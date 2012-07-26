@@ -1,0 +1,50 @@
+== Statements.do-while == map:sd, sc:d ==
+do {
+<SPLIT>} while ( <CURSOR> );				# -----  end do-while  -----
+== Statements.for == map:sf, sc:f ==
+for ( my $<CURSOR>; ;  ) {
+<SPLIT>}
+== Statements.foreach == map:sfe, sc:f ==
+foreach my $<CURSOR> (  ) {
+<SPLIT>}
+== Statements.if == map:si, sc:i ==
+if ( <CURSOR> ) {
+<SPLIT><-IF_PART->
+}
+== Statements.else == map:se, sc:e ==
+else {<CURSOR>
+<SPLIT>}
+== Statements.elsif == map:sei, sc:e ==
+elsif ( <CURSOR> ) {
+<SPLIT>}
+== Statements.if-else == map:sie, sc:i ==
+if ( <CURSOR> ) {
+<SPLIT><-IF_PART->
+}
+else {
+	<-ELSE_PART->
+}
+== Statements.unless == map:su, sc:u ==
+unless ( <CURSOR> ) {
+<SPLIT>}
+== Statements.unless-else == map:sue, sc:u ==
+unless ( <CURSOR> ) {
+<SPLIT>}
+else {
+	<-ELSE_PART->
+}
+== Statements.until == map:st, sc:t ==
+until ( <CURSOR> ) {
+<SPLIT>}
+== Statements.while == map:sw, sc:w ==
+while ( <CURSOR> ) {
+<SPLIT>}
+== Statements.given == map:sg, sc:g ==
+given ( <CURSOR> ) {
+	when () {}
+	when () {}
+	default {}
+}
+== Statements.when == map:swh, sc:w ==
+	when (<CURSOR>) {}
+== ENDTEMPLATE ==

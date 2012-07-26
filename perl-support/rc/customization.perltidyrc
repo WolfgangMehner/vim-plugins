@@ -1,0 +1,10 @@
+--quiet
+--continuation-indentation=4
+--indent-columns=4
+--maximum-line-length=96
+--nooutdent-long-lines
+--nospace-for-semicolon
+--fixed-position-side-comment=49
+--closing-side-comments
+--closing-side-comment-list="sub : BEGIN END"
+--closing-side-comment-prefix="## ---------- end" 

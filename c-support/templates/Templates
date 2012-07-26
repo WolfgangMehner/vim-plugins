@@ -1,0 +1,43 @@
+§ ==========================================================
+§  User Macros
+§ ==========================================================
+
+SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
+SetMacro( 'AUTHORREF',   'fgm' )
+SetMacro( 'COMPANY',     '' )
+SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
+SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
+SetMacro( 'LICENSE',     'GNU General Public License' )
+SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
+
+SetStyle( 'C' )
+
+§ ==========================================================
+§  File Includes and Shortcuts
+§ ==========================================================
+
+MenuShortcut( 'Comments',     'c' )
+MenuShortcut( 'Statements',   's' )
+MenuShortcut( 'Idioms',       'i' )
+MenuShortcut( 'Preprocessor', 'p' )
+MenuShortcut( 'Snippets',     'n' )
+MenuShortcut( 'C++',          'c' )
+§
+IncludeFile( 'snippets.template'     )
+§
+== USE STYLES : C ==
+IncludeFile( 'c.comments.template'     )
+IncludeFile( 'c.cpp.template'          )
+IncludeFile( 'c.idioms.template'       )
+IncludeFile( 'c.preprocessor.template' )
+IncludeFile( 'c.statements.template'   )
+== ENDSTYLES ==
+§
+== USE STYLES : CPP ==
+IncludeFile( 'cpp.comments.template'     )
+IncludeFile( 'cpp.cpp.template'          )
+IncludeFile( 'cpp.idioms.template'       )
+IncludeFile( 'cpp.preprocessor.template' )
+IncludeFile( 'cpp.statements.template'   )
+== ENDSTYLES ==
+

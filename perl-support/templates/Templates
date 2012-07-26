@@ -1,0 +1,36 @@
+§ ==========================================================
+§  User Macros
+§ ==========================================================
+
+SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
+SetMacro( 'AUTHORREF',   'fgm' )
+SetMacro( 'COMPANY',     '' )
+SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
+SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
+SetMacro( 'LICENSE',     'GNU General Public License' )
+SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
+
+SetStyle( 'default' )
+
+§ ==========================================================
+§  File Includes and Shortcuts
+§ ==========================================================
+
+MenuShortcut( 'Comments',   'c' )
+MenuShortcut( 'Idioms',     'i' )
+MenuShortcut( 'Pod',        'd' )
+MenuShortcut( 'Statements', 's' )
+MenuShortcut( 'Special Variables', 'v' )
+MenuShortcut( 'Regex', 'r' )
+MenuShortcut( 'Snippets', 'n' )
+MenuShortcut( 'File-Test', 'f' )
+
+IncludeFile( 'comments.templates' )
+IncludeFile( 'statements.templates' )
+IncludeFile( 'idioms.templates' )
+IncludeFile( 'specvar.templates' )
+IncludeFile( 'regex.templates' )
+IncludeFile( 'pod.templates' )
+IncludeFile( 'snippets.templates' )
+IncludeFile( 'filetests.templates' )
+

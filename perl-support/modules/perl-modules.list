@@ -1,0 +1,3 @@
+<---------- please generate your own Perl module list ---------->
+    gVim : menu item Perl->Run->'generate Perl module list'
+    Vim : hotkey \rg out of a buffer with filetype 'perl'.

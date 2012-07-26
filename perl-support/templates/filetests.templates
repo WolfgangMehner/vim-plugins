@@ -1,0 +1,57 @@
+
+== File-Tests.exists   -e         == insert ==             
+-e<CURSOR>
+== File-Tests.has zero size   -z       == insert ==      
+-z<CURSOR>
+== File-Tests.has nonzero size   -s         == insert == 
+-s<CURSOR>
+== File-Tests.plain file   -f                 == insert ==
+-f<CURSOR>
+== File-Tests.directory   -d                   == insert ==
+-d<CURSOR>
+== File-Tests.symbolic link   -l              == insert ==
+-l<CURSOR>
+== File-Tests.named pipe   -p                 == insert ==
+-p<CURSOR>
+== File-Tests.socket   -S                      == insert ==
+-S<CURSOR>
+== File-Tests.block special file   -b        == insert ==
+-b<CURSOR>
+== File-Tests.character special file   -c    == insert ==
+-c<CURSOR>
+== File-Tests.readable by eff UID-GID   -r    == insert ==
+-r<CURSOR>
+== File-Tests.writable by eff UID-GID   -w    == insert ==
+-w<CURSOR>
+== File-Tests.executable by eff UID-GID   -x  == insert ==
+-x<CURSOR>
+== File-Tests.owned by eff UID   -o           == insert ==
+-o<CURSOR>
+== File-Tests.readable by real UID-GID   -R     == insert ==
+-R<CURSOR>
+== File-Tests.writable by real UID-GID   -W     == insert ==
+-W<CURSOR>
+== File-Tests.executable by real UID-GID   -X   == insert ==
+-X<CURSOR>
+== File-Tests.owned by real UID   -O            == insert ==
+-O<CURSOR>
+== File-Tests.setuid bit set   -u                == insert ==
+-u<CURSOR>
+== File-Tests.setgid bit set   -g                == insert ==
+-g<CURSOR>
+== File-Tests.sticky bit set   -k                == insert ==
+-k<CURSOR>
+== File-Tests.age since modification   -M        == insert ==
+-M<CURSOR>
+== File-Tests.age since last access   -A        == insert ==
+-A<CURSOR>
+== File-Tests.age since inode change   -C       == insert ==
+-C<CURSOR>
+== File-Tests.text file   -T                      == insert ==
+-T<CURSOR>
+== File-Tests.binary file   -B                    == insert ==
+-B<CURSOR>
+== File-Tests.handle opened to a tty   -t      == insert ==
+-t<CURSOR>
+== ENDTEMPLATE ==
+

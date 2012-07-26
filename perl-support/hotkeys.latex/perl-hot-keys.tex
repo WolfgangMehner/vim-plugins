@@ -1,0 +1,365 @@
+%%=====================================================================================
+%%
+%%         File:  perl-hot-keys.tex
+%%
+%%  Description:  perl-support.vim : Key mappings for Vim without GUI.
+%%                
+%%                
+%%       Author:  Dr.-Ing. Fritz Mehner
+%%        Email:  mehner@fh-swf.de
+%%    Copyright:  Copyright (C)  2003-2012  Dr.-Ing. Fritz Mehner  (mehner@fh-swf.de)
+%%      Version:  see \Pluginversion
+%%      Created:  06.06.2003
+%%                
+%%=====================================================================================
+
+\documentclass[oneside,10pt,landscape,DIV17]{scrartcl}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lastpage}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+
+\setlength\parindent{0pt}
+
+\newcommand{\Pluginversion}{5.1}
+\newcommand{\ReleaseDate}{\today}
+\newcommand{\Rep}{{\scriptsize{[n]}}}
+
+%%----------------------------------------------------------------------
+%%  fancyhdr
+%%----------------------------------------------------------------------
+\pagestyle{fancyplain}
+\fancyhf{}
+\fancyfoot[L]{\small \ReleaseDate}
+\fancyfoot[C]{\small perl-support.vim}
+\fancyfoot[R]{\small \textbf{Page \thepage{} / \pageref{LastPage}}}
+\renewcommand{\headrulewidth}{0.0pt}
+
+%%----------------------------------------------------------------------
+%%  luximono : Type1-font
+%%  Makes keyword stand out by using semibold letters.
+%%----------------------------------------------------------------------
+\usepackage[scaled]{luximono}
+
+%%----------------------------------------------------------------------
+%%  hyperref
+%%----------------------------------------------------------------------
+\usepackage[ps2pdf]{hyperref}
+\hypersetup{pdfauthor={Dr.-Ing. Fritz Mehner, FH Südwestfalen, Iserlohn, Germany}}
+\hypersetup{pdfkeywords={Vim, Perl}}
+\hypersetup{pdfsubject={Vim-plug-in,  perl-support.vim, hot keys}}
+\hypersetup{pdftitle={Vim-plug-in,  perl-support.vim, hot keys}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  START OF DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}%
+
+\begin{multicols}{3}
+%
+\begin{center}
+%
+%%======================================================================
+%%  title
+%%======================================================================
+\textbf{\textsc{\small{Vim-Plug-in}}}\\
+\textbf{\LARGE{perl-support.vim}}\\
+\textbf{\textsc{\small{Version \Pluginversion}}}\\
+\vspace{5mm}%
+\textbf{\textsc{\Huge{Hot keys}}}\\ 
+\vspace{5mm}%
+Key mappings for Vim and gVim.\\
+Plug-in: http://vim.sourceforge.net\\
+Fritz Mehner (mehner.fritz@fh-swf.de)\\
+\vspace{1.0mm}
+{\normalsize (i)} insert mode, {\normalsize (n)} normal mode, {\normalsize (v)} visual mode\\
+\vspace{4.0mm}
+
+%%======================================================================
+%%  table, left part
+%%======================================================================
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{60mm}|}
+%%----------------------------------------------------------------------
+%%  show plug-in help
+%%----------------------------------------------------------------------
+\hline 
+\multicolumn{2}{|r|}{\textsl{\textbf{H}elp}}\\[1.0ex]
+\hline \verb'\h'    & read perldoc for word under cursor \hfill (n,i)\\
+\hline \verb'\hp'   & help (plug-in) \hfill (n,i)\\
+\hline 
+%%----------------------------------------------------------------------
+%%  menu comments
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{C}omments}}                       \\[1.0ex]
+\hline \Rep\verb'\cl'   & end-of-line comment               \hfill (n, v, i)\\
+\hline \Rep\verb'\cj'   & adjust end-of-line comments       \hfill (n, v, i)\\
+\hline     \verb'\cs'   & set end-of-line comment col.      \hfill (n)      \\
+%
+\hline \Rep\verb'\cc'   & code $\leftrightarrow$ comment    \hfill (n, v)   \\
+\hline     \verb'\cb'   & code block $\rightarrow$ comment  \hfill (n, v)   \\
+\hline     \verb'\cub'  & uncomment code block              \hfill (n)      \\
+%
+\hline     \verb'\cfr'  & frame comment                     \hfill (n, i)   \\
+\hline     \verb'\cfu'  & function description              \hfill (n, i)   \\
+\hline     \verb'\cme'  & method description                \hfill (n, i)   \\
+\hline     \verb'\chpl' & file header (.pl)                 \hfill (n)      \\
+\hline     \verb'\chpm' & file header (.pm)                 \hfill (n)      \\
+\hline     \verb'\cht'  & file header (.t)                  \hfill (n)      \\
+\hline     \verb'\chpo' & file header (.pod)                \hfill (n)      \\
+\hline     \verb'\cd'   & date                              \hfill (n, i)   \\
+\hline     \verb'\ct'   & date \& time                      \hfill (n, i)   \\
+\hline     \verb'\ck'   & keyword comments                  \hfill (n, i)   \\
+\hline     \verb'\cma'  & plug-in macros                     \hfill (n, i)   \\
+\hline
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%======================================================================
+%%  table, middle part
+%%======================================================================
+%
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{60mm}|}
+%%----------------------------------------------------------------------
+%%  menu statements
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{S}tatements}}                    \\[1.0ex]
+\hline \verb'\sd'      & \verb'do { } while'          \hfill (n, v, i)\\
+\hline \verb'\sf'      & \verb'for { }'               \hfill (n, v, i)\\
+\hline \verb'\sfe'     & \verb'foreach { }'           \hfill (n, v, i)\\
+\hline \verb'\si'      & \verb'if { }'                \hfill (n, v, i)\\
+\hline \verb'\sie'     & \verb'if { } else { }'       \hfill (n, v, i)\\
+\hline \verb'\se'      & \verb'else { }'              \hfill (n, v, i)\\
+\hline \verb'\sei'     & \verb'elsif { }'             \hfill (n, v, i)\\
+\hline \verb'\su'      & \verb'unless { }'            \hfill (n, v, i)\\
+\hline \verb'\sue'     & \verb'unless { } else { }'   \hfill (n, v, i)\\
+\hline \verb'\st'      & \verb'until { }'             \hfill (n, v, i)\\
+\hline \verb'\sw'      & \verb'while { }'             \hfill (n, v, i)\\
+\hline \verb'\sg'      & \verb'given { }'             \hfill (n, v, i)\\
+\hline \verb'\swh'     & \verb'when { }'              \hfill (n, v, i)\\
+\hline
+%%----------------------------------------------------------------------
+%%  menu idioms
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{I}dioms}}                 \\[1.0ex]
+\hline \verb'\id  '  & \verb'my $;'              \hfill (n, i)   \\
+\hline \verb'\ida '  & \verb'my $ = ;'           \hfill (n, i)   \\
+\hline \verb'\idd '  & \verb'my ( $, $ );'       \hfill (n, i)   \\
+\hline \verb'\ia  '  & \verb'my @;'              \hfill (n, i)   \\
+\hline \verb'\iaa '  & \verb'my @ = (,,);'       \hfill (n, i)   \\
+\hline \verb'\ih  '  & \verb'my %;'              \hfill (n, i)   \\
+\hline \verb'\iha '  & \verb'my % = (=>,=>,);'   \hfill (n, i)   \\
+%
+\hline \verb'\ir'  & \verb'my $rgx_ = q//;'    \hfill (n, i)   \\
+\hline \verb'\im'  & \verb'$ =~ m//xm'         \hfill (n, i)   \\
+\hline \verb'\is'  & \verb'$ =~ s///xm'        \hfill (n, i)   \\
+\hline \verb'\it'  & \verb'$ =~ tr///xm'       \hfill (n, i)   \\
+\hline \verb'\isu' & \verb'subroutine'         \hfill (n, v, i)\\
+\hline \verb'\ip'  & \verb'print "...\n";'     \hfill (n ,i)   \\
+\hline \verb'\ii'  & open input file           \hfill (n, v, i)\\
+\hline \verb'\io'  & open output file          \hfill (n, v, i)\\
+\hline \verb'\ipi' & open pipe                 \hfill (n, v, i)\\
+\hline
+%%----------------------------------------------------------------------
+%%  snippet menu
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{S\textbf{n}ippet}}                \\[1.0ex]
+\hline \verb'\nr'  & read code snippet         \hfill (n, i)   \\
+\hline \verb'\nv'  & view code snippet         \hfill (n, i)   \\
+\hline \verb'\nw'  & write code snippet        \hfill (n, v, i)\\
+\hline \verb'\ne'  & edit code snippet         \hfill (n, i)   \\
+%
+\hline \verb'\ntl' & edit local templates      \hfill (n, i)\\
+\hline \verb'\ntr' & reread the templates      \hfill (n, i)\\
+\hline \verb'\nts' & choose template style     \hfill (n, i)\\
+%
+\hline \verb'\njt' & insert jump tag           \hfill (n, i)\\
+\hline \verb'\nxs' & regex snippet template    \hfill (n, i)\\
+\hline
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%======================================================================
+%%  table, right part
+%%======================================================================
+%
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{60mm}|}
+%%----------------------------------------------------------------------
+%%  menu regex menu
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{Regular E\textbf{x}pressions}}     \\[1.0ex]
+\hline     \verb'xpc' &  POSIX classes                 \hfill (n, i)\\ 
+\hline     \verb'xup' &  Unicode properties            \hfill (n, i)\\ 
+\hline     \verb'xex' &  extended Regex                \hfill (n, i)\\ 
+\hline \Rep\verb'\xr' &  pick up Regex                 \hfill (n, v)\\
+\hline \Rep\verb'\xs' &  pick up string                \hfill (n, v)\\
+\hline     \verb'\xf' &  pick up flag(s)               \hfill (n, v)\\
+\hline     \verb'\xm' &  match                         \hfill (n)   \\
+\hline     \verb'\xmm'&  match multiple (Regex/target) \hfill (n)   \\
+\hline     \verb'\xe' &  explain Regex                 \hfill (n, v)\\
+\hline
+%%----------------------------------------------------------------------
+%%  menu Special variables
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{S}pecial Variables}}            \\[1.0ex]
+\hline \verb'\vb'   & basics \hfill (n, i)\\
+\hline \verb'\ve'   & errors \hfill (n, i)\\
+\hline \verb'\vf'   & files  \hfill (n, i)\\
+\hline \verb'\vid'  & IDs    \hfill (n, i)\\
+\hline \verb'\vio'  & IO     \hfill (n, i)\\
+\hline \verb'\vr'   & regexp \hfill (n, i)\\
+\hline \verb'\vs'   & POSIX signals \hfill (n, i)\\
+\hline
+%%----------------------------------------------------------------------
+%%  menu POD
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{P}OD}}                       \\[1.0ex]
+\hline \verb'\pod'    & run \verb'podchecker'           \hfill (n, i)\\
+\hline \verb'\podh'   & convert POD data to .html file  \hfill (n, i)\\
+\hline \verb'\podm'   & Convert POD data to *roff input \hfill (n, i)\\
+\hline \verb'\podt'   & Convert POD data to ASCII text  \hfill (n, i)\\
+\hline \verb'\pm'     & markup sequences                \hfill (n, i)\\
+\hline
+%%----------------------------------------------------------------------
+%%  menu Profiling
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{P}rofiling}}                 \\[1.0ex]
+\hline \verb'\rps'     & run \verb'SmallProf'                    \hfill (n, i)\\
+\hline \verb'\rpss'    & sort \verb'SmallProf' report            \hfill (n, i)\\
+\hline \verb'\rpso'    & open existing \verb'SmallProf' results  \hfill (n, i)\\
+\hline
+%
+\hline \verb'\rpf'     & run \verb'FastProf'                    \hfill (n, i)\\
+\hline \verb'\rpfs'    & sort \verb'FastProf' report            \hfill (n, i)\\
+\hline \verb'\rpfo'    & open existing \verb'FastProf' results  \hfill (n, i)\\
+%
+\hline
+\hline \verb'\rpn'     & run \verb'NYTProf'                    \hfill (n, i)\\
+\hline \verb'\rpns'    & sort \verb'NYTProf' report            \hfill (n, i)\\
+\hline \verb'\rpno'    & open existing \verb'NYTProf' results  \hfill (n, i)\\
+\hline \verb'\rpnh'    & browse HTML files (\verb'NYTProf')\hfill (n, i)\\
+\hline
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%
+\end{center}%
+\end{multicols}%
+%
+\newpage
+%%----------------------------------------------------------------------
+%%  PAGE 2
+%%----------------------------------------------------------------------
+%
+%
+\begin{multicols}{2}
+%
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{61mm}|}
+%%----------------------------------------------------------------------
+%%  menu run
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{R}un}} \\[1.0ex]
+\hline \verb'\rr'    & update file, run script                  \hfill (n, i)   \\
+\hline \verb'\rs'    & update file, check syntax                \hfill (n, i)   \\
+\hline \verb'\ra'    & set command line arguments               \hfill (n, i)   \\
+\hline \verb'\rw'    & set Perl cmd.\ line switches             \hfill (n, i)   \\
+\hline \verb'\re'    & make script executable                   \hfill (n, i)   \\
+\hline \verb'\rm'    & run \texttt{make}                        \hfill (n, i)   \\
+\hline \verb'\rcm'   & choose makefile                          \hfill (n, i)   \\
+\hline \verb'\rm'    & \texttt{make clean}                      \hfill (n, i)   \\
+\hline \verb'\rma'   & command line arguments for \texttt{make} \hfill (n, i)   \\
+\hline \verb'\rd'    & start debugger                           \hfill (n, i)   \\
+\hline \verb'\ri'    & show installed Perl modules              \hfill (n, i)   \\
+\hline \verb'\rg'    & generate Perl module list                \hfill (n, i)   \\
+\hline \verb'\ry'    & run \verb'perltidy'                      \hfill (n, v, i)\\
+\hline \verb'\rpc'   & run \verb'perlcritic'                    \hfill (n, i)   \\
+\hline \verb'\rpcs'  & set \verb'perlcritic' severity           \hfill (n, i)   \\
+\hline \verb'\rpcv'  & set \verb'perlcritic' verbosity          \hfill (n, i)   \\
+\hline \verb'\rpco'  & set \verb'perlcritic' options            \hfill (n, i)   \\
+\hline \verb'\rt'    & save buffer with timestamp               \hfill (n, i)   \\
+\hline \verb'\rh'    & hardcopy buffer                          \hfill (n, v, i)\\
+\hline \verb'\rk'    & settings and hotkeys                     \hfill (n, i)   \\
+\hline \verb'\rx'    & set xterm size                           \hfill (n, i {\tiny GUI only})\\
+\hline \verb'\ro'    & change output destination                \hfill (n, i)   \\
+\hline
+\end{tabular}%
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+
+\parbox[t][70mm][t]{120mm}{%
+%
+\begin{tabbing}
+\hspace{30mm} \= \hspace{50mm} \= \kill
+%
+%%----------------------------------------------------------------------
+%%  perlcritic
+%%----------------------------------------------------------------------
+\textbf{\texttt{perlcritic}}\\[1.0ex]
+%
+Ex commands for \texttt{perlcritic} (version 1.01+)\\
+Use tab expansion to choose the severity or the verbosity.\\[2.0ex]
+\texttt{ :CriticSeverity}  \> \texttt{\ 1\ \ \ \ \ \ 2\ \ \ \ \ 3\ \ \ \ \ 4\ \ \ \ \ 5} \\
+                           \> \texttt{\ brutal cruel harsh stern gentle} \\[1.0ex]
+\texttt{ :CriticVerbosity} \> \texttt{\ 1} $\ldots$ \texttt{11}\\[1.0ex]
+\texttt{ :CriticOptions}   \> option(s), see \texttt{perlcritic(1)}\\[5.5ex]
+%
+\hspace{40mm} \= \hspace{50mm} \= \kill
+%%----------------------------------------------------------------------
+%%  regex tester
+%%----------------------------------------------------------------------
+\textbf{\texttt{Regular Expression Tester}}\\[1.0ex]
+%
+Ex command for the regular expression tester. Set control character\\
+replacements for newline and tabulator used to display the results\\
+of a match, e.g.:\\[2.0ex]
+
+\texttt{ :RegexSubstitutions}   \> \texttt{'\$}\texttt{\~}\texttt{'}  \\[5.5ex]
+%
+\hspace{30mm} \= \hspace{50mm} \= \kill
+%
+%%----------------------------------------------------------------------
+%%  Profiling
+%%----------------------------------------------------------------------
+\large{\textbf{Profiling}}\\[1.0ex]
+%
+The following ex commands can be used to sort a profiler report \\in the quickfix window.\\
+Use tab expansion to choose the sort criterion or the file name.\\[2.0ex]
+%
+For \texttt{Devel::SmallProf}\\[1.0ex]
+\texttt{ :SmallProfSort}   \> \texttt{file-name|line-number|line-count|time|ctime}\\[3.0ex]
+%
+%
+For \texttt{Devel::FastProf}\\[1.0ex]
+\texttt{ :FastProfSort}    \> \texttt{file-name|line-number|time|line-count}\\[3.0ex]
+%
+%
+For \texttt{Devel::NYTProf}\\[1.0ex]
+\texttt{ :NYTProfCSV}      \> Read a CSV-file.\\[1.0ex]
+%
+\texttt{ :NYTProfHTML}      \> Read the HTML-reports with an external viewer (GUI only).\\[1.0ex]
+%
+%
+\texttt{ :NYTProfSort}     \> \texttt{file-name|line-number|time|calls|time-call}\\
+%
+\end{tabbing}
+}
+\end{multicols}%
+%
+%%----- TABBING :  end  ----------
+\end{document}

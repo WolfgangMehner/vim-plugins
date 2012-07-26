@@ -1,0 +1,120 @@
+
+== LIST: POSIX_CharClasses == list ==
+  'alnum',
+  'alpha',
+  'ascii',
+  'blank',
+  'cntrl',
+  'digit',
+  'graph',
+  'lower',
+  'print',
+  'punct',
+  'space',
+  'upper',
+  'word',
+  'xdigit',
+== ENDLIST ==
+
+== Regex.POSIX classes == expandmenu, insert, sc:p, map:xpc ==
+|PickList( 'POSIX char. classes', 'POSIX_CharClasses' )|
+[:|PICK|:]<CURSOR>
+== ENDTEMPLATE ==
+
+== LIST: UnicodeProperties == hash ==
+  'Letter L'                        : 'Letter',
+  'Lowercase_Letter Ll'             : 'Lowercase_Letter',
+  'Uppercase_Letter Lu'             : 'Uppercase_Letter',
+  'Titlecase_Letter Lt'             : 'Titlecase_Letter',
+  'Modifier_Letter Lm'              : 'Modifier_Letter',
+  'Other_Letter Lo'                 : 'Other_Letter',
+  'Mark M'                          : 'Mark',
+  'Non_Spacing_Mark Mn'             : 'Non_Spacing_Mark',
+  'Spacing_Combining_Mark M'        : 'Spacing_Combining_Mark',
+  'Enclosing_Mark Me'               : 'Enclosing_Mark',
+  'Separator Z'                     : 'Separator',
+  'Space_Separator Zs'              : 'Space_Separator',
+  'Line_Separator Zl'               : 'Line_Separator',
+  'Paragraph_Separator Zp'          : 'Paragraph_Separator',
+  'Symbol S'                        : 'Symbol',
+  'Math_Symbol Sm'                  : 'Math_Symbol',
+  'Currency_Symbol Sc'              : 'Currency_Symbol',
+  'Modifier_Symbol Sk'              : 'Modifier_Symbol',
+  'Other_Symbol So'                 : 'Other_Symbol',
+  'Number N'                        : 'Number',
+  'Decimal_Digit_Number Nd'         : 'Decimal_Digit_Number',
+  'Letter_Number Nl'                : 'Letter_Number',
+  'Other_Number No'                 : 'Other_Number',
+  'Punctuation P'                   : 'Punctuation',
+  'Dash_Punctuation Pd'             : 'Dash_Punctuation',
+  'Open_Punctuation Ps'             : 'Open_Punctuation',
+  'Close_Punctuation Pe'            : 'Close_Punctuation',
+  'Initial_Punctuation Pi'          : 'Initial_Punctuation',
+  'Final_Punctuation Pf'            : 'Final_Punctuation',
+  'Connector_Punctuation Pc'        : 'Connector_Punctuation',
+  'Other_Punctuation Po'            : 'Other_Punctuation',
+  'Other C'                         : 'Other',
+  'Control Cc'                      : 'Control',
+  'Format Cf'                       : 'Format',
+  'Private_Use Co'                  : 'Private_Use',
+  'Unassigned Cn'                   : 'Unassigned',
+== ENDLIST ==
+
+== Regex.Unicode Property == expandmenu, insert, sc:u, map:xup ==
+|PickList( 'Unicode Property', 'UnicodeProperties' )|
+\p{|PICK|}<CURSOR>
+== ENDTEMPLATE ==
+
+
+== LIST: ExtendedRegex == hash ==
+  'comment'                  : '(?#<SPLIT><CURSOR>)',
+  'cluster only parenthesis' : '(?-imsx:<SPLIT><CURSOR>)',
+  'named capture'            : '(?<<SPLIT><CURSOR>>)',
+  'pattern modifier'         : '<SPLIT>(?<CURSOR>-imsx)',
+  'execute code'             : '(?{<SPLIT><CURSOR>})',
+  'match regex from code'    : '(??{<SPLIT><CURSOR>})',
+  'match-if-then'            : '(?(<SPLIT><CURSOR>))',
+  'match-if-then-else'       : '(?(<SPLIT><CURSOR>)|)',
+  'lookahead succeeds'       : '(?=<SPLIT><CURSOR>)',
+  'lookahead fails'          : '(?!<SPLIT><CURSOR>)',
+  'lookbehind succeeds'      : '(?<=<SPLIT><CURSOR>)',
+  'lookbehind fails'         : '(?<!<SPLIT><CURSOR>)',
+  'prohibit backtracking'    : '(?><SPLIT><CURSOR>)',
+== ENDLIST ==
+
+== Regex.extended Regex == expandmenu, insert, visual, sc:e, map:xex ==
+|PickList( 'Regex, extended', 'ExtendedRegex' )|
+|PICK|
+== ENDTEMPLATE ==
+
+== Regex.grouping == insert ==
+(<SPLIT><CURSOR>)
+== Regex.alternation == insert ==
+(<SPLIT><CURSOR>|)
+== Regex.char class == insert ==
+[<SPLIT><CURSOR>]
+== Regex.count == insert ==
+{<SPLIT><CURSOR>,}
+== Regex.word boundary == insert ==
+\b<CURSOR>
+== Regex.digit == insert ==
+\d<CURSOR>
+== Regex.whitespace == insert ==
+\s<CURSOR>
+== Regex.word character == insert ==
+\w<CURSOR>
+== Regex.match property == insert ==
+\p{<SPLIT><CURSOR>}
+== Regex.non-word boundary == insert ==
+\B<CURSOR>
+== Regex.non-digit == insert ==
+\D<CURSOR>
+== Regex.non-whitespace == insert ==
+\S<CURSOR>
+== Regex.non-word character == insert ==
+\W<CURSOR>
+== Regex.do not match property == insert ==
+\P{<SPLIT><CURSOR>}
+== ENDTEMPLATE ==
+
+

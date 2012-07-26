@@ -1,0 +1,124 @@
+== POD.pod, cut ==
+
+=pod
+
+<SPLIT><CURSOR>
+
+=cut
+
+== POD.cut ==
+
+=cut
+
+<CURSOR>
+== POD.for, cut ==
+
+=for  <CURSOR>
+
+<SPLIT>
+
+=cut
+
+== POD.begin html, end ==
+
+=begin  html
+
+<SPLIT><CURSOR>
+
+=end    html  #  back to Perl
+
+== POD.begin man, end ==
+
+=begin  man 
+
+<SPLIT><CURSOR>
+
+=end    man   #  back to Perl
+
+== POD.begin text, end ==
+
+=begin  text
+
+<SPLIT><CURSOR>
+
+=end    text  #  back to Perl
+
+== POD.head1 ==
+
+=head1 <CURSOR>
+
+== POD.head2 ==
+
+=head2 <CURSOR>
+
+== POD.head3 ==
+
+=head3 <CURSOR>
+
+== POD.over, back ==
+
+=over 2
+
+=item *
+
+<SPLIT><CURSOR>
+
+=item *
+
+
+
+=back
+
+== POD.item ==
+
+=item *
+
+<CURSOR>
+
+== POD.invisible POD.Improvement ==
+
+=for Improvement: |?KEYWORD|
+<CURSOR><single paragraph>
+
+=cut
+
+== POD.invisible POD.Optimization ==
+
+=for Optimization: |?KEYWORD|
+<CURSOR><single paragraph>
+
+=cut
+
+== POD.invisible POD.Rationale ==
+
+=for Rationale: |?KEYWORD|
+<CURSOR><single paragraph>
+
+=cut
+
+== POD.invisible POD.Workaround ==
+
+=for Workaround: |?KEYWORD|
+<CURSOR><single paragraph>
+
+=cut
+
+== ENDTEMPLATE ==
+
+== LIST: POD_markup == hash ==
+  'bold B'         :   'B',
+  'literal C'      :   'C',
+  'escape E'       :   'E',
+  'filename F'     :   'F',
+  'italic I'       :   'I',
+  'link L'         :   'L',
+  'nonbr. spaces S':   'S',
+  'index X'        :   'X',
+  'zero-width Z'   :   'Z'
+== ENDLIST ==
+
+== POD.markup sequences == expandmenu, insert, map:pm, sc:m ==
+|PickList( 'Markup', 'POD_markup' )|
+|PICK|<<SPLIT><CURSOR>>
+== ENDTEMPLATE ==
+
