@@ -2711,14 +2711,14 @@ if has("autocmd")
 	autocmd BufNewFile,BufRead  *.i  :set filetype=c
 	autocmd BufNewFile,BufRead  *.ii :set filetype=cpp
 	"
-	"
 	" DELAYED LOADING OF THE TEMPLATE DEFINITIONS
 	"
-	autocmd BufNewFile,BufRead  *                   
-				\	if (&filetype=='cpp' || &filetype=='c') |
-				\	  call C_CreateMenusDelayed()           |
-				\ 	call mmtemplates#core#CreateMaps ( 'g:C_Templates', g:C_MapLeader ) |
-				\ endif
+	autocmd FileType *
+				\	if ( &filetype == 'cpp' || &filetype == 'c') |
+				\		call C_CreateMenusDelayed() |
+				\		call s:CreateAdditionalMaps() |
+				\		call mmtemplates#core#CreateMaps ( 'g:C_Templates', g:C_MapLeader ) |
+				\	endif
 
 		"-------------------------------------------------------------------------------
 		" style switching :Automated header insertion (suffixes from the gcc manual)
@@ -2735,7 +2735,6 @@ if has("autocmd")
 				" template styles are related to file extensions 
 				"-------------------------------------------------------------------------------
 				for [ pattern, stl ] in items( g:C_Styles )
-""					exe "autocmd BufNewFile,BufRead,BufEnter ".pattern." call C_Style( '".stl."' )"
 					exe "autocmd BufNewFile,BufRead,BufEnter ".pattern." call mmtemplates#core#ChooseStyle ( g:C_Templates, '".stl."')"
 					exe "autocmd BufNewFile                  ".pattern." call C_InsertTemplateWrapper()"
 				endfor
@@ -2749,8 +2748,8 @@ if has("autocmd")
 	exe 'autocmd BufRead *.'.join( s:C_SourceCodeExtensionsList, '\|*.' )
 				\     .' call C_HighlightJumpTargets()'
 	"
-	autocmd BufNewFile,BufRead * if &filetype =~ '^\(c\|cpp\)$' |
-							\     call s:CreateAdditionalMaps() | endif
+" 	autocmd BufNewFile,BufRead * if &filetype =~ '^\(c\|cpp\)$' |
+" 							\     call s:CreateAdditionalMaps() | endif
 endif " has("autocmd")
 "
 "=====================================================================================
