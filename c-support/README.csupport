@@ -1,4 +1,4 @@
-README for c.vim (Version 5.19) / May 05 2012
+README for c.vim (Version 6.0) / August 17 2012
 
   *  DESCRIPTION
   *  INSTALLATION
@@ -52,15 +52,15 @@ value of $HOME with ":echo $HOME" from inside Vim).
     '$HOME/.vim/c-support/templates/Templates' 
     Here is the minimal personalization (my settings as an example):
 
-      |AUTHOR|       = Dr. Fritz Mehner 
-      |AUTHORREF|    = fgm
-      |EMAIL|        = mehner.fritz@fh-swf.de
-      |ORGANIZATION| = FH Südwestfalen, Iserlohn
-      |COPYRIGHT|    = Copyright (c) |YEAR|, |AUTHOR|
+       SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
+       SetMacro( 'AUTHORREF',   'fgm' )
+       SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
+       SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
+       SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 
     (Read more about the template system in the plugin documentation)
 
-(1.4) Make the plugin help accessible by typing the following command on the
+(1.4) Make the plugin help accessable by typing the following command on the
     Vim command line:
 
     :helptags $HOME/.vim/doc/
@@ -69,7 +69,6 @@ value of $HOME with ":echo $HOME" from inside Vim).
     customization.vimrc and customization.gvimrc are replacements or extensions
     for your .vimrc and .gvimrc.  You may want to use parts of them. The files
     are documented. 
-
 
 (2)  WINDOWS
 ------------
@@ -102,11 +101,11 @@ the value of $HOME with ":echo $HOME" from inside Vim).
     '$HOME/vimfiles/c-support/templates/Templates' 
     Here is the minimal personalization (my settings as an example):
 
-      |AUTHOR|       = Dr. Fritz Mehner 
-      |AUTHORREF|    = fgm
-      |EMAIL|        = mehner.fritz@fh-swf.de
-      |ORGANIZATION| = FH Südwestfalen, Iserlohn
-      |COPYRIGHT|    = Copyright (c) |YEAR|, |AUTHOR|
+       SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
+       SetMacro( 'AUTHORREF',   'fgm' )
+       SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
+       SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
+       SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 
     (Read more about the template system in the plugin documentation)
 
@@ -149,10 +148,19 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
 ================================================================================
   RELEASE NOTES
 ================================================================================
-- Resolve home for linked home directories.
-- Three C++-items removed (see file 'customization.cpp.vim').
-- Bugfix: global options changed unintentionally.
-- Minor improvements and bugfixes.
+
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++  The plug-in version 6.0+ is a rewriting of version 5.19.                ++
+  ++  The versions 6.0+ are based on a new and more powerful template system  ++
+  ++  (please see |template-support|for more information).                    ++
+  ++  The template syntax has changed!                                        ++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+- New template system (many thanks to Wolfgang Mehner)
+- A few new hotkeys and menu item.
+- A few hotkeys and menu items renamed.
 
   Please see file ./c-support/doc/ChangeLog .
 
@@ -161,6 +169,8 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
 ================================================================================
 
 README.csupport                This file.
+
+autoload/mmtemplates/core.vim  The template system.
 
 doc/csupport.txt               The help file for the local on-line help. 
                           
