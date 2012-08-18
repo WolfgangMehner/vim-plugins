@@ -2861,17 +2861,12 @@ endif
 "------------------------------------------------------------------------------
 if has("autocmd")
 	"
-	autocmd BufNewFile,BufRead *.pl,*.pm,*.t,*.pod
+	autocmd FileType *
 				\	if ( &filetype == 'perl' || &filetype == 'pod') |
-				\	  call Perl_CreateMenusDelayed()           |
-				\ 	call mmtemplates#core#CreateMaps ( 'g:Perl_Templates', g:Perl_MapLeader ) |
-				\ endif |
-	"
-	autocmd BufRead *
-				\	if ( &filetype == 'perl' || &filetype == 'pod') |
-				\	  call Perl_CreateMenusDelayed()           |
-				\ 	call mmtemplates#core#CreateMaps ( 'g:Perl_Templates', g:Perl_MapLeader ) |
-				\ endif 
+				\		call Perl_CreateMenusDelayed() |
+				\		call s:CreateAdditionalMaps() |
+				\		call mmtemplates#core#CreateMaps ( 'g:Perl_Templates', g:Perl_MapLeader ) |
+				\	endif
 	"
 	autocmd BufNewFile,BufRead *.pod  setlocal  syntax=perl
   autocmd BufNewFile,BufRead *.t    setlocal  filetype=perl
@@ -2888,8 +2883,6 @@ if has("autocmd")
   "
 	exe 'autocmd BufNewFile,BufReadPost  '.s:Perl_PerlModuleList.' setlocal foldmethod=expr | setlocal foldexpr=Perl_ModuleListFold(v:lnum)'
 	"
-	autocmd BufNewFile,BufRead * if &filetype =~ '^\(perl\|pod\)$' |
-							\     call s:CreateAdditionalMaps() | endif
 endif
 "
 " vim: tabstop=2 shiftwidth=2 foldmethod=marker
