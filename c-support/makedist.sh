@@ -2,53 +2,64 @@
 #===============================================================================
 #
 #          FILE:  makedist.sh
-# 
-#         USAGE:  ./makedist.sh 
-# 
-#   DESCRIPTION:  
-# 
+#
+#         USAGE:  ./makedist.sh
+#
+#   DESCRIPTION:  create archive cvim.zip
+#
 #       OPTIONS:  ---
 #  REQUIREMENTS:  ---
 #          BUGS:  ---
 #         NOTES:  ---
 #        AUTHOR:  Dr.-Ing. Fritz Mehner (Mn), mehner@fh-swf.de
 #       COMPANY:  Fachhochschule Südwestfalen, Iserlohn
-#       VERSION:  1.0
-#       CREATED:  12.05.2007 08:41:41 CEST
+#       VERSION:  2.0
+#       CREATED:  17.08.2012 15:01:05 CEST
 #===============================================================================
 
-dokliste="hotkeys.latex/c-hotkeys.pdf hotkeys.latex/c-hotkeys.tex"
 archive_name="cvim"
-exclude_list="makedist.sh hotkeys.latex/\* *.swp *.cvsignore"
 
-rm --force $archive_name".zip"
+#-------------------------------------------------------------------------------
+#   Hotkeys: PDF und LaTeX-Quelle kopieren
+#-------------------------------------------------------------------------------
+cp hotkeys.latex/c-hotkeys.tex doc/
+cp hotkeys.latex/c-hotkeys.pdf doc/
 
-for datei in $dokliste ; do
-	if  [ -e $datei ]; then
-		cp $datei c-support/doc/
-	else
-		echo -e "Datei $datei existiert nicht\n"
-		exit 1
-	fi
-done
 #-------------------------------------------------------------------------------
 #   persönliche Angaben aus dem Haupt-Template-File ändern
 #-------------------------------------------------------------------------------
-templatefile=./c-support/templates/Templates
+MainTemplateFile=./templates/Templates
 
-if [ -f $templatefile ] ; then
-	sed --in-place '/^\s*|AUTHOR|\s*=/s/Dr. Fritz Mehner/YOUR NAME/'  $templatefile
-	sed --in-place '/^\s*|AUTHORREF|\s*=/s/fgm//'                     $templatefile
-	sed --in-place '/^\s*|EMAIL|\s*=/s/mehner@fh-swf.de//'            $templatefile
-	sed --in-place '/^\s*|COMPANY|\s*=/s/FH Südwestfalen, Iserlohn//' $templatefile
+if [ -f $MainTemplateFile ] ; then
+  sed --in-place  '/SetMacro.*AUTHOR/s/Dr. Fritz Mehner/YOUR NAME/'        $MainTemplateFile
+  sed --in-place  '/SetMacro.*AUTHORREF/s/fgm//'                           $MainTemplateFile
+  sed --in-place  '/SetMacro.*EMAIL/s/mehner.fritz@fh-swf.de//'            $MainTemplateFile
+  sed --in-place  '/SetMacro.*ORGANIZATION/s/FH Südwestfalen, Iserlohn//'  $MainTemplateFile
 else
-	echo -e "Datei ${templatefile} nicht gefunden!\n"
+  echo -e "Datei ${MainTemplateFile} nicht gefunden!\n"
 fi
 
 #-------------------------------------------------------------------------------
 #   Archiv erstellen
 #-------------------------------------------------------------------------------
+cd ..
 
-eval zip -r $archive_name . -x $exclude_list
+rm --force $archive_name'.zip'
 
-exit 0
+filelist="
+ ./autoload/mmtemplates/core.vim
+ ./c-support/codesnippets/*
+ ./c-support/doc/*
+ ./c-support/rc/*
+ ./c-support/README.csupport
+ ./c-support/scripts/*
+ ./c-support/templates/*
+ ./c-support/wordlists/*
+ ./doc/csupport.txt
+ ./ftplugin/c.vim
+ ./ftplugin/make.vim
+ ./plugin/c.vim
+"
+
+zip  $archive_name $filelist
+
