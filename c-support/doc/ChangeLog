@@ -1,4 +1,12 @@
 ================================================================================
+  RELEASE NOTES FOR VERSION 5.19
+================================================================================
+- Resolve home for linked home directories.
+- Three C++-items removed (see file 'customization.cpp.vim').
+- Bugfix: global options changed unintentionally.
+- Minor improvements and bugfixes.
+
+================================================================================
   RELEASE NOTES FOR VERSION 5.18
 ================================================================================
 - Hotkeys \lcs, \ucs removed.
