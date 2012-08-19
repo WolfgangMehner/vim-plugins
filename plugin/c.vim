@@ -295,6 +295,14 @@ let s:C_SourceCodeExtensionsList	= split( s:C_SourceCodeExtensions, '\s\+' )
 "
 let s:CppcheckSeverity	= [ "all", "error", "warning", "style", "performance", "portability", "information" ]
 "
+"------------------------------------------------------------------------------
+"  Modules
+"------------------------------------------------------------------------------
+"
+" list of lists: each entry is a list of strings:
+"   [ "<modulename>", "<prettyname>", "<versionnumber>" ]
+let s:C_ModuleList = []
+"
 "===  FUNCTION  ================================================================
 "          NAME:  C_MenuTitle     {{{1
 "   DESCRIPTION:  display warning
@@ -2051,6 +2059,16 @@ function! C_Settings ()
 		endif
 		let txt = txt."CodeCheck (TM) options(s) :  ".ausgabe."\n"
 	endif
+	" ----- modules -----------------------------
+	if ! empty ( s:C_ModuleList )
+		let mdl = []
+		for [ name, prettyname, versionnumber ] in s:C_ModuleList
+			call add ( mdl, prettyname." (".versionnumber.")" )
+		endfor
+		let sep = "\n                             "
+		let txt = txt."                  modules :  "
+					\ .join ( mdl, sep )."\n"
+	endif
 	let txt = txt."\n"
 	let	txt = txt."__________________________________________________________________________\n"
 	let	txt = txt." C/C++-Support, Version ".g:C_Version." / Dr.-Ing. Fritz Mehner / mehner.fritz@fh-swf.de\n\n"
@@ -2751,6 +2769,31 @@ if has("autocmd")
 " 	autocmd BufNewFile,BufRead * if &filetype =~ '^\(c\|cpp\)$' |
 " 							\     call s:CreateAdditionalMaps() | endif
 endif " has("autocmd")
+"
+"-------------------------------------------------------------------------------
+"  Load additional modules:
+"  - All files in the folder autoload/csupport are assumed to be modules.
+"    They are expected to implement a csupport#filename#Init function,
+"    which must return a list of to strings:
+"     [ "<pretty module name>", "<version number>" ]
+"-------------------------------------------------------------------------------
+"
+if isdirectory ( s:plugin_dir.'/autoload/csupport/' )
+	"
+	for file in split( glob (s:plugin_dir.'/autoload/csupport/*.vim'), '\n' )
+		let s:module = fnamemodify( file, ':t:r' )
+		try
+			exe 'let s:retval = csupport#'.s:module.'#Init()'
+			call add ( s:C_ModuleList, [ s:module ] + s:retval )
+		catch /Vim(call):E117:.*/
+			" could not load the plugin: Init() function missing?
+		catch /.*/
+			echomsg "Internal error (" . v:exception . ")"
+			echomsg " - occurred at " . v:throwpoint
+		endtry
+	endfor
+	"
+endif
 "
 "=====================================================================================
 " vim: tabstop=2 shiftwidth=2 foldmethod=marker
