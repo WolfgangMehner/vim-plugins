@@ -2692,7 +2692,9 @@ function! s:CreateAdditionalMaps ()
 		imap  <buffer>  <silent>  <C-j>    <C-R>=C_JumpCtrlJ()<CR>
 	endif
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
-
+"
+" Plug-in setup:  {{{1
+"
 "------------------------------------------------------------------------------
 "  show / hide the c-support menus
 "  define key mappings (gVim only)
