@@ -54,11 +54,3 @@ inoremap    <buffer>  <silent>  <LocalLeader>cc    <Esc>:call b:CodeComment()<CR
  noremap    <buffer>  <silent>  <LocalLeader>cu         :call b:CommentCode()<CR>
 inoremap    <buffer>  <silent>  <LocalLeader>cu    <Esc>:call b:CommentCode()<CR>
 "
-"-------------------------------------------------------------------------------
-" maps - from the template support
-"-------------------------------------------------------------------------------
-"
-" if exists ( 'g:TemplateSupport_Templates' )
-"   call mmtemplates#core#CreateMaps ( 'g:TemplateSupport_Templates', '', 'do_jump_map', 'do_special_maps' )
-" endif
-"

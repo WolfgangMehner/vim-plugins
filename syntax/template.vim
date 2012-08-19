@@ -7,7 +7,7 @@ elseif exists("b:current_syntax")
 endif
 
 " comment
-syn match Comment   "^\$.*$"
+syn match Comment   "^§.*$"
 syn match Comment   "\%(==\)\@<=[^=]*$"
 
 " templates, lists, ...
