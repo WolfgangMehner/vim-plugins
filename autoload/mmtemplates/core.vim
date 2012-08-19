@@ -4,10 +4,10 @@
 " 
 "   Description:  Template engine: Core.
 "
-"                 Mehner & Mehner - Maps & Menus - Template Engine
+"                 Maps & Menus - Template Engine
 " 
 "   VIM Version:  7.0+
-"        Author:  Wolfgang Mehner (WM), wolfgang-mehner@web.de
+"        Author:  Wolfgang Mehner, wolfgang-mehner@web.de
 "  Organization:  
 "       Version:  0.9
 "       Created:  30.08.2011
@@ -47,7 +47,7 @@ if &cp || ( exists('g:Templates_Version') && ! exists('g:Templates_DevelopmentOv
 	finish
 endif
 let g:Templates_Version= '0.9'     " version number of this script; do not change
-
+"
 if ! exists ( 'g:Templates_MapInUseWarn' )
 	let g:Templates_MapInUseWarn = 1
 endif
@@ -884,9 +884,9 @@ function! s:IncludeFile ( templatefile, ... )
 	"
 	let regex = s:library.regex_file
 	"
-	let first = 0
-	if a:0 >= 1 && a:1 == 'first'
-		let first = 1
+	let read_abs = 0
+	if a:0 >= 1 && a:1 == 'abs'
+		let read_abs = 1
 	endif
 	"
 	" ==================================================
@@ -901,7 +901,7 @@ function! s:IncludeFile ( templatefile, ... )
 " 	else
 "		let templatefile = s:ConcatNormalizedFilename ( s:t_runtime.state_stack[ s:StateStackFile ], templatefile )
 " 	endif
-	if first
+	if read_abs
 		let templatefile = s:ConcatNormalizedFilename ( templatefile )
 	else
 		let templatefile = s:ConcatNormalizedFilename ( s:t_runtime.state_stack[ s:StateStackFile ], templatefile )
@@ -929,7 +929,7 @@ function! s:IncludeFile ( templatefile, ... )
 	call s:DebugMsg ( 'Reading '.templatefile.' ...', 2 )
 	"
 	" old format?
-	let format = 'new'
+	let format = 'new'   " TODO: review this
 	"
 	let state       = 'command'
 	let t_start     = 0
@@ -1303,7 +1303,7 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 		let s:t_runtime.styles_stack  = []
 		"
 		" read the top-level file
-		call s:IncludeFile ( f, 'first' )
+		call s:IncludeFile ( f, 'abs' )
 		"
 	endfor
 	"
@@ -2926,12 +2926,14 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		"
 		exe 'let [ entry, visual, shortcut, mp ] = ['.t_lib.templates[ t_name.'!!menu' ].']'
 		"
-		" no map or map already existing?
+		" no map?
 		if empty ( mp )
 			continue
 		endif
-
-		for mode in ['', 'v', 'i']
+		"
+		for mode in [ 'n', 'v', 'i' ]
+			"
+			" map already existing?
 			if ! empty ( maparg( leader.mp, mode ) )
 				if g:Templates_MapInUseWarn != 0
 					call s:ErrorMsg ( 'Mapping already in use: "'.leader.mp.'", mode "'.mode.'"' )
@@ -2939,9 +2941,13 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 				continue
 			endif
 			"
-			let esc = mode == '' ? '' : '<Esc>'
+			" visual and insert mode: insert '<Esc>'
+			if mode == 'n' | let esc = ''
+			else           | let esc = '<Esc>' | endif
+			"
 			" visual mode: template contains a split tag, or the mode is forced
-			let v = mode == 'v' && visual == 1 ? ',"v"' : ''
+			if mode == 'v' && visual == 1 | let v = ',"v"'
+			else                          | let v = ''     | endif
 			"
 			" assemble the command to create the maps
 			let cmd .= mode.'noremap '.options.' '.leader.mp.' '.esc.':call mmtemplates#core#InsertTemplate('.a:library.',"'.t_name.'"'.v.')<CR>'.sep
@@ -2955,7 +2961,7 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		if ! empty ( maparg( jump_key ) )
 			call s:ErrorMsg ( 'Mapping already in use: "'.jump_key.'"' )
 		else
-			let jump_regex = string ( t_lib.regex_template.JumpTagBoth )
+			let jump_regex = string ( escape ( t_lib.regex_template.JumpTagBoth, '|' ) )
 			let cmd .= 'nnoremap '.options.' '.jump_key.' i<C-R>=mmtemplates#core#JumpToTag('.jump_regex.')<CR>'.sep
 			let cmd .= 'inoremap '.options.' '.jump_key.'  <C-R>=mmtemplates#core#JumpToTag('.jump_regex.')<CR>'.sep
 		endif
@@ -3537,12 +3543,16 @@ function! mmtemplates#core#ChangeSyntax ( library, category, ... )
 	"
 	if a:category == 'comment'
 		"
-		if a:0 < 2
+		if a:0 < 1
 			return s:ErrorMsg ( 'Not enough arguments for '.a:category.'.' )
+		elseif a:0 == 1
+			let t_lib.regex_settings.CommentStart = a:1
+			let t_lib.regex_settings.CommentHint  = a:1[0]
+		elseif a:0 == 2
+			let t_lib.regex_settings.CommentStart = a:1
+			let t_lib.regex_settings.CommentHint  = a:2[0]
 		endif
 		"
-		let t_lib.regex_settings.CommentStart = a:1
-		let t_lib.regex_settings.CommentHint  = a:2[0]
 		call s:UpdateFileReadRegex ( t_lib.regex_file, t_lib.regex_settings )
 		"
 	else

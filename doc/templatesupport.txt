@@ -1,12 +1,38 @@
-*templatesupport.txt*          Template Support              September 22 2011
+*templatesupport.txt*         MM Template Support                July 18 2012
 
-Template Support                                            *template-support*
+MM Template Support                                        *template-support*
 
                              Plugin version 0.9
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
 
-	*Todo	overview
+
+     --- The Maps & Menus Template Support ... ---
+
+-- ... for Vim Users --
+
+This plug-in aims at providing extendible template libraries. A template
+library can assist in speeding up the writing of code, while at the same time
+ensuring a consistent style. The templates are written in an easy markup
+language, which enables the user to customize templates without much hassle.
+
+Menus and maps to access the templates are created automatically. While maps
+might or might not be the preferred way of inserting templates (as well as
+using Vim in general), the menus always provided an overview of the templates
+and the associated maps. This makes it quite easy to use the templates and
+learn their maps at the same time.
+
+-- ... for Plug-Ins --
+
+The template support is controlled by an API and thus can be integrated in
+another plug-in. A template library is essentially an object, several of which
+can exist in parallel. This makes it relatively easy to write a plug-in for
+the programming language of your choice.
+
+Here is a list of high profile plug-ins which use the template support:
+- Bash-Support (www.vim.org/scripts/script.php?script_id=365)
+- C-Support (www.vim.org/scripts/script.php?script_id=213)
+- Perl-Support (www.vim.org/scripts/script.php?script_id=556)
 
 ==============================================================================
 0.  TABLE OF CONTENTS                              *template-support-contents*
@@ -50,7 +76,7 @@ doxygen-support:
 perl-support:
 	-	No automatic uppercase for *|BASENAME|* .
 	-	The format for *|DATE|* , *|TIME|* and *|YEAR|* is now configured via the
-		template library. Plugins may provide other ways to do the configuration.
+		template library. Plug-ins may provide other ways to do the configuration.
 
 perl-support:
 	-	The template head can not have the format >
@@ -69,7 +95,7 @@ own plugin!
 
 The API enables other plugins to use the template system.
 
-The template library is stored in a dictionary (|Dictionary|).
+Each template library is stored in a dictionary (|Dictionary|).
 	-	This dictionary must be a global variable, because it it used for purposes
 		such as callback functions for menu entries and maps.
 	-	Do not change the entries of the dictionary directly, since the internal
@@ -561,7 +587,7 @@ Get the current style:
 A.  SYNTAX                                           *template-support-syntax*
 ==============================================================================
 
-The standards for the idioms are as follow, but may be changed via the API:
+The standards for the idioms are as follows, but may be changed via the API:
 
 Idiom						Changeable?		Standard
 
@@ -605,7 +631,7 @@ Statement (one of):
 	-empty line-
 	<start> CommentStart -anything-
 	<start> CommandName ( ParameterList )
-	<start> | MacroName | = MacroAssignment
+	<start> *|MacroName|* = MacroAssignment
 	StyleBlock1
 	StyleBlock2
 	Template
@@ -614,7 +640,7 @@ Statement (one of):
 
 
 StyleBlock1 (sequence):
-	<start> == IF | StyleName | IS MacroName ==
+	<start> == IF *|STYLE|* IS MacroName ==
 	StatementList
 	<start> == ENDIF ==
 
@@ -635,7 +661,7 @@ structure of the next two rules.
 
 
 List (sequence):
-	<start> == LIST : Macro == [ OptionList == ]
+	<start> == LIST : MacroName == [ OptionList == ]
 	-several lines-
 	<start> == ENDLIST ==
 
@@ -988,7 +1014,7 @@ Menus and Maps:
 	                those of a given list.
 	sc:<sc>       - A shortcut is created for the menu entry of this template.
 	shortcut:<sc> - Long version of sc:<sc>.
-	map:<map>     - A map is created for this templated.
+	map:<map>     - A map is created for this template.
 
 Note: The default is for a menu entry to be created.
 Note: A shortcut can only be one character long. A map can be several
@@ -1018,8 +1044,9 @@ For a description see |template-support-syntax-list|.
 ------------------------------------------------------------------------------
                   *template-support-bare*
 Interpretation:
-	bare - The list is interpreted as a bare. Each line is considered to be a
-	       new entry.
+
+	bare - The list is interpreted as a bare list. Each line is considered to be
+	       a new entry.
 
 Note: Bare list are not the default.
 
