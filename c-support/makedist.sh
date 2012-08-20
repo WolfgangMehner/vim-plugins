@@ -56,9 +56,11 @@ filelist="
  ./c-support/templates/*
  ./c-support/wordlists/*
  ./doc/csupport.txt
+ ./doc/templatesupport.txt
  ./ftplugin/c.vim
  ./ftplugin/make.vim
  ./plugin/c.vim
+ ./syntax/template.vim
 "
 
 zip  $archive_name $filelist
