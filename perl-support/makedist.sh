@@ -51,6 +51,7 @@ filelist="
  ./autoload/perlsupportprofiling.vim
  ./autoload/perlsupportregex.vim
  ./doc/perlsupport.txt
+ ./doc/templatesupport.txt
  ./ftplugin/perl.vim
  ./ftplugin/pod.vim
  ./ftplugin/qf.vim
@@ -63,6 +64,7 @@ filelist="
  ./perl-support/templates/*
  ./perl-support/wordlists/*
  ./plugin/perl-support.vim
+ ./syntax/template.vim
 "
 
 zip  $archive_name $filelist
