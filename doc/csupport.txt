@@ -1,4 +1,4 @@
-*csupport.txt*                  C/C++ Support                    July 23 2012
+*csupport.txt*                  C/C++ Support                  August 20 2012
 
 C/C++ Support                                           *c-support* *csupport*
                              Plugin version 6.0
@@ -1316,7 +1316,6 @@ Several global variables are checked by the script to customize it:
   ----------------------------------------------------------------------------
   g:C_GlobalTemplateFile     plugin_dir.'c-support/templates/Templates'
   g:C_LocalTemplateFile      $HOME.'/.vim/c-support/templates/Templates'
-  g:C_TemplateOverriddenMsg  'no'
   g:C_Ctrl_j                 'on'
 
   g:C_CodeSnippets           plugin_dir.'/c-support/codesnippets/'
@@ -1363,7 +1362,6 @@ The variable plugin_dir will automatically be set to one of the following values
 
  1. group: g:C_GlobalTemplateFile    : sets the global template file (see|csupport-templates|)
            g:C_LocalTemplateFile     : sets the local template file  (see|csupport-templates|)
-           g:C_TemplateOverriddenMsg : message if template is overwritten
            g:C_Ctrl_j                : hotkey Ctrl-j  'on'/'off' (see|csupport-Ctrl-j|)
 
  2. group: g:C_CodeSnippets       : The name of the code snippet directory
@@ -1482,9 +1480,9 @@ overwrite some macros, e.g.
 You can also have local templates which override the global ones. To see a
 messages in this case set a global variable in '~/.vimrc' (Windows: '~\_vimrc'):
 
-  let g:C_TemplateOverriddenMsg= 'yes'
+	let g:Templates_MapInUseWarn = 0
 
-The default is 'no'.
+The default is '1'.
 
 ==============================================================================
 5.  TEMPLATE FILES AND TAGS                               *csupport-templates*
