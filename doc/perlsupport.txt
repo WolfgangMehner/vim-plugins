@@ -1,4 +1,4 @@
-*perlsupport.txt*                Perl Support                  July 23 2012
+*perlsupport.txt*                Perl Support                 August 20 2012
 
 Perl Support                                      *perl-support* *perlsupport*
 
@@ -1688,7 +1688,6 @@ global variable                default value               tag (see below)
 ------------------------------------------------------------------------------
 g:Perl_GlobalTemplateFile      root_dir.'perl-support/templates/Templates'
 g:Perl_LocalTemplateFile       $HOME.'/.vim/perl-support/templates/Templates'
-g:Perl_TemplateOverriddenMsg   'no'
 g:Perl_Ctrl_j                  'on'
 
 g:Perl_CodeSnippets            root_dir.'perl-support/codesnippets/'
@@ -1732,7 +1731,6 @@ The variable root_dir will automatically be set to one of the following values:
  1. group: Sets the template directory and the names of the template files (see below).
            g:Perl_GlobalTemplateFile      : sets the global template file  (see|perlsupport-templates|)
            g:Perl_LocalTemplateFile       : sets the local template file  (see|perlsupport-templates|)
-           g:Perl_TemplateOverriddenMsg   : message if a template is overwritten
            g:Perl_Ctrl_j                  : hotkey Ctrl-j  'on'/'off' (see|perlsupport-Ctrl-j|)
 
  2. group: g:Perl_CodeSnippets       : The name of the (non-standard) code snippet directory (see below).
@@ -1946,11 +1944,11 @@ personalized comments,  e.g. something like this:
 <
 You can also have local templates which override the global ones. To see a
 messages in this case set a global variable in '~/.vimrc' (Windows: '~\_vimrc'):
->
-  let g:Perl_TemplateOverriddenMsg= 'yes'
-<
-The default is 'no'.
 
+	let g:Templates_MapInUseWarn = 0
+
+The default is '1'.
+>
 Create your private snippet directory:
 
   mkdir --parents  ~/.vim/perl-support/codesnippets
