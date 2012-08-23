@@ -164,7 +164,6 @@ let s:C_XtermDefaults         = '-fa courier -fs 12 -geometry 80x24'
 let s:C_GuiSnippetBrowser     = 'gui'										" gui / commandline
 let s:C_GuiTemplateBrowser    = 'gui'										" gui / explorer / commandline
 "
-let s:C_TemplateOverriddenMsg = 'no'
 let s:C_Ctrl_j								= 'on'
 "
 let s:C_FormatDate						= '%x'
@@ -216,7 +215,6 @@ call C_CheckGlobal('C_OutputGvim           ')
 call C_CheckGlobal('C_Printheader          ')
 call C_CheckGlobal('C_RootMenu             ')
 call C_CheckGlobal('C_SourceCodeExtensions ')
-call C_CheckGlobal('C_TemplateOverriddenMsg')
 call C_CheckGlobal('C_TypeOfH              ')
 call C_CheckGlobal('C_VimCompilerName      ')
 call C_CheckGlobal('C_XtermDefaults        ')
@@ -422,6 +420,8 @@ function! s:C_InitMenus ()
 	"===============================================================================================
 	"----- Menu : run  ----- --------------------------------------------------   {{{2
 	"===============================================================================================
+	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Run' )
+	"
 	let	ahead	= 'anoremenu <silent> '.s:MenuRun.'.'
 	let	vhead	= 'vnoremenu <silent> '.s:MenuRun.'.'
 	let	ihead	= 'inoremenu <silent> '.s:MenuRun.'.'

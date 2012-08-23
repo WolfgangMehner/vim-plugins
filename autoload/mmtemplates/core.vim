@@ -3299,8 +3299,10 @@ function! mmtemplates#core#ChooseStyle ( library, style )
 	if style == ''
 		" noop
 	elseif -1 != index ( t_lib.styles, style )
-		let t_lib.current_style = style
-		echo 'Changed style to "'.style.'".'
+		if t_lib.current_style != style
+			let t_lib.current_style = style
+			echo 'Changed style to "'.style.'".'
+		endif
 	else
 		call s:ErrorMsg ( 'Style was not changed. Style "'.style.'" is not available.' )
 	end
