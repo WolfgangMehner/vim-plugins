@@ -86,8 +86,17 @@ endfunction    " ----------  end of function csupport#doxygen#AddMaps  ---------
 "-------------------------------------------------------------------------------
 " AddMenu : Add menus.   {{{1
 "-------------------------------------------------------------------------------
-function! csupport#doxygen#AddMenu ()
+function! csupport#doxygen#AddMenu ( root, name )
+	"
+	let root = a:root.'.&Doxygen'
+	"
+	exe 'amenu '.root.'.Doxygen<TAB>'.escape( a:name, ' .' ).'  :echo "This is a menu header."<CR>'
+	exe 'amenu '.root.'.-Sep00- <Nop>'
+	"
 	" TODO
+	"
+	exe 'amenu '.root.'.&error\ file<Tab>:DoxygenErrorFile  :DoxygenErrorFile '
+	"
 endfunction    " ----------  end of function csupport#doxygen#AddMenu  ----------
 "
 "-------------------------------------------------------------------------------

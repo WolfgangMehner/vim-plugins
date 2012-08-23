@@ -296,12 +296,12 @@ let s:C_SourceCodeExtensionsList	= split( s:C_SourceCodeExtensions, '\s\+' )
 let s:CppcheckSeverity	= [ "all", "error", "warning", "style", "performance", "portability", "information" ]
 "
 "------------------------------------------------------------------------------
-"  Modules
+"  Tools
 "------------------------------------------------------------------------------
 "
 " list of lists: each entry is a list of strings:
-"   [ "<modulename>", "<prettyname>", "<versionnumber>" ]
-let s:C_ModuleList = []
+"   [ "<toolname>", "<prettyname>", "<versionnumber>" ]
+let s:C_ToolBox = []
 "
 "===  FUNCTION  ================================================================
 "          NAME:  C_MenuTitle     {{{1
@@ -421,15 +421,20 @@ function! s:C_InitMenus ()
 					\ 'specials_menu', 'Snippets'	)
 	endif
 	"
-  "===============================================================================================
-  "----- Menu : Run                             {{{2
-  "===============================================================================================
+	"===============================================================================================
+	"----- Menu : C++                             {{{2
+	"===============================================================================================
 	"
- 	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', 'C&++' )
+	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', 'C&++' )
 	"
 	"===============================================================================================
-	"----- Menu : run  ----- --------------------------------------------------   {{{2
+	"----- Menu : Run  --------------------------------------------------------   {{{2
 	"===============================================================================================
+	"
+	" :TODO:19.08.2012 19:36:WM: Added a pretty menu header here, but the name
+	"   of the run menu is defined by the variable 's:MenuRun'. Review this.
+	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', 'Run' )
+	"
 	let	ahead	= 'anoremenu <silent> '.s:MenuRun.'.'
 	let	vhead	= 'vnoremenu <silent> '.s:MenuRun.'.'
 	let	ihead	= 'inoremenu <silent> '.s:MenuRun.'.'
@@ -522,7 +527,20 @@ function! s:C_InitMenus ()
 	endif
 	"
 	"===============================================================================================
-	"----- Menu : help  -------------------------------------------------------   {{{2
+	"----- Menu : Tools -----------------------------------------------------   {{{2
+	"===============================================================================================
+	"
+	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Tool Box' )
+	"
+	let toolbox_root = string( s:C_RootMenu.'&Tool\ Box' )
+	let plugin_name  = string( substitute( s:C_RootMenu, '&\|\.$', '', 'g' ) )
+	"
+	for [ name, _pn, _vrs ] in s:C_ToolBox
+		exe 'call csupport#'.name.'#AddMenu('.toolbox_root.','.plugin_name.')'
+	endfor
+	"
+	"===============================================================================================
+	"----- Menu : Help  -------------------------------------------------------   {{{2
 	"===============================================================================================
 	"
 	exe " menu  <silent>  ".s:C_RootMenu.'&help\ (C-Support)<Tab>\\hp        :call C_HelpCsupport()<CR>'
@@ -2059,14 +2077,14 @@ function! C_Settings ()
 		endif
 		let txt = txt."CodeCheck (TM) options(s) :  ".ausgabe."\n"
 	endif
-	" ----- modules -----------------------------
-	if ! empty ( s:C_ModuleList )
+	" ----- toolbox -----------------------------
+	if ! empty ( s:C_ToolBox )
 		let mdl = []
-		for [ name, prettyname, versionnumber ] in s:C_ModuleList
+		for [ name, prettyname, versionnumber ] in s:C_ToolBox
 			call add ( mdl, prettyname." (".versionnumber.")" )
 		endfor
 		let sep = "\n                             "
-		let txt = txt."                  modules :  "
+		let txt = txt."                  toolbox :  "
 					\ .join ( mdl, sep )."\n"
 	endif
 	let txt = txt."\n"
@@ -2695,6 +2713,31 @@ endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 "
 " Plug-in setup:  {{{1
 "
+"-------------------------------------------------------------------------------
+"  Load additional tools:
+"  - All files in the folder autoload/csupport are assumed to be tools.
+"    They are expected to implement a csupport#filename#Init function,
+"    which must return a list of two strings:
+"     [ "<pretty tool name>", "<version number>" ]
+"-------------------------------------------------------------------------------
+"
+if isdirectory ( s:plugin_dir.'/autoload/csupport/' )
+	"
+	for file in split( glob (s:plugin_dir.'/autoload/csupport/*.vim'), '\n' )
+		let s:tool = fnamemodify( file, ':t:r' )
+		try
+			exe 'let s:retval = csupport#'.s:tool.'#Init()'
+			call add ( s:C_ToolBox, [ s:tool ] + s:retval )
+		catch /Vim(call):E117:.*/
+			" could not load the plugin: Init() function missing?
+		catch /.*/
+			echomsg "Internal error (" . v:exception . ")"
+			echomsg " - occurred at " . v:throwpoint
+		endtry
+	endfor
+	"
+endif
+"
 "------------------------------------------------------------------------------
 "  show / hide the c-support menus
 "  define key mappings (gVim only)
@@ -2771,31 +2814,6 @@ if has("autocmd")
 " 	autocmd BufNewFile,BufRead * if &filetype =~ '^\(c\|cpp\)$' |
 " 							\     call s:CreateAdditionalMaps() | endif
 endif " has("autocmd")
-"
-"-------------------------------------------------------------------------------
-"  Load additional modules:
-"  - All files in the folder autoload/csupport are assumed to be modules.
-"    They are expected to implement a csupport#filename#Init function,
-"    which must return a list of to strings:
-"     [ "<pretty module name>", "<version number>" ]
-"-------------------------------------------------------------------------------
-"
-if isdirectory ( s:plugin_dir.'/autoload/csupport/' )
-	"
-	for file in split( glob (s:plugin_dir.'/autoload/csupport/*.vim'), '\n' )
-		let s:module = fnamemodify( file, ':t:r' )
-		try
-			exe 'let s:retval = csupport#'.s:module.'#Init()'
-			call add ( s:C_ModuleList, [ s:module ] + s:retval )
-		catch /Vim(call):E117:.*/
-			" could not load the plugin: Init() function missing?
-		catch /.*/
-			echomsg "Internal error (" . v:exception . ")"
-			echomsg " - occurred at " . v:throwpoint
-		endtry
-	endfor
-	"
-endif
 "
 "=====================================================================================
 " vim: tabstop=2 shiftwidth=2 foldmethod=marker

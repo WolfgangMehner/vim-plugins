@@ -107,26 +107,26 @@ endfunction    " ----------  end of function csupport#cmake#AddMaps  ----------
 "-------------------------------------------------------------------------------
 " AddMenu : Add menus.   {{{1
 "-------------------------------------------------------------------------------
-function! csupport#cmake#AddMenu ()
+function! csupport#cmake#AddMenu ( root, name )
 	"
-	let root = 'C/C++.Run.CMake'
+	let root = a:root.'.&CMake'
 	"
-	exe 'amenu '.root.'.CMake   <Nop>'
+	exe 'amenu '.root.'.CMake<TAB>'.escape( a:name, ' .' ).'  :echo "This is a menu header."<CR>'
 	exe 'amenu '.root.'.-Sep00- <Nop>'
 	"
-	exe 'amenu '.root.'.run\ CMake<Tab>TODO   :CMake! '
-	exe 'amenu '.root.'.run\ make<Tab>TODO    :CMake '
+	exe 'amenu '.root.'.run\ CMake<Tab>:CMake!   :CMake! '
+	exe 'amenu '.root.'.&run\ make<Tab>:CMake     :CMake '
 	"
 	exe 'amenu '.root.'.-Sep01- <Nop>'
 	"
-	exe 'amenu '.root.'.base\ directory<Tab>TODO   :CMakeBaseDirectory '
-	exe 'amenu '.root.'.build\ location<Tab>TODO   :CMakeBuildLocation '
+	exe 'amenu '.root.'.base\ &directory<Tab>:CMakeBaseDirectory  :CMakeBaseDirectory '
+	exe 'amenu '.root.'.build\ &location<Tab>:CMakeBuildLocation  :CMakeBuildLocation '
 	"
 	exe 'amenu '.root.'.-Sep02- <Nop>'
 	"
-	exe 'amenu '.root.'.help\ commands<Tab>TODO    :CMakeHelpCommand<CR>'
-	exe 'amenu '.root.'.help\ modules<Tab>TODO     :CMakeHelpModule<CR>'
-	exe 'amenu '.root.'.help\ variables<Tab>TODO   :CMakeHelpVariable<CR>'
+	exe 'amenu '.root.'.help\ &commands<Tab>:CMakeHelpCommand    :CMakeHelpCommand<CR>'
+	exe 'amenu '.root.'.help\ &modules<Tab>:CMakeHelpModule      :CMakeHelpModule<CR>'
+	exe 'amenu '.root.'.help\ &variables<Tab>:CMakeHelpVariable  :CMakeHelpVariable<CR>'
 	"
 endfunction    " ----------  end of function csupport#cmake#AddMenu  ----------
 "
