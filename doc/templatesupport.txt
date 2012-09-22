@@ -607,9 +607,9 @@ Mapping					no						a-z, A-Z, 0-9 and _ + -
 
 The rules in the next sections use the following notation:
 
-- Syntax category: StartsWithCapitalLetters
+-	Syntax category: StartsWithCapitalLetters
 -	Keyword:         ALLCAPS
-- Various items:   -something-
+-	Various items:   -something-
 -	Square brackets [ ] mark an optional part of the rule.
 -	All other characters are as printed.
 -	Whitespaces are ignored, except where <start> marks the start of the line.
@@ -777,8 +777,8 @@ Set the macro 'name' to 'text':
 This is used to set replacements for macros.
 
 Setting the macros "TIME", "DATE", "YEAR", "BASENAME", "FILENAME" , "PATH" and
-"SUFFIX" is not allowed.  They are set to the appropriate values for insertion
-of a template.
+"SUFFIX" is not allowed.  They are set to the appropriate values before
+insertion of a template.
 
 Example: >
 	SetMacro ( "AUTHOR", "My cat." )
@@ -828,7 +828,7 @@ Open a prompt and let the user select a file:
 
 Displays 'prompt' and lets the user select a file. The file browser starts out
 in the directory named by 'path'. If 'path' matches an identifier, the path
-resource by this name severs as the path. Otherwise the string path is used as
+resource by this name serves as the path. Otherwise the string path is used as
 the path directly.
 
 After the user selected a file, several replacements for macros are created,
@@ -899,13 +899,13 @@ Example:
 
 	== header include == below ==
 	|PickList( "header file: ", "headers" )|
-  #include <|PICK|.h>
+	#include <|PICK|.h>
 	== function call == insert ==
 	|PickList( "function: ", "functions" )|
-	|KEY| ( |VALUE| )
+	|KEY|<CURSOR> ( |VALUE| )
 	== ENDTEMPLATE ==
 <
-The first template is straight ahead. The user selects a header from the list,
+The first template is quite simple. The user selects a header from the list,
 then the preprocessor directive is inserted.
 
 The second template uses a dictionary. The user has to pick an entry from the
@@ -913,9 +913,15 @@ list of function names. The template is inserted using both the selected key
 and value. Each value is a list of jump tags, named for the arguments of the
 corresponding function.
 
+Inserting the template "function call" and selecting "strcpy" will results in
+the following text to be inserted: >
+	strcpy | ( {+DEST+}, {+SRC+} )
+The position of the cursor is marked by "|". The jump key can be used to jump
+ahead and replace the tags.
+
 ------------------------------------------------------------------------------
                                                    *template-support-Prompt()*
-Prompt the for a replacement of the macro:
+Prompt the user for a replacement of the macro:
 
 	|Prompt ( macro, flag )| ~
 
@@ -923,7 +929,7 @@ The user is prompted for a replacement of 'macro'. After the user has entered
 a text, the flag is applied. The replacement is saved to be reused later.
 
 Flags:
-- ""  : no change to the text
+-	""  : no change to the text
 -	"l" : change text to lowercase
 -	"u" : change text to uppercase
 -	"c" : capitalize text
@@ -982,8 +988,8 @@ Help templates use the same options as normal templates.
 Placement:
 
 	start  - The text is placed above the first line.
-	above  - The text is placed above the first line.
-	below  - The text is placed below the first line (default).
+	above  - The text is placed above the current line.
+	below  - The text is placed below the current line (default).
 	append - The text is appended to the current line.
 	insert - The text is inserted at the cursor position.
 
@@ -1048,7 +1054,7 @@ Interpretation:
 	bare - The list is interpreted as a bare list. Each line is considered to be
 	       a new entry.
 
-Note: Bare list are not the default.
+Note: Bare lists are not the default.
 
 ==============================================================================
 vim:tw=78:noet:ts=2:ft=help:norl:
