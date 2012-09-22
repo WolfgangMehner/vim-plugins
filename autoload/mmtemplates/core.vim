@@ -1751,7 +1751,7 @@ function! s:GetTemplate ( name, style )
 			let template = get ( s:library.templates, name.'!default' )
 			let style    = 'default'
 		elseif style == 'default'
-			throw 'Template:Check:template does not have the default style'.
+			throw 'Template:Check:template does not have the default style'
 		else
 			throw 'Template:Check:template has neither the style "'.style.'" nor the default style'
 		endif
