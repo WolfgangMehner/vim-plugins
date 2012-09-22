@@ -1157,7 +1157,9 @@ function! C_ProtoPick( type ) range
 		"
 		" remove template keyword
 		"
-		let prototyp  = substitute( prototyp, '^template\s*<\s*class \w\+\s*>\s*', "", "" )
+		let	template_param	= '\s*\w\+\s\+\w\+\s*'
+		let	template_params	= template_param.'\(,'.template_param.'\)*'
+		let prototyp  = substitute( prototyp, '^template\s*<'.template_params.'>\s*', "", "" )
 		"
 		let idx     = stridx( prototyp, '(' )								    		" start of the parameter list
 		let head    = strpart( prototyp, 0, idx )
@@ -1165,16 +1167,16 @@ function! C_ProtoPick( type ) range
 		"
 		" remove the scope resolution operator
 		"
-		let	template_id	= '\h\w*\s*\(<[^>]\+>\)\?'
-		let	rgx2				= '\('.template_id.'\s*::\s*\)*\([~]\?\h\w*\|operator.\+\)\s*$'
+		let	template_id	= '\h\w*\s*\(<[^>]\+>\)\?\s*::\s*'
+		let	rgx2				= '\('.template_id.'\)*\([~]\?\h\w*\|operator.\+\)\s*$'
 		let idx 				= match( head, rgx2 )								    		" start of the function name
 		let returntype	= strpart( head, 0, idx )
 		let fctname	  	= strpart( head, idx )
 
-		let resret	= matchstr( returntype, '\('.template_id.'\s*::\s*\)*'.template_id )
+		let resret	= matchstr( returntype, '\('.template_id.'\)*'.template_id )
 		let resret	= substitute( resret, '\s\+', '', 'g' )
 
-		let resfct	= matchstr( fctname   , '\('.template_id.'\s*::\s*\)*'.template_id )
+		let resfct	= matchstr( fctname   , '\('.template_id.'\)*'.template_id )
 		let resfct	= substitute( resfct, '\s\+', '', 'g' )
 
 		if  !empty(resret) && match( resfct, resret.'$' ) >= 0
@@ -1187,7 +1189,7 @@ function! C_ProtoPick( type ) range
 			let returntype 	= substitute( returntype, '\<std##', 'std::', 'g' )			" remove the scope res. operator
 		endif
 
-		let fctname		  = substitute( fctname, '<\s*\w\+\s*>', "", "g" )
+		let fctname		  = substitute( fctname, '<[^>]\+>', '', 'g' )
 		let fctname   	= substitute( fctname, '\<std\s*::', 'std##', 'g' )	" remove the scope res. operator
 		let fctname   	= substitute( fctname, '\<\h\w*\s*::', '', 'g' )		" remove the scope res. operator
 		let fctname   	= substitute( fctname, '\<std##', 'std::', 'g' )		" remove the scope res. operator
@@ -2455,7 +2457,7 @@ function! C_InsertTemplateWrapper ()
 		if index( s:C_SourceCodeExtensionsList, expand('%:e') ) >= 0 
  			call mmtemplates#core#InsertTemplate(g:C_Templates, 'Comments.file description impl')
 		else
- 			call mmtemplates#core#InsertTemplate(g:C_Templates, 'Comments.file description-header')
+ 			call mmtemplates#core#InsertTemplate(g:C_Templates, 'Comments.file description header')
 		endif
 		set modified
 	endif
