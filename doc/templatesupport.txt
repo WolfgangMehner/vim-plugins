@@ -1,8 +1,8 @@
-*templatesupport.txt*         MM Template Support                July 18 2012
+*templatesupport.txt*         MM Template Support                 Sep 22 2012
 
 MM Template Support                                        *template-support*
 
-                             Plugin version 0.9
+                            Plugin version 0.9.1
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
 
@@ -56,6 +56,7 @@ Here is a list of high profile plug-ins which use the template support:
  C    Options                                |template-support-options|
  C.1    Templates                            |template-support-opt-templ|
  C.2    List                                 |template-support-opt-list|
+ D    Change Log                             |template-support-change-log|
 
 ==============================================================================
 1.  INTRODUCTION                                       *template-introduction*
@@ -1055,6 +1056,23 @@ Interpretation:
 	       a new entry.
 
 Note: Bare lists are not the default.
+
+==============================================================================
+D  Change Log                                    *template-support-change-log*
+==============================================================================
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 0.9.1
+------------------------------------------------------------------------------
+
+- When checking for already existing maps: Check each mode individually.
+- Minor improvements and bugfixes.
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 0.9
+------------------------------------------------------------------------------
+
+- Initial upload.
 
 ==============================================================================
 vim:tw=78:noet:ts=2:ft=help:norl:

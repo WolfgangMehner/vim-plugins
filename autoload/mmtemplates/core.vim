@@ -9,9 +9,9 @@
 "   VIM Version:  7.0+
 "        Author:  Wolfgang Mehner, wolfgang-mehner@web.de
 "  Organization:  
-"       Version:  0.9
+"       Version:  0.9.1
 "       Created:  30.08.2011
-"      Revision:  04.02.2012
+"      Revision:  22.09.2012
 "       License:  Copyright (c) 2012, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -46,7 +46,7 @@ endif
 if &cp || ( exists('g:Templates_Version') && ! exists('g:Templates_DevelopmentOverwrite') )
 	finish
 endif
-let g:Templates_Version= '0.9'     " version number of this script; do not change
+let g:Templates_Version= '0.9.1'     " version number of this script; do not change
 "
 if ! exists ( 'g:Templates_MapInUseWarn' )
 	let g:Templates_MapInUseWarn = 1
