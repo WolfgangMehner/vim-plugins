@@ -74,6 +74,8 @@ let s:Flagactions = {
 "
 let s:MsgInsertionNotAvail = "insertion not available for a fold"
 "
+let s:StandardPriority = 500
+"
 "----------------------------------------------------------------------
 "  s:StandardMacros : The standard macros.   {{{2
 "----------------------------------------------------------------------
@@ -3004,11 +3006,25 @@ endfunction    " ----------  end of function mmtemplates#core#CreateMaps  ------
 "
 " The menu 'menu' can contain '&' and a trailing '.'. Both are ignored.
 "----------------------------------------------------------------------
-function! s:CreateSubmenu ( t_lib, root_menu, global_name, menu )
+function! s:CreateSubmenu ( t_lib, root_menu, global_name, menu, priority )
+	"
+	let level    = len( split( a:root_menu, '\.' ) )
+	let parts    = split( a:menu, '\.' )
+	let n_parts  = len( parts )
+	let level   += n_parts
+	"
+	let priority_str = ''
 	"
 	" go through the menu, clean up and check for new menus
 	let submenu = ''
-	for part in split( a:menu, '\.' )
+	for i in range( 1, len( parts ) )
+		"
+		let part = parts[ i-1 ]
+		"
+		if i == n_parts
+			let priority_str = repeat( '.', level-1 ).a:priority.'. '
+		endif
+		"
 		let clean = substitute( part, '&', '', 'g' )
 		if ! has_key ( a:t_lib.menu_existing, submenu.clean )
 			" a new menu!
@@ -3029,9 +3045,9 @@ function! s:CreateSubmenu ( t_lib, root_menu, global_name, menu )
 			let assemble .= '.'
 			"
 			if -1 != stridx ( clean, '<TAB>' )
-				exe 'amenu '.a:root_menu.escape( assemble.clean, ' ' ).' :echo "This is a menu header."<CR>'
+				exe 'amenu '.priority_str.a:root_menu.escape( assemble.clean, ' ' ).' :echo "This is a menu header."<CR>'
 			else
-				exe 'amenu '.a:root_menu.escape( assemble.clean, ' ' ).'<TAB>'.escape( a:global_name, ' .' ).' :echo "This is a menu header."<CR>'
+				exe 'amenu '.priority_str.a:root_menu.escape( assemble.clean, ' ' ).'<TAB>'.escape( a:global_name, ' .' ).' :echo "This is a menu header."<CR>'
 			endif
 			exe 'amenu '.a:root_menu.escape( assemble,       ' ' ).'-Sep00- <Nop>'
 		endif
@@ -3061,7 +3077,7 @@ function! s:CreateTemplateMenus ( t_lib, root_menu, global_name, t_lib_name )
 		"
 		" menu does not exist?
 		if ! empty ( t_menu ) && ! has_key ( a:t_lib.menu_existing, t_menu[ 0 : -2 ] )
-			call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, t_menu[ 0 : -2 ] )
+			call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, t_menu[ 0 : -2 ], s:StandardPriority )
 		endif
 		"
 		" shortcut and menu entry
@@ -3088,7 +3104,7 @@ function! s:CreateTemplateMenus ( t_lib, root_menu, global_name, t_lib_name )
 				exe 'vmenu '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","v")<CR>'
 			endif
 		elseif entry == 2
-			call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, t_menu.t_last.map_entry )
+			call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, t_menu.t_last.map_entry, s:StandardPriority )
 			"
 			for item in s:GetPickList ( t_name )
 				let item_entry = compl_entry.'.'.substitute ( substitute ( escape ( item, ' .' ), '&', '\&\&', 'g' ), '\w', '\&&', '' )
@@ -3121,7 +3137,7 @@ function! s:CreateSpecialsMenus ( t_lib, root_menu, global_name, t_lib_name, spe
 	"
 	" new menu?
 	if ! has_key ( a:t_lib.menu_existing, substitute ( specials_menu, '&', '', 'g' ) )
-		call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, specials_menu )
+		call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, specials_menu, s:StandardPriority )
 	endif
 	"
 	if ! a:styles_only
@@ -3176,6 +3192,7 @@ function! mmtemplates#core#CreateMenus ( library, root_menu, ... )
 	let global_name   = substitute(   root_menu, '\.$', '', ''  )
 	let root_menu     = global_name.'.'
 	let specials_menu = '&Run'
+	let priority      = s:StandardPriority
 	"
 	let do_reset     = 0
 	let do_templates = 0
@@ -3200,6 +3217,9 @@ function! mmtemplates#core#CreateMenus ( library, root_menu, ... )
 			let i += 2
 		elseif a:[i] == 'specials_menu' && i+1 <= a:0
 			let specials_menu = a:[i+1]
+			let i += 2
+		elseif a:[i] == 'priority' && i+1 <= a:0
+			let priority = a:[i+1]
 			let i += 2
 		elseif a:[i] == 'do_all'
 			let do_reset     = 1
@@ -3240,7 +3260,7 @@ function! mmtemplates#core#CreateMenus ( library, root_menu, ... )
 	"
 	" sub-menus
 	for name in submenus
-		call s:CreateSubmenu ( t_lib, root_menu, global_name, name )
+		call s:CreateSubmenu ( t_lib, root_menu, global_name, name, priority )
 	endfor
 	"
 	" templates

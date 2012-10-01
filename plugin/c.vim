@@ -319,12 +319,17 @@ function! s:C_InitMenus ()
 	"
 	exe 'amenu '.s:C_RootMenu.'C\/C\+\+ <Nop>'
 	exe 'amenu '.s:C_RootMenu.'-Sep00-  <Nop>'
-"
+	"
+	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Comments', 'priority', 500 )
+	" the other, automatically created menus go here; their priority is the standard priority 500
+	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', 'S&nippets', 'priority', 600 )
+	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Run'     , 'priority', 700 )
+	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Help'    , 'priority', 800 )
+	"
 	"===============================================================================================
 	"----- Menu : C-Comments --------------------------------------------------   {{{2
 	"===============================================================================================
 	"
-	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Comments' )
 	let	MenuComments	= s:C_RootMenu.'&Comments'
 	"
 	exe "amenu <silent> ".MenuComments.'.end-of-&line\ comment<Tab>\\cl           :call C_EndOfLineComment( )<CR>'
@@ -345,30 +350,21 @@ function! s:C_InitMenus ()
 
 	exe "amenu          ".MenuComments.'.-SEP0-                        :'
 	"
-  "===============================================================================================
-  "----- Menu : Statements (title)                              {{{2
-  "===============================================================================================
-	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Statements' )
-	"
-  "===============================================================================================
-  "----- Menu : Idioms (title)                             {{{2
-  "===============================================================================================
-	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Idioms' )
-	"
-  "===============================================================================================
-  "----- Menu : Preprocessor (title)                             {{{2
-  "===============================================================================================
-	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Preprocessor' )
+	"===============================================================================================
+	"----- Menu : GENERATE MENU ITEMS FROM THE TEMPLATES ----------------------   {{{2
+	"===============================================================================================
+	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'do_templates' )
+	"===============================================================================================
+	"===============================================================================================
 	"
 	"===============================================================================================
 	"----- Menu : Snippets ----------------------------------------------------   {{{2
 	"===============================================================================================
 	"
- 	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', 'S&nippets' )
 	let	ahead	= 'anoremenu <silent> '.s:C_RootMenu.'S&nippets.'
 	let	vhead	= 'vnoremenu <silent> '.s:C_RootMenu.'S&nippets.'
 	let	ihead	= 'inoremenu <silent> '.s:C_RootMenu.'S&nippets.'
-  "
+	"
 	if !empty(s:C_CodeSnippets)
 		exe ahead.'&read\ code\ snippet<Tab>\\nr       :call C_CodeSnippet("r")<CR>'
 		exe ihead.'&read\ code\ snippet<Tab>\\nr  <C-C>:call C_CodeSnippet("r")<CR>'
@@ -395,32 +391,25 @@ function! s:C_InitMenus ()
 	exe ihead.'&show\ prototype(s)<Tab>\\ns		 <C-C>:call C_ProtoShow()<CR>'
 
 	exe ahead.'-SEP2-									     :'
-		"
-		exe ahead.'edit\ &local\ templates<Tab>\\ntl       :call mmtemplates#core#EditTemplateFiles(g:C_Templates,-1)<CR>'
-		exe ihead.'edit\ &local\ templates<Tab>\\ntl  <C-C>:call mmtemplates#core#EditTemplateFiles(g:C_Templates,-1)<CR>'
-		if g:C_Installation == 'system'
-			exe ahead.'edit\ &local\ templates<Tab>\\ntg       :call mmtemplates#core#EditTemplateFiles(g:C_Templates,1)<CR>'
-			exe ihead.'edit\ &local\ templates<Tab>\\ntg  <C-C>:call mmtemplates#core#EditTemplateFiles(g:C_Templates,1)<CR>'
-		endif
-		"
-		exe ahead.'reread\ &templates<Tab>\\ntr       :call mmtemplates#core#ReadTemplates(g:C_Templates,"reload","all")<CR>'
-		exe ihead.'reread\ &templates<Tab>\\ntr  <C-C>:call mmtemplates#core#ReadTemplates(g:C_Templates,"reload","all")<CR>'
+	"
+	exe ahead.'edit\ &local\ templates<Tab>\\ntl       :call mmtemplates#core#EditTemplateFiles(g:C_Templates,-1)<CR>'
+	exe ihead.'edit\ &local\ templates<Tab>\\ntl  <C-C>:call mmtemplates#core#EditTemplateFiles(g:C_Templates,-1)<CR>'
+	if g:C_Installation == 'system'
+		exe ahead.'edit\ &local\ templates<Tab>\\ntg       :call mmtemplates#core#EditTemplateFiles(g:C_Templates,1)<CR>'
+		exe ihead.'edit\ &local\ templates<Tab>\\ntg  <C-C>:call mmtemplates#core#EditTemplateFiles(g:C_Templates,1)<CR>'
+	endif
+	"
+	exe ahead.'reread\ &templates<Tab>\\ntr       :call mmtemplates#core#ReadTemplates(g:C_Templates,"reload","all")<CR>'
+	exe ihead.'reread\ &templates<Tab>\\ntr  <C-C>:call mmtemplates#core#ReadTemplates(g:C_Templates,"reload","all")<CR>'
 	"
 	if !empty(s:C_CodeSnippets)
 		call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'do_styles', 
 					\ 'specials_menu', 'Snippets'	)
 	endif
 	"
-  "===============================================================================================
-  "----- Menu : Run                             {{{2
-  "===============================================================================================
-	"
- 	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', 'C&++' )
-	"
 	"===============================================================================================
-	"----- Menu : run  ----- --------------------------------------------------   {{{2
+	"----- Menu : Run ---------------------------------------------------------   {{{2
 	"===============================================================================================
-	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Run' )
 	"
 	let	ahead	= 'anoremenu <silent> '.s:MenuRun.'.'
 	let	vhead	= 'vnoremenu <silent> '.s:MenuRun.'.'
@@ -435,7 +424,7 @@ function! s:C_InitMenus ()
 	exe ahead.'cmd\.\ line\ &arg\.<Tab>\\ra\ \ \<S-F9\>         :call C_Arguments()<CR>'
 	exe ihead.'cmd\.\ line\ &arg\.<Tab>\\ra\ \ \<S-F9\>    <C-C>:call C_Arguments()<CR>'
 	"
-	exe ahead.'-SEP0-                            :'
+	exe ahead.'-SEP0-                                            :'
 	exe ahead.'&make<Tab>\\rm                                    :call C_Make()<CR>'
 	exe ihead.'&make<Tab>\\rm                               <C-C>:call C_Make()<CR>'
 	exe ahead.'&choose\ makefile<Tab>\\rcm                       :call C_ChooseMakefile()<CR>'
@@ -447,14 +436,14 @@ function! s:C_InitMenus ()
 	exe ahead.'cmd\.\ line\ ar&g\.\ for\ make<Tab>\\rma          :call C_MakeArguments()<CR>'
 	exe ihead.'cmd\.\ line\ ar&g\.\ for\ make<Tab>\\rma     <C-C>:call C_MakeArguments()<CR>'
 	"
-	exe ahead.'-SEP1-                            :'
+	exe ahead.'-SEP1-                                            :'
 	"
 	if s:C_SplintIsExecutable==1
 		exe ahead.'s&plint<Tab>\\rp                                :call C_SplintCheck()<CR>:call C_HlMessage()<CR>'
 		exe ihead.'s&plint<Tab>\\rp                           <C-C>:call C_SplintCheck()<CR>:call C_HlMessage()<CR>'
 		exe ahead.'cmd\.\ line\ arg\.\ for\ spl&int<Tab>\\rpa      :call C_SplintArguments()<CR>'
 		exe ihead.'cmd\.\ line\ arg\.\ for\ spl&int<Tab>\\rpa <C-C>:call C_SplintArguments()<CR>'
-		exe ahead.'-SEP2-                          :'
+		exe ahead.'-SEP2-                                          :'
 	endif
 	"
 	if s:C_CppcheckIsExecutable==1
@@ -463,7 +452,7 @@ function! s:C_InitMenus ()
 		"
 		if s:C_MenuHeader == 'yes'
 			exe ahead.'cppcheck\ severity<Tab>\\rccs.cppcheck\ severity     :call C_MenuTitle()<CR>'
-			exe ahead.'cppcheck\ severity<Tab>\\rccs.-Sep5-       :'
+			exe ahead.'cppcheck\ severity<Tab>\\rccs.-Sep5-                 :'
 		endif
 
 		for level in s:CppcheckSeverity
@@ -476,7 +465,7 @@ function! s:C_InitMenus ()
 		exe ihead.'CodeChec&k<Tab>\\rk                           <C-C>:call C_CodeCheck()<CR>:call C_HlMessage()<CR>'
 		exe ahead.'cmd\.\ line\ arg\.\ for\ Cod&eCheck<Tab>\\rka      :call C_CodeCheckArguments()<CR>'
 		exe ihead.'cmd\.\ line\ arg\.\ for\ Cod&eCheck<Tab>\\rka <C-C>:call C_CodeCheckArguments()<CR>'
-		exe ahead.'-SEP3-                          :'
+		exe ahead.'-SEP3-                                             :'
 	endif
 	"
 	exe ahead.'in&dent<Tab>\\ri                                  :call C_Indent()<CR>'
@@ -490,88 +479,87 @@ function! s:C_InitMenus ()
 		exe ihead.'&hardcopy\ to\ FILENAME\.ps<Tab>\\rh       <C-C>:call C_Hardcopy()<CR>'
 		exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>\\rh            :call C_Hardcopy()<CR>'
 	endif
-	exe ihead.'-SEP4-                           :'
+	exe ihead.'-SEP4-                                            :'
 
 	exe ahead.'&settings<Tab>\\rs                                :call C_Settings()<CR>'
 	exe ihead.'&settings<Tab>\\rs                           <C-C>:call C_Settings()<CR>'
-	exe ihead.'-SEP5-                           :'
+	exe ihead.'-SEP5-                                            :'
 
-	if	!s:MSWIN
+	if !s:MSWIN
 		exe ahead.'&xterm\ size<Tab>\\rx                           :call C_XtermSize()<CR>'
 		exe ihead.'&xterm\ size<Tab>\\rx                      <C-C>:call C_XtermSize()<CR>'
 	endif
 	if s:C_OutputGvim == "vim"
-		exe ahead.'&output:\ '.s:output1.'<Tab>\\ro           :call C_Toggle_Gvim_Xterm()<CR>'
-		exe ihead.'&output:\ '.s:output1.'<Tab>\\ro      <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
+		exe ahead.'&output:\ '.s:output1.'<Tab>\\ro                :call C_Toggle_Gvim_Xterm()<CR>'
+		exe ihead.'&output:\ '.s:output1.'<Tab>\\ro           <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
 	else
 		if s:C_OutputGvim == "buffer"
-			exe ahead.'&output:\ '.s:output2.'<Tab>\\ro         :call C_Toggle_Gvim_Xterm()<CR>'
-			exe ihead.'&output:\ '.s:output2.'<Tab>\\ro    <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
+			exe ahead.'&output:\ '.s:output2.'<Tab>\\ro              :call C_Toggle_Gvim_Xterm()<CR>'
+			exe ihead.'&output:\ '.s:output2.'<Tab>\\ro         <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
 		else
-			exe ahead.'&output:\ '.s:output3.'<Tab>\\ro         :call C_Toggle_Gvim_Xterm()<CR>'
-			exe ihead.'&output:\ '.s:output3.'<Tab>\\ro    <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
+			exe ahead.'&output:\ '.s:output3.'<Tab>\\ro              :call C_Toggle_Gvim_Xterm()<CR>'
+			exe ihead.'&output:\ '.s:output3.'<Tab>\\ro         <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
 		endif
 	endif
 	"
 	"===============================================================================================
-	"----- Menu : help  -------------------------------------------------------   {{{2
+	"----- Menu : Help --------------------------------------------------------   {{{2
 	"===============================================================================================
 	"
-	exe " menu  <silent>  ".s:C_RootMenu.'&help\ (C-Support)<Tab>\\hp        :call C_HelpCsupport()<CR>'
-	exe "imenu  <silent>  ".s:C_RootMenu.'&help\ (C-Support)<Tab>\\hp   <C-C>:call C_HelpCsupport()<CR>'
-	exe " menu  <silent>  ".s:C_RootMenu.'show\ &manual<Tab>\\hm   		       :call C_Help("m")<CR>'
-	exe "imenu  <silent>  ".s:C_RootMenu.'show\ &manual<Tab>\\hm 		    <C-C>:call C_Help("m")<CR>'
+	let	ahead	= 'anoremenu <silent> '.s:C_RootMenu.'Help.'
+	let	vhead	= 'vnoremenu <silent> '.s:C_RootMenu.'Help.'
+	let	ihead	= 'inoremenu <silent> '.s:C_RootMenu.'Help.'
 	"
-  "===============================================================================================
-  "----- Menu : GENERATE MENU ITEMS FROM THE TEMPLATES                              {{{2
-  "===============================================================================================
-	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'do_templates' )
-  "===============================================================================================
-  "===============================================================================================
+	exe ahead.'show\ &manual<Tab>\\hm   		       :call C_Help("m")<CR>'
+	exe ihead.'show\ &manual<Tab>\\hm 		    <C-C>:call C_Help("m")<CR>'
+	exe ahead.'-SEP1-                              :'
+	exe ahead.'&help\ (C-Support)<Tab>\\hp         :call C_HelpCsupport()<CR>'
+	exe ihead.'&help\ (C-Support)<Tab>\\hp    <C-C>:call C_HelpCsupport()<CR>'
 	"
 	"===============================================================================================
 	"----- Menu : C-Comments --------------------------------------------------   {{{2
 	"===============================================================================================
 	"
-	exe "amenu  ".MenuComments.'.-SEP8-                        :'
-	exe " menu  ".MenuComments.'.&date<Tab>\\cd                       <Esc>:call C_InsertDateAndTime("d")<CR>'
-	exe "imenu  ".MenuComments.'.&date<Tab>\\cd                       <Esc>:call C_InsertDateAndTime("d")<CR>a'
-	exe "vmenu  ".MenuComments.'.&date<Tab>\\cd                      s<Esc>:call C_InsertDateAndTime("d")<CR>a'
-	exe " menu  ".MenuComments.'.date\ &time<Tab>\\ct                 <Esc>:call C_InsertDateAndTime("dt")<CR>'
-	exe "imenu  ".MenuComments.'.date\ &time<Tab>\\ct                 <Esc>:call C_InsertDateAndTime("dt")<CR>a'
-	exe "vmenu  ".MenuComments.'.date\ &time<Tab>\\ct                s<Esc>:call C_InsertDateAndTime("dt")<CR>a'
+	exe "amenu ".MenuComments.'.-SEP8-                      :'
+	exe " menu ".MenuComments.'.&date<Tab>\\cd         <Esc>:call C_InsertDateAndTime("d")<CR>'
+	exe "imenu ".MenuComments.'.&date<Tab>\\cd         <Esc>:call C_InsertDateAndTime("d")<CR>a'
+	exe "vmenu ".MenuComments.'.&date<Tab>\\cd        s<Esc>:call C_InsertDateAndTime("d")<CR>a'
+	exe " menu ".MenuComments.'.date\ &time<Tab>\\ct   <Esc>:call C_InsertDateAndTime("dt")<CR>'
+	exe "imenu ".MenuComments.'.date\ &time<Tab>\\ct   <Esc>:call C_InsertDateAndTime("dt")<CR>a'
+	exe "vmenu ".MenuComments.'.date\ &time<Tab>\\ct  s<Esc>:call C_InsertDateAndTime("dt")<CR>a'
 
-	exe "amenu  ".MenuComments.'.-SEP12-                    :'
-	exe "amenu <silent> ".MenuComments.'.\/*\ &xxx\ *\/\ \ <->\ \ \/\/\ xxx<Tab>\\cx   :call C_CommentToggle()<CR>'
-	exe "vmenu <silent> ".MenuComments.'.\/*\ &xxx\ *\/\ \ <->\ \ \/\/\ xxx<Tab>\\cx   :call C_CommentToggle()<CR>'
+	exe "amenu          ".MenuComments.'.-SEP12-                                      :'
+	exe "amenu <silent> ".MenuComments.'.\/*\ &xxx\ *\/\ \ <->\ \ \/\/\ xxx<Tab>\\cx  :call C_CommentToggle()<CR>'
+	exe "vmenu <silent> ".MenuComments.'.\/*\ &xxx\ *\/\ \ <->\ \ \/\/\ xxx<Tab>\\cx  :call C_CommentToggle()<CR>'
 	"
 	"===============================================================================================
 	"----- Menu : C-Idioms ----------------------------------------------------   {{{2
 	"===============================================================================================
 	"
+	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Idioms' )
 	let	MenuIdioms	= s:C_RootMenu.'&Idioms.'
 	"
-	exe "amenu          ".MenuIdioms.'-SEP1-                      :'
-	exe "amenu          ".MenuIdioms.'for(x=&0;\ x<n;\ x\+=1)<Tab>\\i0          :call C_CodeFor("up"    )<CR>'
-	exe "vmenu          ".MenuIdioms.'for(x=&0;\ x<n;\ x\+=1)<Tab>\\i0          :call C_CodeFor("up","v")<CR>'
-	exe "imenu          ".MenuIdioms.'for(x=&0;\ x<n;\ x\+=1)<Tab>\\i0     <Esc>:call C_CodeFor("up"    )<CR>'
-	exe "amenu          ".MenuIdioms.'for(x=&n-1;\ x>=0;\ x\-=1)<Tab>\\in       :call C_CodeFor("down"    )<CR>'
-	exe "vmenu          ".MenuIdioms.'for(x=&n-1;\ x>=0;\ x\-=1)<Tab>\\in       :call C_CodeFor("down","v")<CR>'
-	exe "imenu          ".MenuIdioms.'for(x=&n-1;\ x>=0;\ x\-=1)<Tab>\\in  <Esc>:call C_CodeFor("down"    )<CR>'
+	exe "amenu ".MenuIdioms.'-SEP1-                                    :'
+	exe "amenu ".MenuIdioms.'for(x=&0;\ x<n;\ x\+=1)<Tab>\\i0          :call C_CodeFor("up"    )<CR>'
+	exe "vmenu ".MenuIdioms.'for(x=&0;\ x<n;\ x\+=1)<Tab>\\i0          :call C_CodeFor("up","v")<CR>'
+	exe "imenu ".MenuIdioms.'for(x=&0;\ x<n;\ x\+=1)<Tab>\\i0     <Esc>:call C_CodeFor("up"    )<CR>'
+	exe "amenu ".MenuIdioms.'for(x=&n-1;\ x>=0;\ x\-=1)<Tab>\\in       :call C_CodeFor("down"    )<CR>'
+	exe "vmenu ".MenuIdioms.'for(x=&n-1;\ x>=0;\ x\-=1)<Tab>\\in       :call C_CodeFor("down","v")<CR>'
+	exe "imenu ".MenuIdioms.'for(x=&n-1;\ x>=0;\ x\-=1)<Tab>\\in  <Esc>:call C_CodeFor("down"    )<CR>'
 	"
 	"===============================================================================================
 	"----- Menu : C-Preprocessor ----------------------------------------------   {{{2
 	"===============================================================================================
 	"
+	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Preprocessor' )
 	let	MenuPreprocessor	= s:C_RootMenu.'&Preprocessor.'
 	"
-	exe "amenu  ".MenuPreprocessor.'-SEP2-                        :'
-	exe "amenu  ".MenuPreprocessor.'#if\ &0\ #endif<Tab>\\pi0                     :call C_PPIf0("a")<CR>2ji'
-	exe "imenu  ".MenuPreprocessor.'#if\ &0\ #endif<Tab>\\pi0                <Esc>:call C_PPIf0("a")<CR>2ji'
-	exe "vmenu  ".MenuPreprocessor.'#if\ &0\ #endif<Tab>\\pi0                <Esc>:call C_PPIf0("v")<CR>'
-	"
-	exe "amenu <silent> ".MenuPreprocessor.'&remove\ #if\ 0\ #endif<Tab>\\pr0             :call C_PPIf0Remove()<CR>'
-	exe "imenu <silent> ".MenuPreprocessor.'&remove\ #if\ 0\ #endif<Tab>\\pr0        <Esc>:call C_PPIf0Remove()<CR>'
+	exe "amenu          ".MenuPreprocessor.'-SEP2-                                  :'
+	exe "amenu          ".MenuPreprocessor.'#if\ &0\ #endif<Tab>\\pi0               :call C_PPIf0("a")<CR>2ji'
+	exe "imenu          ".MenuPreprocessor.'#if\ &0\ #endif<Tab>\\pi0          <Esc>:call C_PPIf0("a")<CR>2ji'
+	exe "vmenu          ".MenuPreprocessor.'#if\ &0\ #endif<Tab>\\pi0          <Esc>:call C_PPIf0("v")<CR>'
+	exe "amenu <silent> ".MenuPreprocessor.'&remove\ #if\ 0\ #endif<Tab>\\pr0       :call C_PPIf0Remove()<CR>'
+	exe "imenu <silent> ".MenuPreprocessor.'&remove\ #if\ 0\ #endif<Tab>\\pr0  <Esc>:call C_PPIf0Remove()<CR>'
 	"
 endfunction    " ----------  end of function  s:C_InitMenus  ----------
 "

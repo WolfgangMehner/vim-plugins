@@ -377,6 +377,8 @@ Options:
 	                         (string or list of strings)
 	"specials_menu", name  - The name of the menu containing the special
 	                         operations. (string, default: "Run")
+	"priority", p          - Create the sub-menu with priority p.
+	                         (integer, default: 500)
 	"do_all"               - Action: Reset and create all menus.
 	"do_reset"             - Action: Reset.
 	"do_templates"         - Action: Create menus for all the templates.
@@ -400,6 +402,8 @@ Each sub-menu looks like this, starting with a header:
 <
 The global name (option "global_name") helps to keep track of tear-off menus.
 "sub_menu" can be used to create additional menus, which have the same header.
+When a sub-menu is created through use of the API like this, an optional
+priority can be specified.
 
 The library keeps track of all created sub-menus, to be able to add the
 headers correctly. "existing_menu" adds menus to this list.
@@ -470,7 +474,7 @@ Create the special entries at the end of the run menu: >
 
 Technical Details:
 	-	The library must be given as the name of the global variable, since this
-		name is required to create the menues.
+		name is required to create the menus.
 	-	The function creates menus of the following types:
 			amenu, vmenu (where appropriate)
 
