@@ -299,7 +299,7 @@ function! s:OpenManBuffer ( generate_cmd, buf_name, jump_reaction )
 	endif
 	"
 	aboveleft new
-	put! = text
+	silent exe 'put! = text'
 	:1
 	"
 	" settings of the new buffer
