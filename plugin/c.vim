@@ -293,6 +293,14 @@ let s:C_SourceCodeExtensionsList	= split( s:C_SourceCodeExtensions, '\s\+' )
 "
 let s:CppcheckSeverity	= [ "all", "error", "warning", "style", "performance", "portability", "information" ]
 "
+"------------------------------------------------------------------------------
+"  Tools
+"------------------------------------------------------------------------------
+"
+" list of lists: each entry is a list of strings:
+"   [ "<toolname>", "<prettyname>", "<versionnumber>" ]
+let s:C_ToolBox = []
+"
 "===  FUNCTION  ================================================================
 "          NAME:  C_MenuTitle     {{{1
 "   DESCRIPTION:  display warning
@@ -324,7 +332,8 @@ function! s:C_InitMenus ()
 	" the other, automatically created menus go here; their priority is the standard priority 500
 	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', 'S&nippets', 'priority', 600 )
 	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Run'     , 'priority', 700 )
-	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Help'    , 'priority', 800 )
+	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Tool Box', 'priority', 800 )
+	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Help'    , 'priority', 900 )
 	"
 	"===============================================================================================
 	"----- Menu : C-Comments --------------------------------------------------   {{{2
@@ -501,6 +510,17 @@ function! s:C_InitMenus ()
 			exe ihead.'&output:\ '.s:output3.'<Tab>\\ro         <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
 		endif
 	endif
+	"
+	"===============================================================================================
+	"----- Menu : Tools -----------------------------------------------------   {{{2
+	"===============================================================================================
+	"
+	let toolbox_root = string( s:C_RootMenu.'&Tool\ Box' )
+	let plugin_name  = string( substitute( s:C_RootMenu, '&\|\.$', '', 'g' ) )
+	"
+	for [ name, _pn, _vrs ] in s:C_ToolBox
+		exe 'call csupport#'.name.'#AddMenu('.toolbox_root.','.plugin_name.')'
+	endfor
 	"
 	"===============================================================================================
 	"----- Menu : Help --------------------------------------------------------   {{{2
@@ -2041,6 +2061,16 @@ function! C_Settings ()
 		endif
 		let txt = txt."CodeCheck (TM) options(s) :  ".ausgabe."\n"
 	endif
+	" ----- toolbox -----------------------------
+	if ! empty ( s:C_ToolBox )
+		let mdl = []
+		for [ name, prettyname, versionnumber ] in s:C_ToolBox
+			call add ( mdl, prettyname." (".versionnumber.")" )
+		endfor
+		let sep = "\n                             "
+		let txt = txt."                  toolbox :  "
+					\ .join ( mdl, sep )."\n"
+	endif
 	let txt = txt."\n"
 	let	txt = txt."__________________________________________________________________________\n"
 	let	txt = txt." C/C++-Support, Version ".g:C_Version." / Dr.-Ing. Fritz Mehner / mehner.fritz@fh-swf.de\n\n"
@@ -2666,6 +2696,31 @@ function! s:CreateAdditionalMaps ()
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 "
 " Plug-in setup:  {{{1
+"
+"-------------------------------------------------------------------------------
+"  Load additional tools:
+"  - All files in the folder autoload/csupport are assumed to be tools.
+"    They are expected to implement a csupport#filename#Init function,
+"    which must return a list of two strings:
+"     [ "<pretty tool name>", "<version number>" ]
+"-------------------------------------------------------------------------------
+"
+if isdirectory ( s:plugin_dir.'/autoload/csupport/' )
+	"
+	for file in split( glob (s:plugin_dir.'/autoload/csupport/*.vim'), '\n' )
+		let s:tool = fnamemodify( file, ':t:r' )
+		try
+			exe 'let s:retval = csupport#'.s:tool.'#Init()'
+			call add ( s:C_ToolBox, [ s:tool ] + s:retval )
+		catch /Vim(call):E117:.*/
+			" could not load the plugin: Init() function missing?
+		catch /.*/
+			echomsg "Internal error (" . v:exception . ")"
+			echomsg " - occurred at " . v:throwpoint
+		endtry
+	endfor
+	"
+endif
 "
 "------------------------------------------------------------------------------
 "  show / hide the c-support menus
