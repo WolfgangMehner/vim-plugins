@@ -1,8 +1,8 @@
-README for c.vim (Version 6.0) / August 17 2012
+README for c.vim (Version 6.1) / December 26 2012
 
   *  DESCRIPTION
   *  INSTALLATION
-  *  RELEASE NOTES 
+  *  RELEASE NOTES
   *  FILES
   *  ADDITIONAL TIPS
   *  CREDITS
@@ -48,8 +48,8 @@ value of $HOME with ":echo $HOME" from inside Vim).
     This is the minimal content of the file '$HOME/.vimrc'. Create one if there
     is none or use the files in $HOME/.vim/c-support/rc as a starting point.
 
-(1.3) Set at least some personal details in the file 
-    '$HOME/.vim/c-support/templates/Templates' 
+(1.3) Set at least some personal details in the file
+    '$HOME/.vim/c-support/templates/Templates'
     Here is the minimal personalization (my settings as an example):
 
        SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
@@ -64,11 +64,11 @@ value of $HOME with ":echo $HOME" from inside Vim).
     Vim command line:
 
     :helptags $HOME/.vim/doc/
-  
+
 (1.5) Consider additional settings in the file '$HOME/.vimrc'.  The files
     customization.vimrc and customization.gvimrc are replacements or extensions
     for your .vimrc and .gvimrc.  You may want to use parts of them. The files
-    are documented. 
+    are documented.
 
 (2)  WINDOWS
 ------------
@@ -97,8 +97,8 @@ the value of $HOME with ":echo $HOME" from inside Vim).
     This is the minimal content of the file '$HOME/_vimrc'. Create one if there
     is none or use the files in $HOME/vimfiles/c-support/rc as a starting point.
 
-(2.3) Set at least some personal details in the file 
-    '$HOME/vimfiles/c-support/templates/Templates' 
+(2.3) Set at least some personal details in the file
+    '$HOME/vimfiles/c-support/templates/Templates'
     Here is the minimal personalization (my settings as an example):
 
        SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
@@ -113,28 +113,29 @@ the value of $HOME with ":echo $HOME" from inside Vim).
     Vim command line:
 
     :helptags $HOME\vimfiles\doc\
-  
+
 (2.5) Consider additional settings in the file '$HOME/_vimrc'.  The files
     customization.vimrc and customization.gvimrc are replacements or extensions
     for your _vimrc and _gvimrc. You may want to use parts of them.  The files
-    are documented. 
+    are documented.
 
 There are a lot of features and options which can be used and influenced:
 
   *  use of template files and tags
   *  surround marked blocks with statements
   *  using and managing personal code snippets
-  *  generate/remove multiline comments 
+  *  generate/remove multiline comments
   *  picking up prototypes
   *  C/C++ dictionaries for keyword completion
   *  (re)moving the root menu
 
 Look at csupport help with
 
-  :help csupport 
+  :help csupport
 
 or use the 'help' item in the root menu of this plug-in.
 
+file description header'
              +-----------------------------------------------+
              | +-------------------------------------------+ |
              | |    ** PLEASE READ THE DOCUMENTATION **    | |
@@ -158,9 +159,16 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-- New template system (many thanks to Wolfgang Mehner)
-- A few new hotkeys and menu item.
-- A few hotkeys and menu items renamed.
+================================================================================
+  RELEASE NOTES FOR VERSION 6.1
+================================================================================
+- New global variable g:C_InsertFileHeader (suppress file description comment for new files).
+- Two new ex commands: CCmdlineArgs, CMakeCmdlineArgs.
+- 'Run->cmd. line arg.' : tab expansion (files/directories)for all arguments.
+- Bugfix: template 'file description header' not loading (thanks to Marco Lasczok).
+- Bugfix: unnecessary characters in one template.
+- Prototype picker improved.
+- Several internal improvements.
 
   Please see file ./c-support/doc/ChangeLog .
 
@@ -172,8 +180,8 @@ README.csupport                This file.
 
 autoload/mmtemplates/core.vim  The template system.
 
-doc/csupport.txt               The help file for the local on-line help. 
-                          
+doc/csupport.txt               The help file for the local on-line help.
+
 ftplugin/c.vim                 A file type plug-in. Define hotkeys, creates a
                                local dictionary for each C/C++ file.
 ftplugin/make.vim              Access hotkeys for make(1) in makefiles.
@@ -181,7 +189,7 @@ ftplugin/make.vim              Access hotkeys for make(1) in makefiles.
 plugin/c.vim                   The C/C++ plug-in for GVIM.
 
 c-support/scripts/wrapper.sh   The wrapper script for the use of a xterm.
-c-support/templates/*          C-style and C++-style template files 
+c-support/templates/*          C-style and C++-style template files
                                (see csupport.txt on how to adapt the templates).
 
 
@@ -233,7 +241,7 @@ rc/customization.vimrc       Additional settings I use in .vimrc :  incremental
      www.possibility.com/Cpp/CppCodingStandard.html
 
   The splint error format is taken from the file splint.vim (Vim standard
-  distribution).  
+  distribution).
 
 ------------------
 
@@ -242,7 +250,7 @@ rc/customization.vimrc       Additional settings I use in .vimrc :  incremental
 Johann Wolfgang von Goethe (1749-1832), the greatest of the German poets,
 about LINUX, Vim/gVim and other great tools (Ok, almost.) :
 
- Ein Mann, der recht zu wirken denkt,     Who on efficient work is bent, 
+ Ein Mann, der recht zu wirken denkt,     Who on efficient work is bent,
  Muß auf das beste Werkzeug halten.       Must choose the fittest instrument.
 
 Faust, Teil 1, Vorspiel auf dem Theater  Faust, Part 1, Prologue for the Theatre

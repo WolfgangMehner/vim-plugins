@@ -31,7 +31,7 @@
 "------------------------------------------------------------------------------
 "
 if v:version < 700
-  echohl WarningMsg | echo 'The plugin c-support.vim needs Vim version >= 7 .'| echohl None
+  echohl WarningMsg | echo 'The plugin c.vim needs Vim version 7+.'| echohl None
   finish
 endif
 "
@@ -40,7 +40,7 @@ endif
 if exists("g:C_Version") || &cp
  finish
 endif
-let g:C_Version= "6.0"  							" version number of this script; do not change
+let g:C_Version= "6.1"  							" version number of this script; do not change
 "
 "#################################################################################
 "
@@ -172,6 +172,7 @@ let s:C_FormatYear						= '%Y'
 let s:C_SourceCodeExtensions  = 'c cc cp cxx cpp CPP c++ C i ii'
 let g:C_MapLeader							= '\'
 let s:C_CppcheckSeverity			= 'all'
+let s:C_InsertFileHeader			= 'yes'
 "
 "------------------------------------------------------------------------------
 "
@@ -183,6 +184,7 @@ function! C_CheckGlobal ( name )
   endif
 endfunction    " ----------  end of function C_CheckGlobal ----------
 "
+call C_CheckGlobal('C_InsertFileHeader     ')
 call C_CheckGlobal('C_CCompiler            ')
 call C_CheckGlobal('C_CExtension           ')
 call C_CheckGlobal('C_CFlags               ')
@@ -225,6 +227,11 @@ endif
 "
 "----- some variables for internal use only -----------------------------------
 "
+let s:stdbuf	= ''
+if executable( 'stdbuf' )
+	" stdbuf : the output stream will be unbuffered
+	let s:stdbuf	= 'stdbuf -o0 '
+endif
 "
 " set default geometry if not specified
 "
@@ -283,10 +290,7 @@ let s:C_ForTypes     = [
 
 let s:MsgInsNotAvail	= "insertion not available for a fold" 
 let s:MenuRun         = s:C_RootMenu.'&Run'
-
-let	s:output1	= 'VIM->buffer->xterm'
-let	s:output2	= 'BUFFER->xterm->vim'
-let	s:output3	= 'XTERM->vim->buffer'
+let s:Output					= [ 'VIM->buffer->xterm', 'BUFFER->xterm->vim', 'XTERM->vim->buffer' ]
 
 let s:C_saved_global_option				= {}
 let s:C_SourceCodeExtensionsList	= split( s:C_SourceCodeExtensions, '\s\+' )
@@ -432,8 +436,8 @@ function! s:C_InitMenus ()
 	exe ihead.'&link<Tab>\\rl\ \ \ \ \<F9\>                <C-C>:call C_Link()<CR>:call C_HlMessage()<CR>'
 	exe ahead.'&run<Tab>\\rr\ \ \<C-F9\>                        :call C_Run()<CR>'
 	exe ihead.'&run<Tab>\\rr\ \ \<C-F9\>                   <C-C>:call C_Run()<CR>'
-	exe ahead.'cmd\.\ line\ &arg\.<Tab>\\ra\ \ \<S-F9\>         :call C_Arguments()<CR>'
-	exe ihead.'cmd\.\ line\ &arg\.<Tab>\\ra\ \ \<S-F9\>    <C-C>:call C_Arguments()<CR>'
+	exe 'anoremenu '.s:MenuRun.'.cmd\.\ line\ &arg\.<Tab>\\ra\ \ \<S-F9\>         :CCmdlineArgs<Space>'
+	exe 'inoremenu '.s:MenuRun.'.cmd\.\ line\ &arg\.<Tab>\\ra\ \ \<S-F9\>    <C-C>:CCmdlineArgs<Space>'
 	"
 	exe ahead.'-SEP0-                            :'
 	exe ahead.'&make<Tab>\\rm                                    :call C_Make()<CR>'
@@ -444,8 +448,8 @@ function! s:C_InitMenus ()
 	exe ihead.'executable\ to\ run<Tab>\\rme                <C-C>:call C_ExeToRun()<CR>'
 	exe ahead.'&make\ clean<Tab>\\rmc                            :call C_MakeClean()<CR>'
 	exe ihead.'&make\ clean<Tab>\\rmc                       <C-C>:call C_MakeClean()<CR>'
-	exe ahead.'cmd\.\ line\ ar&g\.\ for\ make<Tab>\\rma          :call C_MakeArguments()<CR>'
-	exe ihead.'cmd\.\ line\ ar&g\.\ for\ make<Tab>\\rma     <C-C>:call C_MakeArguments()<CR>'
+	exe 'anoremenu '.s:MenuRun.'.cmd\.\ line\ ar&g\.\ for\ make<Tab>\\rma          :CMakeCmdlineArgs<Space>'
+	exe 'inoremenu '.s:MenuRun.'.cmd\.\ line\ ar&g\.\ for\ make<Tab>\\rma     <C-C>:CMakeCmdlineArgs<Space>'
 	"
 	exe ahead.'-SEP1-                            :'
 	"
@@ -501,15 +505,15 @@ function! s:C_InitMenus ()
 		exe ihead.'&xterm\ size<Tab>\\rx                      <C-C>:call C_XtermSize()<CR>'
 	endif
 	if s:C_OutputGvim == "vim"
-		exe ahead.'&output:\ '.s:output1.'<Tab>\\ro           :call C_Toggle_Gvim_Xterm()<CR>'
-		exe ihead.'&output:\ '.s:output1.'<Tab>\\ro      <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
+		exe ahead.'&output:\ '.s:Output[0].'<Tab>\\ro           :call C_Toggle_Gvim_Xterm()<CR>'
+		exe ihead.'&output:\ '.s:Output[0].'<Tab>\\ro      <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
 	else
 		if s:C_OutputGvim == "buffer"
-			exe ahead.'&output:\ '.s:output2.'<Tab>\\ro         :call C_Toggle_Gvim_Xterm()<CR>'
-			exe ihead.'&output:\ '.s:output2.'<Tab>\\ro    <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
+			exe ahead.'&output:\ '.s:Output[1].'<Tab>\\ro         :call C_Toggle_Gvim_Xterm()<CR>'
+			exe ihead.'&output:\ '.s:Output[1].'<Tab>\\ro    <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
 		else
-			exe ahead.'&output:\ '.s:output3.'<Tab>\\ro         :call C_Toggle_Gvim_Xterm()<CR>'
-			exe ihead.'&output:\ '.s:output3.'<Tab>\\ro    <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
+			exe ahead.'&output:\ '.s:Output[2].'<Tab>\\ro         :call C_Toggle_Gvim_Xterm()<CR>'
+			exe ihead.'&output:\ '.s:Output[2].'<Tab>\\ro    <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
 		endif
 	endif
 	"
@@ -1333,7 +1337,7 @@ function! C_Compile ()
 			let s:C_HlMessage = "'".Obj."' : compilation successful"
 		endif
 		if v:shell_error != 0
-			let	s:LastShellReturnCode	= v:shell_error
+			let	s:LastShellReturnCode	= v:statusmsg
 		endif
 		call s:C_RestoreGlobalOption('makeprg')
 		"
@@ -1524,28 +1528,27 @@ function! C_Run ()
 			" run programm
 			"
 			setlocal	modifiable
+
 			if s:C_ExecutableToRun !~ "^\s*$"
 				call C_HlMessage( "executable : '".s:C_ExecutableToRun."'" )
-				exe		'%!'.Quote.s:C_ExecutableToRun.Quote.' '.l:arguments
-				setlocal	nomodifiable
-				"
-				if winheight(winnr()) >= line("$")
-					exe bufwinnr(l:currentbuffernr) . "wincmd w"
-				endif
+				let realexe	= s:C_ExecutableToRun
+			elseif executable(Exe) && getftime(Exe) >= getftime(Obj) && getftime(Obj) >= getftime(Sou)
+				let realexe	= ExeEsc
 			else
-				"
-				if	executable(Exe) && getftime(Exe) >= getftime(Obj) && getftime(Obj) >= getftime(Sou)
-					exe		"%!".Quote.ExeEsc.Quote." ".l:arguments
-					setlocal	nomodifiable
-					"
-					if winheight(winnr()) >= line("$")
-						exe bufwinnr(l:currentbuffernr) . "wincmd w"
-					endif
-				else
-					setlocal	nomodifiable
-					:close
-					echomsg "file '".Exe.s:C_RunMsg1
-				endif
+				setlocal	nomodifiable
+				:close
+				echomsg "file '".Exe.s:C_RunMsg1
+				return
+			endif
+
+			exe		'%!'.s:stdbuf.Quote.realexe.Quote.' '.l:arguments
+			if v:shell_error
+				call append( line('$'), "program '".realexe."' terminated with error ".v:shell_error )
+			endif
+			setlocal	nomodifiable
+			"
+			if winheight(winnr()) >= line("$")
+				exe bufwinnr(l:currentbuffernr) . "wincmd w"
 			endif
 			"
 		endif
@@ -1586,19 +1589,8 @@ endfunction    " ----------  end of function C_Run ----------
 "------------------------------------------------------------------------------
 "  C_Arguments : Arguments for the executable       {{{1
 "------------------------------------------------------------------------------
-function! C_Arguments ()
-	let	Exe		  = expand("%:r").s:C_ExeExtension
-  if empty(Exe)
-		redraw
-		echohl WarningMsg | echo "no file name " | echohl None
-		return
-  endif
-	let	prompt	= 'command line arguments for "'.Exe.'" : '
-	if exists("b:C_CmdLineArgs")
-		let	b:C_CmdLineArgs= C_Input( prompt, b:C_CmdLineArgs, 'file' )
-	else
-		let	b:C_CmdLineArgs= C_Input( prompt , "", 'file' )
-	endif
+function! C_Arguments ( ... )
+	let	b:C_CmdLineArgs= join( a:000 )
 endfunction    " ----------  end of function C_Arguments ----------
 "
 "----------------------------------------------------------------------
@@ -1606,35 +1598,25 @@ endfunction    " ----------  end of function C_Arguments ----------
 "----------------------------------------------------------------------
 function! C_Toggle_Gvim_Xterm ()
 	if s:C_OutputGvim == "vim"
-		exe "aunmenu  <silent>  ".s:MenuRun.'.&output:\ '.s:output1
-		exe "amenu    <silent>  ".s:MenuRun.'.&output:\ '.s:output2.'<Tab>\\ro              :call C_Toggle_Gvim_Xterm()<CR>'
-		exe "imenu    <silent>  ".s:MenuRun.'.&output:\ '.s:output2.'<Tab>\\ro         <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
+		exe "aunmenu  <silent>  ".s:MenuRun.'.&output:\ '.s:Output[0]
+		exe "amenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[1].'<Tab>\\ro        :call C_Toggle_Gvim_Xterm()<CR>'
+		exe "imenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[1].'<Tab>\\ro   <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
 		let	s:C_OutputGvim	= "buffer"
 	else
 		if s:C_OutputGvim == "buffer"
-				exe "aunmenu  <silent>  ".s:MenuRun.'.&output:\ '.s:output2
-				if (!s:MSWIN)
-					exe "amenu    <silent>  ".s:MenuRun.'.&output:\ '.s:output3.'<Tab>\\ro            :call C_Toggle_Gvim_Xterm()<CR>'
-					exe "imenu    <silent>  ".s:MenuRun.'.&output:\ '.s:output3.'<Tab>\\ro       <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
-				else
-					exe "amenu    <silent>  ".s:MenuRun.'.&output:\ '.s:output1.'<Tab>\\ro            :call C_Toggle_Gvim_Xterm()<CR>'
-					exe "imenu    <silent>  ".s:MenuRun.'.&output:\ '.s:output1.'<Tab>\\ro       <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
-				endif
-			if (!s:MSWIN) 
-				let	s:C_OutputGvim	= "xterm"
-			else
-				let	s:C_OutputGvim	= "vim"
-			endif
+			exe "aunmenu  <silent>  ".s:MenuRun.'.&output:\ '.s:Output[1]
+			exe "amenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[2].'<Tab>\\ro      :call C_Toggle_Gvim_Xterm()<CR>'
+			exe "imenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[2].'<Tab>\\ro <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
+			let	s:C_OutputGvim	= "xterm"
 		else
 			" ---------- output : xterm -> gvim
-				exe "aunmenu  <silent>  ".s:MenuRun.'.&output:\ '.s:output3
-				exe "amenu    <silent>  ".s:MenuRun.'.&output:\ '.s:output1.'<Tab>\\ro            :call C_Toggle_Gvim_Xterm()<CR>'
-				exe "imenu    <silent>  ".s:MenuRun.'.&output:\ '.s:output1.'<Tab>\\ro       <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
+			exe "aunmenu  <silent>  ".s:MenuRun.'.&output:\ '.s:Output[2]
+			exe "amenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[0].'<Tab>\\ro      :call C_Toggle_Gvim_Xterm()<CR>'
+			exe "imenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[0].'<Tab>\\ro <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
 			let	s:C_OutputGvim	= "vim"
 		endif
 	endif
 	echomsg "output destination is '".s:C_OutputGvim."'"
-
 endfunction    " ----------  end of function C_Toggle_Gvim_Xterm ----------
 "
 "------------------------------------------------------------------------------
@@ -1656,9 +1638,9 @@ endfunction    " ----------  end of function C_XtermSize ----------
 "------------------------------------------------------------------------------
 "  run make(1)       {{{1
 "------------------------------------------------------------------------------
-let s:C_ExecutableToRun	    = ''
-let s:C_Makefile						= ''
-let s:C_MakeCmdLineArgs   	= ''   " command line arguments for Run-make; initially empty
+let s:C_ExecutableToRun	= ''
+let s:C_Makefile				= ''
+let s:C_MakeCmdLineArgs = ''   " command line arguments for Run-make; initially empty
 "
 "------------------------------------------------------------------------------
 "  C_ChooseMakefile : choose a makefile       {{{1
@@ -1722,8 +1704,8 @@ endfunction    " ----------  end of function C_MakeClean ----------
 "------------------------------------------------------------------------------
 "  C_MakeArguments : get make command line arguments       {{{1
 "------------------------------------------------------------------------------
-function! C_MakeArguments ()
-	let	s:C_MakeCmdLineArgs= C_Input( 'make command line arguments : ', s:C_MakeCmdLineArgs, 'file' )
+function! C_MakeArguments ( ... )
+	let	s:C_MakeCmdLineArgs	= join( a:000 )
 endfunction    " ----------  end of function C_MakeArguments ----------
 
 "------------------------------------------------------------------------------
@@ -2453,7 +2435,7 @@ function! C_InsertTemplateWrapper ()
 	" prevent insertion for a file generated from a link error:
 	"
 	call C_CheckAndRereadTemplates()
-	if isdirectory(expand('%:p:h'))
+	if isdirectory(expand('%:p:h')) && s:C_InsertFileHeader == 'yes'
 		if index( s:C_SourceCodeExtensionsList, expand('%:e') ) >= 0 
  			call mmtemplates#core#InsertTemplate(g:C_Templates, 'Comments.file description impl')
 		else
@@ -2490,6 +2472,12 @@ function! s:CreateAdditionalMaps ()
 	" USER DEFINED COMMANDS
 	"-------------------------------------------------------------------------------
 	"
+	command! -nargs=1 -complete=customlist,C_CppcheckSeverityList  CppcheckSeverity   call C_GetCppcheckSeverity (<f-args>)
+	"
+	" ---------- commands : run -------------------------------------
+  command! -nargs=* -complete=file CCmdlineArgs     call C_Arguments(<q-args>)
+  command! -nargs=* -complete=file CMakeCmdlineArgs call C_MakeArguments(<q-args>)
+	"
 	" ---------- F-key mappings  ------------------------------------
 	"
 	"   Alt-F9   write buffer and compile
@@ -2506,8 +2494,8 @@ function! s:CreateAdditionalMaps ()
 	map  <buffer>  <silent>  <C-F9>       :call C_Run()<CR>
 	imap <buffer>  <silent>  <C-F9>  <C-C>:call C_Run()<CR>
 	"
-	map  <buffer>  <silent>  <S-F9>       :call C_Arguments()<CR>
-	imap <buffer>  <silent>  <S-F9>  <C-C>:call C_Arguments()<CR>
+	map  <buffer>            <S-F9>       :CCmdlineArgs<Space>
+	imap <buffer>            <S-F9>  <C-C>:CCmdlineArgs<Space>
 	"
 
 	" ---------- KEY MAPPINGS : MENU ENTRIES -------------------------------------
@@ -2620,8 +2608,8 @@ function! s:CreateAdditionalMaps ()
 	imap <buffer>  <silent>  <LocalLeader>rl    <C-C>:call C_Link()<CR>:call C_HlMessage()<CR>
 	map  <buffer>  <silent>  <LocalLeader>rr         :call C_Run()<CR>
 	imap <buffer>  <silent>  <LocalLeader>rr    <C-C>:call C_Run()<CR>
-	map  <buffer>  <silent>  <LocalLeader>ra         :call C_Arguments()<CR>
-	imap <buffer>  <silent>  <LocalLeader>ra    <C-C>:call C_Arguments()<CR>
+	map  <buffer>            <LocalLeader>ra         :CCmdlineArgs<Space>
+	imap <buffer>            <LocalLeader>ra    <C-C>:CCmdlineArgs<Space>
 	map  <buffer>  <silent>  <LocalLeader>rm         :call C_Make()<CR>
 	imap <buffer>  <silent>  <LocalLeader>rm    <C-C>:call C_Make()<CR>
 	map  <buffer>  <silent>  <LocalLeader>rcm        :call C_ChooseMakefile()<CR>
@@ -2630,8 +2618,8 @@ function! s:CreateAdditionalMaps ()
 	imap <buffer>  <silent>  <LocalLeader>rmc   <C-C>:call C_MakeClean()<CR>
 	map  <buffer>  <silent>  <LocalLeader>rme        :call C_ExeToRun()<CR>
 	imap <buffer>  <silent>  <LocalLeader>rme   <C-C>:call C_ExeToRun()<CR>
-	map  <buffer>  <silent>  <LocalLeader>rma        :call C_MakeArguments()<CR>
-	imap <buffer>  <silent>  <LocalLeader>rma   <C-C>:call C_MakeArguments()<CR>
+	map  <buffer>            <LocalLeader>rma        :CMakeCmdlineArgs<Space>
+	imap <buffer>            <LocalLeader>rma   <C-C>:CMakeCmdlineArgs<Space>
 	map  <buffer>  <silent>  <LocalLeader>rp         :call C_SplintCheck()<CR>:call C_HlMessage()<CR>
 	imap <buffer>  <silent>  <LocalLeader>rp    <C-C>:call C_SplintCheck()<CR>:call C_HlMessage()<CR>
 	map  <buffer>  <silent>  <LocalLeader>rpa        :call C_SplintArguments()<CR>
@@ -2690,9 +2678,6 @@ if s:C_LoadMenus == 'yes' && s:C_CreateMenusDelayed == 'no'
 	call C_CreateGuiMenus()
 endif
 "
-"
-command! -nargs=1 -complete=customlist,C_CppcheckSeverityList  CppcheckSeverity   call C_GetCppcheckSeverity (<f-args>)
-"
 "------------------------------------------------------------------------------
 "  Automated header insertion
 "  Local settings for the quickfix window
@@ -2701,7 +2686,6 @@ command! -nargs=1 -complete=customlist,C_CppcheckSeverityList  CppcheckSeverity 
 "			so that the autocommands execute in the order in which
 "			they were given. The order matters!
 "------------------------------------------------------------------------------
-
 if has("autocmd")
 	"
 	"  *.h has filetype 'cpp' by default; this can be changed to 'c' :
