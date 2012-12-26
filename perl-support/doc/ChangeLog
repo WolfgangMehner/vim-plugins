@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 5.1
+---------------------------------------------------------------------------------------
+- New menu items: 'choose makefile' (\rcm), 'make clean' (\rmc)
+- Bugfix: g:Perl_LocalTemplateFile ignored if present (thanks to Sébastien Nobili)
+- Bugfix: debugger do not start in console mode
+- Several internal improvements.
+
+---------------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 5.0.1
 ---------------------------------------------------------------------------------------
 - Bugfix: resolve home for linked home directories
