@@ -351,15 +351,15 @@ function! Perl_EndOfLineComment ( ) range
 	exe a:firstline.','.a:lastline.'s/\s*$//'
 
 	for line in range( a:lastline, a:firstline, -1 )
-		let linelength	= virtcol( [line, "$"] ) - 1
-		let	diff				= 1
-		if linelength < b:Perl_LineEndCommentColumn
-			let diff	= b:Perl_LineEndCommentColumn -1 -linelength
-		endif
-		exe "normal	".diff."A "
-		exe 'normal!	A'.s:PerlStartComment.' '
-		if line > a:firstline
-			normal k
+		silent exe ":".line
+		if getline(line) !~ '^\s*$'
+			let linelength	= virtcol( [line, "$"] ) - 1
+			let	diff				= 1
+			if linelength < b:Perl_LineEndCommentColumn
+				let diff	= b:Perl_LineEndCommentColumn -1 -linelength
+			endif
+			exe "normal	".diff."A "
+			call mmtemplates#core#InsertTemplate(g:Perl_Templates, 'Comments.end-of-line-comment')
 		endif
 	endfor
 endfunction		" ---------- end of function  Perl_EndOfLineComment  ----------
@@ -468,52 +468,6 @@ function! Perl_AlignLineEndComm ( ) range
 	call setpos('.', save_cursor)
 
 endfunction		" ---------- end of function  Perl_AlignLineEndComm  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Perl_MultiLineEndComments     {{{1
-"   DESCRIPTION:  apply multiple end-of-line comments
-"===============================================================================
-function! Perl_MultiLineEndComments ( )
-	"
-  if !exists("b:Perl_LineEndCommentColumn")
-		let	b:Perl_LineEndCommentColumn	= s:Perl_LineEndCommColDefault
-  endif
-	"
-	let pos0	= line("'<")
-	let pos1	= line("'>")
-	"
-	" ----- trim whitespaces -----
-  exe pos0.','.pos1.'s/\s*$//'
-	"
-	" ----- find the longest line -----
-	let maxlength	= max( map( range(pos0, pos1), "virtcol([v:val, '$'])" ) )
-	let	maxlength	= max( [b:Perl_LineEndCommentColumn, maxlength+1] )
-	"
-	" ----- fill lines with blanks -----
-	for linenumber in range( pos0, pos1 )
-		exe ":".linenumber
-		if getline(linenumber) !~ '^\s*$'
-			let diff	= maxlength - virtcol("$")
-			exe "normal	".diff."A "
-			exe 'normal!	A'.s:PerlStartComment.' '
-		endif
-	endfor
-	"
-	" ----- back to the begin of the marked block -----
-	stopinsert
-	normal '<$
-	if match( getline("."), '\/\/\s*$' ) < 0
-		if search( '\/\*', 'bcW', line(".") ) > 1
-			normal l
-		endif
-		let save_cursor = getpos(".")
-		if getline(".")[save_cursor[2]+1] == ' '
-			normal l
-		endif
-	else
-		normal $
-	endif
-endfunction		" ---------- end of function  Perl_MultiLineEndComments  ----------
 "
 let s:Perl_CmtCounter   = 0
 let s:Perl_CmtLabel     = "BlockCommentNo_"
@@ -2233,9 +2187,8 @@ function! s:Perl_InitMenus ()
 	let vhead = 'vnoremenu <silent> '.s:Perl_RootMenu.'.&Comments.'
 	let ihead = 'inoremenu <silent> '.s:Perl_RootMenu.'.&Comments.'
 	"
-	exe ahead.'end-of-&line\ comment<Tab>\\cl                    :call Perl_EndOfLineComment()<CR>A'
-	exe ihead.'end-of-&line\ comment<Tab>\\cl               <C-C>:call Perl_EndOfLineComment()<CR>A'
-	exe vhead.'end-of-&line\ comment<Tab>\\cl               <C-C>:call Perl_MultiLineEndComments()<CR>A'
+	exe ahead.'end-of-&line\ comment<Tab>\\cl                    :call Perl_EndOfLineComment()<CR>'
+	exe vhead.'end-of-&line\ comment<Tab>\\cl                    :call Perl_EndOfLineComment()<CR>'
 	exe ahead.'ad&just\ end-of-line\ com\.<Tab>\\cj              :call Perl_AlignLineEndComm()<CR>'
 	exe vhead.'ad&just\ end-of-line\ com\.<Tab>\\cj              :call Perl_AlignLineEndComm()<CR>'
 	exe ahead.'&set\ end-of-line\ com\.\ col\.<Tab>\\cs     <C-C>:call Perl_GetLineEndCommCol()<CR>'
@@ -2635,9 +2588,8 @@ function! s:CreateAdditionalMaps ()
 	" Comments
 	" ----------------------------------------------------------------------------
 	"
-	nnoremap    <buffer>  <silent>  <LocalLeader>cl         :call Perl_EndOfLineComment()<CR>A
+	 noremap    <buffer>  <silent>  <LocalLeader>cl         :call Perl_EndOfLineComment()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>cl    <C-C>:call Perl_EndOfLineComment()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>cl    <C-C>:call Perl_MultiLineEndComments()<CR>A
 	"
 	nnoremap    <buffer>  <silent>  <LocalLeader>cj         :call Perl_AlignLineEndComm()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>cj    <C-C>:call Perl_AlignLineEndComm()<CR>

@@ -737,15 +737,15 @@ function! C_EndOfLineComment ( ) range
 	exe a:firstline.','.a:lastline.'s/\s*$//'
 
 	for line in range( a:lastline, a:firstline, -1 )
-		let linelength	= virtcol( [line, "$"] ) - 1
-		let	diff				= 1
-		if linelength < b:C_LineEndCommentColumn
-			let diff	= b:C_LineEndCommentColumn -1 -linelength
-		endif
-		exe "normal	".diff."A "
+		silent exe ":".line
+		if getline(line) !~ '^\s*$'
+			let linelength	= virtcol( [line, "$"] ) - 1
+			let	diff				= 1
+			if linelength < b:C_LineEndCommentColumn
+				let diff	= b:C_LineEndCommentColumn -1 -linelength
+			endif
+			exe "normal	".diff."A "
 			call mmtemplates#core#InsertTemplate(g:C_Templates, 'Comments.end-of-line-comment')
-		if line > a:firstline
-			normal k
 		endif
 	endfor
 endfunction		" ---------- end of function  C_EndOfLineComment  ----------
@@ -2531,7 +2531,7 @@ function! s:CreateAdditionalMaps ()
 	" ---------- KEY MAPPINGS : MENU ENTRIES -------------------------------------
 	" ---------- comments menu  ------------------------------------------------
 	"
-	noremap    <buffer>  <silent>  <LocalLeader>cl         :call C_EndOfLineComment()<CR>
+	 noremap   <buffer>  <silent>  <LocalLeader>cl         :call C_EndOfLineComment()<CR>
 	inoremap   <buffer>  <silent>  <LocalLeader>cl    <Esc>:call C_EndOfLineComment()<CR>
 	"
 	nnoremap   <buffer>  <silent>  <LocalLeader>cj         :call C_AdjustLineEndComm()<CR>
