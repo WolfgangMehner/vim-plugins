@@ -2,12 +2,16 @@
 "
 "          File:  cmake.vim
 " 
-"   Description:  
+"   Description:  Part of the C-Support toolbox.
+"
+"                 Vim/gVim integration of CMake.
+"
+"                 See help file csupport_cmake.txt .
 " 
 "   VIM Version:  7.0+
 "        Author:  Wolfgang Mehner, wolfgang-mehner@web.de
 "  Organization:  
-"       Version:  1.0
+"       Version:  see variable g:CMake_Version below
 "       Created:  28.12.2011
 "      Revision:  ---
 "       License:  Copyright (c) 2012, Wolfgang Mehner
@@ -28,10 +32,10 @@
 "
 " need at least 7.0
 if v:version < 700
-  echohl WarningMsg
+	echohl WarningMsg
 	echo 'The plugin csupport/cmake.vim needs Vim version >= 7.'
 	echohl None
-  finish
+	finish
 endif
 "
 " prevent duplicate loading
@@ -55,8 +59,33 @@ else
 	let s:FilenameEscChar = ' \%#[]'
 endif
 "
+"-------------------------------------------------------------------------------
+" s:GetGlobalSetting : Get a setting from a global variable.   {{{2
+"-------------------------------------------------------------------------------
+"
+function! s:GetGlobalSetting ( varname )
+	if exists ( 'g:'.a:varname )
+		exe 'let s:'.a:varname.' = g:'.a:varname
+	endif
+endfunction    " ----------  end of function s:GetGlobalSetting  ----------
+" }}}2
+"
 let s:BaseDirectory = '.'
 let s:BuildLocation = '.'
+"
+let s:CMake_Executable = 'cmake'
+let s:CMake_MakeTool   = 'make'
+"
+call s:GetGlobalSetting ( 'CMake_Executable' )
+call s:GetGlobalSetting ( 'CMake_MakeTool' )
+"
+let s:Enabled = 1
+"
+if ! executable ( s:CMake_Executable ) || ! executable ( s:CMake_MakeTool )
+	let s:Enabled = 0
+endif
+"
+" error formats {{{2
 "
 " error format for CMake
 let s:ErrorFormat_CMake = escape(
@@ -82,13 +111,63 @@ let s:ErrorFormat_MakeAdditions = escape(
 			\ .'%-G%\s%\+from %f:%l:%.%#,'
 			\ , s:SettingsEscChar )
 "
-" custom commands
-command!       -nargs=? -complete=file CMakeBaseDirectory :call csupport#cmake#Property('base-dir','<args>')
-command!       -nargs=? -complete=file CMakeBuildLocation :call csupport#cmake#Property('build-dir','<args>')
-command! -bang -nargs=* -complete=file CMake              :call csupport#cmake#Run('<args>','<bang>'=='!')
-command!       -nargs=? -complete=file CMakeHelpCommand   :call csupport#cmake#Help('command','<args>')
-command!       -nargs=? -complete=file CMakeHelpModule    :call csupport#cmake#Help('module','<args>')
-command!       -nargs=? -complete=file CMakeHelpVariable  :call csupport#cmake#Help('variable','<args>')
+" policy list {{{2
+"
+let s:Policies_Version = '2.8.7'
+let s:Policies_List = [
+			\ [ 'CMP0000', 'A minimum required CMake version must be specified.', '2.6.0' ],
+			\ [ 'CMP0001', 'CMAKE_BACKWARDS_COMPATIBILITY should no longer be used.', '2.6.0' ],
+			\ [ 'CMP0002', 'Logical target names must be globally unique.', '2.6.0' ],
+			\ [ 'CMP0003', 'Libraries linked via full path no longer produce linker search paths.', '2.6.0' ],
+			\ [ 'CMP0004', 'Libraries linked may not have leading or trailing whitespace.', '2.6.0' ],
+			\ [ 'CMP0005', 'Preprocessor definition values are now escaped automatically.', '2.6.0' ],
+			\ [ 'CMP0006', 'Installing MACOSX_BUNDLE targets requires a BUNDLE DESTINATION.', '2.6.0' ],
+			\ [ 'CMP0007', 'list command no longer ignores empty elements.', '2.6.0' ],
+			\ [ 'CMP0008', 'Libraries linked by full-path must have a valid library file name.', '2.6.1' ],
+			\ [ 'CMP0009', 'FILE GLOB_RECURSE calls should not follow symlinks by default.', '2.6.2' ],
+			\ [ 'CMP0010', 'Bad variable reference syntax is an error.', '2.6.3' ],
+			\ [ 'CMP0011', 'Included scripts do automatic cmake_policy PUSH and POP.', '2.6.3' ],
+			\ [ 'CMP0012', 'if() recognizes numbers and boolean constants.', '2.8.0' ],
+			\ [ 'CMP0013', 'Duplicate binary directories are not allowed.', '2.8.0' ],
+			\ [ 'CMP0014', 'Input directories must have CMakeLists.txt.', '2.8.0' ],
+			\ [ 'CMP0015', 'link_directories() treats paths relative to the source dir.', '2.8.1' ],
+			\ [ 'CMP0016', 'target_link_libraries() reports error if only argument is not a target.', '2.8.3' ],
+			\ [ 'CMP0017', 'Prefer files from the CMake module directory when including from there.', '2.8.4' ],
+			\ [ 'CMP????', 'There might be more policies not mentioned here, since this list is not maintained automatically.', '?.?.?' ],
+			\ ]
+"
+" }}}2
+"
+if s:Enabled == 1
+	" custom commands
+	command!       -nargs=? -complete=file CMakeBaseDirectory :call csupport#cmake#Property('base-dir','<args>')
+	command!       -nargs=? -complete=file CMakeBuildLocation :call csupport#cmake#Property('build-dir','<args>')
+	command! -bang -nargs=* -complete=file CMake              :call csupport#cmake#Run('<args>','<bang>'=='!')
+	command!       -nargs=? -complete=file CMakeHelpCommand   :call csupport#cmake#Help('command','<args>')
+	command!       -nargs=? -complete=file CMakeHelpModule    :call csupport#cmake#Help('module','<args>')
+	command!       -nargs=? -complete=file CMakeHelpPolicy    :call csupport#cmake#Help('policy','<args>')
+	command!       -nargs=? -complete=file CMakeHelpProperty  :call csupport#cmake#Help('property','<args>')
+	command!       -nargs=? -complete=file CMakeHelpVariable  :call csupport#cmake#Help('variable','<args>')
+else
+	"
+	function! csupport#cmake#Disabled ()
+		let txt = "CMake tool not working:\n"
+		if ! executable ( s:CMake_Executable )
+			let txt .= "CMake not executable (".s:CMake_Executable.")"
+		elseif ! executable ( s:CMake_MakeTool )
+			let txt .= "make tool not executable (".s:CMake_MakeTool.")"
+		else
+			let txt .= "unknown reason"
+		endif
+		echohl Search
+		echo txt
+		echohl None
+		return
+	endfunction    " ----------  end of function csupport#cmake#Disabled  ----------
+	"
+	command! -nargs=* CMakeHelp :call csupport#cmake#Disabled()
+	"
+endif
 "
 "-------------------------------------------------------------------------------
 " Init : Initialize the script.   {{{1
@@ -126,16 +205,11 @@ function! csupport#cmake#AddMenu ( root, name )
 	"
 	exe 'amenu '.root.'.help\ &commands<Tab>:CMakeHelpCommand    :CMakeHelpCommand<CR>'
 	exe 'amenu '.root.'.help\ &modules<Tab>:CMakeHelpModule      :CMakeHelpModule<CR>'
+	exe 'amenu '.root.'.help\ &policies<Tab>:CMakeHelpPolicy     :CMakeHelpPolicy<CR>'
+	exe 'amenu '.root.'.help\ &property<Tab>:CMakeHelpProperty   :CMakeHelpProperty<CR>'
 	exe 'amenu '.root.'.help\ &variables<Tab>:CMakeHelpVariable  :CMakeHelpVariable<CR>'
 	"
 endfunction    " ----------  end of function csupport#cmake#AddMenu  ----------
-"
-"-------------------------------------------------------------------------------
-" RemoveMenu : Remove menus.   {{{1
-"-------------------------------------------------------------------------------
-function! csupport#cmake#RemoveMenu ()
-	" TODO
-endfunction    " ----------  end of function csupport#cmake#RemoveMenu  ----------
 "
 "-------------------------------------------------------------------------------
 " === Script: Auxiliary functions. ===   {{{1
@@ -200,7 +274,7 @@ function! csupport#cmake#Run ( args, cmake_only )
 		endif
 		"
 		let errors = 'DIR : '.s:BaseDirectory."\n"
-					\ .system ( 'cmake '.args )
+					\ .system ( s:CMake_Executable.' '.args )
 					\ .'ENDDIR : '.s:BaseDirectory
 		cexpr errors
 		"
@@ -221,7 +295,7 @@ function! csupport#cmake#Run ( args, cmake_only )
 		" CMake, run by make, in case of failure: "-- Configuring incomplete, errors occurred!"
 		"
 		" run make
-		let errors = system ( 'make '.a:args )
+		let errors = system ( s:CMake_MakeTool.' '.a:args )
 		"
 		" error was produced by CMake?
 		if v:shell_error != 0
@@ -280,9 +354,37 @@ function! csupport#cmake#Run ( args, cmake_only )
 endfunction    " ----------  end of function csupport#cmake#Run  ----------
 "
 "-------------------------------------------------------------------------------
+" s:TextFromSystem : Get text from a system command.   {{{1
+"-------------------------------------------------------------------------------
+function! s:TextFromSystem ( cmd )
+	"
+	let text = system ( a:cmd )
+	"
+	if v:shell_error != 0
+		return [ 0, '' ]
+	endif
+	"
+	return [ 1, text ]
+endfunction    " ----------  end of function s:TextFromSystem  ----------
+"
+"-------------------------------------------------------------------------------
+" s:PolicyListText : Get text for policy list.   {{{1
+"-------------------------------------------------------------------------------
+function! s:PolicyListText ()
+	"
+	let text = "cmake version ".s:Policies_Version
+	"
+	for [ nr, dsc, vrs ] in s:Policies_List
+		let text .= "\n\n".nr."\n\t".dsc." (".vrs.")"
+	endfor
+	"
+	return [ 1, text ]
+endfunction    " ----------  end of function s:PolicyListText  ----------
+"
+"-------------------------------------------------------------------------------
 " s:OpenManBuffer : Print help for commands.   {{{1
 "-------------------------------------------------------------------------------
-function! s:OpenManBuffer ( generate_cmd, buf_name, jump_reaction )
+function! s:OpenManBuffer ( text_cmd, buf_name, jump_reaction )
 	"
 	" a buffer like this already existing?
 	if bufnr ( a:buf_name ) != -1
@@ -292,9 +394,9 @@ function! s:OpenManBuffer ( generate_cmd, buf_name, jump_reaction )
 	endif
 	"
 	" no -> open a buffer and insert the text
-	let text = system ( a:generate_cmd )
+	exe 'let [ success, text ] = '.a:text_cmd
 	"
-	if v:shell_error != 0
+	if success == 0
 		return 0
 	endif
 	"
@@ -310,9 +412,10 @@ function! s:OpenManBuffer ( generate_cmd, buf_name, jump_reaction )
 	setlocal bufhidden=wipe
 "	setlocal filetype=man
 	"
-	silent exe ':map <silent> <buffer> <C-]>         '.a:jump_reaction
-	silent exe ':map <silent> <buffer> <Enter>       '.a:jump_reaction
-	silent exe ':map <silent> <buffer> <2-Leftmouse> '.a:jump_reaction
+	silent exe 'nmap <silent> <buffer> <C-]>         '.a:jump_reaction
+	silent exe 'nmap <silent> <buffer> <Enter>       '.a:jump_reaction
+	silent exe 'nmap <silent> <buffer> <2-Leftmouse> '.a:jump_reaction
+	silent exe 'nmap <silent> <buffer> q             :close<CR>'
   "
 	return 1
 endfunction    " ----------  end of function s:OpenManBuffer  ----------
@@ -327,6 +430,10 @@ function! csupport#cmake#Help ( type, topic )
 		let switch = '--help-command'
 	elseif a:type == 'module'
     let switch = '--help-module'
+	elseif a:type == 'policy'
+    let switch = '--help-policy'
+	elseif a:type == 'property'
+    let switch = '--help-property'
 	elseif a:type == 'variable'
     let switch = '--help-variable'
 	else
@@ -335,15 +442,22 @@ function! csupport#cmake#Help ( type, topic )
 	endif
 	"
 	" overview or concrete topic?
-	if a:topic == ''
-		let switch .= '-list'
+	if a:topic == '' && a:type == 'policy'
+		let cmd  = 's:PolicyListText ()'
+		"
+		let topic    = a:type
+		let category = 'list'
+		"
+		let jump = ':call csupport#cmake#HelpJump("'.a:type.'")<CR>'
+	elseif a:topic == ''
+		let cmd  = 's:TextFromSystem ( "'.s:CMake_Executable.' '.switch.'-list '.a:topic.'" )'
 		"
 		let topic    = a:type
 		let category = 'list'
 		"
 		let jump = ':call csupport#cmake#HelpJump("'.a:type.'")<CR>'
 	else
-		let switch .= ' '.a:topic
+		let cmd  = 's:TextFromSystem ( "'.s:CMake_Executable.' '.switch.' '.a:topic.'" )'
 		"
 		let topic    = a:topic
 		let category = a:type
@@ -352,7 +466,6 @@ function! csupport#cmake#Help ( type, topic )
 	endif
 	"
 	" get the help
-	let cmd  = 'cmake '.switch
 	let buf  = 'CMake help : '.topic.' ('.category.')'
 	"
 	if ! s:OpenManBuffer ( cmd, buf, jump )
@@ -371,7 +484,7 @@ function! csupport#cmake#HelpJump ( type )
 	let line = matchstr(line,'^\w\+\ze\s*$')
 	"
 	if empty( line )
-		echo 'CMake : No command/module/variable under the cursor.'
+		echo 'CMake : No '.a:type.' under the cursor.'
 		return
 	endif
 	"
