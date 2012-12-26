@@ -100,13 +100,6 @@ function! csupport#doxygen#AddMenu ( root, name )
 endfunction    " ----------  end of function csupport#doxygen#AddMenu  ----------
 "
 "-------------------------------------------------------------------------------
-" RemoveMenu : Remove menus.   {{{1
-"-------------------------------------------------------------------------------
-function! csupport#doxygen#RemoveMenu ()
-	" TODO
-endfunction    " ----------  end of function csupport#doxygen#RemoveMenu  ----------
-"
-"-------------------------------------------------------------------------------
 " === Script: Auxiliary functions. ===   {{{1
 "-------------------------------------------------------------------------------
 "
