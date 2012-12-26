@@ -1,0 +1,36 @@
+§ =============================================================
+§  User Macros
+§ =============================================================
+
+SetMacro( 'AUTHOR',      'YOUR NAME' )
+SetMacro( 'AUTHORREF',   '' )
+SetMacro( 'COMPANY',     '' )
+SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
+SetMacro( 'EMAIL',       '' )
+SetMacro( 'LICENSE',     'GNU General Public License' )
+SetMacro( 'ORGANIZATION','' )
+
+SetFormat( 'DATE', '%x' )
+SetFormat( 'TIME', '%H:%M' )
+SetFormat( 'YEAR', '%Y' )
+
+SetStyle( 'default' )
+
+§ =============================================================
+§  File Includes and Shortcuts
+§ =============================================================
+
+MenuShortcut( 'Comments',          'c' )
+MenuShortcut( 'Statements',        's' )
+MenuShortcut( 'Idioms',            'i' )
+MenuShortcut( 'Functions',         'f' )
+MenuShortcut( 'Special Variables', 'v' )
+MenuShortcut( 'Regex',             'x' )
+
+IncludeFile( 'comments.templates' )
+IncludeFile( 'statements.templates' )
+IncludeFile( 'idioms.templates' )
+IncludeFile( 'functions.templates' )
+IncludeFile( 'specvar.templates' )
+IncludeFile( 'regex.templates' )
+

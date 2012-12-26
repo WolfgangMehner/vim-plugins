@@ -1,0 +1,75 @@
+§ =============================================================
+§  Comments
+§ =============================================================
+
+== Comments.end-of-line comment == nomenu, append, map:ce, sc:e ==
+ # <CURSOR>
+== Comments.frame == map:cfr, sc:r ==
+#-------------------------------------------------------------------------------
+# <CURSOR>
+#-------------------------------------------------------------------------------
+== Comments.function == map:cfu, sc:f ==
+#===  FUNCTION  ================================================================
+#          NAME:  |?FUNCTION_NAME:c|     {{{1
+#   DESCRIPTION:  <CURSOR>
+#    PARAMETERS:  -|PARAMETERS:EMPTY|
+#    PARAMETERS:  |PARAMETERS:FIRST| - {+DESCRIPTION+}
+#                 |PARAMETERS:ENTRY| - {+DESCRIPTION+}
+#       RETURNS:  
+#===============================================================================
+== Comments.file description == start, map:ch ==
+#!/usr/bin/awk -f
+#===============================================================================
+#
+#          File:  |FILENAME|
+# 
+#   Description:  <CURSOR>
+# 
+#   VIM Version:  7.0+
+#        Author:  |AUTHOR| (|AUTHORREF|), |EMAIL|
+#  Organization:  |ORGANIZATION|
+#       Version:  1.0
+#       Created:  |DATE| |TIME|
+#      Revision:  ---
+#       License:  |COPYRIGHT|
+#===============================================================================
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+
+== Comments.date == append, map:cd, sc:d ==
+|DATE|
+== Comments.date-time == append, map:ct, sc:t ==
+|DATE| |TIME|
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Keywords, Special and Macros
+§ -------------------------------------------------------------
+
+== LIST: comments_keywords == hash ==
+	'bug'         : ':BUG:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'todo'        : ':TODO:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'tricky'      : ':TRICKY:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'warning'     : ':WARNING:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'workaround'  : ':WORKAROUND:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'new keyword' : ':<CURSOR>:|DATE| |TIME|:|AUTHORREF|: {+COMMENT+}',
+== LIST: comments_macros == hash ==
+	'AUTHOR'       : '|AUTHOR|',
+	'AUTHORREF'    : '|AUTHORREF|',
+	'COMPANY'      : '|COMPANY|',
+	'COPYRIGHT'    : '|COPYRIGHT|',
+	'EMAIL'        : '|EMAIL|',
+	'ORGANIZATION' : '|ORGANIZATION|',
+== ENDLIST ==
+
+§ -------------------------------------------------------------
+
+== Comments.keyword comments == expandmenu, append, map:ck, sc:k ==
+|PickList( 'keyword comment', 'comments_keywords' )|
+ # |PICK|
+== Comments.macros == expandmenu, insert, map:cma, sc:m ==
+|PickList( 'macro', 'comments_macros' )|
+|PICK|
+== ENDTEMPLATE ==
+

@@ -1,0 +1,76 @@
+§ =============================================================
+§  Functions
+§ =============================================================
+
+== LIST: functions_numeric == hash ==
+	'atan2'    : '<+Y+>, <+X+>',
+	'cos'      : '',
+	'exp'      : '',
+	'int'      : '',
+	'log'      : '',
+	'rand'     : '',
+	'sin'      : '',
+	'sqrt'     : '',
+	'srand'    : '',
+== LIST: functions_string == hash ==
+	'asort'    : '<+ARRAY+>',
+	'asorti'   : '<+ARRAY+>',
+	'gensub'   : '<+REGEXP+>, <+REPLACEMENT+>, <+MODE+>',
+	'gsub'     : '<+REGEXP+>, <+STRING+>',
+	'index'    : '<+STRING+>, <+FIND+>',
+	'length'   : '<+STRING+>',
+	'match'    : '<+STRING+>, <+REGEXP+>',
+	'patsplit' : '<+STRING+>, <+ARRAY+>',
+	'split'    : '<+STRING+>, <+ARRAY+>',
+	'sprintf'  : '<+FORMAT+>, <+EXPR+>',
+	'strtonum' : '<+STRING+>',
+	'sub'      : '<+REGEXP+>, <+REPLACEMENT+>',
+	'substr'   : '<+STRING+>, <+START+>',
+	'tolower'  : '<+STRING+>',
+	'toupper'  : '<+STRING+>',
+== LIST: functions_time == hash ==
+	'mktime'   : '<+DATESPEC+>',
+	'strftime' : '',
+	'systime'  : '',
+== LIST: functions_bit == hash ==
+	'and'      : '<+VAL1+>, <+VAL2+>',
+	'compl'    : '<+VAL+>',
+	'lshift'   : '<+VAL+>, <+COUNT+>',
+	'or'       : '<+VAL1+>, <+VAL2+>',
+	'rshift'   : '<+VAL+>, <+COUNT+>',
+	'xor'      : '<+VAL1+>, <+VAL2+>',
+== LIST: functions_internat == hash ==
+	'bindtextdomain' : '<+DIRECTORY+>',
+	'dcgettext'      : '<+STRING+>',
+	'dcngettext'     : '<+STRING1+>, <+STRING2+>, <+NUMBER+>',
+== LIST: functions_io == hash ==
+	'close'    : '',
+	'fflush'   : '',
+	'system'   : '',
+	'printf'   : '"", ',
+== ENDLIST ==
+
+== Functions.Numeric Functions == expandmenu, insert, map:fn, sc:n ==
+|PickList( 'function', 'functions_numeric' )|
+|KEY|( <CURSOR><SPLIT>|VALUE| )
+== Functions.String Functions == expandmenu, insert, map:fs, sc:s ==
+|PickList( 'function', 'functions_string' )|
+|KEY|( <CURSOR><SPLIT>|VALUE| )
+== Functions.IO Functions == expandmenu, insert, map:fio, sc:s ==
+|PickList( 'function', 'functions_io' )|
+|KEY|( |VALUE|<CURSOR><SPLIT> )
+== Functions.Time Functions == expandmenu, insert, map:ft, sc:t ==
+|PickList( 'function', 'functions_time' )|
+|KEY|( <CURSOR><SPLIT>|VALUE| )
+== Functions.Bit Maniputations Functions == expandmenu, insert, map:fb, sc:b ==
+|PickList( 'function', 'functions_bit' )|
+|KEY|( <CURSOR><SPLIT>|VALUE| )
+== Functions.Internationalization Functions == expandmenu, insert, map:fin, sc:i ==
+|PickList( 'function', 'functions_internat' )|
+|KEY|( <CURSOR><SPLIT>|VALUE| )
+== ENDTEMPLATE ==
+
+== Functions.isarray == insert, map:fa, sc:a ==
+isarray( <CURSOR><SPLIT> )
+== ENDTEMPLATE ==
+
