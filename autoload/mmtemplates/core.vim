@@ -2628,11 +2628,13 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 			call cursor ( l1, c1, o1 )
 			exe 'normal! i'.part[0]
 			let indentation = 0
+			let pos1 = l1
+			let pos2 = l2 + len(split( text, '\n' )) - 1
 		elseif placement == 'below'
 			:'<put! = part[0]
 			:'>put  = part[1]
-			let pos1 = line("'<") - len(split(part[0], '\n' ))
-			let pos2 = line("'>") + len(split(part[1], '\n' ))
+			let pos1 = line("'<") - len(split( part[0], '\n' ))
+			let pos2 = line("'>") + len(split( part[1], '\n' ))
 		else
 			throw 'Template:Insert:usage with <SPLIT> not allowed for placement "'.placement.'"'
 		endif
