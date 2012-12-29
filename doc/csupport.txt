@@ -1,4 +1,4 @@
-*csupport.txt*                  C/C++ Support                 December 26 2012
+*csupport.txt*                  C/C++ Support                 December 27 2012
 
 C/C++ Support                                           *c-support* *csupport*
                              Plugin version 6.1
@@ -338,8 +338,7 @@ system (see|csupport-templates-macros|).
 1.1.9  DATE AND DATE+TIME                                 *csupport-comm-date*
 
 The format for 'date' and 'date time' can be defined by the user (see
-|csupport-templates-date|). In visual mode the marked string will be replaced
-by the macro (e.g. to update date and time).
+|csupport-templates-date|). 
 
 ------------------------------------------------------------------------------
 

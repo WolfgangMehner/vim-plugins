@@ -166,9 +166,6 @@ let s:C_GuiTemplateBrowser    = 'gui'										" gui / explorer / commandline
 "
 let s:C_Ctrl_j								= 'on'
 "
-let s:C_FormatDate						= '%x'
-let s:C_FormatTime						= '%X'
-let s:C_FormatYear						= '%Y'
 let s:C_SourceCodeExtensions  = 'c cc cp cxx cpp CPP c++ C i ii'
 let g:C_MapLeader							= '\'
 let s:C_CppcheckSeverity			= 'all'
@@ -200,9 +197,6 @@ call C_CheckGlobal('C_CplusCompiler        ')
 call C_CheckGlobal('C_CreateMenusDelayed   ')
 call C_CheckGlobal('C_Ctrl_j               ')
 call C_CheckGlobal('C_ExeExtension         ')
-call C_CheckGlobal('C_FormatDate           ')
-call C_CheckGlobal('C_FormatTime           ')
-call C_CheckGlobal('C_FormatYear           ')
 call C_CheckGlobal('C_GlobalTemplateFile   ')
 call C_CheckGlobal('C_GuiSnippetBrowser    ')
 call C_CheckGlobal('C_GuiTemplateBrowser   ')
@@ -537,14 +531,6 @@ function! s:C_InitMenus ()
 	"----- Menu : C-Comments --------------------------------------------------   {{{2
 	"===============================================================================================
 	"
-	exe "amenu  ".MenuComments.'.-SEP8-                        :'
-	exe " menu  ".MenuComments.'.&date<Tab>\\cd                       <Esc>:call C_InsertDateAndTime("d")<CR>'
-	exe "imenu  ".MenuComments.'.&date<Tab>\\cd                       <Esc>:call C_InsertDateAndTime("d")<CR>a'
-	exe "vmenu  ".MenuComments.'.&date<Tab>\\cd                      s<Esc>:call C_InsertDateAndTime("d")<CR>a'
-	exe " menu  ".MenuComments.'.date\ &time<Tab>\\ct                 <Esc>:call C_InsertDateAndTime("dt")<CR>'
-	exe "imenu  ".MenuComments.'.date\ &time<Tab>\\ct                 <Esc>:call C_InsertDateAndTime("dt")<CR>a'
-	exe "vmenu  ".MenuComments.'.date\ &time<Tab>\\ct                s<Esc>:call C_InsertDateAndTime("dt")<CR>a'
-
 	exe "amenu  ".MenuComments.'.-SEP12-                    :'
 	exe "amenu <silent> ".MenuComments.'.\/*\ &xxx\ *\/\ \ <->\ \ \/\/\ xxx<Tab>\\cx   :call C_CommentToggle()<CR>'
 	exe "vmenu <silent> ".MenuComments.'.\/*\ &xxx\ *\/\ \ <->\ \ \/\/\ xxx<Tab>\\cx   :call C_CommentToggle()<CR>'
@@ -2399,36 +2385,6 @@ function! C_ExpandSingleMacro ( val, macroname, replacement )
 endfunction    " ----------  end of function C_ExpandSingleMacro  ----------
 
 "------------------------------------------------------------------------------
-"  insert date and time     {{{1
-"------------------------------------------------------------------------------
-function! C_InsertDateAndTime ( format )
-	if &foldenable && foldclosed(".") >= 0
-		echohl WarningMsg | echomsg s:MsgInsNotAvail  | echohl None
-		return ""
-	endif
-	if col(".") > 1
-		exe 'normal a'.C_DateAndTime(a:format)
-	else
-		exe 'normal i'.C_DateAndTime(a:format)
-	endif
-endfunction    " ----------  end of function C_InsertDateAndTime  ----------
-
-"------------------------------------------------------------------------------
-"  generate date and time     {{{1
-"------------------------------------------------------------------------------
-function! C_DateAndTime ( format )
-	if a:format == 'd'
-		return strftime( s:C_FormatDate )
-	elseif a:format == 't'
-		return strftime( s:C_FormatTime )
-	elseif a:format == 'dt'
-		return strftime( s:C_FormatDate ).' '.strftime( s:C_FormatTime )
-	elseif a:format == 'y'
-		return strftime( s:C_FormatYear )
-	endif
-endfunction    " ----------  end of function C_DateAndTime  ----------
-
-"------------------------------------------------------------------------------
 "  check for header or implementation file     {{{1
 "------------------------------------------------------------------------------
 function! C_InsertTemplateWrapper ()
@@ -2517,13 +2473,6 @@ function! s:CreateAdditionalMaps ()
 	vnoremap   <buffer>  <silent>  <LocalLeader>cc         :call C_CodeToCommentCpp()<CR>:nohlsearch<CR>j
 	noremap    <buffer>  <silent>  <LocalLeader>co         :call C_CommentToCode()<CR>:nohlsearch<CR>
 	vnoremap   <buffer>  <silent>  <LocalLeader>co         :call C_CommentToCode()<CR>:nohlsearch<CR>
-
-	noremap    <buffer>  <silent>  <LocalLeader>cd    <Esc>:call C_InsertDateAndTime('d')<CR>
-	inoremap   <buffer>  <silent>  <LocalLeader>cd    <Esc>:call C_InsertDateAndTime('d')<CR>a
-	vnoremap   <buffer>  <silent>  <LocalLeader>cd   s<Esc>:call C_InsertDateAndTime('d')<CR>a
-	noremap    <buffer>  <silent>  <LocalLeader>ct    <Esc>:call C_InsertDateAndTime('dt')<CR>
-	inoremap   <buffer>  <silent>  <LocalLeader>ct    <Esc>:call C_InsertDateAndTime('dt')<CR>a
-	vnoremap   <buffer>  <silent>  <LocalLeader>ct   s<Esc>:call C_InsertDateAndTime('dt')<CR>a
 	" 
 	noremap    <buffer>  <silent>  <LocalLeader>cx          :call C_CommentToggle( )<CR>
 	inoremap   <buffer>  <silent>  <LocalLeader>cx    <Esc>:call C_CommentToggle( )<CR>
