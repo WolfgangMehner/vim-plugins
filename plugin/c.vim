@@ -62,6 +62,8 @@ let s:C_LocalTemplateFile		= ''
 let s:C_LocalTemplateDir		= ''
 let s:C_FilenameEscChar 		= ''
 
+let s:C_ToolboxDir  				= []
+
 if	s:MSWIN
   " ==========  MS Windows  ======================================================
 	"
@@ -74,6 +76,9 @@ if	s:MSWIN
 		let s:plugin_dir  					= substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
 		let s:C_LocalTemplateFile		= s:plugin_dir.'/c-support/templates/Templates'
 		let s:C_LocalTemplateDir		= fnamemodify( s:C_LocalTemplateFile, ":p:h" ).'/'
+		let s:C_ToolboxDir		     += [
+					\	s:plugin_dir.'/autoload/mmtoolbox/common/',
+					\	s:plugin_dir.'/autoload/mmtoolbox/c/' ]
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
@@ -83,6 +88,11 @@ if	s:MSWIN
 		let s:C_GlobalTemplateFile  = s:C_GlobalTemplateDir.'/Templates'
 		let s:C_LocalTemplateFile		= $HOME.'/vimfiles/c-support/templates/Templates'
 		let s:C_LocalTemplateDir		= fnamemodify( s:C_LocalTemplateFile, ":p:h" ).'/'
+		let s:C_ToolboxDir		     += [
+					\	s:plugin_dir.'/autoload/mmtoolbox/common/',
+					\	s:plugin_dir.'/autoload/mmtoolbox/c/',
+					\	$HOME.'/vimfiles/autoload/mmtoolbox/common/',
+					\	$HOME.'/vimfiles/autoload/mmtoolbox/c/' ]
 	endif
 	"
   let s:C_FilenameEscChar 			= ''
@@ -96,6 +106,9 @@ else
 		let s:plugin_dir 						= expand('<sfile>:p:h:h')
 		let s:C_LocalTemplateFile		= s:plugin_dir.'/c-support/templates/Templates'
 		let s:C_LocalTemplateDir		= fnamemodify( s:C_LocalTemplateFile, ":p:h" ).'/'
+		let s:C_ToolboxDir		     += [
+					\	s:plugin_dir.'/autoload/mmtoolbox/common/',
+					\	s:plugin_dir.'/autoload/mmtoolbox/c/' ]
 	else
 		" SYSTEM WIDE INSTALLATION
 		let g:C_Installation				= 'system'
@@ -104,6 +117,11 @@ else
 		let s:C_GlobalTemplateFile  = s:C_GlobalTemplateDir.'/Templates'
 		let s:C_LocalTemplateFile		= $HOME.'/.vim/c-support/templates/Templates'
 		let s:C_LocalTemplateDir		= fnamemodify( s:C_LocalTemplateFile, ":p:h" ).'/'
+		let s:C_ToolboxDir		     += [
+					\	s:plugin_dir.'/autoload/mmtoolbox/common/',
+					\	s:plugin_dir.'/autoload/mmtoolbox/c/',
+					\	$HOME.'/.vim/autoload/mmtoolbox/common/',
+					\	$HOME.'/.vim/autoload/mmtoolbox/c/' ]
 	endif
 	"
   let s:C_FilenameEscChar 			= ' \%#[]'
@@ -163,6 +181,7 @@ let s:C_Wrapper               = s:plugin_dir.'/c-support/scripts/wrapper.sh'
 let s:C_XtermDefaults         = '-fa courier -fs 12 -geometry 80x24'
 let s:C_GuiSnippetBrowser     = 'gui'										" gui / commandline
 let s:C_GuiTemplateBrowser    = 'gui'										" gui / explorer / commandline
+let s:C_UseToolbox            = 'yes'
 "
 let s:C_Ctrl_j								= 'on'
 "
@@ -216,6 +235,7 @@ call C_CheckGlobal('C_Printheader          ')
 call C_CheckGlobal('C_RootMenu             ')
 call C_CheckGlobal('C_SourceCodeExtensions ')
 call C_CheckGlobal('C_TypeOfH              ')
+call C_CheckGlobal('C_UseToolbox           ')
 call C_CheckGlobal('C_VimCompilerName      ')
 call C_CheckGlobal('C_XtermDefaults        ')
 
@@ -292,20 +312,6 @@ let s:C_saved_global_option				= {}
 let s:C_SourceCodeExtensionsList	= split( s:C_SourceCodeExtensions, '\s\+' )
 "
 let s:CppcheckSeverity	= [ "all", "error", "warning", "style", "performance", "portability", "information" ]
-"
-"------------------------------------------------------------------------------
-"  Tools
-"------------------------------------------------------------------------------
-"
-" list of dictionaries: each entry is a dictionary with entries:
-"   {
-"     name       = "<toolname>",
-"     prettyname = "<Pretty Name>",
-"     version    = "<number>",
-"     enabled    = 1/0,
-"     domenu     = 1/0,
-"   }
-let s:C_ToolBox = []
 "
 "===  FUNCTION  ================================================================
 "          NAME:  C_MenuTitle     {{{1
@@ -521,19 +527,9 @@ function! s:C_InitMenus ()
 	"----- Menu : Tools -----------------------------------------------------   {{{2
 	"===============================================================================================
 	"
-	let toolbox_root = s:C_RootMenu.'&Tool\ Box'
-	"
-	for entry in s:C_ToolBox
-		if entry.enabled && entry.domenu
-			let menu_item = entry.prettyname
-			let menu_item = substitute ( menu_item, '\V&', '\&&', 'g' )
-			let menu_item = escape ( menu_item, '.|\' )
-			call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', 'Tool Box.&'.menu_item )
-			let menu_item = escape ( menu_item, ' ' )
-			let menu_root = toolbox_root.'.'.menu_item
-			exe 'call csupport#'.entry.name.'#AddMenu('.string( menu_root ).')'
-		endif
-	endfor
+	if s:C_UseToolbox == 'yes'
+		call mmtoolbox#tools#AddMenus ( s:C_Toolbox, s:C_RootMenu.'&Tool\ Box' )
+	endif
 	"
 	"===============================================================================================
 	"----- Menu : Help --------------------------------------------------------   {{{2
@@ -2075,18 +2071,15 @@ function! C_Settings ()
 		let txt = txt."CodeCheck (TM) options(s) :  ".ausgabe."\n"
 	endif
 	" ----- toolbox -----------------------------
-	if ! empty ( s:C_ToolBox )
-		let mdl = []
-		for entry in s:C_ToolBox
-			if entry.enabled
-				call add ( mdl, entry.prettyname." (".entry.version.")" )
-			else
-				call add ( mdl, entry.prettyname." (".entry.version.", disabled)" )
-			endif
-		endfor
-		let sep = "\n                             "
-		let txt = txt."                  toolbox :  "
-					\ .join ( mdl, sep )."\n"
+	if s:C_UseToolbox == 'yes'
+		let toollist = mmtoolbox#tools#GetList ( s:C_Toolbox )
+		if empty ( toollist )
+			let txt .= "                  toolbox :  -no tools-\n"
+		else
+			let sep  = "\n"."                             "
+			let txt .=      "                  toolbox :  "
+						\ .join ( toollist, sep )."\n"
+		endif
 	endif
 	let txt = txt."\n"
 	let	txt = txt."__________________________________________________________________________\n"
@@ -2713,53 +2706,27 @@ function! s:CreateAdditionalMaps ()
 	"
 	" ---------- tool box --------------------------------------------------------
 	"
-	for entry in s:C_ToolBox
-		if entry.enabled
-			exe 'call csupport#'.entry.name.'#AddMaps()'
-		endif
-	endfor
+	if s:C_UseToolbox == 'yes'
+		call mmtoolbox#tools#AddMaps ( s:C_Toolbox )
+	endif
 	"
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 "
 " Plug-in setup:  {{{1
 "
-"-------------------------------------------------------------------------------
-"  Load additional tools:
-"  - All files in the folder autoload/csupport are assumed to be tools.
-"    They are expected to implement a csupport#filename#Init function,
-"    which must return a list of two strings:
-"     [ "<pretty tool name>", "<version number>" ]
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
+"  setup the toolbox
+"------------------------------------------------------------------------------
 "
-if isdirectory ( s:plugin_dir.'/autoload/csupport/' )
+if s:C_UseToolbox == 'yes'
 	"
-	for file in split( glob (s:plugin_dir.'/autoload/csupport/*.vim'), '\n' )
-		let s:tool = fnamemodify( file, ':t:r' )
-		try
-			exe 'let s:retlist = csupport#'.s:tool.'#Init()'
-			let s:entry = {
-						\	"name"       : s:tool,
-						\	"prettyname" : s:retlist[0],
-						\	"version"    : s:retlist[1],
-						\	"enabled"    : 1,
-						\	"domenu"     : 1,
-						\	}
-			if len ( s:retlist ) > 2
-				if index ( s:retlist, 'nomenu', 2 ) != -1
-					let s:entry.domenu = 0
-				endif
-				if index ( s:retlist, 'disabled', 2 ) != -1
-					let s:entry.enabled = 0
-				endif
-			endif
-			call add ( s:C_ToolBox, s:entry )
-		catch /Vim(call):E117:.*/
-			" could not load the plugin: Init() function missing?
-		catch /.*/
-			echomsg "Internal error (" . v:exception . ")"
-			echomsg " - occurred at " . v:throwpoint
-		endtry
-	endfor
+	let s:C_Toolbox = mmtoolbox#tools#NewToolbox ()
+	call mmtoolbox#tools#Property ( s:C_Toolbox, 'mapleader', g:C_MapLeader )
+	"
+	call mmtoolbox#tools#Load ( s:C_Toolbox, s:C_ToolboxDir )
+	"
+	" debugging only:
+	"call mmtoolbox#tools#Info ( s:C_Toolbox )
 	"
 endif
 "

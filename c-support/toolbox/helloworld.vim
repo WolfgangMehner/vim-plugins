@@ -58,7 +58,7 @@ let s:WorldAvailable = 1
 "-------------------------------------------------------------------------------
 " Init : Initialize the script.   {{{1
 "-------------------------------------------------------------------------------
-function! csupport#helloworld#Init ()
+function! mmtoolbox#c#helloworld#Init ()
 	"
 	" returns [ <prettyname>, <version>, <flag1>, ... ]
 	"
@@ -69,12 +69,12 @@ function! csupport#helloworld#Init ()
 	else
 		return [ 'Hello World', g:HelloWorld_Version, 'disabled' ]
 	endif
-endfunction    " ----------  end of function csupport#helloworld#Init  ----------
+endfunction    " ----------  end of function mmtoolbox#c#helloworld#Init  ----------
 "
 "-------------------------------------------------------------------------------
 " AddMaps : Add maps.   {{{1
 "-------------------------------------------------------------------------------
-function! csupport#helloworld#AddMaps ()
+function! mmtoolbox#c#helloworld#AddMaps ()
 	"
 	" create maps for the current buffer only
 	"
@@ -82,20 +82,20 @@ function! csupport#helloworld#AddMaps ()
 	"
 	" TODO
 	"
-endfunction    " ----------  end of function csupport#helloworld#AddMaps  ----------
+endfunction    " ----------  end of function mmtoolbox#c#helloworld#AddMaps  ----------
 "
 "-------------------------------------------------------------------------------
 " AddMenu : Add menus.   {{{1
 "-------------------------------------------------------------------------------
-function! csupport#helloworld#AddMenu ( root )
+function! mmtoolbox#c#helloworld#AddMenu ( root, mapleader )
 	"
 	" create menus using the given 'root'
 	"
-	exe 'amenu '.a:root.'.&hello\ world   :echo "Hello world!"<CR>'
+	exe 'amenu '.a:root.'.&hello\ world<TAB>'.a:mapleader.'hi   :echo "Hello world!"<CR>'
 	"
 	" TODO
 	"
-endfunction    " ----------  end of function csupport#helloworld#AddMenu  ----------
+endfunction    " ----------  end of function mmtoolbox#c#helloworld#AddMenu  ----------
 "
 " =====================================================================================
 "  vim: foldmethod=marker

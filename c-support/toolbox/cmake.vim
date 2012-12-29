@@ -33,7 +33,7 @@
 " need at least 7.0
 if v:version < 700
 	echohl WarningMsg
-	echo 'The plugin csupport/cmake.vim needs Vim version >= 7.'
+	echo 'The plugin tools/c/cmake.vim needs Vim version >= 7.'
 	echohl None
 	finish
 endif
@@ -44,6 +44,31 @@ if &cp || ( exists('g:CMake_Version') && ! exists('g:CMake_DevelopmentOverwrite'
 	finish
 endif
 let g:CMake_Version= '0.9'     " version number of this script; do not change
+"
+"-------------------------------------------------------------------------------
+" Auxiliary functions   {{{1
+"-------------------------------------------------------------------------------
+"
+"-------------------------------------------------------------------------------
+" s:ErrorMsg : Print an error message.   {{{2
+"-------------------------------------------------------------------------------
+function! s:ErrorMsg ( ... )
+	echohl WarningMsg
+	for line in a:000
+		echomsg line
+	endfor
+	echohl None
+endfunction    " ----------  end of function s:ErrorMsg  ----------
+"
+"-------------------------------------------------------------------------------
+" s:GetGlobalSetting : Get a setting from a global variable.   {{{2
+"-------------------------------------------------------------------------------
+function! s:GetGlobalSetting ( varname )
+	if exists ( 'g:'.a:varname )
+		exe 'let s:'.a:varname.' = g:'.a:varname
+	endif
+endfunction    " ----------  end of function s:GetGlobalSetting  ----------
+" }}}2
 "
 "-------------------------------------------------------------------------------
 " Modul setup.   {{{1
@@ -58,17 +83,6 @@ if s:MSWIN
 else
 	let s:FilenameEscChar = ' \%#[]'
 endif
-"
-"-------------------------------------------------------------------------------
-" s:GetGlobalSetting : Get a setting from a global variable.   {{{2
-"-------------------------------------------------------------------------------
-"
-function! s:GetGlobalSetting ( varname )
-	if exists ( 'g:'.a:varname )
-		exe 'let s:'.a:varname.' = g:'.a:varname
-	endif
-endfunction    " ----------  end of function s:GetGlobalSetting  ----------
-" }}}2
 "
 let s:BaseDirectory = '.'
 let s:BuildLocation = '.'
@@ -136,21 +150,21 @@ let s:Policies_List = [
 			\ [ 'CMP????', 'There might be more policies not mentioned here, since this list is not maintained automatically.', '?.?.?' ],
 			\ ]
 "
-" }}}2
+" custom commands {{{2
 "
 if s:Enabled == 1
-	" custom commands
-	command!       -nargs=? -complete=file CMakeBaseDirectory :call csupport#cmake#Property('base-dir','<args>')
-	command!       -nargs=? -complete=file CMakeBuildLocation :call csupport#cmake#Property('build-dir','<args>')
-	command! -bang -nargs=* -complete=file CMake              :call csupport#cmake#Run('<args>','<bang>'=='!')
-	command!       -nargs=? -complete=file CMakeHelpCommand   :call csupport#cmake#Help('command','<args>')
-	command!       -nargs=? -complete=file CMakeHelpModule    :call csupport#cmake#Help('module','<args>')
-	command!       -nargs=? -complete=file CMakeHelpPolicy    :call csupport#cmake#Help('policy','<args>')
-	command!       -nargs=? -complete=file CMakeHelpProperty  :call csupport#cmake#Help('property','<args>')
-	command!       -nargs=? -complete=file CMakeHelpVariable  :call csupport#cmake#Help('variable','<args>')
+	command!       -nargs=? -complete=file CMakeBaseDirectory :call mmtoolbox#common#cmake#Property('base-dir','<args>')
+	command!       -nargs=? -complete=file CMakeBuildLocation :call mmtoolbox#common#cmake#Property('build-dir','<args>')
+	command! -bang -nargs=* -complete=file CMake              :call mmtoolbox#common#cmake#Run('<args>','<bang>'=='!')
+	command!       -nargs=? -complete=file CMakeHelpCommand   :call mmtoolbox#common#cmake#Help('command','<args>')
+	command!       -nargs=? -complete=file CMakeHelpModule    :call mmtoolbox#common#cmake#Help('module','<args>')
+	command!       -nargs=? -complete=file CMakeHelpPolicy    :call mmtoolbox#common#cmake#Help('policy','<args>')
+	command!       -nargs=? -complete=file CMakeHelpProperty  :call mmtoolbox#common#cmake#Help('property','<args>')
+	command!       -nargs=? -complete=file CMakeHelpVariable  :call mmtoolbox#common#cmake#Help('variable','<args>')
 else
 	"
-	function! csupport#cmake#Disabled ()
+	" Disabled : Print why the script is disabled.   {{{3
+	function! mmtoolbox#common#cmake#Disabled ()
 		let txt = "CMake tool not working:\n"
 		if ! executable ( s:CMake_Executable )
 			let txt .= "CMake not executable (".s:CMake_Executable.")"
@@ -163,33 +177,36 @@ else
 		echo txt
 		echohl None
 		return
-	endfunction    " ----------  end of function csupport#cmake#Disabled  ----------
+	endfunction    " ----------  end of function mmtoolbox#common#cmake#Disabled  ----------
+	" }}}3
 	"
-	command! -nargs=* CMakeHelp :call csupport#cmake#Disabled()
+	command! -nargs=* CMakeHelp :call mmtoolbox#common#cmake#Disabled()
 	"
 endif
+"
+" }}}2
 "
 "-------------------------------------------------------------------------------
 " Init : Initialize the script.   {{{1
 "-------------------------------------------------------------------------------
-function! csupport#cmake#Init ()
+function! mmtoolbox#common#cmake#Init ()
 	if s:Enabled
 		return [ 'CMake', g:CMake_Version ]
 	else
 		return [ 'CMake', g:CMake_Version, 'disabled' ]
 	endif
-endfunction    " ----------  end of function csupport#cmake#Init  ----------
+endfunction    " ----------  end of function mmtoolbox#common#cmake#Init  ----------
 "
 "-------------------------------------------------------------------------------
 " AddMaps : Add maps.   {{{1
 "-------------------------------------------------------------------------------
-function! csupport#cmake#AddMaps ()
-endfunction    " ----------  end of function csupport#cmake#AddMaps  ----------
+function! mmtoolbox#common#cmake#AddMaps ()
+endfunction    " ----------  end of function mmtoolbox#common#cmake#AddMaps  ----------
 "
 "-------------------------------------------------------------------------------
 " AddMenu : Add menus.   {{{1
 "-------------------------------------------------------------------------------
-function! csupport#cmake#AddMenu ( root )
+function! mmtoolbox#common#cmake#AddMenu ( root, mapleader )
 	"
 	exe 'amenu '.a:root.'.run\ CMake<Tab>:CMake!   :CMake! '
 	exe 'amenu '.a:root.'.&run\ make<Tab>:CMake     :CMake '
@@ -207,35 +224,12 @@ function! csupport#cmake#AddMenu ( root )
 	exe 'amenu '.a:root.'.help\ &property<Tab>:CMakeHelpProperty   :CMakeHelpProperty<CR>'
 	exe 'amenu '.a:root.'.help\ &variables<Tab>:CMakeHelpVariable  :CMakeHelpVariable<CR>'
 	"
-endfunction    " ----------  end of function csupport#cmake#AddMenu  ----------
-"
-"-------------------------------------------------------------------------------
-" Modul setup.   {{{1
-"-------------------------------------------------------------------------------
-if s:Enabled == 0
-	finish
-endif
-"
-"-------------------------------------------------------------------------------
-" === Script: Auxiliary functions. ===   {{{1
-"-------------------------------------------------------------------------------
-"
-"-------------------------------------------------------------------------------
-" s:ErrorMsg : Print an error message.   {{{2
-"-------------------------------------------------------------------------------
-"
-function! s:ErrorMsg ( ... )
-	echohl WarningMsg
-	for line in a:000
-		echomsg line
-	endfor
-	echohl None
-endfunction    " ----------  end of function s:ErrorMsg  ----------
+endfunction    " ----------  end of function mmtoolbox#common#cmake#AddMenu  ----------
 "
 "-------------------------------------------------------------------------------
 " Property : Various settings.   {{{1
 "-------------------------------------------------------------------------------
-function! csupport#cmake#Property ( key, val )
+function! mmtoolbox#common#cmake#Property ( key, val )
 	"
 	" check argument
 	if a:key == 'base-dir'      | let var = 's:BaseDirectory'
@@ -250,12 +244,19 @@ function! csupport#cmake#Property ( key, val )
 	else           | exe 'let '.var.' = fnamemodify( expand( a:val ), ":p" )'
 	endif
 	"
-endfunction    " ----------  end of function csupport#cmake#Property  ----------
+endfunction    " ----------  end of function mmtoolbox#common#cmake#Property  ----------
+"
+"-------------------------------------------------------------------------------
+" Modul setup.   {{{1
+"-------------------------------------------------------------------------------
+if s:Enabled == 0
+	finish
+endif
 "
 "-------------------------------------------------------------------------------
 " Run : Run CMake or make.   {{{1
 "-------------------------------------------------------------------------------
-function! csupport#cmake#Run ( args, cmake_only )
+function! mmtoolbox#common#cmake#Run ( args, cmake_only )
 	"
 	let g:CMakeDebugStr = 'cmake#run: '   " debug
 	"
@@ -356,7 +357,7 @@ function! csupport#cmake#Run ( args, cmake_only )
 	"
 	let g:CMakeDebugStr .= 'done'   " debug
 	"
-endfunction    " ----------  end of function csupport#cmake#Run  ----------
+endfunction    " ----------  end of function mmtoolbox#common#cmake#Run  ----------
 "
 "-------------------------------------------------------------------------------
 " s:TextFromSystem : Get text from a system command.   {{{1
@@ -428,7 +429,7 @@ endfunction    " ----------  end of function s:OpenManBuffer  ----------
 "-------------------------------------------------------------------------------
 " Help : Print help for commands, modules and variables.   {{{1
 "-------------------------------------------------------------------------------
-function! csupport#cmake#Help ( type, topic )
+function! mmtoolbox#common#cmake#Help ( type, topic )
 	"
 	" help for which type of object?
 	if a:type == 'command'
@@ -453,21 +454,21 @@ function! csupport#cmake#Help ( type, topic )
 		let topic    = a:type
 		let category = 'list'
 		"
-		let jump = ':call csupport#cmake#HelpJump("'.a:type.'")<CR>'
+		let jump = ':call mmtoolbox#common#cmake#HelpJump("'.a:type.'")<CR>'
 	elseif a:topic == ''
 		let cmd  = 's:TextFromSystem ( "'.s:CMake_Executable.' '.switch.'-list '.a:topic.'" )'
 		"
 		let topic    = a:type
 		let category = 'list'
 		"
-		let jump = ':call csupport#cmake#HelpJump("'.a:type.'")<CR>'
+		let jump = ':call mmtoolbox#common#cmake#HelpJump("'.a:type.'")<CR>'
 	else
 		let cmd  = 's:TextFromSystem ( "'.s:CMake_Executable.' '.switch.' '.a:topic.'" )'
 		"
 		let topic    = a:topic
 		let category = a:type
 		"
-		let jump = ':call csupport#cmake#Help("'.a:type.'","")<CR>'
+		let jump = ':call mmtoolbox#common#cmake#Help("'.a:type.'","")<CR>'
 	endif
 	"
 	" get the help
@@ -477,12 +478,12 @@ function! csupport#cmake#Help ( type, topic )
 		echo 'CMake : No help for "'.topic.'".'
 	endif
   "
-endfunction    " ----------  end of function csupport#cmake#Help  ----------
+endfunction    " ----------  end of function mmtoolbox#common#cmake#Help  ----------
 "
 "-------------------------------------------------------------------------------
 " HelpJump : Jump to help for commands, modules and variables.   {{{1
 "-------------------------------------------------------------------------------
-function! csupport#cmake#HelpJump ( type )
+function! mmtoolbox#common#cmake#HelpJump ( type )
 	"
 	" get help for the word in the line
 	let line = getline('.')
@@ -493,16 +494,9 @@ function! csupport#cmake#HelpJump ( type )
 		return
 	endif
 	"
-	call csupport#cmake#Help ( a:type, line )
+	call mmtoolbox#common#cmake#Help ( a:type, line )
   "
-endfunction    " ----------  end of function csupport#cmake#HelpJump  ----------
-"
-"-------------------------------------------------------------------------------
-" Settings : Plugin settings.   {{{1
-"-------------------------------------------------------------------------------
-function! csupport#cmake#Settings ()
-	" TODO
-endfunction    " ----------  end of function csupport#cmake#Settings  ----------
+endfunction    " ----------  end of function mmtoolbox#common#cmake#HelpJump  ----------
 " }}}1
 "
 " =====================================================================================
