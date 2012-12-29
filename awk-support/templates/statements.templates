@@ -1,0 +1,69 @@
+§ =============================================================
+§  Statements
+§ =============================================================
+
+== Statements.do while == map:sd, shortcut:d  ==
+do {
+<SPLIT>} while ( <CURSOR> )		# -----  end do-while  -----
+== Statements.for == map:sf, shortcut:o  ==
+for ( <CURSOR>; ; )
+§
+§ The names INIT, CONDITION, INCREMENT, and 'for block' are used by the main
+§ plugin plugin/c.vim . Please do not change.
+§
+== Statements.for block == map:sfo, shortcut:r  ==
+|DefaultMacro( 'CONDITION', '{+CONDITION+}' )|
+|DefaultMacro( 'INCREMENT', '{+INCREMENT+}' )|
+for ( |INIT|<CURSOR>; |CONDITION|; |INCREMENT| ) {
+<SPLIT>}
+== Statements.for in == map:sfi, shortcut:i  ==
+for ( <CURSOR> in <-ARRAY-> ) {
+<SPLIT>}
+== Statements.if == map:si, shortcut:i  ==
+if ( <CURSOR> )
+== Statements.if block == map:sif, shortcut:f  ==
+if ( <CURSOR> ) {
+<SPLIT><-IF_PART->
+}
+== Statements.if else == map:sie, shortcut:e  ==
+if ( <CURSOR> )
+<SPLIT>else
+== Statements.if block else == map:sife, shortcut:l  ==
+if ( <CURSOR> ) {
+<SPLIT><-IF_PART->
+}
+else {
+<-ELSE_PART->
+}
+== Statements.while == map:sw, shortcut:w  ==
+while ( <CURSOR> )
+== Statements.while block == map:swh, shortcut:h  ==
+while ( <CURSOR> ) {
+<SPLIT>}
+== Statements.switch == map:ss, shortcut:s  ==
+switch ( <CURSOR> ) {
+	case <-LABEL->:	
+		<SPLIT>break
+
+	case <-LABEL->:	
+		break
+
+	case <-LABEL->:	
+		break
+
+	default:	
+		break
+}		# -----  end switch  -----
+== Statements.case == map:sc, shortcut:c  ==
+case <CURSOR>:	
+break
+
+== Statements.BEGIN == map:sb, shortcut:b  ==
+BEGIN {
+<CURSOR><SPLIT>
+}		# -----  end BEGIN  -----
+== Statements.END == map:se, shortcut:e  ==
+END {
+<CURSOR><SPLIT>
+}		# -----  end END  -----
+== ENDTEMPLATE ==

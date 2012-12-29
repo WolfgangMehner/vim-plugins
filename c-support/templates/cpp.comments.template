@@ -116,4 +116,8 @@
 == Comments.macros == expandmenu, insert, map:cma, shortcut:m ==
 |PickList( 'macro', 'comments_macros' )|
 ||PICK||<CURSOR>
+== Comments.date == insert, map:cd, shortcut:d ==
+|DATE|<CURSOR>
+== Comments.date time == insert, map:ct, shortcut:t ==
+|DATE| |TIME|<CURSOR>
 == ENDTEMPLATE ==

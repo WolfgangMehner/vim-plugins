@@ -1,4 +1,11 @@
 ================================================================================
+  RELEASE NOTES FOR VERSION 6.0
+================================================================================
+- New template system (many thanks to Wolfgang Mehner)
+- A few new hotkeys and menu item.
+- A few hotkeys and menu items renamed.
+
+================================================================================
   RELEASE NOTES FOR VERSION 5.19
 ================================================================================
 - Resolve home for linked home directories.

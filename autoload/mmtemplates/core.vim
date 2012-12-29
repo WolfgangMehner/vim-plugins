@@ -2520,7 +2520,7 @@ endfunction    " ----------  end of function s:PrepareTemplate  ----------
 " (thanks to Fritz Mehner)
 "----------------------------------------------------------------------
 "
-function! s:InsertIntoBuffer ( text, placement, indentation, flag_visual_mode )
+function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 	"
 	" TODO: syntax
 	let regex = s:library.regex_template
@@ -2528,7 +2528,7 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_visual_mode )
 	let placement   = a:placement
 	let indentation = a:indentation == '1'
 	"
-	if a:flag_visual_mode == 0
+	if a:flag_mode != 'v'
 		" --------------------------------------------------
 		"  command and insert mode
 		" --------------------------------------------------
@@ -2576,10 +2576,11 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_visual_mode )
 				let currentline = getline( "." )
 				let pos1 = line(".")
 				let pos2 = pos1 + count( split(text,'\zs'), "\n" )
-				"" assign to the unnamed register " :
-				"let @"=text
-				"normal p
-				exe 'normal! a'.text
+				if a:flag_mode == 'i'
+					exe 'normal! gi'.text
+				else
+					exe 'normal! a'.text
+				endif
 				" reformat only multi-line inserts and previously empty lines
 				if pos1 == pos2 && currentline != ''
 					let indentation = 0
@@ -2588,7 +2589,7 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_visual_mode )
 			"
 		endif
 		"
-	elseif a:flag_visual_mode == 1
+	elseif a:flag_mode == 'v'
 		" --------------------------------------------------
 		"  visual mode
 		" --------------------------------------------------
@@ -2621,23 +2622,23 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_visual_mode )
 		" part0 and part1 can consist of several lines
 		"
 		if placement == 'insert'
-			" windows:  register @* does not work
-			" solution: recover area of the visual mode and yank,
-			"           puts the selected area into the buffer @"
-			normal gvy
-			let pos1 = line(".")
-			let pos2 = pos1
-			let str  = escape ( @",                 '\' )
-			let repl = escape ( part[0].@".part[1], '\&~' )
-			" TODO: substitute is not the best choice,
-			"       problematic when '\V'.@* matches before the actual position
-			exe ':s/\V'.str.'/'.repl.'/'
+			" [_,line,col,off] = getpos()
+			let [_,l1,c1,o1] = getpos("'<")
+			let [_,l2,c2,o2] = getpos("'>")
+			call cursor ( l2, c2, o2 )
+			exe 'normal! a'.part[1]
+			call cursor ( l1, c1, o1 )
+			exe 'normal! i'.part[0]
 			let indentation = 0
+			let pos1 = l1
+			let pos2 = l2 + len(split( text, '\n' )) - 1
 		elseif placement == 'below'
 			:'<put! = part[0]
 			:'>put  = part[1]
-			let pos1 = line("'<") - len(split(part[0], '\n' ))
-			let pos2 = line("'>") + len(split(part[1], '\n' ))
+			let pos1 = line("'<") - len(split( part[0], '\n' ))
+			let pos2 = line("'>") + len(split( part[1], '\n' ))
+		else
+			throw 'Template:Insert:usage with <SPLIT> not allowed for placement "'.placement.'"'
 		endif
 		"
 	endif
@@ -2657,7 +2658,7 @@ endfunction    " ----------  end of function s:InsertIntoBuffer  ----------
 " (thanks to Fritz Mehner)
 "----------------------------------------------------------------------
 "
-function! s:PositionCursor ( placement, flag_visual_mode, pos1, pos2 )
+function! s:PositionCursor ( placement, flag_mode, pos1, pos2 )
 	"
 	" TODO: syntax
 	"
@@ -2667,7 +2668,7 @@ function! s:PositionCursor ( placement, flag_visual_mode, pos1, pos2 )
 		let line = getline(mtch)
 		if line =~ '<CURSOR>$\|{CURSOR}$'
 			call setline( mtch, substitute( line, '<CURSOR>\|{CURSOR}', '', '' ) )
-			if a:flag_visual_mode == 1 && getline(".") =~ '^\s*$'
+			if a:flag_mode == 'v' && getline(".") =~ '^\s*$'
 				normal J
 			else
 				startinsert!
@@ -2739,8 +2740,8 @@ function! mmtemplates#core#InsertTemplate ( library, t_name, ... ) range
 	let equalprg_save = &equalprg
 	set equalprg=
 	"
-	let flag_visual_mode = 0
-	let options          = []
+	let flag_mode = 'n'
+	let options   = []
 	"
 	" ==================================================
 	"  parameters
@@ -2749,8 +2750,11 @@ function! mmtemplates#core#InsertTemplate ( library, t_name, ... ) range
 	let i = 1
 	while i <= a:0
 		"
-		if a:[i] == 'v' || a:[i] == 'visual'
-			let flag_visual_mode = 1
+		if a:[i] == 'i' || a:[i] == 'insert'
+			let flag_mode = 'i'
+			let i += 1
+		elseif a:[i] == 'v' || a:[i] == 'visual'
+			let flag_mode = 'v'
 			let i += 1
 		elseif a:[i] == 'placement' && i+1 <= a:0
 			let s:t_runtime.placement = a:[i+1]
@@ -2797,10 +2801,10 @@ function! mmtemplates#core#InsertTemplate ( library, t_name, ... ) range
 			endif
 			"
 			" insert the text into the buffer
-			let [ pos1, pos2 ] = s:InsertIntoBuffer ( text, placement, indentation, flag_visual_mode )
+			let [ pos1, pos2 ] = s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 			"
 			" position the cursor
-			call s:PositionCursor ( placement, flag_visual_mode, pos1, pos2 )
+			call s:PositionCursor ( placement, flag_mode, pos1, pos2 )
 			"
 			" highlight jump targets
 			call s:HighlightJumpTargets ( regex.JumpTagBoth )
@@ -2837,7 +2841,11 @@ function! mmtemplates#core#InsertTemplate ( library, t_name, ... ) range
 		call call ( 's:ErrorMsg', [ 'Recursion detected while replacing the macro/s:' ] + cont +
 					\ s:t_runtime.macro_stack[ idx1 : -1 ] )
 		"
-"	catch /Template:Insert:.*/
+	catch /Template:Insert:.*/
+		"
+		let msg   = v:exception[ len( 'Template:Insert:') : -1 ]
+		call s:ErrorMsg ( 'Inserting "'.a:t_name.'":', msg )
+		"
 	catch /Template:.*/
 		"
 		let msg = v:exception[ len( 'Template:') : -1 ]
@@ -2882,13 +2890,23 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		call s:ErrorMsg ( 'Argument "localleader" must be given as a string.' )
 		return
 	elseif ! empty ( a:localleader )
-		let maplocalleader = a:localleader
+		if exists ( 'g:maplocalleader' )
+			let ll_save = g:maplocalleader
+		endif
+		let g:maplocalleader = a:localleader
 	endif
 	"
 	" the commands have been generated before
 	if has_key ( t_lib, 'map_commands' )
 		"let TimeStart = reltime()
 		exe t_lib.map_commands
+		if ! empty ( a:localleader )
+			if exists ( 'll_save' )
+				let g:maplocalleader = ll_save
+			else
+				unlet g:maplocalleader
+			endif
+		endif
 		"echo 'Executing maps: '.reltimestr( reltime( TimeStart ) )
 		return
 	endif
@@ -2943,16 +2961,20 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 				continue
 			endif
 			"
-			" visual and insert mode: insert '<Esc>'
+			" insert and visual mode: insert '<Esc>'
 			if mode == 'n' | let esc = ''
 			else           | let esc = '<Esc>' | endif
 			"
-			" visual mode: template contains a split tag, or the mode is forced
-			if mode == 'v' && visual == 1 | let v = ',"v"'
-			else                          | let v = ''     | endif
+			" insert mode, flag 'i':
+			" change behavior of templates with placement 'insert'
+			" visual mode, flag 'v':
+			" template contains a split tag, or the mode is forced
+			if     mode == 'i'                | let flag = ',"i"'
+			elseif mode == 'v' && visual == 1 | let flag = ',"v"'
+			else                              | let flag = ''     | endif
 			"
 			" assemble the command to create the maps
-			let cmd .= mode.'noremap '.options.' '.leader.mp.' '.esc.':call mmtemplates#core#InsertTemplate('.a:library.',"'.t_name.'"'.v.')<CR>'.sep
+			let cmd .= mode.'noremap '.options.' '.leader.mp.' '.esc.':call mmtemplates#core#InsertTemplate('.a:library.',"'.t_name.'"'.flag.')<CR>'.sep
 		endfor
 		"
 	endfor
@@ -2992,6 +3014,14 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 	"
 	let t_lib.map_commands = cmd
 	exe cmd
+	"
+	if ! empty ( a:localleader )
+		if exists ( 'll_save' )
+			let g:maplocalleader = ll_save
+		else
+			unlet g:maplocalleader
+		endif
+	endif
 	"
 	"echo 'Generating maps: '.reltimestr( reltime( TimeStart ) )
 	"
@@ -3100,6 +3130,7 @@ function! s:CreateTemplateMenus ( t_lib, root_menu, global_name, t_lib_name )
 		if entry == 1
 			" <Esc><Esc> prevents problems in insert mode
 			exe 'amenu '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'")<CR>'
+			exe 'imenu '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","i")<CR>'
 			if visual == 1
 				exe 'vmenu '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","v")<CR>'
 			endif
@@ -3109,6 +3140,7 @@ function! s:CreateTemplateMenus ( t_lib, root_menu, global_name, t_lib_name )
 			for item in s:GetPickList ( t_name )
 				let item_entry = compl_entry.'.'.substitute ( substitute ( escape ( item, ' .' ), '&', '\&\&', 'g' ), '\w', '\&&', '' )
 				exe 'amenu '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","pick",'.string(item).')<CR>'
+				exe 'imenu '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","i","pick",'.string(item).')<CR>'
 				if visual == 1
 					exe 'vmenu '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","v","pick",'.string(item).')<CR>'
 				endif

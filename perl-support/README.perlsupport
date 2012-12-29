@@ -1,7 +1,7 @@
-README for perl-support.vim (Version 5.1) / May 04 2012
+README for perl-support.vim (Version 5.2) / December 26 2012
 
   *  INSTALLATION
-  *  RELEASE NOTES 
+  *  RELEASE NOTES
   *  FILES
   *  ADDITIONAL TIPS
   *  CREDITS
@@ -42,8 +42,8 @@ structure which is needed below the local installation directory $HOME/.vim/
     This is the minimal content of the file '$HOME/.vimrc'. Create one if there
     is none or use the files in $HOME/.vim/perl-support/rc as a starting point.
 
-(1.3) Set at least some personal details in the file 
-    '$HOME/.vim/perl-support/templates/Templates' 
+(1.3) Set at least some personal details in the file
+    '$HOME/.vim/perl-support/templates/Templates'
     Here is the minimal personalization (my settings as an example):
 
        SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
@@ -58,11 +58,11 @@ structure which is needed below the local installation directory $HOME/.vim/
     Vim command line:
 
     :helptags $HOME/.vim/doc/
-  
+
 (1.5) Consider additional settings in the file '$HOME/.vimrc'.  The files
     customization.vimrc and customization.gvimrc are replacements or extensions
     for your .vimrc and .gvimrc.  You may want to use parts of them. The files
-    are documented. 
+    are documented.
 
 
 (2)  WINDOWS
@@ -86,8 +86,8 @@ $HOME/vimfiles/ (find the value of $HOME with ":echo $HOME" from inside Vim).
     This is the minimal content of the file '$HOME/_vimrc'. Create one if there
     is none or use the files in $HOME/vimfiles/perl-support/rc as a starting point.
 
-(2.3) Set at least some personal details in the file 
-    '$HOME/vimfiles/perl-support/templates/Templates' 
+(2.3) Set at least some personal details in the file
+    '$HOME/vimfiles/perl-support/templates/Templates'
     Here is the minimal personalization (my settings as an example):
 
        SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
@@ -102,11 +102,11 @@ $HOME/vimfiles/ (find the value of $HOME with ":echo $HOME" from inside Vim).
     Vim command line:
 
     :helptags $HOME\vimfiles\doc\
-  
+
 (2.5) Consider additional settings in the file '$HOME/_vimrc'.  The files
     customization.vimrc and customization.gvimrc are replacements or extensions
     for your _vimrc and _gvimrc. You may want to use parts of them.  The files
-    are documented. 
+    are documented.
 
 There are a lot of features and options which can be used and influenced:
 
@@ -120,7 +120,7 @@ There are a lot of features and options which can be used and influenced:
 
 Look at the perlsupport help with
 
-  :help perlsupport 
+  :help perlsupport
 
                +-----------------------------------------------+
                | +-------------------------------------------+ |
@@ -135,16 +135,16 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
 For a system-wide installation please see the help file 'doc/perlsupport.txt'.
 
 =======================================================================================
-  RELEASE NOTES 
+  RELEASE NOTES
 =======================================================================================
 
 ---------------------------------------------------------------------------------------
-  RELEASE NOTES FOR VERSION 5.1
+  RELEASE NOTES FOR VERSION 5.2
 ---------------------------------------------------------------------------------------
-- New menu items: 'choose makefile' (\rcm), 'make clean' (\rmc)
-- Bugfix: g:Perl_LocalTemplateFile ignored if present (thanks to Sébastien Nobili)
-- Bugfix: debugger do not start in console mode
-- Several internal improvements.
+- New global variable g:C_InsertFileHeader (suppress file description comment for new files).
+- Two new ex commands: PerlScriptArguments, PerlSwitches
+- Specifying command line arguments and Perl command line switches improved.
+- Minor improvements.
 
 ---------------------------------------------------------------------------------------
   OLDER RELEASE NOTES : see file 'ChangeLog'
@@ -160,10 +160,10 @@ autoload/perlsupportprofiling.vim Profiler support.
 autoload/perlsupportregex.vim     Regex analyser code.
 autoload/mmtemplates/core.vim     The template system.
 
-doc/perlsupport.txt               The help file for perl support. 
-doc/templatesupport.txt           The help file for the template system. 
-                                  
-ftplugin/perl.vim                 A filetype plugin. Define hotkeys, create a local 
+doc/perlsupport.txt               The help file for perl support.
+doc/templatesupport.txt           The help file for the template system.
+
+ftplugin/perl.vim                 A filetype plugin. Define hotkeys, create a local
                                   dictionary for each Perl file.
 ftplugin/pod.vim                  A filetype plugin. Define hotkeys for filetype 'pod'.
 ftplugin/qf.vim                   A filetype plugin used by the profilers.
@@ -192,21 +192,21 @@ perl-support/rc/customization.ctags       Additional settings I use in  .ctags t
 
 perl-support/rc/customization.gvimrc      Additional settings I use in  .gvimrc:
                                           hot keys, mouse settings, ...
-                                          The file is commented. Append it to your .gvimrc 
+                                          The file is commented. Append it to your .gvimrc
                                           if you like.
 
-perl-support/rc/customization.perltidyrc  Additional settings I use in  .perltidyrc to 
+perl-support/rc/customization.perltidyrc  Additional settings I use in  .perltidyrc to
                                           customize perltidy.
 
-perl-support/rc/customization.smallprof   Additional settings I use to control the profiler 
+perl-support/rc/customization.smallprof   Additional settings I use to control the profiler
                                           Devel::SmallProf
 
 perl-support/rc/customization.vimrc       Additional settings I use in  .vimrc:  incremental search,
                                           tabstop, hot keys, font, use of dictionaries, ...
                                           The file is commented. Append it to your .vimrc if you like.
 
-perl-support/doc/perl-hot-keys.pdf        Reference card for the key mappings. 
-                                          The mappings can also be used with the non-GUI Vim, 
+perl-support/doc/perl-hot-keys.pdf        Reference card for the key mappings.
+                                          The mappings can also be used with the non-GUI Vim,
                                           where the menus are not available.
 perl-support/doc/pmdesc3.text             The man page for pmdesc3.
 perl-support/doc/ChangeLog                The change log.
@@ -221,8 +221,8 @@ perl-support/doc/ChangeLog                The change log.
 
     1.1 Add the following line to .vimrc (see also rc/customization.vimrc ):
 
-      set backupdir  =$HOME/.vim.backupdir  
-    
+      set backupdir  =$HOME/.vim.backupdir
+
     1.2 Create  $HOME/.vim.backupdir  .
 
     1.3 Add the following line to your shell initialization file  ~/.profile :
@@ -230,7 +230,7 @@ perl-support/doc/ChangeLog                The change log.
       find $HOME/.vim.backupdir/  -name "*" -type f -mtime +60 -exec rm -f {} \;
 
     When you are logging in all files in the backup directory older then 60
-    days (-mtime +60) will be removed (60 days is a suggestion, of course). 
+    days (-mtime +60) will be removed (60 days is a suggestion, of course).
     Be shure to backup in shorter terms !
 
 (2) gVim. Toggle 'insert mode' <--> 'normal mode' with the right mouse button
@@ -242,7 +242,7 @@ perl-support/doc/ChangeLog                The change log.
     pointer is back from the menu entry).
 
 (5) Use Emulate3Buttons "on" (X11) even for a 3-button mouse. Pressing left and
-    right button simultaneously without moving your fingers is faster than 
+    right button simultaneously without moving your fingers is faster than
     moving a finger to the middle button (which is often a wheel).
 
 
@@ -253,10 +253,10 @@ perl-support/doc/ChangeLog                The change log.
 Wolfgang Mehner <wolfgang-mehner@web.de> for the implementation of the powerful
 template system templatesupport.
 
-David Fishburn <fishburn@ianywhere.com> for the implementation of the 
+David Fishburn <fishburn@ianywhere.com> for the implementation of the
   single root menu and several suggestions for improving the customization
   and the documentation.
-  
+
 Ryan Hennig <hennig@amazon.com> improved the install script.
 
 Aristotle, http://qs321.pair.com/~monkads/ is the author of the script pmdesc2
@@ -265,7 +265,7 @@ Aristotle, http://qs321.pair.com/~monkads/ is the author of the script pmdesc2
 David Fishburn contributed changes for the Windows platform and suggested to not let
   enter snippets and templates the list of alternate files.
 
-The two files pod-template-application.pl and pod-template-module.pl are taken from 
+The two files pod-template-application.pl and pod-template-module.pl are taken from
   Damian Conway's book "Perl Best Practices".
 
 

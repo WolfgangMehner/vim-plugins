@@ -1,0 +1,11 @@
+§ =============================================================
+§  Idioms
+§ =============================================================
+
+== Idioms.function == map:if, sc:f ==
+function |?FUNCTION_NAME| ( <CURSOR> )
+{
+<SPLIT><-FUNCTION_BODY->
+}		# -----  end of function |FUNCTION_NAME|  -----
+== ENDTEMPLATE ==
+

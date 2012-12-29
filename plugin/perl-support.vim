@@ -198,6 +198,7 @@ let s:Perl_GuiSnippetBrowser     = 'gui'										" gui / commandline
 let s:Perl_GuiTemplateBrowser    = 'gui'										" gui / explorer / commandline
 let s:Perl_CreateMenusDelayed    = 'yes'
 "
+let s:Perl_InsertFileHeader			   = 'yes'
 let s:Perl_Wrapper                 = g:Perl_PluginDir.'/perl-support/scripts/wrapper.sh'
 let s:Perl_EfmPerl                 = g:Perl_PluginDir.'/perl-support/scripts/efm_perl.pl'
 let s:Perl_PerlModuleListGenerator = g:Perl_PluginDir.'/perl-support/scripts/pmdesc3.pl'
@@ -210,6 +211,7 @@ let s:Perl_RootMenu								= '&Perl'
 "
 "  Look for global variables (if any), to override the defaults.
 "
+call s:perl_SetLocalVariable('Perl_InsertFileHeader       ')
 call s:perl_SetLocalVariable('Perl_CreateMenusDelayed     ')
 call s:perl_SetLocalVariable('Perl_Ctrl_j                 ')
 call s:perl_SetLocalVariable('Perl_Debugger               ')
@@ -1051,26 +1053,19 @@ function! Perl_Toggle_Gvim_Xterm ()
 
 endfunction    " ----------  end of function Perl_Toggle_Gvim_Xterm ----------
 "
-"===  FUNCTION  ================================================================
-"          NAME:  Perl_PerlSwitches     {{{1
-"   DESCRIPTION:  read switches to hand down to the Perl interpreter
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Perl_PerlSwitches ()
-  let filename = fnameescape( expand("%:p") )
-  if empty(filename)
-    redraw!
-    echohl WarningMsg | echo " no file name " | echohl None
-    return
-  endif
-  let prompt   = 'perl command line switches for "'.filename.'" : '
-  if exists("b:Perl_Switches")
-    let b:Perl_Switches= Perl_Input( prompt, b:Perl_Switches, '' )
-  else
-    let b:Perl_Switches= Perl_Input( prompt , "", '' )
-  endif
-endfunction   " ---------- end of function  Perl_PerlSwitches  ----------
+"------------------------------------------------------------------------------
+"  Command line arguments    {{{1
+"------------------------------------------------------------------------------
+function! Perl_ScriptCmdLineArguments ( ... )
+	let	b:Perl_CmdLineArgs= join( a:000 )
+endfunction		" ---------- end of function  Perl_ScriptCmdLineArguments  ----------
+"
+"------------------------------------------------------------------------------
+"  Perl command line arguments       {{{1
+"------------------------------------------------------------------------------
+function! Perl_PerlCmdLineArguments ( ... )
+	let	b:Perl_Switches	= join( a:000 )
+endfunction    " ----------  end of function Perl_PerlCmdLineArguments ----------
 "
 let s:Perl_OutputBufferName   = "Perl-Output"
 let s:Perl_OutputBufferNumber = -1
@@ -1328,27 +1323,6 @@ function! Perl_Debugger ()
   "
 	redraw!
 endfunction   " ---------- end of function  Perl_Debugger  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Perl_Arguments     {{{1
-"   DESCRIPTION:  read command line arguments for the current buffer
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Perl_Arguments ()
-  let filename = fnameescape( expand("%") )
-  if empty(filename)
-    redraw!
-    echohl WarningMsg | echo " no file name " | echohl None
-    return
-  endif
-  let prompt   = 'command line arguments for "'.filename.'" : '
-  if exists("b:Perl_CmdLineArgs")
-    let b:Perl_CmdLineArgs= Perl_Input( prompt, b:Perl_CmdLineArgs, 'file' )
-  else
-    let b:Perl_CmdLineArgs= Perl_Input( prompt , "", 'file' )
-  endif
-endfunction   " ---------- end of function  Perl_Arguments  ----------
 "
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_XtermSize     {{{1
@@ -2298,8 +2272,8 @@ function! s:Perl_InitMenus ()
 	"
   exe ahead.'update,\ &run\ script<Tab>\\rr\ \ <C-F9>         :call Perl_Run()<CR>'
   exe ahead.'update,\ check\ &syntax<Tab>\\rs\ \ <A-F9>       :call Perl_SyntaxCheck()<CR>'
-  exe ahead.'cmd\.\ line\ &arg\.<Tab>\\ra\ \ <S-F9>           :call Perl_Arguments()<CR>'
-  exe ahead.'perl\ s&witches<Tab>\\rw                         :call Perl_PerlSwitches()<CR>'
+  exe 'amenu '.s:Perl_RootMenu.'.&Run.cmd\.\ line\ &arg\.<Tab>\\ra\ \ <S-F9>  :PerlScriptArguments<Space>'
+  exe 'amenu .'s:Perl_RootMenu.'.&Run.perl\ s&witches<Tab>\\rw                :PerlSwitches<Space>'
   "
   "   set execution rights for user only ( user may be root ! )
   "
@@ -2529,6 +2503,12 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" USER DEFINED COMMANDS
 	"-------------------------------------------------------------------------------
+	"
+	" ---------- commands : run -------------------------------------
+  command! -nargs=* -complete=file PerlScriptArguments call Perl_ScriptCmdLineArguments(<q-args>)
+  command! -nargs=* -complete=file PerlSwitches        call Perl_PerlCmdLineArguments(<q-args>)
+
+	"
 	" ---------- commands : perlcritic -------------------------------------
 	command! -nargs=? CriticOptions         call Perl_GetPerlcriticOptions  (<f-args>)
 	command! -nargs=1 -complete=customlist,Perl_PerlcriticSeverityList   CriticSeverity   call Perl_GetPerlcriticSeverity (<f-args>)
@@ -2569,8 +2549,8 @@ function! s:CreateAdditionalMaps ()
 		map    <buffer>  <silent>  <C-F9>             :call Perl_Run()<CR>
 		imap   <buffer>  <silent>  <C-F9>        <C-C>:call Perl_Run()<CR>
 		"
-		map    <buffer>  <silent>  <S-F9>             :call Perl_Arguments()<CR>
-		imap   <buffer>  <silent>  <S-F9>        <C-C>:call Perl_Arguments()<CR>
+		map    <buffer>            <S-F9>             :PerlScriptArguments<Space>
+		imap   <buffer>            <S-F9>        <C-C>:PerlScriptArguments<Space>
 		"
  		map    <buffer>  <silent>  <S-F1>             :call Perl_perldoc()<CR>
  		imap   <buffer>  <silent>  <S-F1>        <C-C>:call Perl_perldoc()<CR>
@@ -2692,8 +2672,8 @@ function! s:CreateAdditionalMaps ()
 	"
 	noremap    <buffer>  <silent>  <LocalLeader>rr         :call Perl_Run()<CR>
 	noremap    <buffer>  <silent>  <LocalLeader>rs         :call Perl_SyntaxCheck()<CR>
-	noremap    <buffer>  <silent>  <LocalLeader>ra         :call Perl_Arguments()<CR>
-	noremap    <buffer>  <silent>  <LocalLeader>rw         :call Perl_PerlSwitches()<CR>
+	noremap    <buffer>            <LocalLeader>ra         :PerlScriptArguments<Space>
+	noremap    <buffer>            <LocalLeader>rw         :PerlSwitches<Space>
 	noremap    <buffer>  <silent>  <LocalLeader>rm         :call Perl_Make()<CR>
 	noremap    <buffer>  <silent>  <LocalLeader>rcm        :call Perl_ChooseMakefile()<CR>
 	noremap    <buffer>  <silent>  <LocalLeader>rmc        :call Perl_MakeClean()<CR>
@@ -2701,8 +2681,8 @@ function! s:CreateAdditionalMaps ()
 
 	inoremap    <buffer>  <silent>  <LocalLeader>rr    <C-C>:call Perl_Run()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rs    <C-C>:call Perl_SyntaxCheck()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>ra    <C-C>:call Perl_Arguments()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>rw    <C-C>:call Perl_PerlSwitches()<CR>
+	inoremap    <buffer>            <LocalLeader>ra    <C-C>:PerlScriptArguments<Space>
+	inoremap    <buffer>            <LocalLeader>rw    <C-C>:PerlSwitches<Space>
 	inoremap    <buffer>  <silent>  <LocalLeader>rm    <C-C>:call Perl_Make()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rcm   <C-C>:call Perl_ChooseMakefile()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rmc   <C-C>:call Perl_MakeClean()<CR>
@@ -2823,9 +2803,11 @@ if has("autocmd")
 	autocmd BufNewFile,BufRead *.pod  setlocal  syntax=perl
   autocmd BufNewFile,BufRead *.t    setlocal  filetype=perl
 	"
- 	autocmd BufNewFile  *.pl  call mmtemplates#core#InsertTemplate(g:Perl_Templates, 'Comments.file description pl')
- 	autocmd BufNewFile  *.pm  call mmtemplates#core#InsertTemplate(g:Perl_Templates, 'Comments.file description pm')
- 	autocmd BufNewFile  *.t   call mmtemplates#core#InsertTemplate(g:Perl_Templates, 'Comments.file description t')
+	if s:Perl_InsertFileHeader == 'yes'
+		autocmd BufNewFile  *.pl  call mmtemplates#core#InsertTemplate(g:Perl_Templates, 'Comments.file description pl')
+		autocmd BufNewFile  *.pm  call mmtemplates#core#InsertTemplate(g:Perl_Templates, 'Comments.file description pm')
+		autocmd BufNewFile  *.t   call mmtemplates#core#InsertTemplate(g:Perl_Templates, 'Comments.file description t')
+	endif
 
 	autocmd BufNew   *.pl,*.pm,*.t,*.pod  call Perl_InitializePerlInterface()
 	autocmd BufRead  *.pl,*.pm,*.t,*.pod  call Perl_HighlightJumpTargets()

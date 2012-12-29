@@ -1,8 +1,8 @@
-*perlsupport.txt*                Perl Support                 August 20 2012
+*perlsupport.txt*                Perl Support               December 26 2012
 
 Perl Support                                      *perl-support* *perlsupport*
 
-                             Plug-in version 5.1
+                             Plug-in version 5.2
                         for Vim version 7.0 and above
                        Fritz Mehner  <mehner@fh-swf.de>
 
@@ -139,14 +139,14 @@ Marking the 3 lines
 >
  my  $x11       = 11;
  my  $x1111     = 1111;
- 
+
  my  $x11111111 = 11111111;
 <
 and choosing 'end-of-line comments' will yield
 >
  my  $x11       = 11;                            # |
  my  $x1111     = 1111;                          #
- 
+
  my  $x11111111 = 11111111;                      #
 <
 The cursor position above is marked by '|'. Empty lines will be ignored.
@@ -220,12 +220,12 @@ In visual mode a block of code like
 will be surrounded by the above construct:
 >
  =begin  BlockComment  # BlockCommentNo_2
- 
+
    print "x11 = $x11\n";
    print "x22 = $x22\n";
- 
+
  =end    BlockComment  # BlockCommentNo_2
- 
+
  =cut
 <
 The label names like BlockCommentNo_2 are automatically inserted into the
@@ -435,7 +435,7 @@ variable in your ~/.vimrc :
 >
  let g:Perl_GuiSnippetBrowser = 'commandline'
 <
-The default value is 'gui'. 
+The default value is 'gui'.
 
 
 1.4.2  Code Templates                             *perlsupport-templates-menu*
@@ -544,8 +544,8 @@ REGEX-TEST:
 In addition the match will be highlighted in most cases. The match is done as
   $string =~ m{(?flags:$regexp)}
 by the Perl interface. For the flags see|perlsupport-regex-flags|).
-The brackets after a match object contain the starting position (starting 
-with 0) and the length of the object. Objects starting or ending with one or 
+The brackets after a match object contain the starting position (starting
+with 0) and the length of the object. Objects starting or ending with one or
 more spaces are enclosed in vertical bars.
 
 Multi-line regular expressions (like the string inside the braces below) are
@@ -560,15 +560,15 @@ The most-recently-closed capturing parenthesis submatch ($^N) will be
 displayed if it differs from the last parenthesized submatch ($+).
 >
  REGEXP = m{(a|b)((a|b)(a|b))}
- 
- STRING    [  0,  3] = aba 
+
+ STRING    [  0,  3] = aba
  MATCH     [  0,  3] = aba
- 
+
    $1      [  0,  1] = a
    $2      [  1,  2] =  ba
    $3      [  1,  1] =  b
    $4      [  2,  1] =   a
- 
+
    $^N         [  2] = ba
 <
 1.5.3.2  MULTI-LINE STRINGS                *perlsupport-regex-match-multiline*
@@ -622,21 +622,21 @@ The modifier 'g' can be used. The match operator
 >
  m/(\d\d)/g
 <
-applied to the string 
+applied to the string
 >
  'aaa 1234567890 BBB 123'
 <
 gives the following result:
 >
  REGEXP = m{(\d\d)}g
- 
- STRING    [  0, 22] = aaa 1234567890 BBB 123 
+
+ STRING    [  0, 22] = aaa 1234567890 BBB 123
  prematch  [  0, 19] =|aaa 1234567890 BBB |
  MATCH     [ 19,  2] =                    12
  postmatch [ 21,  1] =                      3
- 
+
    $1      [ 19,  2] =                    12
- 
+
    1.MATCH [  4,  2] =     12
    2.MATCH [  6,  2] =       34
    3.MATCH [  8,  2] =         56
@@ -683,15 +683,15 @@ This form is often be found in the code and saves marking the flags as an
 additional action.  The recognized flags and the regular expression will be
 shown in a message. The following forms are allowed (flags are optional):
 >
-   /<regex>/<flags>    ?<regex>?<flags> 
-  m/<regex>/<flags>   m?<regex>?<flags> 
+   /<regex>/<flags>    ?<regex>?<flags>
+  m/<regex>/<flags>   m?<regex>?<flags>
 
   m<delimiter><regex><delimiter><flags>
 
-  m{<regex>}<flags> 
-  m(<regex>)<flags> 
-  m[<regex>]<flags> 
-  m<<regex>><flags> 
+  m{<regex>}<flags>
+  m(<regex>)<flags>
+  m[<regex>]<flags>
+  m<<regex>><flags>
 <
 Multi-line expressions are also possible.
 
@@ -833,7 +833,7 @@ turn the warnings off put the following line in the file .vimrc :
 1.8.3  RUN A POD TRANSLATOR                        *perlsupport-podtranslator*
 ---------------------------
 Pod can be translated into a manual (using pod2man), a plain text file (using
-pod2text), a html-page (using pod2html), or a PDF document (using pod2pdf). 
+pod2text), a html-page (using pod2html), or a PDF document (using pod2pdf).
 Please see the dependency section (*perlsupport-dependencies* ) for details
 about the translators.
 The translation will go to the directory of the source file if this directory
@@ -878,23 +878,30 @@ The item 'command line arguments' calls an input dialog which asks for
 command line arguments. These arguments are forwarded to the script which
 is run by the 'run' item. The arguments are kept until you change them.
 The arguments can contain pipes and redirections, e.g.
-  " infile.txt | sort -rn > result.txt"
-For the first and only the first argument file name expansion will work (use
-the Tab-key).
+>
+ infile.txt | sort -rn > result.txt
+<
+For filenames and directories tab expansion can be used.
 
 The arguments belong to the current buffer (that is, each buffer can have its
-own arguments). The input dialog has a history.
-
-If the buffer gets a new name with "save as" the arguments will now belong to
-the buffer with the new name.
+own arguments). The input dialog has a history. The ex command
+>
+ :PerlScriptArguments
+<
+can also be used to set the command line arguments.  If the buffer gets a new
+name with "save as" the arguments will now belong to the buffer with the new
+name.
 
 1.9.4  PERL COMMAND LINE SWITCHES                  *perlsupport-perl-switches*
 ---------------------------------
 The item 'perl switches' calls an input dialog which asks for command line
 switches for the perl interpreter. These arguments are forwarded to the call
 of the script which is run by the 'run' item. The switches are kept until you
-change them.
-
+change them. The ex command
+>
+ :PerlSwitches
+<
+can also be used to set the command line arguments for Perl.
 The switches belong to the current buffer (that is, each buffer can have its
 own independent switches). The input dialog has a history.
 
@@ -910,7 +917,7 @@ e.g.  'test'.
 Choose a special makefile using the item 'choose makefile'. The plugin tries
 to find one ('Makefile' or 'makefile') searching from the current directory
 upwards. If no one was found the current working directory will be suggested.
-use tab-expansion and command-line editing to find or specify a makefile. 
+use tab-expansion and command-line editing to find or specify a makefile.
 
 1.9.6  DEBUG                                           *perlsupport-run-debug*
 ------------
@@ -1092,7 +1099,7 @@ Resorting is not available under MS-Windows.
 
 Additional hint
 ---------------
-Use the configuration file '.smallprof' to set the depth of the profiling, 
+Use the configuration file '.smallprof' to set the depth of the profiling,
 e.g. with
 
  %DB::packages    = ('main'=>1);  # Only profile code in a certain package.
@@ -1138,15 +1145,15 @@ containing the results. Only the CSV-files can be loaded into the editor using
 the item 'Profiler->NYTProf->read CSV file'.  The selected file will be
 automatically loaded into a quickfix buffer.
 An alternative way to open these files is the ex-command
-
+>
  :NYTProfCSV
-
+<
 or using the hotkey \rpnc.
 
 After the Return you are asked for a file (file browser or command line with
 tab-expansion).
 
-The report can be sorted using the criterion file-name, line-number, time, 
+The report can be sorted using the criterion file-name, line-number, time,
 calls, time/call using the appropriate menu item.
 
 In the absence of menus (console mode) sorting is done with the command
@@ -1276,7 +1283,7 @@ Save the current buffer into a new file. The filename gets a trailing
 timestamp.  The format is YYYYMMDD.HHMMSS.  This corresponds to the default
 time format is '%Y%m%d.%H%M%S' (see the manual page of the C function
 strftime() for the format).  To change this put a different format into the
-file ~/vimrc , e.g.  
+file ~/vimrc , e.g.
 >
   let g:Perl_TimestampFormat= '%H%M%S.%d%m%y'
 <
@@ -1359,8 +1366,9 @@ See 'xterm -help' for more options. Xterms are not available under MS-Windows.
 
 The root menu item 'help' (hotkey \hp ) shows this plug-in help in a help
 window.  The help tags must have been generated with
+>
   :helptags ~/.vim/doc
-
+<
 ==============================================================================
 2.  USAGE WITHOUT GUI  (Vim)                            *perlsupport-mappings*
 ==============================================================================
@@ -1373,9 +1381,13 @@ All mappings  are filetype specific: they are only defined for buffers with
 filetype 'perl' to minimize conflicts with mappings from other plug-ins.
 
 Some mappings can be used with range (of lines). In normal mode
+>
   \cl
-appends a end-of-line comment to the current line,  whereas 
+<
+appends a end-of-line comment to the current line,  whereas
+>
   4\cl
+<
 appends end-of-line comments to the 4 lines starting with the current line.
 
 Legend:  (i) insert mode, (n) normal mode, (v) visual mode
@@ -1494,28 +1506,28 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
 
   -- Run -----------------------------------------------
 
-     \rr        update file, run script            (in )   
-     \rs        update file, check syntax          (in )   
-     \ra        set command line argument          (in )   
-     \rw        set Perl command line switches     (in )   
-     \rm        run make                           (in )   
-     \rcm       choose makefile                    (in )   
-     \rmc       run 'make clean'                   (in )   
-     \rma       command line argument for make     (in )   
-     \rd        start debugger                     (in )   
+     \rr        update file, run script            (in )
+     \rs        update file, check syntax          (in )
+     \ra        set command line argument          (in )
+     \rw        set Perl command line switches     (in )
+     \rm        run make                           (in )
+     \rcm       choose makefile                    (in )
+     \rmc       run 'make clean'                   (in )
+     \rma       command line argument for make     (in )
+     \rd        start debugger                     (in )
      \re        make script executable (*)         (in )
-     \ri        show installed Perl modules        (in )   
-     \rg        generation Perl module list        (in )   
-     \ry        run perltidy                       (inv) 
-     \rc        run perlcritic                     (in )   
+     \ri        show installed Perl modules        (in )
+     \rg        generation Perl module list        (in )
+     \ry        run perltidy                       (inv)
+     \rc        run perlcritic                     (in )
      \rpcs      set perlcritic severity            (in )
      \rpcv      set perlcritic verbosity           (in )
      \rpco      set perlcritic optionsty           (in )
-     \rt        save buffer with timestamp         (in )   
-     \rh        hardcopy buffer to FILENAME.ps     (inv) 
+     \rt        save buffer with timestamp         (in )
+     \rh        hardcopy buffer to FILENAME.ps     (inv)
      \rk        settings and hotkeys               (in )
-     \rx        set xterm size (*)                 (in )   
-     \ro        change output destination          (in )   
+     \rx        set xterm size (*)                 (in )
+     \ro        change output destination          (in )
 
   -- Help ----------------------------------------------
 
@@ -1537,7 +1549,7 @@ The following mappings work also for filetype 'pod':
   \nr        read code snippet                 (in )
   \nw        write code snippet                (inv)
   \ne        edit code snippet                 (in )
-                                                 
+
   \ntl       edit local template file          (in )
   \ntg       edit global template file         (in )
   \ntr       reread template file              (in )
@@ -1696,6 +1708,7 @@ g:Perl_Dictionary_File         ''
 g:Perl_MenuHeader              'yes'
 g:Perl_GuiSnippetBrowser       'gui'
 g:Perl_GuiTemplateBrowser      'gui'
+g:Perl_InsertFileHeader        'yes'
 g:Perl_CreateMenusDelayed      'yes'
 g:Perl_PerlTags                'off'
 g:Perl_PerltidyBackup          'off'
@@ -1739,7 +1752,8 @@ The variable root_dir will automatically be set to one of the following values:
                                        dictionary completion (see below).
            g:Perl_MenuHeader         : Switch submenu titles on/off.
            g:Perl_GuiSnippetBrowser  : code snippet browser: 'gui', 'commandline'
-           g:Perl_GuiTemplateBrowser : code template browser: 'gui', 'explorer', 'commandline' 
+           g:Perl_GuiTemplateBrowser : code template browser: 'gui', 'explorer', 'commandline'
+           g:Perl_InsertFileHeader   : insert file description comment in a new file ('yes', 'no')
            g:Perl_CreateMenusDelayed : Delaying the initialization until the first file is opened.
            g:Perl_PerlTags           : switch use of Perl::Tags on/off ( 'on', 'off' )
            g:Perl_Perltidy           : use perltidy as standard beautifier
@@ -1773,7 +1787,7 @@ The variable root_dir will automatically be set to one of the following values:
 
 The root menu is not visible by default.  The root menu 'Perl' will appears
 after the first file with extension 'pl', 'pm', or 't' or with filetype 'perl'
-or 'pod' has been opened. 
+or 'pod' has been opened.
 When the root menu is visible all templates have been loaded and the internal
 data structures are built.  On a slow computer this may cause a noticeable
 delay when starting the editor.  Therefor loading the templates is delayed to
@@ -1789,7 +1803,7 @@ default is
 >
                   '&Perl.'
 <
-Please note the terminating dot. 
+Please note the terminating dot.
 
 If you want to set the plug-in root menu as a submenu into another menu, e.g.
 your own with the name 'Plugin', this is done by the following line in
@@ -2005,19 +2019,19 @@ Example:
  § ==========================================================
  §  User Macros
  § ==========================================================
- 
+
  SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
  SetMacro( 'AUTHORREF',   'fgm' )
  SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
  SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
  SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
- 
+
  SetStyle( 'default' )
- 
+
  § ==========================================================
  §  File Includes and Shortcuts
  § ==========================================================
- 
+
  MenuShortcut( 'Comments',   'c' )
  MenuShortcut( 'Idioms',     'i' )
  MenuShortcut( 'Pod',        'd' )
@@ -2025,7 +2039,7 @@ Example:
  MenuShortcut( 'Special Variables', 'v' )
  MenuShortcut( 'Regex', 'r' )
  MenuShortcut( 'Snippets', 'n' )
- 
+
  IncludeFile( 'comments.templates' )
  IncludeFile( 'idioms.templates' )
  IncludeFile( 'pod.templates' )
@@ -2076,7 +2090,7 @@ personalize templates.
  ----------------------------------------------------------------------------
  <CURSOR>           The cursor position after insertion of a template.
  <+text+>,<-text->  See |perlsupport-templates-jumptags|.
- {+text+},{-text-}  
+ {+text+},{-text-}
 
  <SPLIT>            The split point when inserting in visual mode
                     (see|perlsupport-templates|)
@@ -2113,10 +2127,10 @@ master template file is '$HOME/.vim/perl-support/templates/Templates',  e.g.
 
 5.3.1    Template definition                *perlsupport-templates-definition*
 The template behind a menu entry is identified by a given name. The first part
-of the name identifies the menu name, the second part identifies the item. 
+of the name identifies the menu name, the second part identifies the item.
 A template definition starts with a template header with the following syntax:
 
-  == menu_name.template_name == options == 
+  == menu_name.template_name == options ==
 
 The options are described here: |template-support-options|.
 
@@ -2127,13 +2141,13 @@ There are four jump tag types which can be used as jump targets in templates:
  <+text+>   Can be jumped to by hitting Ctrl-j.
  {+text+}   Same as <+text+>. Used in cases where indentation gives unwanted
             results with the first one.
- 
+
  <-text->   Same as the two above. Will be removed if the template is used
  {-text-}   in visual mode.
 
 The text inside the brackets is userdefined and can be empty. The text can be
 composed from letters (uppercase and lowercase), digits, and underscores.
-After the insertion of an template these jump targets will be highlighted. 
+After the insertion of an template these jump targets will be highlighted.
 
 5.3.3  Command Ctrl-j                                     *perlsupport-Ctrl-j*
 
@@ -2171,7 +2185,7 @@ a CTRL-] let you jump into the file GnuplotIF.pm.  An easy way back is with
 the CTRL-T command.  See also the module documentation on how to use
 Perl::Tags.
 
-The availability of Perl::Tags is automatically detected. To switch this 
+The availability of Perl::Tags is automatically detected. To switch this
 feature on put the following line into .vimrc :
 >
   let g:Perl_PerlTags           = 'on'
@@ -2348,7 +2362,7 @@ Open a block (modes: i,v):
   '{<CR>' =>  {
                 |
               }
-<             
+<
 In visual mode the content of the new block will be indented.
 
 ==============================================================================
@@ -2371,7 +2385,7 @@ regular expression analyzer has been called (hotkey or menu item).
 13.  MS-Windows PARTICULARITIES                          *perlsupport-windows*
 ==============================================================================
 
-For a user installation the plug-in should go into the directory structure below 
+For a user installation the plug-in should go into the directory structure below
   $HOME/vimfiles/
 for a system installation below
   $VIM/vimfiles/

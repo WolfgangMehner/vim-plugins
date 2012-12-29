@@ -1,0 +1,56 @@
+§ =============================================================
+§  Regex
+§ =============================================================
+
+== LIST: POSIX_CharClasses == list ==
+  'alnum',
+  'alpha',
+  'blank',
+  'cntrl',
+  'digit',
+  'graph',
+  'lower',
+  'print',
+  'punct',
+  'space',
+  'upper',
+  'xdigit',
+== ENDLIST ==
+
+== Regex.POSIX classes == expandmenu, insert, sc:p, map:xpc ==
+|PickList( 'POSIX char. classes', 'POSIX_CharClasses' )|
+[:|PICK|:]<CURSOR>
+== ENDTEMPLATE ==
+
+== LIST: regex_operators == hash ==
+	'whitespace'               : '\s',
+	'non-whitespace'           : '\S',
+	'word char.'               : '\w',
+	'non-word char.'           : '\W',
+	'begin of a word'          : '\<', 
+	'end of a word'            : '\>', 
+	'word boundary'            : '\y', 
+	'not word boundary'        : '\B', 
+	'beginning of buffer'      : '\`', 
+	'end of buffer'            : "'", 
+== ENDLIST ==
+
+== Regex.Regexp Operators == expandmenu, insert, sc:o, map:xro ==
+|PickList( 'Regexp Operators', 'regex_operators' )|
+|PICK|<CURSOR>
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Templates
+§ -------------------------------------------------------------
+
+== Regex.grouping == insert, map:xg, sc:g ==
+(<SPLIT><CURSOR>)
+== Regex.alternation == insert, map:xa, sc:a ==
+(<SPLIT><CURSOR>|)
+== Regex.character list == insert, map:xl, sc:l  ==
+[<CURSOR>]
+== Regex.word == insert, map:xw, sc:w ==
+\<<CURSOR>\>
+== ENDTEMPLATE ==
+

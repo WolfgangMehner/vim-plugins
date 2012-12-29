@@ -198,6 +198,8 @@ Parameters:
 	library - The template library. (string or dict)
 	name    - The name of the template or "!pick". (string)
 Options:
+	"i"      - > "insert"
+	"insert" - Insert mode, special treatment of placement 'insert'.
 	"v"      - > "visual"
 	"visual" - Visual mode, use the <SPLIT> tag.
 No returns.

@@ -1,0 +1,1015 @@
+*awksupport.txt*                Awk Support                  December 26 2012
+
+Awk Support                                         *awk-support* *awksupport*
+                              Plugin version 1.0
+                        for Awk version 7.0 and above
+                  Fritz Mehner  <mehner.fritz at fh-swf.de>
+                Wolfgang Mehner  <wolfgang-mehner at web.de>
+
+Awk Support implements an Awk-IDE for Awk/gAwk. It is written to considerably
+speed up writing Awk script code in a consistent style. This is done by
+inserting complete statements, comments, idioms, and code snippets. There are
+many additional hints and options which can improve speed and comfort when
+writing Awk scripts.
+
+ 1.     USAGE WITH GUI                      |awksupport-usage-gvim|
+ 1.1     Menu 'Comments'                    |awksupport-comments|
+ 1.1.1    Append aligned comments           |awksupport-comm-aligned|
+ 1.1.2    Adjust end-of-line comments       |awksupport-comm-realign|
+ 1.1.3    Comment / uncomment               |awksupport-comm-uncomm|
+ 1.1.4    Frame comments, file header, ...  |awksupport-comm-templates|
+ 1.1.5    Keyword comment                   |awksupport-comm-keywords|
+ 1.2     Menu 'Statements'                  |awksupport-statements|
+ 1.2.1    Normal mode, insert mode          |awksupport-stat-norm-ins|
+ 1.2.2    Visual mode                       |awksupport-stat-visual|
+ 1.3     Menu 'Idioms'                      |awksupport-idioms|
+ 1.4     Menu 'Functions'                   |awksupport-functions|
+ 1.5     Menu 'Special Variables'           |awksupport-specvars|
+ 1.6     Menu 'Regex'                       |awksupport-regex|
+ 1.7     Menu 'Snippets'                    |awksupport-snippets|
+ 1.7.1    Code Snippets                     |awksupport-codesnippets|
+ 1.7.2    Edit templates                    |awksupport-templates-edit|
+ 1.8     Menu 'Run'                         |awksupport-run|
+ 1.8.1    Run Script                        |awksupport-run-script|
+ 1.8.2    Syntax Check                      |awksupport-syntax-check|
+ 1.8.3    Lint Check                        |awksupport-lint-check|
+ 1.8.4    Command Line Arguments            |awksupport-cmdline-args|
+ 1.8.5    Awk Command Line Arguments        |awksupport-awk-args|
+ 1.8.6    Hardcopy                          |awksupport-hardcopy|
+ 1.8.7    Settings                          |awksupport-settings|
+ 1.8.8    Xterm Size                        |awksupport-xterm|
+ 1.8.9    Change Output Destination         |awksupport-output|
+ 1.9     Main menu 'Help'                   |awksupport-help|
+ 2.     USAGE WITHOUT GUI                   |awksupport-usage-vim|
+ 3.     CUSTOMIZATION AND CONFIGURATION     |awksupport-customization|
+ 3.1     Files                              |awksupport-custom-files|
+ 3.2     Global variables                   |awksupport-custom-variables|
+ 3.3     The root menu                      |awksupport-custom-root|
+ 3.4     System-wide installation           |awksupport-system-wide|
+ 4.      TEMPLATE FILES AND TAGS            |awksupport-templates|
+ 4.1      Template files                    |awksupport-templates-files|
+ 4.2      Macros                            |awksupport-templates-macros|
+ 4.2.1   Formats for date and time          |awksupport-templates-date|
+ 4.3      Templates                         |awksupport-templates-names|
+ 4.3.1    Template definition               |awksupport-templates-definition|
+ 4.3.2    The macros <+text+> etc.          |awksupport-templates-jumptags|
+ 4.3.3    Command Ctrl-j                    |awksupport-Ctrl-j|
+ 5.     WINDOWS PARTICULARITIES             |awksupport-windows|
+ 6.     TROUBLESHOOTING                     |awksupport-troubleshooting|
+ 7.     RELEASE NOTES                       |awksupport-release-notes|
+
+        How to add this help file to Vim's help  |add-local-help|
+
+
+==============================================================================
+1.  USAGE WITH GUI  (gVim)                             *awksupport-usage-gvim*
+==============================================================================
+
+If the menus are not visible call them using the item "Load Awk Support"
+from the standard Tools-menu.
+
+------------------------------------------------------------------------------
+1.1  MENU 'Comments'                                     *awksupport-comments*
+------------------------------------------------------------------------------
+
+1.1.1 APPEND ALIGNED COMMENTS TO CONSECUTIVE LINES   *awksupport-comm-aligned*
+--------------------------------------------------
+
+In NORMAL MODE the menu item 'end-of-line comments' will append a comment to
+the current line.
+In VISUAL MODE, this item will append aligned comments to all marked lines.
+Marking the 4 lines
+>
+ x = 33
+ y = 44
+ 
+ z = 55
+<
+and choosing 'end-of-line comments' will yield
+>
+ x = 33                                        # |
+ y = 44                                        # 
+
+ z = 55                                        # 
+<
+The cursor position above is marked by '|'. Empty lines will be ignored.
+
+The default starting column is 49 ( = (multiple of 2,4, or 8) + 1 ).  This can
+be changed by setting a global variable in the file '.vimrc', e.g. :
+>
+ let g:Awk_LineEndCommColDefault    = 45
+<
+The starting column can also be set by the menu item 'Comments->adjust
+end-of-line com.' . Just position the cursor in an arbitrary column (normal
+mode; column number is shown in the Vim status line) and choose this menu
+item.  This setting is buffer related.
+If the cursor was at the end of a line you will be asked for a column number
+because this position is most likely not the desired starting column.  Your
+choice will be confirmed.
+
+1.1.2 ADJUST END-OF-LINE COMMENTS                    *awksupport-comm-realign*
+---------------------------------
+After some copy/paste/change actions comments may be misaligned:
+>
+ x = 33                             # this is x
+ y = 44                                      # and y
+ z = 55                                         # and now z
+<
+Realignment can be achieved with the menu item 'adjust end-of-line com.' In
+normal mode the comment (if any) in the current line will be aligned to the
+end-of-line comment column (see above) if possible. In visual mode the
+comments in the marked block will be aligned:
+>
+ x = 33                                     # this is x
+ y = 44                                     # and y
+ z = 55                                     # and now z
+<
+Another way is to use the hotkey \cj. In normal and insert mode the current
+line will be adjusted. To adjust n lines starting with the current one use
+n\cj.
+
+1.1.3  COMMENT/UNCOMMENT                              *awksupport-comm-uncomm*
+----------------------
+The comment sign # can be set or removed at the beginning of the current line
+or for a marked block using the menu items 'comment' (or \cc) and 'uncomment'
+(or \cu).  A single line needs not to be marked (normal mode, insert mode).
+
+A marked block
+>
+ x = 33                                     # this is x
+ y = 44                                     # and y
+ z = 55                                     # and now z
+<
+will be changed into (and vice versa)
+>
+ #  x = 33                                     # this is x
+ #  y = 44                                     # and y
+ #  z = 55                                     # and now z
+<
+1.1.4 FRAME COMMENTS, FILE HEADER, ...             *awksupport-comm-templates*
+--------------------------------------
+
+Frame comments, function descriptions and file header comments are read as
+templates from the appropriate files (see |awksupport-templates|).
+
+
+1.1.5 KEYWORD COMMENT                               *awksupport-comm-keywords*
+---------------------
+
+Preliminary end-of-line comments to document (and find again!) places where
+work will be resumed shortly, like
+>
+ # :BUG:19.12.2012 17:06:fgm: ... your comment
+<
+Here 'fgm' is the authors reference (see section 4. for templates and tags).
+Usually these comments are not meant for the final documentation.
+
+------------------------------------------------------------------------------
+1.2  MENU 'Statements'                                 *awksupport-statements*
+------------------------------------------------------------------------------
+
+1.2.1  NORMAL MODE, INSERT MODE.                    *awksupport-stat-norm-ins*
+--------------------------------
+An empty statement will be inserted and properly indented. The item 'if block'
+will insert an if-statement:
+>
+>
+ if (  ) {
+   <-IF_PART->
+ }
+<
+The statement will be indented.
+
+1.2.2  VISUAL MODE                                    *awksupport-stat-visual*
+------------------
+The highlighted area
+>
+  xxxxx
+  xxxxx
+<
+can be surrounded by one of the following statements
+( '|' marks the cursor position after insertion):
+>
+  +--------------------------------------------------+
+  |  do {                                            |
+  |    xxxxx                                         |
+  |    xxxxx                                         |
+  |  } while ( | )    # -----  end do-while  -----   |
+  +--------------------------------------------------+
+  |  for (  in <-ARRAY-> ) {                         |
+  |    xxxxx                                         |
+  |    xxxxx                                         |
+  |  }                                               |
+  +--------------------------------------------------+
+  |  if ( | ) {                                      |
+  |    xxxxx                                         |
+  |    xxxxx                                         |
+  |  }                                               |
+  +--------------------------------------------------+
+  |  if ( | ) {                                      |
+  |    xxxxx                                         |
+  |    xxxxx                                         |
+  |  }                                               |
+  |  else {                                          |
+  |                                                  |
+  |  }                                               |
+  +--------------------------------------------------+
+  |  while ( | ) {                                   |
+  |    xxxxx                                         |
+  |    xxxxx                                         |
+  |  }                                               |
+  +--------------------------------------------------+
+  |  switch ( | ) {                                  |
+  |    case <-LABEL->:                               |
+  |    xxxxx                                         |
+  |    xxxxx                                         |
+  |    break                                         |
+  |                                                  |
+  |    case <-LABEL->:                               |
+  |    break                                         |
+  |                                                  |
+  |    case <-LABEL->:                               |
+  |    break                                         |
+  |                                                  |
+  |    default:                                      |
+  |    break                                         |
+  |  }   # -----  end switch  -----                  |
+  +--------------------------------------------------+
+  |  BEGIN {                                         |
+  |    xxxxx                                         |
+  |    xxxxx                                         |
+  |  }   # -----  end BEGIN  -----                   |
+  +--------------------------------------------------+
+  |  END {                                           |
+  |    xxxxx                                         |
+  |    xxxxx                                         |
+  |  }   # -----  end END  -----                     |
+  +--------------------------------------------------+
+<
+The whole statement will be indented after insertion.
+
+------------------------------------------------------------------------------
+1.3  MENU 'Idioms'                                         *awksupport-idioms*
+------------------------------------------------------------------------------
+
+Your often used programming idioms other than the basic language statements.
+
+
+------------------------------------------------------------------------------
+1.4  MENU 'Functions'                                   *awksupport-functions*
+------------------------------------------------------------------------------
+
+The gAwk functions organized in several groups. The numeric functions can be
+accessed via menu or via the hotkey \fn (+ tab expansion). Please see section
+USAGE WITHOUT GUI |(awksupport-usage-vim|) for the other hotkeys.
+
+
+------------------------------------------------------------------------------
+1.5  MENU 'Special Variables'                            *awksupport-specvars*
+------------------------------------------------------------------------------
+
+The gAwk special variables organized in the two groups
+ - auto-set
+ - user modifiable
+
+------------------------------------------------------------------------------
+1.6  MENU 'Regex'                                           *awksupport-regex*
+------------------------------------------------------------------------------
+
+This menu can be used to compose regular expressions with a few keystrokes.
+In normal mode the items insert the shown constructs after the cursor. Some
+of them can enclose a marked text.  The marked text
+>
+ xxxxx
+<
+will be changed into
+>
+ (xxxxx)
+<
+by the menu item 'grouping'.
+
+------------------------------------------------------------------------------
+1.7  MENU 'SNIPPETS'                                     *awksupport-snippets*
+------------------------------------------------------------------------------
+
+1.7.1 Code Snippets                                  *awksupport-codesnippets*
+-------------------
+Code snippets are pieces of code which are kept in separate files in a special
+directory. File names are used to identify the snippets.  The default snippet
+directory is  '$HOME/.vim/awk-support/codesnippets'.  Snippets are managed
+with the 4 items
+>
+ Awk -> Snippets -> read  code snippet
+ Awk -> Snippets -> view  code snippet
+ Awk -> Snippets -> write code snippet
+ Awk -> Snippets -> edit  code snippet
+<
+from the Statements submenu.
+
+Creating a new snippet:
+-----------------------
+When nothing is marked, 'write code snippet' will write the whole buffer
+to a snippet file, otherwise the marked area will be written to a file.
+
+Insert a snippet:
+-----------------
+Select the appropriate file from the snippet directory ('read  code snippet').
+The inserted lines will be indented.
+
+Indentation / no indentation
+----------------------------
+Code snippets are normally indented after insertion. To suppress indentation
+add the file extension "ni" or "noindent" to the snippet file name, e.g.
+>
+  parameter_handling.noindent
+<
+Snippet browser
+---------------
+Under a GUI a file requester will be put up. Without GUI the filename will be
+read from the command line. You can change this behavior by setting a global
+variable in your $HOME/.vimrc :
+>
+ let g:Awk_GuiSnippetBrowser = 'commandline'
+<
+The default value is 'gui'. 
+
+
+1.7.2  Edit Templates                              *awksupport-templates-edit*
+---------------------
+Nearly all menu items insert code snippets or comments. All of these are
+contained within template files and can be changed by the user to meet their
+requirements (see|awksupport-templates|on how to use the template system).
+
+The menu item 'edit templates' opens the main template file in a local plugin
+installation. This is usually the file
+'$HOME/.vim/awk-support/templates/Templates'.  There may be dependent files
+loaded from the main file.  Now change whatever file you want, save it, and
+click on the menu item 'reread templates' to read in the file(s) and to
+rebuild the internal representation of the templates. If menu items,  hotkeys,
+or shortcuts have been added or changed these changes will be applied with the
+next start of Vim.
+
+------------------------------------------------------------------------------
+1.8  MENU 'Run'                                               *awksupport-run*
+------------------------------------------------------------------------------
+
+1.8.1  Run Script                                      *awksupport-run-script*
+-----------------
+Run the script in the current buffer.  The output destination can be chosen
+using the menu item 'Run->output: ...'.  There are 3 choices: VIM command
+line, separate output buffer and xterm (see |awksupport-output|).
+
+1.8.2  Syntax Check                                  *awksupport-syntax-check*
+-------------------
+The script is run as
+>
+ awk -e 'BEGIN { exit(0) } END { exit(0) }' -f scriptname
+<
+to check the syntax. Errors and warnings will be shown in a quickfix buffer.
+For convenience consider to use maps like
+>
+  noremap  <silent> <F5>    :copen<CR>
+  noremap  <silent> <F6>    :cclose<CR>
+  noremap  <silent> <F7>    :cp<CR>
+  noremap  <silent> <F8>    :cn<CR>
+<
+in your .vimrc file to jump to the error locations (F7,F8) and to open and
+close the error window (F5,F6). This makes navigation a lot easier (see also
+file 'customization.vimrc', |awksupport-custom-files|).  The error list and
+the error locations in your source buffer will be synchronized.
+
+1.8.3  Lint Check                                      *awksupport-lint-check*
+-----------------
+The script is run as
+>
+ awk --lint -f scriptname arguments
+<
+Errors and warnings will be shown in a quickfix buffer.  The error list and
+the error locations in your source buffer will be synchronized.
+
+1.8.4  Command Line Arguments                        *awksupport-cmdline-args*
+-----------------------------
+The item 'script cmd. line arg.' calls an input dialog which asks for command
+line arguments. These arguments are forwarded to the script which is run by
+the 'run' item. The arguments are kept until you change them.  The arguments
+can contain pipes and redirections, e.g.
+>
+ infile.txt | sort -rn > result.txt
+<
+For file names tab-expansion will work.  The ex command
+>
+	:AwkScriptArguments ... 
+<
+can also be used to set the command line arguments for the current script.
+
+
+The arguments belong to the current buffer (that is, each buffer can have its
+own arguments). The input dialog has a history.
+
+If the buffer gets a new name with "save as" the arguments will now belong to
+the buffer with the new name.
+
+1.8.5  Awk Command Line Arguments                        *awksupport-awk-args*
+---------------------------------
+The item 'AWK cmd. line arg.' calls an input dialog which asks for command
+line arguments for the awk interpreter. These arguments are forwarded to the
+call of the script which is run by the 'run' item. The arguments are kept
+until you change them.
+
+The arguments belong to the current buffer (that is, each buffer can have its
+own independent arguments). The input dialog has a history. The ex command
+>
+	:AwkArguments ... 
+<
+can also be used to set the command line arguments for Awk.
+
+If the buffer gets a new name with "save as" the arguments will now belong to
+the buffer with the new name.
+
+1.8.6 Hardcopy                                           *awksupport-hardcopy*
+
+Generates a PostScript file from the whole buffer or from a marked region.
+The hardcopy goes to the current working directory.  If the buffer contains
+documentation or other material from non-writable directories the hardcopy
+goes to the HOME directory. The output destination will be shown in a message.
+
+The print header contains date and time according the current locale. The
+definition used is
+>
+  let s:Awk_Printheader = "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
+<
+The current locale can be overwritten by changing the language, e.g.
+>
+  :language C
+<
+or by setting a global variable in the file '.vimrc', e.g. :
+>
+  let g:Awk_Printheader = "%<%f%h%m%<  %=%{strftime('%x %X')}     SEITE %N"
+<
+See :h printheader and :h strftime()  for more details.
+
+1.8.7 Settings                                           *awksupport-settings*
+--------------
+Displays some Awk Support plugin settings. 
+
+1.8.8 Xterm Size                                            *awksupport-xterm*
+----------------
+The size of the xterm used for running the script (below) can be set by this
+menu item. The default is 80 columns with 24 lines.
+This feature is not available under MS-Windows.
+
+1.8.9 Change Output Destination                            *awksupport-output*
+-------------------------------
+Running a Awk script can be done in three ways:
+(1) The script can be run from the command line as usual.
+(2) The output can be directed into a buffer with name "Awk-Output".
+    The buffer and its content will disappear when the window is closed or
+    reused otherwise. If this window remains open it will be used for the next
+    run. If the script doesn't produce shell output the output window will
+    not be opened (but you will see a message).
+    There is no file behind the window Awk-Output but the content can be
+    saved with a 'save as'.
+(3) The script can be run in an xterm.
+
+The output method can be chosen with the menu item 'Run->output: ...'.
+This menu has three states:
+>
+  output: VIM->buffer->xterm
+  output: BUFFER->xterm->vim
+  output: XTERM->vim->buffer
+<
+The first (uppercase) item shows the current method.  The default is 'vim'.
+This can be changed by setting the variable g:Awk_OutputGvim to another
+value.  Possible values are 'vim', 'buffer' and 'xterm'.
+
+Vim (non-GUI) : The output destination can be toggled between (1) and (2)
+                using the hotkey \ro .
+
+The xterm defaults can be set in .vimrc by the variable g:Awk_XtermDefaults .
+The default is "-fa courier -fs 12 -geometry 80x24" :
+  font name     : -fa courier
+  font size     : -fs 12
+  terminal size : -geometry 80x24
+See 'xterm -help' for more options. Xterms are not available under MS-Windows.
+
+
+------------------------------------------------------------------------------
+1.9  Main Menu Item 'AWK manual'                             *awksupport-help*
+------------------------------------------------------------------------------
+
+Display the Awk manual in a separate buffer.
+
+==============================================================================
+2.  USAGE WITHOUT GUI  (Vim)                            *awksupport-usage-vim*
+==============================================================================
+
+The frequently used constructs can be inserted via key mappings.  The mappings
+are also described in the document 'awk-hotkeys.pdf' (reference card, part of
+this package).
+
+All mappings are filetype specific: they are only defined for buffers with
+filetype 'awk' to minimize conflicts with mappings from other plugins.
+
+Hint: Typing speed matters. The combination of a leader ('\') and the
+following character(s) will only be recognized for a short time.
+
+Some mappings can be used with range (of lines). In normal mode
+>
+  \cl
+<
+appends a end-of-line comment to the current line,  whereas
+>
+  4\cl
+>
+appends end-of-line comments to the 4 lines starting with the current line.
+
+Legend:  (i) insert mode, (n) normal mode, (v) visual mode
+         [n] range
+
+  -- Comments ------------------------------------------
+
+  [n]\cl     end-of-line comment             (n, i, v)
+  [n]\cj     adjust end-of-line comments     (n, i, v)
+     \cs     set end-of-line comment column  (n)
+  [n]\cc     comment code                    (n, i, v)
+  [n]\cu     uncomment code                  (n, i, v)
+     \cfr    frame comment                   (n, i)
+     \cfu    function description            (n, i)
+     \ch     file header                     (n, i)
+     \cd     date                            (n, i)
+     \ct     date & time                     (n, i)
+     \ck     keyword comments                (n, i)
+     \cma    plugin macros                   (n, i)
+
+  -- Statements -----------------------------------------
+
+     \sd     do while                        (n, i, v)
+     \sf     for                             (n, i)
+     \sfo    for BLOCK                       (n, i, v)
+     \sfi    for in                          (n, i, v)
+     \si     if                              (n, i)
+     \sif    if BLOCK                        (n, i, v)
+     \sie    if else                         (n, i, v)
+     \sife   if else BLOCK                   (n, i, v)
+     \sw     while                           (n, i)
+     \swh    while BLOCK                     (n, i, v)
+     \ss     switch                          (n, i, v)
+     \sc     case                            (n, i)
+     \sb     BEGIN                           (n, i, v)
+     \se     END                             (n, i, v)
+
+  -- Idioms ----------------------------------------------
+
+     \if     function                        (n, i, v )
+
+  -- Functions -------------------------------------------
+
+     \fn     numeric functions               (n, i, v)
+     \fs     string functions                (n, i, v)
+     \fio    I/O functions                   (n, i, v)
+     \ft     time functions                  (n, i, v)
+     \fb     bit manipulations functions     (n, i, v)
+     \fin    internationalizationfunctions   (n, i, v)
+		 \fa     isarray()                       (n, i, v)
+
+  -- Special Variables -----------------------------------
+
+     \va     built-in variables, auto-set         (n, i) 
+     \vm     built-in variables, user-modifiable  (n, i)
+
+  -- Regular Expression ----------------------------------
+
+     \xpc    POSIX character classes         (n, i )
+     \xro    regexp operators                (n, i )
+     \xg     grouping                        (n, i, v )
+     \xa     alteration                      (n, i, v )
+     \xl     character list                  (n, i, v )
+     \xw     word                            (n, i )
+
+  -- Snippets --------------------------------------------
+
+     \nr     read code snippet                (n, i)
+     \nv     view code snippet                (n, i)
+     \nw     write code snippet               (n, i, v)
+     \ne     edit code snippet                (n, i)
+
+  -- Run -------------------------------------------------
+
+     \rr     save and run script              (n, i)
+		 \rs     syntax check                     (n, i)
+		 \rl     lint check                       (n, i)
+		 \ra     script command line arguments    (n, i)
+		 \raa    Awk command line arguments       (n, i)
+		 \re     make script executable           (n, i)
+     \rh     hardcopy buffer to FILENAME.ps   (n, i)
+     \rse    settings and hot keys            (n, i)
+		 \rt     xterm size                       (n, i)
+		 \ro     switch output destination        (n, i)
+
+  -- help ----------------------------------------------
+
+     \hm     Displays the Awk manual          (n, i)
+     \hp     help (Awk-Suppor)                (n, i)
+
+File 'awk-hotkeys.pdf' contains a reference card for these key mappings.
+Multiline inserts and code snippets will be indented after insertion.
+
+Changing the default map leader '\'
+-----------------------------------
+The map leader can be changed by the user by setting a global variable in the
+file .vimrc 
+>
+ let g:Awk_MapLeader  = ','
+<
+The map leader is now a comma. The 'end-of-line comment' command is now
+defined as ',cl'. This setting will be used as a so called local leader and
+influences only files with filetype 'vim'.
+
+==============================================================================
+3.  CUSTOMIZATION                                    *awksupport-customization*
+==============================================================================
+
+------------------------------------------------------------------------------
+3.1  FILES (after installation)                      *awksupport-custom-files*
+------------------------------------------------------------------------------
+
+README.awksupport                  Release notes, installation description.
+
+ftplugin/help.vim                  Filetype plugin to extend Vim help.
+
+plugin/awk-support.vim             The Awk plugin for Vim/gVim.
+
+doc/awksupport.txt                 The help file for the local online help.
+
+awk-support/codesnippets/*         Some code snippets as a starting point.
+
+awk-support/templates/*            Awk template files
+                                   (see |awksupport-comm-templates|).
+
+autoload/mmtemplates/core          The template engine.
+
+The following files and extensions are for convenience only.  awk-support.vim
+will work without them.
+
+awk-support/doc/*                   Hotkey reference card (PDF), changelog.
+
+awk-support/rc/customization.vimrc  Additional settings I use in '.vimrc': 
+                                    incremental search, tabstop, hot keys,
+                                    font, use of dictionaries, ...  The file
+                                    is commented. Append it to your '.vimrc'
+                                    if you like.
+
+awk-support/rc/customization.gvimrc Additional settings I use in '.gvimrc': 
+                                    hot keys, mouse settings, ...  The file is
+                                    commented.  Append it to your '.gvimrc' if
+                                    you like.
+
+------------------------------------------------------------------------------
+3.2  GLOBAL VARIABLES                            *awksupport-custom-variables*
+------------------------------------------------------------------------------
+
+Several global variables are checked by the plugin to customize it:
+
+------------------------------------------------------------------------------
+Global Variable               Default Value
+------------------------------------------------------------------------------
+g:Awk_LocalTemplateFile     $HOME.'/.vim/awk-support/templates/Templates'
+g:Awk_GlobalTemplateFile    $VIM.'/vimfiles/awk-support/templates/Templates'
+g:Awk_CodeSnippets          $HOME.'/.vim/awk-support/codesnippets' (Linux/U**X)
+                            $VIM.'\vimfiles\awk-support/codesnippets/'(Windows)
+g:Awk_LoadMenus             'yes'
+g:Awk_CreateMenusDelayed    'no'
+g:Awk_RootMenu              '&Awk'
+g:Awk_GuiSnippetBrowser     'gui'
+g:C_InsertFileHeader        'yes'
+g:Awk_LineEndCommColDefault 49
+g:Awk_Printheader           '%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N'
+                             'vim.exe'     (Windows)
+g:Awk_MapLeader             '\'
+
+------------------------------------------------------------------------------
+Global Variable              Description
+------------------------------------------------------------------------------
+g:Awk_LocalTemplateFile     sets the local template file (see|awksupport-templates|)
+g:Awk_GlobalTemplateFile    sets the global template file (see|awksupport-templates|)
+g:Awk_CodeSnippets          set the personal code snippet directory
+g:Awk_LoadMenus             Load menus and mappings ("yes", "no") at start up.
+g:Awk_CreateMenusDelayed    Load menus only with filetype 'awk'
+g:Awk_RootMenu              The name of the root menu item of this plugin
+                             (see |awksupport-custom-root|).
+g:Awk_GuiSnippetBrowser     code snippet browser: 'gui', 'commandline'
+g:C_InsertFileHeader        insert file description comment in a new file ('yes', 'no')
+
+g:Awk_LineEndCommColDefault default starting column for line end comments
+g:Awk_Printheader           hardcopy header format
+g:Awk_MapLeader             the map leader for hotkeys (see|awksupport-usage-vim|)
+
+To override the defaults add appropriate assignments in '.vimrc', e.g.
+>
+ let g:Awk_MapLeader  = ','
+<
+------------------------------------------------------------------------------
+3.3  THE ROOT MENU                                    *awksupport-custom-root*
+------------------------------------------------------------------------------
+
+The variable g:Awk_RootMenu, if set (in '.vimrc' or in '.gvimrc'), sets the
+name of the single gVim root menu item in which the Awk submenus will be
+appear.  The default is
+>
+                  '&Awk'
+<
+If you want to set the plugin root menu into another menu, e.g. 'Plugin',
+this is done by the following line in '.vimrc'
+>
+  let g:Awk_RootMenu = "&Plugin"
+<
+------------------------------------------------------------------------------
+3.4  System-wide installation                         *awksupport-system-wide*
+------------------------------------------------------------------------------
+
+A system-wide installation (one installation for all users) is done as
+follows.
+
+As ****** SUPERUSER ****** :
+
+(1) Find the Vim installation directory.
+The Vim ex command ':echo $VIM' gives '/usr/local/share/vim' or something like
+that. Beyond this directory you will find the Vim installation,  e.g. in
+'/usr/local/share/vim/vim73' if Vim version 7.3 has been installed.
+
+(2) Create a new subdirectory 'vimfiles', e.g. '/usr/local/share/vim/vimfiles'.
+
+(3) Install Awk Support
+Copy the archive 'awk-support.zip' to this new directory and unpack it:
+>
+  unzip awk-support.zip
+<
+(4) Generate the help tags:
+>
+  :helptags $VIM/vimfiles/doc
+<
+SPECIAL CASES. Some Linux distributions use non-standard names for Vim
+directories. SUSE has a directory '/usr/share/vim/site' to put plugins in.
+These directories will not be found automatically.  After installing the
+plugin below '/usr/share/vim/site' the use of the templates will be enabled by
+the following line in '$HOME/.vimrc':
+>
+  let g:Awk_GlobalTemplateFile = '/usr/share/vim/site/awk-support/templates/Templates'
+<
+
+As ****** USER ****** :
+
+The plugin tries to create a minimal template file 'Templates' (and the
+necessary directory '$HOME/.vim/awk-support/templates') when the first buffer
+with filetype 'vim' will be opened. You should edit this file to personalize
+some macros.
+
+You can also have local templates which override the global ones. To see a
+messages in this case set a global variable in '$HOME/.vimrc' (Windows:
+'$HOME\_vimrc'):
+>
+  let g:Awk_TemplateOverriddenMsg= 'yes'
+<
+The default is 'no'.
+
+Create your private snippet directory:
+>
+  mkdir --parents  $HOME/.vim/awk-support/codesnippets
+<
+You may want to copy the snippets coming with this plugin (in
+$VIM/vimfiles/awk-support/codesnippets) into the new directory or to set a
+link to the global directory.
+
+==============================================================================
+4.  TEMPLATE FILES AND TAGS                             *awksupport-templates*
+==============================================================================
+
+------------------------------------------------------------------------------
+4.1  Template Files                               *awksupport-templates-files*
+------------------------------------------------------------------------------
+
+Nearly all menu items insert code snippets or comments. All of these are
+contained within template files and can be changed by the user to meet their
+requirements. The menu shortcuts (e.g. 'c' for the Comments menu) and the
+menu item hotkeys (e.g. '\ct' insert date and time) are also defined in the
+templates.
+The template engine comes as a separate plugin contributed by Wolfgang Mehner.
+This section is a short introduction to this template system. Please see
+|templatesupport.txt| for more information.
+
+The master template file is '$HOME/.vim/awk-support/templates/Templates' for
+a user installation and  '$VIM/vimfiles/awk-support/templates/Templates' for
+a system-wide installation (see |awksupport-system-wide|).
+
+The master template file starts with a macro section followed by templates for
+single menu items or better by including other template files grouping the
+templates according to the menu structure of this plugin. The master file
+usually looks like this (my settings as an example):
+>
+ § =============================================================
+ §  User Macros
+ § =============================================================
+ 
+ SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
+ SetMacro( 'AUTHORREF',   'fgm' )
+ SetMacro( 'COMPANY',     '' )
+ SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
+ SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
+ SetMacro( 'LICENSE',     'GNU General Public License' )
+ SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
+ 
+ SetFormat( 'DATE', '%x' )
+ SetFormat( 'TIME', '%H:%M' )
+ SetFormat( 'YEAR', '%Y' )
+ 
+ SetStyle( 'default' )
+ 
+ § =============================================================
+ §  File Includes and Shortcuts
+ § =============================================================
+ 
+ MenuShortcut( 'Comments',          'c' )
+ MenuShortcut( 'Statements',        's' )
+ MenuShortcut( 'Idioms',            'i' )
+ MenuShortcut( 'Functions',         'f' )
+ MenuShortcut( 'Special Variables', 'v' )
+ MenuShortcut( 'Regex',             'x' )
+ 
+ IncludeFile( 'comments.templates' )
+ IncludeFile( 'statements.templates' )
+ IncludeFile( 'idioms.templates' )
+ IncludeFile( 'functions.templates' )
+ IncludeFile( 'specvar.templates' )
+ IncludeFile( 'regex.templates' )
+<
+Lines starting with a paragraph sign are comments. The section starting with
+>
+  SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
+<
+assigns values to predefined tags (macros).  Arbitrary user-defined macros are
+possible. The macro name must follows the rules for a C language identifier:
+first character letter  or underscore; case matters; digits are allowed
+beginning with the second character.
+
+The statement
+>
+  IncludeFile( 'comments.templates' )
+<
+includes the templates from the file 'comments.templates' (in the same
+directory). An absolute path would also be possible.  The statement
+>
+  MenuShortcut( 'Comments',      'c' )
+<
+sets 'c' as the shortcut for the Comments menu.
+
+------------------------------------------------------------------------------
+4.2  Macros                                      *awksupport-templates-macros*
+------------------------------------------------------------------------------
+
+The following macro names are predefined. The first group is used to
+personalize templates.
+
+ ----------------------------------------------------------------------------
+ PREDEFINED MACROS  DEFAULT VALUE
+ ----------------------------------------------------------------------------
+
+*|BASENAME|*        filename without path and suffix
+*|DATE|*            the preferred date representation for the current locale
+                    without the time
+*|FILENAME|*        filename without path
+*|PATH|*            path without filename
+*|SUFFIX|*          filename suffix
+*|TIME|*            the preferred time representation for the current locale
+                    without the date and the time zone or name or abbreviation
+*|YEAR|*            the year as a decimal number including the century
+
+ ----------------------------------------------------------------------------
+ PREDEFINED TAGS USED IN TEMPLATES
+ ----------------------------------------------------------------------------
+ <CURSOR>           The cursor position after insertion of a template.
+ <+text+>,<-text->  See |awksupport-templates-jumptags|.
+ {+text+},{-text-}  
+
+ <SPLIT>            The split point when inserting in visual mode
+                    (see|awksupport-templates|)
+
+A dependent template file can start with its own command section. There is no
+need to have all user defined macros in the master file.
+
+------------------------------------------------------------------------------
+4.2.1   User defined formats for date and time     *awksupport-templates-date*
+------------------------------------------------------------------------------
+The format for *|DATE|* ,*|TIME|* , and*|YEAR|* can be set by the user. The
+defaults are
+    *|DATE|*        '%x'
+    *|TIME|*        '%X'
+    *|YEAR|*        '%Y'
+See the manual page of the C function strftime() for the format.  The accepted
+format depends on your system, thus this is not portable!  The maximum length
+of the result is 80 characters.
+
+User defined formats can be set using the following function calls in the
+master template file is '$HOME/.vim/awk-support/templates/Templates',  e.g.
+>
+  SetFormat( 'DATE', '%D'      )
+  SetFormat( 'TIME', '%H:%M'   )
+  SetFormat( 'YEAR', 'year %Y' )
+<
+------------------------------------------------------------------------------
+4.3  Templates                                    *awksupport-templates-names*
+------------------------------------------------------------------------------
+
+4.3.1 Template Definition                    *awksupport-templates-definition*
+The template behind a menu item is identified by a given name. The first part
+of the name identifies the menu name, the second part identifies the item. 
+A template definition starts with a template header with the following syntax:
+
+  == menu_name.template_name == options == 
+
+The options are described here: |template-support-options|.
+
+4.3.2  The jump tags <+text+> etc.             *awksupport-templates-jumptags*
+
+There are four jump tag types which can be used as jump targets in templates:
+
+ <+text+>   Can be jumped to by hitting Ctrl-j.
+ {+text+}   Same as <+text+>. Used in cases where indentation gives unwanted
+            results with the first one.
+ 
+ <-text->   Same as the two above. Will be removed if the template is used
+ {-text-}   in visual mode.
+
+The text inside the brackets is userdefined and can be empty. The text can be
+composed from letters (uppercase and lowercase), digits, and underscores.
+After the insertion of an template these jump targets will be highlighted. 
+
+4.3.3  Command Ctrl-j                                      *awksupport-Ctrl-j*
+
+Use the command Ctrl-j to jump to the next target. The target will be removed
+and the mode will switched to insertion. Ctrl-j works in normal and in insert
+mode.  The template for an if-else-statement can be written as follows:
+>
+ == Statements.if block else == map:sife, shortcut:l  ==
+ if ( <CURSOR> ) {
+ <SPLIT><-IF_PART->
+ }
+ else {
+ <-ELSE_PART->
+ }
+<
+The cursor will be set as shown. When the condition is specified a Ctrl-j let
+you jump to the target <-IF PART-> and deletes it.  When the block is written
+a Ctrl-j leads you to the else-part.  The target <-ELSE_PART-> disappears and
+you can type on.
+
+==============================================================================
+5.  WINDOWS PARTICULARITIES                               *awksupport-windows*
+==============================================================================
+
+For a user installation the plugin should go into the directory structure
+below 
+  $HOME/vimfiles/
+for a system installation below
+  $VIM/vimfiles/
+
+The values of the two variables can be found from inside Vim:
+   :echo $VIM
+or
+   :echo $HOME
+
+The configuration files for a user are
+
+  $HOME/_vimrc   and  $HOME/_gvimrc
+
+for the system
+
+  $VIM/_vimrc   and  $VIM/_gvimrc
+
+==============================================================================
+6.  TROUBLESHOOTING                               *awksupport-troubleshooting*
+==============================================================================
+
+* I do not see any new main menu item.
+  - Was the archive extracted into the right directory?
+
+* How can I see what was loaded?
+  - Use ':scriptnames' from the Vim command line.
+
+* No main menu item.
+  - Loading of plugin files must be enabled. If not use
+      :filetype plugin on
+    This is the minimal content of the file '$HOME/.vimrc'. Create one if
+    there is none, or better use customization.vimrc.
+
+* Some hotkeys do not work.
+  - The hotkeys might be in use by your graphical desktop environment. The key
+    settings can usually be redefined.
+
+==============================================================================
+7.  RELEASE NOTES                                   *awksupport-release-notes*
+==============================================================================
+
+See file 'README.awksupport'.
+
+==============================================================================
+vim:tw=78:noet:ts=2:ft=help:norl:

@@ -108,8 +108,8 @@ if( fclose(|FILEPOINTER|) == EOF ) {			// close output file
 	exit (EXIT_FAILURE);
 }
 
-== Idioms.fprintf == map:ifsc, shortcut:f, insert  ==
+== Idioms.fprintf == map:ifpr, shortcut:f, insert  ==
 fprintf ( |?FILEPOINTER|, "<CURSOR>\n",  );
-== Idioms.fscanf == map:ifpr, shortcut:f, insert  ==
+== Idioms.fscanf == map:ifsc, shortcut:f, insert  ==
 fscanf ( |?FILEPOINTER|, "<CURSOR>", & );
 

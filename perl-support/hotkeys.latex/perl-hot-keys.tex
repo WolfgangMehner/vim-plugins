@@ -24,7 +24,7 @@
 
 \setlength\parindent{0pt}
 
-\newcommand{\Pluginversion}{5.1}
+\newcommand{\Pluginversion}{5.2}
 \newcommand{\ReleaseDate}{\today}
 \newcommand{\Rep}{{\scriptsize{[n]}}}
 
@@ -308,28 +308,43 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hspace{30mm} \= \hspace{50mm} \= \kill
 %
 %%----------------------------------------------------------------------
+%%  Run
+%%----------------------------------------------------------------------
+\large{\textbf{Run}}\\[1.0ex]
+%
+Specify command line arguments for the script in the current buffer.\\
+Use tab expansion to choose a file or a directory.\\[1.0ex]
+%
+\texttt{ :PerlScriptArguments}  \> \\[1.0ex]
+%
+Specify command line switches for the Perl interpreter.\\[1.0ex]
+%
+\texttt{ :PerlSwitches}  \> \\[2.5ex]
+%
+%
+%%----------------------------------------------------------------------
 %%  perlcritic
 %%----------------------------------------------------------------------
-\textbf{\texttt{perlcritic}}\\[1.0ex]
+\large{\textbf{Perlcritic}}\\[1.0ex]
 %
 Ex commands for \texttt{perlcritic} (version 1.01+)\\
 Use tab expansion to choose the severity or the verbosity.\\[2.0ex]
 \texttt{ :CriticSeverity}  \> \texttt{\ 1\ \ \ \ \ \ 2\ \ \ \ \ 3\ \ \ \ \ 4\ \ \ \ \ 5} \\
                            \> \texttt{\ brutal cruel harsh stern gentle} \\[1.0ex]
 \texttt{ :CriticVerbosity} \> \texttt{\ 1} $\ldots$ \texttt{11}\\[1.0ex]
-\texttt{ :CriticOptions}   \> option(s), see \texttt{perlcritic(1)}\\[5.5ex]
+\texttt{ :CriticOptions}   \> option(s), see \texttt{perlcritic(1)}\\[2.5ex]
 %
 \hspace{40mm} \= \hspace{50mm} \= \kill
 %%----------------------------------------------------------------------
 %%  regex tester
 %%----------------------------------------------------------------------
-\textbf{\texttt{Regular Expression Tester}}\\[1.0ex]
+\large{\textbf{Regular Expression Tester}}\\[1.0ex]
 %
 Ex command for the regular expression tester. Set control character\\
 replacements for newline and tabulator used to display the results\\
-of a match, e.g.:\\[2.0ex]
+of a match, e.g.:\\[1.0ex]
 
-\texttt{ :RegexSubstitutions}   \> \texttt{'\$}\texttt{\~}\texttt{'}  \\[5.5ex]
+\texttt{ :RegexSubstitutions}   \> \texttt{'\$}\texttt{\~}\texttt{'}  \\[2.5ex]
 %
 \hspace{30mm} \= \hspace{50mm} \= \kill
 %
@@ -342,11 +357,11 @@ The following ex commands can be used to sort a profiler report \\in the quickfi
 Use tab expansion to choose the sort criterion or the file name.\\[2.0ex]
 %
 For \texttt{Devel::SmallProf}\\[1.0ex]
-\texttt{ :SmallProfSort}   \> \texttt{file-name|line-number|line-count|time|ctime}\\[3.0ex]
+\texttt{ :SmallProfSort}   \> \texttt{file-name|line-number|line-count|time|ctime}\\[1.0ex]
 %
 %
 For \texttt{Devel::FastProf}\\[1.0ex]
-\texttt{ :FastProfSort}    \> \texttt{file-name|line-number|time|line-count}\\[3.0ex]
+\texttt{ :FastProfSort}    \> \texttt{file-name|line-number|time|line-count}\\[1.0ex]
 %
 %
 For \texttt{Devel::NYTProf}\\[1.0ex]
