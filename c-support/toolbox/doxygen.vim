@@ -2,13 +2,17 @@
 "
 "          File:  doxygen.vim
 " 
-"   Description:  
+"   Description:  Part of the C-Support toolbox.
+"
+"                 Vim/gVim integration of Doxygen.
+"
+"                 See help file csupport_doxygen.txt .
 " 
 "   VIM Version:  7.0+
 "        Author:  Dr.-Ing. Fritz Mehner, mehner@fh-swf.de
 "                 Wolfgang Mehner, wolfgang-mehner@web.de
 "  Organization:  
-"       Version:  1.0
+"       Version:  see variable g:Doxygen_Version below
 "       Created:  10.06.2012
 "      Revision:  ---
 "       License:  Copyright (c) 2012, Wolfgang Mehner
@@ -80,22 +84,16 @@ endfunction    " ----------  end of function csupport#doxygen#Init  ----------
 " AddMaps : Add maps.   {{{1
 "-------------------------------------------------------------------------------
 function! csupport#doxygen#AddMaps ()
-	" TODO
 endfunction    " ----------  end of function csupport#doxygen#AddMaps  ----------
 "
 "-------------------------------------------------------------------------------
 " AddMenu : Add menus.   {{{1
 "-------------------------------------------------------------------------------
-function! csupport#doxygen#AddMenu ( root, name )
-	"
-	let root = a:root.'.&Doxygen'
-	"
-	exe 'amenu '.root.'.Doxygen<TAB>'.escape( a:name, ' .' ).'  :echo "This is a menu header."<CR>'
-	exe 'amenu '.root.'.-Sep00- <Nop>'
+function! csupport#doxygen#AddMenu ( root )
 	"
 	" TODO
 	"
-	exe 'amenu '.root.'.&error\ file<Tab>:DoxygenErrorFile  :DoxygenErrorFile '
+	exe 'amenu '.a:root.'.&error\ file<Tab>:DoxygenErrorFile  :DoxygenErrorFile '
 	"
 endfunction    " ----------  end of function csupport#doxygen#AddMenu  ----------
 "

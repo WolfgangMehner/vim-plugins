@@ -297,8 +297,14 @@ let s:CppcheckSeverity	= [ "all", "error", "warning", "style", "performance", "p
 "  Tools
 "------------------------------------------------------------------------------
 "
-" list of lists: each entry is a list of strings:
-"   [ "<toolname>", "<prettyname>", "<versionnumber>" ]
+" list of dictionaries: each entry is a dictionary with entries:
+"   {
+"     name       = "<toolname>",
+"     prettyname = "<Pretty Name>",
+"     version    = "<number>",
+"     enabled    = 1/0,
+"     domenu     = 1/0,
+"   }
 let s:C_ToolBox = []
 "
 "===  FUNCTION  ================================================================
@@ -515,11 +521,18 @@ function! s:C_InitMenus ()
 	"----- Menu : Tools -----------------------------------------------------   {{{2
 	"===============================================================================================
 	"
-	let toolbox_root = string( s:C_RootMenu.'&Tool\ Box' )
-	let plugin_name  = string( substitute( s:C_RootMenu, '&\|\.$', '', 'g' ) )
+	let toolbox_root = s:C_RootMenu.'&Tool\ Box'
 	"
-	for [ name, _pn, _vrs ] in s:C_ToolBox
-		exe 'call csupport#'.name.'#AddMenu('.toolbox_root.','.plugin_name.')'
+	for entry in s:C_ToolBox
+		if entry.enabled && entry.domenu
+			let menu_item = entry.prettyname
+			let menu_item = substitute ( menu_item, '\V&', '\&&', 'g' )
+			let menu_item = escape ( menu_item, '.|\' )
+			call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', 'Tool Box.&'.menu_item )
+			let menu_item = escape ( menu_item, ' ' )
+			let menu_root = toolbox_root.'.'.menu_item
+			exe 'call csupport#'.entry.name.'#AddMenu('.string( menu_root ).')'
+		endif
 	endfor
 	"
 	"===============================================================================================
@@ -2064,8 +2077,12 @@ function! C_Settings ()
 	" ----- toolbox -----------------------------
 	if ! empty ( s:C_ToolBox )
 		let mdl = []
-		for [ name, prettyname, versionnumber ] in s:C_ToolBox
-			call add ( mdl, prettyname." (".versionnumber.")" )
+		for entry in s:C_ToolBox
+			if entry.enabled
+				call add ( mdl, entry.prettyname." (".entry.version.")" )
+			else
+				call add ( mdl, entry.prettyname." (".entry.version.", disabled)" )
+			endif
 		endfor
 		let sep = "\n                             "
 		let txt = txt."                  toolbox :  "
@@ -2693,6 +2710,15 @@ function! s:CreateAdditionalMaps ()
 		nmap  <buffer>  <silent>  <C-j>   i<C-R>=C_JumpCtrlJ()<CR>
 		imap  <buffer>  <silent>  <C-j>    <C-R>=C_JumpCtrlJ()<CR>
 	endif
+	"
+	" ---------- tool box --------------------------------------------------------
+	"
+	for entry in s:C_ToolBox
+		if entry.enabled
+			exe 'call csupport#'.entry.name.'#AddMaps()'
+		endif
+	endfor
+	"
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 "
 " Plug-in setup:  {{{1
@@ -2710,8 +2736,23 @@ if isdirectory ( s:plugin_dir.'/autoload/csupport/' )
 	for file in split( glob (s:plugin_dir.'/autoload/csupport/*.vim'), '\n' )
 		let s:tool = fnamemodify( file, ':t:r' )
 		try
-			exe 'let s:retval = csupport#'.s:tool.'#Init()'
-			call add ( s:C_ToolBox, [ s:tool ] + s:retval )
+			exe 'let s:retlist = csupport#'.s:tool.'#Init()'
+			let s:entry = {
+						\	"name"       : s:tool,
+						\	"prettyname" : s:retlist[0],
+						\	"version"    : s:retlist[1],
+						\	"enabled"    : 1,
+						\	"domenu"     : 1,
+						\	}
+			if len ( s:retlist ) > 2
+				if index ( s:retlist, 'nomenu', 2 ) != -1
+					let s:entry.domenu = 0
+				endif
+				if index ( s:retlist, 'disabled', 2 ) != -1
+					let s:entry.enabled = 0
+				endif
+			endif
+			call add ( s:C_ToolBox, s:entry )
 		catch /Vim(call):E117:.*/
 			" could not load the plugin: Init() function missing?
 		catch /.*/

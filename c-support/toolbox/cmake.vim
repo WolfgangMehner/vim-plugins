@@ -173,43 +173,48 @@ endif
 " Init : Initialize the script.   {{{1
 "-------------------------------------------------------------------------------
 function! csupport#cmake#Init ()
-	return [ 'CMake', g:CMake_Version ]
+	if s:Enabled
+		return [ 'CMake', g:CMake_Version ]
+	else
+		return [ 'CMake', g:CMake_Version, 'disabled' ]
+	endif
 endfunction    " ----------  end of function csupport#cmake#Init  ----------
 "
 "-------------------------------------------------------------------------------
 " AddMaps : Add maps.   {{{1
 "-------------------------------------------------------------------------------
 function! csupport#cmake#AddMaps ()
-	" TODO
 endfunction    " ----------  end of function csupport#cmake#AddMaps  ----------
 "
 "-------------------------------------------------------------------------------
 " AddMenu : Add menus.   {{{1
 "-------------------------------------------------------------------------------
-function! csupport#cmake#AddMenu ( root, name )
+function! csupport#cmake#AddMenu ( root )
 	"
-	let root = a:root.'.&CMake'
+	exe 'amenu '.a:root.'.run\ CMake<Tab>:CMake!   :CMake! '
+	exe 'amenu '.a:root.'.&run\ make<Tab>:CMake     :CMake '
 	"
-	exe 'amenu '.root.'.CMake<TAB>'.escape( a:name, ' .' ).'  :echo "This is a menu header."<CR>'
-	exe 'amenu '.root.'.-Sep00- <Nop>'
+	exe 'amenu '.a:root.'.-Sep01- <Nop>'
 	"
-	exe 'amenu '.root.'.run\ CMake<Tab>:CMake!   :CMake! '
-	exe 'amenu '.root.'.&run\ make<Tab>:CMake     :CMake '
+	exe 'amenu '.a:root.'.base\ &directory<Tab>:CMakeBaseDirectory  :CMakeBaseDirectory '
+	exe 'amenu '.a:root.'.build\ &location<Tab>:CMakeBuildLocation  :CMakeBuildLocation '
 	"
-	exe 'amenu '.root.'.-Sep01- <Nop>'
+	exe 'amenu '.a:root.'.-Sep02- <Nop>'
 	"
-	exe 'amenu '.root.'.base\ &directory<Tab>:CMakeBaseDirectory  :CMakeBaseDirectory '
-	exe 'amenu '.root.'.build\ &location<Tab>:CMakeBuildLocation  :CMakeBuildLocation '
-	"
-	exe 'amenu '.root.'.-Sep02- <Nop>'
-	"
-	exe 'amenu '.root.'.help\ &commands<Tab>:CMakeHelpCommand    :CMakeHelpCommand<CR>'
-	exe 'amenu '.root.'.help\ &modules<Tab>:CMakeHelpModule      :CMakeHelpModule<CR>'
-	exe 'amenu '.root.'.help\ &policies<Tab>:CMakeHelpPolicy     :CMakeHelpPolicy<CR>'
-	exe 'amenu '.root.'.help\ &property<Tab>:CMakeHelpProperty   :CMakeHelpProperty<CR>'
-	exe 'amenu '.root.'.help\ &variables<Tab>:CMakeHelpVariable  :CMakeHelpVariable<CR>'
+	exe 'amenu '.a:root.'.help\ &commands<Tab>:CMakeHelpCommand    :CMakeHelpCommand<CR>'
+	exe 'amenu '.a:root.'.help\ &modules<Tab>:CMakeHelpModule      :CMakeHelpModule<CR>'
+	exe 'amenu '.a:root.'.help\ &policies<Tab>:CMakeHelpPolicy     :CMakeHelpPolicy<CR>'
+	exe 'amenu '.a:root.'.help\ &property<Tab>:CMakeHelpProperty   :CMakeHelpProperty<CR>'
+	exe 'amenu '.a:root.'.help\ &variables<Tab>:CMakeHelpVariable  :CMakeHelpVariable<CR>'
 	"
 endfunction    " ----------  end of function csupport#cmake#AddMenu  ----------
+"
+"-------------------------------------------------------------------------------
+" Modul setup.   {{{1
+"-------------------------------------------------------------------------------
+if s:Enabled == 0
+	finish
+endif
 "
 "-------------------------------------------------------------------------------
 " === Script: Auxiliary functions. ===   {{{1
