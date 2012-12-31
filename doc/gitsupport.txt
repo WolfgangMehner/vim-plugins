@@ -19,6 +19,8 @@ a quick overview and a short guide to this documentation.
 
  1.    Introduction                               |gitsupport-introduction|
  2.    Overview                                   |gitsupport-overview|
+ 2.1    Menu                                      |gitsupport-overview-menu|
+ 2.2    Workflow                                  |gitsupport-overview-work|
  3.    Commands                                   |gitsupport-commands|
  4.    Syntax Highlighting                        |gitsupport-syntax|
  4.1    Branch                                    |gitsupport-syn-branch|
@@ -28,6 +30,7 @@ a quick overview and a short guide to this documentation.
  5.    Configuration                              |gitsupport-configuration|
  5.1    Executable                                |gitsupport-config-executable|
  5.2    Menus                                     |gitsupport-config-menus|
+ 5.3    Maps                                      |gitsupport-config-maps|
 
  A.    Troubleshooting                            |gitsupport-troubleshooting|
  B.    Release Notes / Change Log                 |gitsupport-release-notes|
@@ -45,16 +48,21 @@ to run other commands. For example, after running :GitStatus, you can use maps
 like "a" and "c" to add or check out the file under the cursor, provided its
 name appears in the section "Changes not staged for commit:".
 
-The next chapter |gitsupport-overview| gives an overview over all the commands,
-follow by a detailed description in |gitsupport-commands|. The customization
-of the syntax highlighting is explained in |gitsupport-syntax|. The chapter
-|gitsupport-configuration| documents further configurations.
+All commands are listed in a menu "Git". It provides convenient access to all
+the commands and gives an overview of the plug-in's functionality.
+
+The next chapter |gitsupport-overview| gives an overview of the plug-in, fol-
+lowed by a detailed description of the commands in |gitsupport-commands|.  The
+customization of the syntax highlighting is explained in |gitsupport-syntax|.
+The chapter |gitsupport-configuration| documents further configurations.
 
 ==============================================================================
 2.  OVERVIEW                                             *gitsupport-overview*
 ==============================================================================
 
-The following commands are provided by Git Support:
+The following commands are provided by Git Support. Each command is executed
+in the current working directory, just as it would work on the shell. You can
+run the commands in every subdirectory of the project.
 
 	Command												Short Description
  ----------------------------------------------------------------------------
@@ -88,6 +96,52 @@ GitRemove and GitReset is the current buffer.
 When called without parameters, the commands GitBranch and GitRemote open a
 buffer, otherwise they run the respective Git command with the given
 parameters.
+
+------------------------------------------------------------------------------
+2.1  MENU                                           *gitsupport-overview-menu*
+------------------------------------------------------------------------------
+
+Git Support comes with a menu "Git" which contains all commands for convenient
+access. The menu contains several entries which open buffers for a quick
+overview of your repository: branch, log, status, ...
+
+All commands are listed in the menu "git ...". Each entry opens the command-
+line and inserts the respective command, awaiting further input. This menu
+provides an overview of the plug-in's functionality.
+
+The menu "file" contains several commands which can be run on the current
+buffer. Each entry runs the command directly. This is designed to support the
+work on the current file: viewing diffs, adding or checking out the file, ...
+
+Some special commands are provided in the menu "specials". See their documen-
+tation for further help.
+
+------------------------------------------------------------------------------
+2.2  WORKFLOW                                       *gitsupport-overview-work*
+------------------------------------------------------------------------------
+
+To be completely honest, the plug-in in its current state is probably best
+suited for my own workflow. This is the main reason why simply running
+|:GitCommit| without parameters currently does not work, and why there is a
+|:GitCommitFile| command.
+
+I keep a file like 'project/commit.txt' around and protocol the changes while
+working on the files. This has the advantage that names of variables,
+functions or classes can quickly be inserted using <CTRL-P>. Intermediate
+results can be staged using |:GitAdd|, so the output of |:GitDiff| is clean
+again. After a look at the output of |:GitStatus| and assembling the release
+in the status buffer, I finalize the commit message in 'project/commit.txt'.
+Running |:GitCommitFile| on the buffer commits the changes using the contents
+of the file as the message.
+
+I am convinced, since you do not have to leave Vim to manage your repository,
+that this is a better way of doing things. Editing the commit message in a
+window gives you the chance to browse around your project in the environment
+your already working in anyway. You furthermore can have a look at logs,
+compare different branches or add another file while writing the commit
+message. And seeing how you use Vim for a big project like the kinds of
+projects you manage in a version control system, you obviously do not have a
+problem dealing with one further file.
 
 ==============================================================================
 3.  COMMANDS                                             *gitsupport-commands*
@@ -162,6 +216,10 @@ The first version runs "git commit" with the given parameters. The second
 version takes the commit message from the given file (default: current
 buffer). The third version uses the commit message provided on the command
 line.
+
+Note The command :GitCommit currently can not be run without parameters.
+     Supply the commit message using either the -m or -F options, or by using
+		 the other versions :GitCommitFile or :GitCommitMsg.
 
 Examples:
 
@@ -341,16 +399,26 @@ Only the current branch is highlighted.
 
 The headers of the output for each file are highlighted, as well as each range
 "@@ <range> @@" and inserted and deleted lines. Folds are created for each
-file and subfolds for each block (starting with "@@ <range> @@").
+file and subfolds for each block (starting with "@@ <range> @@"). For unmerged
+files, regions with conflicts are highlighted as well.
 
 	Category								Short Description
  ----------------------------------------------------------------------------
 	GitDiffHeader						the header generated for each file
 														(lines like "diff ...", "index ...", ...)
+ ----------------------------------------------------------------------------
 	GitDiffRange						the range of a single block of the output
 														(line "@@ <range> @@ ...")
 	GitDiffLineP						inserted lines (lines starting with "+")
 	GitDiffLineM						removed lines (lines starting with "-")
+ ----------------------------------------------------------------------------
+	GitMergeRange						the range of a single block of the output
+														(line "@@@ <range> @@@ ...")
+	GitMergeLineP						inserted lines (lines starting with "+ " or " +")
+	GitMergeLineM						removed lines (lines starting with "- " or " -")
+	GitMergeConflict				lines signaling regions with conflicts
+														(lines like "++<<<<<<< HEAD", "++=======" or
+														"++>>>>>>> master")
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -385,6 +453,7 @@ committed:", "Changes not staged for commit:", ...
 	GitModifiedFile					files listed as "not staged for commit"
 	GitUntrackedFile				files listed as "untracked"
 	GitIgnoredFile					files listed as "ignored"
+	GitUnmergedFile					files listed as "unmerged"
  ----------------------------------------------------------------------------
 
 ==============================================================================
@@ -411,7 +480,7 @@ in the .vimrc file.
                                                             *g:Git_Executable*
 The executable is set by g:Git_Executable. You should use the English language
 environment: >
-	g:Git_Executable = 'LANG=en_US git'
+	let g:Git_Executable = 'LANG=en_US git'
 
 ------------------------------------------------------------------------------
 5.2  MENUS                                           *gitsupport-config-menus*
@@ -433,6 +502,16 @@ character prefixed by '&' will be the shortcut.
 Example: >
 	let g:Git_RootMenu = 'G&it'
 Sets the shortcut to 'i'.
+
+------------------------------------------------------------------------------
+5.3  MAPS                                             *gitsupport-config-maps*
+------------------------------------------------------------------------------
+
+You can add hotkeys for your favorite commands by adding maps to your .vimrc.
+
+With these lines, <F10> will open the status buffer: >
+	 noremap <silent> <F10>       :GitStatus<CR>
+	inoremap <silent> <F10>  <C-C>:GitStatus<CR>
 
 ==============================================================================
 A.  TROUBLESHOOTING                               *gitsupport-troubleshooting*

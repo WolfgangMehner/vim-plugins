@@ -28,6 +28,7 @@ local filelist = {
 	'git-support/README.gitsupport',
 	'syntax/gitsbranch.vim',
 	'syntax/gitslog.vim',
+	'syntax/gitssshort.vim',
 	'syntax/gitsstatus.vim',
 }
 
