@@ -39,7 +39,7 @@ endif
 let g:AwkSupportVersion= "1.0"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
-"          NAME:  Perl_SetGlobalVariable     {{{1
+"          NAME:  awk_SetGlobalVariable     {{{1
 "   DESCRIPTION:  Define a global variable and assign a default value if nor
 "                 already defined
 "    PARAMETERS:  name - global variable
@@ -153,8 +153,6 @@ else
 	let s:Awk_OutputGvim					= 'vim'
 	"
 endif
-"
-" g:Perl_CodeSnippets is used in autoload/perlsupportgui.vim
 "
 let s:Awk_CodeSnippets  				= s:plugin_dir.'/awk-support/codesnippets/'
 call s:awk_SetGlobalVariable( 'Awk_CodeSnippets', s:Awk_CodeSnippets )
@@ -369,67 +367,18 @@ function! Awk_EndOfLineComment ( ) range
 	exe a:firstline.','.a:lastline.'s/\s*$//'
 
 	for line in range( a:lastline, a:firstline, -1 )
-		let linelength	= virtcol( [line, "$"] ) - 1
-		let	diff				= 1
-		if linelength < b:Awk_LineEndCommentColumn
-			let diff	= b:Awk_LineEndCommentColumn -1 -linelength
-		endif
-		exe 'normal!	'.diff.'A '
-		exe 'normal!	A'.s:Awk_StartComment.' '
-		startinsert!
-		if line > a:firstline
-			normal k
+		silent exe ":".line
+		if getline(line) !~ '^\s*$'
+			let linelength	= virtcol( [line, "$"] ) - 1
+			let	diff				= 1
+			if linelength < b:Awk_LineEndCommentColumn
+				let diff	= b:Awk_LineEndCommentColumn -1 -linelength
+			endif
+			exe "normal	".diff."A "
+			call mmtemplates#core#InsertTemplate(g:Awk_Templates, 'Comments.end-of-line comment')
 		endif
 	endfor
 endfunction		" ---------- end of function  Awk_EndOfLineComment  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Awk_MultiLineEndComments     {{{1
-"   DESCRIPTION:  multiple end-of-line comment
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Awk_MultiLineEndComments ( )
-	"
-  if !exists("b:Awk_LineEndCommentColumn")
-		let	b:Awk_LineEndCommentColumn	= s:Awk_LineEndCommColDefault
-  endif
-	"
-	let pos0	= line("'<")
-	let pos1	= line("'>")
-	"
-	" ----- trim whitespaces -----
-  exe pos0.','.pos1.'s/\s*$//'
-	"
-	" ----- find the longest line -----
-	let maxlength	= max( map( range(pos0, pos1), "virtcol([v:val, '$'])" ) )
-	let	maxlength	= max( [b:Awk_LineEndCommentColumn, maxlength+1] )
-	"
-	" ----- fill lines with blanks -----
-	for linenumber in range( pos0, pos1 )
-		exe ":".linenumber
-		if getline(linenumber) !~ '^\s*$'
-			let diff	= maxlength - virtcol("$")
-			exe 'normal	'.diff.'A '
-			exe 'normal!	A'.s:Awk_StartComment.' '
-		endif
-	endfor
-	"
-	" ----- back to the begin of the marked block -----
-	stopinsert
-	normal '<$
-	if match( getline("."), '\/\/\s*$' ) < 0
-		if search( '\/\*', 'bcW', line(".") ) > 1
-			normal l
-		endif
-		let save_cursor = getpos(".")
-		if getline(".")[save_cursor[2]+1] == ' '
-			normal l
-		endif
-	else
-		normal $
-	endif
-endfunction		" ---------- end of function  Awk_MultiLineEndComments  ----------
 "
 "===  FUNCTION  ================================================================
 "          NAME:  Awk_CodeComment     {{{1
@@ -462,50 +411,6 @@ function! Awk_CommentCode( toggle ) range
 	endfor
 	"
 endfunction    " ----------  end of function Awk_CommentCode  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  GetFunctionParameters     {{{1
-"   DESCRIPTION:  get function name and parameters
-"    PARAMETERS:  fun_line - function head
-"       RETURNS:  scope     - The scope. (string, 's', 'g' or empty) 
-"                 fun_name  - The name of the function (string, id without the scope)
-"                 param_str - Names of the parameters. (list of strings)
-"                 ellipsis  - Has an ellipsis? (boolean)
-"                 range     - Has a range? (boolean)
-"===============================================================================
-function! s:GetFunctionParameters ( fun_line )
-	"
-	" 1. function names with '.' (dictionaries) and '#' (autoload)
-	" 2. parameter list with spaces, tabs and optional ellipsis
-	let fun_id       = '\([a-zA-Z][a-zA-Z0-9_\.#]*\)'
-	let params       = '\s*\([a-zA-Z0-9_, \t]*\)\(\.\.\.\)\?\s*'
-	"
-	" apparently every prefix of 'function' is allowed,
-	" as long as it is at least two characters long
-	let mlist = matchlist ( a:fun_line, '^\s*:\?\s*fu\%[nction]!\?\s*\([sg]:\)\?'.fun_id.'\s*('.params.')\s*\(range\)\?' )
-	"
-	" no function?
-	if empty( mlist )
-		return []
-	endif
-	"
-	" found a function!
-	let [ scope, fun_name, param_str, ellipsis, range ] = mlist[1:5]
-	"
-	let param_str  = substitute ( param_str, '\s*$', '', '' )
-	let param_list = split ( param_str, '\s*,\s*' )
-	"
-	let scope    = scope[0]
-	let ellipsis = ! empty ( ellipsis )
-	let range    = ! empty ( range )
-	"
-	if empty ( fun_name )
-		return []
-	else
-		return [ scope, fun_name, param_list, ellipsis, range ]
-	endif
-	"
-endfunction    " ----------  end of function s:GetFunctionParameters  ----------
 "
 "===  FUNCTION  ================================================================
 "          NAME:  Awk_RereadTemplates     {{{1
@@ -614,7 +519,8 @@ function! s:InitMenus()
 	let ihead = 'inoremenu <silent> '.s:Awk_RootMenu.'.Comments.'
 	"
 	exe ahead.'end-of-&line\ comment<Tab>cl                    :call Awk_EndOfLineComment()<CR>'
-	exe vhead.'end-of-&line\ comment<Tab>cl               <Esc>:call Awk_MultiLineEndComments()<CR>A'
+	exe vhead.'end-of-&line\ comment<Tab>cl                    :call Awk_EndOfLineComment()<CR>'
+
 	exe ahead.'ad&just\ end-of-line\ com\.<Tab>cj              :call Awk_AdjustLineEndComm()<CR>'
 	exe ihead.'ad&just\ end-of-line\ com\.<Tab>cj         <Esc>:call Awk_AdjustLineEndComm()<CR>'
 	exe vhead.'ad&just\ end-of-line\ com\.<Tab>cj              :call Awk_AdjustLineEndComm()<CR>'
@@ -933,7 +839,7 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	nnoremap    <buffer>  <silent>  <LocalLeader>cl         :call Awk_EndOfLineComment()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>cl    <C-C>:call Awk_EndOfLineComment()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>cl    <C-C>:call Awk_MultiLineEndComments()<CR>A
+	vnoremap    <buffer>  <silent>  <LocalLeader>cl         :call Awk_EndOfLineComment()<CR>
 	"
 	nnoremap    <buffer>  <silent>  <LocalLeader>cj         :call Awk_AdjustLineEndComm()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>cj    <C-C>:call Awk_AdjustLineEndComm()<CR>

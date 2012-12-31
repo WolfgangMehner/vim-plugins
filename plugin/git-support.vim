@@ -42,7 +42,7 @@ endif
 let g:GitSupport_Version= '0.1'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
-" Auxiliary functions   {{{1
+" Auxiliary functions.   {{{1
 "-------------------------------------------------------------------------------
 "
 "-------------------------------------------------------------------------------
@@ -400,7 +400,7 @@ function! GitS_BranchBuf( action )
 	"
 	if s:OpenManBuffer ( 'Git : branch' )
 		"
-		let b:GitSupportBranchFlag = 1
+		let b:GitSupport_BranchFlag = 1
 		"
 		setlocal filetype=gitsbranch
 		"
@@ -421,7 +421,21 @@ endfunction    " ----------  end of function GitS_BranchBuf  ----------
 "
 function! GitS_Checkout( param, confirmation )
 	"
-	return s:StandardRun ( 'checkout', a:param, a:confirmation )
+	if empty( a:param )
+		"
+		" checkout on the current file potentially destroys unstaged changed,
+		" ask question with different highlighting
+		if a:confirmation && s:Question ( 'Check out current file?', 'warning' ) != 1
+			echo "aborted"
+			return
+		endif
+		"
+		let confirmation = 0
+	else
+		let confirmation = a:confirmation
+	endif
+	"
+	return s:StandardRun ( 'checkout', a:param, confirmation )
 	"
 endfunction    " ----------  end of function GitS_Checkout  ----------
 "
@@ -432,8 +446,17 @@ endfunction    " ----------  end of function GitS_Checkout  ----------
 function! GitS_Commit( mode, param, confirmation )
 	"
 	if a:mode == 'direct'
+		"
+		" empty parameter list?
+		if empty ( a:param )
+			return s:ErrorMsg ( "The command :GitCommit currently can not be used this way.",
+						\ "Please supply the message using either the -m or -F options,",
+						\ "or by using the special commands :GitCommitFile or :GitCommitMsg." )
+		endif
+		"
 		" commit ...
 		let cmd = s:Git_Executable.' commit '.a:param
+		"
 	elseif a:mode == 'file'
 		"
 		" message from file
@@ -497,9 +520,9 @@ function! GitS_Diff( action, ... )
 	"
 	if s:OpenManBuffer ( 'Git : diff' )
 		"
-		let b:GitSupportDiffFlag = 1
+		let b:GitSupport_DiffFlag = 1
 		"
-		let b:GitSupportCWD = getcwd ()
+		let b:GitSupport_CWD = getcwd ()
 		"
 		setlocal filetype=gitsstatus
 		"
@@ -509,9 +532,9 @@ function! GitS_Diff( action, ... )
 	endif
 	"
 	if a:0 == 0
-		let param = b:GitSupportParam
+		let param = b:GitSupport_Param
 	else
-		let b:GitSupportParam = param
+		let b:GitSupport_Param = param
 	endif
 	"
 	let cmd = s:Git_Executable.' diff '.param
@@ -547,8 +570,8 @@ function! GitS_Help( action, ... )
 			let helpcmd = a:1
 		endif
 " 	elseif a:action == 'toc'
-" 		for i in range( 1, len(b:GitSupportTOC) )
-" 			echo i.' - '.b:GitSupportTOC[i-1][1]
+" 		for i in range( 1, len(b:GitSupport_TOC) )
+" 			echo i.' - '.b:GitSupport_TOC[i-1][1]
 " 		endfor
 " 		return
 	else
@@ -558,7 +581,7 @@ function! GitS_Help( action, ... )
 	"
 	if s:OpenManBuffer ( 'Git : help' )
 		"
-		let b:GitSupportHelpFlag = 1
+		let b:GitSupport_HelpFlag = 1
 		"
 		setlocal filetype=man
 		"
@@ -572,7 +595,7 @@ function! GitS_Help( action, ... )
 	"
 	call s:UpdateManBuffer ( cmd )
 	"
-" 	let b:GitSupportTOC = []
+" 	let b:GitSupport_TOC = []
 " 	"
 " 	let cpos = getpos ('.')
 " 	call setpos ( '.', [ bufnr('%'),1,1,1 ] )
@@ -585,7 +608,7 @@ function! GitS_Help( action, ... )
 "  		"
 "  		let item = matchstr ( getline(pos), '^[0-9A-Za-z \t]\+' )
 "  		"
-" 		call add ( b:GitSupportTOC, [ pos, item ] )
+" 		call add ( b:GitSupport_TOC, [ pos, item ] )
 "  		"
 "  	endwhile
 " 	"
@@ -641,7 +664,7 @@ function! GitS_Log( action, ... )
 	"
 	if s:OpenManBuffer ( 'Git : log' )
 		"
-		let b:GitSupportLogFlag = 1
+		let b:GitSupport_LogFlag = 1
 		"
 		setlocal filetype=gitslog
 		setlocal foldtext=GitS_LogFold()
@@ -652,9 +675,9 @@ function! GitS_Log( action, ... )
 	endif
 	"
 	if a:0 == 0
-		let param = b:GitSupportParam
+		let param = b:GitSupport_Param
 	else
-		let b:GitSupportParam = param
+		let b:GitSupport_Param = param
 	endif
 	"
 	let cmd = s:Git_Executable.' log '.param
@@ -698,7 +721,7 @@ function! GitS_RemoteBuf( action )
 	"
 	if s:OpenManBuffer ( 'Git : remote' )
 		"
-		let b:GitSupportRemoteFlag = 1
+		let b:GitSupport_RemoteFlag = 1
 		"
 		"setlocal filetype=
 		"
@@ -739,69 +762,142 @@ function! GitS_Reset( param, confirmation )
 endfunction    " ----------  end of function GitS_Reset  ----------
 "
 "-------------------------------------------------------------------------------
-" s:Status_FileAction : execute a command for the file under the cursor {{{1
+" Status : Auxiliary   {{{1
+"-------------------------------------------------------------------------------
+"
+" s:Status_SectionCodes   {{{2
+let s:Status_SectionCodes = {
+			\ 'b': 'staged/modified',
+			\ 's': 'staged',
+			\ 'm': 'modified',
+			\ 'u': 'untracked',
+			\ 'i': 'ignored',
+			\ 'c': 'conflict',
+			\ }
+"
+"-------------------------------------------------------------------------------
+" s:Status_GetFile : Get the file under the cursor and its status. {{{2
+"-------------------------------------------------------------------------------
+"
+function! s:Status_GetFile()
+	"
+	if b:GitSupport_ShortOption
+		"
+		" short output
+		"
+		let line = getline('.')
+		"
+		if line =~ '^##'
+			call s:ErrorMsg ( 'No file under the cursor.' )
+			return []
+		elseif line =~ '^\%([MARC][MD]\|DM\)\s'
+			let s_code = 'b'
+		elseif line =~ '^[MARCD] \s'
+			let s_code = 's'
+		elseif line =~ '^ [MD]\s'
+			let s_code = 'm'
+		elseif line =~ '^??\s'
+			let s_code = 'u'
+		elseif line =~ '^!!\s'
+			let s_code = 'i'
+		elseif line =~ '^\%(AA\|DD\|[AD]U\|U[ADU]\)\s'
+			let s_code = 'c'
+		else
+			call s:ErrorMsg ( 'Unknown section, aborting.' )
+			return []
+		endif
+		"
+		let [ f_status, f_name ] = matchlist( line, '^\(..\)\s\(.*\)' )[1:2]
+		"
+	else
+		"
+		" regular output
+		"
+		let c_pos  = line('.')
+		let h_pos  = c_pos
+		let s_head = ''
+		"
+		" find header
+		while h_pos > 0
+			"
+			let s_head = matchstr( getline(h_pos), '^# \zs[[:alnum:][:space:]]\+\ze:$' )
+			"
+			if ! empty( s_head )
+				break
+			endif
+			"
+			let h_pos -= 1
+		endwhile
+		"
+		" which header?
+		if s_head == ''
+			call s:ErrorMsg ( 'Not in any section.' )
+			return []
+		elseif s_head == 'Changes to be committed'
+			let s_code = 's'
+		elseif s_head == 'Changed but not updated' || s_head == 'Changes not staged for commit'
+			let s_code = 'm'
+		elseif s_head == 'Untracked files'
+			let s_code = 'u'
+		elseif s_head == 'Ignored files'
+			let s_code = 'i'
+		elseif s_head == 'Unmerged paths'
+			let s_code = 'c'
+		else
+			call s:ErrorMsg ( 'Unknown section "'.s_head.'", aborting.' )
+			return []
+		endif
+		"
+		" get the filename
+		if s_code =~ '[smc]'
+			let mlist = matchlist( getline(c_pos), '^#\t\([[:alnum:][:space:]]\+\):\s\+\(\S.*\)$' )
+		else
+			let mlist = matchlist( getline(c_pos), '^#\t\(\)\(\S.*\)$' )
+		endif
+		"
+		" check the filename
+		if empty( mlist )
+			call s:ErrorMsg ( 'No file under the cursor.' )
+			return []
+		endif
+		"
+		let [ f_status, f_name ] = mlist[1:2]
+		"
+		if s_code == 'c'
+			let f_status = 'conflict'
+		endif
+		"
+	endif
+	"
+	return [ s_code, f_status, f_name ]
+	"
+endfunction    " ----------  end of function s:Status_GetFile  ----------
+"
+"-------------------------------------------------------------------------------
+" s:Status_FileAction : Execute a command for the file under the cursor. {{{2
 "-------------------------------------------------------------------------------
 "
 function! s:Status_FileAction( action )
 	"
-	" the file and the action
-	let c_pos  = line('.')
-	let h_pos  = c_pos
-	let s_head = ''
-	let s_name = ''
-	let s_code = ''
+	" the file under the cursor
+	let fileinfo = s:Status_GetFile()
 	"
-	while h_pos > 0
-		"
-		let s_head = matchstr( getline(h_pos), '^# \zs[[:alnum:][:space:]]\+\ze:$' )
-		"
-		if ! empty( s_head )
-			break
-		endif
-		"
-		let h_pos -= 1
-	endwhile
-	"
-	if s_head == ''
-		echo 'Not in any section.'
-		return 0
-	elseif s_head == 'Changes to be committed'
-		let s_name = 'staged'
-		let s_code = 's'
-	elseif s_head == 'Changed but not updated' || s_head == 'Changes not staged for commit'
-		let s_name = 'modified'
-		let s_code = 'm'
-	elseif s_head == 'Untracked files'
-		let s_name = 'untracked'
-		let s_code = 'u'
-	elseif s_head == 'Ignored files'
-		let s_name = 'ignored'
-		let s_code = 'i'
-	else
-		echoerr 'Unknown section "'.s_head.'", aborting.'
+	if empty( fileinfo )
 		return 0
 	endif
 	"
-	if s_code =~ '[sm]'
-		let mlist = matchlist( getline(c_pos), '^#\t\([[:alnum:][:space:]]\+\):\s\+\(\S.*\)$' )
-	else
-		let mlist = matchlist( getline(c_pos), '^#\t\(\)\(\S.*\)$' )
-	endif
-	"
-	if empty( mlist )
-		echo 'No file under the cursor.'
-		return 0
-	endif
-	"
-	let [ f_status, f_name ] = mlist[1:2]
+	let [ s_code, f_status, f_name ] = fileinfo
 	"
 	" section / action
-	"           | edit  | diff  log   | add   ckout reset
-	" staged    |  x    |  x     x    |  -     -     x
-	" modified  |  x    |  x     x    |  x     x     -
-	" untracked |  x    |  -     -    |  x     -     -
-	" ignored   |  x    |  -     -    |  x     -     -
+	"                 | edit  | diff  log   | add   ckout reset rm
+	" staged    (b/s) |  x    |  x     x    |  -     -     x     -
+	" modified  (b/m) |  x    |  x     x    |  x     x     -     ?
+	" untracked (u)   |  x    |  -     -    |  x     -     -     -
+	" ignored   (i)   |  x    |  -     -    |  x     -     -     -
+	" unmerged  (c)   |  x    |  x     x    |  x     -     -     x
 	"  (ckout = checkout)
+	"
+	" in section 'modified': action 'rm' only for status 'deleted'
 	"
 	if a:action == 'edit'
 		"
@@ -809,14 +905,14 @@ function! s:Status_FileAction( action )
 		belowright new
 		exe "edit ".escape( f_name, s:FilenameEscChar )
 		"
-	elseif s_code =~ '[sm]' && a:action == 'diff'
+	elseif s_code =~ '[bsmc]' && a:action == 'diff'
 		"
-		" section "staged" or "modified", action "diff"
+		" section "staged", "modified" or "conflict", action "diff"
 		call GitS_Diff( 'update', '-- '.f_name )
 		"
-	elseif s_code =~ '[sm]' && a:action == 'log'
+	elseif s_code =~ '[bsmc]' && a:action == 'log'
 		"
-		" section "staged" or "modified", action "log"
+		" section "staged", "modified" or "conflict", action "log"
 		call GitS_Log( 'update', '-- '.f_name )
 		"
 	elseif s_code == 'i' && a:action == 'add'
@@ -835,59 +931,75 @@ function! s:Status_FileAction( action )
 			return 1
 		endif
 		"
-	elseif s_code == 'm' && a:action == 'add'
+	elseif s_code =~ '[bm]' && a:action == 'add'
 		"
 		" section "modified", action "add"
 		"
-		if f_status == 'modified'
+		if f_status == 'modified' || f_status =~ '^.M$'
 			" add a modified file?
 			if s:Question( 'Add file "'.f_name.'"?' ) == 1
 				call GitS_Add( '-- '.f_name, 0, 0 )
 				return 1
 			endif
-		elseif f_status == 'deleted'
+		elseif f_status == 'deleted' || f_status =~ '^.D$'
 			" add a deleted file? -> remove it?
 			if s:Question( 'Remove file "'.f_name.'"?' ) == 1
 				call GitS_Remove( '-- '.f_name, 0 )
 				return 1
 			endif
 		else
-			echo 'Adding not implemented yet for file status "'.f_status.'".'
+			call s:ErrorMsg ( 'Adding not implemented yet for file status "'.f_status.'".' )
 		endif
 		"
-	elseif s_code == 'm' && a:action == 'checkout'
+	elseif s_code =~ '[bm]' && a:action == 'checkout'
 		"
 		" section "modified", action "checkout"
 		"
-		if f_status == 'modified' || f_status == 'deleted'
+		if f_status == 'modified' || f_status == 'deleted' || f_status =~ '^.[MD]$'
 			" check out a modified or deleted file?
-			if s:Question( 'Checkout file "'.f_name.'"?' ) == 1
+			if s:Question( 'Checkout file "'.f_name.'"?', 'warning' ) == 1
 				call GitS_Checkout( '-- '.f_name, 0 )
 				return 1
 			endif
 		else
-			echo 'Checking out not implemented yet for file status "'.f_status.'".'
+			call s:ErrorMsg ( 'Checking out not implemented yet for file status "'.f_status.'".' )
 		endif
 		"
-	elseif s_code == 's' && a:action == 'reset'
+	elseif s_code =~ '[bs]' && a:action == 'reset'
 		"
 		" section "staged", action "reset"
 		"
-		if f_status == 'modified' || f_status == 'new file' || f_status == 'deleted'
+		if f_status == 'modified' || f_status == 'new file' || f_status == 'deleted' || f_status =~ '^[MADRC].$'
 			" reset a modified, new or deleted file?
 			if s:Question( 'Reset file "'.f_name.'"?' ) == 1
 				call GitS_Reset( '-- '.f_name, 0 )
 				return 1
 			endif
 		else
-			echo 'Reseting not implemented yet for file status "'.f_status.'".'
+			call s:ErrorMsg ( 'Reseting not implemented yet for file status "'.f_status.'".' )
+		endif
+		"
+	elseif s_code =~ 'c' && a:action == 'add'
+		"
+		" section "unmerged", action "add"
+		if s:Question( 'Add unmerged file "'.f_name.'"?' ) == 1
+			call GitS_Add( '-- '.f_name, 0, 0 )
+			return 1
+		endif
+		"
+	elseif s_code =~ 'c' && a:action == 'reset'
+		"
+		" section "unmerged", action "reset" -> "remove"
+		if s:Question( 'Remove unmerged file "'.f_name.'"?' ) == 1
+			call GitS_Remove( '-- '.f_name, 0 )
+			return 1
 		endif
 		"
 	else
 		"
 		" action not implemented for section
 		"
-		echo 'Can not execute "'.a:action.'" in section "'.s_name.'".'
+		call s:ErrorMsg ( 'Can not execute "'.a:action.'" in section "'.s:Status_SectionCodes[s_code].'".' )
 		"
 	endif
 	"
@@ -916,7 +1028,8 @@ function! GitS_Status( action )
 		let txt .= "od      : file under cursor: open diff\n"
 		let txt .= "of      : file under cursor: open file (edit)\n"
 		let txt .= "ol      : file under cursor: open log\n"
-		let txt .= "r       : file under cursor: reset"
+		let txt .= "r       : file under cursor: reset\n"
+		let txt .= "r       : file under cursor: remove (only for unmerged changes)"
 		echo txt
 		return
 	elseif a:action == 'quit'
@@ -926,19 +1039,19 @@ function! GitS_Status( action )
 		let newCWD = getcwd ()
 	elseif a:action == 'ignored'
 		if ! s:HasStatusIgnore
-			echo '"show ignored files" not available in Git version '.s:GitVersion.'.'
+			call s:ErrorMsg ( '"show ignored files" not available in Git version '.s:GitVersion.'.' )
 			return
 		endif
 	elseif a:action =~ '\<\%(short\|verbose\)\>'
 		" noop
 	elseif a:action =~ '\<\%(add\|checkout\|diff\|edit\|log\|reset\)\>'
 		"
-		if getline('.') =~ '^#'
+		if getline('.') =~ '^#' || b:GitSupport_ShortOption
 			if s:Status_FileAction ( a:action )
 				call GitS_Status( 'update' )
 			endif
 		else
-			echo 'Not in status section.'
+			call s:ErrorMsg ( 'Not in status section.' )
 		endif
 		"
 		return
@@ -949,12 +1062,12 @@ function! GitS_Status( action )
 	"
 	if s:OpenManBuffer ( 'Git : status' )
 		"
-		let b:GitSupportStatusFlag = 1
-		let b:GitSupportIgnored    = 0
-		let b:GitSupportShort      = 0
-		let b:GitSupportVerbose    = 0
+		let b:GitSupport_StatusFlag = 1
+		let b:GitSupport_IgnoredOption    = 0
+		let b:GitSupport_ShortOption      = 0
+		let b:GitSupport_VerboseOption    = 0
 		"
-		let b:GitSupportCWD = getcwd ()
+		let b:GitSupport_CWD = getcwd ()
 		"
 		setlocal filetype=gitsstatus
 		"
@@ -976,24 +1089,32 @@ function! GitS_Status( action )
 	endif
 	"
 	if a:action == 'update'
-		if newCWD != b:GitSupportCWD
+		if newCWD != b:GitSupport_CWD
 			exe	'lchdir '.escape( newCWD, s:FilenameEscChar )
-			let b:GitSupportCWD = getcwd ()
+			let b:GitSupport_CWD = getcwd ()
 		endif
 	elseif a:action == 'ignored'
-		let b:GitSupportIgnored = ( b:GitSupportIgnored + 1 ) % 2
+		let b:GitSupport_IgnoredOption = ( b:GitSupport_IgnoredOption + 1 ) % 2
 	elseif a:action == 'short'
-		let b:GitSupportShort = ( b:GitSupportShort + 1 ) % 2
+		if b:GitSupport_ShortOption == 0
+			" switch to short
+			let b:GitSupport_ShortOption = 1
+			setlocal filetype=gitssshort
+		else
+			" switch to normal
+			let b:GitSupport_ShortOption = 0
+			setlocal filetype=gitsstatus
+		endif
 	elseif a:action == 'verbose'
-		let b:GitSupportVerbose = ( b:GitSupportVerbose + 1 ) % 2
+		let b:GitSupport_VerboseOption = ( b:GitSupport_VerboseOption + 1 ) % 2
 	endif
 	"
 	let cmd = s:Git_Executable.' status'
 	"
-	if b:GitSupportIgnored == 1 &&   s:HasStatusIgnore | let cmd .= ' --ignored'        | endif
-	if b:GitSupportShort   == 1 &&   s:HasStatusBranch | let cmd .= ' --short --branch' | endif
-	if b:GitSupportShort   == 1 && ! s:HasStatusBranch | let cmd .= ' --short'          | endif
-	if b:GitSupportVerbose == 1                        | let cmd .= ' --verbose'        | endif
+	if b:GitSupport_IgnoredOption == 1 &&   s:HasStatusIgnore | let cmd .= ' --ignored'        | endif
+	if b:GitSupport_ShortOption   == 1 &&   s:HasStatusBranch | let cmd .= ' --short --branch' | endif
+	if b:GitSupport_ShortOption   == 1 && ! s:HasStatusBranch | let cmd .= ' --short'          | endif
+	if b:GitSupport_VerboseOption == 1                        | let cmd .= ' --verbose'        | endif
 	"
 	call s:UpdateManBuffer ( cmd )
 	"
@@ -1068,6 +1189,7 @@ endfunction    " ----------  end of function s:InitMenus  ----------
 "-------------------------------------------------------------------------------
 " s:ToolMenu : Add or remove tool menu entries.   {{{1
 "-------------------------------------------------------------------------------
+"
 function! s:ToolMenu( action )
 	if a:action == 'setup'
 		amenu   <silent> 40.1000 &Tools.-SEP100- :

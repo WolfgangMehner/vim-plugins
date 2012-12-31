@@ -37,6 +37,7 @@ plugin/git-support.vim         The Git plug-in for Vim/gVim.
 
 syntax/gitsbranch.vim          The syntax file for "git branch".
 syntax/gitslog.vim             The syntax file for "git log".
+syntax/gitssshort.vim          The syntax file for "git status --short"
 syntax/gitsstatus.vim          The syntax file for "git status" and "git diff".
                           
 ----------------------------------------------------------------------
