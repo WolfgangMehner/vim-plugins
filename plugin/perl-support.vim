@@ -178,9 +178,6 @@ let s:Perl_LoadMenus             = 'yes'        " display the menus ?
 let s:Perl_TemplateOverriddenMsg = 'no'
 let s:Perl_Ctrl_j								 = 'on'
 "
-let s:Perl_FormatDate						 = '%x'
-let s:Perl_FormatTime						 = '%X'
-let s:Perl_FormatYear						 = '%Y'
 let s:Perl_TimestampFormat       = '%Y%m%d.%H%M%S'
 
 let s:Perl_PerlModuleList        = g:Perl_PluginDir.'/perl-support/modules/perl-modules.list'
@@ -215,9 +212,6 @@ call s:perl_SetLocalVariable('Perl_InsertFileHeader       ')
 call s:perl_SetLocalVariable('Perl_CreateMenusDelayed     ')
 call s:perl_SetLocalVariable('Perl_Ctrl_j                 ')
 call s:perl_SetLocalVariable('Perl_Debugger               ')
-call s:perl_SetLocalVariable('Perl_FormatDate             ')
-call s:perl_SetLocalVariable('Perl_FormatTime             ')
-call s:perl_SetLocalVariable('Perl_FormatYear             ')
 call s:perl_SetLocalVariable('Perl_GlobalTemplateFile     ')
 call s:perl_SetLocalVariable('Perl_LocalTemplateFile      ')
 call s:perl_SetLocalVariable('Perl_GuiSnippetBrowser      ')
