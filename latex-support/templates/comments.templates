@@ -1,0 +1,73 @@
+§ =============================================================
+§  Comments
+§ =============================================================
+
+== Comments.end-of-line comment == append, nomenu ==
+% <CURSOR> 
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+
+== Comments.frame 1 == below ==
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  <CURSOR>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== Comments.frame 2 == below ==
+%%======================================================================
+%%  <CURSOR>
+%%======================================================================
+== Comments.frame 3 == below ==
+%%----------------------------------------------------------------------
+%%  <CURSOR>
+%%----------------------------------------------------------------------
+== Comments.file prolog == noindent, start, map:cp, sc:p ==
+%%=====================================================================================
+%%
+%%       Filename:  |FILENAME|
+%%
+%%    Description:  <CURSOR>
+%%
+%%        Version:  1.0
+%%        Created:  |DATE|
+%%       Revision:  none
+%%
+%%         Author:  |AUTHOR| (|AUTHORREF|), |EMAIL|
+%%   Organization:  |ORGANIZATION|
+%%      Copyright:  |COPYRIGHT|
+%%
+%%          Notes:  
+%%                
+%%=====================================================================================
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+
+== LIST: comments_macros == hash ==
+	'author'       : '|AUTHOR|',
+	'author ref'   : '|AUTHORREF|',
+	'organization' : '|ORGANIZATION|',
+	'copyright'    : '|COPYRIGHT|',
+	'email'        : '|EMAIL|',
+
+	'path'       : '|PATH|',
+	'filename'   : '|FILENAME|',
+	'basename'   : '|BASENAME|',
+	'basename:u' : '|BASENAME:u|',
+	'suffix'     : '|SUFFIX|',
+
+	'date' : '|DATE|',
+	'time' : '|TIME|',
+	'year' : '|YEAR|',
+== ENDLIST ==
+
+§ -------------------------------------------------------------
+
+== Comments.macros == expandmenu, insert, map:cm, sc:m ==
+|PickList( 'macro', 'comments_macros' )|
+|PICK|<CURSOR>
+== Comments.date == insert, map:cd, sc:d ==
+|DATE|<CURSOR>
+== Comments.date time == insert, map:ct, sc:t ==
+|DATE| |TIME|<CURSOR>
+== ENDTEMPLATE ==
+
