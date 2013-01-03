@@ -1,0 +1,61 @@
+§ =============================================================
+§  Document
+§ =============================================================
+
+
+§ -------------------------------------------------------------
+§  Title, Table of Contents, Bibliography
+§ -------------------------------------------------------------
+== LIST: document_classes == list, bare  ==
+article
+book   
+letter 
+proc   
+report 
+slides 
+scrartcl
+scrbook
+scrdoc
+scrreprt
+scrlttr2
+scrlettr
+== ENDLIST ==
+
+== Document.document class == expandmenu, insert, map:dc ==
+|PickList( 'stype', 'document_classes' )|
+|PICK|<CURSOR>
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Indices
+§ -------------------------------------------------------------
+== LIST: indices == list, bare  ==
+listoffigures
+listoftables
+lstlistoflistings           
+printindex
+tableofcontents
+== ENDLIST ==
+
+== Document.indices == expandmenu, insert, map:di ==
+|PickList( 'stype', 'indices' )|
+\|PICK|<CURSOR>
+== ENDTEMPLATE ==
+
+== Document.title == insert, map:dti ==
+\author{|AUTHOR|}
+\title{<CURSOR>}
+\date{|DATE|}
+%
+\maketitle
+== ENDTEMPLATE ==
+
+== Document.bibliography == below, map:dbi ==
+\bibliographystyle{alpha}
+\bibliography{<CURSOR>}
+== ENDTEMPLATE ==
+
+== Document.addcontentsline == below, map:dac ==
+\addcontentsline{toc<CURSOR>}{<+level+>}{<+entry+>}
+== ENDTEMPLATE ==
+

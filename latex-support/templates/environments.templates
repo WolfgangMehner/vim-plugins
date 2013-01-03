@@ -1,0 +1,40 @@
+§ =============================================================
+§  Environments
+§ =============================================================
+
+== LIST: environment_list == list, bare ==
+align
+array
+center
+description
+document
+doublespace
+enumerate
+eqnarray
+equation
+figure
+floatingfigure
+floatingtable
+flushleft
+flushright
+itemize
+list
+lstlisting
+minipage
+picture
+onehalfspace
+quotation
+quote
+singlespace
+spacing
+tabbing
+table
+tabular
+thebibliography
+theorem
+titlepage
+verbatim
+verse
+wrapfigure
+== ENDLIST ==
+

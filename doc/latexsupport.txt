@@ -1,0 +1,25 @@
+*latexsupport.txt*           LATEX Support                      January 02 2013
+
+LaTeX Support                                   *latex-support* *latexsupport*
+
+                              Plugin version 1.0
+                        for Vim version 7.0 and above
+                    Fritz Mehner  <mehner.fritz@fh-swf.de>
+                   Wolfgang Mehner <wolfgang-mehner@web.de>
+
+LaTeX-IDE for Vim/gVim. It is written to considerably speed up typesetting a
+document in a consistent style.  This is done by inserting complete
+statements, idioms, code snippets, templates, and comments.  Compiling and
+viewing a document, format conversion and running make can be done with a few
+keystrokes.
+
+
+
+==============================================================================
+8.  RELEASE NOTES                                 *latexsupport-release-notes*
+==============================================================================
+
+See file README.latexsupport .
+
+==============================================================================
+vim:tw=78:noet:ts=2:ft=help:norl:
