@@ -618,12 +618,12 @@ function! s:InitMenus()
  	exe ahead.'save\ +\ &run\ lacheck<Tab>\\rla       :call Latex_Lacheck()<CR><CR>'
 	exe ihead.'save\ +\ &run\ lacheck<Tab>\\rla  <C-C>:call Latex_Lacheck()<CR><CR>'
 	"
- 	exe ahead.'view\ +\ &DVI<Tab>\\rdvi       :call Latex_View("dvi")<CR>'
-	exe ihead.'view\ +\ &DVI<Tab>\\rdvi  <C-C>:call Latex_View("dvi")<CR>'
- 	exe ahead.'view\ +\ &PDF<Tab>\\rpdf       :call Latex_View("pdf")<CR>'
-	exe ihead.'view\ +\ &PDF<Tab>\\rpdf  <C-C>:call Latex_View("pdf")<CR>'
- 	exe ahead.'view\ +\ &PS<Tab>\\rps         :call Latex_View("ps" )<CR>'
-	exe ihead.'view\ +\ &PS<Tab>\\rps    <C-C>:call Latex_View("ps" )<CR>'
+ 	exe ahead.'view\ &DVI<Tab>\\rdvi       :call Latex_View("dvi")<CR>'
+	exe ihead.'view\ &DVI<Tab>\\rdvi  <C-C>:call Latex_View("dvi")<CR>'
+ 	exe ahead.'view\ &PDF<Tab>\\rpdf       :call Latex_View("pdf")<CR>'
+	exe ihead.'view\ &PDF<Tab>\\rpdf  <C-C>:call Latex_View("pdf")<CR>'
+ 	exe ahead.'view\ &PS<Tab>\\rps         :call Latex_View("ps" )<CR>'
+	exe ihead.'view\ &PS<Tab>\\rps    <C-C>:call Latex_View("ps" )<CR>'
 	"
 	exe ahead.'-SEP0-                            :'
 	exe ahead.'&make<Tab>\\rm                                    :call Latex_Make()<CR>'

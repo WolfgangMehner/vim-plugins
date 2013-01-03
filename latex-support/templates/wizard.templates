@@ -2,7 +2,7 @@
 §  Wizard
 § =============================================================
 
-== Wizard.listings.snippet == map:wlsn, sc:l ==
+== Wizard.listings.lstlisting == map:wll, sc:l ==
 \begin{lstlisting}[numbers=none,frame=none]
 <CURSOR><SPLIT>
 \end{lstlisting}
@@ -68,7 +68,7 @@ xrightmargin
 
 § -------------------------------------------------------------
 
-== Wizard.listings.lstset == expandmenu, insert, map:wlse, sc:l ==
+== Wizard.listings.lstset == expandmenu, insert, map:wls, sc:l ==
 |PickList( 'macro', 'lstsetvalues' )|
 \lstset{|PICK|=<CURSOR>}
 == ENDTEMPLATE ==
@@ -105,4 +105,25 @@ xrightmargin
 \end{center}
 \end{wrapfigure}
 %%---------- WRAPFIGURE :  end  ----------------------------
+== ENDTEMPLATE ==
+
+== Wizard.boxes.fbox == insert, map:wbf, sc:f ==
+\fbox{<CURSOR><SPLIT>}
+§
+== Wizard.boxes.framebox == insert, map:wbfr, sc:f ==
+\framebox[<+width+>][<+position+>]{<CURSOR><SPLIT>}
+§
+== Wizard.boxes.mbox == insert, map:wbm, sc:m ==
+\mbox{<CURSOR><SPLIT>}
+§
+== Wizard.boxes.makebox == insert, map:wbmb, sc:m ==
+\makebox[<+width+>][<+position+>]{<CURSOR><SPLIT>}
+§
+== Wizard.boxes.minipage == insert, map:wmp, sc:m ==
+\begin{minipage}[<+vpos+>][<+hight+>][<+ipos+>]{<+width+>}
+<CURSOR><SPLIT>
+\end{minipage}
+§
+== Wizard.boxes.parbox == insert, map:wbp, sc:p ==
+\parbox[<+vpos+>][<+hight+>][<+ipos+>]{<+width+>}{<CURSOR><SPLIT>}
 == ENDTEMPLATE ==

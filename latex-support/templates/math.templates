@@ -258,6 +258,8 @@ mathtt
 §  Math, single menu items
 § =============================================================
 
+== SEP: Math.sep1 == 
+
 == Math.equation+label == sc:e, map:me, noindent ==
 \begin{equation}
 \label{|?LABEL|}
@@ -275,6 +277,8 @@ mathtt
 		 & 
 	\end{matrix}\right)
 == ENDTEMPLATE ==
+
+== SEP: Math.sep2 == 
 
 == Math.choose == sc:c, insert, map:mch ==
 {<CURSOR><SPLIT>}\choose{<+k+>}
