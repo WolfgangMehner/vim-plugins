@@ -46,7 +46,8 @@ staging area. The second kind redirects the output from Git commands like "git
 status" into buffers. For each such buffer maps are defined which can be used
 to run other commands. For example, after running :GitStatus, you can use maps
 like "a" and "c" to add or check out the file under the cursor, provided its
-name appears in the section "Changes not staged for commit:".
+name appears in the section "Changes not staged for commit:". Each buffer has
+a map <SHIFT-F1> for showing a short help.
 
 All commands are listed in a menu "Git". It provides convenient access to all
 the commands and gives an overview of the plug-in's functionality.
@@ -74,13 +75,18 @@ run the commands in every subdirectory of the project.
 	:GitCommitFile [<file>]				(run) git commit -F <file>
 	:GitCommitMsg <msg>						(run) git commit -m "<msg>"
 	:GitDiff [<param>]						(buf) git diff <param>
+	:GitFetch [<param>]						(run) git fetch <param>
 	:GitHelp [<command>]					(buf) git help <command>
 	:GitLog [<param>]							(buf) git log <param>
+	:GitMerge [<param>]						(run) git merge <param>
+	:GitPull [<param>]						(run) git pull <param>
+	:GitPush [<param>]						(run) git push <param>
 	:GitRemote										(buf) git remote
 	:GitRemote <param>						(run) git remote <param>
 	:GitRemove [<param>]					(run) git rm <param>
 	:GitRm [<param>]							(run) git rm <param>
 	:GitReset [<param>]						(run) git reset <param>
+	:GitStash [<param>]						(run) git stash <param>
 	:GitStatus										(buf) git status
  ----------------------------------------------------------------------------
 
@@ -264,6 +270,12 @@ Is equivalent to: >
 	git diff Vector.*
 
 ------------------------------------------------------------------------------
+                                                                   *:GitFetch*
+	:GitFetch [<param>] ~
+
+Executes "git fetch ...".
+
+------------------------------------------------------------------------------
                                                                     *:GitHelp*
 	:GitHelp [<command>] ~
 
@@ -297,6 +309,24 @@ The second version runs log for the given parameters.
 	q					close the buffer
 	u					update the buffer
  ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+                                                                   *:GitMerge*
+	:GitMerge [<param>] ~
+
+Executes "git merge ...".
+
+------------------------------------------------------------------------------
+                                                                    *:GitPull*
+	:GitPull [<param>] ~
+
+Executes "git pull ...".
+
+------------------------------------------------------------------------------
+                                                                    *:GitPush*
+	:GitPush [<param>] ~
+
+Executes "git push ...".
 
 ------------------------------------------------------------------------------
                                                                   *:GitRemote*
@@ -365,6 +395,12 @@ Opens a buffer showing the current status.
 	ol				file under cursor: open log
 	r					file under cursor: reset
  ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+                                                                   *:GitStash*
+	:GitStash [<param>] ~
+
+Executes "git stash ...".
 
 ==============================================================================
 4.  SYNTAX HIGHLIGHTING                                    *gitsupport-syntax*

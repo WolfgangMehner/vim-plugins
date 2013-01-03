@@ -7,7 +7,7 @@
 "   VIM Version:  7.0+
 "        Author:  Wolfgang Mehner, wolfgang-mehner@web.de
 "  Organization:  
-"       Version:  0.1
+"       Version:  see variable g:GitSupport_Version below
 "       Created:  06.10.2012
 "      Revision:  ---
 "       License:  Copyright (c) 2012, Wolfgang Mehner
@@ -39,7 +39,7 @@ endif
 if &cp || ( exists('g:GitSupport_Version') && ! exists('g:GitSupport_DevelopmentOverwrite') )
 	finish
 endif
-let g:GitSupport_Version= '0.1'     " version number of this script; do not change
+let g:GitSupport_Version= '0.9'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
@@ -48,6 +48,7 @@ let g:GitSupport_Version= '0.1'     " version number of this script; do not chan
 "-------------------------------------------------------------------------------
 " s:ErrorMsg : Print an error message.   {{{2
 "-------------------------------------------------------------------------------
+"
 function! s:ErrorMsg ( ... )
 	echohl WarningMsg
 	for line in a:000
@@ -59,6 +60,7 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 "-------------------------------------------------------------------------------
 " s:ImportantMsg : Print an important message.   {{{2
 "-------------------------------------------------------------------------------
+"
 function! s:ImportantMsg ( ... )
 	echohl Search
 	for line in a:000
@@ -70,6 +72,7 @@ endfunction    " ----------  end of function s:ImportantMsg  ----------
 "-------------------------------------------------------------------------------
 " s:GetGlobalSetting : Get a setting from a global variable.   {{{2
 "-------------------------------------------------------------------------------
+"
 function! s:GetGlobalSetting ( varname )
 	if exists ( 'g:'.a:varname )
 		exe 'let s:'.a:varname.' = g:'.a:varname
@@ -79,6 +82,7 @@ endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 "-------------------------------------------------------------------------------
 " s:VersionLess : Compare two version numbers.   {{{2
 "-------------------------------------------------------------------------------
+"
 function! s:VersionLess ( v1, v2 )
 	"
 	let l1 = matchlist( a:v1, '^\(\d\+\)\.\(\d\+\)\%(\.\(\d\+\)\)\?\%(\.\(\d\+\)\)\?$' )
@@ -190,19 +194,24 @@ let s:HelpTxtStdNoUpdate .= "q       : close"
 " custom commands   {{{2
 "
 if s:Enabled
-	command! -bang -nargs=* -complete=file GitAdd                 :call GitS_Add('<args>','<bang>'=='!',1)
-	command!       -nargs=* -complete=file GitBranch              :call GitS_Branch('<args>',1)
-	command!       -nargs=* -complete=file GitCheckout            :call GitS_Checkout('<args>',1)
-	command!       -nargs=* -complete=file GitCommit              :call GitS_Commit('direct','<args>',1)
-	command!       -nargs=? -complete=file GitCommitFile          :call GitS_Commit('file','<args>',1)
-	command!       -nargs=+                GitCommitMsg           :call GitS_Commit('msg','<args>',1)
+	command! -bang -nargs=* -complete=file GitAdd                 :call GitS_Add('<args>','<bang>'=='!'?'cef':'ce')
+	command!       -nargs=* -complete=file GitBranch              :call GitS_Branch('<args>','c')
+	command!       -nargs=* -complete=file GitCheckout            :call GitS_Checkout('<args>','ce')
+	command!       -nargs=* -complete=file GitCommit              :call GitS_Commit('direct','<args>','c')
+	command!       -nargs=? -complete=file GitCommitFile          :call GitS_Commit('file','<args>','c')
+	command!       -nargs=+                GitCommitMsg           :call GitS_Commit('msg','<args>','c')
 	command!       -nargs=* -complete=file GitDiff                :call GitS_Diff('update','<args>')
+	command!       -nargs=*                GitFetch               :call GitS_Fetch('<args>','c')
 	command!       -nargs=?                GitHelp                :call GitS_Help('update','<args>')
 	command!       -nargs=* -complete=file GitLog                 :call GitS_Log('update','<args>')
-	command!       -nargs=* -complete=file GitRemote              :call GitS_Remote('<args>',1)
-	command!       -nargs=* -complete=file GitRemove              :call GitS_Remove('<args>',1)
-	command!       -nargs=* -complete=file GitRm                  :call GitS_Remove('<args>',1)
-	command!       -nargs=* -complete=file GitReset               :call GitS_Reset('<args>',1)
+	command!       -nargs=*                GitMerge               :call GitS_Merge('<args>','c')
+	command!       -nargs=*                GitPull                :call GitS_Pull('<args>','c')
+	command!       -nargs=*                GitPush                :call GitS_Push('<args>','c')
+	command!       -nargs=*                GitRemote              :call GitS_Remote('<args>','c')
+	command!       -nargs=* -complete=file GitRemove              :call GitS_Remove('<args>','ce')
+	command!       -nargs=* -complete=file GitRm                  :call GitS_Remove('<args>','ce')
+	command!       -nargs=* -complete=file GitReset               :call GitS_Reset('<args>','ce')
+	command!       -nargs=*                GitStash               :call GitS_Stash('<args>','c')
 	command!       -nargs=0                GitStatus              :call GitS_Status('update')
 else
 	command!       -nargs=*                GitHelp                :call GitS_Help('disabled')
@@ -213,6 +222,7 @@ endif
 "-------------------------------------------------------------------------------
 " s:Question : Ask the user a question.   {{{1
 "-------------------------------------------------------------------------------
+"
 function! s:Question ( text, ... )
 	"
 	let ret = -2
@@ -247,6 +257,7 @@ endfunction    " ----------  end of function s:Question  ----------
 "-------------------------------------------------------------------------------
 " s:OpenManBuffer : Put output in a read-only buffer.   {{{1
 "-------------------------------------------------------------------------------
+"
 function! s:OpenManBuffer ( buf_name )
 	"
 	" a buffer like this already exists?
@@ -272,6 +283,7 @@ endfunction    " ----------  end of function s:OpenManBuffer  ----------
 "-------------------------------------------------------------------------------
 " s:UpdateManBuffer : Put output in a read-only buffer.   {{{1
 "-------------------------------------------------------------------------------
+"
 function! s:UpdateManBuffer ( command )
 	"
 	" save the position
@@ -302,17 +314,31 @@ endfunction    " ----------  end of function s:UpdateManBuffer  ----------
 "
 "-------------------------------------------------------------------------------
 " s:StandardRun : execute 'git <cmd> ...'   {{{1
+"
+" Flags:
+" - c : Ask for confirmation.
+" - e : Expand empty 'param' to current buffer.
 "-------------------------------------------------------------------------------
 "
-function! s:StandardRun( cmd, param, confirmation )
+function! s:StandardRun( cmd, param, flags, ... )
 	"
-	if empty( a:param ) | let param = '-- '.expand ( '%' )
-	else                | let param = a:param
+	if a:0 == 0
+		let flag_check = '[^ce]'
+	else
+		let flag_check = '[^'.a:1.']'
+	end
+	"
+	if a:flags =~ flag_check
+		return s:ErrorMsg ( 'Unknown flag "'.matchstr( a:flags, flag_check ).'".' )
+	endif
+	"
+	if a:flags =~ 'e' && empty( a:param ) | let param = '-- '.expand ( '%' )
+	else                                  | let param = a:param
 	endif
 	"
 	let cmd = s:Git_Executable.' '.a:cmd.' '.param
 	"
-	if a:confirmation && s:Question ( 'Execute "'.cmd.'"?' ) != 1
+	if a:flags =~ 'c' && s:Question ( 'Execute "'.cmd.'"?' ) != 1
 		echo "aborted"
 		return
 	endif
@@ -331,21 +357,30 @@ endfunction    " ----------  end of function s:StandardRun  ----------
 "
 "-------------------------------------------------------------------------------
 " GitS_Add : execute 'git add ...'   {{{1
+"
+" Flags:
+" - c : Ask for confirmation.
+" - e : Expand empty 'param' to current buffer.
+" - f : Force add (cmdline param -f).
 "-------------------------------------------------------------------------------
 "
-function! GitS_Add( param, force, confirmation )
+function! GitS_Add( param, flags )
 	"
-	if empty( a:param ) | let param = '-- '.expand ( '%' )
-	else                | let param = a:param
+	if a:flags =~ '[^cef]'
+		return s:ErrorMsg ( 'Unknown flag "'.matchstr( a:flags, '[^cef]' ).'".' )
+	endif
+	"
+	if a:flags =~ 'e' && empty( a:param ) | let param = '-- '.expand ( '%' )
+	else                                  | let param = a:param
 	endif
 	"
 	let cmd = s:Git_Executable.' add '
 	"
-	if a:force | let cmd .= '-f ' | endif
+	if a:flags =~ 'f' | let cmd .= '-f ' | endif
 	"
 	let cmd .= param
 	"
-	if a:confirmation && s:Question ( 'Execute "'.cmd.'"?' ) != 1
+	if a:flags =~ 'c' && s:Question ( 'Execute "'.cmd.'"?' ) != 1
 		echo "aborted"
 		return
 	endif
@@ -358,7 +393,7 @@ function! GitS_Add( param, force, confirmation )
 		echo "ran successfully:\n".text       | " success
 	else
 		echo "\"".cmd."\" failed:\n\n".text   | " failure, may use the force instead
-		if ! a:force
+		if ! a:flags =~ 'f'
 			echo "\nUse \":GitAdd! ...\" to force adding the files.\n"
 		endif
 	endif
@@ -367,14 +402,16 @@ endfunction    " ----------  end of function GitS_Add  ----------
 "
 "-------------------------------------------------------------------------------
 " GitS_Branch : execute 'git branch'   {{{1
+"
+" Flags: -> s:StandardRun
 "-------------------------------------------------------------------------------
 "
-function! GitS_Branch( param, confirmation )
+function! GitS_Branch( param, flags )
 	"
 	if empty ( a:param )
 		call GitS_BranchBuf ( 'update' )
 	else
-		return s:StandardRun ( 'branch', a:param, a:confirmation )
+		return s:StandardRun ( 'branch', a:param, a:flags, 'c' )
 	endif
 	"
 endfunction    " ----------  end of function GitS_Branch  ----------
@@ -417,41 +454,55 @@ endfunction    " ----------  end of function GitS_BranchBuf  ----------
 "
 "-------------------------------------------------------------------------------
 " GitS_Checkout : execute 'git checkout ...'   {{{1
+"
+" Flags: -> s:StandardRun
 "-------------------------------------------------------------------------------
 "
-function! GitS_Checkout( param, confirmation )
+function! GitS_Checkout( param, flags )
+	"
+	if a:flags =~ '[^ce]'
+		return s:ErrorMsg ( 'Unknown flag "'.matchstr( a:flags, '[^ce]' ).'".' )
+	endif
 	"
 	if empty( a:param )
 		"
 		" checkout on the current file potentially destroys unstaged changed,
 		" ask question with different highlighting
-		if a:confirmation && s:Question ( 'Check out current file?', 'warning' ) != 1
+		if a:flags =~ 'c' && s:Question ( 'Check out current file?', 'warning' ) != 1
 			echo "aborted"
 			return
 		endif
 		"
-		let confirmation = 0
+		" remove confirmation from flags
+		let flags = substitute ( a:flags, 'c', '', 'g' )
 	else
-		let confirmation = a:confirmation
+		let flags = a:flags
 	endif
 	"
-	return s:StandardRun ( 'checkout', a:param, confirmation )
+	return s:StandardRun ( 'checkout', a:param, flags )
 	"
 endfunction    " ----------  end of function GitS_Checkout  ----------
 "
 "-------------------------------------------------------------------------------
 " GitS_Commit : execute 'git commit ...'   {{{1
+"
+" Flags:
+" - c : Ask for confirmation.
 "-------------------------------------------------------------------------------
 "
-function! GitS_Commit( mode, param, confirmation )
+function! GitS_Commit( mode, param, flags )
+	"
+	if a:flags =~ '[^c]'
+		return s:ErrorMsg ( 'Unknown flag "'.matchstr( a:flags, '[^c]' ).'".' )
+	endif
 	"
 	if a:mode == 'direct'
 		"
 		" empty parameter list?
 		if empty ( a:param )
-			return s:ErrorMsg ( "The command :GitCommit currently can not be used this way.",
-						\ "Please supply the message using either the -m or -F options,",
-						\ "or by using the special commands :GitCommitFile or :GitCommitMsg." )
+			return s:ErrorMsg ( 'The command :GitCommit currently can not be used this way.',
+						\ 'Please supply the message using either the -m or -F options,',
+						\ 'or by using the special commands :GitCommitFile or :GitCommitMsg.' )
 		endif
 		"
 		" commit ...
@@ -472,7 +523,7 @@ function! GitS_Commit( mode, param, confirmation )
 		return
 	endif
 	"
-	if a:confirmation && s:Question ( 'Execute "'.cmd.'"?' ) != 1
+	if a:flags =~ 'c' && s:Question ( 'Execute "'.cmd.'"?' ) != 1
 		echo "aborted"
 		return
 	endif
@@ -542,6 +593,18 @@ function! GitS_Diff( action, ... )
 	call s:UpdateManBuffer ( cmd )
 	"
 endfunction    " ----------  end of function GitS_Diff  ----------
+"
+"-------------------------------------------------------------------------------
+" GitS_Fetch : execute 'git fetch ...'   {{{1
+"
+" Flags: -> s:StandardRun
+"-------------------------------------------------------------------------------
+"
+function! GitS_Fetch( param, flags )
+	"
+	return s:StandardRun ( 'fetch', a:param, a:flags, 'c' )
+	"
+endfunction    " ----------  end of function GitS_Fetch  ----------
 "
 "-------------------------------------------------------------------------------
 " GitS_Help : execute 'git help'   {{{1
@@ -687,15 +750,53 @@ function! GitS_Log( action, ... )
 endfunction    " ----------  end of function GitS_Log  ----------
 "
 "-------------------------------------------------------------------------------
-" GitS_Remote : execute 'git remote'   {{{1
+" GitS_Merge : execute 'git merge ...'   {{{1
+"
+" Flags: -> s:StandardRun
 "-------------------------------------------------------------------------------
 "
-function! GitS_Remote( param, confirmation )
+function! GitS_Merge( param, flags )
+	"
+	return s:StandardRun ( 'merge', a:param, a:flags, 'c' )
+	"
+endfunction    " ----------  end of function GitS_Merge  ----------
+"
+"-------------------------------------------------------------------------------
+" GitS_Pull : execute 'git pull ...'   {{{1
+"
+" Flags: -> s:StandardRun
+"-------------------------------------------------------------------------------
+"
+function! GitS_Pull( param, flags )
+	"
+	return s:StandardRun ( 'pull', a:param, a:flags, 'c' )
+	"
+endfunction    " ----------  end of function GitS_Pull  ----------
+"
+"-------------------------------------------------------------------------------
+" GitS_Push : execute 'git push ...'   {{{1
+"
+" Flags: -> s:StandardRun
+"-------------------------------------------------------------------------------
+"
+function! GitS_Push( param, flags )
+	"
+	return s:StandardRun ( 'push', a:param, a:flags, 'c' )
+	"
+endfunction    " ----------  end of function GitS_Push  ----------
+"
+"-------------------------------------------------------------------------------
+" GitS_Remote : execute 'git remote'   {{{1
+"
+" Flags: -> s:StandardRun
+"-------------------------------------------------------------------------------
+"
+function! GitS_Remote( param, flags )
 	"
 	if empty ( a:param )
 		call GitS_RemoteBuf ( 'update' )
 	else
-		return s:StandardRun ( 'remote', a:param, a:confirmation )
+		return s:StandardRun ( 'remote', a:param, a:flags, 'c' )
 	endif
 	"
 endfunction    " ----------  end of function GitS_Remote  ----------
@@ -738,11 +839,13 @@ endfunction    " ----------  end of function GitS_RemoteBuf  ----------
 "
 "-------------------------------------------------------------------------------
 " GitS_Remove : execute 'git rm ...'   {{{1
+"
+" Flags: -> s:StandardRun
 "-------------------------------------------------------------------------------
 "
-function! GitS_Remove( param, confirmation )
+function! GitS_Remove( param, flags )
 	"
-	call s:StandardRun ( 'rm', a:param, a:confirmation )
+	call s:StandardRun ( 'rm', a:param, a:flags )
 	"
 	if empty ( a:param ) && s:Question ( 'Delete the current buffer as well?' ) == 1
 		bdelete
@@ -753,13 +856,27 @@ endfunction    " ----------  end of function GitS_Remove  ----------
 "
 "-------------------------------------------------------------------------------
 " GitS_Reset : execute 'git reset ...'   {{{1
+"
+" Flags: -> s:StandardRun
 "-------------------------------------------------------------------------------
 "
-function! GitS_Reset( param, confirmation )
+function! GitS_Reset( param, flags )
 	"
-	return s:StandardRun ( 'reset', a:param, a:confirmation )
+	return s:StandardRun ( 'reset', a:param, a:flags )
 	"
 endfunction    " ----------  end of function GitS_Reset  ----------
+"
+"-------------------------------------------------------------------------------
+" GitS_Stash : execute 'git stash ...'   {{{1
+"
+" Flags: -> s:StandardRun
+"-------------------------------------------------------------------------------
+"
+function! GitS_Stash( param, flags )
+	"
+	return s:StandardRun ( 'stash', a:param, a:flags, 'c' )
+	"
+endfunction    " ----------  end of function GitS_Stash  ----------
 "
 "-------------------------------------------------------------------------------
 " Status : Auxiliary   {{{1
@@ -919,7 +1036,7 @@ function! s:Status_FileAction( action )
 		"
 		" section "ignored", action "add"
 		if s:Question( 'Add ignored file "'.f_name.'"?', 'warning' ) == 1
-			call GitS_Add( '-- '.f_name, 1, 0 )
+			call GitS_Add( '-- '.f_name, 'f' )
 			return 1
 		endif
 		"
@@ -927,7 +1044,7 @@ function! s:Status_FileAction( action )
 		"
 		" section "untracked", action "add"
 		if s:Question( 'Add untracked file "'.f_name.'"?' ) == 1
-			call GitS_Add( '-- '.f_name, 0, 0 )
+			call GitS_Add( '-- '.f_name, '' )
 			return 1
 		endif
 		"
@@ -938,13 +1055,13 @@ function! s:Status_FileAction( action )
 		if f_status == 'modified' || f_status =~ '^.M$'
 			" add a modified file?
 			if s:Question( 'Add file "'.f_name.'"?' ) == 1
-				call GitS_Add( '-- '.f_name, 0, 0 )
+				call GitS_Add( '-- '.f_name, '' )
 				return 1
 			endif
 		elseif f_status == 'deleted' || f_status =~ '^.D$'
 			" add a deleted file? -> remove it?
 			if s:Question( 'Remove file "'.f_name.'"?' ) == 1
-				call GitS_Remove( '-- '.f_name, 0 )
+				call GitS_Remove( '-- '.f_name, '' )
 				return 1
 			endif
 		else
@@ -958,7 +1075,7 @@ function! s:Status_FileAction( action )
 		if f_status == 'modified' || f_status == 'deleted' || f_status =~ '^.[MD]$'
 			" check out a modified or deleted file?
 			if s:Question( 'Checkout file "'.f_name.'"?', 'warning' ) == 1
-				call GitS_Checkout( '-- '.f_name, 0 )
+				call GitS_Checkout( '-- '.f_name, '' )
 				return 1
 			endif
 		else
@@ -972,7 +1089,7 @@ function! s:Status_FileAction( action )
 		if f_status == 'modified' || f_status == 'new file' || f_status == 'deleted' || f_status =~ '^[MADRC].$'
 			" reset a modified, new or deleted file?
 			if s:Question( 'Reset file "'.f_name.'"?' ) == 1
-				call GitS_Reset( '-- '.f_name, 0 )
+				call GitS_Reset( '-- '.f_name, '' )
 				return 1
 			endif
 		else
@@ -983,7 +1100,7 @@ function! s:Status_FileAction( action )
 		"
 		" section "unmerged", action "add"
 		if s:Question( 'Add unmerged file "'.f_name.'"?' ) == 1
-			call GitS_Add( '-- '.f_name, 0, 0 )
+			call GitS_Add( '-- '.f_name, '' )
 			return 1
 		endif
 		"
@@ -991,7 +1108,7 @@ function! s:Status_FileAction( action )
 		"
 		" section "unmerged", action "reset" -> "remove"
 		if s:Question( 'Remove unmerged file "'.f_name.'"?' ) == 1
-			call GitS_Remove( '-- '.f_name, 0 )
+			call GitS_Remove( '-- '.f_name, '' )
 			return 1
 		endif
 		"
@@ -1146,11 +1263,16 @@ function! s:InitMenus()
 	exe ahead.'&checkout<TAB>:GitCheckout :GitCheckout<space>'
 	exe ahead.'&commit<TAB>:GitCommit     :GitCommit<space>'
 	exe ahead.'&diff<TAB>:GitDiff         :GitDiff<space>'
+	exe ahead.'&fetch<TAB>:GitFetch       :GitFetch<space>'
 	exe ahead.'&help<TAB>:GitHelp         :GitHelp<space>'
 	exe ahead.'&log<TAB>:GitLog           :GitLog<space>'
+	exe ahead.'&merge<TAB>:GitMerge       :GitMerge<space>'
+	exe ahead.'&pull<TAB>:GitPull         :GitPull<space>'
+	exe ahead.'&push<TAB>:GitPush         :GitPush<space>'
 	exe ahead.'&remote<TAB>:GitRemote     :GitRemote<space>'
 	exe ahead.'&rm<TAB>:GitRm             :GitRm<space>'
 	exe ahead.'&reset<TAB>:GitReset       :GitReset<space>'
+	exe ahead.'&stash<TAB>:GitStash       :GitStash<space>'
 	exe ahead.'&status<TAB>:GitStatus     :GitStatus<space>'
 	"
 	" Current File
@@ -1231,9 +1353,9 @@ function! Git_RemoveMenus()
 	endif
 endfunction    " ----------  end of function Git_RemoveMenus  ----------
 "
-" }}}1
-"
-" setup menus   {{{2
+"-------------------------------------------------------------------------------
+" Setup menus.   {{{1
+"-------------------------------------------------------------------------------
 "
 " tool menu entry
 if has ( 'menu' )
@@ -1245,7 +1367,7 @@ if s:Git_LoadMenus == 'yes'
 	call Git_AddMenus ()
 endif
 "
-" }}}2
+" }}}1
 "
 " =====================================================================================
 "  vim: foldmethod=marker
