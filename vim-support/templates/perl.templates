@@ -1,0 +1,51 @@
+§ =============================================================
+§  Perl
+§ =============================================================
+
+== Perl.Perl snippet == below, noindent, map:ps, sc:s ==
+perl << EOF
+	# ========== Perl-Code Begin ===============================================
+	<CURSOR>
+	# ========== Perl-Code End   ===============================================
+EOF
+== Perl.VIM DoCommand == map:pd, sc:d ==
+VIM::DoCommand( <CURSOR> );
+== Perl.VIM Eval == map:pe, sc:e ==
+( $success, $<CURSOR> )	= VIM::Eval( '<+VIM_EXPRESSION+>' );
+== Perl.VIM Msg == map:pm, sc:m ==
+VIM::Msg( "<CURSOR>" );
+== Perl.VIM Msg-Comment == map:pmc, sc:c ==
+VIM::Msg( "<CURSOR>", "Comment" );
+== Perl.VIM Msg-ErrorMsg == map:pme, sc:e ==
+VIM::Msg( "<CURSOR>", "ErrorMsg" );
+== Perl.VIM Msg-Warning == map:pmw, sc:w ==
+VIM::Msg( "<CURSOR>", "Warning" );
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Buffer and Window
+§ -------------------------------------------------------------
+
+§ Use a tabulator at the beginning of a line, otherwise "$curbuf->..."
+§ recognized as a comment. The indentation takes care of the layout.
+
+== Perl.curbuf Count == insert, sc:c ==
+$curbuf->Count()
+== Perl.curbuf Name == insert, sc:n  ==
+$curbuf->Name()
+== Perl.curbuf Number == insert, sc:n  ==
+$curbuf->Number()
+== Perl.curbuf Append == insert, sc:a  ==
+$curbuf->Append( <CURSOR><+LINE_NUMBER+>, <+SCALAR_OR_ARRAY+> )
+== Perl.curbuf Delete == insert, sc:d  ==
+$curbuf->Delete( <CURSOR><+LINE_NUMBER+>, <+LAST_LINE+> )
+== Perl.curbuf Get == insert, sc:g  ==
+$curbuf->Get( <CURSOR><+LINE_NUMBER+> )
+== Perl.curbuf Set == insert, sc:s  ==
+$curbuf->Set( <CURSOR><+LINE_NUMBER+>, <+SCALAR_OR_ARRAY+> )
+== Perl.curwin Cursor get == insert, sc:c  ==
+( $row, $col )	= $curwin->Cursor();
+== Perl.curwin Cursor set == insert, sc:c  ==
+$curwin->Cursor( $row, $col );
+== ENDTEMPLATE ==
+

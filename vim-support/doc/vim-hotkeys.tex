@@ -1,0 +1,235 @@
+%%=====================================================================================
+%%
+%%         File:  vim-hotkeys.tex
+%%
+%%  Description:  vim-support.vim : Key mappings for Vim without GUI.
+%%                
+%%                
+%%       Author:  Dr.-Ing. Fritz Mehner
+%%        Email:  mehner@fh-swf.de
+%%    Copyright:  Copyright (C)  2012  Dr.-Ing. Fritz Mehner  (mehner@fh-swf.de)
+%%      Version:  see \Pluginversion
+%%      Created:  22.01.2012
+%%     Revision:  $Id: vim-hotkeys.tex,v 1.5 2012/02/11 16:31:26 mehner Exp $
+%%                
+%%=====================================================================================
+
+\documentclass[oneside,10pt,landscape,DIV17]{scrartcl}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lastpage}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+
+\setlength\parindent{0pt}
+
+\newcommand{\Pluginversion}{2.0}
+\newcommand{\Rep}{{\scriptsize{[n]}}}
+
+%%----------------------------------------------------------------------
+%%  fancyhdr
+%%----------------------------------------------------------------------
+\pagestyle{fancyplain}
+\fancyhf{}
+\fancyfoot[L]{\small \today}
+\fancyfoot[C]{\small vim-support.vim}
+\fancyfoot[R]{\small \textbf{Page \thepage{} / \pageref{LastPage}}}
+\renewcommand{\headrulewidth}{0.0pt}
+
+%%----------------------------------------------------------------------
+%%  luximono : Type1-font
+%%  Makes keyword stand out by using semibold letters.
+%%----------------------------------------------------------------------
+\usepackage[scaled]{luximono}
+
+%%----------------------------------------------------------------------
+%%  hyperref
+%%----------------------------------------------------------------------
+\usepackage[ps2pdf]{hyperref}
+\hypersetup{pdfauthor={Dr.-Ing. Fritz Mehner, FH Südwestfalen, Iserlohn, Germany}}
+\hypersetup{pdfkeywords={Vim, VimScript}}
+\hypersetup{pdfsubject={Vim-plugin,  vim-support.vim, hot keys}}
+\hypersetup{pdftitle={Vim-plugin,  vim-support.vim, hot keys}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  START OF DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}%
+
+\begin{multicols}{3}
+%
+\begin{center}
+%
+%%======================================================================
+%%  title
+%%======================================================================
+\textbf{\textsc{\small{Vim-Plugin}}}\\
+\textbf{\LARGE{vim-support.vim}}\\
+\textbf{\textsc{\small{Version \Pluginversion}}}\\
+\vspace{5mm}%
+\textbf{\textsc{\Huge{Hot keys}}}\\ 
+\vspace{5mm}%
+Key mappings for Vim and gVim.\\
+Plugin: http://vim.sourceforge.net\\
+Fritz Mehner (mehner.fritz@fh-swf.de)\\
+\vspace{1.0mm}
+{\normalsize (i)} insert mode, {\normalsize (n)} normal mode, {\normalsize (v)} visual mode\\
+\vspace{4.0mm}
+
+%%======================================================================
+%%  table, left part
+%%======================================================================
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{16mm}|p{56mm}|}
+%%----------------------------------------------------------------------
+%%  show plugin help
+%%----------------------------------------------------------------------
+\hline 
+\multicolumn{2}{|r|}{\textsl{\underline{H}elp}}\\[1.0ex]
+\hline \verb'\h' \verb'<S-F1>'   & help (Vim functions) \hfill (n,i)\\
+\hline 
+%%----------------------------------------------------------------------
+%%  menu comments
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\underline{C}omments}}                       \\[1.0ex]
+\hline \Rep\verb'\cl'   & end-of-line comment               \hfill (n, v, i)\\
+\hline \Rep\verb'\cj'   & adjust end-of-line comments       \hfill (n, v, i)\\
+\hline     \verb'\cs'   & set end-of-line comment col.      \hfill (n)   \\
+\hline \Rep\verb'\cc'   & comment code                      \hfill (n, i, v)\\
+\hline \Rep\verb'\cu'   & uncomment code                    \hfill (n, i, v)\\
+\hline     \verb'\ca'   & function description (auto)       \hfill (n, i)\\
+%
+\hline     \verb'\cfr'  & frame comment                     \hfill (n, i)\\
+\hline     \verb'\cfu'  & function description              \hfill (n, i)\\
+\hline     \verb'\ch'   & file description                  \hfill (n, i)\\
+\hline     \verb'\cd'   & date                              \hfill (n, i)\\
+\hline     \verb'\ct'   & date \& time                      \hfill (n, i)\\
+\hline
+%
+\hline     \verb'\ck'   & keyword comments                  \hfill (n, i)\\
+\hline     \verb'\cma'  & plugin macros                     \hfill (n, i)\\
+\hline
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%======================================================================
+%%  table, middle part
+%%======================================================================
+%
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{56mm}|}
+%%----------------------------------------------------------------------
+%%  menu statements
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\underline{S}tatements}}\\[1.0ex]
+\hline \verb'\sv'     & \verb'let' variable                              \hfill (n, i)\\
+\hline \verb'\sl'     & \verb'let' list                                  \hfill (n, i)\\
+\hline \verb'\sd'     & \verb'let' dictionary                            \hfill (n, i)\\
+\hline \verb'\sf'     & \verb'for'                                       \hfill (n, v, i)\\
+\hline \verb'\sif'    & \verb'if'$\ldots$\verb'endif'                    \hfill (n, v, i)\\
+\hline \verb'\sie'    & \verb'if'$\ldots$\verb'else'$\ldots$\verb'endif' \hfill (n, v, i)\\
+\hline \verb'\sei'    & \verb'elseif'                                    \hfill (n, i)\\
+\hline \verb'\sel'    & \verb'else'                                      \hfill (n, i)\\
+\hline \verb'\sw'     & \verb'while'                                     \hfill (n, v, i)\\
+\hline \verb'\st'     & \verb'try'$\ldots$\verb'catch'                   \hfill (n, v, i)\\
+\hline
+%%----------------------------------------------------------------------
+%%  menu idioms
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\underline{I}dioms}}                 \\[1.0ex]
+\hline \verb'\ii'  & iterators      \hfill (n, v, i)   \\
+%
+\hline \verb'\if' & function                  \hfill (n, v, i)\\
+\hline
+%%----------------------------------------------------------------------
+%%  snippet menu
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{S\underline{n}ippet}}                \\[1.0ex]
+\hline \verb'\nr'  & read code snippet         \hfill (n, i)   \\
+\hline \verb'\nw'  & write code snippet        \hfill (n, v, i)\\
+\hline \verb'\ne'  & edit code snippet         \hfill (n, i)   \\
+%
+%\hline \verb'\ntl' & edit local templates      \hfill (n, i)\\
+%\hline \verb'\ntg' & edit global templates$^1$ \hfill (n, i)\\
+%\hline \verb'\ntr' & reread the templates      \hfill (n, i)\\
+\hline
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%======================================================================
+%%  table, right part
+%%======================================================================
+%
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{60mm}|}
+%%----------------------------------------------------------------------
+%%  menu regex menu
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{Regular E\underline{x}pressions}}     \\[1.0ex]
+\hline \verb'\xc'  & capture                 \hfill (n, i, v)\\
+\hline \verb'\xbc' & branch                  \hfill (n, i, v)\\
+\hline \verb'\xbn' & branch, no capture      \hfill (n, i, v)\\
+\hline \verb'\xw'  & word                    \hfill (n, i)\\
+\hline \verb'\xcc' & character classes       \hfill (n, i)\\
+\hline \verb'\xs'  & switches                \hfill (n, i)\\
+\hline
+%%----------------------------------------------------------------------
+%%  menu Perl
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\underline{P}erl}}                       \\[1.0ex]
+\hline \verb'\ps'   & Perl snippet \hfill (n, i)\\
+\hline \verb'\pd'   & \texttt{Vim::DoCommand()} \hfill (n, i)\\
+\hline \verb'\pe'   & \texttt{Vim::Eval()} \hfill (n, i)\\
+\hline \verb'\pm'   & \texttt{Vim::Msg( "" )           } \hfill (n, i)\\
+\hline \verb'\pmc'  & \texttt{Vim::Msg( "", "Comment" )} \hfill (n, i)\\
+\hline \verb'\pme'  & \texttt{Vim::Msg( "", "Warning" )} \hfill (n, i)\\
+\hline \verb'\pmw'  & \texttt{Vim::Msg( "", "ErrorMsg")} \hfill (n, i)\\
+\hline
+%%----------------------------------------------------------------------
+%%  menu Documentation
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\underline{D}ocumentation}}                 \\[1.0ex]
+\hline \verb'\dcc' & chapter, contents             \hfill (n, i)\\
+\hline \verb'\dcs' & section, contents             \hfill (n, i)\\
+\hline \verb'\dcu' & subsection, contents          \hfill (n, i)\\
+\hline \verb'\dtc' & chapter, text                 \hfill (n, i)\\
+\hline \verb'\dts' & section, text                 \hfill (n, i)\\
+\hline \verb'\dtu' & subsection, text              \hfill (n, i)\\
+\hline \verb'\df'  & function description          \hfill (n, i)\\
+\hline \verb'\de'  & example                       \hfill (n, v, i)\\
+\hline \verb'\dl'  & list item                     \hfill (n, i)\\
+\hline
+%%----------------------------------------------------------------------
+%%  menu run
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\underline{R}un}} \\[1.0ex]
+\hline \verb'\rh'    & hardcopy buffer                          \hfill (n, v, i)\\
+\hline \verb'\rs'    & plugin settings \hfill (n,i)\\
+\hline
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%\begin{minipage}[b]{75mm}%
+%\scriptsize{%
+%\vspace{10mm}
+%\hrulefill\\
+%$^1$ {system-wide installation only}\\
+%}%
+%\end{minipage}\\
+%
+\end{center}%
+\end{multicols}%
+%
+%%----- TABBING :  end  ----------
+\end{document}
