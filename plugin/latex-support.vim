@@ -387,7 +387,7 @@ function! Latex_EndOfLineComment ( ) range
 				let diff	= b:Latex_LineEndCommentColumn -1 -linelength
 			endif
 			exe "normal	".diff."A "
-			call mmtemplates#core#InsertTemplate(g:Latex_Templates, 'Comments.end-of-line-comment')
+			call mmtemplates#core#InsertTemplate(g:Latex_Templates, 'Comments.end-of-line comment')
 		endif
 	endfor
 endfunction		" ---------- end of function  Latex_EndOfLineComment  ----------
@@ -432,10 +432,27 @@ endfunction    " ----------  end of function Latex_CommentCode  ----------
 "       RETURNS:  
 "===============================================================================
 function! g:Latex_RereadTemplates ( displaymsg )
+	"
+	"-------------------------------------------------------------------------------
+	" SETUP TEMPLATE LIBRARY
+	"-------------------------------------------------------------------------------
 	let g:Latex_Templates = mmtemplates#core#NewLibrary ()
-	call mmtemplates#core#ChangeSyntax  ( g:Latex_Templates, 'comment', '§', '§' )
-	let s:Latex_TemplateJumpTarget 		=  mmtemplates#core#Resource ( g:Latex_Templates, "jumptag" )[0]
-	let	messsage							= ''
+	"
+	" mapleader
+	if empty ( g:Latex_MapLeader )
+		call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::Mapleader', '\' )
+	else
+		call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::Mapleader', g:Latex_MapLeader )
+	endif
+	"
+	" map: choose style
+	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::ChooseStyle::Map', 'nts' )
+	"
+	" syntax: comments
+	call mmtemplates#core#ChangeSyntax ( g:Latex_Templates, 'comment', '§' )
+	let s:Latex_TemplateJumpTarget = mmtemplates#core#Resource ( g:Latex_Templates, "jumptag" )[0]
+	"
+	let	messsage = ''
 	"
 	if s:installation == 'system'
 		"-------------------------------------------------------------------------------
@@ -518,128 +535,137 @@ function! s:InitMenus()
 	" Preparation
 	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'do_reset' )
 	"
+	" get the mapleader (correctly escaped)
+	let [ esc_mapl, err ] = mmtemplates#core#Resource ( g:Latex_Templates, 'escaped_mapleader' )
+	"
 	exe 'amenu '.s:Latex_RootMenu.'.LaTe&X  <Nop>'
 	exe 'amenu '.s:Latex_RootMenu.'.-Sep00- <Nop>'
 	"
 	"-------------------------------------------------------------------------------
-	" Comments
+	" menu headers
 	"-------------------------------------------------------------------------------
-	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', '&Comments' )
+	"
+	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', '&Comments', 'priority', 500 )
+	" the other, automatically created menus go here; their priority is the standard priority 500
+	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', 'S&nippets', 'priority', 600 )
+	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', '&Wizard'  , 'priority', 700 )
+	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', '&Run'     , 'priority', 800 )
+	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', '&Help'    , 'priority', 900 )
+	"
+	"-------------------------------------------------------------------------------
+	" comments
+	"-------------------------------------------------------------------------------
 	"
 	let  head =  'noremenu <silent> '.s:Latex_RootMenu.'.Comments.'
 	let ahead = 'anoremenu <silent> '.s:Latex_RootMenu.'.Comments.'
 	let ihead = 'inoremenu <silent> '.s:Latex_RootMenu.'.Comments.'
 	let vhead = 'vnoremenu <silent> '.s:Latex_RootMenu.'.Comments.'
 	"
- 	exe ahead.'end-of-&line\ comment<Tab>cl                    :call Latex_EndOfLineComment()<CR>'
- 	exe vhead.'end-of-&line\ comment<Tab>cl                    :call Latex_EndOfLineComment()<CR>'
+ 	exe ahead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl                    :call Latex_EndOfLineComment()<CR>'
+ 	exe vhead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl                    :call Latex_EndOfLineComment()<CR>'
 
-	exe ahead.'ad&just\ end-of-line\ com\.<Tab>cj              :call Latex_AdjustLineEndComm()<CR>'
-	exe ihead.'ad&just\ end-of-line\ com\.<Tab>cj         <Esc>:call Latex_AdjustLineEndComm()<CR>'
-	exe vhead.'ad&just\ end-of-line\ com\.<Tab>cj              :call Latex_AdjustLineEndComm()<CR>'
-	exe  head.'&set\ end-of-line\ com\.\ col\.<Tab>cs     <Esc>:call Latex_GetLineEndCommCol()<CR>'
+	exe ahead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call Latex_AdjustLineEndComm()<CR>'
+	exe ihead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj         <Esc>:call Latex_AdjustLineEndComm()<CR>'
+	exe vhead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call Latex_AdjustLineEndComm()<CR>'
+	exe  head.'&set\ end-of-line\ com\.\ col\.<Tab>'.esc_mapl.'cs     <Esc>:call Latex_GetLineEndCommCol()<CR>'
 	"
-	exe ahead.'&comment<TAB>cc		:call Latex_CodeComment()<CR>'
-	exe vhead.'&comment<TAB>cc		:call Latex_CodeComment()<CR>'
-	exe ahead.'&uncomment<TAB>cu	:call Latex_CommentCode(0)<CR>'
-	exe vhead.'&uncomment<TAB>cu	:call Latex_CommentCode(0)<CR>'
+	exe ahead.'&comment<TAB>'.esc_mapl.'cc		:call Latex_CodeComment()<CR>'
+	exe vhead.'&comment<TAB>'.esc_mapl.'cc		:call Latex_CodeComment()<CR>'
+	exe ahead.'&uncomment<TAB>'.esc_mapl.'cu	:call Latex_CommentCode(0)<CR>'
+	exe vhead.'&uncomment<TAB>'.esc_mapl.'cu	:call Latex_CommentCode(0)<CR>'
 	exe ahead.'-Sep02-												             <Nop>'
 	"
 	"-------------------------------------------------------------------------------
-	" generate menues from the templates
+	" generate menus from the templates
 	"-------------------------------------------------------------------------------
 	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'do_templates' )
 	"
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------
+	"
 	let ahead = 'anoremenu <silent> '.s:Latex_RootMenu.'.S&nippets.'
 	let ihead = 'inoremenu <silent> '.s:Latex_RootMenu.'.S&nippets.'
 	let vhead = 'vnoremenu <silent> '.s:Latex_RootMenu.'.S&nippets.'
 	"
-	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', 'S&nippets' )
-	exe ahead.'&read\ code\ snippet<Tab>\\nr       :call Latex_CodeSnippet("read")<CR>'
-	exe ihead.'&read\ code\ snippet<Tab>\\nr  <C-C>:call Latex_CodeSnippet("read")<CR>'
-	exe ahead.'&view\ code\ snippet<Tab>\\nv       :call Latex_CodeSnippet("view")<CR>'
-	exe ihead.'&view\ code\ snippet<Tab>\\nv  <C-C>:call Latex_CodeSnippet("view")<CR>'
-	exe ahead.'&write\ code\ snippet<Tab>\\nw      :call Latex_CodeSnippet("write")<CR>'
-	exe ihead.'&write\ code\ snippet<Tab>\\nw <C-C>:call Latex_CodeSnippet("write")<CR>'
-	exe vhead.'&write\ code\ snippet<Tab>\\nw <C-C>:call Latex_CodeSnippet("writemarked")<CR>'
-	exe ahead.'&edit\ code\ snippet<Tab>\\ne       :call Latex_CodeSnippet("edit")<CR>'
-	exe ihead.'&edit\ code\ snippet<Tab>\\ne  <C-C>:call Latex_CodeSnippet("edit")<CR>'
+	exe ahead.'&read\ code\ snippet<Tab>'.esc_mapl.'nr       :call Latex_CodeSnippet("read")<CR>'
+	exe ihead.'&read\ code\ snippet<Tab>'.esc_mapl.'nr  <C-C>:call Latex_CodeSnippet("read")<CR>'
+	exe ahead.'&view\ code\ snippet<Tab>'.esc_mapl.'nv       :call Latex_CodeSnippet("view")<CR>'
+	exe ihead.'&view\ code\ snippet<Tab>'.esc_mapl.'nv  <C-C>:call Latex_CodeSnippet("view")<CR>'
+	exe ahead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw      :call Latex_CodeSnippet("write")<CR>'
+	exe ihead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Latex_CodeSnippet("write")<CR>'
+	exe vhead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Latex_CodeSnippet("writemarked")<CR>'
+	exe ahead.'&edit\ code\ snippet<Tab>'.esc_mapl.'ne       :call Latex_CodeSnippet("edit")<CR>'
+	exe ihead.'&edit\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call Latex_CodeSnippet("edit")<CR>'
 	exe ahead.'-SepSnippets-                       :'
 	"
-	exe ahead.'edit\ &local\ templates<Tab>\\ntl       :call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,-1)<CR>'
-	exe ihead.'edit\ &local\ templates<Tab>\\ntl  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,-1)<CR>'
+	exe ahead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntl       :call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,-1)<CR>'
+	exe ihead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntl  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,-1)<CR>'
 	if s:installation == 'system'
-		exe ahead.'edit\ &local\ templates<Tab>\\ntg       :call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,1)<CR>'
-		exe ihead.'edit\ &local\ templates<Tab>\\ntg  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,1)<CR>'
+		exe ahead.'edit\ &global\ templates<Tab>'.esc_mapl.'ntg       :call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,1)<CR>'
+		exe ihead.'edit\ &global\ templates<Tab>'.esc_mapl.'ntg  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,1)<CR>'
 	endif
 	"
-	exe ahead.'reread\ &templates<Tab>\\ntr       :call mmtemplates#core#ReadTemplates(g:Latex_Templates,"reload","all")<CR>'
-	exe ihead.'reread\ &templates<Tab>\\ntr  <C-C>:call mmtemplates#core#ReadTemplates(g:Latex_Templates,"reload","all")<CR>'
+	exe ahead.'reread\ &templates<Tab>'.esc_mapl.'ntr       :call mmtemplates#core#ReadTemplates(g:Latex_Templates,"reload","all")<CR>'
+	exe ihead.'reread\ &templates<Tab>'.esc_mapl.'ntr  <C-C>:call mmtemplates#core#ReadTemplates(g:Latex_Templates,"reload","all")<CR>'
+	"
+	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'do_styles', 
+				\ 'specials_menu', 'Snippets'	)
 	"
 	"-------------------------------------------------------------------------------
 	" wizard
 	"-------------------------------------------------------------------------------
 	" 
-	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', '&Wizard' )
-	"
 	let ahead = 'anoremenu <silent> '.s:Latex_RootMenu.'.&Wizard.'
 	let ihead = 'inoremenu <silent> '.s:Latex_RootMenu.'.&Wizard.'
 	let vhead = 'vnoremenu <silent> '.s:Latex_RootMenu.'.&Wizard.'
 	"
- 	exe ahead.'tables.tabbing<Tab>\\wtg                     :call Latex_Tabbing()<CR>k0a'
- 	exe ihead.'tables.tabbing<Tab>\\wtg                <C-C>:call Latex_Tabbing()<CR>k0a'
- 	exe ahead.'tables.tabular<Tab>\\wtr                     :call Latex_Tabular()<CR>3k0a'
- 	exe ihead.'tables.tabular<Tab>\\wtr                <C-C>:call Latex_Tabular()<CR>3k0a'
+ 	exe ahead.'tables.tabbing<Tab>'.esc_mapl.'wtg                     :call Latex_Tabbing()<CR>k0a'
+ 	exe ihead.'tables.tabbing<Tab>'.esc_mapl.'wtg                <C-C>:call Latex_Tabbing()<CR>k0a'
+ 	exe ahead.'tables.tabular<Tab>'.esc_mapl.'wtr                     :call Latex_Tabular()<CR>3k0a'
+ 	exe ihead.'tables.tabular<Tab>'.esc_mapl.'wtr                <C-C>:call Latex_Tabular()<CR>3k0a'
 	"
 	exe ahead.'li&gatures.find\ double       <C-C>:/f[filt]<CR>'
 	exe ahead.'li&gatures.find\ triple       <C-C>:/ff[filt]<CR>'
 	exe ahead.'li&gatures.split\ with\ \\\/  <C-C>a\/<Esc>'
 	exe ahead.'li&gatures.highlight\ off     <C-C>:nohlsearch<CR>'
 	"
-	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'do_styles', 
-				\ 'specials_menu', 'Snippets'	)
-	"
 	"-------------------------------------------------------------------------------
 	" run
 	"-------------------------------------------------------------------------------
 	" 
-	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', '&Run' )
-	"
 	let ahead = 'amenu <silent> '.s:Latex_RootMenu.'.&Run.'
 	let ihead = 'imenu <silent> '.s:Latex_RootMenu.'.&Run.'
 	let vhead = 'vmenu <silent> '.s:Latex_RootMenu.'.&Run.'
 	"
- 	exe ahead.'save\ +\ &run\ typesetter<Tab>\\rr\ <C-F9>       :call Latex_Compile()<CR><CR>'
-	exe ihead.'save\ +\ &run\ typesetter<Tab>\\rr\ <C-F9>  <C-C>:call Latex_Compile()<CR><CR>'
+ 	exe ahead.'save\ +\ &run\ typesetter<Tab>'.esc_mapl.'rr\ <C-F9>       :call Latex_Compile()<CR><CR>'
+	exe ihead.'save\ +\ &run\ typesetter<Tab>'.esc_mapl.'rr\ <C-F9>  <C-C>:call Latex_Compile()<CR><CR>'
 	"
- 	exe ahead.'save\ +\ &run\ lacheck<Tab>\\rla       :call Latex_Lacheck()<CR><CR>'
-	exe ihead.'save\ +\ &run\ lacheck<Tab>\\rla  <C-C>:call Latex_Lacheck()<CR><CR>'
+ 	exe ahead.'save\ +\ &run\ lacheck<Tab>'.esc_mapl.'rla       :call Latex_Lacheck()<CR><CR>'
+	exe ihead.'save\ +\ &run\ lacheck<Tab>'.esc_mapl.'rla  <C-C>:call Latex_Lacheck()<CR><CR>'
 	"
- 	exe ahead.'view\ &DVI<Tab>\\rdvi       :call Latex_View("dvi")<CR>'
-	exe ihead.'view\ &DVI<Tab>\\rdvi  <C-C>:call Latex_View("dvi")<CR>'
- 	exe ahead.'view\ &PDF<Tab>\\rpdf       :call Latex_View("pdf")<CR>'
-	exe ihead.'view\ &PDF<Tab>\\rpdf  <C-C>:call Latex_View("pdf")<CR>'
- 	exe ahead.'view\ &PS<Tab>\\rps         :call Latex_View("ps" )<CR>'
-	exe ihead.'view\ &PS<Tab>\\rps    <C-C>:call Latex_View("ps" )<CR>'
+ 	exe ahead.'view\ &DVI<Tab>'.esc_mapl.'rdvi       :call Latex_View("dvi")<CR>'
+	exe ihead.'view\ &DVI<Tab>'.esc_mapl.'rdvi  <C-C>:call Latex_View("dvi")<CR>'
+ 	exe ahead.'view\ &PDF<Tab>'.esc_mapl.'rpdf       :call Latex_View("pdf")<CR>'
+	exe ihead.'view\ &PDF<Tab>'.esc_mapl.'rpdf  <C-C>:call Latex_View("pdf")<CR>'
+ 	exe ahead.'view\ &PS<Tab>'.esc_mapl.'rps         :call Latex_View("ps" )<CR>'
+	exe ihead.'view\ &PS<Tab>'.esc_mapl.'rps    <C-C>:call Latex_View("ps" )<CR>'
 	"
 	exe ahead.'-SEP0-                            :'
-	exe ahead.'&make<Tab>\\rm                                    :call Latex_Make()<CR>'
-	exe ihead.'&make<Tab>\\rm                               <C-C>:call Latex_Make()<CR>'
-	exe ahead.'&choose\ makefile<Tab>\\rcm                       :call Latex_ChooseMakefile()<CR>'
-	exe ihead.'&choose\ makefile<Tab>\\rcm                  <C-C>:call Latex_ChooseMakefile()<CR>'
-	exe ahead.'&make\ clean<Tab>\\rmc                            :call Latex_MakeClean()<CR>'
-	exe ihead.'&make\ clean<Tab>\\rmc                       <C-C>:call Latex_MakeClean()<CR>'
-	exe 'amenu '.s:Latex_RootMenu.'.&Run.cmd\.\ line\ ar&g\.\ for\ make<Tab>\\rma          :LatexMakeCmdlineArgs<Space>'
-	exe 'imenu '.s:Latex_RootMenu.'.&Run.cmd\.\ line\ ar&g\.\ for\ make<Tab>\\rma     <C-C>:LatexMakeCmdlineArgs<Space>'
+	exe ahead.'&make<Tab>'.esc_mapl.'rm                                    :call Latex_Make()<CR>'
+	exe ihead.'&make<Tab>'.esc_mapl.'rm                               <C-C>:call Latex_Make()<CR>'
+	exe ahead.'&choose\ makefile<Tab>'.esc_mapl.'rcm                       :call Latex_ChooseMakefile()<CR>'
+	exe ihead.'&choose\ makefile<Tab>'.esc_mapl.'rcm                  <C-C>:call Latex_ChooseMakefile()<CR>'
+	exe ahead.'&make\ clean<Tab>'.esc_mapl.'rmc                            :call Latex_MakeClean()<CR>'
+	exe ihead.'&make\ clean<Tab>'.esc_mapl.'rmc                       <C-C>:call Latex_MakeClean()<CR>'
+	exe 'amenu '.s:Latex_RootMenu.'.&Run.cmd\.\ line\ ar&g\.\ for\ make<Tab>'.esc_mapl.'rma          :LatexMakeCmdlineArgs<Space>'
+	exe 'imenu '.s:Latex_RootMenu.'.&Run.cmd\.\ line\ ar&g\.\ for\ make<Tab>'.esc_mapl.'rma     <C-C>:LatexMakeCmdlineArgs<Space>'
   "
 	exe ahead.'-SEP1-                            :'
-	exe ahead.'run\ make&index<Tab>\\rmi                       :call Latex_Makeindex()<CR>'
-	exe ihead.'run\ make&index<Tab>\\rmi                  <C-C>:call Latex_Makeindex()<CR>'
-	exe ahead.'run\ &bibtex<Tab>\\rbi                          :call Latex_RunBibtex()<CR>'
-	exe ihead.'run\ &bibtex<Tab>\\rbi                     <C-C>:call Latex_RunBibtex()<CR>'
+	exe ahead.'run\ make&index<Tab>'.esc_mapl.'rmi                       :call Latex_Makeindex()<CR>'
+	exe ihead.'run\ make&index<Tab>'.esc_mapl.'rmi                  <C-C>:call Latex_Makeindex()<CR>'
+	exe ahead.'run\ &bibtex<Tab>'.esc_mapl.'rbi                          :call Latex_RunBibtex()<CR>'
+	exe ihead.'run\ &bibtex<Tab>'.esc_mapl.'rbi                     <C-C>:call Latex_RunBibtex()<CR>'
 	exe ahead.'-SEP2-                            :'
 
 	exe ahead.'Convert.DVI->PDF<Tab>                     :call Latex_Conversions( "dvi-pdf", "no" )<CR>'
@@ -649,50 +675,23 @@ function! s:InitMenus()
 	exe ahead.'Convert.PS->PDF<Tab>                      :call Latex_Conversions( "ps-pdf" , "no" )<CR>'
 
 	exe ahead.'-SEP3-                            :'
-	exe ahead.'plugin\ &settings<Tab>rse                 :call Latex_Settings()<CR>'
+	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rse                 :call Latex_Settings()<CR>'
 	"
 	"-------------------------------------------------------------------------------
 	" help
 	"-------------------------------------------------------------------------------
 	"
-	exe " menu  <silent>  ".s:Latex_RootMenu.'.Help.&texdoc<Tab>\\ht        :call Latex_texdoc()<CR>'
-	exe "imenu  <silent>  ".s:Latex_RootMenu.'.Help.&texdoc<Tab>\\ht   <C-C>:call Latex_texdoc()<CR>'
-	exe " menu  <silent>  ".s:Latex_RootMenu.'.Help.-SEP2-                  :'
-	exe " menu  <silent>  ".s:Latex_RootMenu.'.Help.&help\ (Latex-Support)<Tab>\\hp        :call Latex_HelpLatexSupport()<CR>'
-	exe "imenu  <silent>  ".s:Latex_RootMenu.'.Help.&help\ (Latex-Support)<Tab>\\hp   <C-C>:call Latex_HelpLatexSupport()<CR>'
+	let ahead = 'amenu <silent> '.s:Latex_RootMenu.'.Help.'
+	let ihead = 'imenu <silent> '.s:Latex_RootMenu.'.Help.'
+	"
+	exe ahead.'&texdoc<Tab>'.esc_mapl.'ht        :call Latex_texdoc()<CR>'
+	exe ihead.'&texdoc<Tab>'.esc_mapl.'ht   <C-C>:call Latex_texdoc()<CR>'
+	exe ahead.'-SEP1- :'
+	exe ahead.'&help\ (Latex-Support)<Tab>'.esc_mapl.'hp        :call Latex_HelpLatexSupport()<CR>'
+	exe ihead.'&help\ (Latex-Support)<Tab>'.esc_mapl.'hp   <C-C>:call Latex_HelpLatexSupport()<CR>'
 
 endfunction    " ----------  end of function s:InitMenus  ----------
 "
-"===  FUNCTION  ================================================================
-"          NAME:  Latex_AddMenus     {{{1
-"   DESCRIPTION:  Add menus.
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! g:Latex_AddMenus()
-	" initialize if not existing
-	if s:Latex_MenuVisible == 'no'
-		call s:InitMenus ()
-	endif
-	" the menu is now visible
-	let s:Latex_MenuVisible = 'yes'
-endfunction    " ----------  end of function g:Latex_AddMenus  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Latex_RemoveMenus     {{{1
-"   DESCRIPTION:  Remove menus.
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! g:Latex_RemoveMenus()
-	" destroy if visible
-	if s:Latex_MenuVisible == 'yes' && has ( 'menu' )
-		aunmenu <silent> latex
-	endif
-	" the menu is now invisible
-	let s:Latex_MenuVisible = 'no'
-endfunction    " ----------  end of function g:Latex_RemoveMenus  ----------
-
 "===  FUNCTION  ================================================================
 "          NAME:  Latex_JumpForward     {{{1
 "   DESCRIPTION:  Jump to the next target, otherwise behind the current string.
@@ -817,10 +816,11 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" USER DEFINED COMMANDS
 	"-------------------------------------------------------------------------------
+	command! -nargs=* -complete=file LatexMakeCmdlineArgs call Latex_MakeArguments(<q-args>)
 	"
-  command! -nargs=* -complete=file LatexMakeCmdlineArgs call Latex_MakeArguments(<q-args>)
-	"
-	" setup maplocalleader
+	"-------------------------------------------------------------------------------
+	" settings - local leader
+	"-------------------------------------------------------------------------------
 	if ! empty ( g:Latex_MapLeader )
 		if exists ( 'g:maplocalleader' )
 			let ll_save = g:maplocalleader
@@ -934,6 +934,9 @@ function! s:CreateAdditionalMaps ()
 	nmap    <buffer>  <silent>  <C-j>    i<C-R>=Latex_JumpForward()<CR>
 	imap    <buffer>  <silent>  <C-j>     <C-R>=Latex_JumpForward()<CR>
 	"
+	"-------------------------------------------------------------------------------
+	" settings - reset local leader
+	"-------------------------------------------------------------------------------
 	if ! empty ( g:Latex_MapLeader )
 		if exists ( 'll_save' )
 			let g:maplocalleader = ll_save
@@ -996,48 +999,41 @@ function! Latex_Settings ()
 endfunction    " ----------  end of function Latex_Settings ----------
 "
 "------------------------------------------------------------------------------
-"  Latex_CreateMenusDelayed     {{{1
-"------------------------------------------------------------------------------
-function! Latex_CreateMenusDelayed ()
-	if s:Latex_CreateMenusDelayed == 'yes' && s:Latex_MenuVisible == 'no'
-		call Latex_CreateGuiMenus()
-	endif
-endfunction    " ----------  end of function Latex_CreateMenusDelayed  ----------
-"
-"------------------------------------------------------------------------------
 "  Latex_CreateGuiMenus     {{{1
 "------------------------------------------------------------------------------
 function! Latex_CreateGuiMenus ()
-  if s:Latex_MenuVisible != 'yes'
+	if s:Latex_MenuVisible == 'no'
 		aunmenu <silent> &Tools.Load\ Latex\ Support
-    amenu   <silent> 40.1000 &Tools.-SEP100- :
-    amenu   <silent> 40.1170 &Tools.Unload\ Latex\ Support :call Latex_RemoveGuiMenus()<CR>
+		amenu   <silent> 40.1000 &Tools.-SEP100- :
+		amenu   <silent> 40.1110 &Tools.Unload\ Latex\ Support :call Latex_RemoveGuiMenus()<CR>
+		"
 		call g:Latex_RereadTemplates('no')
 		call s:InitMenus () 
-    let s:Latex_MenuVisible = 'yes'
-  endif
+		"
+		let s:Latex_MenuVisible = 'yes'
+	endif
 endfunction    " ----------  end of function Latex_CreateGuiMenus  ----------
 "
 "------------------------------------------------------------------------------
 "  Latex_ToolMenu     {{{1
 "------------------------------------------------------------------------------
 function! Latex_ToolMenu ()
-    amenu   <silent> 40.1000 &Tools.-SEP100- :
-    amenu   <silent> 40.1170 &Tools.Load\ Latex\ Support :call Latex_CreateGuiMenus()<CR>
+	amenu   <silent> 40.1000 &Tools.-SEP100- :
+	amenu   <silent> 40.1110 &Tools.Load\ Latex\ Support :call Latex_CreateGuiMenus()<CR>
 endfunction    " ----------  end of function Latex_ToolMenu  ----------
 
 "------------------------------------------------------------------------------
 "  Latex_RemoveGuiMenus     {{{1
 "------------------------------------------------------------------------------
 function! Latex_RemoveGuiMenus ()
-  if s:Latex_MenuVisible == 'yes'
+	if s:Latex_MenuVisible == 'yes'
 		exe "aunmenu <silent> ".s:Latex_RootMenu
-    "
-    aunmenu <silent> &Tools.Unload\ Latex\ Support
+		"
+		aunmenu <silent> &Tools.Unload\ Latex\ Support
 		call Latex_ToolMenu()
-    "
-    let s:Latex_MenuVisible = 'no'
-  endif
+		"
+		let s:Latex_MenuVisible = 'no'
+	endif
 endfunction    " ----------  end of function Latex_RemoveGuiMenus  ----------
 "
 "------------------------------------------------------------------------------
@@ -1457,13 +1453,22 @@ if s:Latex_LoadMenus == 'yes' && s:Latex_CreateMenusDelayed == 'no'
 endif
 "
 if has( 'autocmd' )
-  autocmd BufNewFile,BufRead *.tex
-        \ if ! exists( 'g:Latex_Templates' ) |
-        \   call g:Latex_RereadTemplates ('no') |
-        \   if s:Latex_LoadMenus == 'yes' | call g:Latex_AddMenus () | endif |
-        \ endif |
-        \ call s:CreateAdditionalMaps() |
-        \ call mmtemplates#core#CreateMaps ( 'g:Latex_Templates', g:Latex_MapLeader )
+
+  " In the absence of any LaTeX keywords, the default filetype for *.tex files is 'plaintex'.
+  " This means new files have this filetype.
+
+  autocmd FileType *
+        \ if &filetype == 'tex' |
+        \   if ! exists( 'g:Latex_Templates' ) |
+        \     if s:Latex_LoadMenus == 'yes' | call Latex_CreateGuiMenus ()        |
+        \     else                          | call g:Latex_RereadTemplates ('no') |
+        \     endif |
+        \   endif |
+        \   call s:CreateAdditionalMaps () |
+        \   call mmtemplates#core#CreateMaps ( 'g:Latex_Templates', g:Latex_MapLeader ) |
+        \ endif
+
+  " :TODO:04.01.2013 22:14:WM: set filetype to 'tex' for LaTeX
   if s:Latex_InsertFileHeader == 'yes'
     autocmd BufNewFile  *.tex  call mmtemplates#core#InsertTemplate(g:Latex_Templates, 'Comments.file prolog')
   endif
