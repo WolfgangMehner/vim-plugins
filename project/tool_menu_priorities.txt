@@ -1,0 +1,19 @@
+
+Priorities of the tool menu entries "Load Support"/"Unload Support":
+
+Entry		Priority
+
+Tools.-SEP100-	40.1000
+Tools.Awk	40.1010
+Tools.Bash	40.1021
+Tools.C		40.1030
+Tools.Git	40.1080
+Tools.Latex	40.1110
+Tools.Lua	40.1122
+Tools.Perl	40.1160
+Tools.Vim	40.1170
+
+Tools.Filter	40.1210		???
+
+
+vim: tabstop=8

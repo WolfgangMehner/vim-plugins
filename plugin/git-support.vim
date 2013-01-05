@@ -10,7 +10,7 @@
 "       Version:  see variable g:GitSupport_Version below
 "       Created:  06.10.2012
 "      Revision:  ---
-"       License:  Copyright (c) 2012, Wolfgang Mehner
+"       License:  Copyright (c) 2012-2013, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the

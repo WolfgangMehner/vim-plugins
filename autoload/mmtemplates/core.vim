@@ -11,8 +11,8 @@
 "  Organization:  
 "       Version:  see variable g:Templates_Version below
 "       Created:  30.08.2011
-"      Revision:  22.09.2012
-"       License:  Copyright (c) 2012, Wolfgang Mehner
+"      Revision:  04.01.2013
+"       License:  Copyright (c) 2012-2013, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -81,6 +81,22 @@ let s:StandardMacros = {
 			\ 'SUFFIX'         : '',
 			\ 'TIME'           : '%X',
 			\ 'YEAR'           : '%Y',
+			\ }
+"
+"----------------------------------------------------------------------
+"  s:StandardProperties : The standard properties.   {{{2
+"----------------------------------------------------------------------
+"
+let s:StandardProperties = {
+			\ 'Templates::EditTemplates::Map'   : 're',
+			\ 'Templates::RereadTemplates::Map' : 'rr',
+			\ 'Templates::ChooseStyle::Map'     : 'rs',
+			\
+			\ 'Templates::EditTemplates::Shortcut'   : 'e',
+			\ 'Templates::RereadTemplates::Shortcut' : 'r',
+			\ 'Templates::ChooseStyle::Shortcut'     : 's',
+			\
+			\ 'Templates::Mapleader' : '\',
 			\ }
 "
 "----------------------------------------------------------------------
@@ -427,6 +443,7 @@ function! mmtemplates#core#NewLibrary ( ... )
 	" library
 	let library   = {
 				\ 'macros'         : {},
+				\ 'properties'     : {},
 				\ 'resources'      : {},
 				\ 'templates'      : {},
 				\
@@ -446,7 +463,8 @@ function! mmtemplates#core#NewLibrary ( ... )
 				\ }
 	" entry used by maps: 'map_commands'
 	"
-	call extend ( library.macros, s:StandardMacros, 'keep' )
+	call extend ( library.macros,     s:StandardMacros,     'keep' )
+	call extend ( library.properties, s:StandardProperties, 'keep' )
 	"
 	call s:UpdateFileReadRegex ( library.regex_file,     library.regex_settings )
 	call s:UpdateTemplateRegex ( library.regex_template, library.regex_settings )
@@ -2872,9 +2890,9 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 	" TODO: edit template
 	if do_special_maps
 		let special_maps = {
-					\ 're' : ':call mmtemplates#core#EditTemplateFiles('.a:library.',-1)<CR>',
-					\ 'rr' : ':call mmtemplates#core#ReadTemplates('.a:library.',"reload","all")<CR>',
-					\ 'rs' : ':call mmtemplates#core#ChooseStyle('.a:library.',"!pick")<CR>',
+					\ t_lib.properties[ 'Templates::EditTemplates::Map'   ] : ':call mmtemplates#core#EditTemplateFiles('.a:library.',-1)<CR>',
+					\ t_lib.properties[ 'Templates::RereadTemplates::Map' ] : ':call mmtemplates#core#ReadTemplates('.a:library.',"reload","all")<CR>',
+					\ t_lib.properties[ 'Templates::ChooseStyle::Map'     ] : ':call mmtemplates#core#ChooseStyle('.a:library.',"!pick")<CR>',
 					\ }
 		"
 		for [ mp, action ] in items ( special_maps )
@@ -2911,6 +2929,30 @@ endfunction    " ----------  end of function mmtemplates#core#CreateMaps  ------
 "----------------------------------------------------------------------
 "
 "----------------------------------------------------------------------
+" s:InsertShortcut : Insert a shortcut into a menu entry.   {{{2
+"
+" Inserts the shortcut by prefixing the appropriate character with '&',
+" or by appending " (<shortcut>)". If escaped is true, the appended string is
+" correctly escaped.
+"----------------------------------------------------------------------
+"
+function! s:InsertShortcut ( entry, shortcut, escaped )
+	if empty ( a:shortcut )
+		return a:entry
+	else
+		let entry = a:entry
+		let sc    = a:shortcut
+		if stridx ( tolower( entry ), tolower( sc ) ) == -1
+			if a:escaped | return entry.'\ (&'.sc.')'
+			else         | return entry.' (&'.sc.')'
+			endif
+		else
+			return substitute( entry, '\V\c'.sc, '\&&', '' )
+		endif
+	endif
+endfunction    " ----------  end of function s:InsertShortcut  ----------
+"
+"----------------------------------------------------------------------
 " s:CreateSubmenu : Create sub-menus, given they do not already exists.   {{{2
 "
 " The menu 'menu' can contain '&' and a trailing '.'. Both are ignored.
@@ -2918,8 +2960,12 @@ endfunction    " ----------  end of function mmtemplates#core#CreateMaps  ------
 "
 function! s:CreateSubmenu ( t_lib, root_menu, global_name, menu, priority )
 	"
-	let level    = len( split( a:root_menu, '\.' ) )
-	let parts    = split( a:menu, '\.' )
+	" split point:
+	" a point, preceded by an even number of backslashes
+	" in turn, the backslashes must be preceded by a different character, or the
+	" beginning of the string
+	let level    = len( split( a:root_menu, '\%(\_^\|[^\\]\)\%(\\\\\)*\zs\.' ) )
+	let parts    =      split( a:menu,      '\%(\_^\|[^\\]\)\%(\\\\\)*\zs\.' )
 	let n_parts  = len( parts )
 	let level   += n_parts
 	"
@@ -2972,6 +3018,8 @@ endfunction    " ----------  end of function s:CreateSubmenu  ----------
 "
 function! s:CreateTemplateMenus ( t_lib, root_menu, global_name, t_lib_name )
 	"
+	let map_ldr = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::Mapleader' ] )
+	"
 	" go through all the templates
 	for t_name in a:t_lib.menu_order
 		"
@@ -3018,7 +3066,7 @@ function! s:CreateTemplateMenus ( t_lib, root_menu, global_name, t_lib_name )
 		if empty ( mp )
 			let map_entry = ''
 		else
-			let map_entry = '<TAB>\\'.mp
+			let map_entry = '<TAB>'.map_ldr.mp
 		end
 		"
 		if entry == 1
@@ -3056,27 +3104,38 @@ endfunction    " ----------  end of function s:CreateTemplateMenus  ----------
 "
 function! s:CreateSpecialsMenus ( t_lib, root_menu, global_name, t_lib_name, specials_menu, styles_only )
 	"
-	" TODO: expansion of the 'styles'-menu should be configurable
+	" remove trailing point
+	let specials_menu = substitute( a:specials_menu, '\.$', '', '' )
 	"
-	let specials_menu = a:specials_menu
-	let specials_menu = substitute( specials_menu, '\.$', '', '' )
+	let map_ldr   = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::Mapleader' ] )
+	let map_edit  = map_ldr.mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::EditTemplates::Map' ] )
+	let map_read  = map_ldr.mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::RereadTemplates::Map' ] )
+	let map_style = map_ldr.mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::ChooseStyle::Map' ] )
+	let sc_edit   = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::EditTemplates::Shortcut' ] )
+	let sc_read   = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::RereadTemplates::Shortcut' ] )
+	let sc_style  = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::ChooseStyle::Shortcut' ] )
 	"
-	" new menu?
-	if ! has_key ( a:t_lib.menu_existing, substitute ( specials_menu, '&', '', 'g' ) )
-		call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, specials_menu, s:StandardPriority )
-	endif
+	" create the specials menu
+	call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, specials_menu, s:StandardPriority )
 	"
 	if ! a:styles_only
-		" create edit, reread and choose templates
-		exe 'amenu <silent> '.a:root_menu.specials_menu.'.&edit\ templates'
+		" create edit and reread templates
+		let entry_edit = s:InsertShortcut ( '.edit\ templates',   sc_edit, 1 ).'<TAB>'.map_edit
+		let entry_read = s:InsertShortcut ( '.reread\ templates', sc_read, 1 ).'<TAB>'.map_read
+		exe 'amenu <silent> '.a:root_menu.specials_menu.entry_edit
 					\ .' :call mmtemplates#core#EditTemplateFiles('.a:t_lib_name.',-1)<CR>'
-		exe 'amenu <silent> '.a:root_menu.specials_menu.'.&reread\ templates'
+		exe 'amenu <silent> '.a:root_menu.specials_menu.entry_read
 					\ .' :call mmtemplates#core#ReadTemplates('.a:t_lib_name.',"reload","all")<CR>'
 	endif
 	"
 	" create a menu for all the styles
+	if sc_style == 's' | let entry_styles = '.choose &style<TAB>'.map_style
+	else               | let entry_styles = s:InsertShortcut ( '.choose style', sc_style, 0 ).'<TAB>'.map_style
+	endif
+	call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, specials_menu.entry_styles, s:StandardPriority )
+	"
 	for s in a:t_lib.styles
-		exe 'amenu <silent> '.a:root_menu.specials_menu.'.choose\ &style.'.escape( s, ' ' )
+		exe 'amenu <silent> '.a:root_menu.specials_menu.'.choose\ style.&'.s
 					\ .' :call mmtemplates#core#ChooseStyle('.a:t_lib_name.','.string(s).')<CR>'
 	endfor
 	"
@@ -3221,6 +3280,19 @@ function! mmtemplates#core#CreateMenus ( library, root_menu, ... )
 endfunction    " ----------  end of function mmtemplates#core#CreateMenus  ----------
 "
 "----------------------------------------------------------------------
+" mmtemplates#core#EscapeMenu : Escape a string so it can be used as a menu item.   {{{1
+"----------------------------------------------------------------------
+"
+function! mmtemplates#core#EscapeMenu ( str )
+	"
+	let str = escape     ( a:str, ' \.|' )
+	let str = substitute (   str, '&', '\&\&', 'g' )
+	"
+	return str
+	"
+endfunction    " ----------  end of function mmtemplates#core#EscapeMenu  ----------
+"
+"----------------------------------------------------------------------
 " mmtemplates#core#ChooseStyle : Choose a style.   {{{1
 "----------------------------------------------------------------------
 "
@@ -3252,7 +3324,7 @@ function! mmtemplates#core#ChooseStyle ( library, style )
 	if a:style == '!pick'
 		try
 			let style = s:UserInput( 'Style (currently '.t_lib.current_style.') : ', '', 
-						\				'customlist', t_lib.styles )
+						\ 'customlist', t_lib.styles )
 		catch /Template:UserInputAborted/
 			return
 		endtry
@@ -3264,7 +3336,9 @@ function! mmtemplates#core#ChooseStyle ( library, style )
 	if style == ''
 		" noop
 	elseif -1 != index ( t_lib.styles, style )
-		if t_lib.current_style != style
+		if t_lib.current_style == style
+			echo 'Style stayed "'.style.'".'
+		else
 			let t_lib.current_style = style
 			echo 'Changed style to "'.style.'".'
 		endif
@@ -3302,12 +3376,14 @@ function! mmtemplates#core#Resource ( library, mode, ... )
 	"  special inquiries
 	" ==================================================
 	"
-	if a:mode == 'get' || a:mode == 'set'
+	if a:mode == 'add' || a:mode == 'get' || a:mode == 'set'
 		" continue below
-	elseif a:mode == 'style'
-		return [ t_lib.current_style, '' ]
+	elseif a:mode == 'escaped_mapleader'
+		return [ mmtemplates#core#EscapeMenu( t_lib.properties[ 'Templates::Mapleader' ] ), '' ]
 	elseif a:mode == 'jumptag'
 		return [ t_lib.regex_template.JumpTagBoth, '' ]
+	elseif a:mode == 'style'
+		return [ t_lib.current_style, '' ]
 	else
 		return [ '', 'Mode "'.a:mode.'" is unknown.' ]
 	endif
@@ -3317,11 +3393,13 @@ function! mmtemplates#core#Resource ( library, mode, ... )
 	" ==================================================
 	"
 	" type of 'resource'
-	let types = { 'macro' : 's', 'path' : 's', 'list' : '[ld]' }
+	let types = { 'list' : '[ld]', 'macro' : 's', 'path' : 's', 'property' : 's' }
 	"
-	if a:mode == 'get' && a:0 < 2
+	if a:mode == 'add' && a:0 != 3
+		return [ '', 'Mode "add" requires three additional arguments.' ]
+	elseif a:mode == 'get' && a:0 != 2
 		return [ '', 'Mode "get" requires two additional arguments.' ]
-	elseif a:mode == 'set' && a:0 < 3
+	elseif a:mode == 'set' && a:0 != 3
 		return [ '', 'Mode "set" requires three additional arguments.' ]
 	elseif type( a:1 ) != type( '' )
 		return [ '', 'Argument "resource" must be given as a string.' ]
@@ -3329,42 +3407,70 @@ function! mmtemplates#core#Resource ( library, mode, ... )
 		return [ '', 'Argument "key" must be given as a string.' ]
 	elseif ! has_key ( types, a:1 )
 		return [ '', 'Resource "'.a:1.'" does not exist.' ]
+	elseif a:mode == 'add' && a:1 != 'property'
+		return [ '', 'Can not execute add for resource of type "'.a:1.'".' ]
 	endif
 	"
 	" ==================================================
-	"  get or set
+	"  add, get or set
 	" ==================================================
 	"
 	let resource = a:1
 	let key      = a:2
 	"
-	if a:mode == 'get'
+	if a:mode == 'add'
+		"
+		let value = a:3
+		"
+		" add (property only)
+		if type( value ) != type( '' )
+			return [ '', 'Argument "value" must be given as a string.' ]
+		else
+			let t_lib.properties[ key ] = value
+			return [ '', '' ]
+		endif
+		"
+		return [ '', '' ]
+	elseif a:mode == 'get'
 		"
 		" get
-		if resource == 'macro'
+		if resource == 'list'
+			return [ get( t_lib.resources, 'list!'.key ), '' ]
+		elseif resource == 'macro'
 			return [ get( t_lib.macros, key ), '' ]
 		elseif resource == 'path'
 			return [ get( t_lib.resources, 'path!'.key ), '' ]
-		elseif resource == 'list'
-			return [ get( t_lib.resources, 'list!'.key ), '' ]
+		elseif resource == 'property'
+			if has_key ( t_lib.properties, key )
+				return [ t_lib.properties[ key ], '' ]
+			else
+				return [ '', 'Property "'.key.'" does not exist.' ]
+			endif
 		endif
 		"
 	elseif a:mode == 'set'
 		"
-		let value  = a:3
+		let value = a:3
 		"
 		" check type and set
 		if s:TypeNames[ type( value ) ] !~ types[ resource ]
 			return [ '', 'Argument "value" has the wrong type.' ]
+		elseif resource == 'list'
+			let t_lib.resources[ 'list!'.key ] = value
 		elseif resource == 'macro'
 			let t_lib.macros[ key ] = value
 		elseif resource == 'path'
 			let t_lib.resources[ 'path!'.key ] = value
-		elseif resource == 'list'
-			let t_lib.resources[ 'list!'.key ] = value
+		elseif resource == 'property'
+			if has_key ( t_lib.properties, key )
+				let t_lib.properties[ key ] = value
+				return [ '', '' ]
+			else
+				return [ '', 'Property "'.key.'" does not exist.' ]
+			endif
 		endif
 		"
-		return [ 0, '' ]
+		return [ '', '' ]
 	endif
 	"
 endfunction    " ----------  end of function mmtemplates#core#Resource  ----------
