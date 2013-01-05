@@ -23,11 +23,3 @@ let b:did_Help_ftplugin = 1
 "----------------------------------------------------------------------
 inoremap <buffer> \|\| \|\|<Left>
 "
-"-------------------------------------------------------------------------------
-" maps - from the template support
-"-------------------------------------------------------------------------------
-"
-if exists ( 'g:Vim_Templates' )
-  call mmtemplates#core#CreateMaps ( 'g:Vim_Templates', '', 'do_special_maps' )
-endif
-"

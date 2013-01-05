@@ -137,6 +137,8 @@ let s:Vim_MenuVisible				= 'no'
 let s:Vim_GuiSnippetBrowser = 'gui'             " gui / commandline
 let s:Vim_LoadMenus         = 'yes'             " load the menus?
 let s:Vim_RootMenu          = '&Vim'            " name of the root menu
+let s:Vim_CreateMapsForHelp = 'no'              " create maps for modifiable help buffers as well
+" :TODO:05.01.2013 13:59:WM: new option "Vim_CreateMapsForHelp": rethink and document!
 "
 let s:Vim_MapLeader             = ''            " default: do not overwrite 'maplocalleader'
 let s:Vim_LineEndCommColDefault = 49
@@ -147,12 +149,13 @@ let s:Vim_TemplateJumpTarget 		= '<+\i\++>\|{+\i\++}\|<-\i\+->\|{-\i\+-}'
 call s:GetGlobalSetting ( 'Vim_GuiSnippetBrowser' )
 call s:GetGlobalSetting ( 'Vim_LoadMenus' )
 call s:GetGlobalSetting ( 'Vim_RootMenu' )
+call s:GetGlobalSetting ( 'Vim_CreateMapsForHelp' )
 call s:GetGlobalSetting ( 'Vim_Printheader' )
-call s:GetGlobalSetting ( 's:Vim_LocalTemplateFile' )
-call s:GetGlobalSetting ( 's:Vim_GlobalTemplateFile' )
-call s:GetGlobalSetting ( 's:Vim_CodeSnippets' )
-call s:GetGlobalSetting ( 's:Vim_CreateMenusDelayed' )
-call s:GetGlobalSetting ( 's:Vim_LineEndCommColDefault' )
+call s:GetGlobalSetting ( 'Vim_LocalTemplateFile' )
+call s:GetGlobalSetting ( 'Vim_GlobalTemplateFile' )
+call s:GetGlobalSetting ( 'Vim_CodeSnippets' )
+call s:GetGlobalSetting ( 'Vim_CreateMenusDelayed' )
+call s:GetGlobalSetting ( 'Vim_LineEndCommColDefault' )
 
 call s:ApplyDefaultSetting ( 'Vim_MapLeader'    )
 "
@@ -525,10 +528,31 @@ endfunction    " ----------  end of function Vim_Help  ----------
 "       RETURNS:  
 "===============================================================================
 function! g:Vim_RereadTemplates ( displaymsg )
-	let g:Vim_Templates = mmtemplates#core#NewLibrary ()
-	call mmtemplates#core#ChangeSyntax  ( g:Vim_Templates, 'comment', '§', '§' )
-	let	messsage							= ''
 	"
+	"
+	"-------------------------------------------------------------------------------
+	" SETUP TEMPLATE LIBRARY
+	"-------------------------------------------------------------------------------
+ 	let g:Vim_Templates = mmtemplates#core#NewLibrary ()
+	"
+	" mapleader
+	if empty ( g:Vim_MapLeader )
+		call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Mapleader', '\' )
+	else
+		call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Mapleader', g:Vim_MapLeader )
+	endif
+	"
+	" map: choose style
+	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::EditTemplates::Map',   'ntl' )
+	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::RereadTemplates::Map', 'ntr' )
+	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::ChooseStyle::Map',     'nts' )
+	"
+	" syntax: comments
+	call mmtemplates#core#ChangeSyntax ( g:Vim_Templates, 'comment', '§' )
+	let s:Vim_TemplateJumpTarget = mmtemplates#core#Resource ( g:Vim_Templates, "jumptag" )[0]
+	"
+	let	messsage = ''
+ 	"
 	if s:installation == 'system'
 		"-------------------------------------------------------------------------------
 		" SYSTEM INSTALLATION
@@ -601,8 +625,6 @@ endfunction    " ----------  end of function Vim_RereadTemplates  ----------
 "===============================================================================
 function! s:InitMenus()
 	"
-	" TODO: mapleader configurable
-	"
 	if ! has ( 'menu' )
 		return
 	endif
@@ -610,108 +632,105 @@ function! s:InitMenus()
 	" Preparation
 	call mmtemplates#core#CreateMenus ( 'g:Vim_Templates', s:Vim_RootMenu, 'do_reset' )
 	"
+	" get the mapleader (correctly escaped)
+	let [ esc_mapl, err ] = mmtemplates#core#Resource ( g:Vim_Templates, 'escaped_mapleader' )
+	"
 	exe 'amenu '.s:Vim_RootMenu.'.Vim  <Nop>'
 	exe 'amenu '.s:Vim_RootMenu.'.-Sep00- <Nop>'
 	"
 	" Comments
 	"
-	call mmtemplates#core#CreateMenus ( 'g:Vim_Templates', s:Vim_RootMenu, 'sub_menu', '&Comments' )
+ 	"-------------------------------------------------------------------------------
+	" menu headers
+	"-------------------------------------------------------------------------------
+	"
+	call mmtemplates#core#CreateMenus ( 'g:Vim_Templates', s:Vim_RootMenu, 'sub_menu', '&Comments', 'priority', 500 )
+	" the other, automatically created menus go here; their priority is the standard priority 500
+	call mmtemplates#core#CreateMenus ( 'g:Vim_Templates', s:Vim_RootMenu, 'sub_menu', 'S&nippets', 'priority', 600 )
+	call mmtemplates#core#CreateMenus ( 'g:Vim_Templates', s:Vim_RootMenu, 'sub_menu', '&Run'     , 'priority', 800 )
+	call mmtemplates#core#CreateMenus ( 'g:Vim_Templates', s:Vim_RootMenu, 'sub_menu', '&Help'    , 'priority', 900 )
+	"
+	"-------------------------------------------------------------------------------
+	" comments
+ 	"-------------------------------------------------------------------------------
 	"
 	let  head =  'noremenu <silent> '.s:Vim_RootMenu.'.Comments.'
 	let ahead = 'anoremenu <silent> '.s:Vim_RootMenu.'.Comments.'
 	let vhead = 'vnoremenu <silent> '.s:Vim_RootMenu.'.Comments.'
 	"
-	exe ahead.'end-of-&line\ comment<Tab>cl                    :call Vim_EndOfLineComment()<CR>'
-	exe vhead.'end-of-&line\ comment<Tab>cl               <Esc>:call Vim_MultiLineEndComments()<CR>A'
-	exe ahead.'ad&just\ end-of-line\ com\.<Tab>cj              :call Vim_AdjustLineEndComm()<CR>'
-	exe vhead.'ad&just\ end-of-line\ com\.<Tab>cj              :call Vim_AdjustLineEndComm()<CR>'
-	exe  head.'&set\ end-of-line\ com\.\ col\.<Tab>cs     <Esc>:call Vim_GetLineEndCommCol()<CR>'
+	exe ahead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl                    :call Vim_EndOfLineComment()<CR>'
+	exe vhead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl               <Esc>:call Vim_MultiLineEndComments()<CR>A'
+	exe ahead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call Vim_AdjustLineEndComm()<CR>'
+	exe vhead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call Vim_AdjustLineEndComm()<CR>'
+	exe  head.'&set\ end-of-line\ com\.\ col\.<Tab>'.esc_mapl.'cs     <Esc>:call Vim_GetLineEndCommCol()<CR>'
 	"
-	exe ahead.'&comment<TAB>cc		:call Vim_CodeComment()<CR>'
-	exe vhead.'&comment<TAB>cc		:call Vim_CodeComment()<CR>'
-	exe ahead.'&uncomment<TAB>cu	:call Vim_CommentCode(0)<CR>'
-	exe vhead.'&uncomment<TAB>cu	:call Vim_CommentCode(0)<CR>'
+	exe ahead.'&comment<TAB>'.esc_mapl.'cc		:call Vim_CodeComment()<CR>'
+	exe vhead.'&comment<TAB>'.esc_mapl.'cc		:call Vim_CodeComment()<CR>'
+	exe ahead.'&uncomment<TAB>'.esc_mapl.'cu	:call Vim_CommentCode(0)<CR>'
+	exe vhead.'&uncomment<TAB>'.esc_mapl.'cu	:call Vim_CommentCode(0)<CR>'
 	exe ahead.'-Sep00-						<Nop>'
 	"
-	exe ahead.'&function\ description\ (auto)<TAB>ca	     :call Vim_FunctionComment()<CR>'
-	exe vhead.'&function\ description\ (auto)<TAB>ca	<Esc>:call Vim_FunctionComment()<CR>'
+	exe ahead.'&function\ description\ (auto)<TAB>'.esc_mapl.'ca	     :call Vim_FunctionComment()<CR>'
+	exe vhead.'&function\ description\ (auto)<TAB>'.esc_mapl.'ca	<Esc>:call Vim_FunctionComment()<CR>'
 	exe ahead.'-Sep02-												             <Nop>'
 	"
-	"
-	" Templates
+ 	"-------------------------------------------------------------------------------
+	" generate menus from the templates
+ 	"-------------------------------------------------------------------------------
 	call mmtemplates#core#CreateMenus ( 'g:Vim_Templates', s:Vim_RootMenu, 'do_templates' )
 	"
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------
+	"
 	if !empty(s:Vim_CodeSnippets)
 		"
-		exe 'amenu <silent>  '.s:Vim_RootMenu.'.S&nippets.Snippets<Tab>Vim  <Nop>'
-		exe 'amenu <silent>  '.s:Vim_RootMenu.'.S&nippets.-Sep00- <Nop>'
-		exe "amenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>nr       :call Vim_CodeSnippet("r")<CR>'
-		exe "imenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>nr  <C-C>:call Vim_CodeSnippet("r")<CR>'
-		exe "amenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>nw      :call Vim_CodeSnippet("w")<CR>'
-		exe "vmenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>nw <C-C>:call Vim_CodeSnippet("wv")<CR>'
-		exe "imenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>nw <C-C>:call Vim_CodeSnippet("w")<CR>'
-		exe "amenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>ne       :call Vim_CodeSnippet("e")<CR>'
-		exe "imenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>ne  <C-C>:call Vim_CodeSnippet("e")<CR>'
+		exe "amenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>'.esc_mapl.'nr       :call Vim_CodeSnippet("r")<CR>'
+		exe "imenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>'.esc_mapl.'nr  <C-C>:call Vim_CodeSnippet("r")<CR>'
+		exe "amenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw      :call Vim_CodeSnippet("w")<CR>'
+		exe "vmenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Vim_CodeSnippet("wv")<CR>'
+		exe "imenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Vim_CodeSnippet("w")<CR>'
+		exe "amenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne       :call Vim_CodeSnippet("e")<CR>'
+		exe "imenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call Vim_CodeSnippet("e")<CR>'
+		exe "amenu  <silent> ".s:Vim_RootMenu.'.S&nippets.-SepSnippets-                       :'
+		"
+		" :TODO:05.01.2013 11:06:WM: what to do if Vim_CodeSnippet is empty/directory does not exist?
+		"
 	endif
+	"
+	call mmtemplates#core#CreateMenus ( 'g:Vim_Templates', s:Vim_RootMenu, 'do_specials', 'specials_menu', 'S&nippets' )
 	"
 	"-------------------------------------------------------------------------------
 	" run
 	"-------------------------------------------------------------------------------
 	" 
-	call mmtemplates#core#CreateMenus ( 'g:Vim_Templates', s:Vim_RootMenu, 'sub_menu', '&Run' )
-	"
-  exe "amenu <silent>  ".s:Vim_RootMenu.'.&help\ (Vim\ funct\.)<Tab>h\ \ <S-F1>    :call Vim_Help()<CR>'
-	"
 	let ahead = 'amenu <silent> '.s:Vim_RootMenu.'.Run.'
 	let vhead = 'vmenu <silent> '.s:Vim_RootMenu.'.Run.'
 	"
 	if	s:MSWIN
-		exe ahead.'&hardcopy\ to\ printer<Tab>rh        <C-C>:call Vim_Hardcopy("n")<CR>'
-		exe vhead.'&hardcopy\ to\ printer<Tab>rh        <C-C>:call Vim_Hardcopy("v")<CR>'
+		exe ahead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call Vim_Hardcopy("n")<CR>'
+		exe vhead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call Vim_Hardcopy("v")<CR>'
 	else
-		exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>rh   <C-C>:call Vim_Hardcopy("n")<CR>'
-		exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>rh   <C-C>:call Vim_Hardcopy("v")<CR>'
+		exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call Vim_Hardcopy("n")<CR>'
+		exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call Vim_Hardcopy("v")<CR>'
 	endif
 	"
-	exe ahead.'plugin\ &settings<Tab>rs                 :call Vim_Settings()<CR>'
+	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rs                 :call Vim_Settings()<CR>'
 	"
-	call mmtemplates#core#CreateMenus ( 'g:Vim_Templates', s:Vim_RootMenu, 'do_specials' )
+ 	"-------------------------------------------------------------------------------
+ 	" help
+ 	"-------------------------------------------------------------------------------
+ 	"
+	let ahead = 'amenu <silent> '.s:Vim_RootMenu.'.Help.'
+	let ihead = 'imenu <silent> '.s:Vim_RootMenu.'.Help.'
+	"
+	" :TODO:05.01.2013 12:28:WM: new menu entry and new map: document!
+  exe ahead.'&keyword\ help<Tab>'.esc_mapl.'hk\ \ <S-F1>    :call Vim_Help()<CR>'
+	exe ahead.'-SEP1- :'
+	" :TODO:05.01.2013 12:28:WM: jump to help for Vim-Support (see Latex_HelpLatexSupport)
 	"
 endfunction    " ----------  end of function s:InitMenus  ----------
 "
-"===  FUNCTION  ================================================================
-"          NAME:  Vim_AddMenus     {{{1
-"   DESCRIPTION:  Add menus.
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! g:Vim_AddMenus()
-	" initialize if not existing
-	if s:Vim_MenuVisible == 'no'
-		call s:InitMenus ()
-	endif
-	" the menu is now visible
-	let s:Vim_MenuVisible = 'yes'
-endfunction    " ----------  end of function g:Vim_AddMenus  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Vim_RemoveMenus     {{{1
-"   DESCRIPTION:  Remove menus.
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! g:Vim_RemoveMenus()
-	" destroy if visible
-	if s:Vim_MenuVisible == 'yes' && has ( 'menu' )
-		aunmenu <silent> Vim
-	endif
-	" the menu is now invisible
-	let s:Vim_MenuVisible = 'no'
-endfunction    " ----------  end of function g:Vim_RemoveMenus  ----------
-
 "===  FUNCTION  ================================================================
 "          NAME:  Vim_JumpForward     {{{1
 "   DESCRIPTION:  Jump to the next target, otherwise behind the current string.
@@ -856,8 +875,11 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" settings - local leader
 	"-------------------------------------------------------------------------------
-	if g:Vim_MapLeader != ''
-		let maplocalleader = g:Vim_MapLeader
+	if ! empty ( g:Vim_MapLeader )
+		if exists ( 'g:maplocalleader' )
+			let ll_save = g:maplocalleader
+		endif
+		let g:maplocalleader = g:Vim_MapLeader
 	endif
 	"
 	"-------------------------------------------------------------------------------
@@ -908,8 +930,8 @@ function! s:CreateAdditionalMaps ()
 	"   help
 	"-------------------------------------------------------------------------------
 	nnoremap    <buffer>  <silent>  <LocalLeader>rs         :call Vim_Settings()<CR>
-	nnoremap    <buffer>  <silent>  <LocalLeader>h          :call Vim_Help()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>h     <C-C>:call Vim_Help()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>hk          :call Vim_Help()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>hk     <C-C>:call Vim_Help()<CR>
 	" 
 	if has("gui_running")
 		nnoremap    <buffer>  <silent>  <S-F1>             :call Vim_Help()<CR>
@@ -918,6 +940,17 @@ function! s:CreateAdditionalMaps ()
 	"
 	nmap    <buffer>  <silent>  <C-j>    i<C-R>=Vim_JumpForward()<CR>
 	imap    <buffer>  <silent>  <C-j>     <C-R>=Vim_JumpForward()<CR>
+	"
+	"-------------------------------------------------------------------------------
+	" settings - reset local leader
+	"-------------------------------------------------------------------------------
+	if ! empty ( g:Vim_MapLeader )
+		if exists ( 'll_save' )
+			let g:maplocalleader = ll_save
+		else
+			unlet g:maplocalleader
+		endif
+	endif
 	"
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 "
@@ -946,48 +979,41 @@ function! Vim_Settings ()
 endfunction    " ----------  end of function Vim_Settings ----------
 "
 "------------------------------------------------------------------------------
-"  Vim_CreateMenusDelayed     {{{1
-"------------------------------------------------------------------------------
-function! Vim_CreateMenusDelayed ()
-	if s:Vim_CreateMenusDelayed == 'yes' && s:Vim_MenuVisible == 'no'
-		call Vim_CreateGuiMenus()
-	endif
-endfunction    " ----------  end of function Vim_CreateMenusDelayed  ----------
-"
-"------------------------------------------------------------------------------
 "  Vim_CreateGuiMenus     {{{1
 "------------------------------------------------------------------------------
 function! Vim_CreateGuiMenus ()
-  if s:Vim_MenuVisible != 'yes'
+	if s:Vim_MenuVisible == 'no'
 		aunmenu <silent> &Tools.Load\ Vim\ Support
-    amenu   <silent> 40.1000 &Tools.-SEP100- :
-    amenu   <silent> 40.1170 &Tools.Unload\ Vim\ Support :call Vim_RemoveGuiMenus()<CR>
+		amenu   <silent> 40.1000 &Tools.-SEP100- :
+		amenu   <silent> 40.1170 &Tools.Unload\ Vim\ Support :call Vim_RemoveGuiMenus()<CR>
+		"
 		call g:Vim_RereadTemplates('no')
 		call s:InitMenus () 
-    let s:Vim_MenuVisible = 'yes'
-  endif
+		"
+		let s:Vim_MenuVisible = 'yes'
+	endif
 endfunction    " ----------  end of function Vim_CreateGuiMenus  ----------
 "
 "------------------------------------------------------------------------------
 "  Vim_ToolMenu     {{{1
 "------------------------------------------------------------------------------
 function! Vim_ToolMenu ()
-    amenu   <silent> 40.1000 &Tools.-SEP100- :
-    amenu   <silent> 40.1170 &Tools.Load\ Vim\ Support :call Vim_CreateGuiMenus()<CR>
+	amenu   <silent> 40.1000 &Tools.-SEP100- :
+	amenu   <silent> 40.1170 &Tools.Load\ Vim\ Support :call Vim_CreateGuiMenus()<CR>
 endfunction    " ----------  end of function Vim_ToolMenu  ----------
 
 "------------------------------------------------------------------------------
 "  Vim_RemoveGuiMenus     {{{1
 "------------------------------------------------------------------------------
 function! Vim_RemoveGuiMenus ()
-  if s:Vim_MenuVisible == 'yes'
+	if s:Vim_MenuVisible == 'yes'
 		exe "aunmenu <silent> ".s:Vim_RootMenu
-    "
-    aunmenu <silent> &Tools.Unload\ Vim\ Support
+		"
+		aunmenu <silent> &Tools.Unload\ Vim\ Support
 		call Vim_ToolMenu()
-    "
-    let s:Vim_MenuVisible = 'no'
-  endif
+		"
+		let s:Vim_MenuVisible = 'no'
+	endif
 endfunction    " ----------  end of function Vim_RemoveGuiMenus  ----------
 
 "----------------------------------------------------------------------
@@ -1001,13 +1027,18 @@ if s:Vim_LoadMenus == 'yes' && s:Vim_CreateMenusDelayed == 'no'
 endif
 "
 if has( 'autocmd' )
-	autocmd BufNewFile,BufRead *.vim
-				\ if ! exists( 'g:Vim_Templates' ) |
-				\ 	call g:Vim_RereadTemplates ('no') |
-				\ 	if s:Vim_LoadMenus == 'yes' | call g:Vim_AddMenus () | endif |
-				\ endif |
-				\ call mmtemplates#core#CreateMaps ( 'g:Vim_Templates', g:Vim_MapLeader, 'do_jump_map', 'do_special_maps' ) 
-	autocmd BufNewFile,BufRead *.vim call s:CreateAdditionalMaps() 
+
+  autocmd FileType *
+        \ if &filetype == 'vim' || ( &filetype == 'help' && &modifiable == 1 && s:Vim_CreateMapsForHelp == 'yes' ) |
+        \   if ! exists( 'g:Vim_Templates' ) |
+        \     if s:Vim_LoadMenus == 'yes' | call Vim_CreateGuiMenus ()        |
+        \     else                        | call g:Vim_RereadTemplates ('no') |
+        \     endif |
+        \   endif |
+        \   call s:CreateAdditionalMaps() |
+        \   call mmtemplates#core#CreateMaps ( 'g:Vim_Templates', g:Vim_MapLeader, 'do_special_maps' ) |
+        \ endif
+
 endif
 " }}}1
 "
