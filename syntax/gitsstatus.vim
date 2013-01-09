@@ -29,11 +29,15 @@ syn match  GitUntrackedFile    "^#\s\+\zs[^([:space:]].*$" contained
 syn region GitIgnoredRegion    start=/^# Ignored files:/ end=/^\%(# \w\)\@=\|^#\@!/ contains=GitStatusHeader,GitStatusComment,GitIgnoredFile fold
 syn match  GitIgnoredFile      "^#\s\+\zs[^([:space:]].*$" contained
 
-syn region GitDiffRegion       start=/^diff / end=/^\%(diff \)\@=/ contains=GitDiffHeader,GitDiffLines fold
-syn region GitDiffLines        start=/^@@ / end=/^\%(@@ \)\@=\|^\%(diff \)\@=/ contains=GitDiffRange,GitDiffLineP,GitDiffLineM fold
+syn region GitUnmergedRegion   start=/^# Unmerged paths:/ end=/^\%(# \w\)\@=\|^#\@!/ contains=GitStatusHeader,GitStatusComment,GitUnmergedFile fold
+syn match  GitUnmergedFile     "^#\s\+\zs[[:alnum:][:space:]]\+:\s.\+" contained
 
 syn match  GitStatusHeader     "^# \zs.\+:$"        contained
 syn match  GitStatusComment    "^#\s\+\zs([^)]*)$"  contained
+
+syn region GitDiffRegion       start=/^diff / end=/^\%(diff \)\@=/ contains=GitDiffHeader,GitDiffLines,GitMergeLines fold
+syn region GitDiffLines        start=/^@@ /   end=/^\%(@@ \)\@=\|^\%(diff \)\@=/ contains=GitDiffRange,GitDiffLineP,GitDiffLineM fold
+syn region GitMergeLines       start=/^@@@ /  end=/^\%(@@@ \)\@=\|^\%(diff \)\@=/ contains=GitMergeRange,GitMergeLineP,GitMergeLineM,GitMergeConflict fold
 
 syn match  GitDiffHeader       "^\w.*$"    contained
 syn match  GitDiffHeader       "^--- .*$"  contained
@@ -42,6 +46,15 @@ syn match  GitDiffHeader       "^+++ .*$"  contained
 syn match  GitDiffRange        "^@@[^@]\+@@"  contained
 syn match  GitDiffLineP        "^+.*$"        contained
 syn match  GitDiffLineM        "^-.*$"        contained
+
+syn match  GitMergeRange       "^@@@[^@]\+@@@"   contained
+syn match  GitMergeLineP       "^+ .*$"          contained
+syn match  GitMergeLineP       "^ +.*$"          contained
+syn match  GitMergeLineM       "^- .*$"          contained
+syn match  GitMergeLineM       "^ -.*$"          contained
+syn match  GitMergeConflict    "^++<<<<<<< .\+"  contained
+syn match  GitMergeConflict    "^++======="      contained
+syn match  GitMergeConflict    "^++>>>>>>> .\+"  contained
 
 "-------------------------------------------------------------------------------
 " Highlight
@@ -53,10 +66,15 @@ highlight default      GitStagedFile     ctermfg=Green    guifg=SeaGreen
 highlight default      GitModifiedFile   ctermfg=Red      guifg=Red
 highlight default link GitUntrackedFile  GitModifiedFile
 highlight default link GitIgnoredFile    GitModifiedFile
+highlight default link GitUnmergedFile   GitModifiedFile
 
-highlight default GitDiffHeader  cterm=bold                 gui=bold
-highlight default GitDiffRange   cterm=bold  ctermfg=Cyan   gui=bold  guifg=DarkCyan
-highlight default GitDiffLineP               ctermfg=Green            guifg=SeaGreen
-highlight default GitDiffLineM               ctermfg=Red              guifg=Red
+highlight default      GitDiffHeader  cterm=bold                 gui=bold
+highlight default      GitDiffRange   cterm=bold  ctermfg=Cyan   gui=bold  guifg=DarkCyan
+highlight default      GitDiffLineP               ctermfg=Green            guifg=SeaGreen
+highlight default      GitDiffLineM               ctermfg=Red              guifg=Red
+highlight default link GitMergeRange GitDiffRange
+highlight default link GitMergeLineP GitDiffLineP
+highlight default link GitMergeLineM GitDiffLineM
+highlight default      GitMergeConflict  cterm=bold  ctermfg=White  ctermbg=Red  gui=bold  guifg=White  guibg=Red
 
 let b:current_syntax = "gitsstatus"

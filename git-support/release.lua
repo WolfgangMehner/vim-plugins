@@ -19,6 +19,8 @@ function escape_shell ( text )
 	return string.gsub ( text, '[%(%);&=\' ]', function ( m ) return '\\' .. m end )
 end  ----------  end of function escape_shell  ----------
 
+local args = { ... }
+
 local outfile = 'git-support.zip'
 
 local filelist = {
@@ -28,6 +30,7 @@ local filelist = {
 	'git-support/README.gitsupport',
 	'syntax/gitsbranch.vim',
 	'syntax/gitslog.vim',
+	'syntax/gitssshort.vim',
 	'syntax/gitsstatus.vim',
 }
 
@@ -36,15 +39,62 @@ for idx, val in ipairs ( filelist ) do
 	filelist[ idx ] = escape_shell ( val )
 end
 
-local cmd = 'zip -r '..outfile..' '..table.concat ( filelist, ' ' )
+local print_help = false
 
-print ( '\n=== executing: '..outfile..' ===\n' )
+if #args == 0 then
 
-local success, res_reason, res_status = os.execute ( cmd )
+	print ( '\n=== failed: mode missing ===\n' )
 
-if success then
-	print ( '\n=== successful ===\n' )
+	print_help = true
+
+elseif args[1] == 'check' then
+
+	local cmd = 'grep -nH ":[[:upper:]]\\+:\\|[Tt][Oo][Dd][Oo]" '..table.concat ( filelist, ' ' )
+
+	print ( '\n=== checking ===\n' )
+
+	local success, res_reason, res_status = os.execute ( cmd )
+
+	if success then
+		print ( '\n=== done ===\n' )
+	else
+		print ( '\n=== failed: '..res_reason..' '..res_status..' ===\n' )
+	end
+
+elseif args[1] == 'zip' then
+
+	local cmd = 'zip -r '..outfile..' '..table.concat ( filelist, ' ' )
+
+	print ( '\n=== executing: '..outfile..' ===\n' )
+
+	local success, res_reason, res_status = os.execute ( cmd )
+
+	if success then
+		print ( '\n=== successful ===\n' )
+	else
+		print ( '\n=== failed: '..res_reason..' '..res_status..' ===\n' )
+	end
+
+elseif args[1] == 'help' then
+
+	print_help = true
+
 else
-	print ( '\n=== failed: '..res_reason..' '..res_status..' ===\n' )
+
+	print ( '\n=== failed: unknown mode "'..args[1]..'" ===\n' )
+
+	print_help = true
+
 end
 
+if print_help then
+
+	print ( '' )
+	print ( 'release <mode>' )
+	print ( '' )
+	print ( '\tcheck - check the release' )
+	print ( '\tzip   - create archive' )
+	print ( '\thelp  - print help' )
+	print ( '' )
+
+end

@@ -141,7 +141,7 @@ For a system-wide installation please see the help file 'doc/perlsupport.txt'.
 ---------------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 5.2
 ---------------------------------------------------------------------------------------
-- New global variable g:C_InsertFileHeader (suppress file description comment for new files).
+- New global variable g:Perl_InsertFileHeader (suppress file description comment for new files).
 - Two new ex commands: PerlScriptArguments, PerlSwitches
 - Specifying command line arguments and Perl command line switches improved.
 - Minor improvements.

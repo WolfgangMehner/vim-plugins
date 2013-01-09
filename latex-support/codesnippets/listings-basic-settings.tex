@@ -1,0 +1,31 @@
+
+%%----------------------------------------------------------------------
+%%  Settings for the package listings
+%%  \usepackage[scaled]{luximono}
+%%----------------------------------------------------------------------
+\usepackage{listings}
+
+\lstset{basicstyle={\ttfamily\small}}
+\lstset{commentstyle=\itshape}
+\lstset{extendedchars=true}
+\lstset{frame=none}
+\lstset{framesep=2mm}
+\lstset{identifierstyle=\ttfamily}
+\lstset{keywordstyle=\bfseries}
+\lstset{language=C}
+\lstset{linewidth=155mm}
+\lstset{numbers=left}
+\lstset{numberstyle=\tiny}
+\lstset{showstringspaces=false}
+\lstset{stepnumber=1}
+\lstset{tabsize=2}
+% Replace German Umlauts ( literate={replace}{replacement text}{length} ... )  
+\lstset{literate=
+{ä}{{\"a}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+{Ä}{{\"A}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+{ß}{{\ss}}1
+}
+
+\lstdefinestyle{ANSI}{language=C}
+\lstdefinestyle{C++}{alsolanguage=C++}
+

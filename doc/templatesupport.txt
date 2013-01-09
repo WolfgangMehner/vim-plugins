@@ -1,8 +1,8 @@
-*templatesupport.txt*         MM Template Support                July 18 2012
+*templatesupport.txt*         MM Template Support                  Jan 02 2013
 
 MM Template Support                                        *template-support*
 
-                             Plugin version 0.9
+                            Plug-in version 0.9.1
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
 
@@ -45,17 +45,19 @@ Here is a list of high profile plug-ins which use the template support:
  9.1    Basic Usage                          |template-support-api-basic|
  9.2    Creating Maps and Menus              |template-support-api-maps|
  9.3    Access                               |template-support-api-access|
+ 9.4    Miscellany                           |template-support-api-misc|
 
  A.    Syntax                                |template-support-syntax|
  A.1    Command Section                      |template-support-syntax-cmd|
  A.2    Templates                            |template-support-syntax-templ|
  A.3    Lists                                |template-support-syntax-list|
- B    Commands                               |template-support-commands|
+ B.    Commands                              |template-support-commands|
  B.1    Command Section                      |template-support-cmd-cmd-sct|
  B.2    Templates                            |template-support-cmd-templates|
- C    Options                                |template-support-options|
+ C.    Options                               |template-support-options|
  C.1    Templates                            |template-support-opt-templ|
  C.2    List                                 |template-support-opt-list|
+ D.    Change Log                            |template-support-change-log|
 
 ==============================================================================
 1.  INTRODUCTION                                       *template-introduction*
@@ -74,17 +76,17 @@ supported.
 c-support:
 doxygen-support:
 perl-support:
-	-	No automatic uppercase for *|BASENAME|* .
-	-	The format for *|DATE|* , *|TIME|* and *|YEAR|* is now configured via the
-		template library. Plug-ins may provide other ways to do the configuration.
+-	No automatic uppercase for *|BASENAME|* .
+-	The format for *|DATE|* , *|TIME|* and *|YEAR|* is now configured via the
+	template library. Plug-ins may provide other ways to do the configuration.
 
 perl-support:
-	-	The template head can not have the format >
-			== templatename == [ position == ] [ indentation == ]
-<		anymore, since the last part would be ignored. Use the list of template
-		options instead: >
-			== templatename == [ position, indentation == ]
-<		Both 'position' and 'indentation' are optional, of course.
+-	The template head can not have the format >
+		== templatename == [ position == ] [ indentation == ]
+<	anymore, since the last part would be ignored. Use the list of template
+	options instead: >
+		== templatename == [ position, indentation == ]
+<	Both 'position' and 'indentation' are optional, of course.
 
 ==============================================================================
 9.  API                                                 *template-support-api*
@@ -96,10 +98,10 @@ own plugin!
 The API enables other plugins to use the template system.
 
 Each template library is stored in a dictionary (|Dictionary|).
-	-	This dictionary must be a global variable, because it it used for purposes
-		such as callback functions for menu entries and maps.
-	-	Do not change the entries of the dictionary directly, since the internal
-		structure may change. The API provides access to the stored information.
+-	This dictionary must be a global variable, because it it used for purposes
+	such as callback functions for menu entries and maps.
+-	Do not change the entries of the dictionary directly, since the internal
+	structure may change. The API provides access to the stored information.
 
 ------------------------------------------------------------------------------
 9.1  BASIC USAGE                                  *template-support-api-basic*
@@ -112,18 +114,20 @@ insert templates into a buffer. A further function expands macros in a text.
                                               *mmtemplates#core#NewLibrary()*
 To create a new template library call:
 
-	library = mmtemplates#core#NewLibrary () ~
+	library = mmtemplates#core#NewLibrary ( ... ) ~
 
 No parameters.
+Options:
+	"debug", level      - View debug information with the given level of detail.
+	                      (integer, default: show no debug information)
 Returns:
 	library - The template library. (dict)
 
-Example: >
+Example:
 
+Create a new library and store it in the variable 'g:My_C_Templates': >
 	let g:My_C_Templates = mmtemplates#core#NewLibrary ()
 <
-Creates a new library and stores it in the variable 'g:My_C_Templates'.
-
 ------------------------------------------------------------------------------
                                             *mmtemplates#core#ReadTemplates()*
 Templates are loaded using the function:
@@ -157,34 +161,39 @@ The i'th file which has been loaded can be reloaded via: >
 With the switch "overwrite_warning", a warning is displayed whenever a
 template is encountered which already has a text for the current style.
 
-Example 1: Load a file.
->
+
+Example 1:
+
+Load a file: >
 	call mmtemplates#core#ReadTemplates ( g:My_C_Templates,
 		\ "load", "$HOME/.vim/c-support/templates/lib.templates",
 		\ "debug", 1, "overwrite_warning" )
-<
 Load the templates in the given file and print very little debug information.
 Print a warning whenever a template is overwritten.
 
-Example 2.1: Load several files.
->
+
+Example 2.1:
+
+Load several files: >
 	call mmtemplates#core#ReadTemplates ( g:My_C_Templates,
 		\ "load", "/usr/share/vim/.../global.templates" )
 
 	call mmtemplates#core#ReadTemplates ( g:My_C_Templates,
 		\ "load", "$HOME/.vim/.../local.templates" )
-<
 Load the templates in the two files.
 
-Example 2.2: Reload specific templates.
->
+
+Example 2.2:
+
+Reload specific templates: >
 	call mmtemplates#core#ReadTemplates ( g:My_C_Templates, "reload", -1 )
-<
 Reload the last template which has been loaded.
 (".../local.templates" from above)
 
-Example 2.3: Reload templates by name.
->
+
+Example 2.3:
+
+Reload templates by name: >
 	call mmtemplates#core#ReadTemplates ( g:My_C_Templates,
 		\ "reload", "$HOME/.vim/.../local.templates" )
 <
@@ -196,31 +205,32 @@ To insert templates into the current buffer use:
 
 Parameters:
 	library - The template library. (string or dict)
-	name    - The name of the template or "!pick". (string)
+	name    - The name of the template. (string)
 Options:
-	"i"      - > "insert"
-	"insert" - Insert mode, special treatment of placement 'insert'.
-	"v"      - > "visual"
-	"visual" - Visual mode, use the <SPLIT> tag.
+	"i"                - > "insert"
+	"insert"           - Insert mode, special treatment of placement 'insert'.
+	"v"                - > "visual"
+	"visual"           - Visual mode, use the <SPLIT> tag.
+	"placement", place - Overwrite the template's placement. (string)
+	"range", a, b      - Use the range from lines 'a' to 'b'. (integers)
+	"<macro>", replace - Set the replacement for the given macro. The string
+	                     <macro> must match a macro, e.g. *|FUNCTION_NAME|* .
+	                     (string)
+	"pick", choice     - When inserting a list use 'choice', do not ask the user
+	                     to pick an entry. (string)
+	"debug", level     - View debug information with the given level of detail.
+	                     (integer, default: show no debug information)
 No returns.
 
 The library can either be given directly, or as the name of the global
 variable containing the library.
 It the template 'name' does not exist, an error message is displayed.
 
-If 'name' is "!pick", the user is presented with a list of all template, and
-can choose one to be included. (currently not implemented!)
-
 Examples:
->
+
+Include "Statement.If", surround the selected lines: >
 	call mmtemplates#core#InsertTemplate ( g:My_C_Templates,
 		\ "Statement.If", "v" )
-<
-Include "Statement.If", surround the selected lines.
->
-	call mmtemplates#core#InsertTemplate ( g:My_C_Templates, "!pick" )
-<
-The user is prompted for a template, which is then included.
 
 ------------------------------------------------------------------------------
                                                *mmtemplates#core#ExpandText()*
@@ -240,12 +250,12 @@ The expansion is done using all the settings in the library, as well as the
 global macro replacements such as *|AUTHOR|* .
 
 Examples:
->
+
+Calling the function: >
 	let text = mmtemplates#core#ExpandText ( g:My_C_Templates, "|DATE| |TIME|" )
-<
-Returns "29.2.2000 12:00", depending on the format set in the library.
-This can be used for special menu entries such as:
->
+returns "29.2.2000 12:00", depending on the format set in the library.
+
+This can be used for special menu entries such as: >
 	exe 'amenu Comments.Special.Date\ Time '
 		\ .':exe "normal! a".mmtemplates#core#ExpandText ( '
 		\ .'g:My_C_Templates, "\|DATE\| \|TIME\|" )<CR>'
@@ -273,6 +283,8 @@ A file browser is then opened for the directory containing the file.
 	*Todo		configuration of the file browser
 
 Example:
+
+Open a file browser in the directory "$HOME/.vim/.../templates/":
 >
 	" load the last template file:
 	call mmtemplates#core#ReadTemplates ( g:My_C_Templates,
@@ -283,8 +295,6 @@ Example:
 	" edit the library
 	call mmtemplates#core#EditTemplateFiles ( g:My_C_Templates, -1 )
 <
-Opens a file browser in the directory "$HOME/.vim/.../templates/".
-
 ------------------------------------------------------------------------------
                                                 *mmtemplates#core#JumpToTag()*
 The jump to the next tag is performed by:
@@ -349,17 +359,16 @@ An error message is displayed whenever a mapping already exists. The existing
 mapping is not overwritten.
 
 Example:
->
+
+Create maps using the standard mapleader: >
 	call mmtemplates#core#CreateMaps ( "g:My_C_Templates", "", "do_jump_map" )
-<
-Creates maps using the standard mapleader. A map to jump to the next tag is
-also created.
+A map to jump to the next tag is also created.
 
 Technical Details:
-	-	The library must be given as the name of the global variable, since this
-		name is required to create the maps.
-	-	The function creates maps of the following types:
-			noremap, inoremap, vnoremap
+-	The library must be given as the name of the global variable, since this
+	name is required to create the maps.
+-	The function creates maps of the following types:
+		noremap, inoremap, vnoremap
 
 ------------------------------------------------------------------------------
                                               *mmtemplates#core#CreateMenus()*
@@ -432,8 +441,7 @@ Suppose your plugin creates the following menus:
 	|	>-- run
 	|	>-- ...
 <
-Then the call has to look like this:
->
+Then the call has to look like this: >
 	call mmtemplates#core#CreateMenus ( "g:My_C_Templates", "&C-Support",
 		\  "do_all", "existing_menu", [ "&Comments","Comments.&Special.","&Run." ] )
 <
@@ -475,10 +483,10 @@ Create the special entries at the end of the run menu: >
 >
 
 Technical Details:
-	-	The library must be given as the name of the global variable, since this
-		name is required to create the menus.
-	-	The function creates menus of the following types:
-			amenu, vmenu (where appropriate)
+-	The library must be given as the name of the global variable, since this
+	name is required to create the menus.
+-	The function creates menus of the following types:
+		amenu, imenu and vmenu (where appropriate)
 
 ------------------------------------------------------------------------------
 9.3  ACCESS                                      *template-support-api-access*
@@ -507,10 +515,9 @@ It the style 'style' does not exist, an error message is displayed and the
 style remains unchanged.
 
 Example:
->
+
+Prompt the user for a new style: >
 	call mmtemplates#core#ChooseStyle ( g:My_C_Templates, "!pick" )
-<
-The user is prompted for a new style.
 
 ------------------------------------------------------------------------------
                                                  *mmtemplates#core#Resource()*
@@ -536,32 +543,47 @@ Returns:
 The library can either be given directly, or as the name of the global
 variable containing the library.
 
-The following modes are supported:
-	-	"jumptag" : Return the regex used to find jump tags.
-	-	"style"   : Return the name of the current style.
-	-	"get"     : Return the resource with the given key or 0.
-	-	"set"     : Change the resource with the given key to val.
-		            ('rval' is undefined)
+Special resources:
+
+-	"escaped_mapleader" : Return the mapleader, escaped for use in a menu.
+-	"jumptag"           : Return the regex used to find jump tags.
+-	"style"             : Return the name of the current style.
+
+Regular resources:
+
+-	"add" : Add the property with the given key and set it to 'val'.
+-	"get" : Return the resource with the given key or 0.
+-	"set" : Change the resource with the given key to 'val'.
 
 The mode "get" supports the following resources:
-	-	"macro", "m": A macro as set by SetMacro( "m", ... )
-	-	"path",  "p": A path as set by SetPath( "p", ... )
-	-	"list",  "l": The list as generated by == List: l == ... ==
+-	"list",     "l": The list as generated by: == List: l == ... ==
+-	"macro",    "m": A macro as set by: SetMacro( "m", ... )
+-	"path",     "p": A path as set by: SetPath( "p", ... )
+-	"property", "p": An existing resource named "p".
 It returns the integer 0, if the resource 'key' does not exist.
 The mode "set" can be used to overwrite these resources.
 The resource "list" is returned as a reference, use it responsibly.
 
+For "add" and "set" 'rval' is undefined.
+
+Macros:
+
 Setting the special macros "DATE", "TIME", and "YEAR" changes the format of
 the date and time. they use the same format as the function |strftime()|.
-Setting "basename", "FILENAME", "PATH" and "SUFFIX" has no effect.
+Setting "BASENAME", "FILENAME", "PATH" and "SUFFIX" has no effect.
+
+Properties:
+
+The mode "get" returns the property named 'key', but only if it already
+exists. Only an existing property can be set in the mode "set". To create and
+set a new property, the mode "add" must be used.
 
 
 Example 1:
 
-The format of the macro *|TIME|* can be changed by calling:
->
-	call mmtemplates#core#Resource ( g:My_C_Templates, "set", "macro",
-		\ "TIME", "%H:%M" )
+The format of the macro *|TIME|* can be changed by calling: >
+	call mmtemplates#core#Resource (
+		\ g:My_C_Templates, "set", "macro", "TIME", "%H:%M" )
 <
 
 Example 2:
@@ -574,10 +596,9 @@ Suppose you have a template like this:
 	#include "|PICK|"
 	== ENDTEMPLATE ==
 <
-Whenever you switch to a new project, you can execute:
->
-	call mmtemplates#core#Resource ( g:My_C_Templates, "set", "path",
-		\ "project_include", project_include_dir )
+Whenever you switch to a new project, you can execute: >
+	call mmtemplates#core#Resource (
+		\ g:My_C_Templates, "set", "path", "project_include", project_incl_dir )
 <
 The next time you insert the template "Include.project include", the file
 browser will already be set to the project include directory.
@@ -585,10 +606,63 @@ browser will already be set to the project include directory.
 
 Example 3:
 
-Get the current style:
->
+Set the property "Templates::Mapleader": >
+	call mmtemplates#core#Property (
+		\ g:My_C_Templates, "set", "Templates::Mapleader", "." )
+<
+Create a new property "C::RunCompiler::Map": >
+	call mmtemplates#core#Property (
+		\  g:My_C_Templates, "add","C::RunCompiler::Map", "rc" )
+<
+Get the mapleader (already escaped): >
+	let esc_mapleader = mmtemplates#core#Property (
+		\ g:My_C_Templates, "escaped_mapleader" )
+<
+Get the map (not escaped!): >
+	let [ map_run, msg ] mmtemplates#core#Property (
+		\ g:My_C_Templates, "get", "C::RunCompiler::Map" )
+
+Create the menu entry: >
+	if empty ( msg )
+		exe 'amenu '.root_menu
+			\ .'.Run.run\ &compiler<TAB>'.esc_mapleader.map_run.'   :call Run()<CR>'
+	else
+		" handle error ...
+	endif
+<
+
+Example 4:
+
+Get the current style: >
 	let current_style = mmtemplates#core#Resource ( g:My_C_Templates, "style" )
 <
+------------------------------------------------------------------------------
+9.4  MISCELLANY                                    *template-support-api-misc*
+------------------------------------------------------------------------------
+
+This section describes various functions, provided for convenience.
+
+------------------------------------------------------------------------------
+                                               *mmtemplates#core#EscapeMenu()*
+Escape a string to be used as a menu entry:
+
+	str = mmtemplates#core#EscapeMenu ( str ) ~
+
+Parameters:
+	str - The menu item.
+Returns:
+	str - The same string with appropriately escaped characters.
+
+Escapes the following characters:
+-	<space> \ . | with \
+-	& with &
+
+The function even escapes '.', so you must escape the menu and the entry
+separately, otherwise the entry 'frame comment' in the menu 'Comments': >
+	"Comments.frame comment"
+would turn into the entry: >
+	"Comments\.frame\ comment"
+
 ==============================================================================
 A.  SYNTAX                                           *template-support-syntax*
 ==============================================================================
@@ -600,15 +674,16 @@ Idiom						Changeable?		Standard
 CommentStart		yes						$
 BlockDelimiter	no						==
 
+CommandName			no						same as MacroName
 MacroName				no						a-z, A-Z, 0-9 and _
 															starting with a letter or underscore
-StyleName				no						same as MacroName
+OptionName			no						same as MacroName
 ResourceName		no						same as MacroName
-CommandName			no						same as MacroName
+SeparatorName		no						same as MacroName
+StyleName				no						same as MacroName
 TemplateName		no						a-z, A-Z, 0-9 and _ + - . , <Space>
 															starting with a letter or underscore,
 															not ending with a whitespace
-OptionName			no						same as MacroName
 Mapping					no						a-z, A-Z, 0-9 and _ + -
 
 The rules in the next sections use the following notation:
@@ -625,7 +700,7 @@ The rules in the next sections use the following notation:
 A.1  COMMAND SECTION                             *template-support-syntax-cmd*
 ------------------------------------------------------------------------------
 
-MacroAssignment:
+MacroAssignment (one of):
 	-text-
 	' -text- '
 	" -text- "
@@ -641,8 +716,9 @@ Statement (one of):
 	StyleBlock1
 	StyleBlock2
 	Template
-	List
 	HelpTemplate
+	MenuSeparator
+	List
 
 
 StyleBlock1 (sequence):
@@ -663,19 +739,23 @@ Template (sequence):
 	<start> == ENDTEMPLATE ==
 
 Note: The " TEMPLATE : " in the first line is optional, as opposed to the
-structure of the next two rules.
+      structure of the next three rules.
+
+
+HelpTemplate (sequence):
+	<start> == HELP : TemplateName == [ OptionList == ]
+	-several lines-
+	<start> == ENDTEMPLATE ==
+
+
+MenuSeparator (one line):
+	<start> == SEP : SeparatorName ==
 
 
 List (sequence):
 	<start> == LIST : MacroName == [ OptionList == ]
 	-several lines-
 	<start> == ENDLIST ==
-
-
-HelpTemplate (sequence):
-	<start> == HELP : TemplateName == [ OptionList == ]
-	-several lines-
-	<start> == ENDHELP ==
 
 
 MacroNameList (one of):
@@ -738,7 +818,7 @@ colon, different entries by a comma.
 	== ENDLIST ==
 <
 ==============================================================================
-B  COMMANDS                                        *template-support-commands*
+B.  COMMANDS                                       *template-support-commands*
 ==============================================================================
 
 This sections list the commands supported by the template system.
@@ -972,7 +1052,7 @@ name is saved as entered and only inserted in uppercase. Now it can be
 inserted into the table of contents as entered by the user.
 
 ==============================================================================
-C  OPTIONS                                          *template-support-options*
+C.  OPTIONS                                         *template-support-options*
 ==============================================================================
 
 The following sections list the options for templates and lists.
@@ -1013,7 +1093,7 @@ Insertion:
 	noindent - No automatic indentation.
 
 Note: "visual" is the default for templates containing the split tag,
-"novisual" for templates without the split tag.
+      "novisual" for templates without the split tag.
 
 ------------------------------------------------------------------------------
                   *template-support-sc*         *template-support-nomenu*
@@ -1030,7 +1110,7 @@ Menus and Maps:
 
 Note: The default is for a menu entry to be created.
 Note: A shortcut can only be one character long. A map can be several
-characters long. It is always preceded by the local mapleader.
+      characters long. It is always preceded by the local mapleader.
 
 ------------------------------------------------------------------------------
 C.2  LISTS                                         *template-support-opt-list*
@@ -1061,6 +1141,34 @@ Interpretation:
 	       a new entry.
 
 Note: Bare lists are not the default.
+
+==============================================================================
+D.  Change Log                                   *template-support-change-log*
+==============================================================================
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 0.9.1
+------------------------------------------------------------------------------
+
+- Change: When checking for already existing maps: Check each mode individually.
+- Added: Menu separators can be inserted via the template library.
+- Bugfix: Changing the mapleader now works.
+- Bugfix: Inserting templates with placement "insert" did not work in some
+  cases.
+- Minor improvements and bugfixes.
+
+API:
+- Added: Sub-menus can be created with priorities.
+
+Internal Changes:
+- Changes to the template data structure.
+- Major code cleanup.
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 0.9
+------------------------------------------------------------------------------
+
+- Initial upload.
 
 ==============================================================================
 vim:tw=78:noet:ts=2:ft=help:norl:

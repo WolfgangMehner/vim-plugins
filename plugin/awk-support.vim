@@ -39,7 +39,7 @@ endif
 let g:AwkSupportVersion= "1.0"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
-"          NAME:  Perl_SetGlobalVariable     {{{1
+"          NAME:  awk_SetGlobalVariable     {{{1
 "   DESCRIPTION:  Define a global variable and assign a default value if nor
 "                 already defined
 "    PARAMETERS:  name - global variable
@@ -153,8 +153,6 @@ else
 	let s:Awk_OutputGvim					= 'vim'
 	"
 endif
-"
-" g:Perl_CodeSnippets is used in autoload/perlsupportgui.vim
 "
 let s:Awk_CodeSnippets  				= s:plugin_dir.'/awk-support/codesnippets/'
 call s:awk_SetGlobalVariable( 'Awk_CodeSnippets', s:Awk_CodeSnippets )
@@ -369,67 +367,18 @@ function! Awk_EndOfLineComment ( ) range
 	exe a:firstline.','.a:lastline.'s/\s*$//'
 
 	for line in range( a:lastline, a:firstline, -1 )
-		let linelength	= virtcol( [line, "$"] ) - 1
-		let	diff				= 1
-		if linelength < b:Awk_LineEndCommentColumn
-			let diff	= b:Awk_LineEndCommentColumn -1 -linelength
-		endif
-		exe 'normal!	'.diff.'A '
-		exe 'normal!	A'.s:Awk_StartComment.' '
-		startinsert!
-		if line > a:firstline
-			normal k
+		silent exe ":".line
+		if getline(line) !~ '^\s*$'
+			let linelength	= virtcol( [line, "$"] ) - 1
+			let	diff				= 1
+			if linelength < b:Awk_LineEndCommentColumn
+				let diff	= b:Awk_LineEndCommentColumn -1 -linelength
+			endif
+			exe "normal	".diff."A "
+			call mmtemplates#core#InsertTemplate(g:Awk_Templates, 'Comments.end-of-line comment')
 		endif
 	endfor
 endfunction		" ---------- end of function  Awk_EndOfLineComment  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Awk_MultiLineEndComments     {{{1
-"   DESCRIPTION:  multiple end-of-line comment
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Awk_MultiLineEndComments ( )
-	"
-  if !exists("b:Awk_LineEndCommentColumn")
-		let	b:Awk_LineEndCommentColumn	= s:Awk_LineEndCommColDefault
-  endif
-	"
-	let pos0	= line("'<")
-	let pos1	= line("'>")
-	"
-	" ----- trim whitespaces -----
-  exe pos0.','.pos1.'s/\s*$//'
-	"
-	" ----- find the longest line -----
-	let maxlength	= max( map( range(pos0, pos1), "virtcol([v:val, '$'])" ) )
-	let	maxlength	= max( [b:Awk_LineEndCommentColumn, maxlength+1] )
-	"
-	" ----- fill lines with blanks -----
-	for linenumber in range( pos0, pos1 )
-		exe ":".linenumber
-		if getline(linenumber) !~ '^\s*$'
-			let diff	= maxlength - virtcol("$")
-			exe 'normal	'.diff.'A '
-			exe 'normal!	A'.s:Awk_StartComment.' '
-		endif
-	endfor
-	"
-	" ----- back to the begin of the marked block -----
-	stopinsert
-	normal '<$
-	if match( getline("."), '\/\/\s*$' ) < 0
-		if search( '\/\*', 'bcW', line(".") ) > 1
-			normal l
-		endif
-		let save_cursor = getpos(".")
-		if getline(".")[save_cursor[2]+1] == ' '
-			normal l
-		endif
-	else
-		normal $
-	endif
-endfunction		" ---------- end of function  Awk_MultiLineEndComments  ----------
 "
 "===  FUNCTION  ================================================================
 "          NAME:  Awk_CodeComment     {{{1
@@ -464,50 +413,6 @@ function! Awk_CommentCode( toggle ) range
 endfunction    " ----------  end of function Awk_CommentCode  ----------
 "
 "===  FUNCTION  ================================================================
-"          NAME:  GetFunctionParameters     {{{1
-"   DESCRIPTION:  get function name and parameters
-"    PARAMETERS:  fun_line - function head
-"       RETURNS:  scope     - The scope. (string, 's', 'g' or empty) 
-"                 fun_name  - The name of the function (string, id without the scope)
-"                 param_str - Names of the parameters. (list of strings)
-"                 ellipsis  - Has an ellipsis? (boolean)
-"                 range     - Has a range? (boolean)
-"===============================================================================
-function! s:GetFunctionParameters ( fun_line )
-	"
-	" 1. function names with '.' (dictionaries) and '#' (autoload)
-	" 2. parameter list with spaces, tabs and optional ellipsis
-	let fun_id       = '\([a-zA-Z][a-zA-Z0-9_\.#]*\)'
-	let params       = '\s*\([a-zA-Z0-9_, \t]*\)\(\.\.\.\)\?\s*'
-	"
-	" apparently every prefix of 'function' is allowed,
-	" as long as it is at least two characters long
-	let mlist = matchlist ( a:fun_line, '^\s*:\?\s*fu\%[nction]!\?\s*\([sg]:\)\?'.fun_id.'\s*('.params.')\s*\(range\)\?' )
-	"
-	" no function?
-	if empty( mlist )
-		return []
-	endif
-	"
-	" found a function!
-	let [ scope, fun_name, param_str, ellipsis, range ] = mlist[1:5]
-	"
-	let param_str  = substitute ( param_str, '\s*$', '', '' )
-	let param_list = split ( param_str, '\s*,\s*' )
-	"
-	let scope    = scope[0]
-	let ellipsis = ! empty ( ellipsis )
-	let range    = ! empty ( range )
-	"
-	if empty ( fun_name )
-		return []
-	else
-		return [ scope, fun_name, param_list, ellipsis, range ]
-	endif
-	"
-endfunction    " ----------  end of function s:GetFunctionParameters  ----------
-"
-"===  FUNCTION  ================================================================
 "          NAME:  Awk_RereadTemplates     {{{1
 "   DESCRIPTION:  Reread the templates. Also set the character which starts
 "                 the comments in the template files.
@@ -515,10 +420,29 @@ endfunction    " ----------  end of function s:GetFunctionParameters  ----------
 "       RETURNS:  
 "===============================================================================
 function! g:Awk_RereadTemplates ( displaymsg )
+	"
+	"-------------------------------------------------------------------------------
+	" SETUP TEMPLATE LIBRARY
+	"-------------------------------------------------------------------------------
 	let g:Awk_Templates = mmtemplates#core#NewLibrary ()
-	call mmtemplates#core#ChangeSyntax  ( g:Awk_Templates, 'comment', '§', '§' )
-	let s:Awk_TemplateJumpTarget 		=  mmtemplates#core#Resource ( g:Awk_Templates, "jumptag" )[0]
-	let	messsage							= ''
+	"
+	" mapleader
+	if empty ( g:Awk_MapLeader )
+		call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Mapleader', '\' )
+	else
+		call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Mapleader', g:Awk_MapLeader )
+	endif
+	"
+	" map: choose style
+	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::EditTemplates::Map',   'ntl' )
+	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::RereadTemplates::Map', 'ntr' )
+	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::ChooseStyle::Map',     'nts' )
+	"
+	" syntax: comments
+	call mmtemplates#core#ChangeSyntax ( g:Awk_Templates, 'comment', '§' )
+	let s:Awk_TemplateJumpTarget = mmtemplates#core#Resource ( g:Awk_Templates, "jumptag" )[0]
+	"
+	let	messsage = ''
 	"
 	if s:installation == 'system'
 		"-------------------------------------------------------------------------------
@@ -601,81 +525,96 @@ function! s:InitMenus()
 	" Preparation
 	call mmtemplates#core#CreateMenus ( 'g:Awk_Templates', s:Awk_RootMenu, 'do_reset' )
 	"
+	" get the mapleader (correctly escaped)
+	let [ esc_mapl, err ] = mmtemplates#core#Resource ( g:Awk_Templates, 'escaped_mapleader' )
+	"
 	exe 'amenu '.s:Awk_RootMenu.'.Awk  <Nop>'
 	exe 'amenu '.s:Awk_RootMenu.'.-Sep00- <Nop>'
 	"
-	" Comments
+ 	"-------------------------------------------------------------------------------
+	" menu headers
+	"-------------------------------------------------------------------------------
 	"
-	call mmtemplates#core#CreateMenus ( 'g:Awk_Templates', s:Awk_RootMenu, 'sub_menu', '&Comments' )
+	call mmtemplates#core#CreateMenus ( 'g:Awk_Templates', s:Awk_RootMenu, 'sub_menu', '&Comments', 'priority', 500 )
+	" the other, automatically created menus go here; their priority is the standard priority 500
+	call mmtemplates#core#CreateMenus ( 'g:Awk_Templates', s:Awk_RootMenu, 'sub_menu', 'S&nippets', 'priority', 600 )
+	call mmtemplates#core#CreateMenus ( 'g:Awk_Templates', s:Awk_RootMenu, 'sub_menu', '&Run'     , 'priority', 700 )
+	call mmtemplates#core#CreateMenus ( 'g:Awk_Templates', s:Awk_RootMenu, 'sub_menu', '&Help'    , 'priority', 800 )
+	"
+	"-------------------------------------------------------------------------------
+	" comments
+ 	"-------------------------------------------------------------------------------
 	"
 	let  head =  'noremenu <silent> '.s:Awk_RootMenu.'.Comments.'
 	let ahead = 'anoremenu <silent> '.s:Awk_RootMenu.'.Comments.'
 	let vhead = 'vnoremenu <silent> '.s:Awk_RootMenu.'.Comments.'
 	let ihead = 'inoremenu <silent> '.s:Awk_RootMenu.'.Comments.'
 	"
-	exe ahead.'end-of-&line\ comment<Tab>cl                    :call Awk_EndOfLineComment()<CR>'
-	exe vhead.'end-of-&line\ comment<Tab>cl               <Esc>:call Awk_MultiLineEndComments()<CR>A'
-	exe ahead.'ad&just\ end-of-line\ com\.<Tab>cj              :call Awk_AdjustLineEndComm()<CR>'
-	exe ihead.'ad&just\ end-of-line\ com\.<Tab>cj         <Esc>:call Awk_AdjustLineEndComm()<CR>'
-	exe vhead.'ad&just\ end-of-line\ com\.<Tab>cj              :call Awk_AdjustLineEndComm()<CR>'
-	exe  head.'&set\ end-of-line\ com\.\ col\.<Tab>cs     <Esc>:call Awk_GetLineEndCommCol()<CR>'
+	exe ahead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl                    :call Awk_EndOfLineComment()<CR>'
+	exe vhead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl                    :call Awk_EndOfLineComment()<CR>'
+
+	exe ahead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call Awk_AdjustLineEndComm()<CR>'
+	exe ihead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj         <Esc>:call Awk_AdjustLineEndComm()<CR>'
+	exe vhead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call Awk_AdjustLineEndComm()<CR>'
+	exe  head.'&set\ end-of-line\ com\.\ col\.<Tab>'.esc_mapl.'cs     <Esc>:call Awk_GetLineEndCommCol()<CR>'
 	"
-	exe ahead.'&comment<TAB>cc		:call Awk_CodeComment()<CR>'
-	exe vhead.'&comment<TAB>cc		:call Awk_CodeComment()<CR>'
-	exe ahead.'&uncomment<TAB>cu	:call Awk_CommentCode(0)<CR>'
-	exe vhead.'&uncomment<TAB>cu	:call Awk_CommentCode(0)<CR>'
+	exe ahead.'&comment<TAB>'.esc_mapl.'cc		:call Awk_CodeComment()<CR>'
+	exe vhead.'&comment<TAB>'.esc_mapl.'cc		:call Awk_CodeComment()<CR>'
+	exe ahead.'&uncomment<TAB>'.esc_mapl.'cu	:call Awk_CommentCode(0)<CR>'
+	exe vhead.'&uncomment<TAB>'.esc_mapl.'cu	:call Awk_CommentCode(0)<CR>'
 	exe ahead.'-Sep02-												             <Nop>'
 	"
+	"-------------------------------------------------------------------------------
+	" generate menus from the templates
+ 	"-------------------------------------------------------------------------------
 	"
-	" Templates
 	call mmtemplates#core#CreateMenus ( 'g:Awk_Templates', s:Awk_RootMenu, 'do_templates' )
 	"
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------
+	"
 	if !empty(s:Awk_CodeSnippets)
 		"
-		call mmtemplates#core#CreateMenus ( 'g:Awk_Templates', s:Awk_RootMenu, 'sub_menu', 'S&nippets' )
-		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>\\nr       :call Awk_CodeSnippet("read")<CR>'
-		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>\\nr  <C-C>:call Awk_CodeSnippet("read")<CR>'
-		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&view\ code\ snippet<Tab>\\nv       :call Awk_CodeSnippet("view")<CR>'
-		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&view\ code\ snippet<Tab>\\nv  <C-C>:call Awk_CodeSnippet("view")<CR>'
-		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>\\nw      :call Awk_CodeSnippet("write")<CR>'
-		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>\\nw <C-C>:call Awk_CodeSnippet("write")<CR>'
-		exe "vmenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>\\nw <C-C>:call Awk_CodeSnippet("writemarked")<CR>'
-		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>\\ne       :call Awk_CodeSnippet("edit")<CR>'
-		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>\\ne  <C-C>:call Awk_CodeSnippet("edit")<CR>'
-		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.-SepSnippets-                       :'
-		call mmtemplates#core#CreateMenus ( 'g:Awk_Templates', s:Awk_RootMenu, 'do_specials', 'specials_menu', 'S&nippets' )
+		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>'.esc_mapl.'nr       :call Awk_CodeSnippet("read")<CR>'
+		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>'.esc_mapl.'nr  <C-C>:call Awk_CodeSnippet("read")<CR>'
+		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&view\ code\ snippet<Tab>'.esc_mapl.'nv       :call Awk_CodeSnippet("view")<CR>'
+		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&view\ code\ snippet<Tab>'.esc_mapl.'nv  <C-C>:call Awk_CodeSnippet("view")<CR>'
+		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw      :call Awk_CodeSnippet("write")<CR>'
+		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Awk_CodeSnippet("write")<CR>'
+		exe "vmenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Awk_CodeSnippet("writemarked")<CR>'
+		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne       :call Awk_CodeSnippet("edit")<CR>'
+		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call Awk_CodeSnippet("edit")<CR>'
 		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.-SepSnippets-                       :'
 		"
+		" :TODO:05.01.2013 11:06:WM: what to do if Awk_CodeSnippet is empty/directory does not exist?
+		"
 	endif
+	"
+	call mmtemplates#core#CreateMenus ( 'g:Awk_Templates', s:Awk_RootMenu, 'do_specials', 'specials_menu', 'S&nippets' )
 	"
 	"-------------------------------------------------------------------------------
 	" run
 	"-------------------------------------------------------------------------------
 	" 
-	call mmtemplates#core#CreateMenus ( 'g:Awk_Templates', s:Awk_RootMenu, 'sub_menu', '&Run' )
+	exe " menu <silent> ".s:Awk_RootMenu.'.&Run.save\ +\ &run\ script<Tab>'.esc_mapl.'rr\ \ <C-F9>            :call Awk_Run("n")<CR>'
+	exe "imenu <silent> ".s:Awk_RootMenu.'.&Run.save\ +\ &run\ script<Tab>'.esc_mapl.'rr\ \ <C-F9>       <C-C>:call Awk_Run("n")<CR>'
+  exe " menu <silent> ".s:Awk_RootMenu.'.&Run.update,\ check\ &syntax<Tab>'.esc_mapl.'rs\ \ <A-F9>          :call Awk_SyntaxCheck("syntax")<CR>'
+  exe "imenu <silent> ".s:Awk_RootMenu.'.&Run.update,\ check\ &syntax<Tab>'.esc_mapl.'rs\ \ <A-F9>     <C-C>:call Awk_SyntaxCheck("syntax")<CR>'
+  exe " menu <silent> ".s:Awk_RootMenu.'.&Run.update,\ &lint\ check<Tab>'.esc_mapl.'rl                      :call Awk_SyntaxCheck("lint")<CR>'
+  exe "imenu <silent> ".s:Awk_RootMenu.'.&Run.update,\ &lint\ check<Tab>'.esc_mapl.'rl                 <C-C>:call Awk_SyntaxCheck("lint")<CR>'
 	"
-
-	exe " menu <silent> ".s:Awk_RootMenu.'.&Run.save\ +\ &run\ script<Tab>\\rr\ \ <C-F9>            :call Awk_Run("n")<CR>'
-	exe "imenu <silent> ".s:Awk_RootMenu.'.&Run.save\ +\ &run\ script<Tab>\\rr\ \ <C-F9>       <C-C>:call Awk_Run("n")<CR>'
-  exe " menu <silent> ".s:Awk_RootMenu.'.&Run.update,\ check\ &syntax<Tab>\\rs\ \ <A-F9>          :call Awk_SyntaxCheck("syntax")<CR>'
-  exe "imenu <silent> ".s:Awk_RootMenu.'.&Run.update,\ check\ &syntax<Tab>\\rs\ \ <A-F9>     <C-C>:call Awk_SyntaxCheck("syntax")<CR>'
-  exe " menu <silent> ".s:Awk_RootMenu.'.&Run.update,\ &lint\ check<Tab>\\rl                      :call Awk_SyntaxCheck("lint")<CR>'
-  exe "imenu <silent> ".s:Awk_RootMenu.'.&Run.update,\ &lint\ check<Tab>\\rl                 <C-C>:call Awk_SyntaxCheck("lint")<CR>'
+	exe " menu          ".s:Awk_RootMenu.'.&Run.script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra\ \ <S-F9>      :AwkScriptArguments<Space>'
+	exe "imenu          ".s:Awk_RootMenu.'.&Run.script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra\ \ <S-F9> <C-C>:AwkScriptArguments<Space>'
 	"
-	exe " menu          ".s:Awk_RootMenu.'.&Run.script\ cmd\.\ line\ &arg\.<Tab>\\ra\ \ <S-F9>      :AwkScriptArguments<Space>'
-	exe "imenu          ".s:Awk_RootMenu.'.&Run.script\ cmd\.\ line\ &arg\.<Tab>\\ra\ \ <S-F9> <C-C>:AwkScriptArguments<Space>'
-	"
-	exe " menu          ".s:Awk_RootMenu.'.&Run.AWK\ cmd\.\ line\ &arg\.<Tab>\\raa                  :AwkArguments<Space>'
-	exe "imenu          ".s:Awk_RootMenu.'.&Run.AWK\ cmd\.\ line\ &arg\.<Tab>\\raa             <C-C>:AwkArguments<Space>'
+	exe " menu          ".s:Awk_RootMenu.'.&Run.AWK\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'raa                  :AwkArguments<Space>'
+	exe "imenu          ".s:Awk_RootMenu.'.&Run.AWK\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'raa             <C-C>:AwkArguments<Space>'
 	"
 	let ahead = 'amenu <silent> '.s:Awk_RootMenu.'.Run.'
 	let vhead = 'vmenu <silent> '.s:Awk_RootMenu.'.Run.'
   "
   if !s:MSWIN
-    exe ahead.'make\ script\ &executable<Tab>\\re              :call Awk_MakeScriptExecutable()<CR>'
+    exe ahead.'make\ script\ &executable<Tab>'.esc_mapl.'re              :call Awk_MakeScriptExecutable()<CR>'
   endif
 	"
 	if	s:MSWIN
@@ -689,71 +628,48 @@ function! s:InitMenus()
 	exe ahead.'plugin\ &settings<Tab>rse                 :call Awk_Settings()<CR>'
 	"
 	if	!s:MSWIN
-		exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.x&term\ size<Tab>\\rt                       :call Awk_XtermSize()<CR>'
-		exe "imenu  <silent>  ".s:Awk_RootMenu.'.&Run.x&term\ size<Tab>\\rt                  <C-C>:call Awk_XtermSize()<CR>'
+		exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.x&term\ size<Tab>'.esc_mapl.'rt                       :call Awk_XtermSize()<CR>'
+		exe "imenu  <silent>  ".s:Awk_RootMenu.'.&Run.x&term\ size<Tab>'.esc_mapl.'rt                  <C-C>:call Awk_XtermSize()<CR>'
 	endif
 	"
 	if	s:MSWIN
 		if s:Awk_OutputGvim == "buffer"
-			exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->term<Tab>\\ro          :call Awk_Toggle_Gvim_Xterm_MS()<CR>'
-			exe "imenu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->term<Tab>\\ro     <C-C>:call Awk_Toggle_Gvim_Xterm_MS()<CR>'
+			exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->term<Tab>'.esc_mapl.'ro          :call Awk_Toggle_Gvim_Xterm_MS()<CR>'
+			exe "imenu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->term<Tab>'.esc_mapl.'ro     <C-C>:call Awk_Toggle_Gvim_Xterm_MS()<CR>'
 		else
-			exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ TERM->buffer<Tab>\\ro          :call Awk_Toggle_Gvim_Xterm_MS()<CR>'
-			exe "imenu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ TERM->buffer<Tab>\\ro     <C-C>:call Awk_Toggle_Gvim_Xterm_MS()<CR>'
+			exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ TERM->buffer<Tab>'.esc_mapl.'ro          :call Awk_Toggle_Gvim_Xterm_MS()<CR>'
+			exe "imenu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ TERM->buffer<Tab>'.esc_mapl.'ro     <C-C>:call Awk_Toggle_Gvim_Xterm_MS()<CR>'
 		endif
 	else
 		if s:Awk_OutputGvim == "vim"
-			exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ VIM->buffer->xterm<Tab>\\ro          :call Awk_Toggle_Gvim_Xterm()<CR>'
-			exe "imenu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ VIM->buffer->xterm<Tab>\\ro     <C-C>:call Awk_Toggle_Gvim_Xterm()<CR>'
+			exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ VIM->buffer->xterm<Tab>'.esc_mapl.'ro          :call Awk_Toggle_Gvim_Xterm()<CR>'
+			exe "imenu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ VIM->buffer->xterm<Tab>'.esc_mapl.'ro     <C-C>:call Awk_Toggle_Gvim_Xterm()<CR>'
 		else
 			if s:Awk_OutputGvim == "buffer"
-				exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->xterm->vim<Tab>\\ro        :call Awk_Toggle_Gvim_Xterm()<CR>'
-				exe "imenu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->xterm->vim<Tab>\\ro   <C-C>:call Awk_Toggle_Gvim_Xterm()<CR>'
+				exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->xterm->vim<Tab>'.esc_mapl.'ro        :call Awk_Toggle_Gvim_Xterm()<CR>'
+				exe "imenu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->xterm->vim<Tab>'.esc_mapl.'ro   <C-C>:call Awk_Toggle_Gvim_Xterm()<CR>'
 			else
-				exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ XTERM->vim->buffer<Tab>\\ro        :call Awk_Toggle_Gvim_Xterm()<CR>'
-				exe "imenu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ XTERM->vim->buffer<Tab>\\ro   <C-C>:call Awk_Toggle_Gvim_Xterm()<CR>'
+				exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ XTERM->vim->buffer<Tab>'.esc_mapl.'ro        :call Awk_Toggle_Gvim_Xterm()<CR>'
+				exe "imenu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ XTERM->vim->buffer<Tab>'.esc_mapl.'ro   <C-C>:call Awk_Toggle_Gvim_Xterm()<CR>'
 			endif
 		endif
 	endif
 	"
+ 	"-------------------------------------------------------------------------------
+ 	" help
+ 	"-------------------------------------------------------------------------------
+ 	"
+	let ahead = 'amenu <silent> '.s:Awk_RootMenu.'.Help.'
+	let ihead = 'imenu <silent> '.s:Awk_RootMenu.'.Help.'
 	"
-	exe " menu  <silent>  ".s:Awk_RootMenu.'.&AWK\ manual<Tab>\\hm             :call Awk_help("awk")<CR>'
-	exe "imenu  <silent>  ".s:Awk_RootMenu.'.&AWK\ manual<Tab>\\hm        <C-C>:call Awk_help("awk")<CR>'
-	exe " menu  <silent>  ".s:Awk_RootMenu.'.&help\ (Awk-Support)<Tab>\\hp        :call Awk_HelpAwkSupport()<CR>'
-	exe "imenu  <silent>  ".s:Awk_RootMenu.'.&help\ (Awk-Support)<Tab>\\hp   <C-C>:call Awk_HelpAwkSupport()<CR>'
+	exe ahead.'&AWK\ manual<Tab>'.esc_mapl.'hm             :call Awk_help("awk")<CR>'
+	exe ihead.'&AWK\ manual<Tab>'.esc_mapl.'hm        <C-C>:call Awk_help("awk")<CR>'
+	exe ahead.'-SEP1- :'
+	exe ahead.'&help\ (Awk-Support)<Tab>'.esc_mapl.'hp        :call Awk_HelpAwkSupport()<CR>'
+	exe ihead.'&help\ (Awk-Support)<Tab>'.esc_mapl.'hp   <C-C>:call Awk_HelpAwkSupport()<CR>'
 	"
 endfunction    " ----------  end of function s:InitMenus  ----------
 "
-"===  FUNCTION  ================================================================
-"          NAME:  Awk_AddMenus     {{{1
-"   DESCRIPTION:  Add menus.
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! g:Awk_AddMenus()
-	" initialize if not existing
-	if s:Awk_MenuVisible == 'no'
-		call s:InitMenus ()
-	endif
-	" the menu is now visible
-	let s:Awk_MenuVisible = 'yes'
-endfunction    " ----------  end of function g:Awk_AddMenus  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Awk_RemoveMenus     {{{1
-"   DESCRIPTION:  Remove menus.
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! g:Awk_RemoveMenus()
-	" destroy if visible
-	if s:Awk_MenuVisible == 'yes' && has ( 'menu' )
-		aunmenu <silent> awk
-	endif
-	" the menu is now invisible
-	let s:Awk_MenuVisible = 'no'
-endfunction    " ----------  end of function g:Awk_RemoveMenus  ----------
-
 "===  FUNCTION  ================================================================
 "          NAME:  Awk_JumpForward     {{{1
 "   DESCRIPTION:  Jump to the next target, otherwise behind the current string.
@@ -916,24 +832,27 @@ function! s:CreateAdditionalMaps ()
 	endif
 	"
 	"-------------------------------------------------------------------------------
-	" settings - local leader
-	"-------------------------------------------------------------------------------
-	if g:Awk_MapLeader != ''
-		let maplocalleader = g:Awk_MapLeader
-	endif
-	"
-	"-------------------------------------------------------------------------------
 	" USER DEFINED COMMANDS
 	"-------------------------------------------------------------------------------
-  command! -nargs=* -complete=file AwkScriptArguments  call Awk_ScriptCmdLineArguments(<q-args>)
-  command! -nargs=* -complete=file AwkArguments        call Awk_AwkCmdLineArguments(<q-args>)
+	command! -nargs=* -complete=file AwkScriptArguments  call Awk_ScriptCmdLineArguments(<q-args>)
+	command! -nargs=* -complete=file AwkArguments        call Awk_AwkCmdLineArguments(<q-args>)
+	"
+	"-------------------------------------------------------------------------------
+	" settings - local leader
+	"-------------------------------------------------------------------------------
+	if ! empty ( g:Awk_MapLeader )
+		if exists ( 'g:maplocalleader' )
+			let ll_save = g:maplocalleader
+		endif
+		let g:maplocalleader = g:Awk_MapLeader
+	endif
 	"
 	"-------------------------------------------------------------------------------
 	" comments
 	"-------------------------------------------------------------------------------
 	nnoremap    <buffer>  <silent>  <LocalLeader>cl         :call Awk_EndOfLineComment()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>cl    <C-C>:call Awk_EndOfLineComment()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>cl    <C-C>:call Awk_MultiLineEndComments()<CR>A
+	vnoremap    <buffer>  <silent>  <LocalLeader>cl         :call Awk_EndOfLineComment()<CR>
 	"
 	nnoremap    <buffer>  <silent>  <LocalLeader>cj         :call Awk_AdjustLineEndComm()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>cj    <C-C>:call Awk_AdjustLineEndComm()<CR>
@@ -1016,6 +935,17 @@ function! s:CreateAdditionalMaps ()
 	"
 	nmap    <buffer>  <silent>  <C-j>    i<C-R>=Awk_JumpForward()<CR>
 	imap    <buffer>  <silent>  <C-j>     <C-R>=Awk_JumpForward()<CR>
+	"
+	"-------------------------------------------------------------------------------
+	" settings - reset local leader
+	"-------------------------------------------------------------------------------
+	if ! empty ( g:Awk_MapLeader )
+		if exists ( 'll_save' )
+			let g:maplocalleader = ll_save
+		else
+			unlet g:maplocalleader
+		endif
+	endif
 	"
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 "
@@ -1135,48 +1065,41 @@ function! Awk_Settings ()
 endfunction    " ----------  end of function Awk_Settings ----------
 "
 "------------------------------------------------------------------------------
-"  Awk_CreateMenusDelayed     {{{1
-"------------------------------------------------------------------------------
-function! Awk_CreateMenusDelayed ()
-	if s:Awk_CreateMenusDelayed == 'yes' && s:Awk_MenuVisible == 'no'
-		call Awk_CreateGuiMenus()
-	endif
-endfunction    " ----------  end of function Awk_CreateMenusDelayed  ----------
-"
-"------------------------------------------------------------------------------
 "  Awk_CreateGuiMenus     {{{1
 "------------------------------------------------------------------------------
 function! Awk_CreateGuiMenus ()
-  if s:Awk_MenuVisible != 'yes'
+	if s:Awk_MenuVisible == 'no'
 		aunmenu <silent> &Tools.Load\ Awk\ Support
-    amenu   <silent> 40.1000 &Tools.-SEP100- :
-    amenu   <silent> 40.1170 &Tools.Unload\ Awk\ Support :call Awk_RemoveGuiMenus()<CR>
+		amenu   <silent> 40.1000 &Tools.-SEP100- :
+		amenu   <silent> 40.1010 &Tools.Unload\ Awk\ Support :call Awk_RemoveGuiMenus()<CR>
+		"
 		call g:Awk_RereadTemplates('no')
 		call s:InitMenus () 
-    let s:Awk_MenuVisible = 'yes'
-  endif
+		"
+		let s:Awk_MenuVisible = 'yes'
+	endif
 endfunction    " ----------  end of function Awk_CreateGuiMenus  ----------
 "
 "------------------------------------------------------------------------------
 "  Awk_ToolMenu     {{{1
 "------------------------------------------------------------------------------
 function! Awk_ToolMenu ()
-    amenu   <silent> 40.1000 &Tools.-SEP100- :
-    amenu   <silent> 40.1170 &Tools.Load\ Awk\ Support :call Awk_CreateGuiMenus()<CR>
+	amenu   <silent> 40.1000 &Tools.-SEP100- :
+	amenu   <silent> 40.1010 &Tools.Load\ Awk\ Support :call Awk_CreateGuiMenus()<CR>
 endfunction    " ----------  end of function Awk_ToolMenu  ----------
 
 "------------------------------------------------------------------------------
 "  Awk_RemoveGuiMenus     {{{1
 "------------------------------------------------------------------------------
 function! Awk_RemoveGuiMenus ()
-  if s:Awk_MenuVisible == 'yes'
+	if s:Awk_MenuVisible == 'yes'
 		exe "aunmenu <silent> ".s:Awk_RootMenu
-    "
-    aunmenu <silent> &Tools.Unload\ Awk\ Support
+		"
+		aunmenu <silent> &Tools.Unload\ Awk\ Support
 		call Awk_ToolMenu()
-    "
-    let s:Awk_MenuVisible = 'no'
-  endif
+		"
+		let s:Awk_MenuVisible = 'no'
+	endif
 endfunction    " ----------  end of function Awk_RemoveGuiMenus  ----------
 "
 "----------------------------------------------------------------------
@@ -1536,13 +1459,18 @@ if s:Awk_LoadMenus == 'yes' && s:Awk_CreateMenusDelayed == 'no'
 endif
 "
 if has( 'autocmd' )
-  autocmd BufNewFile,BufRead *.awk
-        \ if ! exists( 'g:Awk_Templates' ) |
-        \   call g:Awk_RereadTemplates ('no') |
-        \   if s:Awk_LoadMenus == 'yes' | call g:Awk_AddMenus () | endif |
-        \ endif |
-        \ call mmtemplates#core#CreateMaps ( 'g:Awk_Templates', g:Awk_MapLeader, 'do_jump_map', 'do_special_maps' )
-  autocmd BufNewFile,BufRead *.awk call s:CreateAdditionalMaps() 
+
+  autocmd FileType *
+        \ if &filetype == 'awk' |
+        \   if ! exists( 'g:Awk_Templates' ) |
+        \     if s:Awk_LoadMenus == 'yes' | call Awk_CreateGuiMenus ()        |
+        \     else                        | call g:Awk_RereadTemplates ('no') |
+        \     endif |
+        \   endif |
+        \   call s:CreateAdditionalMaps () |
+        \   call mmtemplates#core#CreateMaps ( 'g:Awk_Templates', g:Awk_MapLeader, 'do_special_maps' ) |
+        \ endif
+
   if s:Awk_InsertFileHeader == 'yes'
     autocmd BufNewFile  *.awk  call mmtemplates#core#InsertTemplate(g:Awk_Templates, 'Comments.file description')
   endif

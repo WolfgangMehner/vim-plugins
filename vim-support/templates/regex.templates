@@ -1,0 +1,57 @@
+§ =============================================================
+§  Regex
+§ =============================================================
+
+§ -------------------------------------------------------------
+§  Resource
+§ -------------------------------------------------------------
+
+== LIST: regex_character_classes == hash ==
+	'identifier char.'         : '\i',
+	'keyword char.'            : '\k',
+	'filename char.'           : '\f',
+	'printable char.'          : '\p',
+	'whitespace'               : '\s',
+	'digit'                    : '\d',
+	'digit, hex'               : '\x',
+	'digit, octal'             : '\o',
+	'word char.'               : '\w',
+	'word char., head of word' : '\h',
+	'alphabetic char.'         : '\a',
+	'lowercase char.'          : '\l',
+	'uppercase char.'          : '\u',
+== LIST: regex_switches == hash ==
+	'very magic'   : '\v',
+	'magic'        : '\m',
+	'nomagic'      : '\M',
+	'very nomagic' : '\V',
+	'ignore case'  : '\c',
+	'match case'   : '\C',
+== ENDLIST ==
+
+§ -------------------------------------------------------------
+§  Templates
+§ -------------------------------------------------------------
+
+== Regex.capture == insert, map:xc, sc:c ==
+\(<SPLIT><CURSOR>\)
+== Regex.branch == insert, map:xbc, sc:b ==
+\(<SPLIT><CURSOR>\|\)
+== Regex.branch, no capture == insert, map:xbn, sc:b ==
+\%(<SPLIT><CURSOR>\|\)
+== Regex.collection == insert ==
+[<CURSOR>]
+== ENDTEMPLATE ==
+
+== Regex.word == insert, map:xw, sc:w ==
+\<<CURSOR>\>
+== ENDTEMPLATE ==
+
+== Regex.character classes == expandmenu, insert, map:xcc, sc:l ==
+|PickList( 'character class', 'regex_character_classes' )|
+|PICK|<CURSOR>
+== Regex.switches == expandmenu, insert, map:xs, sc:s ==
+|PickList( 'switch', 'regex_switches' )|
+|PICK|<CURSOR>
+== ENDTEMPLATE ==
+

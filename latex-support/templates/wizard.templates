@@ -1,0 +1,129 @@
+§ =============================================================
+§  Wizard
+§ =============================================================
+
+== Wizard.listings.lstlisting == map:wll, sc:l ==
+\begin{lstlisting}[numbers=none,frame=none]
+<CURSOR><SPLIT>
+\end{lstlisting}
+== ENDTEMPLATE ==
+
+== Wizard.listings.lstinputlisting == map:wlil, sc:l ==
+%%---------- LISTING begin ----------
+\lstinputlisting[label=<CURSOR>,caption={<+CAPTION+>}]{<+FILE+>}
+%%---------- LISTING end  ----------
+== ENDTEMPLATE ==
+
+== Wizard.tables.table == map:wtt, sc:t ==
+%%---------- TABLE begin ----------
+\vspace{0mm}
+\begin{table}[htbp]
+\begin{center}
+{\bf TITLE} \\[1.0ex]
+<CURSOR><SPLIT>
+{\emph {SUBTITLE}}
+\caption{\label{}CAPTION}
+\end{center}
+\end{table}
+%%---------- TABLE end  ----------
+== ENDTEMPLATE ==
+
+== Wizard.tables.table, floating == noindent, map:wttf, sc:t ==
+%%---------- TABLE (floating) begin ----------
+\vspace{0mm}
+\begin{floatingtable}[r]{
+<CURSOR><SPLIT>
+}
+\caption{\label{}CAPTION}
+\end{floatingtable}
+%%---------- TABLE (floating) end  ----------
+== ENDTEMPLATE ==
+
+== LIST: lstsetvalues == list, bare ==
+basicstyle
+caption
+commentstyle
+extendedchars
+firstline
+frame
+framesep
+identifierstyle
+label
+language
+lastline
+linerange
+linewidth
+literate
+numbers
+numberstyle
+showspace
+showstringspaces
+showtabs
+stepnumber
+tabsize
+title
+xleftmargin
+xrightmargin
+== ENDLIST ==
+
+§ -------------------------------------------------------------
+
+== Wizard.listings.lstset == expandmenu, insert, map:wls, sc:l ==
+|PickList( 'macro', 'lstsetvalues' )|
+\lstset{|PICK|=<CURSOR>}
+== ENDTEMPLATE ==
+
+== Wizard.figures.figure == map:wf, sc:i ==
+%%---------- FIGURE begin ----------
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[scale=1.0]{<CURSOR>}
+\caption{\label{<+label+>}<+caption+>}
+\end{center}
+\end{figure}
+%%---------- FIGURE end  ----------
+== ENDTEMPLATE ==
+
+== Wizard.figures.floatingfigure == map:wff, sc:i ==
+%%----- FIGURE (floating) begin ----------
+\begin{floatingfigure}[r]{80mm}
+\begin{center}%
+\includegraphics[scale=1.0]{<CURSOR>}
+\caption{\label{<+label+>}<+caption+>}
+\end{center}
+\end{floatingfigure}
+%%----- FIGURE (floating) end  ----------
+== ENDTEMPLATE ==
+
+== Wizard.figures.wrapfigure == map:wwf, sc:w ==
+%%---------- WRAPFIGURE : begin ----------------------------
+%%---------- [hight in lines (opt.)] {pos: lr...} [border] {width} --
+\begin{wrapfigure}[]{l}[0mm]{80mm}
+\begin{center}
+\includegraphics[scale=1.0]{<CURSOR>}
+\caption{\label{<+label+>}<+caption+>}
+\end{center}
+\end{wrapfigure}
+%%---------- WRAPFIGURE :  end  ----------------------------
+== ENDTEMPLATE ==
+
+== Wizard.boxes.fbox == insert, map:wbf, sc:f ==
+\fbox{<CURSOR><SPLIT>}
+§
+== Wizard.boxes.framebox == insert, map:wbfr, sc:f ==
+\framebox[<+width+>][<+position+>]{<CURSOR><SPLIT>}
+§
+== Wizard.boxes.mbox == insert, map:wbm, sc:m ==
+\mbox{<CURSOR><SPLIT>}
+§
+== Wizard.boxes.makebox == insert, map:wbmb, sc:m ==
+\makebox[<+width+>][<+position+>]{<CURSOR><SPLIT>}
+§
+== Wizard.boxes.minipage == insert, map:wmp, sc:m ==
+\begin{minipage}[<+vpos+>][<+hight+>][<+ipos+>]{<+width+>}
+<CURSOR><SPLIT>
+\end{minipage}
+§
+== Wizard.boxes.parbox == insert, map:wbp, sc:p ==
+\parbox[<+vpos+>][<+hight+>][<+ipos+>]{<+width+>}{<CURSOR><SPLIT>}
+== ENDTEMPLATE ==

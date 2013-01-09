@@ -1,0 +1,300 @@
+%%=====================================================================================
+%%
+%%         File:  latex-hotkeys.tex
+%%
+%%  Description:  latex-support.vim : Key mappings
+%%                
+%%                
+%%       Author:  Dr.-Ing. Fritz Mehner
+%%        Email:  mehner.fritz@fh-swf.de
+%%    Copyright:  Copyright (C)  2013  Dr.-Ing. Fritz Mehner  (mehner@fh-swf.de)
+%%      Version:  see \Pluginversion
+%%      Created:  02.01.2013
+%%                
+%%=====================================================================================
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Latex settings			[[[1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[oneside,10pt,landscape,DIV17]{scrartcl}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lastpage}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+\usepackage{textcomp}
+
+\setlength\parindent{0pt}
+
+\newcommand{\Pluginversion}{1.0}
+\newcommand{\ReleaseDate}{\today}
+\newcommand{\Rep}{{\scriptsize{[n]}}}
+\newcommand{\Map}[1] {\textbf{\textasciiacute}\texttt{#1}}
+
+%%----------------------------------------------------------------------
+%%  fancyhdr
+%%----------------------------------------------------------------------
+\pagestyle{fancyplain}
+\fancyhf{}
+\fancyfoot[L]{\small \ReleaseDate}
+\fancyfoot[C]{\small latex-support.vim}
+\fancyfoot[R]{\small \textbf{Page \thepage{} / \pageref{LastPage}}}
+\renewcommand{\headrulewidth}{0.0pt}
+
+%%----------------------------------------------------------------------
+%%  luximono : Type1-font
+%%  Makes keyword stand out by using semibold letters.
+%%----------------------------------------------------------------------
+\usepackage[scaled]{luximono}
+
+%%----------------------------------------------------------------------
+%%  hyperref
+%%----------------------------------------------------------------------
+\usepackage[ps2pdf]{hyperref}
+\hypersetup{pdfauthor={Dr.-Ing. Fritz Mehner, FH Südwestfalen, Iserlohn, Germany}}
+\hypersetup{pdfkeywords={Vim, LaTeX}}
+\hypersetup{pdfsubject={Vim-plug-in, latex-support.vim, hot keys}}
+\hypersetup{pdftitle={Vim-plug-in, latex-support.vim, hot keys}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  START OF DOCUMENT			[[[1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\begin{multicols}{3}
+\begin{center}
+%
+%%======================================================================
+%%  title			[[[2
+%%======================================================================
+\textbf{\textsc{\small{Vim-Plug-in}}}\\
+\textbf{\LARGE{latex-support.vim}}\\
+\textbf{\textsc{\small{Version \Pluginversion}}}\\
+\vspace{5mm}%
+\textbf{\textsc{\Huge{Hot keys}}}\\ 
+\vspace{5mm}%
+Key mappings for Vim and gVim.\\
+Plug-in: http://vim.sourceforge.net\\
+Fritz Mehner (mehner.fritz@fh-swf.de)\\
+\vspace{1.0mm}
+{\normalsize (i)} insert mode, {\normalsize (n)} normal mode, {\normalsize (v)} visual mode\\
+\vspace{4.0mm}
+
+%%======================================================================
+%%  page 1 / table, left part			[[[2
+%%======================================================================
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{60mm}|}
+%%----------------------------------------------------------------------
+%%  Help
+%%----------------------------------------------------------------------
+\hline 
+\multicolumn{2}{|r|}{\textsl{\textbf{H}elp}}\\[1.0ex]
+\hline \Map{ht}   & start \texttt{texdoc}           \hfill (n,i)\\
+\hline \Map{hp}   & help (plug-in)                  \hfill (n,i)\\
+\hline 
+%%----------------------------------------------------------------------
+%%  Comments
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{C}omments}}    \\[1.0ex]
+\hline \Rep\Map{cl}   & end-of-line comment         \hfill (n, i, v)\\
+\hline \Rep\Map{cj}   & adjust end-of-line comments \hfill (n, i, v)\\
+\hline     \Map{cs}   & set end-of-line comment col.\hfill (n)      \\
+%
+\hline \Rep\Map{cc}   & code $\rightarrow$ comment  \hfill (n, i, v)\\
+\hline     \Map{cu}   & uncomment code block        \hfill (n, i, v)\\
+%
+\hline     \Map{cfr1} & frame comment, type 1       \hfill (n, i)   \\
+\hline     \Map{cfr2} & frame comment, type 2       \hfill (n, i)   \\
+\hline     \Map{cfr3} & frame comment, type 3       \hfill (n, i)   \\
+\hline     \Map{ch}   & file prolog                 \hfill (n, i)   \\
+\hline     \Map{cm}   & plug-in macros              \hfill (n, i)   \\
+\hline     \Map{cd}   & date                        \hfill (n, i)   \\
+\hline     \Map{ct}   & date \& time                \hfill (n, i)   \\
+\hline
+%%----------------------------------------------------------------------
+%%  Document
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{D}ocument}}                 \\[1.0ex]
+\hline     \Map{dc}  &  document class              \hfill (n, i)\\
+\hline     \Map{di}  &  indices                     \hfill (n, i)\\
+\hline     \Map{dti} &  title                       \hfill (n, i)\\
+\hline     \Map{dbi} &  bibliography                \hfill (n, i)\\
+\hline     \Map{dac} &  addcontentsline             \hfill (n, i)\\
+\hline
+%
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%======================================================================
+%%  page 1 / table, middle part			[[[2
+%%======================================================================
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{60mm}|}
+%%----------------------------------------------------------------------
+%%  Text
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{T}ext}}                 \\[1.0ex]
+\hline \Map{e}    & environment                    \hfill (n, i, v)\\
+\hline \Map{ts}   & section                        \hfill (n, i)\\
+\hline \Map{to}   & organization                   \hfill (n, i)\\
+\hline \Map{tld}  & list environment, description  \hfill (n, i)\\
+\hline \Map{tle}  & list environment, enumerate    \hfill (n, i)\\
+\hline \Map{tli}  & list environment, itemize      \hfill (n, i)\\
+\hline \Map{tll}  & list environment, list         \hfill (n, i)\\
+\hline \Map{tlit} & list environment, item         \hfill (n, i)\\
+\hline \Map{tlil} & list environment, item+labels  \hfill (n, i)\\
+\hline \Map{tf}   & font style                     \hfill (n, i, v)\\
+\hline \Map{tfs}  & font size                      \hfill (n, i, v)\\
+\hline \Map{tq}   & quotes, single                 \hfill (n, i, v)\\
+\hline \Map{tqq}  & quotes, double                 \hfill (n, i, v)\\
+\hline \Map{tgq}  & quotes, single, German         \hfill (n, i, v)\\
+\hline \Map{tgqq} & quotes, double, German         \hfill (n, i, v)\\
+\hline \Map{tfq}  & quotes, single, French         \hfill (n, i, v)\\
+\hline \Map{tfqq} & quotes, double, French         \hfill (n, i, v)\\
+\hline \Map{tsp}  & spacing                        \hfill (n, i)\\
+\hline \Map{tsh}  & hspace                         \hfill (n, i)\\
+\hline \Map{tsv}  & vspace                         \hfill (n, i)\\
+\hline \Map{ta}   & line alignment + spacin        \hfill (n, i, v)\\
+\hline \Map{ttc}  & textcomp characters            \hfill (n, i)\\
+\hline \Map{tbi}  & bibitem                        \hfill (n, i)\\
+\hline \Map{tci}  & cite                           \hfill (n, i)\\
+\hline \Map{tfo}  & footnote                       \hfill (n, i)\\
+\hline \Map{tin}  & index                          \hfill (n, i)\\
+\hline \Map{tla}  & label                          \hfill (n, i)\\
+\hline \Map{tma}  & marginpar                      \hfill (n, i)\\
+\hline \Map{tnc}  & nocite                         \hfill (n, i)\\
+\hline \Map{tpa}  & pageref                        \hfill (n, i)\\
+\hline \Map{tre}  & ref                            \hfill (n, i)\\
+\hline \Map{tur}  & url                            \hfill (n, i, v)\\
+\hline
+%%----------------------------------------------------------------------
+%%  Snippets
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{S\textbf{n}ippets}}                \\[1.0ex]
+\hline \Map{nr}  & read code snippet         \hfill (n, i)   \\
+\hline \Map{nv}  & view code snippet         \hfill (n, i)   \\
+\hline \Map{nw}  & write code snippet        \hfill (n, i, v)\\
+\hline \Map{ne}  & edit code snippet         \hfill (n, i)   \\
+\hline \Map{ntl} & edit local templates      \hfill (n, i)   \\
+\hline \Map{ne}  & reread templates          \hfill (n, i)   \\
+\hline
+%
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%======================================================================
+%%  page 1 / table, right part			[[[2
+%%======================================================================
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{62mm}|}
+%%----------------------------------------------------------------------
+%%  Math
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{M}ath}}  \\[1.0ex]
+\hline	\Map{msp} & spaces                    \hfill (n, i)\\
+\hline	\Map{mac} & accents                   \hfill (n, i)\\
+\hline	\Map{mfs} & font styles               \hfill (n, i)\\
+\hline	\Map{md}  & delimiter                 \hfill (n, i)\\
+\hline	\Map{mf}  & functions                 \hfill (n, i)\\
+\hline	\Map{mgl} & lowercase  greek          \hfill (n, i)\\
+\hline	\Map{mgu} & upperrcase greek          \hfill (n, i)\\
+\hline	\Map{mo}  & operators                 \hfill (n, i)\\
+\hline	\Map{mr}  & relations                 \hfill (n, i)\\
+\hline	\Map{mar} & arrows                    \hfill (n, i)\\
+\hline	\Map{me}  & equation+label            \hfill (n, i, v)\\
+\hline	\Map{mea} & eqnarray+label            \hfill (n, i, v)\\
+\hline	\Map{mm}  & matrix                    \hfill (n, i)\\
+\hline	\Map{mch} & choose                    \hfill (n, i, v)\\
+\hline	\Map{mddt}& ddot                      \hfill (n, i, v)\\
+\hline	\Map{mdt} & dot                       \hfill (n, i, v)\\
+\hline	\Map{mfr} & frac                      \hfill (n, i, v)\\
+\hline	\Map{mnr} & nth root                  \hfill (n, i, v)\\
+\hline	\Map{mpr} & prod                      \hfill (n, i, v)\\
+\hline	\Map{msq} & sqrt                      \hfill (n, i, v)\\
+\hline	\Map{msu} & sum                       \hfill (n, i, v)\\
+\hline	\Map{mve} & vec                       \hfill (n, i, v)\\
+\hline	\Map{mon} & operatorname              \hfill (n, i, v)\\
+\hline
+%%----------------------------------------------------------------------
+%%  Wizard
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{W}izard}}\\[1.0ex]
+\hline  \Map{wll}  & lstlisting               \hfill (n, i, v)\\
+\hline  \Map{wlil} & lstinputlisting          \hfill (n, i)\\
+\hline  \Map{nls}  & lstset                   \hfill (n, i)\\
+\hline
+\hline  \Map{wtt}  & table                    \hfill (n, i, v)\\
+\hline  \Map{wttf} & table, floating          \hfill (n, i, v)\\
+\hline  \Map{wtg}  & tabbing                  \hfill (n, i)\\
+\hline  \Map{wtr}  & tabular                  \hfill (n, i)\\
+\hline
+\hline  \Map{wf}   & figure                   \hfill (n, i)\\
+\hline  \Map{wff}  & floatingfigure           \hfill (n, i)\\
+\hline  \Map{wwf}  & wrapfigure               \hfill (n, i)\\
+\hline
+\hline  \Map{wbf}  & fbox                     \hfill (n, i, v)\\
+\hline  \Map{wbfr} & framebox                 \hfill (n, i, v)\\
+\hline  \Map{wbm}  & mbox                     \hfill (n, i, v)\\
+\hline  \Map{wbmb} & makebox                  \hfill (n, i, v)\\
+\hline  \Map{wmp}  & minipage                 \hfill (n, i, v)\\
+\hline  \Map{wbp}  & parbox                   \hfill (n, i, v)\\
+\hline
+%
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+\newpage
+%
+%%======================================================================
+%%  page 2 / table, left part			[[[2
+%%======================================================================
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{62mm}|}
+%%----------------------------------------------------------------------
+%%  menu run
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{R}un}} \\[1.0ex]
+\hline \Map{rr}   & save + run typesetter                    \hfill (n, i)\\
+\hline \Map{rla}  & save + run \texttt{lacheck}              \hfill (n, i)\\
+\hline \Map{rdvi} & view DVI                                 \hfill (n, i)\\
+\hline \Map{rpdf} & view PDF                                 \hfill (n, i)\\
+\hline \Map{rps}  & view PS                                  \hfill (n, i)\\
+\hline \Map{rm}   & run \texttt{make}                        \hfill (n, i)\\
+\hline \Map{rcm}  & choose makefile                          \hfill (n, i)\\
+\hline \Map{rmc}  & \texttt{make clean}                      \hfill (n, i)\\
+\hline \Map{rma}  & command line arguments for \texttt{make} \hfill (n, i)\\
+\hline \Map{rmi}  & run \texttt{makeindex}                   \hfill (n, i)\\
+\hline \Map{rbi}  & run \texttt{bibtex}                      \hfill (n, i)\\
+\hline \Map{rse}  & show plugin settings                     \hfill (n, i)\\
+\hline
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%======================================================================
+%%  page 2 / table, middle part			[[[2
+%%======================================================================
+\fbox{\begin{minipage}[t][30mm][l]{73mm}
+\begin{flushleft}
+\large{\textbf{Ex Commands}}\\[1.0ex]
+%
+Set \texttt{make} command line arguments (same as \Map{rm})\\[1.0ex]
+\texttt{\ :LatexMakeCmdlineArgs}\\[1.0ex]
+\end{flushleft}
+\end{minipage}}
+%
+\end{center}%
+\end{multicols}%
+%
+\end{document}
+% vim: foldmethod=marker foldmarker=[[[,]]]

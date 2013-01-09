@@ -1,5 +1,5 @@
-§== Comments.end-of-line comment == map:cl, sc:e, append ==
-§# <CURSOR>
+== Comments.end-of-line-comment == map:cl, sc:e, append ==
+# <CURSOR>
 == Comments.frame == map:cfr, sc:f  ==
 #-------------------------------------------------------------------------------
 #  <CURSOR>

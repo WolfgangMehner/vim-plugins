@@ -1,8 +1,8 @@
-*gitsupport.txt*                  Git Support                    Dez. 23 2012
+*gitsupport.txt*                  Git Support                      Dez 23 2012
 
 Git Support                                          *git-support* *gitsupport*
 
-                             Plugin version 0.9
+                             Plug-in version 0.9
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
 
@@ -19,6 +19,8 @@ a quick overview and a short guide to this documentation.
 
  1.    Introduction                               |gitsupport-introduction|
  2.    Overview                                   |gitsupport-overview|
+ 2.1    Menu                                      |gitsupport-overview-menu|
+ 2.2    Workflow                                  |gitsupport-overview-work|
  3.    Commands                                   |gitsupport-commands|
  4.    Syntax Highlighting                        |gitsupport-syntax|
  4.1    Branch                                    |gitsupport-syn-branch|
@@ -26,6 +28,9 @@ a quick overview and a short guide to this documentation.
  4.3    Log                                       |gitsupport-syn-log|
  4.4    Status                                    |gitsupport-syn-status|
  5.    Configuration                              |gitsupport-configuration|
+ 5.1    Executable                                |gitsupport-config-executable|
+ 5.2    Menus                                     |gitsupport-config-menus|
+ 5.3    Maps                                      |gitsupport-config-maps|
 
  A.    Troubleshooting                            |gitsupport-troubleshooting|
  B.    Release Notes / Change Log                 |gitsupport-release-notes|
@@ -41,33 +46,47 @@ staging area. The second kind redirects the output from Git commands like "git
 status" into buffers. For each such buffer maps are defined which can be used
 to run other commands. For example, after running :GitStatus, you can use maps
 like "a" and "c" to add or check out the file under the cursor, provided its
-name appears in the section "Changes not staged for commit:".
+name appears in the section "Changes not staged for commit:". Each buffer has
+a map <SHIFT-F1> for showing a short help.
 
-The next chapter |gitsupport-overview| gives an overview over all the commands,
-follow by a detailed description in |gitsupport-commands|. The customization
-of the syntax highlighting is explained in |gitsupport-syntax|. The next
-chapter |gitsupport-configuration| documents further configurations.
+All commands are listed in a menu "Git". It provides convenient access to all
+the commands and gives an overview of the plug-in's functionality.
+
+The next chapter |gitsupport-overview| gives an overview of the plug-in, fol-
+lowed by a detailed description of the commands in |gitsupport-commands|.  The
+customization of the syntax highlighting is explained in |gitsupport-syntax|.
+The chapter |gitsupport-configuration| documents further configurations.
 
 ==============================================================================
 2.  OVERVIEW                                             *gitsupport-overview*
 ==============================================================================
 
-The following commands are provided by Git Support:
+The following commands are provided by Git Support. Each command is executed
+in the current working directory, just as it would work on the shell. You can
+run the commands in every subdirectory of the project.
 
 	Command												Short Description
  ----------------------------------------------------------------------------
-	:GitAdd [<files>]							(run) git add -- <files>
+	:GitAdd [<param>]							(run) git add <param>
 	:GitBranch										(buf) git branch
-	:GitCheckout [<what>]					(run) git checkout <what>
-	:GitCheckoutFiles [<files>]		(run) git checkout -- <files>
-	:GitCommit [<what>]						(run) git commit <what>
+	:GitBranch <param>						(run) git branch <param>
+	:GitCheckout [<param>]				(run) git checkout <param>
+	:GitCommit [<param>]					(run) git commit <param>
 	:GitCommitFile [<file>]				(run) git commit -F <file>
 	:GitCommitMsg <msg>						(run) git commit -m "<msg>"
-	:GitDiff [<files>]						(buf) git diff -- <files>
+	:GitDiff [<param>]						(buf) git diff <param>
+	:GitFetch [<param>]						(run) git fetch <param>
 	:GitHelp [<command>]					(buf) git help <command>
-	:GitLog												(buf) git log
+	:GitLog [<param>]							(buf) git log <param>
+	:GitMerge [<param>]						(run) git merge <param>
+	:GitPull [<param>]						(run) git pull <param>
+	:GitPush [<param>]						(run) git push <param>
 	:GitRemote										(buf) git remote
-	:GitReset [<files>]						(run) git reset -- <files>
+	:GitRemote <param>						(run) git remote <param>
+	:GitRemove [<param>]					(run) git rm <param>
+	:GitRm [<param>]							(run) git rm <param>
+	:GitReset [<param>]						(run) git reset <param>
+	:GitStash [<param>]						(run) git stash <param>
 	:GitStatus										(buf) git status
  ----------------------------------------------------------------------------
 
@@ -77,8 +96,58 @@ The following commands are provided by Git Support:
 When a command opens a new buffer, several maps are defined for this buffer.
 Hitting <SHIFT-F1> always prints a short help with all available maps.
 
-The default file for GitAdd, GitCheckoutFiles, GitCommitFile, GitDiff and
-GitReset is the current buffer.
+The default parameter for GitAdd, GitCheckout, GitCommitFile, GitDiff, GitRm,
+GitRemove and GitReset is the current buffer.
+
+When called without parameters, the commands GitBranch and GitRemote open a
+buffer, otherwise they run the respective Git command with the given
+parameters.
+
+------------------------------------------------------------------------------
+2.1  MENU                                           *gitsupport-overview-menu*
+------------------------------------------------------------------------------
+
+Git Support comes with a menu "Git" which contains all commands for convenient
+access. The menu contains several entries which open buffers for a quick
+overview of your repository: branch, log, status, ...
+
+All commands are listed in the menu "git ...". Each entry opens the command-
+line and inserts the respective command, awaiting further input. This menu
+provides an overview of the plug-in's functionality.
+
+The menu "file" contains several commands which can be run on the current
+buffer. Each entry runs the command directly. This is designed to support the
+work on the current file: viewing diffs, adding or checking out the file, ...
+
+Some special commands are provided in the menu "specials". See their documen-
+tation for further help.
+
+------------------------------------------------------------------------------
+2.2  WORKFLOW                                       *gitsupport-overview-work*
+------------------------------------------------------------------------------
+
+To be completely honest, the plug-in in its current state is probably best
+suited for my own workflow. This is the main reason why simply running
+|:GitCommit| without parameters currently does not work, and why there is a
+|:GitCommitFile| command.
+
+I keep a file like 'project/commit.txt' around and protocol the changes while
+working on the files. This has the advantage that names of variables,
+functions or classes can quickly be inserted using <CTRL-P>. Intermediate
+results can be staged using |:GitAdd|, so the output of |:GitDiff| is clean
+again. After a look at the output of |:GitStatus| and assembling the release
+in the status buffer, I finalize the commit message in 'project/commit.txt'.
+Running |:GitCommitFile| on the buffer commits the changes using the contents
+of the file as the message.
+
+I am convinced, since you do not have to leave Vim to manage your repository,
+that this is a better way of doing things. Editing the commit message in a
+window gives you the chance to browse around your project in the environment
+your already working in anyway. You furthermore can have a look at logs,
+compare different branches or add another file while writing the commit
+message. And seeing how you use Vim for a big project like the kinds of
+projects you manage in a version control system, you obviously do not have a
+problem dealing with one further file.
 
 ==============================================================================
 3.  COMMANDS                                             *gitsupport-commands*
@@ -90,31 +159,33 @@ buffers can be closed via <q> and updated via <u>.
 
 ------------------------------------------------------------------------------
                                                                      *:GitAdd*
-	:GitAdd [<files>] ~
-	:GitAdd! [<files>] ~
+	:GitAdd [<param>] ~
+	:GitAdd! [<param>] ~
 
-Adds the files to the staging area. The second version forces the add. If no
-file is given, adds the current buffer.
+Executes "git add ...". The second version forces the add. If no parameters
+are given, adds the current buffer.
 
 Examples:
 
 Add the current buffer: >
 	:GitAdd
 Similarly: >
-	:GitAdd %
+	:GitAdd -- %
 Is equivalent to: >
 	git add -- <currentfile>
 
 Add all the Vim scripts in the current directory: >
 	:GitAdd! *.vim
 Is equivalent to: >
-	git add -f -- *.vim
+	git add -f *.vim
 
 ------------------------------------------------------------------------------
                                                                   *:GitBranch*
 	:GitBranch ~
+	:GitBranch <param> ~
 
-Opens a buffer listing all branches, including remote ones.
+The first version opens a buffer listing all branches, including remote ones.
+The second version executes "git branch ...".
 
 	Map				Meaning
  ----------------------------------------------------------------------------
@@ -124,29 +195,26 @@ Opens a buffer listing all branches, including remote ones.
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
-                                              *:GitCheckout* *:GitCheckoutFiles*
-	:GitCheckout [<what>] ~
-	:GitCheckoutFiles [<files>] ~
+                                                                *:GitCheckout*
+	:GitCheckout [<param>] ~
 
-The first version runs "git checkout" with the given parameters. The second
-version runs Git checkout as well, but makes sure that all the files are
-interpreted as such. For the second version, the default file is the current
-buffer.
+Executes "git checkout ...". If no parameters are given, checks out the
+current file.
 
 Examples:
 
-Check out the branch "master": >
-	:GitCheckout master
-
 Check out the file in the current buffer: >
-	:GitCheckoutFiles
+	:GitCheckout
 Is equivalent to: >
 	git checkout -- <currentfile>
 (Might require running ":e" to update the buffer itself.)
 
+Check out the branch "master": >
+	:GitCheckout master
+
 ------------------------------------------------------------------------------
                                      *:GitCommit* *:GitCommitFile* *:GitCommitMsg*
-	:GitCommit [<what>] ~
+	:GitCommit [<param>] ~
 	:GitCommitFile [<file>] ~
 	:GitCommitMsg <msg> ~
 
@@ -154,6 +222,10 @@ The first version runs "git commit" with the given parameters. The second
 version takes the commit message from the given file (default: current
 buffer). The third version uses the commit message provided on the command
 line.
+
+Note The command :GitCommit currently can not be run without parameters.
+     Supply the commit message using either the -m or -F options, or by using
+		 the other versions :GitCommitFile or :GitCommitMsg.
 
 Examples:
 
@@ -174,10 +246,11 @@ Is equivalent to: >
 
 ------------------------------------------------------------------------------
                                                                     *:GitDiff*
-	:GitDiff [<files>] ~
+	:GitDiff ~
+	:GitDiff <param> ~
 
-Opens a buffer containing the output of Git's diff for the given files. If no
-file is given, runs diff for the current buffer.
+The first version opens a buffer containing the output of Git's diff for the
+current buffer. The second version runs diff for the given parameters.
 
 	Map				Meaning
  ----------------------------------------------------------------------------
@@ -188,10 +261,19 @@ file is given, runs diff for the current buffer.
 
 Example:
 
+Show the diff for the current file: >
+	:GitDiff
+
 Show the diff for a file Vector.cc and its header Vector.h: >
 	:GitDiff Vector.*
 Is equivalent to: >
-	git diff -- Vector.*
+	git diff Vector.*
+
+------------------------------------------------------------------------------
+                                                                   *:GitFetch*
+	:GitFetch [<param>] ~
+
+Executes "git fetch ...".
 
 ------------------------------------------------------------------------------
                                                                     *:GitHelp*
@@ -216,8 +298,10 @@ Is equivalent to: >
 ------------------------------------------------------------------------------
                                                                      *:GitLog*
 	:GitLog ~
+	:GitLog <param> ~
 
-Opens a buffer showing the commit messages for the current branch.
+The first version opens a buffer containing the log for the current branch.
+The second version runs log for the given parameters.
 
 	Map				Meaning
  ----------------------------------------------------------------------------
@@ -225,12 +309,32 @@ Opens a buffer showing the commit messages for the current branch.
 	q					close the buffer
 	u					update the buffer
  ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+                                                                   *:GitMerge*
+	:GitMerge [<param>] ~
+
+Executes "git merge ...".
+
+------------------------------------------------------------------------------
+                                                                    *:GitPull*
+	:GitPull [<param>] ~
+
+Executes "git pull ...".
+
+------------------------------------------------------------------------------
+                                                                    *:GitPush*
+	:GitPush [<param>] ~
+
+Executes "git push ...".
 
 ------------------------------------------------------------------------------
                                                                   *:GitRemote*
 	:GitRemote ~
+	:GitRemote <param> ~
 
-Opens a buffer listing all the remotes together with their URLs.
+The first version opens a buffer listing all the remotes together with their
+URLs. The second version executes "git remote ...".
 
 	Map				Meaning
  ----------------------------------------------------------------------------
@@ -240,10 +344,26 @@ Opens a buffer listing all the remotes together with their URLs.
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
-                                                                   *:GitReset*
-	:GitReset [<files>] ~
+                                                           *:GitRemove* *:GitRm*
+	:GitRemove [<param>] ~
+	:GitRm [<param>] ~
 
-Resets the files. If no file is given, resets the current buffer.
+Both versions behave the same.  Executes "git rm ...". If no parameters are
+given, removes the current buffer.
+
+Example:
+
+Reset the current file: >
+	:GitRemove
+Is equivalent to: >
+	git rm -- <currentfile>
+
+------------------------------------------------------------------------------
+                                                                   *:GitReset*
+	:GitReset [<param>] ~
+
+Executes "git reset ...". If no parameters are given, resets the current
+buffer.
 
 Example:
 
@@ -275,6 +395,12 @@ Opens a buffer showing the current status.
 	ol				file under cursor: open log
 	r					file under cursor: reset
  ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+                                                                   *:GitStash*
+	:GitStash [<param>] ~
+
+Executes "git stash ...".
 
 ==============================================================================
 4.  SYNTAX HIGHLIGHTING                                    *gitsupport-syntax*
@@ -309,16 +435,26 @@ Only the current branch is highlighted.
 
 The headers of the output for each file are highlighted, as well as each range
 "@@ <range> @@" and inserted and deleted lines. Folds are created for each
-file and subfolds for each block (starting with "@@ <range> @@").
+file and subfolds for each block (starting with "@@ <range> @@"). For unmerged
+files, regions with conflicts are highlighted as well.
 
 	Category								Short Description
  ----------------------------------------------------------------------------
 	GitDiffHeader						the header generated for each file
 														(lines like "diff ...", "index ...", ...)
+ ----------------------------------------------------------------------------
 	GitDiffRange						the range of a single block of the output
 														(line "@@ <range> @@ ...")
 	GitDiffLineP						inserted lines (lines starting with "+")
 	GitDiffLineM						removed lines (lines starting with "-")
+ ----------------------------------------------------------------------------
+	GitMergeRange						the range of a single block of the output
+														(line "@@@ <range> @@@ ...")
+	GitMergeLineP						inserted lines (lines starting with "+ " or " +")
+	GitMergeLineM						removed lines (lines starting with "- " or " -")
+	GitMergeConflict				lines signaling regions with conflicts
+														(lines like "++<<<<<<< HEAD", "++=======" or
+														"++>>>>>>> master")
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -353,13 +489,65 @@ committed:", "Changes not staged for commit:", ...
 	GitModifiedFile					files listed as "not staged for commit"
 	GitUntrackedFile				files listed as "untracked"
 	GitIgnoredFile					files listed as "ignored"
+	GitUnmergedFile					files listed as "unmerged"
  ----------------------------------------------------------------------------
 
 ==============================================================================
 5.  CONFIGURATION                                   *gitsupport-configuration*
 ==============================================================================
 
-	*Todo		add
+The configuration is done via a number of global variables, which can be set
+in the .vimrc file.
+
+	Variable									Default				Description and further information
+ ----------------------------------------------------------------------------
+	g:Git_Executable					'git'					the Git executable
+																						|gitsupport-config-executable|
+	g:Git_LoadMenus						'yes'					whether to load the menus
+																					('yes' or 'no')
+																						|gitsupport-config-menus|
+	g:Git_RootMenu						'&Git'  			name and shortcut of the root menu
+																						|gitsupport-config-menus|
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+5.1  EXECUTABLE                                 *gitsupport-config-executable*
+------------------------------------------------------------------------------
+                                                            *g:Git_Executable*
+The executable is set by g:Git_Executable. You should use the English language
+environment: >
+	let g:Git_Executable = 'LANG=en_US git'
+
+------------------------------------------------------------------------------
+5.2  MENUS                                           *gitsupport-config-menus*
+------------------------------------------------------------------------------
+                                                             *g:Git_LoadMenus*
+The creation of the menus is controlled by g:Git_LoadMenus. The default
+setting: >
+	let g:Git_LoadMenus = 'yes'
+causes the menus to appear right away after starting Vim.
+The automatic creation of the menus is prevented by: >
+	let g:Git_LoadMenus = 'no'
+Now the menus can only be loaded by using the tool menu entry 'Tools->Load
+Git Support'.
+
+                                                              *g:Git_RootMenu*
+The name and shortcut of the root menu is set via g:Git_RootMenu. The
+character prefixed by '&' will be the shortcut.
+
+Example: >
+	let g:Git_RootMenu = 'G&it'
+Sets the shortcut to 'i'.
+
+------------------------------------------------------------------------------
+5.3  MAPS                                             *gitsupport-config-maps*
+------------------------------------------------------------------------------
+
+You can add hotkeys for your favorite commands by adding maps to your .vimrc.
+
+With these lines, <F10> will open the status buffer: >
+	 noremap <silent> <F10>       :GitStatus<CR>
+	inoremap <silent> <F10>  <C-C>:GitStatus<CR>
 
 ==============================================================================
 A.  TROUBLESHOOTING                               *gitsupport-troubleshooting*
@@ -372,7 +560,7 @@ A.  TROUBLESHOOTING                               *gitsupport-troubleshooting*
 	-	Is "git" executable from the command line?
 	-	Is the $PATH variable set correctly?
 	-	Are the settings correct? See:
-			:help TODO
+			:help |gitsupport-config-executable|
 
 ==============================================================================
 B.  RELEASE NOTES / CHANGE LOG                      *gitsupport-release-notes*

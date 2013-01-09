@@ -1,0 +1,26 @@
+§ =============================================================
+§  Idioms
+§ =============================================================
+
+== LIST: idioms_iterators == hash ==
+	'dict, keys'    : 'key in keys( <+DICT+> )',
+	'dict, key+val' : '[ key, val ] in items( <+DICT+> )',
+	'dict, values'  : 'val in values( <+DICT+> )',
+	'file'          : 'line in readfile( <+NAME+> )',
+	'list'          : 'val in <+LIST+>',
+	'range'         : 'i in range( <+A+>, <+B+> )',
+	'string, split' : 'part in split( <+STRING+>, <+SEP+> )',
+== ENDLIST ==
+
+== Idioms.iterators == expandmenu, map:ii, sc:i ==
+|PickList( 'iterate over', 'idioms_iterators' )|
+for <CURSOR>|PICK|
+	<SPLIT><-LOOP_BODY->
+endfor
+== Idioms.function == map:if, sc:f ==
+function! |?FUNCTION_NAME| (<CURSOR>)
+	<SPLIT><-FUNCTION_BODY->
+	return
+endfunction    " ----------  end of function |FUNCTION_NAME|  ----------
+== ENDTEMPLATE ==
+

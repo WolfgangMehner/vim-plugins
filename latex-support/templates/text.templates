@@ -1,0 +1,217 @@
+§ =============================================================
+§  Text
+§ =============================================================
+
+§ -------------------------------------------------------------
+§  Environments
+§ -------------------------------------------------------------
+
+§ the following file contains a list of environment names: environment_list
+IncludeFile( 'environments.templates' )
+
+== Text.environment == map:e, sc:e ==
+|PickList( 'environment name', 'environment_list' )|
+\begin{|PICK|}
+<CURSOR><SPLIT>
+\end{|PICK|}
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Sectioning
+§ -------------------------------------------------------------
+
+== LIST: section_list == list, bare ==
+part
+chapter
+section
+subsection
+subsubsection
+paragraph
+subparagraph
+== ENDLIST ==
+
+== Text.section == expandmenu, noindent, map:ts, sc:s ==
+|PickList( 'choose', 'section_list' )|
+\|PICK|{<CURSOR>}
+== Text.organization == expandmenu, noindent, map:to, sc:o ==
+|PickList( 'choose', [ 'frontmatter', 'mainmatter', 'backmatter', 'appendix' ] )|
+\|PICK|
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Lists
+§ -------------------------------------------------------------
+
+== Text.list environment.description == map:tld, sc:d ==
+\begin{description}
+\item [<CURSOR>] <+ITEM+>
+\item [] <+ITEM+>
+\end{description}
+== Text.list environment.enumerate == map:tle, sc:e ==
+\begin{enumerate}
+\item <CURSOR>
+\item <+ITEM+>
+\end{enumerate}
+== Text.list environment.itemize == map:tli, sc:i ==
+\begin{itemize}
+\item <CURSOR>
+\item <+ITEM+>
+\end{itemize}
+== Text.list environment.list == map:tll, sc:l ==
+\begin{list}{<CURSOR>}{}
+\item <+ITEM+>
+\item <+ITEM+>
+\end{list}
+== ENDTEMPLATE ==
+
+== Text.list environment.item == map:tlit, sc:i ==
+\item <CURSOR>
+== Text.list environment.item+label == map:tlil ==
+\item [<CURSOR>] <+ITEM+>
+== ENDTEMPLATE ==
+
+
+§ -------------------------------------------------------------
+§  Font
+§ -------------------------------------------------------------
+== LIST: font_style == dict ==
+	'bf'     : 'textbf',
+	'it'     : 'textit',
+	'normal' : 'textnormal',
+	'sc'     : 'textsc',
+	'sf'     : 'textsf',
+	'sl'     : 'textsl',
+	'tt'     : 'texttt',
+== LIST: font_size == list, bare  ==
+	tiny
+	scriptsize
+	footnotesize
+	small
+	normalsize
+	large
+	Large
+	LARGE
+	huge
+	Huge
+== ENDLIST ==
+
+== Text.font style == expandmenu, insert, map:tf ==
+|PickList( 'stype', 'font_style' )|
+\|PICK|{<CURSOR><SPLIT>}
+== Text.font size == expandmenu, insert, map:tfs ==
+|PickList( 'stype', 'font_size' )|
+\|PICK|{<CURSOR><SPLIT>}
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  quotes
+§ -------------------------------------------------------------
+== Text.quotes.double == insert, map:tqq ==
+''<CURSOR><SPLIT>''
+== Text.quotes.single == insert, map:tq ==
+'<CURSOR><SPLIT>'
+== Text.quotes.French, double == insert, map:tfqq ==
+\flqq <CURSOR><SPLIT>\frqq{}
+== Text.quotes.French, single == insert, map:tfq ==
+\flq <CURSOR><SPLIT>\frq{}
+== Text.quotes.German, double == insert, map:tgqq ==
+\glqq <CURSOR><SPLIT>\grqq{}
+== Text.quotes.German, single == insert, map:tgq ==
+\glq <CURSOR><SPLIT>\grq{}
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  spacing 
+§ -------------------------------------------------------------
+== LIST: spacing == list, bare ==
+newpage
+pagebreak
+newline
+linebreak
+bigskip
+medskip
+== ENDLIST ==
+
+== Text.spacing == expandmenu, noindent, map:tsp, sc:s ==
+|PickList( 'choose', 'spacing' )|
+\|PICK|<CURSOR>
+== ENDTEMPLATE ==
+
+== Text.spacing.hspace == insert, map:tsh ==
+\hspace{<CURSOR>mm}
+== Text.spacing.vspace == insert, map:tsv ==
+\vspace{<CURSOR>mm}
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  line, alignment and spacing 
+§ -------------------------------------------------------------
+== LIST: linespacing == list, bare ==
+flushleft
+flushright
+center
+singlespace
+onehalfspace
+doublespace
+quote
+quotation
+verse
+verbatim
+== ENDLIST ==
+
+== Text.line alignment+spacing== expandmenu, noindent, map:ta, sc:s ==
+|PickList( 'choose', 'linespacing' )|
+\begin{|PICK|}
+<CURSOR><SPLIT>
+\end{|PICK|}
+== ENDTEMPLATE ==
+
+== LIST: textcomp == dict ==
+	'asciiacute ´'  : 'asciiacute',
+	'bullet •'      : 'bullet',
+	'celsius ℃'     : 'celsius',
+	'copyright ©'   : 'copyright',
+	'dagger †'      : 'dagger',
+	'degree °'      : 'degree',
+	'div ÷'         : 'div',
+	'dollar $'      : 'dollar',
+	'euro €'        : 'euro',
+	'onehalf ½'     : 'onehalf',
+	'perthousand ؉' : 'perthousand',
+	'pm ±'          : 'pm',
+	'registered ®'  : 'registered',
+	'section §'     : 'section',
+	'times ⨉'       : 'times',
+	'trademark ™'   : 'trademark ',
+== ENDTEMPLATE ==
+
+== Text.textcomp == expandmenu, insert, map:ttc, sc:c ==
+|PickList( 'choose', 'textcomp' )|
+\text|PICK|<CURSOR>
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Label, Reference
+§ -------------------------------------------------------------
+== Text.bibitem == insert, map:tbi ==
+\bibitem{<CURSOR>}
+== Text.cite == insert, map:tci ==
+\cite{<CURSOR>}
+== Text.footnote == insert, map:tfo ==
+\footnote{<CURSOR>}
+== Text.index == insert, map:tin ==
+\index{<CURSOR>}
+== Text.label == insert, map:tla ==
+\label{<CURSOR>}
+== Text.marginpar == insert, map:tma ==
+\marginpar{<CURSOR>}
+== Text.nocite == insert, map:tnc ==
+\nocite{<CURSOR>}
+== Text.pageref == insert, map:tpa ==
+\pageref{<CURSOR>}
+== Text.ref == insert, map:tre ==
+\ref{<CURSOR>}
+== Text.url == insert, map:tur ==
+\url{<CURSOR><SPLIT>}
+== ENDTEMPLATE ==
+

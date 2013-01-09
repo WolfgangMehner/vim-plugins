@@ -1,0 +1,244 @@
+§ =============================================================
+§  
+§ === BibTeX ===
+§
+§ --- Entries ---
+§
+§ article       - an article from a journal or magazine
+§                    required: author, title, journal, year
+§                    optional: volume, number, pages, month, note
+§ book          - a book with an explicit publisher
+§                    required: author or editor, title, publisher, year
+§                    optional: volume or number, series, address, edition, month, note
+§ booklet       - a work that is printed and bound, but without a named publisher or sponsoring institution
+§                    required: title
+§                    optional: author, howpublished, address, month, year, note
+§ (conference)  - the same as INPROCEEDINGS, included for Scribe compatibility
+§ inbook        - a part of a book, which may be a chapter (or section or whatever) and/or a range of pages
+§                    required: author or editor, title, chapter and/or pages, publisher, year
+§                    optional: volume or number, series, type, address, edition, month, note
+§ incollection  - a part of a book having its own title
+§                    required: author, title, booktitle, publisher, year
+§                    optional: editor, volume or number, series, type, chapter, pages, address, edition, month, note
+§ inproceedings - an article in a conference proceedings
+§                    required: author, title, booktitle, year
+§                    optional: editor, volume or number, series, pages, address, month, organization, publisher, note
+§ manual        - technical documentation
+§                    required: title
+§                    optional: author, organization, address, edition, month, year, note
+§ mastersthesis - a Master's thesis
+§                    required: author, title, school, year
+§                    optional: type, address, month, note
+§ misc          - use this type when nothing else fits
+§                    required: none
+§                    optional: author, title, howpublished, month, year, note
+§ phdthesis     - a PhD thesis
+§                    required: author, title, school, year
+§                    optional: type, address, month, note
+§ proceedings   - the proceedings of a conference
+§                    required: title, year
+§                    optional: editor, volume or number, series, address, month, organization, publisher, note
+§ techreport    - a report published by a school or other institution, usually numbered within a series
+§                    required: author, title, institution, year
+§                    optional: type, number, address, month, note
+§ unpublished   - a document having an author and title, but not formally published
+§                    required: author, title, note
+§                    optional: month, year
+§
+§ --- Fields ---
+§
+§ address      - address of the publisher
+§ annote       - an annotation, not used by the standard bibliography styles
+§ author       - the names of the authors
+§ booktitle    - title of a book, part of which is being cited, for book entries, use 'title' instead
+§ chapter      - a chapter number
+§ crossref     - the key of the entry being cross referenced (-> inherits fields from referenced entry)
+§ edition      - the edition of a book, this should be an ordinal, and should have the first letter capitalized ("Second")
+§ editor       - names of editors
+§ howpublished - how something strange has been published, the first word should be capitalized
+§ institution  - the sponsoring institution of a technical report
+§ journal      - a journal name, abbreviations are provided for many journals
+§ key          - used for alphabetizing, cross referencing, ...
+§ month        - the month in which the work was published or, for an unpublished work, in which it was written
+§ note         - Any additional information that can help the reader, the first word should be capitalized
+§ number       - the number of a journal, magazine, technical report, ...
+§ organization - the organization that sponsors a conference or that publishes a manual
+§ pages        - one or more page numbers or range of numbers (42--111 or 7,41,73--97 or 43+)
+§ publisher    - the publisher's name
+§ school       - the name of the school where a thesis was written
+§ series       - the name of a series or set of books, optional information accompanying the title
+§ title        - the work's title
+§ type         - the type of a technical report ("Research Note")
+§ volume       - the volume of a journal or multivolume book
+§ year         - the year of publication or, for an unpublished work, the year it was written (1984)
+§
+§ =============================================================
+
+== BibTeX.article == below, noindent ==
+@article{<CURSOR>,
+  author        = {},
+  title         = {},
+  journal       = {},
+  year          = ,
+  volume        = {},
+  number        = {},
+  pages         = {},
+  month         = {},
+  note          = {},
+}
+== BibTeX.book == below, noindent ==
+@book{<CURSOR>,
+  author        = {},
+  editor        = {},
+  title         = {},
+  publisher     = {},
+  year          = ,
+  volume        = {},
+  number        = {},
+  series        = {},
+  address       = {},
+  edition       = {},
+  month         = {},
+  note          = {},
+}
+== BibTeX.booklet == below, noindent ==
+@booklet{<CURSOR>,
+  title         = {},
+  author        = {},
+  howpublished  = {},
+  address       = {},
+  month         = {},
+  year          = ,
+  note          = {},
+}
+== BibTeX.inbook == below, noindent ==
+@inbook{<CURSOR>,
+  author        = {},
+  editor        = {},
+  title         = {},
+  chapter       = {},
+  pages         = {},
+  publisher     = {},
+  year          = ,
+  volume        = {},
+  number        = {},
+  series        = {},
+  type          = {},
+  address       = {},
+  edition       = {},
+  month         = {},
+  note          = {},
+}
+== BibTeX.incollection == below, noindent ==
+@incollection{<CURSOR>,
+  author        = {},
+  title         = {},
+  booktitle     = {},
+  publisher     = {},
+  year          = ,
+  edition       = {},
+  volume        = {},
+  number        = {},
+  series        = {},
+  type          = {},
+  chapter       = {},
+  pages         = {},
+  address       = {},
+  edition       = {},
+  month         = {},
+  note          = {},
+}
+== BibTeX.inproceedings == below, noindent ==
+@inproceedings{<CURSOR>,
+  author        = {},
+  title         = {},
+  booktitle     = {},
+  year          = ,
+  editor        = {},
+  volume        = {},
+  number        = {},
+  series        = {},
+  pages         = {},
+  address       = {},
+  month         = {},
+  organization  = {},
+  publisher     = {},
+  note          = {},
+}
+== BibTeX.manual == below, noindent ==
+@manual{<CURSOR>,
+  title         = {},
+  author        = {},
+  organization  = {},
+  address       = {},
+  edition       = {},
+  month         = {},
+  year          = ,
+  note          = {},
+}
+== BibTeX.mastersthesis == below, noindent ==
+@mastersthesis{<CURSOR>,
+  author        = {},
+  title         = {},
+  school        = {},
+  year          = ,
+  type          = {},
+  address       = {},
+  month         = {},
+  note          = {},
+}
+== BibTeX.misc == below, noindent ==
+@misc{<CURSOR>,
+  author        = {},
+  title         = {},
+  howpublished  = {},
+  month         = {},
+  year          = ,
+  note          = {},
+}
+== BibTeX.phdthesis == below, noindent ==
+@phdthesis{<CURSOR>,
+  author        = {},
+  title         = {},
+  school        = {},
+  year          = ,
+  type          = {},
+  address       = {},
+  month         = {},
+  note          = {},
+}
+== BibTeX.proceedings == below, noindent ==
+@proceedings{<CURSOR>,
+  title         = {},
+  year          = ,
+  editor        = {},
+  volume        = {},
+  number        = {},
+  series        = {},
+  address       = {},
+  publisher     = {},
+  note          = {},
+  month         = {},
+  organization  = {},
+}
+== BibTeX.techreport == below, noindent ==
+@techreport{<CURSOR>,
+  author        = {},
+  title         = {},
+  institution   = {},
+  year          = ,
+  type          = {},
+  number        = {},
+  address       = {},
+  month         = {},
+  note          = {},
+}
+== BibTeX.unpublished == below, noindent ==
+@unpublished{<CURSOR>,
+  author        = {},
+  title         = {},
+  note          = {},
+  month         = {},
+  year          = ,
+}
+== ENDTEMPLATE ==

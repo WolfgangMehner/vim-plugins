@@ -1,0 +1,65 @@
+§ =============================================================
+§  Statements
+§ =============================================================
+
+§ -------------------------------------------------------------
+§  Assignment
+§ -------------------------------------------------------------
+
+== Statements.let variable == map:sv, sc:v ==
+let <CURSOR> = <+VAL+>
+== Statements.let list == map:sl, sc:l ==
+let <CURSOR> = [ <+VAL+>, <+VAL+> ]
+== Statements.let dictionary == map:sd, sc:d ==
+let <CURSOR> = {
+	<+KEY+>:<+VAL+>,
+	<+KEY+>:<+VAL+>,
+	<+KEY+>:<+VAL+>,
+	}
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Control
+§ -------------------------------------------------------------
+
+== Statements.for == map:sf, sc:f ==
+for <CURSOR> in <+LIST+>
+	<SPLIT><-LOOP_BODY->
+endfor
+== Statements.if, end == map:sif, sc:i ==
+if <CURSOR>
+	<SPLIT><-IF_PART->
+endif
+== Statements.if, else == map:sie, sc:i ==
+if <CURSOR>
+	<SPLIT><-IF_PART->
+else
+	<+ELSE_PART+>
+endif
+== Statements.elseif == map:sei, sc:e ==
+elseif <CURSOR>
+	<+ELSEIF_PART+>
+== Statements.else == map:sel, sc:e ==
+else
+	<CURSOR>
+== Statements.while == map:sw, sc:w ==
+while <CURSOR>
+	<SPLIT><-LOOP_BODY->
+endwhile
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Exception Handling
+§ -------------------------------------------------------------
+
+== Statements.try, catch == map:st, sc:t ==
+try
+	<CURSOR><SPLIT>
+catch //
+catch /.*/
+  echo "Internal error (" . v:exception . ")"
+  echo " - occurred at " . v:throwpoint
+finally 
+endtry
+== ENDTEMPLATE ==
+
