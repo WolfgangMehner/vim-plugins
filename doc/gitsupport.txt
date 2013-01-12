@@ -73,6 +73,7 @@ run the commands in every subdirectory of the project.
 	:GitCheckout [<param>]				(run) git checkout <param>
 	:GitCommit [<param>]					(run) git commit <param>
 	:GitCommitFile [<file>]				(run) git commit -F <file>
+	:GitCommitMerge								(run) git commit -F <base>/.git/MERGE_MSG
 	:GitCommitMsg <msg>						(run) git commit -m "<msg>"
 	:GitDiff [<param>]						(buf) git diff <param>
 	:GitFetch [<param>]						(run) git fetch <param>
@@ -225,7 +226,30 @@ line.
 
 Note The command :GitCommit currently can not be run without parameters.
      Supply the commit message using either the -m or -F options, or by using
-		 the other versions :GitCommitFile or :GitCommitMsg.
+     the other versions :GitCommitFile or :GitCommitMsg.
+
+                                                             *:GitCommitMerge*
+Commit a merge:
+
+	:GitCommitMerge ~
+
+This version commits changes from a merge conflict. It first looks for the
+base (toplevel) directory of the repository (<base>) and checks whether there
+is a file <base>/.git/MERGE_HEAD located there. Then the changes are committed
+via: >
+	git commit -F <base>/.git/MERGE_HEAD
+The file MERGE_HEAD contains the standard message for merges, which looks
+similar to this:
+>
+	Merge remote-tracking branch 'origin/master'
+    
+	Conflicts:
+	    somedir/thefile.txt
+<
+Note I do not know whether this is a "proper" usage of Git. However, it seems
+     to work and even the files in the .git/ directory which indicate the
+     merge conflict (MERGE_HEAD, MERGE_MSG, ...) are gone afterwards.
+
 
 Examples:
 

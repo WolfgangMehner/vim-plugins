@@ -58,16 +58,21 @@ function! s:ErrorMsg ( ... )
 endfunction    " ----------  end of function s:ErrorMsg  ----------
 "
 "-------------------------------------------------------------------------------
-" s:ImportantMsg : Print an important message.   {{{2
+" s:EscapeCurrent : Escape the name of the current file for the shell,   {{{2
+"     and prefix it with "--".
 "-------------------------------------------------------------------------------
 "
-function! s:ImportantMsg ( ... )
-	echohl Search
-	for line in a:000
-		echomsg line
-	endfor
-	echohl None
-endfunction    " ----------  end of function s:ImportantMsg  ----------
+function! s:EscapeCurrent ()
+	return '-- '.shellescape ( expand ( '%' ) )
+endfunction    " ----------  end of function s:EscapeCurrent  ----------
+"
+"-------------------------------------------------------------------------------
+" s:EscapeFile : Escape a file for usage on the shell.   {{{2
+"-------------------------------------------------------------------------------
+"
+function! s:EscapeFile ( file )
+	return shellescape ( a:file )
+endfunction    " ----------  end of function s:EscapeFile  ----------
 "
 "-------------------------------------------------------------------------------
 " s:GetGlobalSetting : Get a setting from a global variable.   {{{2
@@ -78,6 +83,35 @@ function! s:GetGlobalSetting ( varname )
 		exe 'let s:'.a:varname.' = g:'.a:varname
 	endif
 endfunction    " ----------  end of function s:GetGlobalSetting  ----------
+"
+"-------------------------------------------------------------------------------
+" s:GetRepoBase : Get the base directory of a repository.   {{{2
+"-------------------------------------------------------------------------------
+"
+function! s:GetRepoBase ()
+	"
+	let text = system ( s:Git_Executable.' rev-parse --show-toplevel' )
+	"
+	if v:shell_error == 0
+		return resolve ( substitute ( text, '\_s\+$', '', '' ) )   " remove whitespaces and end-of-line at the end of the string
+	else
+		echo "Can not query the base directory:\n\n".text
+		return ''
+	endif
+	"
+endfunction    " ----------  end of function s:GetRepoBase  ----------
+"
+"-------------------------------------------------------------------------------
+" s:ImportantMsg : Print an important message.   {{{2
+"-------------------------------------------------------------------------------
+"
+function! s:ImportantMsg ( ... )
+	echohl Search
+	for line in a:000
+		echomsg line
+	endfor
+	echohl None
+endfunction    " ----------  end of function s:ImportantMsg  ----------
 "
 "-------------------------------------------------------------------------------
 " s:VersionLess : Compare two version numbers.   {{{2
@@ -121,7 +155,7 @@ endfunction    " ----------  end of function s:VersionLess  ----------
 let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
-let s:SettingsEscChar = ' |"\'
+let s:CmdLineEscChar = ' |"\'
 if s:MSWIN
 	let s:FilenameEscChar = ''
 else
@@ -199,6 +233,7 @@ if s:Enabled
 	command!       -nargs=* -complete=file GitCheckout            :call GitS_Checkout('<args>','ce')
 	command!       -nargs=* -complete=file GitCommit              :call GitS_Commit('direct','<args>','c')
 	command!       -nargs=? -complete=file GitCommitFile          :call GitS_Commit('file','<args>','c')
+	command!       -nargs=0                GitCommitMerge         :call GitS_Commit('merge','','c')
 	command!       -nargs=+                GitCommitMsg           :call GitS_Commit('msg','<args>','c')
 	command!       -nargs=* -complete=file GitDiff                :call GitS_Diff('update','<args>')
 	command!       -nargs=*                GitFetch               :call GitS_Fetch('<args>','c')
@@ -207,7 +242,7 @@ if s:Enabled
 	command!       -nargs=*                GitMerge               :call GitS_Merge('<args>','c')
 	command!       -nargs=*                GitPull                :call GitS_Pull('<args>','c')
 	command!       -nargs=*                GitPush                :call GitS_Push('<args>','c')
-	command!       -nargs=*                GitRemote              :call GitS_Remote('<args>','c')
+	command!       -nargs=* -complete=file GitRemote              :call GitS_Remote('<args>','c')
 	command!       -nargs=* -complete=file GitRemove              :call GitS_Remove('<args>','ce')
 	command!       -nargs=* -complete=file GitRm                  :call GitS_Remove('<args>','ce')
 	command!       -nargs=* -complete=file GitReset               :call GitS_Reset('<args>','ce')
@@ -332,7 +367,7 @@ function! s:StandardRun( cmd, param, flags, ... )
 		return s:ErrorMsg ( 'Unknown flag "'.matchstr( a:flags, flag_check ).'".' )
 	endif
 	"
-	if a:flags =~ 'e' && empty( a:param ) | let param = '-- '.expand ( '%' )
+	if a:flags =~ 'e' && empty( a:param ) | let param = s:EscapeCurrent())
 	else                                  | let param = a:param
 	endif
 	"
@@ -370,7 +405,7 @@ function! GitS_Add( param, flags )
 		return s:ErrorMsg ( 'Unknown flag "'.matchstr( a:flags, '[^cef]' ).'".' )
 	endif
 	"
-	if a:flags =~ 'e' && empty( a:param ) | let param = '-- '.expand ( '%' )
+	if a:flags =~ 'e' && empty( a:param ) | let param = s:EscapeCurrent()
 	else                                  | let param = a:param
 	endif
 	"
@@ -511,9 +546,27 @@ function! GitS_Commit( mode, param, flags )
 	elseif a:mode == 'file'
 		"
 		" message from file
-		if empty( a:param ) | let cmd = s:Git_Executable.' commit -F '.expand ( '%' )
+		if empty( a:param ) | let cmd = s:Git_Executable.' commit -F '.s:EscapeFile( expand('%') )
 		else                | let cmd = s:Git_Executable.' commit -F '.a:param
 		endif
+		"
+	elseif a:mode == 'merge'
+		"
+		" message from ./.git/MERGE_MSG file
+		let file = s:GetRepoBase ()
+		"
+		" could not get base?
+		if file == '' | return | endif
+		"
+		let file .= '/.git/MERGE_MSG'
+		"
+		" could not readable?
+		if ! filereadable ( file )
+			echo "there does not seem to be a merge conflict (see :help GitCommitMerge)"
+			return
+		endif
+		"
+		let cmd = s:Git_Executable.' commit -F '.s:EscapeFile( file )
 		"
 	elseif a:mode == 'msg'
 		" message from command line
@@ -560,7 +613,7 @@ function! GitS_Diff( action, ... )
 	elseif a:action == 'update'
 		"
 		if a:0 == 0         | " run again with old parameters
-		elseif empty( a:1 ) | let param = '-- '.expand ( '%' )
+		elseif empty( a:1 ) | let param = s:EscapeCurrent()
 		else                | let param = a:1
 		endif
 		"
@@ -986,6 +1039,11 @@ function! s:Status_GetFile()
 		"
 	endif
 	"
+	if f_name =~ '^".\+"$'
+		let f_name = substitute ( f_name, '\_^"\|"\_$', '', 'g' )
+		let f_name = substitute ( f_name, '\\\(.\)', '\1', 'g' )
+	endif
+	"
 	return [ s_code, f_status, f_name ]
 	"
 endfunction    " ----------  end of function s:Status_GetFile  ----------
@@ -1016,27 +1074,29 @@ function! s:Status_FileAction( action )
 	"
 	" in section 'modified': action 'rm' only for status 'deleted'
 	"
+	let f_name_esc = '-- '.s:EscapeFile( f_name )
+	"
 	if a:action == 'edit'
 		"
 		" any section, action "edit"
 		belowright new
-		exe "edit ".escape( f_name, s:FilenameEscChar )
+		exe "edit ".escape( f_name, s:FilenameEscChar.s:CmdLineEscChar )
 		"
 	elseif s_code =~ '[bsmc]' && a:action == 'diff'
 		"
 		" section "staged", "modified" or "conflict", action "diff"
-		call GitS_Diff( 'update', '-- '.f_name )
+		call GitS_Diff( 'update', f_name_esc )
 		"
 	elseif s_code =~ '[bsmc]' && a:action == 'log'
 		"
 		" section "staged", "modified" or "conflict", action "log"
-		call GitS_Log( 'update', '-- '.f_name )
+		call GitS_Log( 'update', f_name_esc )
 		"
 	elseif s_code == 'i' && a:action == 'add'
 		"
 		" section "ignored", action "add"
 		if s:Question( 'Add ignored file "'.f_name.'"?', 'warning' ) == 1
-			call GitS_Add( '-- '.f_name, 'f' )
+			call GitS_Add( f_name_esc, 'f' )
 			return 1
 		endif
 		"
@@ -1044,7 +1104,7 @@ function! s:Status_FileAction( action )
 		"
 		" section "untracked", action "add"
 		if s:Question( 'Add untracked file "'.f_name.'"?' ) == 1
-			call GitS_Add( '-- '.f_name, '' )
+			call GitS_Add( f_name_esc, '' )
 			return 1
 		endif
 		"
@@ -1055,13 +1115,13 @@ function! s:Status_FileAction( action )
 		if f_status == 'modified' || f_status =~ '^.M$'
 			" add a modified file?
 			if s:Question( 'Add file "'.f_name.'"?' ) == 1
-				call GitS_Add( '-- '.f_name, '' )
+				call GitS_Add( f_name_esc, '' )
 				return 1
 			endif
 		elseif f_status == 'deleted' || f_status =~ '^.D$'
 			" add a deleted file? -> remove it?
 			if s:Question( 'Remove file "'.f_name.'"?' ) == 1
-				call GitS_Remove( '-- '.f_name, '' )
+				call GitS_Remove( f_name_esc, '' )
 				return 1
 			endif
 		else
@@ -1075,7 +1135,7 @@ function! s:Status_FileAction( action )
 		if f_status == 'modified' || f_status == 'deleted' || f_status =~ '^.[MD]$'
 			" check out a modified or deleted file?
 			if s:Question( 'Checkout file "'.f_name.'"?', 'warning' ) == 1
-				call GitS_Checkout( '-- '.f_name, '' )
+				call GitS_Checkout( f_name_esc, '' )
 				return 1
 			endif
 		else
@@ -1089,7 +1149,7 @@ function! s:Status_FileAction( action )
 		if f_status == 'modified' || f_status == 'new file' || f_status == 'deleted' || f_status =~ '^[MADRC].$'
 			" reset a modified, new or deleted file?
 			if s:Question( 'Reset file "'.f_name.'"?' ) == 1
-				call GitS_Reset( '-- '.f_name, '' )
+				call GitS_Reset( f_name_esc, '' )
 				return 1
 			endif
 		else
@@ -1100,7 +1160,7 @@ function! s:Status_FileAction( action )
 		"
 		" section "unmerged", action "add"
 		if s:Question( 'Add unmerged file "'.f_name.'"?' ) == 1
-			call GitS_Add( '-- '.f_name, '' )
+			call GitS_Add( f_name_esc, '' )
 			return 1
 		endif
 		"
@@ -1108,7 +1168,7 @@ function! s:Status_FileAction( action )
 		"
 		" section "unmerged", action "reset" -> "remove"
 		if s:Question( 'Remove unmerged file "'.f_name.'"?' ) == 1
-			call GitS_Remove( '-- '.f_name, '' )
+			call GitS_Remove( f_name_esc, '' )
 			return 1
 		endif
 		"
@@ -1294,6 +1354,7 @@ function! s:InitMenus()
 	exe ahead.'-Sep00-            :'
 	"
 	exe ahead.'commit,\ msg\ from\ &file<TAB>:GitCommitFile   :GitCommitFile<space>'
+	exe ahead.'commit,\ &msg\ from\ merge<TAB>:GitCommitMerge :GitCommitMerge<CR>'
 	exe ahead.'commit,\ &msg\ from\ cmdline<TAB>:GitCommitMsg :GitCommitMsg<space>'
 	"
 	" Open Buffers
