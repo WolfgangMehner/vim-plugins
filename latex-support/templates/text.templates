@@ -190,6 +190,8 @@ verbatim
 \text|PICK|<CURSOR>
 == ENDTEMPLATE ==
 
+== SEP: Text.sep1 == 
+
 § -------------------------------------------------------------
 §  Label, Reference
 § -------------------------------------------------------------
@@ -205,6 +207,8 @@ verbatim
 \label{<CURSOR>}
 == Text.marginpar == insert, map:tma ==
 \marginpar{<CURSOR>}
+== Text.newcommand == insert, map:tco ==
+\newcommand{<CURSOR>}[1]{<+definition+>}
 == Text.nocite == insert, map:tnc ==
 \nocite{<CURSOR>}
 == Text.pageref == insert, map:tpa ==

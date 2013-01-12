@@ -3,23 +3,22 @@
 § =============================================================
 
 == LIST: delimiter == dict ==
-	'Vert ∥'       : 'Vert',
-	'langle 〈'    : 'langle',
+	'langle ⟨'     : 'langle',
 	'lbrace {'     : 'lbrace',
 	'lbrack ['     : 'lbrack',
 	'lceil ⎡'      : 'lceil',
 	'lfloor ⎣'     : 'lfloor',
-	'rgroup )'     : 'rgroup',
-	'lgroup ⦗'     : 'lgroup',
+	'lgroup ('     : 'lgroup',
 	'lmoustache ⎰' : 'lmoustache',
-	'rangle 〉'    : 'rangle',
+	'rangle ⟩'     : 'rangle',
 	'rbrace }'     : 'rbrace',
 	'rbrack ]'     : 'rbrack',
 	'rceil ⎤'      : 'rceil',
 	'rfloor ⎦'     : 'rfloor',
-	'rgroup ('     : 'rgroup',
+	'rgroup )'     : 'rgroup',
 	'rmoustache ⎱' : 'rmoustache',
 	'vert ⎥'       : 'vert',
+	'Vert ǁ'       : 'Vert',
 == LIST: functions == dict ==
 	'arccos'  : 'arccos',
 	'arcsin'  : 'arcsin',
