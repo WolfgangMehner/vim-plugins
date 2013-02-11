@@ -2399,14 +2399,14 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 			exe ':'.s:t_runtime.range[1]
 			call s:OpenFold('below')
 			let pos1 = line(".")+1
-			put = text
+			silent put = text
 			let pos2 = line(".")
 			"
 		elseif placement == 'above'
 			"
 			exe ':'.s:t_runtime.range[0]
 			let pos1 = line(".")
-			put! = text
+			silent put! = text
 			let pos2 = line(".")
 			"
 		elseif placement == 'start'
@@ -2414,7 +2414,7 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 			exe ':1'
 			call s:OpenFold('start')
 			let pos1 = 1
-			put! = text
+			silent put! = text
 			let pos2 = line(".")
 			"
 		elseif placement == 'append' || placement == 'insert'
@@ -2423,7 +2423,7 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 				throw 'Template:Insert:insertion not available for a closed fold'
 			elseif placement == 'append'
 				let pos1 = line(".")
-				put = text
+				silent put = text
 				let pos2 = line(".")-1
 				exe ":".pos1
 				:join!
@@ -2492,8 +2492,8 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 			let pos1 = l1
 			let pos2 = l2 + len(split( text, '\n' )) - 1
 		elseif placement == 'below'
-			:'<put! = part[0]
-			:'>put  = part[1]
+			silent '<put! = part[0]
+			silent '>put  = part[1]
 			let pos1 = line("'<") - len(split( part[0], '\n' ))
 			let pos2 = line("'>") + len(split( part[1], '\n' ))
 		elseif placement =~ '^\%(start\|above\|append\)$'
@@ -2506,8 +2506,8 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 	"
 	" proper indenting
 	if indentation
-		exe ":".pos1
-		exe "normal ".( pos2-pos1+1 )."=="
+		silent exe ":".pos1
+		silent exe "normal ".( pos2-pos1+1 )."=="
 	endif
 	"
 	return [ pos1, pos2 ]
@@ -3071,20 +3071,20 @@ function! s:CreateTemplateMenus ( t_lib, root_menu, global_name, t_lib_name )
 		"
 		if entry == 1
 			" <Esc><Esc> prevents problems in insert mode
-			exe 'amenu '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'")<CR>'
-			exe 'imenu '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","i")<CR>'
+			exe 'amenu <silent> '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'")<CR>'
+			exe 'imenu <silent> '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","i")<CR>'
 			if visual == 1
-				exe 'vmenu '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","v")<CR>'
+				exe 'vmenu <silent> '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","v")<CR>'
 			endif
 		elseif entry == 2
 			call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, t_menu.t_last.map_entry, s:StandardPriority )
 			"
 			for item in s:GetPickList ( t_name )
 				let item_entry = compl_entry.'.'.substitute ( substitute ( escape ( item, ' .' ), '&', '\&\&', 'g' ), '\w', '\&&', '' )
-				exe 'amenu '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","pick",'.string(item).')<CR>'
-				exe 'imenu '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","i","pick",'.string(item).')<CR>'
+				exe 'amenu <silent> '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","pick",'.string(item).')<CR>'
+				exe 'imenu <silent> '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","i","pick",'.string(item).')<CR>'
 				if visual == 1
-					exe 'vmenu '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","v","pick",'.string(item).')<CR>'
+					exe 'vmenu <silent> '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","v","pick",'.string(item).')<CR>'
 				endif
 			endfor
 			"
@@ -3336,11 +3336,11 @@ function! mmtemplates#core#ChooseStyle ( library, style )
 	if style == ''
 		" noop
 	elseif -1 != index ( t_lib.styles, style )
-		if t_lib.current_style == style
-			echo 'Style stayed "'.style.'".'
-		else
+		if t_lib.current_style != style
 			let t_lib.current_style = style
 			echo 'Changed style to "'.style.'".'
+		elseif a:style == '!pick'
+			echo 'Style stayed "'.style.'".'
 		endif
 	else
 		call s:ErrorMsg ( 'Style was not changed. Style "'.style.'" is not available.' )
