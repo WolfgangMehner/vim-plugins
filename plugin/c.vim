@@ -17,7 +17,7 @@
 "
 "        Version:  see variable  g:C_Version  below
 "        Created:  04.11.2000
-"        License:  Copyright (c) 2000-2012, Fritz Mehner
+"        License:  Copyright (c) 2000-2013, Fritz Mehner
 "                  This program is free software; you can redistribute it and/or
 "                  modify it under the terms of the GNU General Public License as
 "                  published by the Free Software Foundation, version 2 of the
@@ -161,6 +161,7 @@ let s:C_RootMenu  	   				= '&C\/C\+\+.'           " the name of the root menu o
 let s:C_TypeOfH               = 'cpp'
 let s:C_Wrapper               = s:plugin_dir.'/c-support/scripts/wrapper.sh'
 let s:C_XtermDefaults         = '-fa courier -fs 12 -geometry 80x24'
+let s:C_Debugger              = "gdb"
 let s:C_GuiSnippetBrowser     = 'gui'										" gui / commandline
 let s:C_GuiTemplateBrowser    = 'gui'										" gui / explorer / commandline
 "
@@ -170,6 +171,7 @@ let s:C_SourceCodeExtensions  = 'c cc cp cxx cpp CPP c++ C i ii'
 let g:C_MapLeader							= '\'
 let s:C_CppcheckSeverity			= 'all'
 let s:C_InsertFileHeader			= 'yes'
+let s:C_NonCComment						= '#'
 "
 "------------------------------------------------------------------------------
 "
@@ -181,19 +183,17 @@ function! C_CheckGlobal ( name )
   endif
 endfunction    " ----------  end of function C_CheckGlobal ----------
 "
-call C_CheckGlobal('C_InsertFileHeader     ')
+call C_CheckGlobal('C_Debugger             ')
 call C_CheckGlobal('C_CCompiler            ')
 call C_CheckGlobal('C_CExtension           ')
 call C_CheckGlobal('C_CFlags               ')
-call C_CheckGlobal('C_LFlags               ')
-call C_CheckGlobal('C_Libs                 ')
-call C_CheckGlobal('C_CplusCFlags          ')
-call C_CheckGlobal('C_CplusLFlags          ')
-call C_CheckGlobal('C_CplusLibs            ')
 call C_CheckGlobal('C_CodeCheckExeName     ')
 call C_CheckGlobal('C_CodeCheckOptions     ')
 call C_CheckGlobal('C_CodeSnippets         ')
+call C_CheckGlobal('C_CplusCFlags          ')
 call C_CheckGlobal('C_CplusCompiler        ')
+call C_CheckGlobal('C_CplusLFlags          ')
+call C_CheckGlobal('C_CplusLibs            ')
 call C_CheckGlobal('C_CreateMenusDelayed   ')
 call C_CheckGlobal('C_Ctrl_j               ')
 call C_CheckGlobal('C_ExeExtension         ')
@@ -201,11 +201,15 @@ call C_CheckGlobal('C_GlobalTemplateFile   ')
 call C_CheckGlobal('C_GuiSnippetBrowser    ')
 call C_CheckGlobal('C_GuiTemplateBrowser   ')
 call C_CheckGlobal('C_IndentErrorLog       ')
+call C_CheckGlobal('C_InsertFileHeader     ')
+call C_CheckGlobal('C_LFlags               ')
+call C_CheckGlobal('C_Libs                 ')
 call C_CheckGlobal('C_LineEndCommColDefault')
 call C_CheckGlobal('C_LoadMenus            ')
 call C_CheckGlobal('C_LocalTemplateFile    ')
 call C_CheckGlobal('C_Man                  ')
 call C_CheckGlobal('C_MenuHeader           ')
+call C_CheckGlobal('C_NonCComment          ')
 call C_CheckGlobal('C_ObjExtension         ')
 call C_CheckGlobal('C_OutputGvim           ')
 call C_CheckGlobal('C_Printheader          ')
@@ -334,12 +338,19 @@ function! s:C_InitMenus ()
 	exe "amenu <silent> ".MenuComments.'.&set\ end-of-line\ com\.\ col\.<Tab>\\cs :call C_GetLineEndCommCol()<CR>'
 
 	exe "amenu  ".MenuComments.'.-SEP10-                              :'
-	exe "amenu <silent> ".MenuComments.'.code\ ->\ comment\ \/&*\ *\/<Tab>\\c*    :call C_CodeToCommentC()<CR>:nohlsearch<CR>j'
-	exe "vmenu <silent> ".MenuComments.'.code\ ->\ comment\ \/&*\ *\/<Tab>\\c*    :call C_CodeToCommentC()<CR>:nohlsearch<CR>j'
-	exe "amenu <silent> ".MenuComments.'.code\ ->\ comment\ &\/\/<Tab>\\cc        :call C_CodeToCommentCpp()<CR>:nohlsearch<CR>j'
-	exe "vmenu <silent> ".MenuComments.'.code\ ->\ comment\ &\/\/<Tab>\\cc        :call C_CodeToCommentCpp()<CR>:nohlsearch<CR>j'
-	exe "amenu <silent> ".MenuComments.'.c&omment\ ->\ code<Tab>\\co              :call C_CommentToCode()<CR>:nohlsearch<CR>'
-	exe "vmenu <silent> ".MenuComments.'.c&omment\ ->\ code<Tab>\\co              :call C_CommentToCode()<CR>:nohlsearch<CR>'
+	exe "amenu <silent> ".MenuComments.'.code\ ->\ comment\ \/&*\ *\/<Tab>\\c*      :call C_CodeToCommentC()<CR>:nohlsearch<CR>j'
+	exe "vmenu <silent> ".MenuComments.'.code\ ->\ comment\ \/&*\ *\/<Tab>\\c*      :call C_CodeToCommentC()<CR>:nohlsearch<CR>j'
+	exe "imenu <silent> ".MenuComments.'.code\ ->\ comment\ \/&*\ *\/<Tab>\\c* <C-C>:call C_CodeToCommentC()<CR>:nohlsearch<CR>j'
+	exe "amenu <silent> ".MenuComments.'.code\ ->\ comment\ &\/\/<Tab>\\cc          :call C_CodeToCommentCpp()<CR>:nohlsearch<CR>j'
+	exe "vmenu <silent> ".MenuComments.'.code\ ->\ comment\ &\/\/<Tab>\\cc          :call C_CodeToCommentCpp()<CR>:nohlsearch<CR>j'
+	exe "imenu <silent> ".MenuComments.'.code\ ->\ comment\ &\/\/<Tab>\\cc     <C-C>:call C_CodeToCommentCpp()<CR>:nohlsearch<CR>j'
+	exe "amenu <silent> ".MenuComments.'.c&omment\ ->\ code<Tab>\\co                :call C_CommentToCode()<CR>:nohlsearch<CR>'
+	exe "vmenu <silent> ".MenuComments.'.c&omment\ ->\ code<Tab>\\co                :call C_CommentToCode()<CR>:nohlsearch<CR>'
+	exe "imenu <silent> ".MenuComments.'.c&omment\ ->\ code<Tab>\\co           <C-C>:call C_CommentToCode()<CR>:nohlsearch<CR>'
+	" 
+  exe "amenu <silent> ".MenuComments.'.toggle\ &non-C\ comment<Tab>\\cn           :call C_NonCCommentToggle()<CR>j'
+	exe "vmenu <silent> ".MenuComments.'.toggle\ &non-C\ comment<Tab>\\cn           :call C_NonCCommentToggle()<CR>j'
+  exe "imenu <silent> ".MenuComments.'.toggle\ &non-C\ comment<Tab>\\cn      <C-C>:call C_NonCCommentToggle()<CR>j'
 
 	exe "amenu          ".MenuComments.'.-SEP0-                        :'
 	"
@@ -438,12 +449,14 @@ function! s:C_InitMenus ()
 	exe ihead.'&make<Tab>\\rm                               <C-C>:call C_Make()<CR>'
 	exe ahead.'&choose\ makefile<Tab>\\rcm                       :call C_ChooseMakefile()<CR>'
 	exe ihead.'&choose\ makefile<Tab>\\rcm                  <C-C>:call C_ChooseMakefile()<CR>'
-	exe ahead.'executable\ to\ run<Tab>\\rme                     :call C_ExeToRun()<CR>'
-	exe ihead.'executable\ to\ run<Tab>\\rme                <C-C>:call C_ExeToRun()<CR>'
 	exe ahead.'&make\ clean<Tab>\\rmc                            :call C_MakeClean()<CR>'
 	exe ihead.'&make\ clean<Tab>\\rmc                       <C-C>:call C_MakeClean()<CR>'
 	exe 'anoremenu '.s:MenuRun.'.cmd\.\ line\ ar&g\.\ for\ make<Tab>\\rma          :CMakeCmdlineArgs<Space>'
 	exe 'inoremenu '.s:MenuRun.'.cmd\.\ line\ ar&g\.\ for\ make<Tab>\\rma     <C-C>:CMakeCmdlineArgs<Space>'
+	exe ahead.'executable\ to\ run<Tab>\\re                      :call C_ExeToRun()<CR>'
+	exe ihead.'executable\ to\ run<Tab>\\re                 <C-C>:call C_ExeToRun()<CR>'
+	exe ahead.'run\ &debugger<Tab>\\rd                           :call C_Debugger()<CR>'
+	exe ihead.'run\ &debugger<Tab>\\rd                      <C-C>:call C_Debugger()<CR>'
 	"
 	exe ahead.'-SEP1-                            :'
 	"
@@ -838,6 +851,27 @@ function! C_CommentToggle () range
 		endif
 	endfor
 endfunction    " ----------  end of function C_CommentToggle  ----------
+"
+"===  FUNCTION  ================================================================
+"          NAME:  C_NonCCommentToggle     {{{1
+"   DESCRIPTION:  toggle comment
+"===============================================================================
+function! C_NonCCommentToggle ( ) range
+	let	comment=1									" 
+	for line in range( a:firstline, a:lastline )
+		if match( getline(line), '^\V'.s:C_NonCComment ) == -1					" no comment 
+			let comment = 0
+			break
+		endif
+	endfor
+
+	if comment == 0
+			exe a:firstline.','.a:lastline."s/^/".s:C_NonCComment."/"
+	else
+			exe a:firstline.','.a:lastline."s/^".s:C_NonCComment."//"
+	endif
+
+endfunction    " ----------  end of function C_NonCCommentToggle ----------
 "
 "=====================================================================================
 "----- Menu : Statements -----------------------------------------------------------
@@ -1703,9 +1737,76 @@ function! C_ExeToRun ()
 		if s:MSWIN
 			let s:C_ExecutableToRun = substitute(s:C_ExecutableToRun, '\\ ', ' ', 'g' )
 		endif
-		let	s:C_ExecutableToRun = escape( getcwd().'/', s:C_FilenameEscChar ).s:C_ExecutableToRun
+		let	s:C_ExecutableToRun = escape( getcwd().'/'.s:C_ExecutableToRun, s:C_FilenameEscChar )
 	endif
 endfunction    " ----------  end of function C_ExeToRun ----------
+"
+"
+"===  FUNCTION  ================================================================
+"          NAME:  C_Debugger     {{{1
+"   DESCRIPTION:  start debugger
+"    PARAMETERS:  -
+"       RETURNS:  
+"===============================================================================
+function! C_Debugger ()
+  "
+  silent exe  ":update"
+	if s:C_ExecutableToRun == ''
+		call C_ExeToRun()
+	endif
+  let l:arguments 	= exists("b:C_CmdLineArgs") ? " ".b:C_CmdLineArgs : ""
+  let l:switches    = exists("b:C_Switches") ? b:C_Switches.' ' : ""
+  "
+  if  s:MSWIN
+    let l:arguments = substitute( l:arguments, '^\s\+', ' ', '' )
+    let l:arguments = substitute( l:arguments, '\s\+', "\" \"", 'g')
+		let l:switches  = substitute( l:switches,  '^\s\+', ' ', '' )
+		let l:switches  = substitute( l:switches,  '\s\+', "\" \"", 'g')
+  endif
+  "
+  " debugger is 'gdb'
+  "
+  if s:C_Debugger == "gdb"
+    if  s:MSWIN
+      exe '!gdb  "'.s:C_ExecutableToRun.l:arguments.'"'
+    else
+      if has("gui_running") || &term == "xterm"
+     	 	silent exe "!xterm ".s:C_XtermDefaults.' -e gdb ' . l:switches . s:C_ExecutableToRun.l:arguments.' &'
+      else
+        silent exe '!clear; gdb ' . l:switches . s:C_ExecutableToRun.l:arguments
+      endif
+    endif
+  endif
+  "
+  if v:windowid != 0
+    "
+    " grapical debugger is 'kdbg', uses a PerlTk interface
+    "
+    if s:C_Debugger == "kdbg"
+      if  s:MSWIN
+				exe '!kdbg "'.s:C_ExecutableToRun.l:arguments.'"'
+      else
+        silent exe '!kdbg  '.s:C_ExecutableToRun.l:arguments.' &'
+      endif
+    endif
+    "
+    " debugger is 'ddd'  (not available for MS Windows); graphical front-end for GDB
+    "
+    if s:C_Debugger == "ddd" && !s:MSWIN
+      if !executable("ddd")
+        echohl WarningMsg
+        echo 'ddd does not exist or is not executable!'
+        echohl None
+        return
+      else
+        silent exe '!ddd '.s:C_ExecutableToRun.l:arguments.' &'
+      endif
+    endif
+    "
+  endif
+  "
+	redraw!
+endfunction   " ---------- end of function  C_Debugger  ----------
 "
 "------------------------------------------------------------------------------
 "  C_SplintArguments : splint command line arguments       {{{1
@@ -2468,15 +2569,22 @@ function! s:CreateAdditionalMaps ()
 
 	noremap    <buffer>  <silent>  <LocalLeader>c*         :call C_CodeToCommentC()<CR>:nohlsearch<CR>j
 	vnoremap   <buffer>  <silent>  <LocalLeader>c*         :call C_CodeToCommentC()<CR>:nohlsearch<CR>j
+	inoremap   <buffer>  <silent>  <LocalLeader>c*    <Esc>:call C_CodeToCommentC()<CR>:nohlsearch<CR>j
 
 	noremap    <buffer>  <silent>  <LocalLeader>cc         :call C_CodeToCommentCpp()<CR>:nohlsearch<CR>j
 	vnoremap   <buffer>  <silent>  <LocalLeader>cc         :call C_CodeToCommentCpp()<CR>:nohlsearch<CR>j
+	inoremap   <buffer>  <silent>  <LocalLeader>cc    <Esc>:call C_CodeToCommentCpp()<CR>:nohlsearch<CR>j
 	noremap    <buffer>  <silent>  <LocalLeader>co         :call C_CommentToCode()<CR>:nohlsearch<CR>
 	vnoremap   <buffer>  <silent>  <LocalLeader>co         :call C_CommentToCode()<CR>:nohlsearch<CR>
+	inoremap   <buffer>  <silent>  <LocalLeader>co    <Esc>:call C_CommentToCode()<CR>:nohlsearch<CR>
 	" 
-	noremap    <buffer>  <silent>  <LocalLeader>cx          :call C_CommentToggle( )<CR>
-	inoremap   <buffer>  <silent>  <LocalLeader>cx    <Esc>:call C_CommentToggle( )<CR>
+	 noremap   <buffer>  <silent>  <LocalLeader>cn         :call C_NonCCommentToggle( )<CR>
+	vnoremap   <buffer>  <silent>  <LocalLeader>cn         :call C_NonCCommentToggle( )<CR>
+	inoremap   <buffer>  <silent>  <LocalLeader>cn    <Esc>:call C_NonCCommentToggle( )<CR>
+	" 
+	 noremap   <buffer>  <silent>  <LocalLeader>cx         :call C_CommentToggle( )<CR>
 	vnoremap   <buffer>  <silent>  <LocalLeader>cx         :call C_CommentToggle( )<CR>
+	inoremap   <buffer>  <silent>  <LocalLeader>cx    <Esc>:call C_CommentToggle( )<CR>
 	" 
 	" ---------- statements menu  ------------------------------------------------
 	"
@@ -2565,8 +2673,10 @@ function! s:CreateAdditionalMaps ()
 	imap <buffer>  <silent>  <LocalLeader>rcm   <C-C>:call C_ChooseMakefile()<CR>
 	map  <buffer>  <silent>  <LocalLeader>rmc        :call C_MakeClean()<CR>
 	imap <buffer>  <silent>  <LocalLeader>rmc   <C-C>:call C_MakeClean()<CR>
-	map  <buffer>  <silent>  <LocalLeader>rme        :call C_ExeToRun()<CR>
-	imap <buffer>  <silent>  <LocalLeader>rme   <C-C>:call C_ExeToRun()<CR>
+	map  <buffer>  <silent>  <LocalLeader>rd         :call C_Debugger()<CR>
+	imap <buffer>  <silent>  <LocalLeader>rd    <C-C>:call C_Debugger()<CR>
+	map  <buffer>  <silent>  <LocalLeader>re         :call C_ExeToRun()<CR>
+	imap <buffer>  <silent>  <LocalLeader>re    <C-C>:call C_ExeToRun()<CR>
 	map  <buffer>            <LocalLeader>rma        :CMakeCmdlineArgs<Space>
 	imap <buffer>            <LocalLeader>rma   <C-C>:CMakeCmdlineArgs<Space>
 	map  <buffer>  <silent>  <LocalLeader>rp         :call C_SplintCheck()<CR>:call C_HlMessage()<CR>
