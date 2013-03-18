@@ -58,6 +58,51 @@ function! s:ErrorMsg ( ... )
 endfunction    " ----------  end of function s:ErrorMsg  ----------
 "
 "-------------------------------------------------------------------------------
+" s:ChangeCWD : Check the buffer and the CWD.   {{{2
+"
+" First check the current working directory:
+"   let data = s:CheckCWD ()
+" then jump to the Git buffer:
+"   call s:OpenManBuffer ( 'Git : <name>' )
+" then call this function to correctly set the directory of the buffer:
+"   call s:ChangeCWD ()
+"
+" The function s:ChangeCWD queries the working directory of the buffer your
+" starting out in, which is the buffer where you called the Git command. The
+" call to s:OpenManBuffer then opens the requested buffer or jumps to it if it
+" already exists. Finally, s:ChangeCWD sets the working directory of the Git
+" buffer.
+"-------------------------------------------------------------------------------
+"
+function! s:ChangeCWD ( data )
+	"
+	" call originated from outside the Git buffer?
+	" also the case for a new buffer
+	if bufnr('%') != a:data[0]
+		"echomsg '2 - call from outside: '.a:data[0]
+		let b:GitSupport_CWD = a:data[1]
+	else
+		"echomsg '2 - call from inside: '.bufnr('%')
+		" noop
+	endif
+	"
+	" change buffer
+	"echomsg '3 - changing to: '.b:GitSupport_CWD
+	exe	'lchdir '.escape( b:GitSupport_CWD, s:FilenameEscChar )
+endfunction    " ----------  end of function s:ChangeCWD  ----------
+"
+"-------------------------------------------------------------------------------
+" s:CheckCWD : Check the buffer and the CWD.   {{{2
+"
+" Usage: see s:ChangeCWD
+"-------------------------------------------------------------------------------
+"
+function! s:CheckCWD ()
+	"echomsg '1 - calling from: '.getcwd()
+	return [ bufnr('%'), getcwd() ]
+endfunction    " ----------  end of function s:CheckCWD  ----------
+"
+"-------------------------------------------------------------------------------
 " s:EscapeCurrent : Escape the name of the current file for the shell,   {{{2
 "     and prefix it with "--".
 "-------------------------------------------------------------------------------
@@ -237,7 +282,7 @@ if s:Enabled
 	command!       -nargs=+                GitCommitMsg           :call GitS_Commit('msg','<args>','c')
 	command!       -nargs=* -complete=file GitDiff                :call GitS_Diff('update','<args>')
 	command!       -nargs=*                GitFetch               :call GitS_Fetch('<args>','c')
-	command!       -nargs=?                GitHelp                :call GitS_Help('update','<args>')
+	command!       -nargs=*                GitHelp                :call GitS_Help('update','<args>')
 	command!       -nargs=* -complete=file GitLog                 :call GitS_Log('update','<args>')
 	command!       -nargs=*                GitMerge               :call GitS_Merge('<args>','c')
 	command!       -nargs=*                GitPull                :call GitS_Pull('<args>','c')
@@ -537,11 +582,34 @@ function! GitS_Commit( mode, param, flags )
 		if empty ( a:param )
 			return s:ErrorMsg ( 'The command :GitCommit currently can not be used this way.',
 						\ 'Please supply the message using either the -m or -F options,',
-						\ 'or by using the special commands :GitCommitFile or :GitCommitMsg.' )
+						\ 'or by using the special commands :GitCommitFile, :GitCommitMerge or :GitCommitMsg.' )
+" 			"
+" 			" get ./.git/COMMIT_EDITMSG file
+" 			let file = s:GetRepoBase ()
+" 			"
+" 			" could not get base?
+" 			if file == '' | return | endif
+" 			"
+" 			let file .= '/.git/COMMIT_EDITMSG'
+" 			"
+" 			" not readable?
+" 			if ! filereadable ( file )
+" 				echo 'could not read the file ".git/COMMIT_EDITMSG"'
+" 				return
+" 			endif
+" 			"
+" 			" open new buffer
+" 			belowright new
+" 			exe "edit ".escape( file, s:FilenameEscChar.s:CmdLineEscChar )
+" 			"
+" 			return
+" 			"
+		else
+			"
+			" commit ...
+			let cmd = s:Git_Executable.' commit '.a:param
+			"
 		endif
-		"
-		" commit ...
-		let cmd = s:Git_Executable.' commit '.a:param
 		"
 	elseif a:mode == 'file'
 		"
@@ -560,12 +628,14 @@ function! GitS_Commit( mode, param, flags )
 		"
 		let file .= '/.git/MERGE_MSG'
 		"
-		" could not readable?
+		" not readable?
 		if ! filereadable ( file )
-			echo "there does not seem to be a merge conflict (see :help GitCommitMerge)"
+			echo 'could not read the file ".git/MERGE_MSG" /'
+						\ .' there does not seem to be a merge conflict (see :help GitCommitMerge)'
 			return
 		endif
 		"
+		" commit
 		let cmd = s:Git_Executable.' commit -F '.s:EscapeFile( file )
 		"
 	elseif a:mode == 'msg'
@@ -600,8 +670,6 @@ endfunction    " ----------  end of function GitS_Commit  ----------
 "
 function! GitS_Diff( action, ... )
 	"
-	" TODO: change working directories
-	"
 	let param = ''
 	"
 	if a:action == 'help'
@@ -622,11 +690,11 @@ function! GitS_Diff( action, ... )
 		return
 	endif
 	"
+	let buf = s:CheckCWD ()
+	"
 	if s:OpenManBuffer ( 'Git : diff' )
 		"
 		let b:GitSupport_DiffFlag = 1
-		"
-		let b:GitSupport_CWD = getcwd ()
 		"
 		setlocal filetype=gitsstatus
 		"
@@ -634,6 +702,8 @@ function! GitS_Diff( action, ... )
 		exe 'nmap <silent> <buffer> q      :call GitS_Diff("quit")<CR>'
 		exe 'nmap <silent> <buffer> u      :call GitS_Diff("update")<CR>'
 	endif
+	"
+	call s:ChangeCWD ( buf )
 	"
 	if a:0 == 0
 		let param = b:GitSupport_Param
@@ -756,8 +826,6 @@ endfunction    " ----------  end of function GitS_LogFold  ----------
 "
 function! GitS_Log( action, ... )
 	"
-	" TODO: change working directories
-	"
 	let param = ''
 	"
 	if a:action == 'help'
@@ -778,6 +846,8 @@ function! GitS_Log( action, ... )
 		return
 	endif
 	"
+	let buf = s:CheckCWD ()
+	"
 	if s:OpenManBuffer ( 'Git : log' )
 		"
 		let b:GitSupport_LogFlag = 1
@@ -789,6 +859,8 @@ function! GitS_Log( action, ... )
 		exe 'nmap <silent> <buffer> q      :call GitS_Log("quit")<CR>'
 		exe 'nmap <silent> <buffer> u      :call GitS_Log("update")<CR>'
 	endif
+	"
+	call s:ChangeCWD ( buf )
 	"
 	if a:0 == 0
 		let param = b:GitSupport_Param
@@ -1190,10 +1262,6 @@ endfunction    " ----------  end of function s:Status_FileAction  ----------
 "
 function! GitS_Status( action )
 	"
-	" TODO: fix changing of working directory
-	"
-	let newCWD = ''
-	"
 	if a:action == 'help'
 		let txt  = s:HelpTxtStd."\n\n"
 		let txt .= "i       : toggle \"show ignored files\"\n"
@@ -1213,7 +1281,7 @@ function! GitS_Status( action )
 		close
 		return
 	elseif a:action == 'update'
-		let newCWD = getcwd ()
+		" noop
 	elseif a:action == 'ignored'
 		if ! s:HasStatusIgnore
 			call s:ErrorMsg ( '"show ignored files" not available in Git version '.s:GitVersion.'.' )
@@ -1237,14 +1305,14 @@ function! GitS_Status( action )
 		return
 	endif
 	"
+	let buf = s:CheckCWD ()
+	"
 	if s:OpenManBuffer ( 'Git : status' )
 		"
 		let b:GitSupport_StatusFlag = 1
 		let b:GitSupport_IgnoredOption    = 0
 		let b:GitSupport_ShortOption      = 0
 		let b:GitSupport_VerboseOption    = 0
-		"
-		let b:GitSupport_CWD = getcwd ()
 		"
 		setlocal filetype=gitsstatus
 		"
@@ -1265,11 +1333,10 @@ function! GitS_Status( action )
 		"
 	endif
 	"
+	call s:ChangeCWD ( buf )
+	"
 	if a:action == 'update'
-		if newCWD != b:GitSupport_CWD
-			exe	'lchdir '.escape( newCWD, s:FilenameEscChar )
-			let b:GitSupport_CWD = getcwd ()
-		endif
+		" noop
 	elseif a:action == 'ignored'
 		let b:GitSupport_IgnoredOption = ( b:GitSupport_IgnoredOption + 1 ) % 2
 	elseif a:action == 'short'
@@ -1353,9 +1420,9 @@ function! s:InitMenus()
 	exe ahead.'Specials<TAB>Git   :echo "This is a menu header!"<CR>'
 	exe ahead.'-Sep00-            :'
 	"
-	exe ahead.'commit,\ msg\ from\ &file<TAB>:GitCommitFile   :GitCommitFile<space>'
-	exe ahead.'commit,\ &msg\ from\ merge<TAB>:GitCommitMerge :GitCommitMerge<CR>'
-	exe ahead.'commit,\ &msg\ from\ cmdline<TAB>:GitCommitMsg :GitCommitMsg<space>'
+	exe ahead.'&commit,\ msg\ from\ file<TAB>:GitCommitFile   :GitCommitFile<space>'
+	exe ahead.'&commit,\ msg\ from\ merge<TAB>:GitCommitMerge :GitCommitMerge<CR>'
+	exe ahead.'&commit,\ msg\ from\ cmdline<TAB>:GitCommitMsg :GitCommitMsg<space>'
 	"
 	" Open Buffers
 	let ahead = 'amenu '.s:Git_RootMenu.'.'

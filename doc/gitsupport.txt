@@ -53,7 +53,7 @@ All commands are listed in a menu "Git". It provides convenient access to all
 the commands and gives an overview of the plug-in's functionality.
 
 The next chapter |gitsupport-overview| gives an overview of the plug-in, fol-
-lowed by a detailed description of the commands in |gitsupport-commands|.  The
+lowed by a detailed description of the commands in |gitsupport-commands|. The
 customization of the syntax highlighting is explained in |gitsupport-syntax|.
 The chapter |gitsupport-configuration| documents further configurations.
 
@@ -77,7 +77,7 @@ run the commands in every subdirectory of the project.
 	:GitCommitMsg <msg>						(run) git commit -m "<msg>"
 	:GitDiff [<param>]						(buf) git diff <param>
 	:GitFetch [<param>]						(run) git fetch <param>
-	:GitHelp [<command>]					(buf) git help <command>
+	:GitHelp [<param>]						(buf) git help <param>
 	:GitLog [<param>]							(buf) git log <param>
 	:GitMerge [<param>]						(run) git merge <param>
 	:GitPull [<param>]						(run) git pull <param>
@@ -301,7 +301,7 @@ Executes "git fetch ...".
 
 ------------------------------------------------------------------------------
                                                                     *:GitHelp*
-	:GitHelp [<command>] ~
+	:GitHelp [<param>] ~
 
 Opens a buffer containing the help for one of Git's commands. If no command is
 given, opens the help for Git itself.
@@ -314,7 +314,7 @@ given, opens the help for Git itself.
 
 Example:
 
-Show the help for the add command
+Show the help for the add command >
 	:GitHelp add
 Is equivalent to: >
 	git help add
@@ -372,7 +372,7 @@ URLs. The second version executes "git remote ...".
 	:GitRemove [<param>] ~
 	:GitRm [<param>] ~
 
-Both versions behave the same.  Executes "git rm ...". If no parameters are
+Both versions behave the same. Executes "git rm ...". If no parameters are
 given, removes the current buffer.
 
 Example:
