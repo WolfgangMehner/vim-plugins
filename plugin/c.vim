@@ -62,7 +62,7 @@ let s:C_LocalTemplateFile		= ''
 let s:C_LocalTemplateDir		= ''
 let s:C_FilenameEscChar 		= ''
 
-let s:C_ToolboxDir  				= []
+let s:C_ToolboxDir					= []
 
 if	s:MSWIN
   " ==========  MS Windows  ======================================================
@@ -76,9 +76,7 @@ if	s:MSWIN
 		let s:plugin_dir  					= substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
 		let s:C_LocalTemplateFile		= s:plugin_dir.'/c-support/templates/Templates'
 		let s:C_LocalTemplateDir		= fnamemodify( s:C_LocalTemplateFile, ":p:h" ).'/'
-		let s:C_ToolboxDir		     += [
-					\	s:plugin_dir.'/autoload/mmtoolbox/common/',
-					\	s:plugin_dir.'/autoload/mmtoolbox/c/' ]
+		let s:C_ToolboxDir				 += [ s:plugin_dir.'/autoload/mmtoolbox/' ]
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
@@ -88,11 +86,9 @@ if	s:MSWIN
 		let s:C_GlobalTemplateFile  = s:C_GlobalTemplateDir.'/Templates'
 		let s:C_LocalTemplateFile		= $HOME.'/vimfiles/c-support/templates/Templates'
 		let s:C_LocalTemplateDir		= fnamemodify( s:C_LocalTemplateFile, ":p:h" ).'/'
-		let s:C_ToolboxDir		     += [
-					\	s:plugin_dir.'/autoload/mmtoolbox/common/',
-					\	s:plugin_dir.'/autoload/mmtoolbox/c/',
-					\	$HOME.'/vimfiles/autoload/mmtoolbox/common/',
-					\	$HOME.'/vimfiles/autoload/mmtoolbox/c/' ]
+		let s:C_ToolboxDir				 += [
+					\	s:plugin_dir.'/autoload/mmtoolbox/',
+					\	$HOME.'/vimfiles/autoload/mmtoolbox/' ]
 	endif
 	"
   let s:C_FilenameEscChar 			= ''
@@ -106,9 +102,7 @@ else
 		let s:plugin_dir 						= expand('<sfile>:p:h:h')
 		let s:C_LocalTemplateFile		= s:plugin_dir.'/c-support/templates/Templates'
 		let s:C_LocalTemplateDir		= fnamemodify( s:C_LocalTemplateFile, ":p:h" ).'/'
-		let s:C_ToolboxDir		     += [
-					\	s:plugin_dir.'/autoload/mmtoolbox/common/',
-					\	s:plugin_dir.'/autoload/mmtoolbox/c/' ]
+		let s:C_ToolboxDir				 += [ s:plugin_dir.'/autoload/mmtoolbox/' ]
 	else
 		" SYSTEM WIDE INSTALLATION
 		let g:C_Installation				= 'system'
@@ -117,11 +111,9 @@ else
 		let s:C_GlobalTemplateFile  = s:C_GlobalTemplateDir.'/Templates'
 		let s:C_LocalTemplateFile		= $HOME.'/.vim/c-support/templates/Templates'
 		let s:C_LocalTemplateDir		= fnamemodify( s:C_LocalTemplateFile, ":p:h" ).'/'
-		let s:C_ToolboxDir		     += [
-					\	s:plugin_dir.'/autoload/mmtoolbox/common/',
-					\	s:plugin_dir.'/autoload/mmtoolbox/c/',
-					\	$HOME.'/.vim/autoload/mmtoolbox/common/',
-					\	$HOME.'/.vim/autoload/mmtoolbox/c/' ]
+		let s:C_ToolboxDir				 += [
+					\	s:plugin_dir.'/autoload/mmtoolbox/',
+					\	$HOME.'/.vim/autoload/mmtoolbox/' ]
 	endif
 	"
   let s:C_FilenameEscChar 			= ' \%#[]'
@@ -182,6 +174,7 @@ let s:C_XtermDefaults         = '-fa courier -fs 12 -geometry 80x24'
 let s:C_GuiSnippetBrowser     = 'gui'										" gui / commandline
 let s:C_GuiTemplateBrowser    = 'gui'										" gui / explorer / commandline
 let s:C_UseToolbox            = 'yes'
+let s:C_UseTool_cmake         = 'yes'
 "
 let s:C_Ctrl_j								= 'on'
 "
@@ -342,7 +335,9 @@ function! s:C_InitMenus ()
 	" the other, automatically created menus go here; their priority is the standard priority 500
 	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', 'S&nippets', 'priority', 600 )
 	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Run'     , 'priority', 700 )
-	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Tool Box', 'priority', 800 )
+	if s:C_UseToolbox == 'yes' && mmtoolbox#tools#Property ( s:C_Toolbox, 'empty-menu' ) == 0
+		call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Tool Box', 'priority', 800 )
+	endif
 	call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', '&Help'    , 'priority', 900 )
 	"
 	"===============================================================================================
@@ -525,7 +520,7 @@ function! s:C_InitMenus ()
 	"----- Menu : Tools -----------------------------------------------------   {{{2
 	"===============================================================================================
 	"
-	if s:C_UseToolbox == 'yes'
+	if s:C_UseToolbox == 'yes' && mmtoolbox#tools#Property ( s:C_Toolbox, 'empty-menu' ) == 0
 		call mmtoolbox#tools#AddMenus ( s:C_Toolbox, s:C_RootMenu.'&Tool\ Box' )
 	endif
 	"
@@ -2657,7 +2652,7 @@ endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 "
 if s:C_UseToolbox == 'yes'
 	"
-	let s:C_Toolbox = mmtoolbox#tools#NewToolbox ()
+	let s:C_Toolbox = mmtoolbox#tools#NewToolbox ( 'C' )
 	call mmtoolbox#tools#Property ( s:C_Toolbox, 'mapleader', g:C_MapLeader )
 	"
 	call mmtoolbox#tools#Load ( s:C_Toolbox, s:C_ToolboxDir )

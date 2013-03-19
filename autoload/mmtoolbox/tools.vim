@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Toolbox_Version below
 "       Created:  29.12.2012
-"      Revision:  ---
+"      Revision:  19.03.2013
 "       License:  Copyright (c) 2012, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -66,17 +66,41 @@ function! s:GetGlobalSetting ( varname )
 		exe 'let s:'.a:varname.' = g:'.a:varname
 	endif
 endfunction    " ----------  end of function s:GetGlobalSetting  ----------
+"
+"-------------------------------------------------------------------------------
+" s:GetToolConfig : Get the configuration for from a global variable.   {{{2
+"-------------------------------------------------------------------------------
+function! s:GetToolConfig ( plugin, tool )
+	let name = 'g:'.a:plugin.'_UseTool_'.a:tool
+	if exists ( name )
+		exe 'let res = '.name
+	else
+		let res = 'no'
+	endif
+	return res
+endfunction    " ----------  end of function s:GetToolConfig  ----------
 " }}}2
 "
 "-------------------------------------------------------------------------------
 " NewToolbox : Create a new toolbox.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#tools#NewToolbox ()
+function! mmtoolbox#tools#NewToolbox ( plugin )
 	"
+	" properties:
+	" - plugin    : the name (id) if the plugin
+	" - mapleader : only required for menu creation,
+	"               for map creation, the current mapleader/maplocalleader is
+	"               used, it must already be set accordingly
+	" - tools     : dictionary holding the meta information about the tools
+	"               associates: name -> info
+	" - names     : the names of all the tools, sorted alphabetically
+	" - n_menu    : the number of tools which create a menu
 	let toolbox = {
-				\	'mapleader' : '\',
+				\ 'plugin'    : a:plugin,
+				\ 'mapleader' : '\',
 				\ 'tools'     : {},
 				\ 'names'     : [],
+				\ 'n_menu'    : 0,
 				\	}
 	"
 	return toolbox
@@ -91,7 +115,11 @@ function! mmtoolbox#tools#Load ( toolbox, directories )
 	" check the parameters
 	if type( a:toolbox ) != type( {} )
 		return s:ErrorMsg ( 'Argument "toolbox" must be given as a dict.' )
+	elseif type( a:directories ) != type( [] )
+		return s:ErrorMsg ( 'Argument "directories" must be given as a list.' )
 	endif
+	"
+	let a:toolbox.n_menu = 0
 	"
 	" go through all directories
 	for dir in a:directories
@@ -105,20 +133,27 @@ function! mmtoolbox#tools#Load ( toolbox, directories )
 		for file in split( glob (dir.'/*.vim'), '\n' )
 			"
 			" the name is the basename of the file
-			" the category is the last directory
 			let name = fnamemodify( file, ':t:r' )
-			let cat = fnamemodify( file, ':p:h:t' )
+			"
+			" do not process 'tools.vim' (this script)
+			if name == 'tools'
+				continue
+			endif
+			"
+			" check whether to use the tool
+			if s:GetToolConfig ( a:toolbox.plugin, name ) != 'yes'
+				continue
+			endif
 			"
 			" try to load and initialize
 			try
 				" 
 				" call the init function
-				exe 'let retlist = mmtoolbox#'.cat.'#'.name.'#Init()'
+				exe 'let retlist = mmtoolbox#'.name.'#Init()'
 				"
 				" assemble the entry
 				let entry = {
 							\	"name"       : name,
-							\	"cat"        : cat,
 							\	"prettyname" : retlist[0],
 							\	"version"    : retlist[1],
 							\	"enabled"    : 1,
@@ -139,6 +174,10 @@ function! mmtoolbox#tools#Load ( toolbox, directories )
 				" save the entry
 				let a:toolbox.tools[ name ] = entry
 				call add ( a:toolbox.names, name )
+				"
+				if entry.enabled && entry.domenu
+					let a:toolbox.n_menu += 1
+				endif
 				"
 			catch /.*/
 				" could not load the plugin: ?
@@ -172,6 +211,12 @@ function! mmtoolbox#tools#Property ( toolbox, property, ... )
 	" check the property
 	if a:property == 'mapleader'
 		" ok
+" 	elseif a:property == 'empty-menu'
+" 		if a:0 > 0
+" 			return s:ErrorMsg ( 'Can not set the property: '.a:property )
+" 		endif
+	elseif a:property == 'empty-menu'
+		return a:toolbox.n_menu == 0
 	else
 		return s:ErrorMsg ( 'Unknown property: '.a:property )
 	endif
@@ -228,8 +273,6 @@ function! mmtoolbox#tools#Info ( toolbox )
 		"
 		let line  = entry.prettyname." (".entry.version."), "
 		let line .= repeat ( " ", 25-len(line) )
-		let line .= "category: ".entry.cat." / "
-		let line .= repeat ( " ", 45-len(line) )
 		if entry.enabled | let line .= "enabled,  "
 		else             | let line .= "disabled, " | endif
 		if entry.domenu  | let line .= "menu,   "
@@ -263,7 +306,7 @@ function! mmtoolbox#tools#AddMaps ( toolbox )
 		"
 		try
 			" try to create the maps
-			exe 'call mmtoolbox#'.entry.cat.'#'.entry.name.'#AddMaps()'
+			exe 'call mmtoolbox#'.entry.name.'#AddMaps()'
 		catch /.*/
 			" could not load the plugin: ?
 			call s:ErrorMsg ( "Could not create maps for the tool \"".name."\" (".v:exception.")",
@@ -289,7 +332,7 @@ function! mmtoolbox#tools#AddMenus ( toolbox, root )
 	" correctly escape the mapleader
 	if ! empty ( a:toolbox.mapleader )   | let mleader = a:toolbox.mapleader
 	elseif exists ( 'g:maplocalleader' ) | let mleader = g:maplocalleader
-	else                                 | let mleader = 't'
+	else                                 | let mleader = '\'
 	endif
 	let mleader = escape ( mleader, ' .|\' )
 	let mleader = substitute ( mleader, '\V&', '\&&', 'g' )
@@ -316,7 +359,7 @@ function! mmtoolbox#tools#AddMenus ( toolbox, root )
 		"
 		try
 			" try to create the menu
-			exe 'call mmtoolbox#'.entry.cat.'#'.entry.name.'#AddMenu('.string( menu_root ).',mleader)'
+			exe 'call mmtoolbox#'.entry.name.'#AddMenu('.string( menu_root ).',mleader)'
 		catch /.*/
 			" could not load the plugin: ?
 			call s:ErrorMsg ( "Could not create maps for the tool \"".name."\" (".v:exception.")",

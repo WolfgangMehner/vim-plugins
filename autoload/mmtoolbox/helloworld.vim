@@ -58,7 +58,7 @@ let s:WorldAvailable = 1
 "-------------------------------------------------------------------------------
 " Init : Initialize the script.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#c#helloworld#Init ()
+function! mmtoolbox#helloworld#Init ()
 	"
 	" returns [ <prettyname>, <version>, <flag1>, ... ]
 	"
@@ -69,12 +69,12 @@ function! mmtoolbox#c#helloworld#Init ()
 	else
 		return [ 'Hello World', g:HelloWorld_Version, 'disabled' ]
 	endif
-endfunction    " ----------  end of function mmtoolbox#c#helloworld#Init  ----------
+endfunction    " ----------  end of function mmtoolbox#helloworld#Init  ----------
 "
 "-------------------------------------------------------------------------------
 " AddMaps : Add maps.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#c#helloworld#AddMaps ()
+function! mmtoolbox#helloworld#AddMaps ()
 	"
 	" create maps for the current buffer only
 	"
@@ -82,12 +82,12 @@ function! mmtoolbox#c#helloworld#AddMaps ()
 	"
 	" TODO
 	"
-endfunction    " ----------  end of function mmtoolbox#c#helloworld#AddMaps  ----------
+endfunction    " ----------  end of function mmtoolbox#helloworld#AddMaps  ----------
 "
 "-------------------------------------------------------------------------------
 " AddMenu : Add menus.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#c#helloworld#AddMenu ( root, mapleader )
+function! mmtoolbox#helloworld#AddMenu ( root, mapleader )
 	"
 	" create menus using the given 'root'
 	"
@@ -95,7 +95,7 @@ function! mmtoolbox#c#helloworld#AddMenu ( root, mapleader )
 	"
 	" TODO
 	"
-endfunction    " ----------  end of function mmtoolbox#c#helloworld#AddMenu  ----------
+endfunction    " ----------  end of function mmtoolbox#helloworld#AddMenu  ----------
 "
 " =====================================================================================
 "  vim: foldmethod=marker

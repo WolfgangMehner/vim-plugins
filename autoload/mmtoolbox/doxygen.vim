@@ -104,15 +104,15 @@ let s:ErrorFormat = escape( '%f:%l: %m', s:SettingsEscChar )
 " custom commands {{{2
 "
 if s:Enabled == 1
-	command!       -nargs=? -complete=file DoxygenConfigFile :call mmtoolbox#common#doxygen#Property('config-file','<args>')
-	command!       -nargs=? -complete=file DoxygenLogFile    :call mmtoolbox#common#doxygen#Property('log-file','<args>')
-	command!       -nargs=? -complete=file DoxygenErrorFile  :call mmtoolbox#common#doxygen#Property('error-file','<args>')
-	command!       -nargs=? -complete=file DoxygenEditConfig :call mmtoolbox#common#doxygen#EditConfig()
-	command!       -nargs=0                DoxygenErrors     :call mmtoolbox#common#doxygen#Errors()
+	command!       -nargs=? -complete=file DoxygenConfigFile :call mmtoolbox#doxygen#Property('config-file','<args>')
+	command!       -nargs=? -complete=file DoxygenLogFile    :call mmtoolbox#doxygen#Property('log-file','<args>')
+	command!       -nargs=? -complete=file DoxygenErrorFile  :call mmtoolbox#doxygen#Property('error-file','<args>')
+	command!       -nargs=? -complete=file DoxygenEditConfig :call mmtoolbox#doxygen#EditConfig()
+	command!       -nargs=0                DoxygenErrors     :call mmtoolbox#doxygen#Errors()
 else
 	"
 	" Disabled : Print why the script is disabled.   {{{3
-	function! mmtoolbox#common#doxygen#Disabled ()
+	function! mmtoolbox#doxygen#Disabled ()
 		let txt = "Doxygen tool not working:\n"
 		if ! executable ( s:Doxygen_Executable )
 			let txt .= "Doxygen not executable (".s:Doxygen_Executable.")"
@@ -123,10 +123,10 @@ else
 		echo txt
 		echohl None
 		return
-	endfunction    " ----------  end of function mmtoolbox#common#doxygen#Disabled  ----------
+	endfunction    " ----------  end of function mmtoolbox#doxygen#Disabled  ----------
 	" }}}3
 	"
-	command! -nargs=* DoxygenHelp :call mmtoolbox#common#doxygen#Disabled()
+	command! -nargs=* DoxygenHelp :call mmtoolbox#doxygen#Disabled()
 	"
 endif
 "
@@ -135,35 +135,35 @@ endif
 "-------------------------------------------------------------------------------
 " Init : Initialize the script.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#common#doxygen#Init ()
+function! mmtoolbox#doxygen#Init ()
 	if s:Enabled
 		return [ 'Doxygen', g:Doxygen_Version ]
 	else
 		return [ 'Doxygen', g:Doxygen_Version, 'disabled' ]
 	endif
-endfunction    " ----------  end of function mmtoolbox#common#doxygen#Init  ----------
+endfunction    " ----------  end of function mmtoolbox#doxygen#Init  ----------
 "
 "-------------------------------------------------------------------------------
 " AddMaps : Add maps.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#common#doxygen#AddMaps ()
-endfunction    " ----------  end of function mmtoolbox#common#doxygen#AddMaps  ----------
+function! mmtoolbox#doxygen#AddMaps ()
+endfunction    " ----------  end of function mmtoolbox#doxygen#AddMaps  ----------
 "
 "-------------------------------------------------------------------------------
 " AddMenu : Add menus.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#common#doxygen#AddMenu ( root, mapleader )
+function! mmtoolbox#doxygen#AddMenu ( root, mapleader )
 	"
 	" TODO
 	"
 	exe 'amenu '.a:root.'.&error\ file<Tab>:DoxygenErrorFile  :DoxygenErrorFile '
 	"
-endfunction    " ----------  end of function mmtoolbox#common#doxygen#AddMenu  ----------
+endfunction    " ----------  end of function mmtoolbox#doxygen#AddMenu  ----------
 "
 "-------------------------------------------------------------------------------
 " Property : Various settings.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#common#doxygen#Property ( key, val )
+function! mmtoolbox#doxygen#Property ( key, val )
 	"
 	" check argument
 	if a:key == 'config-file'    | let var = 's:ConfigFile'
@@ -179,7 +179,7 @@ function! mmtoolbox#common#doxygen#Property ( key, val )
 	else           | exe 'let '.var.' = fnamemodify( expand( a:val ), ":p" )'
 	endif
 	"
-endfunction    " ----------  end of function mmtoolbox#common#doxygen#Property  ----------
+endfunction    " ----------  end of function mmtoolbox#doxygen#Property  ----------
 "
 "-------------------------------------------------------------------------------
 " Modul setup.   {{{1
@@ -191,29 +191,29 @@ endif
 "-------------------------------------------------------------------------------
 " GenerateConfig : Generate a Doxygen configuration file.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#common#doxygen#GenerateConfig ()
+function! mmtoolbox#doxygen#GenerateConfig ()
 	" TODO
-endfunction    " ----------  end of function mmtoolbox#common#doxygen#GenerateConfig  ----------
+endfunction    " ----------  end of function mmtoolbox#doxygen#GenerateConfig  ----------
 "
 "-------------------------------------------------------------------------------
 " EditConfig : Edit the Doxygen configuration file.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#common#doxygen#EditConfig ()
+function! mmtoolbox#doxygen#EditConfig ()
 	" TODO: do some checks first?
 	exe 'e '.escape( s:ConfigFile, s:FilenameEscChar )
-endfunction    " ----------  end of function mmtoolbox#common#doxygen#EditConfig  ----------
+endfunction    " ----------  end of function mmtoolbox#doxygen#EditConfig  ----------
 "
 "-------------------------------------------------------------------------------
 " Run : Run Doxygen.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#common#doxygen#Run ( args, cmake_only )
+function! mmtoolbox#doxygen#Run ( args, cmake_only )
 	" TODO
-endfunction    " ----------  end of function mmtoolbox#common#doxygen#Run  ----------
+endfunction    " ----------  end of function mmtoolbox#doxygen#Run  ----------
 "
 "-------------------------------------------------------------------------------
 " Errors : Send error file through QuickFix.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#common#doxygen#Errors ()
+function! mmtoolbox#doxygen#Errors ()
 	"
 	silent exe 'update'   | " write source file if necessary
 	cclose
@@ -237,7 +237,7 @@ function! mmtoolbox#common#doxygen#Errors ()
 		echo "Doxygen : no warnings/errors"
 	endif
 	"
-endfunction    " ----------  end of function mmtoolbox#common#doxygen#Errors  ----------
+endfunction    " ----------  end of function mmtoolbox#doxygen#Errors  ----------
 " }}}1
 "
 " =====================================================================================
