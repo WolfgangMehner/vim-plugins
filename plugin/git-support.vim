@@ -297,6 +297,19 @@ else
 	command!       -nargs=*                GitHelp                :call GitS_Help('disabled')
 endif
 "
+" syntax highlighting   {{{2
+"
+highlight default link GitComment     Comment
+highlight default      GitHeading1    term=bold       cterm=bold       gui=bold
+highlight default      GitHeading2    term=underline  cterm=underline  gui=underline
+highlight default link GitHighlight1  Identifier
+highlight default link GitHighlight2  PreProc
+highlight default link GitWarning     WarningMsg
+"
+highlight default link GitAdd         DiffAdd
+highlight default link GitRemove      DiffDelete
+highlight default link GitConflict    DiffText
+"
 " }}}2
 "
 "-------------------------------------------------------------------------------
@@ -434,6 +447,53 @@ function! s:StandardRun( cmd, param, flags, ... )
 	endif
 	"
 endfunction    " ----------  end of function s:StandardRun  ----------
+"
+"-------------------------------------------------------------------------------
+" GitS_Fold : fold text for 'git log'   {{{1
+"-------------------------------------------------------------------------------
+"
+function! GitS_Fold ()
+	let line = getline( v:foldstart )
+	let head = '+-'.v:folddashes.' '
+	let tail = ' ('.( v:foldend - v:foldstart + 1 ).' lines) '
+	"
+	if line =~ '^#\s'
+		" we assume a line in the status comment block (TODO: might be something else),
+		" and try to guess the number of lines
+		let filesstart = v:foldstart+1
+		let filesend   = v:foldend
+		while filesstart < v:foldend && getline(filesstart) =~ '\_^#\s*\_$\|\_^#\s\+('
+			let filesstart += 1
+		endwhile
+		while filesend > v:foldstart && getline(filesend) =~ '^#\s*$'
+			let filesend -= 1
+		endwhile
+		return line.' '.( filesend - filesstart + 1 ).' files '
+	elseif line =~ '^commit'
+		" search for the first line which starts with a space,
+		" this is the first line of the commit message
+		let pos = v:foldstart
+		while pos <= v:foldend
+			if getline(pos) =~ '^\s\+\S'
+				break
+			endif
+			let pos += 1
+		endwhile
+		if pos > v:foldend | let pos = v:foldstart | endif
+		return head.'commit - '.substitute( getline(pos), '^\s\+', '', '' ).tail
+	elseif line =~ '^diff'
+	  " take the filename from (we also consider backslashes):
+		"   diff --git a/<file> b/<file>
+		let file = matchstr ( line, 'a\([/\\]\)\zs\(.*\)\ze b\1\2\s*$' )
+		if file != ''
+			return head.'diff - '.file.tail
+		else
+			return head.line.tail
+		end
+	else
+		return head.line.tail
+	endif
+endfunction    " ----------  end of function GitS_Fold  ----------
 "
 "-------------------------------------------------------------------------------
 " GitS_Add : execute 'git add ...'   {{{1
@@ -696,7 +756,8 @@ function! GitS_Diff( action, ... )
 		"
 		let b:GitSupport_DiffFlag = 1
 		"
-		setlocal filetype=gitsstatus
+		setlocal filetype=gitsdiff
+		setlocal foldtext=GitS_Fold()
 		"
 		exe 'nmap          <buffer> <S-F1> :call GitS_Diff("help")<CR>'
 		exe 'nmap <silent> <buffer> q      :call GitS_Diff("quit")<CR>'
@@ -803,24 +864,6 @@ function! GitS_Help( action, ... )
 endfunction    " ----------  end of function GitS_Help  ----------
 "
 "-------------------------------------------------------------------------------
-" GitS_LogFold : fold text for 'git log'   {{{1
-"-------------------------------------------------------------------------------
-"
-function! GitS_LogFold ()
-	" search for the first line which starts with a space
-	" -> this is the first line of the commit message
-	let pos = v:foldstart
-	while pos <= v:foldend
-		if getline(pos) =~ '^\s\+\S'
-			break
-		endif
-		let pos += 1
-	endwhile
-	if pos > v:foldend | let pos = v:foldstart | endif
-	return v:folddashes.' '.substitute( getline(pos), '^\s\+', '', '' ).' '
-endfunction    " ----------  end of function GitS_LogFold  ----------
-"
-"-------------------------------------------------------------------------------
 " GitS_Log : execute 'git log'   {{{1
 "-------------------------------------------------------------------------------
 "
@@ -853,7 +896,7 @@ function! GitS_Log( action, ... )
 		let b:GitSupport_LogFlag = 1
 		"
 		setlocal filetype=gitslog
-		setlocal foldtext=GitS_LogFold()
+		setlocal foldtext=GitS_Fold()
 		"
 		exe 'nmap          <buffer> <S-F1> :call GitS_Log("help")<CR>'
 		exe 'nmap <silent> <buffer> q      :call GitS_Log("quit")<CR>'
@@ -1315,6 +1358,7 @@ function! GitS_Status( action )
 		let b:GitSupport_VerboseOption    = 0
 		"
 		setlocal filetype=gitsstatus
+		setlocal foldtext=GitS_Fold()
 		"
 		exe 'nmap          <buffer> <S-F1> :call GitS_Status("help")<CR>'
 		exe 'nmap <silent> <buffer> q      :call GitS_Status("quit")<CR>'

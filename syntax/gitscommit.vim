@@ -1,7 +1,7 @@
 " Vim syntax file
-" Language: git output : branch
+" Language: git output : commit
 " Maintainer: Wolfgang Mehner <wolfgang-mehner@web.de>
-" Last Change: 23.12.2012
+" Last Change: 19.03.2013
 
 if exists("b:current_syntax")
 	finish
@@ -15,14 +15,20 @@ syn case match
 "-------------------------------------------------------------------------------
 
 " top-level categories:
-" - GitBranchCurrent
+" - GitCommitLineNwarn
+" - GitCommitLine2warn
+" - GitCommitLine1warn
 
-syn match  GitBranchCurrent  "^\*\s.\+$"
+syn match  GitCommitLineNwarn   "^.\{,76}\zs.*$"
+syn match  GitCommitLine2warn   "^\%2l.*$"
+syn match  GitCommitLine1warn   "^\%1l.\{,50}\zs.*"
 
 "-------------------------------------------------------------------------------
 " Highlight
 "-------------------------------------------------------------------------------
 
-highlight default link GitBranchCurrent  GitHighlight1
+highlight default link GitCommitLine1warn  GitWarning
+highlight default link GitCommitLine2warn  GitWarning
+highlight default link GitCommitLineNwarn  GitWarning
 
-let b:current_syntax = "gitsbranch"
+let b:current_syntax = "gitscommit"

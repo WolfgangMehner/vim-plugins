@@ -24,9 +24,10 @@ a quick overview and a short guide to this documentation.
  3.    Commands                                   |gitsupport-commands|
  4.    Syntax Highlighting                        |gitsupport-syntax|
  4.1    Branch                                    |gitsupport-syn-branch|
- 4.2    Diff                                      |gitsupport-syn-diff|
- 4.3    Log                                       |gitsupport-syn-log|
- 4.4    Status                                    |gitsupport-syn-status|
+ 4.2    Commit                                    |gitsupport-syn-commit|
+ 4.3    Diff                                      |gitsupport-syn-diff|
+ 4.4    Log                                       |gitsupport-syn-log|
+ 4.5    Status                                    |gitsupport-syn-status|
  5.    Configuration                              |gitsupport-configuration|
  5.1    Executable                                |gitsupport-config-executable|
  5.2    Menus                                     |gitsupport-config-menus|
@@ -430,17 +431,44 @@ Executes "git stash ...".
 4.  SYNTAX HIGHLIGHTING                                    *gitsupport-syntax*
 ==============================================================================
 
-The Git support comes with syntax highlighting for various kinds of Git
-output. It is designed to resemble Git's own highlighting. The colors can be
-changed by the user, by adding custom settings to the file .vimrc.
+Git support comes with syntax highlighting for various kinds of Git output.
+The appearance can be changed by the user, by adding custom settings to the
+file .vimrc.
+
+The default configuration is to use Vim's own syntax categories as fallbacks,
+which should achieve a certain interoperability with Vim's colorschemes.
+
+  Category        Short Description                         Example
+ ----------------------------------------------------------------------------
+  GitComment      comments (uses 'Comment')                 see :GitStatus
+  GitHeading1     important heading (bold font)             diff header
+  GitHeading2     less important heading (underlined)       diff range
+  GitHighlight1   a highlight (uses 'Identifier')           current branch
+  GitHighlight2   another highlight (uses 'PreProc')        commit hash
+  GitWarning      a warning (uses 'WarningMsg')
+  
+  GitAdd          an added file/line (uses 'DiffAdd')       diff output
+  GitRemove       a removed file/line (uses 'DiffDelete')   diff output
+  GitConflict     a (merge) conflict (uses 'DiffText')      diff output
+ ----------------------------------------------------------------------------
+
+Suggestions for a syntax highlighting which resemble Git's own highlighting
+can be found in the file "git-support/rc/additions.vimrc". For a bright
+background it suggests the following settings: >
+
+  highlight GitHeading1    cterm=bold                gui=bold
+  highlight GitHeading2    cterm=bold  ctermfg=Cyan  gui=bold  guifg=DarkCyan
+  highlight GitHighlight1  ctermfg=Green             guifg=DarkGreen
+  highlight GitHighlight2  ctermfg=DarkYellow        guifg=DarkYellow
+  highlight GitAdd         ctermfg=Green             guifg=SeaGreen
+  highlight GitRemove      ctermfg=Red               guifg=Red
+  highlight GitConflict    cterm=bold  ctermfg=White  ctermbg=Red
+      \ gui=bold  guifg=White  guibg=Red
 
 Example: >
 
 To display the current branch in yellow instead of green use: >
-	highlight GitBranchCurrent ctermfg=Yellow  guifg=DarkYellow
-
-The syntax file for the status also defines the highlighting for the diff
-output, because it is needed for the verbose version: "git status -v".
+  highlight GitBranchCurrent  ctermfg=Yellow  guifg=DarkYellow
 
 ------------------------------------------------------------------------------
 4.1  BRANCH                                            *gitsupport-syn-branch*
@@ -451,10 +479,26 @@ Only the current branch is highlighted.
 	Category								Short Description
  ----------------------------------------------------------------------------
 	GitBranchCurrent				the current branch (line starting with "*")
+													-> uses GitHighlight1
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
-4.2  DIFF                                                *gitsupport-syn-diff*
+4.2  COMMIT                                            *gitsupport-syn-commit*
+------------------------------------------------------------------------------
+
+Highlights characters exceeding the maximal length of a line:
+  1st line - max. 50 characters
+  2st line - should be empty
+  others   - max. 76 characters
+
+	Category								Short Description
+ ----------------------------------------------------------------------------
+	GitWarning							characters exceeding the maximal length of the line
+													-> uses GitWarning
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+4.3  DIFF                                                *gitsupport-syn-diff*
 ------------------------------------------------------------------------------
 
 The headers of the output for each file are highlighted, as well as each range
@@ -466,23 +510,31 @@ files, regions with conflicts are highlighted as well.
  ----------------------------------------------------------------------------
 	GitDiffHeader						the header generated for each file
 														(lines like "diff ...", "index ...", ...)
+													-> uses GitHeading1
  ----------------------------------------------------------------------------
 	GitDiffRange						the range of a single block of the output
 														(line "@@ <range> @@ ...")
+													-> uses GitHeading2
 	GitDiffLineP						inserted lines (lines starting with "+")
+													-> uses GitAdd
 	GitDiffLineM						removed lines (lines starting with "-")
+													-> uses GitRemove
  ----------------------------------------------------------------------------
 	GitMergeRange						the range of a single block of the output
 														(line "@@@ <range> @@@ ...")
+													-> uses GitHeading2
 	GitMergeLineP						inserted lines (lines starting with "+ " or " +")
+													-> uses GitAdd
 	GitMergeLineM						removed lines (lines starting with "- " or " -")
+													-> uses GitRemove
 	GitMergeConflict				lines signaling regions with conflicts
 														(lines like "++<<<<<<< HEAD", "++=======" or
 														"++>>>>>>> master")
+													-> uses GitConflict
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
-4.3  LOG                                                  *gitsupport-syn-log*
+4.4  LOG                                                  *gitsupport-syn-log*
 ------------------------------------------------------------------------------
 
 The name of each commit and the information about the author, date, ... are
@@ -491,12 +543,14 @@ highlighted. Folds are created for each commit.
 	Category								Short Description
  ----------------------------------------------------------------------------
 	GitLogHash							the name of the commit (line "commit <hash>")
+													-> uses GitHighlight2
 	GitLogInfo							information about the commit
 														(lines like "Author: ..." or "Date: ...")
+													-> uses GitHighlight1
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
-4.4  STATUS                                            *gitsupport-syn-status*
+4.5  STATUS                                            *gitsupport-syn-status*
 ------------------------------------------------------------------------------
 
 Various items are hightlighted, like the headlines of each section and the
@@ -507,13 +561,20 @@ committed:", "Changes not staged for commit:", ...
  ----------------------------------------------------------------------------
 	GitStatusHeader					the header of each section
 														(lines like "# Changes not staged for commit:")
+													-> uses GitHeading1
 	GitStatusComment				additional help inserted into the output
 														(lines like "#  (use 'git add <file>...' to ...)")
+													-> uses GitComment
 	GitStagedFile						files listed as "to be committed"
+													-> uses GitAdd
 	GitModifiedFile					files listed as "not staged for commit"
+													-> uses GitRemove
 	GitUntrackedFile				files listed as "untracked"
+													-> uses GitRemove
 	GitIgnoredFile					files listed as "ignored"
+													-> uses GitRemove
 	GitUnmergedFile					files listed as "unmerged"
+													-> uses GitRemove
  ----------------------------------------------------------------------------
 
 ==============================================================================

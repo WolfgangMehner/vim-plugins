@@ -1,7 +1,7 @@
 " Vim syntax file
-" Language: git output : log
+" Language: git output : log (uses: diff)
 " Maintainer: Wolfgang Mehner <wolfgang-mehner@web.de>
-" Last Change: 23.12.2012
+" Last Change: 19.03.2013
 
 if exists("b:current_syntax")
 	finish
@@ -14,7 +14,13 @@ syn case match
 " Syntax
 "-------------------------------------------------------------------------------
 
-syn region GitLogCommit  start=/^commit\s/ end=/^\%(commit\s\)\@=/ contains=GitLogHash,GitLogInfo fold
+" top-level categories:
+" - GitLogCommit
+
+" use 'GitDiffRegion' contained in 'GitLogCommit'
+syn include <sfile>:p:h/gitsdiff.vim
+
+syn region GitLogCommit  start=/^commit\s/ end=/^\%(commit\s\)\@=/ contains=GitLogHash,GitLogInfo,GitDiffRegion fold keepend
 syn match  GitLogHash    "^commit\s.\+$" contained
 syn match  GitLogInfo    "^\w\+:\s.\+$"  contained
 
@@ -22,7 +28,7 @@ syn match  GitLogInfo    "^\w\+:\s.\+$"  contained
 " Highlight
 "-------------------------------------------------------------------------------
 
-highlight default GitLogHash  ctermfg=DarkYellow  guifg=DarkYellow
-highlight default GitLogInfo  ctermfg=Green       guifg=DarkGreen
+highlight default link GitLogHash  GitHighlight2
+highlight default link GitLogInfo  GitHighlight1
 
 let b:current_syntax = "gitslog"
