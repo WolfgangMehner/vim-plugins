@@ -262,8 +262,8 @@ This version commits changes from a merge conflict. It first looks for the
 base (toplevel) directory of the repository (<base>) and checks whether there
 is a file <base>/.git/MERGE_HEAD located there. Then the changes are committed
 via: >
-	git commit -F <base>/.git/MERGE_HEAD
-The file MERGE_HEAD contains the standard message for merges, which looks
+	git commit -F <base>/.git/MERGE_MSG
+The file MERGE_MSG contains the standard message for merges, which looks
 similar to this:
 >
 	Merge remote-tracking branch 'origin/master'

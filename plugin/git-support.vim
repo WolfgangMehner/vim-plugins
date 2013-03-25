@@ -63,7 +63,7 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 " First check the current working directory:
 "   let data = s:CheckCWD ()
 " then jump to the Git buffer:
-"   call s:OpenManBuffer ( 'Git : <name>' )
+"   call s:OpenManBuffer ( 'Git - <name>' )
 " then call this function to correctly set the directory of the buffer:
 "   call s:ChangeCWD ()
 "
@@ -181,8 +181,8 @@ endfunction    " ----------  end of function s:ImportantMsg  ----------
 "
 function! s:VersionLess ( v1, v2 )
 	"
-	let l1 = matchlist( a:v1, '^\(\d\+\)\.\(\d\+\)\%(\.\(\d\+\)\)\?\%(\.\(\d\+\)\)\?$' )
-	let l2 = matchlist( a:v2, '^\(\d\+\)\.\(\d\+\)\%(\.\(\d\+\)\)\?\%(\.\(\d\+\)\)\?$' )
+	let l1 = matchlist( a:v1, '^\(\d\+\)\.\(\d\+\)\%(\.\(\d\+\)\)\?\%(\.\(\d\+\)\)\?' )
+	let l2 = matchlist( a:v2, '^\(\d\+\)\.\(\d\+\)\%(\.\(\d\+\)\)\?\%(\.\(\d\+\)\)\?' )
 	"
 	if empty( l1 ) || empty( l2 )
 		echoerr 'Can not compare version numbers "'.a:v1.'" and "'.a:v2.'".'
@@ -239,7 +239,10 @@ call s:GetGlobalSetting ( 'Git_LoadMenus' )
 call s:GetGlobalSetting ( 'Git_RootMenu' )
 "
 let s:Enabled = 1
+let s:DisabledReason = ""
 let s:DisabledMessage = "Git-Support not working:"
+let s:GitVersion = ""
+let s:GitHelpFormat = ""
 "
 " check Git executable   {{{2
 "
@@ -275,6 +278,19 @@ if s:Enabled
 		"
 	else
 		call s:ErrorMsg ( 'Can not obtain the version number of Git.' )
+	endif
+endif
+"
+" check Git help.format   {{{2
+"
+if s:Enabled
+	let s:GitHelpFormat = system( s:Git_Executable.' config --get help.format' )
+	let s:GitHelpFormat = substitute( s:GitHelpFormat,  '\_s',  '',  'g' )
+	"
+	if s:GitHelpFormat == ''
+		let s:GitHelpFormat = 'man'
+	elseif s:GitHelpFormat == 'web'
+		let s:GitHelpFormat = 'html'
 	endif
 endif
 "
@@ -396,6 +412,7 @@ function! s:OpenManBuffer ( buf_name )
 endfunction    " ----------  end of function s:OpenManBuffer  ----------
 "
 "-------------------------------------------------------------------------------
+
 " s:UpdateManBuffer : Put output in a read-only buffer.   {{{1
 "-------------------------------------------------------------------------------
 "
@@ -590,7 +607,7 @@ function! GitS_Blame( action, ... )
 	"
 	let buf = s:CheckCWD ()
 	"
-	if s:OpenManBuffer ( 'Git : blame' )
+	if s:OpenManBuffer ( 'Git - blame' )
 		"
 		let b:GitSupport_BlameFlag = 1
 		"
@@ -650,7 +667,7 @@ function! GitS_BranchList( action )
 		return
 	endif
 	"
-	if s:OpenManBuffer ( 'Git : branch' )
+	if s:OpenManBuffer ( 'Git - branch' )
 		"
 		let b:GitSupport_BranchFlag = 1
 		"
@@ -833,7 +850,7 @@ function! GitS_CommitDryRun( action, ... )
 	"
 	let buf = s:CheckCWD ()
 	"
-	if s:OpenManBuffer ( 'Git : commit --dry-run' )
+	if s:OpenManBuffer ( 'Git - commit --dry-run' )
 		"
 		let b:GitSupport_CommitDryRunFlag = 1
 		"
@@ -887,7 +904,7 @@ function! GitS_Diff( action, ... )
 	"
 	let buf = s:CheckCWD ()
 	"
-	if s:OpenManBuffer ( 'Git : diff' )
+	if s:OpenManBuffer ( 'Git - diff' )
 		"
 		let b:GitSupport_DiffFlag = 1
 		"
@@ -961,7 +978,12 @@ function! GitS_Help( action, ... )
 		return
 	endif
 	"
-	if s:OpenManBuffer ( 'Git : help' )
+	if s:GitHelpFormat == 'html'
+		echo 'test'
+		return s:StandardRun ( 'help', helpcmd, '', 'c' )
+	endif
+	"
+	if s:OpenManBuffer ( 'Git - help' )
 		"
 		let b:GitSupport_HelpFlag = 1
 		"
@@ -970,7 +992,7 @@ function! GitS_Help( action, ... )
 		exe 'nmap          <buffer> <S-F1> :call GitS_Help("help")<CR>'
 		exe 'nmap <silent> <buffer> q      :call GitS_Help("quit")<CR>'
 		"
-		exe 'nmap <silent> <buffer> c      :call GitS_Help("toc")<CR>'
+		"exe 'nmap <silent> <buffer> c      :call GitS_Help("toc")<CR>'
 	endif
 	"
 	let cmd = s:Git_Executable.' help '.helpcmd
@@ -1026,7 +1048,7 @@ function! GitS_Log( action, ... )
 	"
 	let buf = s:CheckCWD ()
 	"
-	if s:OpenManBuffer ( 'Git : log' )
+	if s:OpenManBuffer ( 'Git - log' )
 		"
 		let b:GitSupport_LogFlag = 1
 		"
@@ -1135,7 +1157,7 @@ function! GitS_RemoteList( action )
 		return
 	endif
 	"
-	if s:OpenManBuffer ( 'Git : remote' )
+	if s:OpenManBuffer ( 'Git - remote' )
 		"
 		let b:GitSupport_RemoteFlag = 1
 		"
@@ -1209,7 +1231,7 @@ function! GitS_Show( action, ... )
 	"
 	let buf = s:CheckCWD ()
 	"
-	if s:OpenManBuffer ( 'Git : show' )
+	if s:OpenManBuffer ( 'Git - show' )
 		"
 		let b:GitSupport_ShowFlag = 1
 		"
@@ -1282,7 +1304,7 @@ function! GitS_StashList( action, ... )
 		return
 	endif
 	"
-	if s:OpenManBuffer ( 'Git : stash list' )
+	if s:OpenManBuffer ( 'Git - stash list' )
 		"
 		let b:GitSupport_StashListFlag = 1
 		"
@@ -1331,7 +1353,7 @@ function! GitS_StashShow( action, ... )
 		return
 	endif
 	"
-	if s:OpenManBuffer ( 'Git : stash show' )
+	if s:OpenManBuffer ( 'Git - stash show' )
 		"
 		let b:GitSupport_StashShowFlag = 1
 		"
@@ -1657,7 +1679,7 @@ function! GitS_Status( action )
 	"
 	let buf = s:CheckCWD ()
 	"
-	if s:OpenManBuffer ( 'Git : status' )
+	if s:OpenManBuffer ( 'Git - status' )
 		"
 		let b:GitSupport_StatusFlag = 1
 		let b:GitSupport_IgnoredOption    = 0
@@ -1763,7 +1785,7 @@ function! GitS_TagList( action, ... )
 		return
 	endif
 	"
-	if s:OpenManBuffer ( 'Git : tag' )
+	if s:OpenManBuffer ( 'Git - tag' )
 		"
 		let b:GitSupport_TagListFlag = 1
 		"

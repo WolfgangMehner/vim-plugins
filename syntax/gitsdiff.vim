@@ -30,9 +30,9 @@ syn match  GitDiffLineP        "^+.*$"        contained
 syn match  GitDiffLineM        "^-.*$"        contained
 
 syn match  GitMergeRange       "^@@@[^@]\+@@@"   contained
-syn match  GitMergeLineP       "^+ .*$"          contained
+syn match  GitMergeLineP       "^+[+ ].*$"          contained
+syn match  GitMergeLineM       "^-[- ].*$"          contained
 syn match  GitMergeLineP       "^ +.*$"          contained
-syn match  GitMergeLineM       "^- .*$"          contained
 syn match  GitMergeLineM       "^ -.*$"          contained
 syn match  GitMergeConflict    "^++<<<<<<< .\+"  contained
 syn match  GitMergeConflict    "^++======="      contained
