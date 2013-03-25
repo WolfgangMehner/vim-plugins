@@ -195,10 +195,10 @@ xnoremap  `  s``<Esc>P<Right>
 " syntax highlighting (bright background)
 "
 "highlight GitComment
-highlight GitHeading1    cterm=bold                              gui=bold
-highlight GitHeading2    cterm=bold  ctermfg=Cyan                gui=bold  guifg=DarkCyan
+highlight GitHeading     cterm=bold                              gui=bold
 highlight GitHighlight1  ctermfg=Green                           guifg=DarkGreen
 highlight GitHighlight2  ctermfg=DarkYellow                      guifg=DarkYellow
+highlight GitHighlight3  cterm=bold  ctermfg=Cyan                gui=bold  guifg=DarkCyan
 "highlight GitWarning
 highlight GitAdd         ctermfg=Green                           guifg=SeaGreen
 highlight GitRemove      ctermfg=Red                             guifg=Red
@@ -207,10 +207,10 @@ highlight GitConflict    cterm=bold  ctermfg=White  ctermbg=Red  gui=bold  guifg
 " " syntax highlighting (dark background)
 " "
 " "highlight GitComment
-" highlight GitHeading1    cterm=bold                              gui=bold
-" highlight GitHeading2    cterm=bold  ctermfg=Cyan                gui=bold  guifg=Cyan
+" highlight GitHeading     cterm=bold                              gui=bold
 " highlight GitHighlight1  ctermfg=Green                           guifg=Green
 " highlight GitHighlight2  ctermfg=Yellow                          guifg=Yellow
+" highlight GitHighlight3  cterm=bold  ctermfg=Cyan                gui=bold  guifg=Cyan
 " "highlight GitWarning
 " highlight GitAdd         ctermfg=Green                           guifg=Green
 " highlight GitRemove      ctermfg=Red                             guifg=Red

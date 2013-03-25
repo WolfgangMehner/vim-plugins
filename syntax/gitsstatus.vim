@@ -52,7 +52,7 @@ syn match  GitStatusComment    "^#\s\+\zs([^)]*)$"  contained
 " Highlight
 "-------------------------------------------------------------------------------
 
-highlight default link GitStatusHeader   GitHeading1
+highlight default link GitStatusHeader   GitHeading
 highlight default link GitStatusComment  GitComment
 highlight default link GitStagedFile     GitAdd
 highlight default link GitModifiedFile   GitRemove

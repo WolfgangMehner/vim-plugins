@@ -42,11 +42,11 @@ syn match  GitMergeConflict    "^++>>>>>>> .\+"  contained
 " Highlight
 "-------------------------------------------------------------------------------
 
-highlight default link GitDiffHeader     GitHeading1
-highlight default link GitDiffRange      GitHeading2
+highlight default link GitDiffHeader     GitHeading
+highlight default link GitDiffRange      GitHighlight3
 highlight default link GitDiffLineP      GitAdd
 highlight default link GitDiffLineM      GitRemove
-highlight default link GitMergeRange     GitHeading2
+highlight default link GitMergeRange     GitHighlight3
 highlight default link GitMergeLineP     GitAdd
 highlight default link GitMergeLineM     GitRemove
 highlight default link GitMergeConflict  GitConflict

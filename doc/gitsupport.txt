@@ -1,4 +1,4 @@
-*gitsupport.txt*                  Git Support                      Dez 23 2012
+*gitsupport.txt*                  Git Support                      Mar 20 2013
 
 Git Support                                          *git-support* *gitsupport*
 
@@ -66,40 +66,48 @@ The following commands are provided by Git Support. Each command is executed
 in the current working directory, just as it would work on the shell. You can
 run the commands in every subdirectory of the project.
 
-	Command												Short Description
+  Command                       Short Description
  ----------------------------------------------------------------------------
-	:GitAdd [<param>]							(run) git add <param>
-	:GitBranch										(buf) git branch
-	:GitBranch <param>						(run) git branch <param>
-	:GitCheckout [<param>]				(run) git checkout <param>
-	:GitCommit [<param>]					(run) git commit <param>
-	:GitCommitFile [<file>]				(run) git commit -F <file>
-	:GitCommitMerge								(run) git commit -F <base>/.git/MERGE_MSG
-	:GitCommitMsg <msg>						(run) git commit -m "<msg>"
-	:GitDiff [<param>]						(buf) git diff <param>
-	:GitFetch [<param>]						(run) git fetch <param>
-	:GitHelp [<param>]						(buf) git help <param>
-	:GitLog [<param>]							(buf) git log <param>
-	:GitMerge [<param>]						(run) git merge <param>
-	:GitPull [<param>]						(run) git pull <param>
-	:GitPush [<param>]						(run) git push <param>
-	:GitRemote										(buf) git remote
-	:GitRemote <param>						(run) git remote <param>
-	:GitRemove [<param>]					(run) git rm <param>
-	:GitRm [<param>]							(run) git rm <param>
-	:GitReset [<param>]						(run) git reset <param>
-	:GitStash [<param>]						(run) git stash <param>
-	:GitStatus										(buf) git status
+  :GitAdd [<param>]             (run) git add <param>
+  :GitBlame [<param>]           (buf) git blame <param>
+  :GitBranch                    (buf) git branch
+  :GitBranch <param>            (run) git branch <param>
+  :GitCheckout [<param>]        (run) git checkout <param>
+  :GitCommit [<param>]          (run) git commit <param>
+  :GitCommitFile [<file>]       (run) git commit -F <file>
+  :GitCommitMerge               (run) git commit -F <base>/.git/MERGE_MSG
+  :GitCommitMsg <msg>           (run) git commit -m "<msg>"
+  :GitDiff [<param>]            (buf) git diff <param>
+  :GitFetch [<param>]           (run) git fetch <param>
+  :GitHelp [<param>]            (buf) git help <param>
+  :GitLog [<param>]             (buf) git log <param>
+  :GitMerge [<param>]           (run) git merge <param>
+  :GitMove [<param>]            (run) git mv <param>
+  :GitMv [<param>]              (run) git mv <param>
+  :GitPull [<param>]            (run) git pull <param>
+  :GitPush [<param>]            (run) git push <param>
+  :GitRemote                    (buf) git remote
+  :GitRemote <param>            (run) git remote <param>
+  :GitRemove [<param>]          (run) git rm <param>
+  :GitRm [<param>]              (run) git rm <param>
+  :GitReset [<param>]           (run) git reset <param>
+  :GitShow [<param>]            (buf) git show <param>
+  :GitStash [<param>]           (run) git stash <param>
+  :GitStash list [<param>]      (buf) git stash list <param>
+  :GitStash show [<param>]      (buf) git stash show <param>
+  :GitStatus                    (buf) git status
+  :GitTag                       (buf) git tag
+  :GitTag <param>               (run) git tag <param>
  ----------------------------------------------------------------------------
 
 (run) runs the command after asking for confirmation
-(buf) runs the command and puts its output in a new buffer
+(buf) runs the command and redirects its output in a new buffer
 
 When a command opens a new buffer, several maps are defined for this buffer.
 Hitting <SHIFT-F1> always prints a short help with all available maps.
 
-The default parameter for GitAdd, GitCheckout, GitCommitFile, GitDiff, GitRm,
-GitRemove and GitReset is the current buffer.
+The default parameter for GitAdd, GitBlame, GitCheckout, GitCommitFile,
+GitDiff, GitRm, GitRemove and GitReset is the current buffer.
 
 When called without parameters, the commands GitBranch and GitRemote open a
 buffer, otherwise they run the respective Git command with the given
@@ -145,11 +153,11 @@ of the file as the message.
 I am convinced, since you do not have to leave Vim to manage your repository,
 that this is a better way of doing things. Editing the commit message in a
 window gives you the chance to browse around your project in the environment
-your already working in anyway. You furthermore can have a look at logs,
-compare different branches or add another file while writing the commit
-message. And seeing how you use Vim for a big project like the kinds of
-projects you manage in a version control system, you obviously do not have a
-problem dealing with one further file.
+your already working in. You furthermore can have a look at logs, compare
+different branches or add another file while writing the commit message. And
+seeing how you use Vim for a big project like the kinds of projects you manage
+in a version control system, you obviously do not have a problem dealing with
+one further file.
 
 ==============================================================================
 3.  COMMANDS                                             *gitsupport-commands*
@@ -182,6 +190,21 @@ Is equivalent to: >
 	git add -f *.vim
 
 ------------------------------------------------------------------------------
+                                                                   *:GitBlame*
+	:GitBlame ~
+	:GitBlame <param> ~
+
+The first version opens a buffer containing the output of Git's blame for the
+current buffer. The second version runs blame for the given parameters.
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
                                                                   *:GitBranch*
 	:GitBranch ~
 	:GitBranch <param> ~
@@ -189,11 +212,11 @@ Is equivalent to: >
 The first version opens a buffer listing all branches, including remote ones.
 The second version executes "git branch ...".
 
-	Map				Meaning
+  Map       Meaning
  ----------------------------------------------------------------------------
-	S-F1			help: show a list of all maps
-	q					close the buffer
-	u					update the buffer
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -220,10 +243,11 @@ Check out the branch "master": >
 	:GitCommitFile [<file>] ~
 	:GitCommitMsg <msg> ~
 
-The first version runs "git commit" with the given parameters. The second
-version takes the commit message from the given file (default: current
-buffer). The third version uses the commit message provided on the command
-line.
+The first version runs "git commit" with the given parameters. If the
+parameters include the "--dry-run" flag, the output is redirected into a
+buffer. The second version takes the commit message from the given file
+(default: current buffer). The third version uses the commit message provided
+on the command line.
 
 Note The command :GitCommit currently can not be run without parameters.
      Supply the commit message using either the -m or -F options, or by using
@@ -277,11 +301,11 @@ Is equivalent to: >
 The first version opens a buffer containing the output of Git's diff for the
 current buffer. The second version runs diff for the given parameters.
 
-	Map				Meaning
+  Map       Meaning
  ----------------------------------------------------------------------------
-	S-F1			help: show a list of all maps
-	q					close the buffer
-	u					update the buffer
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
  ----------------------------------------------------------------------------
 
 Example:
@@ -307,10 +331,10 @@ Executes "git fetch ...".
 Opens a buffer containing the help for one of Git's commands. If no command is
 given, opens the help for Git itself.
 
-	Map				Meaning
+  Map       Meaning
  ----------------------------------------------------------------------------
-	S-F1			help: show a list of all maps
-	q					close the buffer
+  S-F1      help: show a list of all maps
+  q         close the buffer
  ----------------------------------------------------------------------------
 
 Example:
@@ -328,11 +352,11 @@ Is equivalent to: >
 The first version opens a buffer containing the log for the current branch.
 The second version runs log for the given parameters.
 
-	Map				Meaning
+  Map       Meaning
  ----------------------------------------------------------------------------
-	S-F1			help: show a list of all maps
-	q					close the buffer
-	u					update the buffer
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -340,6 +364,13 @@ The second version runs log for the given parameters.
 	:GitMerge [<param>] ~
 
 Executes "git merge ...".
+
+------------------------------------------------------------------------------
+                                                             *:GitMove* *:GitMv*
+	:GitMove [<param>] ~
+	:GitMv [<param>] ~
+
+Both versions behave the same. Executes "git mv ...".
 
 ------------------------------------------------------------------------------
                                                                     *:GitPull*
@@ -361,11 +392,11 @@ Executes "git push ...".
 The first version opens a buffer listing all the remotes together with their
 URLs. The second version executes "git remote ...".
 
-	Map				Meaning
+  Map       Meaning
  ----------------------------------------------------------------------------
-	S-F1			help: show a list of all maps
-	q					close the buffer
-	u					update the buffer
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -398,34 +429,73 @@ Is equivalent to: >
 	git reset -- <currentfile>
 
 ------------------------------------------------------------------------------
-                                                                  *:GitStatus*
-	:GitStatus ~
+                                                                    *:GitShow*
+	:GitShow [<param>] ~
 
-Opens a buffer showing the current status.
+Opens a buffer containing the output of "git show ...".
 
-	Map				Meaning
+  Map       Meaning
  ----------------------------------------------------------------------------
-	S-F1			help: show a list of all maps
-	q					close the buffer
-	u					update the buffer
-
-	i					toggle "show ignored files"
-	s					toggle "short output"
-	v					toggle "verbose output"
-
-	a					file under cursor: add
-	c					file under cursor: checkout
-	od				file under cursor: open diff
-	of				file under cursor: open file (edit)
-	ol				file under cursor: open log
-	r					file under cursor: reset
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
                                                                    *:GitStash*
 	:GitStash [<param>] ~
+	:GitStash list [<param>] ~
+	:GitStash show [<param>] ~
 
-Executes "git stash ...".
+The first version executes "git stash ...". The second and third version open
+buffers listing the stashes or showing a stash.
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer (list only)
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+                                                                  *:GitStatus*
+	:GitStatus ~
+
+Opens a buffer showing the current status.
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
+
+  i         toggle "show ignored files"
+  s         toggle "short output"
+  v         toggle "verbose output"
+
+  a         file under cursor: add
+  c         file under cursor: checkout
+  od        file under cursor: open diff
+  of        file under cursor: open file (edit)
+  ol        file under cursor: open log
+  r         file under cursor: reset
+  r         file under cursor: remove (only for unmerged changes)
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+                                                                     *:GitTag*
+	:GitTag [-n[<num>]] [--contains <commit>] [-l [<pattern>...]] ~
+	:GitTag <param> ~
+
+The first version opens a buffer listing the tags. The second version executes
+"git tag ...".
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer (list only)
+ ----------------------------------------------------------------------------
 
 ==============================================================================
 4.  SYNTAX HIGHLIGHTING                                    *gitsupport-syntax*
@@ -441,10 +511,10 @@ which should achieve a certain interoperability with Vim's colorschemes.
   Category        Short Description                         Example
  ----------------------------------------------------------------------------
   GitComment      comments (uses 'Comment')                 see :GitStatus
-  GitHeading1     important heading (bold font)             diff header
-  GitHeading2     less important heading (underlined)       diff range
+  GitHeading      a heading (bold font)                     diff header
   GitHighlight1   a highlight (uses 'Identifier')           current branch
   GitHighlight2   another highlight (uses 'PreProc')        commit hash
+  GitHighlight3   another highlight (underlined)            diff range
   GitWarning      a warning (uses 'WarningMsg')
   
   GitAdd          an added file/line (uses 'DiffAdd')       diff output
@@ -456,10 +526,10 @@ Suggestions for a syntax highlighting which resemble Git's own highlighting
 can be found in the file "git-support/rc/additions.vimrc". For a bright
 background it suggests the following settings: >
 
-  highlight GitHeading1    cterm=bold                gui=bold
-  highlight GitHeading2    cterm=bold  ctermfg=Cyan  gui=bold  guifg=DarkCyan
+  highlight GitHeading     cterm=bold                gui=bold
   highlight GitHighlight1  ctermfg=Green             guifg=DarkGreen
   highlight GitHighlight2  ctermfg=DarkYellow        guifg=DarkYellow
+  highlight GitHighlight3  cterm=bold  ctermfg=Cyan  gui=bold  guifg=DarkCyan
   highlight GitAdd         ctermfg=Green             guifg=SeaGreen
   highlight GitRemove      ctermfg=Red               guifg=Red
   highlight GitConflict    cterm=bold  ctermfg=White  ctermbg=Red
@@ -476,10 +546,10 @@ To display the current branch in yellow instead of green use: >
 
 Only the current branch is highlighted.
 
-	Category								Short Description
+  Category                Short Description
  ----------------------------------------------------------------------------
-	GitBranchCurrent				the current branch (line starting with "*")
-													-> uses GitHighlight1
+  GitBranchCurrent        the current branch (line starting with "*")
+                          -> uses GitHighlight1
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -491,10 +561,10 @@ Highlights characters exceeding the maximal length of a line:
   2st line - should be empty
   others   - max. 76 characters
 
-	Category								Short Description
+  Category                Short Description
  ----------------------------------------------------------------------------
-	GitWarning							characters exceeding the maximal length of the line
-													-> uses GitWarning
+  GitWarning              characters exceeding the maximal length of the line
+                          -> uses GitWarning
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -506,31 +576,31 @@ The headers of the output for each file are highlighted, as well as each range
 file and subfolds for each block (starting with "@@ <range> @@"). For unmerged
 files, regions with conflicts are highlighted as well.
 
-	Category								Short Description
+  Category                Short Description
  ----------------------------------------------------------------------------
-	GitDiffHeader						the header generated for each file
-														(lines like "diff ...", "index ...", ...)
-													-> uses GitHeading1
+  GitDiffHeader           the header generated for each file
+                            (lines like "diff ...", "index ...", ...)
+                          -> uses GitHeading
  ----------------------------------------------------------------------------
-	GitDiffRange						the range of a single block of the output
-														(line "@@ <range> @@ ...")
-													-> uses GitHeading2
-	GitDiffLineP						inserted lines (lines starting with "+")
-													-> uses GitAdd
-	GitDiffLineM						removed lines (lines starting with "-")
-													-> uses GitRemove
+  GitDiffRange            the range of a single block of the output
+                            (line "@@ <range> @@ ...")
+                          -> uses GitHighlight3
+  GitDiffLineP            inserted lines (lines starting with "+")
+                          -> uses GitAdd
+  GitDiffLineM            removed lines (lines starting with "-")
+                          -> uses GitRemove
  ----------------------------------------------------------------------------
-	GitMergeRange						the range of a single block of the output
-														(line "@@@ <range> @@@ ...")
-													-> uses GitHeading2
-	GitMergeLineP						inserted lines (lines starting with "+ " or " +")
-													-> uses GitAdd
-	GitMergeLineM						removed lines (lines starting with "- " or " -")
-													-> uses GitRemove
-	GitMergeConflict				lines signaling regions with conflicts
-														(lines like "++<<<<<<< HEAD", "++=======" or
-														"++>>>>>>> master")
-													-> uses GitConflict
+  GitMergeRange           the range of a single block of the output
+                            (line "@@@ <range> @@@ ...")
+                          -> uses GitHighlight3
+  GitMergeLineP           inserted lines (lines starting with "+ " or " +")
+                          -> uses GitAdd
+  GitMergeLineM           removed lines (lines starting with "- " or " -")
+                          -> uses GitRemove
+  GitMergeConflict        lines signaling regions with conflicts
+                            (lines like "++<<<<<<< HEAD", "++=======" or
+                            "++>>>>>>> master")
+                          -> uses GitConflict
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -540,13 +610,13 @@ files, regions with conflicts are highlighted as well.
 The name of each commit and the information about the author, date, ... are
 highlighted. Folds are created for each commit.
 
-	Category								Short Description
+  Category                Short Description
  ----------------------------------------------------------------------------
-	GitLogHash							the name of the commit (line "commit <hash>")
-													-> uses GitHighlight2
-	GitLogInfo							information about the commit
-														(lines like "Author: ..." or "Date: ...")
-													-> uses GitHighlight1
+  GitLogHash              the name of the commit (line "commit <hash>")
+                          -> uses GitHighlight2
+  GitLogInfo              information about the commit
+                            (lines like "Author: ..." or "Date: ...")
+                          -> uses GitHighlight1
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -557,24 +627,24 @@ Various items are hightlighted, like the headlines of each section and the
 files (in green and red). Adds a fold for each section "Changes to be
 committed:", "Changes not staged for commit:", ...
 
-	Category								Short Description
+  Category                Short Description
  ----------------------------------------------------------------------------
-	GitStatusHeader					the header of each section
-														(lines like "# Changes not staged for commit:")
-													-> uses GitHeading1
-	GitStatusComment				additional help inserted into the output
-														(lines like "#  (use 'git add <file>...' to ...)")
-													-> uses GitComment
-	GitStagedFile						files listed as "to be committed"
-													-> uses GitAdd
-	GitModifiedFile					files listed as "not staged for commit"
-													-> uses GitRemove
-	GitUntrackedFile				files listed as "untracked"
-													-> uses GitRemove
-	GitIgnoredFile					files listed as "ignored"
-													-> uses GitRemove
-	GitUnmergedFile					files listed as "unmerged"
-													-> uses GitRemove
+  GitStatusHeader         the header of each section
+                            (lines like "# Changes not staged for commit:")
+                          -> uses GitHeading
+  GitStatusComment        additional help inserted into the output
+                            (lines like "#  (use 'git add <file>...' to ...)")
+                          -> uses GitComment
+  GitStagedFile           files listed as "to be committed"
+                          -> uses GitAdd
+  GitModifiedFile         files listed as "not staged for commit"
+                          -> uses GitRemove
+  GitUntrackedFile        files listed as "untracked"
+                          -> uses GitRemove
+  GitIgnoredFile          files listed as "ignored"
+                          -> uses GitRemove
+  GitUnmergedFile         files listed as "unmerged"
+                          -> uses GitRemove
  ----------------------------------------------------------------------------
 
 ==============================================================================
@@ -584,15 +654,15 @@ committed:", "Changes not staged for commit:", ...
 The configuration is done via a number of global variables, which can be set
 in the .vimrc file.
 
-	Variable									Default				Description and further information
+  Variable                  Default       Description and further information
  ----------------------------------------------------------------------------
-	g:Git_Executable					'git'					the Git executable
-																						|gitsupport-config-executable|
-	g:Git_LoadMenus						'yes'					whether to load the menus
-																					('yes' or 'no')
-																						|gitsupport-config-menus|
-	g:Git_RootMenu						'&Git'  			name and shortcut of the root menu
-																						|gitsupport-config-menus|
+  g:Git_Executable          'git'         the Git executable
+                                            |gitsupport-config-executable|
+  g:Git_LoadMenus           'yes'         whether to load the menus
+                                          ('yes' or 'no')
+                                            |gitsupport-config-menus|
+  g:Git_RootMenu            '&Git'        name and shortcut of the root menu
+                                            |gitsupport-config-menus|
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------

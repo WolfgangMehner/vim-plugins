@@ -49,6 +49,10 @@ structure which is needed below the local installation directory
     for your .vimrc and .gvimrc. You may want to use parts of them. The files
     are documented.
 
+(1.5) To get a syntax highlighting closer to the one Git uses, take a look at
+    the suggestions in git-support/rc/additions.vimrc, which offers example
+    settings for bright and dark backgrounds.
+
 ----------------------------------------------------------------------
   (2) WINDOWS
 ----------------------------------------------------------------------
@@ -80,6 +84,10 @@ structure which is needed below the local installation directory
     for your _vimrc and _gvimrc. You may want to use parts of them. The files
     are documented.
 
+(2.5) To get a syntax highlighting closer to the one Git uses, take a look at
+    the suggestions in git-support\rc\additions.vimrc, which offers example
+    settings for bright and dark backgrounds.
+
 ----------------------------------------------------------------------
   (3) ADDITIONAL REMARKS
 ----------------------------------------------------------------------
@@ -88,7 +96,7 @@ There are a lot of features and options which can be used and influenced:
 
   *  the Git executable
   *  removing the Git menu
-	*  the syntax highlighting
+  *  the syntax highlighting
 
 Look at the Git-Support help with:
 
