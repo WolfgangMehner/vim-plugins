@@ -63,13 +63,13 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 " First check the current working directory:
 "   let data = s:CheckCWD ()
 " then jump to the Git buffer:
-"   call s:OpenManBuffer ( 'Git - <name>' )
+"   call s:OpenGitBuffer ( 'Git - <name>' )
 " then call this function to correctly set the directory of the buffer:
 "   call s:ChangeCWD ()
 "
 " The function s:ChangeCWD queries the working directory of the buffer your
 " starting out in, which is the buffer where you called the Git command. The
-" call to s:OpenManBuffer then opens the requested buffer or jumps to it if it
+" call to s:OpenGitBuffer then opens the requested buffer or jumps to it if it
 " already exists. Finally, s:ChangeCWD sets the working directory of the Git
 " buffer.
 "-------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ function! s:ChangeCWD ( data )
 	"
 	" change buffer
 	"echomsg '3 - changing to: '.b:GitSupport_CWD
-	exe	'lchdir '.escape( b:GitSupport_CWD, s:FilenameEscChar )
+	exe	'lchdir '.fnameescape( b:GitSupport_CWD )
 endfunction    " ----------  end of function s:ChangeCWD  ----------
 "
 "-------------------------------------------------------------------------------
@@ -217,12 +217,12 @@ endfunction    " ----------  end of function s:VersionLess  ----------
 let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
-let s:CmdLineEscChar = ' |"\'
-if s:MSWIN
-	let s:FilenameEscChar = ''
-else
-	let s:FilenameEscChar = ' \%#[]'
-endif
+" let s:CmdLineEscChar = ' |"\'
+" if s:MSWIN
+" 	let s:FilenameEscChar = ''
+" else
+" 	let s:FilenameEscChar = ' \%#[]'
+" endif
 "
 " settings   {{{2
 "
@@ -306,32 +306,36 @@ let s:HelpTxtStdNoUpdate .= "q       : close"
 " custom commands   {{{2
 "
 if s:Enabled
-	command! -bang -nargs=* -complete=file GitAdd                 :call GitS_Add('<args>','<bang>'=='!'?'cef':'ce')
+	command  -bang -nargs=* -complete=file Git                    :call GitS_Run('<args>','<bang>'=='!'?'b':'')
+	command!       -nargs=* -complete=file GitRun                 :call GitS_Run('<args>','')
+	command!       -nargs=* -complete=file GitBuf                 :call GitS_Run('<args>','b')
+	command! -bang -nargs=* -complete=file GitAdd                 :call GitS_Add('<args>','<bang>'=='!'?'ef':'e')
 	command!       -nargs=* -complete=file GitBlame               :call GitS_Blame('update','<args>')
-	command!       -nargs=* -complete=file GitBranch              :call GitS_Branch('<args>','c')
+	command!       -nargs=* -complete=file GitBranch              :call GitS_Branch('<args>','')
 	command!       -nargs=* -complete=file GitCheckout            :call GitS_Checkout('<args>','ce')
-	command!       -nargs=* -complete=file GitCommit              :call GitS_Commit('direct','<args>','c')
-	command!       -nargs=? -complete=file GitCommitFile          :call GitS_Commit('file','<args>','c')
-	command!       -nargs=0                GitCommitMerge         :call GitS_Commit('merge','','c')
-	command!       -nargs=+                GitCommitMsg           :call GitS_Commit('msg','<args>','c')
+	command!       -nargs=* -complete=file GitCommit              :call GitS_Commit('direct','<args>','')
+	command!       -nargs=? -complete=file GitCommitFile          :call GitS_Commit('file','<args>','')
+	command!       -nargs=0                GitCommitMerge         :call GitS_Commit('merge','','')
+	command!       -nargs=+                GitCommitMsg           :call GitS_Commit('msg','<args>','')
 	command!       -nargs=* -complete=file GitDiff                :call GitS_Diff('update','<args>')
-	command!       -nargs=*                GitFetch               :call GitS_Fetch('<args>','c')
+	command!       -nargs=*                GitFetch               :call GitS_Fetch('<args>','')
 	command!       -nargs=*                GitHelp                :call GitS_Help('update','<args>')
 	command!       -nargs=* -complete=file GitLog                 :call GitS_Log('update','<args>')
-	command!       -nargs=*                GitMerge               :call GitS_Merge('<args>','c')
-	command!       -nargs=* -complete=file GitMove                :call GitS_Move('<args>','c')
-	command!       -nargs=* -complete=file GitMv                  :call GitS_Move('<args>','c')
-	command!       -nargs=*                GitPull                :call GitS_Pull('<args>','c')
-	command!       -nargs=*                GitPush                :call GitS_Push('<args>','c')
-	command!       -nargs=* -complete=file GitRemote              :call GitS_Remote('<args>','c')
-	command!       -nargs=* -complete=file GitRemove              :call GitS_Remove('<args>','ce')
-	command!       -nargs=* -complete=file GitRm                  :call GitS_Remove('<args>','ce')
-	command!       -nargs=* -complete=file GitReset               :call GitS_Reset('<args>','ce')
-	command!       -nargs=*                GitShow                :call GitS_Show('update','<args>')
-	command!       -nargs=*                GitStash               :call GitS_Stash('<args>','c')
+	command!       -nargs=*                GitMerge               :call GitS_Merge('<args>','')
+	command!       -nargs=* -complete=file GitMove                :call GitS_Move('<args>','')
+	command!       -nargs=* -complete=file GitMv                  :call GitS_Move('<args>','')
+	command!       -nargs=*                GitPull                :call GitS_Pull('<args>','')
+	command!       -nargs=*                GitPush                :call GitS_Push('<args>','')
+	command!       -nargs=* -complete=file GitRemote              :call GitS_Remote('<args>','')
+	command!       -nargs=* -complete=file GitRemove              :call GitS_Remove('<args>','e')
+	command!       -nargs=* -complete=file GitRm                  :call GitS_Remove('<args>','e')
+	command!       -nargs=* -complete=file GitReset               :call GitS_Reset('<args>','e')
+	command!       -nargs=* -complete=file GitShow                :call GitS_Show('update','<args>')
+	command!       -nargs=*                GitStash               :call GitS_Stash('<args>','')
 	command!       -nargs=0                GitStatus              :call GitS_Status('update')
-	command!       -nargs=*                GitTag                 :call GitS_Tag('<args>','c')
+	command!       -nargs=*                GitTag                 :call GitS_Tag('<args>','')
 else
+	command! -bang -nargs=*                Git                    :call GitS_Help('disabled')
 	command!       -nargs=*                GitHelp                :call GitS_Help('disabled')
 endif
 "
@@ -386,10 +390,10 @@ function! s:Question ( text, ... )
 endfunction    " ----------  end of function s:Question  ----------
 "
 "-------------------------------------------------------------------------------
-" s:OpenManBuffer : Put output in a read-only buffer.   {{{1
+" s:OpenGitBuffer : Put output in a read-only buffer.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! s:OpenManBuffer ( buf_name )
+function! s:OpenGitBuffer ( buf_name )
 	"
 	" a buffer like this already exists?
 	if bufnr ( a:buf_name ) != -1
@@ -409,14 +413,14 @@ function! s:OpenManBuffer ( buf_name )
 	setlocal foldmethod=syntax
 	"
 	return 1
-endfunction    " ----------  end of function s:OpenManBuffer  ----------
+endfunction    " ----------  end of function s:OpenGitBuffer  ----------
 "
 "-------------------------------------------------------------------------------
 
-" s:UpdateManBuffer : Put output in a read-only buffer.   {{{1
+" s:UpdateGitBuffer : Put output in a read-only buffer.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! s:UpdateManBuffer ( command )
+function! s:UpdateGitBuffer ( command )
 	"
 	" save the position
 	let pos = line('.')
@@ -442,7 +446,7 @@ function! s:UpdateManBuffer ( command )
 	setlocal nomodifiable
 	"
 	return v:shell_error == 0
-endfunction    " ----------  end of function s:UpdateManBuffer  ----------
+endfunction    " ----------  end of function s:UpdateGitBuffer  ----------
 "
 "-------------------------------------------------------------------------------
 " s:StandardRun : execute 'git <cmd> ...'   {{{1
@@ -464,7 +468,7 @@ function! s:StandardRun( cmd, param, flags, ... )
 		return s:ErrorMsg ( 'Unknown flag "'.matchstr( a:flags, flag_check ).'".' )
 	endif
 	"
-	if a:flags =~ 'e' && empty( a:param ) | let param = s:EscapeCurrent())
+	if a:flags =~ 'e' && empty( a:param ) | let param = s:EscapeCurrent()
 	else                                  | let param = a:param
 	endif
 	"
@@ -477,7 +481,7 @@ function! s:StandardRun( cmd, param, flags, ... )
 	"
 	let text = system ( cmd )
 	"
-	if v:shell_error == 0 && text =~ '^\s*$'
+	if v:shell_error == 0 && text =~ '^\_s*$'
 		echo "ran successfully"               | " success
 	elseif v:shell_error == 0
 		echo "ran successfully:\n".text       | " success
@@ -533,6 +537,73 @@ function! GitS_Fold ()
 		return head.line.tail
 	endif
 endfunction    " ----------  end of function GitS_Fold  ----------
+"
+"-------------------------------------------------------------------------------
+" GitS_Run : execute 'git ...'   {{{1
+"
+" Flags: -> s:StandardRun
+"-------------------------------------------------------------------------------
+"
+function! GitS_Run( param, flags )
+	"
+	if a:flags =~ 'b'
+		call GitS_RunBuf ( 'update', a:param )
+	else
+		return s:StandardRun ( '', a:param, a:flags, 'bc' )
+	endif
+	"
+endfunction    " ----------  end of function GitS_Run  ----------
+"
+"-------------------------------------------------------------------------------
+" GitS_RunBuf : execute 'git ...'   {{{1
+"-------------------------------------------------------------------------------
+"
+function! GitS_RunBuf( action, ... )
+	"
+	if a:action == 'help'
+		echo s:HelpTxtStd
+		return
+	elseif a:action == 'quit'
+		close
+		return
+	elseif a:action == 'update'
+		"
+		if a:1 =~ '^!'
+			let subcmd = matchstr ( a:1, '[a-z][a-z\-]*' )
+		else
+			let param  = a:1
+			let subcmd = matchstr ( a:1, '[a-z][a-z\-]*' )
+		endif
+		"
+	else
+		echoerr 'Unknown action "'.a:action.'".'
+		return
+	endif
+	"
+	let buf = s:CheckCWD ()
+	"
+	if s:OpenGitBuffer ( 'Git - git '.subcmd )
+		"
+		let b:GitSupport_RunBufFlag = 1
+		"
+		exe 'nmap          <buffer> <S-F1> :call GitS_RunBuf("help")<CR>'
+		exe 'nmap <silent> <buffer> q      :call GitS_RunBuf("quit")<CR>'
+		exe 'nmap <silent> <buffer> u      :call GitS_RunBuf("update","!'.subcmd.'")<CR>'
+	endif
+	"
+	call s:ChangeCWD ( buf )
+	"
+	if ! exists ( 'param' )
+		let param = b:GitSupport_Param
+	else
+		let b:GitSupport_Param = param
+	endif
+	"
+	let cmd = s:Git_Executable.' '.param
+	"
+	call s:UpdateGitBuffer ( cmd )
+	"
+endfunction    " ----------  end of function GitS_RunBuf  ----------
 "
 "-------------------------------------------------------------------------------
 " GitS_Add : execute 'git add ...'   {{{1
@@ -607,7 +678,7 @@ function! GitS_Blame( action, ... )
 	"
 	let buf = s:CheckCWD ()
 	"
-	if s:OpenManBuffer ( 'Git - blame' )
+	if s:OpenGitBuffer ( 'Git - blame' )
 		"
 		let b:GitSupport_BlameFlag = 1
 		"
@@ -628,7 +699,7 @@ function! GitS_Blame( action, ... )
 	"
 	let cmd = s:Git_Executable.' blame '.param
 	"
-	call s:UpdateManBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd )
 	"
 endfunction    " ----------  end of function GitS_Blame  ----------
 "
@@ -667,7 +738,7 @@ function! GitS_BranchList( action )
 		return
 	endif
 	"
-	if s:OpenManBuffer ( 'Git - branch' )
+	if s:OpenGitBuffer ( 'Git - branch' )
 		"
 		let b:GitSupport_BranchFlag = 1
 		"
@@ -680,7 +751,7 @@ function! GitS_BranchList( action )
 	"
 	let cmd = s:Git_Executable.' branch -avv'
 	"
-	call s:UpdateManBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd )
 	"
 endfunction    " ----------  end of function GitS_BranchList  ----------
 "
@@ -754,7 +825,7 @@ function! GitS_Commit( mode, param, flags )
 " 			"
 " 			" open new buffer
 " 			belowright new
-" 			exe "edit ".escape( file, s:FilenameEscChar.s:CmdLineEscChar )
+" 			exe "edit ".fnameescape( file )
 " 			"
 " 			return
 " 			"
@@ -850,7 +921,7 @@ function! GitS_CommitDryRun( action, ... )
 	"
 	let buf = s:CheckCWD ()
 	"
-	if s:OpenManBuffer ( 'Git - commit --dry-run' )
+	if s:OpenGitBuffer ( 'Git - commit --dry-run' )
 		"
 		let b:GitSupport_CommitDryRunFlag = 1
 		"
@@ -872,7 +943,7 @@ function! GitS_CommitDryRun( action, ... )
 	"
 	let cmd = s:Git_Executable.' commit --dry-run '.param
 	"
-	call s:UpdateManBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd )
 	"
 endfunction    " ----------  end of function GitS_CommitDryRun  ----------
 "
@@ -904,7 +975,7 @@ function! GitS_Diff( action, ... )
 	"
 	let buf = s:CheckCWD ()
 	"
-	if s:OpenManBuffer ( 'Git - diff' )
+	if s:OpenGitBuffer ( 'Git - diff' )
 		"
 		let b:GitSupport_DiffFlag = 1
 		"
@@ -926,7 +997,7 @@ function! GitS_Diff( action, ... )
 	"
 	let cmd = s:Git_Executable.' diff '.param
 	"
-	call s:UpdateManBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd )
 	"
 endfunction    " ----------  end of function GitS_Diff  ----------
 "
@@ -980,10 +1051,10 @@ function! GitS_Help( action, ... )
 	"
 	if s:GitHelpFormat == 'html'
 		echo 'test'
-		return s:StandardRun ( 'help', helpcmd, '', 'c' )
+		return s:StandardRun ( 'help', helpcmd, '' )
 	endif
 	"
-	if s:OpenManBuffer ( 'Git - help' )
+	if s:OpenGitBuffer ( 'Git - help' )
 		"
 		let b:GitSupport_HelpFlag = 1
 		"
@@ -997,7 +1068,7 @@ function! GitS_Help( action, ... )
 	"
 	let cmd = s:Git_Executable.' help '.helpcmd
 	"
-	call s:UpdateManBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd )
 	"
 " 	let b:GitSupport_TOC = []
 " 	"
@@ -1048,7 +1119,7 @@ function! GitS_Log( action, ... )
 	"
 	let buf = s:CheckCWD ()
 	"
-	if s:OpenManBuffer ( 'Git - log' )
+	if s:OpenGitBuffer ( 'Git - log' )
 		"
 		let b:GitSupport_LogFlag = 1
 		"
@@ -1070,7 +1141,7 @@ function! GitS_Log( action, ... )
 	"
 	let cmd = s:Git_Executable.' log '.param
 	"
-	call s:UpdateManBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd )
 	"
 endfunction    " ----------  end of function GitS_Log  ----------
 "
@@ -1157,7 +1228,7 @@ function! GitS_RemoteList( action )
 		return
 	endif
 	"
-	if s:OpenManBuffer ( 'Git - remote' )
+	if s:OpenGitBuffer ( 'Git - remote' )
 		"
 		let b:GitSupport_RemoteFlag = 1
 		"
@@ -1170,7 +1241,7 @@ function! GitS_RemoteList( action )
 	"
 	let cmd = s:Git_Executable.' remote -v'
 	"
-	call s:UpdateManBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd )
 	"
 endfunction    " ----------  end of function GitS_RemoteList  ----------
 "
@@ -1231,7 +1302,7 @@ function! GitS_Show( action, ... )
 	"
 	let buf = s:CheckCWD ()
 	"
-	if s:OpenManBuffer ( 'Git - show' )
+	if s:OpenGitBuffer ( 'Git - show' )
 		"
 		let b:GitSupport_ShowFlag = 1
 		"
@@ -1253,7 +1324,7 @@ function! GitS_Show( action, ... )
 	"
 	let cmd = s:Git_Executable.' show '.param
 	"
-	call s:UpdateManBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd )
 	"
 endfunction    " ----------  end of function GitS_Show  ----------
 "
@@ -1304,7 +1375,7 @@ function! GitS_StashList( action, ... )
 		return
 	endif
 	"
-	if s:OpenManBuffer ( 'Git - stash list' )
+	if s:OpenGitBuffer ( 'Git - stash list' )
 		"
 		let b:GitSupport_StashListFlag = 1
 		"
@@ -1323,7 +1394,7 @@ function! GitS_StashList( action, ... )
 	"
 	let cmd = s:Git_Executable.' stash '.param
 	"
-	call s:UpdateManBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd )
 	"
 endfunction    " ----------  end of function GitS_StashList  ----------
 "
@@ -1353,7 +1424,7 @@ function! GitS_StashShow( action, ... )
 		return
 	endif
 	"
-	if s:OpenManBuffer ( 'Git - stash show' )
+	if s:OpenGitBuffer ( 'Git - stash show' )
 		"
 		let b:GitSupport_StashShowFlag = 1
 		"
@@ -1371,7 +1442,7 @@ function! GitS_StashShow( action, ... )
 	"
 	let cmd = s:Git_Executable.' stash '.param
 	"
-	call s:UpdateManBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd )
 	"
 endfunction    " ----------  end of function GitS_StashShow  ----------
 "
@@ -1524,7 +1595,7 @@ function! s:Status_FileAction( action )
 		"
 		" any section, action "edit"
 		belowright new
-		exe "edit ".escape( f_name, s:FilenameEscChar.s:CmdLineEscChar )
+		exe "edit ".fnameescape( f_name )
 		"
 	elseif s_code =~ '[bsmc]' && a:action == 'diff'
 		"
@@ -1679,7 +1750,7 @@ function! GitS_Status( action )
 	"
 	let buf = s:CheckCWD ()
 	"
-	if s:OpenManBuffer ( 'Git - status' )
+	if s:OpenGitBuffer ( 'Git - status' )
 		"
 		let b:GitSupport_StatusFlag = 1
 		let b:GitSupport_IgnoredOption    = 0
@@ -1733,7 +1804,7 @@ function! GitS_Status( action )
 	if b:GitSupport_ShortOption   == 1 && ! s:HasStatusBranch | let cmd .= ' --short'          | endif
 	if b:GitSupport_VerboseOption == 1                        | let cmd .= ' --verbose'        | endif
 	"
-	call s:UpdateManBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd )
 	"
 endfunction    " ----------  end of function GitS_Status  ----------
 "
@@ -1785,7 +1856,7 @@ function! GitS_TagList( action, ... )
 		return
 	endif
 	"
-	if s:OpenManBuffer ( 'Git - tag' )
+	if s:OpenGitBuffer ( 'Git - tag' )
 		"
 		let b:GitSupport_TagListFlag = 1
 		"
@@ -1804,7 +1875,7 @@ function! GitS_TagList( action, ... )
 	"
 	let cmd = s:Git_Executable.' tag '.param
 	"
-	call s:UpdateManBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd )
 	"
 endfunction    " ----------  end of function GitS_TagList  ----------
 "
@@ -1877,6 +1948,7 @@ function! s:InitMenus()
 	let ahead = 'amenu '.s:Git_RootMenu.'.'
 	"
 	exe ahead.'-Sep01-                      :'
+	exe ahead.'&run\ git<TAB>:Git           :Git<space>'
 	exe ahead.'&branch<TAB>:GitBranch       :GitBranch<CR>'
 	exe ahead.'&help\ \.\.\.<TAB>:GitHelp   :GitHelp<space>'
 	exe ahead.'&log<TAB>:GitLog             :GitLog<CR>'

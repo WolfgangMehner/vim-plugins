@@ -68,6 +68,11 @@ run the commands in every subdirectory of the project.
 
   Command                       Short Description
  ----------------------------------------------------------------------------
+  :Git    <cmd> [<param>]       (run) git <cmd> <param>
+  :Git!   <cmd> [<param>]       (buf) git <cmd> <param>
+  :GitRun <cmd> [<param>]       (run) git <cmd> <param>
+  :GitBuf <cmd> [<param>]       (buf) git <cmd> <param>
+
   :GitAdd [<param>]             (run) git add <param>
   :GitBlame [<param>]           (buf) git blame <param>
   :GitBranch                    (buf) git branch
@@ -166,6 +171,23 @@ one further file.
 Whenever a command opens a buffer, several maps are defined for this buffer.
 Hitting <SHIFT-F1> always prints a short help with all available maps. All
 buffers can be closed via <q> and updated via <u>.
+
+------------------------------------------------------------------------------
+                                                        *:Git* *:GitRun* *:GitBuf*
+	:Git <cmd> [<param>] ~
+	:GitRun <cmd> [<param>] ~
+	:Git! <cmd> [<param>] ~
+	:GitBuf <cmd> [<param>] ~
+
+Executes "git <cmd> ...". The last two versions redirect the output into a
+buffer.
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
+ ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
                                                                      *:GitAdd*
