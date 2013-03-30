@@ -695,6 +695,9 @@ The executable is set by g:Git_Executable. You should use the English language
 environment: >
 	let g:Git_Executable = 'LANG=en_US git'
 
+For Windows, set up the executable similar to this: >
+	let g:Git_Executable = 'C:\Programs\Git\bin\git.exe'
+
 ------------------------------------------------------------------------------
 5.2  MENUS                                           *gitsupport-config-menus*
 ------------------------------------------------------------------------------

@@ -251,6 +251,11 @@ if s:Git_Executable =~ '^LANG=\w\+\s.'
 		let s:Enabled = 0
 		let s:DisabledReason = "Git not executable: ".s:Git_Executable
 	endif
+elseif s:Git_Executable =~ '^\(["'']\)\zs.\+\ze\1'
+	if ! executable ( matchstr ( s:Git_Executable, '^\(["'']\)\zs.\+\ze\1' ) )
+		let s:Enabled = 0
+		let s:DisabledReason = "Git not executable: ".s:Git_Executable
+	endif
 else
 	if ! executable ( s:Git_Executable )
 		let s:Enabled = 0
