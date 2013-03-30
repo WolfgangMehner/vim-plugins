@@ -33,8 +33,8 @@ a quick overview and a short guide to this documentation.
  5.2    Menus                                     |gitsupport-config-menus|
  5.3    Maps                                      |gitsupport-config-maps|
 
- A.    Troubleshooting                            |gitsupport-troubleshooting|
- B.    Release Notes / Change Log                 |gitsupport-release-notes|
+ A.    Troubleshooting - Known Issues             |gitsupport-troubleshooting|
+ B.    Release Notes - Change Log                 |gitsupport-release-notes|
  C.    Credits                                    |gitsupport-credits|
 
 ==============================================================================
@@ -730,20 +730,30 @@ With these lines, <F10> will open the status buffer: >
 	inoremap <silent> <F10>  <C-C>:GitStatus<CR>
 
 ==============================================================================
-A.  TROUBLESHOOTING                               *gitsupport-troubleshooting*
+A.  TROUBLESHOOTING - KNOWN ISSUES                *gitsupport-troubleshooting*
 ==============================================================================
 
 * How can I see what was loaded?
-	-	Use ':scriptnames' from the Vim command line.
+	- Use ':scriptnames' from the Vim command line.
 
 * git is not running.
-	-	Is "git" executable from the command line?
-	-	Is the $PATH variable set correctly?
-	-	Are the settings correct? See:
+	- Is "git" executable from the command line?
+	- Is the $PATH variable set correctly?
+	- Are the settings correct? See:
 			:help |gitsupport-config-executable|
 
+* Windows: When entered on the Vim command line, commands containing filenames
+	as parameters cause errors such as "... file not found ...".
+	- This may happen if filenames contain special characters such as spaces.
+		The Vim command line escapes those differently then Windows expects then
+		to be escaped.
+	- However, a filename containing spaces can always be escape using quotes:
+			:GitAdd "help 1.txt"
+	- If you already are in the corresponding buffer, simply use:
+			:GitAdd
+
 ==============================================================================
-B.  RELEASE NOTES / CHANGE LOG                      *gitsupport-release-notes*
+B.  RELEASE NOTES - CHANGE LOG                      *gitsupport-release-notes*
 ==============================================================================
 
 See files 'git-support/README.gitsupport' and 'git-support/doc/ChangeLog'.
