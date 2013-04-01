@@ -42,6 +42,25 @@ if exists("g:C_Version") || &cp
 endif
 let g:C_Version= "6.1"  							" version number of this script; do not change
 "
+"===  FUNCTION  ================================================================
+"          NAME:  C_SetGlobalVariable     {{{1
+"   DESCRIPTION:  Define a global variable and assign a default value if nor
+"                 already defined
+"    PARAMETERS:  name - global variable
+"                 default - default value
+"===============================================================================
+function! s:C_SetGlobalVariable ( name, default )
+  if !exists('g:'.a:name)
+    exe 'let g:'.a:name."  = '".a:default."'"
+	else
+		" check for an empty initialization
+		exe 'let	val	= g:'.a:name
+		if empty(val)
+			exe 'let g:'.a:name."  = '".a:default."'"
+		endif
+  endif
+endfunction   " ---------- end of function  s:C_SetGlobalVariable  ----------
+"
 "#################################################################################
 "
 "  Global variables (with default values) which can be overridden.
@@ -126,27 +145,28 @@ endif
 "  Modul global variables (with default values) which can be overridden. {{{1
 "
 if	s:MSWIN
-	let s:C_CCompiler           = 'gcc.exe'  " the C   compiler
-	let s:C_CplusCompiler       = 'g++.exe'  " the C++ compiler
+	call s:C_SetGlobalVariable ( 'C_CCompiler',     'gcc.exe' )
+	call s:C_SetGlobalVariable ( 'C_CplusCompiler', 'g++.exe' )
 	let s:C_ExeExtension        = '.exe'     " file extension for executables (leading point required)
 	let s:C_ObjExtension        = '.obj'     " file extension for objects (leading point required)
 	let s:C_Man                 = 'man.exe'  " the manual program
 else
-	let s:C_CCompiler           = 'gcc'      " the C   compiler
-	let s:C_CplusCompiler       = 'g++'      " the C++ compiler
+	call s:C_SetGlobalVariable ( 'C_CCompiler',     'gcc' )
+	call s:C_SetGlobalVariable ( 'C_CplusCompiler', 'g++' )
 	let s:C_ExeExtension        = ''         " file extension for executables (leading point required)
 	let s:C_ObjExtension        = '.o'       " file extension for objects (leading point required)
 	let s:C_Man                 = 'man'      " the manual program
 endif
 let s:C_VimCompilerName				= 'gcc'      " the compiler name used by :compiler
 "
-let s:C_CFlags         				= '-Wall -g -O0 -c'      " C compiler flags: compile, don't optimize
-let s:C_LFlags         				= '-Wall -g -O0'         " C compiler flags: link   , don't optimize
-let s:C_Libs           				= '-lm'                  " C libraries to use
+call s:C_SetGlobalVariable ( 'C_CFlags', '-Wall -g -O0 -c')
+call s:C_SetGlobalVariable ( 'C_LFlags', '-Wall -g -O0'   )
+call s:C_SetGlobalVariable ( 'C_Libs',   '-lm'            )
 "
-let s:C_CplusCFlags         	= '-Wall -g -O0 -c'      " C++ compiler flags: compile, don't optimize
-let s:C_CplusLFlags         	= '-Wall -g -O0'         " C++ compiler flags: link   , don't optimize
-let s:C_CplusLibs           	= '-lm'                  " C++ libraries to use
+call s:C_SetGlobalVariable ( 'C_CplusCFlags', '-Wall -g -O0 -c')
+call s:C_SetGlobalVariable ( 'C_CplusLFlags', '-Wall -g -O0'   )
+call s:C_SetGlobalVariable ( 'C_CplusLibs',   '-lm'            )
+call s:C_SetGlobalVariable ( 'C_Debugger',   'gdb'            )
 "
 let s:C_CExtension     				= 'c'                    " C file extension; everything else is C++
 let s:C_CodeCheckExeName      = 'check'
@@ -161,7 +181,6 @@ let s:C_RootMenu  	   				= '&C\/C\+\+.'           " the name of the root menu o
 let s:C_TypeOfH               = 'cpp'
 let s:C_Wrapper               = s:plugin_dir.'/c-support/scripts/wrapper.sh'
 let s:C_XtermDefaults         = '-fa courier -fs 12 -geometry 80x24'
-let s:C_Debugger              = "gdb"
 let s:C_GuiSnippetBrowser     = 'gui'										" gui / commandline
 let s:C_GuiTemplateBrowser    = 'gui'										" gui / explorer / commandline
 "
@@ -183,17 +202,9 @@ function! C_CheckGlobal ( name )
   endif
 endfunction    " ----------  end of function C_CheckGlobal ----------
 "
-call C_CheckGlobal('C_Debugger             ')
-call C_CheckGlobal('C_CCompiler            ')
-call C_CheckGlobal('C_CExtension           ')
-call C_CheckGlobal('C_CFlags               ')
 call C_CheckGlobal('C_CodeCheckExeName     ')
 call C_CheckGlobal('C_CodeCheckOptions     ')
 call C_CheckGlobal('C_CodeSnippets         ')
-call C_CheckGlobal('C_CplusCFlags          ')
-call C_CheckGlobal('C_CplusCompiler        ')
-call C_CheckGlobal('C_CplusLFlags          ')
-call C_CheckGlobal('C_CplusLibs            ')
 call C_CheckGlobal('C_CreateMenusDelayed   ')
 call C_CheckGlobal('C_Ctrl_j               ')
 call C_CheckGlobal('C_ExeExtension         ')
@@ -202,8 +213,6 @@ call C_CheckGlobal('C_GuiSnippetBrowser    ')
 call C_CheckGlobal('C_GuiTemplateBrowser   ')
 call C_CheckGlobal('C_IndentErrorLog       ')
 call C_CheckGlobal('C_InsertFileHeader     ')
-call C_CheckGlobal('C_LFlags               ')
-call C_CheckGlobal('C_Libs                 ')
 call C_CheckGlobal('C_LineEndCommColDefault')
 call C_CheckGlobal('C_LoadMenus            ')
 call C_CheckGlobal('C_LocalTemplateFile    ')
@@ -1340,11 +1349,11 @@ function! C_Compile ()
 		" &makeprg can be a string containing blanks
 		call s:C_SaveGlobalOption('makeprg')
 		if expand("%:e") == s:C_CExtension
-			exe		"setlocal makeprg=".s:C_CCompiler
-			let	compilerflags	= s:C_CFlags
+			exe		"setlocal makeprg=".g:C_CCompiler
+			let	compilerflags	= g:C_CFlags
 		else
-			exe		"setlocal makeprg=".s:C_CplusCompiler
-			let	compilerflags	= s:C_CplusCFlags 
+			exe		"setlocal makeprg=".g:C_CplusCompiler
+			let	compilerflags	= g:C_CplusCFlags 
 		endif
 		"
 		" COMPILATION
@@ -1433,21 +1442,25 @@ function! C_Link ()
 	"   object exists
 	"   source exists
 	"   object newer then source
-	let	linkerflags	= s:C_LFlags 
+	let	linkerflags	= g:C_LFlags 
 
 	if filereadable(Obj) && (getftime(Obj) >= getftime(Sou))
 		call s:C_SaveGlobalOption('makeprg')
 		if expand("%:e") == s:C_CExtension
-			exe		"setlocal makeprg=".s:C_CCompiler
-			let	linkerflags	= s:C_LFlags
+			exe		"setlocal makeprg=".g:C_CCompiler
+			let	linkerflags	= g:C_LFlags
 		else
-			exe		"setlocal makeprg=".s:C_CplusCompiler
-			let	linkerflags	= s:C_CplusLFlags 
+			exe		"setlocal makeprg=".g:C_CplusCompiler
+			let	linkerflags	= g:C_CplusLFlags 
 		endif
 		exe ":compiler ".s:C_VimCompilerName
 		let	s:LastShellReturnCode	= 0
 		let v:statusmsg = ''
-		silent exe "make ".linkerflags." -o ".ExeEsc." ".ObjEsc." ".s:C_Libs
+		if &filetype == "c" 
+			silent exe "make ".linkerflags." -o ".ExeEsc." ".ObjEsc." ".g:C_Libs
+		else
+			silent exe "make ".linkerflags." -o ".ExeEsc." ".ObjEsc." ".g:C_CplusLibs
+		endif
 		if v:shell_error != 0
 			let	s:LastShellReturnCode	= v:shell_error
 		endif
@@ -1755,25 +1768,22 @@ function! C_Debugger ()
 		call C_ExeToRun()
 	endif
   let l:arguments 	= exists("b:C_CmdLineArgs") ? " ".b:C_CmdLineArgs : ""
-  let l:switches    = exists("b:C_Switches") ? b:C_Switches.' ' : ""
   "
   if  s:MSWIN
     let l:arguments = substitute( l:arguments, '^\s\+', ' ', '' )
     let l:arguments = substitute( l:arguments, '\s\+', "\" \"", 'g')
-		let l:switches  = substitute( l:switches,  '^\s\+', ' ', '' )
-		let l:switches  = substitute( l:switches,  '\s\+', "\" \"", 'g')
   endif
   "
   " debugger is 'gdb'
   "
-  if s:C_Debugger == "gdb"
+  if g:C_Debugger == "gdb"
     if  s:MSWIN
       exe '!gdb  "'.s:C_ExecutableToRun.l:arguments.'"'
     else
       if has("gui_running") || &term == "xterm"
-     	 	silent exe "!xterm ".s:C_XtermDefaults.' -e gdb ' . l:switches . s:C_ExecutableToRun.l:arguments.' &'
+     	 	silent exe "!xterm ".s:C_XtermDefaults.' -e gdb ' . s:C_ExecutableToRun.l:arguments.' &'
       else
-        silent exe '!clear; gdb ' . l:switches . s:C_ExecutableToRun.l:arguments
+        silent exe '!clear; gdb ' . s:C_ExecutableToRun.l:arguments
       endif
     endif
   endif
@@ -1782,7 +1792,7 @@ function! C_Debugger ()
     "
     " grapical debugger is 'kdbg', uses a PerlTk interface
     "
-    if s:C_Debugger == "kdbg"
+    if g:C_Debugger == "kdbg"
       if  s:MSWIN
 				exe '!kdbg "'.s:C_ExecutableToRun.l:arguments.'"'
       else
@@ -1792,7 +1802,7 @@ function! C_Debugger ()
     "
     " debugger is 'ddd'  (not available for MS Windows); graphical front-end for GDB
     "
-    if s:C_Debugger == "ddd" && !s:MSWIN
+    if g:C_Debugger == "ddd" && !s:MSWIN
       if !executable("ddd")
         echohl WarningMsg
         echo 'ddd does not exist or is not executable!'
@@ -2068,16 +2078,17 @@ function! C_Settings ()
   let txt = txt.'                  licence :  "'.mmtemplates#core#ExpandText( g:C_Templates, '|LICENSE|'     )."\"\n"
 	let txt = txt.'             organization :  "'.mmtemplates#core#ExpandText( g:C_Templates, '|ORGANIZATION|')."\"\n"
 	let txt = txt.'                  project :  "'.mmtemplates#core#ExpandText( g:C_Templates, '|PROJECT|'     )."\"\n"
-	let txt = txt.'         C / C++ compiler :  '.s:C_CCompiler.' / '.s:C_CplusCompiler."\n"
+	let txt = txt.'         C / C++ compiler :  '.g:C_CCompiler.' / '.g:C_CplusCompiler."\n"
 	let txt = txt.'         C file extension :  "'.s:C_CExtension.'"  (everything else is C++)'."\n"
 	let txt = txt.'    extension for objects :  "'.s:C_ObjExtension."\"\n"
 	let txt = txt.'extension for executables :  "'.s:C_ExeExtension."\"\n"
-	let txt = txt.'       compiler flags (C) :  "'.s:C_CFlags."\"\n"
-	let txt = txt.'         linker flags (C) :  "'.s:C_LFlags."\"\n"
-	let txt = txt.'            libraries (C) :  "'.s:C_Libs."\"\n"
-	let txt = txt.'     compiler flags (C++) :  "'.s:C_CplusCFlags."\"\n"
-	let txt = txt.'       linker flags (C++) :  "'.s:C_CplusLFlags."\"\n"
-	let txt = txt.'          libraries (C++) :  "'.s:C_CplusLibs."\"\n"
+	let txt = txt.'       compiler flags (C) :  "'.g:C_CFlags."\"\n"
+	let txt = txt.'         linker flags (C) :  "'.g:C_LFlags."\"\n"
+	let txt = txt.'            libraries (C) :  "'.g:C_Libs."\"\n"
+	let txt = txt.'     compiler flags (C++) :  "'.g:C_CplusCFlags."\"\n"
+	let txt = txt.'       linker flags (C++) :  "'.g:C_CplusLFlags."\"\n"
+	let txt = txt.'          libraries (C++) :  "'.g:C_CplusLibs."\"\n"
+	let txt = txt.'                 debugger :  "'.g:C_Debugger."\"\n"
 	let txt = txt.'   code snippet directory :  "'.s:C_CodeSnippets."\"\n"
 	" ----- template files  ------------------------
  	let txt = txt.'           template style :  "'.mmtemplates#core#Resource ( g:C_Templates, "style" )[0]."\"\n"

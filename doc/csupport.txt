@@ -1,4 +1,4 @@
-*csupport.txt*                  C/C++ Support                 Februar 16 2013
+*csupport.txt*                  C/C++ Support                   April 1 2013
 
 C/C++ Support                                           *c-support* *csupport*
                              Plugin version 6.1
@@ -1444,7 +1444,19 @@ The variable plugin_dir will automatically be set to one of the following values
  g:C_XtermDefaults         : the xterm defaults
 
 To override the default add appropriate assignments to ~/.vimrc .
-
+The following global variables can be changed on the fly from the Vim command
+line, i.e. without restarting the editor:
+>
+	C_CCompiler
+	C_CFlags
+	C_LFlags
+	C_Libs
+	C_CplusCFlags
+	C_CplusCompiler
+	C_CplusLFlags
+	C_CplusLibs
+	C_Debugger
+<
 ------------------------------------------------------------------------------
 4.2  THE ROOT MENU                                      *csupport-custom-root*
 ------------------------------------------------------------------------------
