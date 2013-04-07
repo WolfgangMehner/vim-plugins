@@ -1,7 +1,7 @@
 " Vim syntax file
-" Language: git output : status (contains: diff)
+" Language: git output : status (uses: diff)
 " Maintainer: Wolfgang Mehner <wolfgang-mehner@web.de>
-" Last Change: 23.12.2012
+" Last Change: 19.03.2013
 
 if exists("b:current_syntax")
 	finish
@@ -13,6 +13,19 @@ syn case match
 "-------------------------------------------------------------------------------
 " Syntax
 "-------------------------------------------------------------------------------
+
+" top-level categories:
+" - GitStagedRegion
+" - GitModifiedRegion
+" - GitUntrackedRegion
+" - GitIgnoredRegion
+" - GitUntrackedRegion
+" imported:
+" - GitDiffRegion
+
+" use 'GitDiffRegion' as a top-level category
+runtime! syntax/gitsdiff.vim
+unlet b:current_syntax
 
 syn region GitStagedRegion     start=/^# Changes to be committed:/ end=/^\%(# \w\)\@=\|^#\@!/ contains=GitStatusHeader,GitStatusComment,GitStagedFile fold
 syn match  GitStagedFile       "^#\s\+\zs[[:alnum:][:space:]]\+:\s.\+" contained
@@ -35,46 +48,16 @@ syn match  GitUnmergedFile     "^#\s\+\zs[[:alnum:][:space:]]\+:\s.\+" contained
 syn match  GitStatusHeader     "^# \zs.\+:$"        contained
 syn match  GitStatusComment    "^#\s\+\zs([^)]*)$"  contained
 
-syn region GitDiffRegion       start=/^diff / end=/^\%(diff \)\@=/ contains=GitDiffHeader,GitDiffLines,GitMergeLines fold
-syn region GitDiffLines        start=/^@@ /   end=/^\%(@@ \)\@=\|^\%(diff \)\@=/ contains=GitDiffRange,GitDiffLineP,GitDiffLineM fold
-syn region GitMergeLines       start=/^@@@ /  end=/^\%(@@@ \)\@=\|^\%(diff \)\@=/ contains=GitMergeRange,GitMergeLineP,GitMergeLineM,GitMergeConflict fold
-
-syn match  GitDiffHeader       "^\w.*$"    contained
-syn match  GitDiffHeader       "^--- .*$"  contained
-syn match  GitDiffHeader       "^+++ .*$"  contained
-
-syn match  GitDiffRange        "^@@[^@]\+@@"  contained
-syn match  GitDiffLineP        "^+.*$"        contained
-syn match  GitDiffLineM        "^-.*$"        contained
-
-syn match  GitMergeRange       "^@@@[^@]\+@@@"   contained
-syn match  GitMergeLineP       "^+ .*$"          contained
-syn match  GitMergeLineP       "^ +.*$"          contained
-syn match  GitMergeLineM       "^- .*$"          contained
-syn match  GitMergeLineM       "^ -.*$"          contained
-syn match  GitMergeConflict    "^++<<<<<<< .\+"  contained
-syn match  GitMergeConflict    "^++======="      contained
-syn match  GitMergeConflict    "^++>>>>>>> .\+"  contained
-
 "-------------------------------------------------------------------------------
 " Highlight
 "-------------------------------------------------------------------------------
 
-highlight default      GitStatusHeader   cterm=bold       gui=bold
-highlight default      GitStatusComment  ctermfg=Blue     guifg=Blue
-highlight default      GitStagedFile     ctermfg=Green    guifg=SeaGreen
-highlight default      GitModifiedFile   ctermfg=Red      guifg=Red
-highlight default link GitUntrackedFile  GitModifiedFile
-highlight default link GitIgnoredFile    GitModifiedFile
-highlight default link GitUnmergedFile   GitModifiedFile
-
-highlight default      GitDiffHeader  cterm=bold                 gui=bold
-highlight default      GitDiffRange   cterm=bold  ctermfg=Cyan   gui=bold  guifg=DarkCyan
-highlight default      GitDiffLineP               ctermfg=Green            guifg=SeaGreen
-highlight default      GitDiffLineM               ctermfg=Red              guifg=Red
-highlight default link GitMergeRange GitDiffRange
-highlight default link GitMergeLineP GitDiffLineP
-highlight default link GitMergeLineM GitDiffLineM
-highlight default      GitMergeConflict  cterm=bold  ctermfg=White  ctermbg=Red  gui=bold  guifg=White  guibg=Red
+highlight default link GitStatusHeader   GitHeading
+highlight default link GitStatusComment  GitComment
+highlight default link GitStagedFile     GitAdd
+highlight default link GitModifiedFile   GitRemove
+highlight default link GitUntrackedFile  GitRemove
+highlight default link GitIgnoredFile    GitRemove
+highlight default link GitUnmergedFile   GitRemove
 
 let b:current_syntax = "gitsstatus"

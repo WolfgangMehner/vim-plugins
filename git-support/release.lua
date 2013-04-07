@@ -27,11 +27,9 @@ local filelist = {
 	'doc/gitsupport.txt',
 	'plugin/git-support.vim',
 	'git-support/doc/',
+	'git-support/rc/',
 	'git-support/README.gitsupport',
-	'syntax/gitsbranch.vim',
-	'syntax/gitslog.vim',
-	'syntax/gitssshort.vim',
-	'syntax/gitsstatus.vim',
+	'syntax/gits*.vim',
 }
 
 outfile = escape_shell ( outfile )

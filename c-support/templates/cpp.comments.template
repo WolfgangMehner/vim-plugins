@@ -81,7 +81,7 @@
   'TODO'        : ':TODO:|DATE| |TIME|:|AUTHORREF|:',
   'WARNING'     : ':WARNING:|DATE| |TIME|:|AUTHORREF|:',
   'WORKAROUND'  : ':WORKAROUND:|DATE| |TIME|:|AUTHORREF|:',
-  'new keyword' : ':<CURSOR>:|DATE| |TIME|:|AUTHORREF|: {+COMMENT+}',
+  'new keyword' : ':{+NEW_KEYWORD+}:|DATE| |TIME|:|AUTHORREF|:',
 == LIST: comments_special == list ==
   'EMPTY'                         , 
   'FALL THROUGH'                  , 

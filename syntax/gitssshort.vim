@@ -14,7 +14,14 @@ syn case match
 " Syntax
 "-------------------------------------------------------------------------------
 
-" The expressions are designed to distinguish between stated, modified and
+" top-level categories:
+" - GitStagedFile
+" - GitModifiedFile
+" - GitUntrackedFile
+" - GitIgnoredFile
+" - GitUnmergedFile
+
+" The expressions are designed to distinguish between staged, modified and
 " unmerged files. This should work, since a modified file is never prefixed
 " by 'AA' or 'DD'.
 
@@ -31,10 +38,10 @@ syn match  GitUnmergedFile     "^\%([AD]U\|U[ADU]\)\s.\+"
 " Highlight
 "-------------------------------------------------------------------------------
 
-highlight default      GitStagedFile     ctermfg=Green    guifg=SeaGreen
-highlight default      GitModifiedFile   ctermfg=Red      guifg=Red
-highlight default link GitUntrackedFile  GitModifiedFile
-highlight default link GitIgnoredFile    GitModifiedFile
-highlight default link GitUnmergedFile   GitModifiedFile
+highlight default link GitStagedFile     GitAdd
+highlight default link GitModifiedFile   GitRemove
+highlight default link GitUntrackedFile  GitRemove
+highlight default link GitIgnoredFile    GitRemove
+highlight default link GitUnmergedFile   GitRemove
 
 let b:current_syntax = "gitssshort"

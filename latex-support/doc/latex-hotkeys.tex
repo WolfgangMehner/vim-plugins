@@ -1,20 +1,21 @@
 %%=====================================================================================
 %%
-%%         File:  latex-hotkeys.tex
+%%       Filename:  latex-hotkeys.tex
 %%
-%%  Description:  latex-support.vim : Key mappings
-%%                
-%%                
-%%       Author:  Dr.-Ing. Fritz Mehner
-%%        Email:  mehner.fritz@fh-swf.de
-%%    Copyright:  Copyright (C)  2013  Dr.-Ing. Fritz Mehner  (mehner@fh-swf.de)
-%%      Version:  see \Pluginversion
-%%      Created:  02.01.2013
+%%    Description:  latex-support.vim : Key mappings
+%%
+%%        Version:  see \Pluginversion
+%%        Created:  02.01.2013
+%%       Revision:  none
+%%
+%%         Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
+%%   Organization:  FH Südwestfalen, Iserlohn, Germany
+%%      Copyright:  Copyright (c) 2013, Dr. Fritz Mehner
 %%                
 %%=====================================================================================
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%  Latex settings			[[[1
+%%  Latex settings      [[[1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass[oneside,10pt,landscape,DIV17]{scrartcl}
 
@@ -58,9 +59,8 @@
 \hypersetup{pdfsubject={Vim-plug-in, latex-support.vim, hot keys}}
 \hypersetup{pdftitle={Vim-plug-in, latex-support.vim, hot keys}}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%  START OF DOCUMENT			[[[1
+%%  START OF DOCUMENT     [[[1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
@@ -68,7 +68,7 @@
 \begin{center}
 %
 %%======================================================================
-%%  title			[[[2
+%%  title     [[[2
 %%======================================================================
 \textbf{\textsc{\small{Vim-Plug-in}}}\\
 \textbf{\LARGE{latex-support.vim}}\\
@@ -84,7 +84,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \vspace{4.0mm}
 
 %%======================================================================
-%%  page 1 / table, left part			[[[2
+%%  page 1 / table, left part     [[[2
 %%======================================================================
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{60mm}|}
@@ -105,8 +105,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline \Rep\Map{cj}   & adjust end-of-line comments \hfill (n, i, v)\\
 \hline     \Map{cs}   & set end-of-line comment col.\hfill (n)      \\
 %
-\hline \Rep\Map{cc}   & code $\rightarrow$ comment  \hfill (n, i, v)\\
-\hline     \Map{cu}   & uncomment code block        \hfill (n, i, v)\\
+\hline \Rep\Map{cc}   & toggle code comment         \hfill (n, i, v)\\
 %
 \hline     \Map{cfr1} & frame comment, type 1       \hfill (n, i)   \\
 \hline     \Map{cfr2} & frame comment, type 2       \hfill (n, i)   \\
@@ -132,7 +131,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
 %%======================================================================
-%%  page 1 / table, middle part			[[[2
+%%  page 1 / table, middle part     [[[2
 %%======================================================================
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{60mm}|}
@@ -161,14 +160,16 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline \Map{tsp}  & spacing                        \hfill (n, i)\\
 \hline \Map{tsh}  & hspace                         \hfill (n, i)\\
 \hline \Map{tsv}  & vspace                         \hfill (n, i)\\
-\hline \Map{ta}   & line alignment + spacin        \hfill (n, i, v)\\
+\hline \Map{ta}   & line alignment + spacing       \hfill (n, i, v)\\
 \hline \Map{ttc}  & textcomp characters            \hfill (n, i)\\
+\hline
 \hline \Map{tbi}  & bibitem                        \hfill (n, i)\\
 \hline \Map{tci}  & cite                           \hfill (n, i)\\
 \hline \Map{tfo}  & footnote                       \hfill (n, i)\\
 \hline \Map{tin}  & index                          \hfill (n, i)\\
 \hline \Map{tla}  & label                          \hfill (n, i)\\
 \hline \Map{tma}  & marginpar                      \hfill (n, i)\\
+\hline \Map{tco}  & newcommand                     \hfill (n, i)\\
 \hline \Map{tnc}  & nocite                         \hfill (n, i)\\
 \hline \Map{tpa}  & pageref                        \hfill (n, i)\\
 \hline \Map{tre}  & ref                            \hfill (n, i)\\
@@ -183,15 +184,17 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline \Map{nv}  & view code snippet         \hfill (n, i)   \\
 \hline \Map{nw}  & write code snippet        \hfill (n, i, v)\\
 \hline \Map{ne}  & edit code snippet         \hfill (n, i)   \\
+\hline
 \hline \Map{ntl} & edit local templates      \hfill (n, i)   \\
-\hline \Map{ne}  & reread templates          \hfill (n, i)   \\
+\hline \Map{ntr} & reread templates          \hfill (n, i)   \\
+\hline \Map{nts} & choose style              \hfill (n, i)   \\
 \hline
 %
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
 %%======================================================================
-%%  page 1 / table, right part			[[[2
+%%  page 1 / table, right part      [[[2
 %%======================================================================
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{62mm}|}
@@ -200,29 +203,31 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{M}ath}}  \\[1.0ex]
-\hline	\Map{msp} & spaces                    \hfill (n, i)\\
-\hline	\Map{mac} & accents                   \hfill (n, i)\\
-\hline	\Map{mfs} & font styles               \hfill (n, i)\\
-\hline	\Map{md}  & delimiter                 \hfill (n, i)\\
-\hline	\Map{mf}  & functions                 \hfill (n, i)\\
-\hline	\Map{mgl} & lowercase  greek          \hfill (n, i)\\
-\hline	\Map{mgu} & upperrcase greek          \hfill (n, i)\\
-\hline	\Map{mo}  & operators                 \hfill (n, i)\\
-\hline	\Map{mr}  & relations                 \hfill (n, i)\\
-\hline	\Map{mar} & arrows                    \hfill (n, i)\\
-\hline	\Map{me}  & equation+label            \hfill (n, i, v)\\
-\hline	\Map{mea} & eqnarray+label            \hfill (n, i, v)\\
-\hline	\Map{mm}  & matrix                    \hfill (n, i)\\
-\hline	\Map{mch} & choose                    \hfill (n, i, v)\\
-\hline	\Map{mddt}& ddot                      \hfill (n, i, v)\\
-\hline	\Map{mdt} & dot                       \hfill (n, i, v)\\
-\hline	\Map{mfr} & frac                      \hfill (n, i, v)\\
-\hline	\Map{mnr} & nth root                  \hfill (n, i, v)\\
-\hline	\Map{mpr} & prod                      \hfill (n, i, v)\\
-\hline	\Map{msq} & sqrt                      \hfill (n, i, v)\\
-\hline	\Map{msu} & sum                       \hfill (n, i, v)\\
-\hline	\Map{mve} & vec                       \hfill (n, i, v)\\
-\hline	\Map{mon} & operatorname              \hfill (n, i, v)\\
+\hline  \Map{msp} & spaces                    \hfill (n, i)\\
+\hline  \Map{mac} & accents                   \hfill (n, i)\\
+\hline  \Map{mfs} & font styles               \hfill (n, i)\\
+\hline  \Map{md}  & delimiter                 \hfill (n, i)\\
+\hline  \Map{mf}  & functions                 \hfill (n, i)\\
+\hline  \Map{mgl} & lowercase  greek          \hfill (n, i)\\
+\hline  \Map{mgu} & uppercase greek           \hfill (n, i)\\
+\hline  \Map{mo}  & operators                 \hfill (n, i)\\
+\hline  \Map{mr}  & relations                 \hfill (n, i)\\
+\hline  \Map{mar} & arrows                    \hfill (n, i)\\
+\hline
+\hline  \Map{me}  & equation+label            \hfill (n, i, v)\\
+\hline  \Map{mea} & eqnarray+label            \hfill (n, i, v)\\
+\hline  \Map{mm}  & matrix                    \hfill (n, i)\\
+\hline
+\hline  \Map{mch} & choose                    \hfill (n, i, v)\\
+\hline  \Map{mddt}& ddot                      \hfill (n, i, v)\\
+\hline  \Map{mdt} & dot                       \hfill (n, i, v)\\
+\hline  \Map{mfr} & frac                      \hfill (n, i, v)\\
+\hline  \Map{mnr} & nth root                  \hfill (n, i, v)\\
+\hline  \Map{mpr} & prod                      \hfill (n, i, v)\\
+\hline  \Map{msq} & sqrt                      \hfill (n, i, v)\\
+\hline  \Map{msu} & sum                       \hfill (n, i, v)\\
+\hline  \Map{mve} & vec                       \hfill (n, i, v)\\
+\hline  \Map{mon} & operatorname              \hfill (n, i, v)\\
 \hline
 %%----------------------------------------------------------------------
 %%  Wizard
@@ -256,10 +261,10 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \newpage
 %
 %%======================================================================
-%%  page 2 / table, left part			[[[2
+%%  page 2 / table, left part     [[[2
 %%======================================================================
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
-\begin{tabular}[]{|p{11mm}|p{62mm}|}
+\begin{tabular}[]{|p{11mm}|p{63mm}|}
 %%----------------------------------------------------------------------
 %%  menu run
 %%----------------------------------------------------------------------
@@ -270,19 +275,22 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline \Map{rdvi} & view DVI                                 \hfill (n, i)\\
 \hline \Map{rpdf} & view PDF                                 \hfill (n, i)\\
 \hline \Map{rps}  & view PS                                  \hfill (n, i)\\
+\hline
 \hline \Map{rm}   & run \texttt{make}                        \hfill (n, i)\\
 \hline \Map{rcm}  & choose makefile                          \hfill (n, i)\\
 \hline \Map{rmc}  & \texttt{make clean}                      \hfill (n, i)\\
 \hline \Map{rma}  & command line arguments for \texttt{make} \hfill (n, i)\\
+\hline
 \hline \Map{rmi}  & run \texttt{makeindex}                   \hfill (n, i)\\
 \hline \Map{rbi}  & run \texttt{bibtex}                      \hfill (n, i)\\
+\hline \Map{rh}   & hardcopy buffer to \small{FILENAME}.ps   \hfill (n, i, v)\\
 \hline \Map{rse}  & show plugin settings                     \hfill (n, i)\\
 \hline
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
 %%======================================================================
-%%  page 2 / table, middle part			[[[2
+%%  page 2 / table, middle part     [[[2
 %%======================================================================
 \fbox{\begin{minipage}[t][30mm][l]{73mm}
 \begin{flushleft}

@@ -1,0 +1,110 @@
+README for latex-support.vim (Version 1.0) / Jan 04 2013
+
+  *  INSTALLATION
+  *  RELEASE NOTES 
+  *  FILES
+  *  ADDITIONAL TIPS
+  *  CREDITS
+
+LaTeX Support implements an LaTeX-IDE for Vim/gVim. It has been written to
+considerably speed up writing code in a consistent style.  This is done by
+inserting complete statements, comments, idioms, and code snippets.    There
+are many additional hints and options which can improve speed and comfort when
+writing LaTeX. Please read the documentation.  This plugin can be used with Vim
+version 7.x.
+
+=======================================================================================
+  INSTALLATION
+=======================================================================================
+
+The subdirectories in the zip archive  latex-support.zip  mirror the directory
+structure which is needed below the local installation directory $HOME/.vim/
+for LINUX/UNIX ($VIM/vimfiles/ for Windows; find the value of $VIM with 
+":echo $VIM" from inside Vim).
+
+(0) Save the template files in '$HOME/.vim/latex-support/templates' if
+    you have changed any of them.
+
+(1) Copy the zip archive  latex-support.zip to $HOME/.vim and run
+
+      unzip latex-support.zip
+
+(2) Loading of plugin files must be enabled. If not use
+      :filetype plugin on
+    This is the minimal content of the file '$HOME/.vimrc'. Create one if there
+    is none. 
+
+(3) Set at least some personal details into latex-support/templates/Templates 
+    by overriding the defaults.
+    Please read the documentation to fully understand the template system.
+
+    The files customization.vimrc and customization.gvimrc are replacements or 
+    extensions for your .vimrc and .gvimrc ( _vimrc and _gvimrc under Windows).
+    You may want to use parts of them. The files are documented. 
+
+(4) Consider additional settings in the file '$HOME/.vimrc'.
+    The files customization.vimrc and customization.gvimrc are replacements or 
+    extensions for your .vimrc and .gvimrc ( _vimrc and _gvimrc under Windows).
+    You may want to use parts of them. The files are documented. 
+
+There are a lot of features and options which can be used and influenced:
+
+  *  use of template files and macros
+  *  using and managing personal code snippets
+  *  using additional plugins
+
+Restart gVim/Vim generate the help tags 
+
+  :helptags ~/.vim/doc
+
+and look at the latex-support help with
+
+  :help latexsupport 
+
+               +-----------------------------------------------+
+               | +-------------------------------------------+ |
+               | |    ** PLEASE READ THE DOCUMENTATION **    | |
+               | |    Actions differ for different modes!    | |
+               | +-------------------------------------------+ |
+               +-----------------------------------------------+
+
+Any problems ? See the TROUBLESHOOTING section at the end of the help file
+'doc/latexsupport.txt'.
+
+For a system-wide installation please see the help file 'doc/latexsupport.txt'.
+
+=======================================================================================
+  RELEASE NOTES 
+=======================================================================================
+
+---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.0
+---------------------------------------------------------------------------------------
++ Initial public release.
+
+=======================================================================================
+  FILES
+=======================================================================================
+
+README.latexsupport                This file.
+
+doc/latexsupport.txt               The help file for the local online help. 
+                                  
+plugin/latex-support.vim           The LaTeX plugin for Vim/gVim.
+
+autoload/mmtemplates/core          The template engine. 
+
+latex-support/codesnippets/*       Some LaTeX code snippets as a starting point.
+
+latex-support/templates/*          template files
+
+latex-support/doc/ChangeLog        The change log.
+
+=======================================================================================
+  CREDITS
+=======================================================================================
+
+Many thanks to Wolfgang Mehner (wolfgang-mehner at web.de) for is template
+engine Template Support.
+
+=======================================================================================
