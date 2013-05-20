@@ -538,6 +538,7 @@ which should achieve a certain interoperability with Vim's colorschemes.
   GitHighlight2   another highlight (uses 'PreProc')        commit hash
   GitHighlight3   another highlight (underlined)            diff range
   GitWarning      a warning (uses 'WarningMsg')
+  GitSevere       a stern warning (uses 'ErrorMsg')
   
   GitAdd          an added file/line (uses 'DiffAdd')       diff output
   GitRemove       a removed file/line (uses 'DiffDelete')   diff output
@@ -586,7 +587,6 @@ Highlights characters exceeding the maximal length of a line:
   Category                Short Description
  ----------------------------------------------------------------------------
   GitWarning              characters exceeding the maximal length of the line
-                          -> uses GitWarning
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -597,12 +597,15 @@ The headers of the output for each file are highlighted, as well as each range
 "@@ <range> @@" and inserted and deleted lines. Folds are created for each
 file and subfolds for each block (starting with "@@ <range> @@"). For unmerged
 files, regions with conflicts are highlighted as well.
+This highlighting is also used for ":GitStash show"
 
   Category                Short Description
  ----------------------------------------------------------------------------
   GitDiffHeader           the header generated for each file
                             (lines like "diff ...", "index ...", ...)
                           -> uses GitHeading
+  GitTrailingWhite        trailing whitespaces in an inserted line
+                          -> uses GitSevere
  ----------------------------------------------------------------------------
   GitDiffRange            the range of a single block of the output
                             (line "@@ <range> @@ ...")
@@ -631,6 +634,7 @@ files, regions with conflicts are highlighted as well.
 
 The name of each commit and the information about the author, date, ... are
 highlighted. Folds are created for each commit.
+This highlighting is also used for ":GitStash list"
 
   Category                Short Description
  ----------------------------------------------------------------------------
@@ -639,6 +643,8 @@ highlighted. Folds are created for each commit.
   GitLogInfo              information about the commit
                             (lines like "Author: ..." or "Date: ...")
                           -> uses GitHighlight1
+  GitStashName            the name of a stash (line "stash@{123}: ...")
+                          -> no highlighting by default
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------

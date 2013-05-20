@@ -24,6 +24,9 @@ syn region GitLogCommit  start=/^commit\s/ end=/^\%(commit\s\)\@=/ contains=GitL
 syn match  GitLogHash    "^commit\s.\+$" contained
 syn match  GitLogInfo    "^\w\+:\s.\+$"  contained
 
+syn region GitStash      start=/^stash@{\d\+}:\s/ end=/^\%(stash@{\d\+}:\s\)\@=/ contains=GitStashName,GitDiffRegion fold keepend
+syn match  GitStashName  "^stash@{\d\+}:\s.\+$" contained
+
 "-------------------------------------------------------------------------------
 " Highlight
 "-------------------------------------------------------------------------------

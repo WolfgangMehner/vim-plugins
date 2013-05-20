@@ -39,7 +39,7 @@ endif
 if &cp || ( exists('g:GitSupport_Version') && ! exists('g:GitSupport_DevelopmentOverwrite') )
 	finish
 endif
-let g:GitSupport_Version= '0.9'     " version number of this script; do not change
+let g:GitSupport_Version= '0.9.1pre'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
@@ -352,6 +352,7 @@ highlight default link GitHighlight1  Identifier
 highlight default link GitHighlight2  PreProc
 highlight default      GitHighlight3  term=underline  cterm=underline  gui=underline
 highlight default link GitWarning     WarningMsg
+highlight default link GitSevere      ErrorMsg
 "
 highlight default link GitAdd         DiffAdd
 highlight default link GitRemove      DiffDelete
@@ -421,7 +422,6 @@ function! s:OpenGitBuffer ( buf_name )
 endfunction    " ----------  end of function s:OpenGitBuffer  ----------
 "
 "-------------------------------------------------------------------------------
-
 " s:UpdateGitBuffer : Put output in a read-only buffer.   {{{1
 "-------------------------------------------------------------------------------
 "
