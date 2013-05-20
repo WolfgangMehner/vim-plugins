@@ -1,8 +1,7 @@
-*perlsupport.txt*                Perl Support               December 26 2012
-
+*perlsupport.txt*                Perl Support                    May 20 2013 
 Perl Support                                      *perl-support* *perlsupport*
 
-                             Plug-in version 5.2
+                             Plug-in version 5.2pre
                         for Vim version 7.0 and above
                        Fritz Mehner  <mehner@fh-swf.de>
 
@@ -121,7 +120,7 @@ If the root menu 'Perl' is not visible you also can call it with the item
 "Load Perl Support" from the standard Tools-menu.  The item "Unload Perl
 Support" can be used to unload the Perl root menu. See|perlsupport-custom-root|.
 
-Nearly all menu entries insert code snippets or comments. All of these are
+Nearly all menu items insert code snippets or comments. All of these are
 contained within template files and can be changed by the user to meet their
 requirements (see|perlsupport-templates|).
 
@@ -131,7 +130,7 @@ requirements (see|perlsupport-templates|).
 
 1.1.1 APPEND ALIGNED COMMENTS TO CONSECUTIVE LINES  *perlsupport-aligned-comm*
 --------------------------------------------------
-In NORMAL MODE the menu entry 'end-of-line comments' will append a comment to
+In NORMAL MODE the menu item 'end-of-line comments' will append a comment to
 the current line.
 
 In VISUAL MODE this item will append aligned comments to all marked lines.
@@ -156,7 +155,7 @@ be changed by setting a global variable in the file .vimrc , e.g. :
 >
   let g:Perl_LineEndCommColDefault    = 45
 <
-The starting column can also be set by the menu entry 'Comments->adjust
+The starting column can also be set by the menu item 'Comments->adjust
 end-of-line com.' . Just position the cursor in an arbitrary column (normal
 mode; the column number is shown in the Vim status line) and choose this menu
 item.  This setting is buffer related.
@@ -373,7 +372,7 @@ All declarations beginning with 'my' and the multi-line statements (subroutine,
 open input file / output file / pipe) will be inserted below the current line.
 Everything else will be inserted at the cursor position.
 
-The entries 'open input file', 'open output file' and 'open pipe' ask for the
+The items 'open input file', 'open output file' and 'open pipe' ask for the
 name of a file handle. The following lines will be inserted:
 >
   my  $INFILE_file_name = '';     # input file name
@@ -397,8 +396,8 @@ above this block, the close statement will be inserted below.
 --------------------
 Code snippets are pieces of code which are kept in separate files in a special
 directory. File names are used to identify the snippets.  The default snippet
-is directory is $HOME/.vim/codesnippets-perl.  Snippets are managed with the 4
-entries
+is directory is $HOME/.vim/perl-support/codesnippets.  Snippets are managed
+with the 4 items
 
    Perl -> Snippets -> read  code snippet
    Perl -> Snippets -> write code snippet
@@ -440,7 +439,7 @@ The default value is 'gui'.
 
 1.4.2  Code Templates                             *perlsupport-templates-menu*
 ---------------------
-Nearly all menu entries insert code snippets or comments. All of these are
+Nearly all menu items will insert code snippets or comments. All of these are
 contained within template files and can be changed by the user to meet their
 requirements (see|perlsupport-templates|on how to use the template system).
 
@@ -487,7 +486,7 @@ snippet in the code snippet directory (see|perlsupport-snippets-menu|).
 In NORMAL and INSERT MODE the shown items will be inserted at the cursor
 position.
 
-In VISUAL MODE the following entries and all entries from the 'extended Regex'
+In VISUAL MODE the following items and all items from the 'extended Regex'
 submenu will surround a marked area 'xxx' like this:
 
     ()    :      (xxx)
@@ -500,17 +499,17 @@ submenu will surround a marked area 'xxx' like this:
 ---------------------------------
 If the Perl module YAPE::Regex::Explain is installed a regular expression
 can be explained to you.
-Just mark the expression (v-mode) and use the menu entry 'explain Regex' or
+Just mark the expression (v-mode) and use the menu item 'explain Regex' or
 the hotkey '\xe'.
 You also can pick up a complete line containing a regular expression with the
-menu entry 'pick up regex' in normal mode. In this case leading and trailing
+menu item 'pick up regex' in normal mode. In this case leading and trailing
 whitespaces will be removed.
-Flags for the operator m/// can be picked up using the  menu entry 'pick up
+Flags for the operator m/// can be picked up using the  menu item 'pick up
 flags'.
 
 The regular expression will now be explained in a new buffer called
 'REGEX-EXPLAIN'. This buffer is not related  to a file and will not be
-written, but the content can be printed with the hardcopy entry in the
+written, but the content can be printed with the hardcopy item in the
 Run-menu. A regular expression can span several lines.
 In order to use this feature you need a Vim binary with Perl interface
 compiled in (see |perl|) and YAPE::Regex::Explain must be installed,  of
@@ -523,9 +522,9 @@ test regular expressions very easily. This can be done in two ways.
 
 1.5.3.1  VISUAL MODE                           *perlsupport-regex-visual-mode*
 Pick up a regular expression by selecting the appropriate
-string (v-mode; e.g.  inside the m// operator) and use the menu entry 'pick up
+string (v-mode; e.g.  inside the m// operator) and use the menu item 'pick up
 regex'.  Pick up flags the same way with 'pick up flags'. Now pick up a string
-as target with 'pick up string' and select the menu entry 'match'. The regular
+as target with 'pick up string' and select the menu item 'match'. The regular
 expression, the target and the match are shown in a new window called
 REGEX-TEST:
 >
@@ -666,7 +665,7 @@ it up in visual mode.
 The picked up regular expression, the string, and the flags are kept in
 internal variables. After a change you have just to renew the changed item.
 The variable for the regular expression and for the flags is also used by the
-menu entry 'explain regex' (see|perlsupport-regex-explain|).
+menu item 'explain regex' (see|perlsupport-regex-explain|).
 
 PICK UP FLAG(S)                                      *perlsupport-regex-flags*
 
@@ -707,7 +706,7 @@ test several targets with several regular expressions:
 
 (3) Pick up flags (if any) the same way with 'pick up flags' or \xf.
 
-(4) Select the menu entry 'match multiple' or use \xmm.
+(4) Select the menu item 'match multiple' or use \xmm.
 
 The regular expressions, the targets and the matches are shown in a new window
 called REGEX-TEST:
@@ -749,15 +748,15 @@ The following rules apply:
 
 1.5.5  SUBMENU  'CharCls'                          *perlsupport-regex-charcls*
 -------------------------
-The entries from this menus will be inserted at the cursor position.
+The items from this menus will be inserted at the cursor position.
 
 1.5.6  SUBMENU  'Unicode property'             *perlsupport-regex-unicodeprop*
 ----------------------------------
-The entries from this menus will be inserted at the cursor position.
+The items from this menus will be inserted at the cursor position.
 
 1.5.7  SUBMENU  'extended Regex'                       *perlsupport-regex-ext*
 --------------------------------
-The entries from this menus will be inserted at the cursor position. The items
+The items from this menus will be inserted at the cursor position. The items
 have an visual mode too. With 'bbb' marked in the line
 >
   aaa bbb ccc
@@ -772,13 +771,13 @@ choosing the menu item '(?:...)' yields
 1.7  MENU 'Spec-Var'                                   *perlsupport-specvar*
 ------------------------------------------------------------------------------
 
-The entries from these menus will be inserted at the cursor position.
+The items from these menus will be inserted at the cursor position.
 
 ------------------------------------------------------------------------------
 1.8  MENU 'POD'                                              *perlsupport-pod*
 ------------------------------------------------------------------------------
 
-Most entries insert POD commands below the cursor position, e.g.
+Most items insert POD commands below the cursor position, e.g.
 >
   =pod
 
@@ -786,7 +785,7 @@ Most entries insert POD commands below the cursor position, e.g.
 
   =cut
 <
-The entries 'POD->html', 'POD->man', 'POD->text' call the appropriate
+The items 'POD->html', 'POD->man', 'POD->text' call the appropriate
 translator which will generate the desired document from the current buffer.
 
 The plug-in taglist.vim (Yegappan Lakshmanan) can be expanded for POD
@@ -794,7 +793,7 @@ navigation. See |perlsupport-custom-navigate|.
 
 1.8.1  MENU 'invisible POD'                        *perlsupport-pod-invisible*
 ---------------------------
-These menu entries insert "invisible" POD sections as suggested in Damian
+These menu items insert "invisible" POD sections as suggested in Damian
 Conway's book "Perl Best Practices", e.g.
 >
   =for Improvement: <keyword>
@@ -802,7 +801,7 @@ Conway's book "Perl Best Practices", e.g.
 
   =cut
 <
-In visual mode these menu entries will surround the marked block with the
+In visual mode these menu items will surround the marked block with the
 appropriate construct. The '=for' line will be put before the first nonempty
 line of the marked block.
 
@@ -991,9 +990,9 @@ doc/pmdesc3.text .
 ----------------------------------
 The item 'Run -> show installed Perl modules' loads the module list in a new
 window.  The full documentation for that module can be opened in a perldoc
-help window using the hot keys <Shift-F1>, \h or \rp .
+help window using the hot keys <Shift-F1>, or \h.
 Looking up help with Shift-F1 works also in the perldoc help window.
-Vim (without GUI): only \h and \rp are working.
+Vim (without GUI): only \h is working.
 
 The module list can be folded (see |folding|). The Folding is defined by the
 Perl package name separator '::'.
@@ -1627,14 +1626,14 @@ unintentional use.  Use mappings instead (|perlsupport-mappings|).
 4.1  FILES                                          *perlsupport-custom-files*
 ------------------------------------------------------------------------------
 
-README.perlsupport                This file.
+README.perlsupport                The starting point.
 
 autoload/perlsupportgui.vim       Menu definitions.
 autoload/perlsupportregex.vim     Regex analyser code.
 autoload/mmtemplates/core         template system
 
-doc/perlsupport.txt               The help file for the local online help.
-doc/templatesupport.txt           The help file for the template system.
+doc/perlsupport.txt               The perl-support help file for the local help.
+doc/templatesupport.txt           The template system help file for the local help.
 
 ftplugin/perl.vim                 A filetype plug-in. Define hotkeys, create a local
                                   dictionary for each Perl file.
@@ -1644,7 +1643,7 @@ ftplugin/qf.vim                   A filetype plug-in for quickfix files (used
 
 plugin/perl-support.vim           The Perl plug-in for Vim/gVim.
 
-perl-support/codesnippets-perl/*  Some Perl code snippets as a starting point.
+perl-support/codesnippets/*       Some Perl code snippets as a starting point.
 
 perl-support/modules/             Directory for the list of installed Perl modules
 
@@ -1655,7 +1654,6 @@ perl-support/scripts/pmdesc3.pl   Perl script; generates a list of all installed
 perl-support/scripts/wrapper.sh   The wrapper script for the use of an xterm.
 
 perl-support/templates/*          Template files
-
 
 perl-support/wordlists/perl.list  A file used as dictionary for automatic word completion.
                                   This file is referenced in the file customization.vimrc.
@@ -1862,7 +1860,7 @@ The taglist navigation window for the module Eliza.pm starts like this:
           . . .
 <
 Now you can navigate through the embedded POD with a mouse click on these
-entries. To enable this feature
+items. To enable this feature
 
  (1) append rc/customization.ctags to $HOME/.ctags (or create this file)
 
@@ -2126,7 +2124,7 @@ master template file is '$HOME/.vim/perl-support/templates/Templates',  e.g.
 ------------------------------------------------------------------------------
 
 5.3.1    Template definition                *perlsupport-templates-definition*
-The template behind a menu entry is identified by a given name. The first part
+The template behind a menu item is identified by a given name. The first part
 of the name identifies the menu name, the second part identifies the item.
 A template definition starts with a template header with the following syntax:
 
@@ -2294,9 +2292,14 @@ some additional libraries first (the development versions).
 
 (3) Change to the directory containing the source code and type
 >
-  ./configure --enable-perlinterp --enable-gui=gtk2
+	./configure --enable-gui=gtk2 --enable-perlinterp=yes
 <
-for Perl and your favorite GUI.
+or
+>
+	./configure --enable-gui=gtk2 --enable-perlinterp=dynamic
+<
+for Perl and your favorite GUI (here GTK). With 'dynamic' the Perl library
+will be loaded only when needed.
 
 (4) Make the binary the traditional way:
       make

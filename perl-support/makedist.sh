@@ -64,6 +64,7 @@ filelist="
  ./perl-support/templates/*
  ./perl-support/wordlists/*
  ./plugin/perl-support.vim
+ ./plugin/make.vim
  ./syntax/template.vim
 "
 

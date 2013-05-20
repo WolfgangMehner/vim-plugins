@@ -57,7 +57,7 @@
 if exists("g:Perl_PluginVersion") || &compatible
   finish
 endif
-let g:Perl_PluginVersion= "5.1"
+let g:Perl_PluginVersion= "5.2pre"
 "
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_SetGlobalVariable     {{{1
@@ -1165,8 +1165,10 @@ function! Perl_Run ()
   "
 endfunction    " ----------  end of function Perl_Run  ----------
 "
-let s:Perl_MakeCmdLineArgs   = ""     " command line arguments for Run-make; initially empty
-let s:Perl_Makefile						= ''
+" globals to cummunicate with a make plugin:
+"
+let g:Make_CmdLineArgs  = ''    " command line arguments for Run-make; initially empty
+let g:Make_Makefile			= ''
 
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_MakeArguments     {{{1
@@ -1175,7 +1177,7 @@ let s:Perl_Makefile						= ''
 "       RETURNS:  
 "===============================================================================
 function! Perl_MakeArguments ()
-	let	s:Perl_MakeCmdLineArgs= Perl_Input("make command line arguments : ",s:Perl_MakeCmdLineArgs, 'file' )
+	let	g:Make_CmdLineArgs= Perl_Input("make command line arguments : ",g:Make_CmdLineArgs, 'file' )
 endfunction    " ----------  end of function Perl_MakeArguments ----------
 "
 "===  FUNCTION  ================================================================
@@ -1186,14 +1188,14 @@ endfunction    " ----------  end of function Perl_MakeArguments ----------
 "===============================================================================
 function! Perl_MakeClean()
 	" run make clean
-	if s:Perl_Makefile == ''
+	if g:Make_Makefile == ''
 		exe	":!make clean"
 	else
-		exe	':lchdir  '.fnamemodify( s:Perl_Makefile, ":p:h" )
+		exe	':lchdir  '.fnamemodify( g:Make_Makefile, ":p:h" )
 		if  s:MSWIN
-			exe	':!make -f "'.s:Perl_Makefile.'" clean'
+			exe	':!make -f "'.g:Make_Makefile.'" clean'
 		else
-			exe	':!make -f '.s:Perl_Makefile.' clean'
+			exe	':!make -f '.g:Make_Makefile.' clean'
 		endif
 		exe	":lchdir -"
 	endif
@@ -1206,7 +1208,7 @@ endfunction    " ----------  end of function Perl_MakeClean ----------
 "       RETURNS:  
 "===============================================================================
 function! Perl_ChooseMakefile ()
-	let s:Perl_Makefile	= ''
+	let g:Make_Makefile	= ''
 	let mkfile	= findfile( "Makefile", ".;" )    " try to find a Makefile
 	if mkfile == ''
     let mkfile  = findfile( "makefile", ".;" )  " try to find a makefile
@@ -1214,9 +1216,9 @@ function! Perl_ChooseMakefile ()
 	if mkfile == ''
 		let mkfile	= getcwd()
 	endif
-	let	s:Perl_Makefile	= Perl_Input ( "choose a Makefile: ", mkfile, "file" )
+	let	g:Make_Makefile	= Perl_Input ( "choose a Makefile: ", mkfile, "file" )
 	if  s:MSWIN
-		let	s:Perl_Makefile	= substitute( s:Perl_Makefile, '\\ ', ' ', 'g' )
+		let	g:Make_Makefile	= substitute( g:Make_Makefile, '\\ ', ' ', 'g' )
 	endif
 endfunction    " ----------  end of function Perl_ChooseMakefile  ----------
 "
@@ -1231,20 +1233,20 @@ function! Perl_Make()
 	" update : write source file if necessary
 	exe	":update"
 	" run make
-	if s:Perl_Makefile == ''
+	if g:Make_Makefile == ''
 		if filereadable('Makefile.PL')
 			:!perl Makefile.PL
 		endif
-		exe	":!make ".s:Perl_MakeCmdLineArgs
+		exe	":!make ".g:Make_CmdLineArgs
 	else
-		exe	':lchdir  '.fnamemodify( s:Perl_Makefile, ":p:h" )
-		if !filereadable(s:Perl_Makefile) && filereadable('Makefile.PL')
+		exe	':lchdir  '.fnamemodify( g:Make_Makefile, ":p:h" )
+		if !filereadable(g:Make_Makefile) && filereadable('Makefile.PL')
 			:!perl Makefile.PL
 		endif
 		if  s:MSWIN
-			exe	':!make -f "'.s:Perl_Makefile.'" '.s:Perl_MakeCmdLineArgs
+			exe	':!make -f "'.g:Make_Makefile.'" '.g:Make_CmdLineArgs
 		else
-			exe	':!make -f '.s:Perl_Makefile.' '.s:Perl_MakeCmdLineArgs
+			exe	':!make -f '.g:Make_Makefile.' '.g:Make_CmdLineArgs
 		endif
 		exe	":lchdir -"
 	endif
@@ -2317,7 +2319,7 @@ function! s:Perl_InitMenus ()
   exe ahead.'-SEP5-                     :'
   exe ahead.'save\ buffer\ with\ &timestamp<Tab>\\rt        :call Perl_SaveWithTimestamp()<CR>'
   exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>\\rh           :call Perl_Hardcopy("n")<CR>'
-  exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>\\rh      <C-C>:call Perl_Hardcopy("v")<CR>'
+  exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>\\rh      <C-C>:call Perl_Hardcopy("v")<CR>'
   exe ahead.'-SEP6-                     :'
   exe ahead.'settings\ and\ hot\ &keys<Tab>\\rk             :call Perl_Settings()<CR>'
   "
@@ -2333,6 +2335,15 @@ function! s:Perl_InitMenus ()
       exe ahead.'&output:\ XTERM->vim->buffer<Tab>\\ro        :call Perl_Toggle_Gvim_Xterm()<CR>'
     endif
   endif
+	"
+	"===============================================================================================
+	"----- Menu : help  -------------------------------------------------------   {{{2
+	"===============================================================================================
+	"
+	exe " menu  <silent>  ".s:Perl_RootMenu.'.read\ &perldoc<Tab>\\h                :call Perl_perldoc()<CR>'
+	exe "imenu  <silent>  ".s:Perl_RootMenu.'.read\ &perldoc<Tab>\\h           <C-C>:call Perl_perldoc()<CR>'
+	exe " menu  <silent>  ".s:Perl_RootMenu.'.&help\ (Perl-Support)<Tab>\\hp        :call Perl_HelpPerlsupport()<CR>'
+	exe "imenu  <silent>  ".s:Perl_RootMenu.'.&help\ (Perl-Support)<Tab>\\hp   <C-C>:call Perl_HelpPerlsupport()<CR>'
 	"
   "===============================================================================================
   "----- Menu : GENERATE MENU ITEMS FROM THE TEMPLATES                              {{{2
@@ -2355,11 +2366,11 @@ function! s:Perl_InitMenus ()
 	let	ihead	= 'inoremenu <silent> '.s:Perl_RootMenu.'.Rege&x.'
   "
   exe " noremenu      ".s:Perl_RootMenu.'.Rege&x.-SEP7-                               :'
-  exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ &regex<Tab>\\xr          :call perlsupportregex#Perl_RegexPick( "regexp", "n" )<CR>j'
-  exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ s&tring<Tab>\\xs         :call perlsupportregex#Perl_RegexPick( "string", "n" )<CR>j'
+  exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ &regex<Tab>\\xr          :call perlsupportregex#Perl_RegexPick( "Regexp", "n" )<CR>j'
+  exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ s&tring<Tab>\\xs         :call perlsupportregex#Perl_RegexPick( "String", "n" )<CR>j'
   exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ &flag(s)<Tab>\\xf        :call perlsupportregex#Perl_RegexPickFlag( "n" )<CR>'
-  exe "vmenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ &regex<Tab>\\xr     <C-C>:call perlsupportregex#Perl_RegexPick( "regexp", "v" )<CR>'."'>j"
-  exe "vmenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ s&tring<Tab>\\xs    <C-C>:call perlsupportregex#Perl_RegexPick( "string", "v" )<CR>'."'>j"
+  exe "vmenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ &regex<Tab>\\xr     <C-C>:call perlsupportregex#Perl_RegexPick( "Regexp", "v" )<CR>'."'>j"
+  exe "vmenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ s&tring<Tab>\\xs    <C-C>:call perlsupportregex#Perl_RegexPick( "String", "v" )<CR>'."'>j"
   exe "vmenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ &flag(s)<Tab>\\xf   <C-C>:call perlsupportregex#Perl_RegexPickFlag( "v" )<CR>'."'>j"
   "                                Menu
   exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.&match<Tab>\\xm                     :call perlsupportregex#Perl_RegexVisualize( )<CR>'
@@ -2452,6 +2463,15 @@ function! Perl_InitializePerlInterface( )
 			# ---------------------------------------------------------------
  			VIM::DoCommand("let s:Perl_PerlExecutableVersion = \"$^V\"");
 			VIM::DoCommand("let g:Perl_InterfaceInitialized = 'yes'");
+			#
+			# ---------------------------------------------------------------
+			# Perl_RegexExplain (function)
+			# try to load the regex analyzer module; report failure
+			# ---------------------------------------------------------------
+			eval { require YAPE::Regex::Explain };
+			if ( !$@ ) {
+				VIM::DoCommand("let g:Perl_PerlRegexAnalyser = 'yes'");
+				}
 			#
 INITIALIZE_PERL_INTERFACE
 		endif
@@ -2553,10 +2573,9 @@ function! s:CreateAdditionalMaps ()
 	" ---------- plugin help -----------------------------------------------------
 	"
 	map    <buffer>  <silent>  <LocalLeader>h          :call Perl_perldoc()<CR>
+	imap   <buffer>  <silent>  <LocalLeader>h     <C-C>:call Perl_perldoc()<CR>
 	map    <buffer>  <silent>  <LocalLeader>hp         :call Perl_HelpPerlsupport()<CR>
-	"
-	imap    <buffer>  <silent>  <LocalLeader>h     <C-C>:call Perl_perldoc()<CR>
-	imap    <buffer>  <silent>  <LocalLeader>hp    <C-C>:call Perl_HelpPerlsupport()<CR>
+	imap   <buffer>  <silent>  <LocalLeader>hp    <C-C>:call Perl_HelpPerlsupport()<CR>
 	"
 	" ----------------------------------------------------------------------------
 	" Comments
@@ -2610,11 +2629,11 @@ function! s:CreateAdditionalMaps ()
 	" Regex
 	" ----------------------------------------------------------------------------
 	"
-	nnoremap    <buffer>  <silent>  <LocalLeader>xr        :call perlsupportregex#Perl_RegexPick( "regexp", "n" )<CR>j
-	nnoremap    <buffer>  <silent>  <LocalLeader>xs        :call perlsupportregex#Perl_RegexPick( "string", "n" )<CR>j
+	nnoremap    <buffer>  <silent>  <LocalLeader>xr        :call perlsupportregex#Perl_RegexPick( "Regexp", "n" )<CR>j
+	nnoremap    <buffer>  <silent>  <LocalLeader>xs        :call perlsupportregex#Perl_RegexPick( "String", "n" )<CR>j
 	nnoremap    <buffer>  <silent>  <LocalLeader>xf        :call perlsupportregex#Perl_RegexPickFlag( "n" )<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>xr   <C-C>:call perlsupportregex#Perl_RegexPick( "regexp", "v" )<CR>'>j
-	vnoremap    <buffer>  <silent>  <LocalLeader>xs   <C-C>:call perlsupportregex#Perl_RegexPick( "string", "v" )<CR>'>j
+	vnoremap    <buffer>  <silent>  <LocalLeader>xr   <C-C>:call perlsupportregex#Perl_RegexPick( "Regexp", "v" )<CR>'>j
+	vnoremap    <buffer>  <silent>  <LocalLeader>xs   <C-C>:call perlsupportregex#Perl_RegexPick( "String", "v" )<CR>'>j
 	vnoremap    <buffer>  <silent>  <LocalLeader>xf   <C-C>:call perlsupportregex#Perl_RegexPickFlag( "v" )<CR>'>j
 	nnoremap    <buffer>  <silent>  <LocalLeader>xm        :call perlsupportregex#Perl_RegexVisualize( )<CR>
 	nnoremap    <buffer>  <silent>  <LocalLeader>xmm       :call perlsupportregex#Perl_RegexMatchSeveral( )<CR>
@@ -2668,8 +2687,9 @@ function! s:CreateAdditionalMaps ()
 	noremap    <buffer>  <silent>  <LocalLeader>rs         :call Perl_SyntaxCheck()<CR>
 	noremap    <buffer>            <LocalLeader>ra         :PerlScriptArguments<Space>
 	noremap    <buffer>            <LocalLeader>rw         :PerlSwitches<Space>
-	noremap    <buffer>  <silent>  <LocalLeader>rm         :call Perl_Make()<CR>
 	noremap    <buffer>  <silent>  <LocalLeader>rcm        :call Perl_ChooseMakefile()<CR>
+	"
+	noremap    <buffer>  <silent>  <LocalLeader>rm         :call Perl_Make()<CR>
 	noremap    <buffer>  <silent>  <LocalLeader>rmc        :call Perl_MakeClean()<CR>
 	noremap    <buffer>  <silent>  <LocalLeader>rma        :call Perl_MakeArguments()<CR>
 
@@ -2677,8 +2697,9 @@ function! s:CreateAdditionalMaps ()
 	inoremap    <buffer>  <silent>  <LocalLeader>rs    <C-C>:call Perl_SyntaxCheck()<CR>
 	inoremap    <buffer>            <LocalLeader>ra    <C-C>:PerlScriptArguments<Space>
 	inoremap    <buffer>            <LocalLeader>rw    <C-C>:PerlSwitches<Space>
-	inoremap    <buffer>  <silent>  <LocalLeader>rm    <C-C>:call Perl_Make()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rcm   <C-C>:call Perl_ChooseMakefile()<CR>
+	"
+	inoremap    <buffer>  <silent>  <LocalLeader>rm    <C-C>:call Perl_Make()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rmc   <C-C>:call Perl_MakeClean()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rma   <C-C>:call Perl_MakeArguments()<CR>
 	"

@@ -1,16 +1,16 @@
 "===============================================================================
 "
 "          File:  perlsupportprofiling.vim
-"
-"   Description:  Plugin perl-support:
-"                 Profiler support
-"
+" 
+"   Description:  Plugin perl-support: Profiler support
+" 
 "   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (mn), mehner@fh-swf.de
-"       Company:  FH Südwestfalen, Iserlohn
+"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
+"  Organization:  FH Südwestfalen, Iserlohn
 "       Version:  1.0
 "       Created:  22.02.2009
-"       License:  Copyright 2009-2012 Dr. Fritz Mehner
+"      Revision:  ---
+"       License:  Copyright (c) 2009-2013, Dr. Fritz Mehner
 "===============================================================================
 "
 " Exit quickly when:

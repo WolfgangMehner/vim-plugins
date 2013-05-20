@@ -6,11 +6,11 @@
 "                 Regular expression explanation and visualization.
 "
 "   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (mn), mehner@fh-swf.de
+"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
 "       Company:  FH Südwestfalen, Iserlohn
 "       Version:  1.0
 "       Created:  16.12.2008 18:16:55
-"       License:  Copyright 2008-2012 Dr. Fritz Mehner
+"       License:  Copyright 2008-2013, Dr. Fritz Mehner
 "===============================================================================
 "
 " Exit quickly when:
@@ -23,48 +23,33 @@ endif
 let g:loaded_perlsupportregex = "v1.0"
 
 let s:MSWIN = has("win16") || has("win32")   || has("win64")    || has("win95")
+"
 "------------------------------------------------------------------------------
 "   RUN THE REGULAR EXPRESSION VISUALIZOR
 "------------------------------------------------------------------------------
 let s:Perl_PerlRegexVisualizeBufferName   = 'REGEX-TEST'
 let s:Perl_PerlRegexVisualizeBufferNumber = -1
-let s:Perl_PerlRegexVisualize_regexp      = ''
-let s:Perl_PerlRegexVisualize_string      = ''
+let s:Perl_PerlRegexVisualizeRegexp       = ''
+let s:Perl_PerlRegexVisualizeString       = ''
 let s:Perl_PerlRegexVisualizeFlag         = ''
-let s:Perl_PerlRegexCodeEvaluation        = 'off'
 let s:Perl_PerlRegexPrematch              = ''
 let s:Perl_PerlRegexMatch                 = ''
 "
 "------------------------------------------------------------------------------
 "   run the regular expression analyzer YAPE::Regex::Explain     {{{1
 "------------------------------------------------------------------------------
-let s:Perl_PerlRegexBufferName    = 'REGEX-EXPLAIN'
-let s:Perl_PerlRegexBufferNumber  = -1
+let s:Perl_PerlRegexBufferName            = 'REGEX-EXPLAIN'
+let s:Perl_PerlRegexBufferNumber          = -1
 
-function! perlsupportregex#Perl_RegexExplain( mode )
+function! perlsupportregex#Perl_RegexExplain ( mode )
 
   if !has('perl')
-    echomsg "*** Your version of Vim was not compiled with Perl interface. ***"
+    echomsg "*** Your version of Vim was not compiled with the Perl interface. ***"
     return
   endif
 
-	if g:Perl_PerlRegexAnalyser	== 'no'
-    perl <<INITIALIZE_PERL_INTERFACE
-		#
-		# ---------------------------------------------------------------
-		# Perl_RegexExplain (function)
-		# try to load the regex analyzer module; report failure
-		# ---------------------------------------------------------------
-		eval "require YAPE::Regex::Explain";
-		if ( !$@ ) {
-			VIM::DoCommand("let g:Perl_PerlRegexAnalyser = 'yes'");
-		}
-		#
-INITIALIZE_PERL_INTERFACE
-	endif
-
   if g:Perl_PerlRegexAnalyser != 'yes'
-    echomsg "*** The Perl module YAPE::Regex::Explain can not be found. ***"
+    echomsg "*** The Perl module YAPE::Regex::Explain could not be found. ***"
     return
   endif
 
@@ -77,34 +62,26 @@ INITIALIZE_PERL_INTERFACE
     " buffer number may have changed, e.g. after a 'save as'
   else
     silent exe ":new ".s:Perl_PerlRegexBufferName
-    let s:Perl_PerlRegexBufferNumber=bufnr("%")
+    let s:Perl_PerlRegexBufferNumber  = bufnr("%")
     setlocal buftype=nofile
-    setlocal noswapfile
     setlocal bufhidden=delete
     setlocal syntax=OFF
+    setlocal noswapfile
   endif
   "
-  " remove content if any
-  "
-	setlocal modifiable
-  silent normal ggdG
+  " remove buffer content if any
+  setlocal modifiable
+  :%delete
 
   perl <<EOF_RegexExplain
-      my $explanation;
-      my ( $success, $regexp ) = VIM::Eval('s:MSWIN');
-
-      my  $flag     = VIM::Eval('s:Perl_PerlRegexVisualizeFlag');
-      ( $success, $regexp ) = VIM::Eval('s:Perl_PerlRegexVisualize_regexp');
+      my  $explanation          = "\n*** VIM failed to evaluate the regular expression ***\n";
+      my  ( $success, $flag   ) = VIM::Eval('s:Perl_PerlRegexVisualizeFlag');
+      my  ( $success, $regexp ) = VIM::Eval('s:Perl_PerlRegexVisualizeRegexp');
       if ( $success == 1 ) {
         # get the explanation
-				$explanation  = "The regular expression\n\n".${regexp}."\n\nmatches as follows:\n\n";
-				#$regexp = eval 'qr{'.$regexp.'}'.$flag;
-        $regexp = qr{$regexp};
-
-        $explanation  .= YAPE::Regex::Explain->new($regexp)->explain('regex');
-        }
-      else {
-        $explanation  = "\n*** VIM failed to evaluate the regular expression ***\n";
+				$explanation = YAPE::Regex::Explain->new( qr{ $regexp } )->explain('regex');
+				$explanation =~ s/\n{2,}/\n/g;
+        $explanation = "The regular expression\n\n".${regexp}."\n\nmatches as follows:\n\n".$explanation;
         }
 
       # split explanation into lines
@@ -113,26 +90,15 @@ INITIALIZE_PERL_INTERFACE
       # put the explanation to the top of the buffer
       $curbuf->Append( 0, @explanation );
 
-			VIM::DoCommand( 'setlocal nomodifiable' );
 EOF_RegexExplain
 
+  setlocal nomodifiable
 
-endfunction    " ----------  end of function Perl_RegexExplain  ----------
-"
-"------------------------------------------------------------------------------
-"   command line switch 'RegexCodeEvaluation'     {{{1
-"------------------------------------------------------------------------------
-function! perlsupportregex#Perl_RegexCodeEvaluation ( onoff )
-  if a:onoff == 'on'
-    let s:Perl_PerlRegexCodeEvaluation        = 'on'
-  else
-    let s:Perl_PerlRegexCodeEvaluation        = 'off'
-  endif
-endfunction    " ----------  end of function Perl_RegexCodeEvaluation  ----------
+endfunction    " ----------  end of function perlsupportregex#Perl_RegexExplain  ----------
 
 "------------------------------------------------------------------------------
 "   pick up string or regular expression     {{{1
-"   item : regexp | string
+"   item : Regexp | String
 "   mode : n | v
 "------------------------------------------------------------------------------
 function! perlsupportregex#Perl_RegexPick ( item, mode ) range
@@ -147,7 +113,7 @@ function! perlsupportregex#Perl_RegexPick ( item, mode ) range
     endif
     let line  = substitute( line, '^\s\+', '', '' )  " remove leading whitespaces
     let line  = substitute( line, '\s\+$', '', '' )  " remove trailing whitespaces
-    let s:Perl_PerlRegexVisualize_{a:item}  = line
+    let s:Perl_PerlRegexVisualize{a:item}  = line
   endif
   "
   " the marked area
@@ -157,7 +123,7 @@ function! perlsupportregex#Perl_RegexPick ( item, mode ) range
     normal gvy
     let line  = eval('@"')
     let line  = substitute( line, "\n$", '', '' )
-    let s:Perl_PerlRegexVisualize_{a:item}  = line
+    let s:Perl_PerlRegexVisualize{a:item}  = line
   endif
   "
   "-------------------------------------------------------------------------------
@@ -183,14 +149,14 @@ function! perlsupportregex#Perl_RegexPick ( item, mode ) range
   \     || ( mlist[2] == "[" && mlist[4] == "]" ) 
   \     || ( mlist[2] == "<" && mlist[4] == ">" ) 
   \   )
-      let s:Perl_PerlRegexVisualize_{a:item}  = mlist[3]
+      let s:Perl_PerlRegexVisualize{a:item}  = mlist[3]
       let s:Perl_PerlRegexVisualizeFlag       = mlist[5]
       let showtheflags                        = "flag(s) = '".mlist[5]."' | "
     endif
     "
   endif
   "
-  let message = s:Perl_PerlRegexVisualize_{a:item}
+  let message = s:Perl_PerlRegexVisualize{a:item}
   let message = substitute( message, '\t', '<Tab>', 'g' )
   let message = substitute( message, '\n', '<CR>', 'g' )
   let message = showtheflags.a:item." = '".message."'"
@@ -201,7 +167,7 @@ function! perlsupportregex#Perl_RegexPick ( item, mode ) range
     :redraw | echomsg message[:&columns-6].' ...'
   endif
   "
-endfunction    " ----------  end of function Perl_RegexPick  ----------
+endfunction    " ----------  end of function perlsupportregex#Perl_RegexPick  ----------
 "
 "------------------------------------------------------------------------------
 "   pick up flags     {{{1
@@ -216,7 +182,7 @@ function! perlsupportregex#Perl_RegexPickFlag ( mode )
   endif
   let s:Perl_PerlRegexVisualizeFlag=substitute(s:Perl_PerlRegexVisualizeFlag, '[^imsxg]', '', 'g')
   echomsg "regex modifier(s) : '".s:Perl_PerlRegexVisualizeFlag."'"
-endfunction    " ----------  end of function Perl_RegexPickFlag  ----------
+endfunction    " ----------  end of function perlsupportregex#Perl_RegexPickFlag  ----------
 "
 "------------------------------------------------------------------------------
 "   visualize regular expression     {{{1
@@ -242,9 +208,9 @@ function! perlsupportregex#Perl_RegexVisualize( )
   endif
   "
   " remove content if any:
-	setlocal modifiable
-  silent normal ggdG
-	let s:Perl_PerlRegexMatch                 = ''
+  setlocal modifiable
+  :%delete
+  let s:Perl_PerlRegexMatch                 = ''
 
   perl <<EOF_regex_evaluate
 
@@ -260,12 +226,12 @@ function! perlsupportregex#Perl_RegexVisualize( )
     #===============================================================================
     sub regex_evaluate {
 
-		use re 'eval';
+    use re 'eval';
     my ( $regexp, $string, $flag );
 
     $flag     = VIM::Eval('s:Perl_PerlRegexVisualizeFlag');
-    $string   = VIM::Eval('s:Perl_PerlRegexVisualize_string') || '';
-    $regexp   = VIM::Eval('s:Perl_PerlRegexVisualize_regexp');
+    $string   = VIM::Eval('s:Perl_PerlRegexVisualizeString') || '';
+    $regexp   = VIM::Eval('s:Perl_PerlRegexVisualizeRegexp');
 
     utf8::decode($string);
     utf8::decode($regexp);
@@ -318,10 +284,10 @@ function! perlsupportregex#Perl_RegexVisualize( )
         my  @hit_length;
 
         $^R = undef;
-				#-------------------------------------------------------------------------------
-				#  g-modifier present
-				#  @hit will contain the consecutive matches
-				#-------------------------------------------------------------------------------
+        #-------------------------------------------------------------------------------
+        #  g-modifier present
+        #  @hit will contain the consecutive matches
+        #-------------------------------------------------------------------------------
         if ( $flag =~ m{g} ) {
           $gflag  = 1;
           $flag =~ s/g//;
@@ -339,10 +305,10 @@ function! perlsupportregex#Perl_RegexVisualize( )
             @lastMatchEnd         = @+;
             }
           }
-				#-------------------------------------------------------------------------------
-				#  no g-modifier
-				#  @hit will contain the submatches $1, $2, ... , if any
-				#-------------------------------------------------------------------------------
+        #-------------------------------------------------------------------------------
+        #  no g-modifier
+        #  @hit will contain the submatches $1, $2, ... , if any
+        #-------------------------------------------------------------------------------
         else {
           @hit                  = ( $string =~ m{(?$flag:$regexp)} );
           $prematch             = $`;
@@ -382,7 +348,7 @@ function! perlsupportregex#Perl_RegexVisualize( )
           # print the numbered variables $1, $2, ...
           #
           foreach my $n ( 1 .. $#lastMatchStart ) {
-					  if ( defined $lastMatchStart[$n] ) {
+            if ( defined $lastMatchStart[$n] ) {
             $result .= sprintf $format2, "  \$$n", $lastMatchStart[$n], $lastMatchEnd[$n] - $lastMatchStart[$n],
               marker_string( $lastMatchStart[$n], 
                               prepare_stringout(substr( $string, $lastMatchStart[$n], $lastMatchEnd[$n] - $lastMatchStart[$n] )) );
@@ -518,14 +484,14 @@ function! perlsupportregex#Perl_RegexVisualize( )
       return ($result, $linecount);
     } # ----------  end of subroutine lineruler  ----------
 
-		VIM::DoCommand( 'setlocal nomodifiable' );
+    VIM::DoCommand( 'setlocal nomodifiable' );
 EOF_regex_evaluate
   "
   if line('$') == 1
     :close
     return
   endif
-  normal gg
+  call setpos( ".", [ "%",1,0,0] )
 
   "-------------------------------------------------------------------------------
   " Highlight the match by matching  MATCH.POSTMATCH.EOL .
@@ -558,13 +524,13 @@ EOF_regex_evaluate
       " the first part of the following regular expression describes the
       " beginnning of $format1 in sub regex_evaluate
       "
-			try 
-				exe ':match color_match '.delim.'\(^STRING\s\+\[\s*\d\+,\s*\d\+\] =[ |]'.match0.'\)\@<='.match1.delim
-			catch //
-				echo "Internal error (" . v:exception . ")"
-				echo " - occurred at " . v:throwpoint
-			finally 
-			endtry
+      try 
+        exe ':match color_match '.delim.'\(^STRING\s\+\[\s*\d\+,\s*\d\+\] =[ |]'.match0.'\)\@<='.match1.delim
+      catch //
+        echo "Internal error (" . v:exception . ")"
+        echo " - occurred at " . v:throwpoint
+      finally 
+      endtry
     endif
   endif
 
@@ -572,7 +538,7 @@ EOF_regex_evaluate
     exe bufwinnr(l:currentbuffernr) . "wincmd w"
   endif
 
-endfunction    " ----------  end of function Perl_RegexVisualize  ----------
+endfunction    " ----------  end of function perlsupportregex#Perl_RegexVisualize  ----------
 "
 "------------------------------------------------------------------------------
 "   visualize regular expression     {{{1
@@ -597,8 +563,8 @@ function! perlsupportregex#Perl_RegexMatchSeveral( )
   endif
   "
   " remove content if any:
-	setlocal modifiable
-  silent normal ggdG
+  setlocal modifiable
+  :%delete
 
   perl <<EOF_evaluate_multiple
 
@@ -612,7 +578,7 @@ function! perlsupportregex#Perl_RegexMatchSeveral( )
     #===============================================================================
     sub regex_evaluate_multiple {
 
-		use re 'eval';
+    use re 'eval';
 
       my ( $regexp, $string, $flag );
       my  $regexp1;
@@ -626,8 +592,8 @@ function! perlsupportregex#Perl_RegexMatchSeveral( )
       my  $matchcount;
 
       $flag     = VIM::Eval('s:Perl_PerlRegexVisualizeFlag');
-      $string   = VIM::Eval('s:Perl_PerlRegexVisualize_string') || '';
-      $regexp   = VIM::Eval('s:Perl_PerlRegexVisualize_regexp');
+      $string   = VIM::Eval('s:Perl_PerlRegexVisualizeString') || '';
+      $regexp   = VIM::Eval('s:Perl_PerlRegexVisualizeRegexp');
 
       utf8::decode($string);
       utf8::decode($regexp);
@@ -673,20 +639,20 @@ function! perlsupportregex#Perl_RegexMatchSeveral( )
     return "'$result'";
     } # ----------  end of subroutine splitstr  ----------
 
-		VIM::DoCommand( 'setlocal nomodifiable' );
+    VIM::DoCommand( 'setlocal nomodifiable' );
 EOF_evaluate_multiple
   "
   if line('$') == 1
     :close
     return
   endif
-  normal gg
+  call setpos( ".", [ "%",1,0,0] )
 
   if winheight(winnr()) >= line("$")
     exe bufwinnr(l:currentbuffernr) . "wincmd w"
   endif
 
-endfunction    " ----------  end of function Perl_RegexMatchSeveral  ----------
+endfunction    " ----------  end of function perlsupportregex#Perl_RegexMatchSeveral  ----------
 "
 "-------------------------------------------------------------------------------
 "   read the substitution characters for \n, \t,  ... from the command line
@@ -706,6 +672,6 @@ function! perlsupportregex#Perl_PerlRegexSubstitutions ( string )
         \ match( result, '[[:cntrl:]]' )     == -1
     let g:Perl_PerlRegexSubstitution  = result
   endif
-endfunction    " ----------  end of function Perl_PerlRegexSubstitutions  ----------
+endfunction    " ----------  end of function perlsupportregex#Perl_PerlRegexSubstitutions  ----------
 "
 " vim: tabstop=2 shiftwidth=2 foldmethod=marker
