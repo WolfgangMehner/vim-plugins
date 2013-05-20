@@ -201,7 +201,7 @@ let s:Perl_EfmPerl                 = g:Perl_PluginDir.'/perl-support/scripts/efm
 let s:Perl_PerlModuleListGenerator = g:Perl_PluginDir.'/perl-support/scripts/pmdesc3.pl'
 let s:Perl_PerltidyBackup			     = "no"
 "
-let g:Perl_MapLeader							= '\'
+call s:perl_SetGlobalVariable ( 'Perl_MapLeader', '' )
 let s:Perl_RootMenu								= '&Perl'
 "
 "------------------------------------------------------------------------------
@@ -1993,11 +1993,27 @@ endfunction    " ----------  end of function Perl_CreateGuiMenus  ----------
 "       RETURNS:  
 "===============================================================================
 function! s:Perl_RereadTemplates ( displaymsg )
+	"
+	"-------------------------------------------------------------------------------
+	" SETUP TEMPLATE LIBRARY
+	"-------------------------------------------------------------------------------
 	let g:Perl_Templates = mmtemplates#core#NewLibrary ()
-	call mmtemplates#core#ChangeSyntax  ( g:Perl_Templates, 'comment', '§', '§' )
-	let s:Perl_TemplateJumpTarget 	=  mmtemplates#core#Resource ( g:Perl_Templates, "jumptag" )[0]
-
-	let	messsage							= ''
+	"
+	" mapleader
+	if empty ( g:Perl_MapLeader )
+		call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Mapleader', '\' )
+	else
+		call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Mapleader', g:Perl_MapLeader )
+	endif
+	"
+	" map: choose style
+	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::ChooseStyle::Map', 'nts' )
+	"
+	" syntax: comments
+	call mmtemplates#core#ChangeSyntax ( g:Perl_Templates, 'comment', '§' )
+	let s:Perl_TemplateJumpTarget = mmtemplates#core#Resource ( g:Perl_Templates, "jumptag" )[0]
+	"
+	let	messsage = ''
 	"
 	if g:Perl_Installation == 'system'
 		"-------------------------------------------------------------------------------
@@ -2145,205 +2161,47 @@ function! s:Perl_InitMenus ()
 	" Preparation
 	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'do_reset' )
 	"
+	" get the mapleader (correctly escaped)
+	let [ esc_mapl, err ] = mmtemplates#core#Resource ( g:Perl_Templates, 'escaped_mapleader' )
+	"
 	exe 'amenu '.s:Perl_RootMenu.'.Perl  <Nop>'
 	exe 'amenu '.s:Perl_RootMenu.'.-Sep00- <Nop>'
+	"
+	"-------------------------------------------------------------------------------
+	" menu headers
+	"-------------------------------------------------------------------------------
+	"
+	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', '&Comments', 'priority', 500 )
+ 	" the other, automatically created menus go here; their priority is the standard priority 500
+	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', 'S&nippets' , 'priority', 600 )
+	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', '&Profiling', 'priority', 700 )
+	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', '&Run'      , 'priority', 800 )
+	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', '&Help'     , 'priority', 900 )
 	"
   "===============================================================================================
   "----- Menu : Comments                              {{{2
   "===============================================================================================
-	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', '&Comments' )
 	"
 	let ahead = 'anoremenu <silent> '.s:Perl_RootMenu.'.&Comments.'
 	let vhead = 'vnoremenu <silent> '.s:Perl_RootMenu.'.&Comments.'
 	let ihead = 'inoremenu <silent> '.s:Perl_RootMenu.'.&Comments.'
 	"
-	exe ahead.'end-of-&line\ comment<Tab>\\cl                    :call Perl_EndOfLineComment()<CR>'
-	exe vhead.'end-of-&line\ comment<Tab>\\cl                    :call Perl_EndOfLineComment()<CR>'
-	exe ahead.'ad&just\ end-of-line\ com\.<Tab>\\cj              :call Perl_AlignLineEndComm()<CR>'
-	exe vhead.'ad&just\ end-of-line\ com\.<Tab>\\cj              :call Perl_AlignLineEndComm()<CR>'
-	exe ahead.'&set\ end-of-line\ com\.\ col\.<Tab>\\cs     <C-C>:call Perl_GetLineEndCommCol()<CR>'
+	exe ahead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl                    :call Perl_EndOfLineComment()<CR>'
+	exe vhead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl                    :call Perl_EndOfLineComment()<CR>'
+	exe ahead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call Perl_AlignLineEndComm()<CR>'
+	exe vhead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call Perl_AlignLineEndComm()<CR>'
+	exe ahead.'&set\ end-of-line\ com\.\ col\.<Tab>'.esc_mapl.'cs     <C-C>:call Perl_GetLineEndCommCol()<CR>'
   "
 	exe ahead.'-Sep01-						<Nop>'
-  exe ahead.'toggle\ &comment<Tab>\\cc         :call Perl_CommentToggle()<CR>j'
-  exe ihead.'toggle\ &comment<Tab>\\cc    <C-C>:call Perl_CommentToggle()<CR>j'
-	exe vhead.'toggle\ &comment<Tab>\\cc         :call Perl_CommentToggle()<CR>j'
+  exe ahead.'toggle\ &comment<Tab>'.esc_mapl.'cc         :call Perl_CommentToggle()<CR>j'
+  exe ihead.'toggle\ &comment<Tab>'.esc_mapl.'cc    <C-C>:call Perl_CommentToggle()<CR>j'
+	exe vhead.'toggle\ &comment<Tab>'.esc_mapl.'cc         :call Perl_CommentToggle()<CR>j'
 
-  exe ahead.'comment\ &block<Tab>\\cb           :call Perl_CommentBlock("a")<CR>'
-  exe ihead.'comment\ &block<Tab>\\cb      <C-C>:call Perl_CommentBlock("a")<CR>'
-  exe vhead.'comment\ &block<Tab>\\cb      <C-C>:call Perl_CommentBlock("v")<CR>'
-  exe ahead.'u&ncomment\ block<Tab>\\cub        :call Perl_UncommentBlock()<CR>'
+  exe ahead.'comment\ &block<Tab>'.esc_mapl.'cb           :call Perl_CommentBlock("a")<CR>'
+  exe ihead.'comment\ &block<Tab>'.esc_mapl.'cb      <C-C>:call Perl_CommentBlock("a")<CR>'
+  exe vhead.'comment\ &block<Tab>'.esc_mapl.'cb      <C-C>:call Perl_CommentBlock("v")<CR>'
+  exe ahead.'u&ncomment\ block<Tab>'.esc_mapl.'cub        :call Perl_UncommentBlock()<CR>'
 	exe ahead.'-Sep02-						<Nop>'
-	"
-  "===============================================================================================
-  "----- Menu : Statements (title)                              {{{2
-  "===============================================================================================
-	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', '&Statements' )
-	"
-  "===============================================================================================
-  "----- Menu : Idioms (title)                             {{{2
-  "===============================================================================================
-	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', '&Idioms' )
-	"
-  "===============================================================================================
-  "----- Menu : Snippets                              {{{2
-  "===============================================================================================
-	if !empty(s:Perl_CodeSnippets)
- 		call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', 'S&nippets' )
-		exe "amenu  <silent> ".s:Perl_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>\\nr       :call Perl_CodeSnippet("read")<CR>'
-		exe "imenu  <silent> ".s:Perl_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>\\nr  <C-C>:call Perl_CodeSnippet("read")<CR>'
-		exe "amenu  <silent> ".s:Perl_RootMenu.'.S&nippets.&view\ code\ snippet<Tab>\\nv       :call Perl_CodeSnippet("view")<CR>'
-		exe "imenu  <silent> ".s:Perl_RootMenu.'.S&nippets.&view\ code\ snippet<Tab>\\nv  <C-C>:call Perl_CodeSnippet("view")<CR>'
-		exe "amenu  <silent> ".s:Perl_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>\\nw      :call Perl_CodeSnippet("write")<CR>'
-		exe "vmenu  <silent> ".s:Perl_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>\\nw <C-C>:call Perl_CodeSnippet("writemarked")<CR>'
-		exe "imenu  <silent> ".s:Perl_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>\\nw <C-C>:call Perl_CodeSnippet("write")<CR>'
-		exe "amenu  <silent> ".s:Perl_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>\\ne       :call Perl_CodeSnippet("edit")<CR>'
-		exe "imenu  <silent> ".s:Perl_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>\\ne  <C-C>:call Perl_CodeSnippet("edit")<CR>'
-		exe "amenu  <silent> ".s:Perl_RootMenu.'.S&nippets.-SepSnippets-                       :'
-		"
-		exe "amenu  <silent> ".s:Perl_RootMenu.'.S&nippets.edit\ &local\ templates<Tab>\\ntl       :call mmtemplates#core#EditTemplateFiles(g:Perl_Templates,-1)<CR>'
-		exe "imenu  <silent> ".s:Perl_RootMenu.'.S&nippets.edit\ &local\ templates<Tab>\\ntl  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Perl_Templates,-1)<CR>'
-		if g:Perl_Installation == 'system'
-			exe "amenu  <silent> ".s:Perl_RootMenu.'.S&nippets.edit\ &local\ templates<Tab>\\ntg       :call mmtemplates#core#EditTemplateFiles(g:Perl_Templates,1)<CR>'
-			exe "imenu  <silent> ".s:Perl_RootMenu.'.S&nippets.edit\ &local\ templates<Tab>\\ntg  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Perl_Templates,1)<CR>'
-		endif
-		"
-		exe "amenu  <silent> ".s:Perl_RootMenu.'.S&nippets.reread\ &templates<Tab>\\ntr       :call mmtemplates#core#ReadTemplates(g:Perl_Templates,"reload","all")<CR>'
-		exe "imenu  <silent> ".s:Perl_RootMenu.'.S&nippets.reread\ &templates<Tab>\\ntr  <C-C>:call mmtemplates#core#ReadTemplates(g:Perl_Templates,"reload","all")<CR>'
-	endif
-	"
-  "===============================================================================================
-  "----- Menu : Regex menu (title)                              {{{2
-  "===============================================================================================
-	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', '&Regex' )
-	"
-  "===============================================================================================
-  "----- Menu : Special Variables menu (title)                              {{{2
-  "===============================================================================================
-	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', 'Special &Variables' )
-	"
-  "===============================================================================================
-  "----- Menu : File-Tests menu                              {{{2
-  "===============================================================================================
-	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', '&File-Tests' )
-	"
-  "===============================================================================================
-  "----- Menu : POD menu (title)                              {{{2
-  "===============================================================================================
-	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', 'PO&D' )
-	"
-  "===============================================================================================
-  "----- Menu : Profiling                             {{{2
-  "===============================================================================================
-	"
-	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', '&Profiling' )
-	let	ahead	= 'amenu <silent> '.s:Perl_RootMenu.'.&Profiling.'
-	exe ahead.'&run\ SmallProf<Tab>\\rps                       :call perlsupportprofiling#Perl_Smallprof()<CR>'
- 	exe ahead.'sort\ SmallProf\ report<Tab>\\rpss              :call perlsupportprofiling#Perl_SmallProfSortInput()<CR>'
-	exe ahead.'open\ existing\ SmallProf\ results<Tab>\\rpso   :call perlsupportprofiling#Perl_Smallprof_OpenQuickfix()<CR>'
-	exe ahead.'-Sep01-						<Nop>'
-	"
-	if !s:MSWIN
-		exe ahead.'&run\ FastProf<Tab>\\rpf                      :call perlsupportprofiling#Perl_Fastprof()<CR>'
- 		exe ahead.'sort\ FastProf\ report<Tab>\\rpfs             :call perlsupportprofiling#Perl_FastProfSortInput()<CR>'
-		exe ahead.'open\ existing\ FastProf\ results<Tab>\\rpfo  :call perlsupportprofiling#Perl_FastProf_OpenQuickfix()<CR>'
-		exe ahead.'-Sep02-						<Nop>'
-	endif
-	"
-	exe ahead.'&run\ NYTProf<Tab>\\rpn                         :call perlsupportprofiling#Perl_NYTprof()<CR>'
-	exe ahead.'show\ &HTML\ report<Tab>\\rph                   :call perlsupportprofiling#Perl_NYTprofReadHtml()<CR>'
-	exe ahead.'open\ &CSV\ file<Tab>\\rpno                     :call perlsupportprofiling#Perl_NYTprofReadCSV("read","line")<CR>'
- 	exe ahead.'sort\ NYTProf\ CSV\ report<Tab>\\rpns           :call perlsupportprofiling#Perl_SmallProfSortInput()<CR>'
-	"
-  "===============================================================================================
-  "----- Menu : Run                             {{{2
-  "===============================================================================================
-	"
- 	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', '&Run' )
-  "
-  "   run the script from the local directory
-  "   ( the one which is being edited; other versions may exist elsewhere ! )
-  "
-	let	ahead	= 'amenu <silent> '.s:Perl_RootMenu.'.&Run.'
-	let	vhead	= 'vmenu <silent> '.s:Perl_RootMenu.'.&Run.'
-	"
-  exe ahead.'update,\ &run\ script<Tab>\\rr\ \ <C-F9>         :call Perl_Run()<CR>'
-  exe ahead.'update,\ check\ &syntax<Tab>\\rs\ \ <A-F9>       :call Perl_SyntaxCheck()<CR>'
-  exe 'amenu '.s:Perl_RootMenu.'.&Run.cmd\.\ line\ &arg\.<Tab>\\ra\ \ <S-F9>  :PerlScriptArguments<Space>'
-  exe 'amenu .'s:Perl_RootMenu.'.&Run.perl\ s&witches<Tab>\\rw                :PerlSwitches<Space>'
-  "
-  "   set execution rights for user only ( user may be root ! )
-  "
-  if !s:MSWIN
-    exe ahead.'make\ script\ &executable<Tab>\\re              :call Perl_MakeScriptExecutable()<CR>'
-  endif
-  exe ahead.'-SEP1-                     :'
-  exe ahead.'run\ &make<Tab>\\rm                              :call Perl_Make()<CR>'
-	exe ahead.'&choose\ makefile<Tab>\\rcm                      :call Perl_ChooseMakefile()<CR>'
-	exe ahead.'&make\ clean<Tab>\\rmc                           :call Perl_MakeClean()<CR>'
-  exe ahead.'cmd\.\ line\ ar&g\.\ for\ make<Tab>\\rma         :call Perl_MakeArguments()<CR>'
-  exe ahead.'start\ &debugger<Tab>\\rd\ \ <F9>                :call Perl_Debugger()<CR>'
-  exe ahead.'-SEP2-                     :'
-
-  exe ahead.'show\ &installed\ Perl\ modules<Tab>\\ri  :call Perl_perldoc_show_module_list()<CR>'
-  exe ahead.'&generate\ Perl\ module\ list<Tab>\\rg    :call Perl_perldoc_generate_module_list()<CR><CR>'
-  "
-  exe ahead.'-SEP4-                     :'
-  exe ahead.'run\ perltid&y<Tab>\\ry                        :call Perl_Perltidy("n")<CR>'
-  exe vhead.'run\ perltid&y<Tab>\\ry                   <C-C>:call Perl_Perltidy("v")<CR>'
-	"
-	"
-  exe ahead.'-SEP3-                     :'
-  exe ahead.'run\ perl&critic<Tab>\\rpc                     :call Perl_Perlcritic()<CR>'
-  "
-  if g:Perl_MenuHeader == "yes"
-    exe ahead.'perlcritic\ severity<Tab>\\rpcs.severity     :call Perl_MenuTitle()<CR>'
-    exe ahead.'perlcritic\ severity<Tab>\\rpcs.-Sep5-       :'
-  endif
-
-  let levelnumber = 1
-  for level in s:PCseverityName[1:]
-    exe ahead.'perlcritic\ severity<Tab>\\rpcs.&'.level.'<Tab>(='.levelnumber.')    :call Perl_GetPerlcriticSeverity("'.level.'")<CR>'
-    let levelnumber = levelnumber+1
-  endfor
-  "
-  if g:Perl_MenuHeader == "yes"
-    exe ahead.'perlcritic\ &verbosity<Tab>\\rpcv.verbosity     :call Perl_MenuTitle()<CR>'
-    exe ahead.'perlcritic\ &verbosity<Tab>\\rpcv.-Sep6-            :'
-  endif
-
-  for level in s:PCverbosityName
-    exe ahead.'perlcritic\ &verbosity<Tab>\\rpcv.&'.level.'   :call Perl_GetPerlcriticVerbosity('.level.')<CR>'
-  endfor
-  exe ahead.'perlcritic\ &options<Tab>\\rpco                :call Perl_PerlcriticOptionsInput()<CR>'
-
-  exe ahead.'-SEP5-                     :'
-  exe ahead.'save\ buffer\ with\ &timestamp<Tab>\\rt        :call Perl_SaveWithTimestamp()<CR>'
-  exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>\\rh           :call Perl_Hardcopy("n")<CR>'
-  exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>\\rh      <C-C>:call Perl_Hardcopy("v")<CR>'
-  exe ahead.'-SEP6-                     :'
-  exe ahead.'settings\ and\ hot\ &keys<Tab>\\rk             :call Perl_Settings()<CR>'
-  "
-  if  !s:MSWIN
-    exe ahead.'&xterm\ size<Tab>\\rx                          :call Perl_XtermSize()<CR>'
-  endif
-  if g:Perl_OutputGvim == "vim"
-    exe ahead.'&output:\ VIM->buffer->xterm<Tab>\\ro          :call Perl_Toggle_Gvim_Xterm()<CR>'
-  else
-    if g:Perl_OutputGvim == "buffer"
-      exe ahead.'&output:\ BUFFER->xterm->vim<Tab>\\ro        :call Perl_Toggle_Gvim_Xterm()<CR>'
-    else
-      exe ahead.'&output:\ XTERM->vim->buffer<Tab>\\ro        :call Perl_Toggle_Gvim_Xterm()<CR>'
-    endif
-  endif
-	"
-	"===============================================================================================
-	"----- Menu : help  -------------------------------------------------------   {{{2
-	"===============================================================================================
-	"
-	exe " menu  <silent>  ".s:Perl_RootMenu.'.read\ &perldoc<Tab>\\h                :call Perl_perldoc()<CR>'
-	exe "imenu  <silent>  ".s:Perl_RootMenu.'.read\ &perldoc<Tab>\\h           <C-C>:call Perl_perldoc()<CR>'
-	exe " menu  <silent>  ".s:Perl_RootMenu.'.&help\ (Perl-Support)<Tab>\\hp        :call Perl_HelpPerlsupport()<CR>'
-	exe "imenu  <silent>  ".s:Perl_RootMenu.'.&help\ (Perl-Support)<Tab>\\hp   <C-C>:call Perl_HelpPerlsupport()<CR>'
 	"
   "===============================================================================================
   "----- Menu : GENERATE MENU ITEMS FROM THE TEMPLATES                              {{{2
@@ -2351,41 +2209,180 @@ function! s:Perl_InitMenus ()
 	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'do_templates' )
 	"
   "===============================================================================================
-  "----- Menu : Snippets menu (items)                              {{{2
+  "----- Menu : Snippets                              {{{2
   "===============================================================================================
+	"
+	let	ahead	= 'anoremenu <silent> '.s:Perl_RootMenu.'.S&nippets.'
+	let	vhead	= 'vnoremenu <silent> '.s:Perl_RootMenu.'.S&nippets.'
+	let	ihead	= 'inoremenu <silent> '.s:Perl_RootMenu.'.S&nippets.'
+	"
 	if !empty(s:Perl_CodeSnippets)
-		call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'do_styles', 
-					\ 'specials_menu', 'Snippets'	)
+		exe ahead.'&read\ code\ snippet<Tab>'.esc_mapl.'nr       :call Perl_CodeSnippet("read")<CR>'
+		exe ihead.'&read\ code\ snippet<Tab>'.esc_mapl.'nr  <C-C>:call Perl_CodeSnippet("read")<CR>'
+		exe ahead.'&view\ code\ snippet<Tab>'.esc_mapl.'nv       :call Perl_CodeSnippet("view")<CR>'
+		exe ihead.'&view\ code\ snippet<Tab>'.esc_mapl.'nv  <C-C>:call Perl_CodeSnippet("view")<CR>'
+		exe ahead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw      :call Perl_CodeSnippet("write")<CR>'
+		exe vhead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Perl_CodeSnippet("writemarked")<CR>'
+		exe ihead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Perl_CodeSnippet("write")<CR>'
+		exe ahead.'&edit\ code\ snippet<Tab>'.esc_mapl.'ne       :call Perl_CodeSnippet("edit")<CR>'
+		exe ihead.'&edit\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call Perl_CodeSnippet("edit")<CR>'
+		exe ahead.'-SepSnippets-                       :'
 	endif
+	"
+	exe ahead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntl       :call mmtemplates#core#EditTemplateFiles(g:Perl_Templates,-1)<CR>'
+	exe ihead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntl  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Perl_Templates,-1)<CR>'
+	if g:Perl_Installation == 'system'
+		exe ahead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntg       :call mmtemplates#core#EditTemplateFiles(g:Perl_Templates,1)<CR>'
+		exe ihead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntg  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Perl_Templates,1)<CR>'
+	endif
+	"
+	exe ahead.'reread\ &templates<Tab>'.esc_mapl.'ntr       :call mmtemplates#core#ReadTemplates(g:Perl_Templates,"reload","all")<CR>'
+	exe ihead.'reread\ &templates<Tab>'.esc_mapl.'ntr  <C-C>:call mmtemplates#core#ReadTemplates(g:Perl_Templates,"reload","all")<CR>'
+	"
+	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'do_styles', 'specials_menu', 'Snippets'	)
+	"
+  "===============================================================================================
+  "----- Menu : Profiling                             {{{2
+  "===============================================================================================
+	"
+	let	ahead	= 'amenu <silent> '.s:Perl_RootMenu.'.&Profiling.'
+	exe ahead.'&run\ SmallProf<Tab>'.esc_mapl.'rps                       :call perlsupportprofiling#Perl_Smallprof()<CR>'
+ 	exe ahead.'sort\ SmallProf\ report<Tab>'.esc_mapl.'rpss              :call perlsupportprofiling#Perl_SmallProfSortInput()<CR>'
+	exe ahead.'open\ existing\ SmallProf\ results<Tab>'.esc_mapl.'rpso   :call perlsupportprofiling#Perl_Smallprof_OpenQuickfix()<CR>'
+	exe ahead.'-Sep01-						<Nop>'
+	"
+	if !s:MSWIN
+		exe ahead.'&run\ FastProf<Tab>'.esc_mapl.'rpf                      :call perlsupportprofiling#Perl_Fastprof()<CR>'
+ 		exe ahead.'sort\ FastProf\ report<Tab>'.esc_mapl.'rpfs             :call perlsupportprofiling#Perl_FastProfSortInput()<CR>'
+		exe ahead.'open\ existing\ FastProf\ results<Tab>'.esc_mapl.'rpfo  :call perlsupportprofiling#Perl_FastProf_OpenQuickfix()<CR>'
+		exe ahead.'-Sep02-						<Nop>'
+	endif
+	"
+	exe ahead.'&run\ NYTProf<Tab>'.esc_mapl.'rpn                         :call perlsupportprofiling#Perl_NYTprof()<CR>'
+	exe ahead.'show\ &HTML\ report<Tab>'.esc_mapl.'rph                   :call perlsupportprofiling#Perl_NYTprofReadHtml()<CR>'
+	exe ahead.'open\ &CSV\ file<Tab>'.esc_mapl.'rpno                     :call perlsupportprofiling#Perl_NYTprofReadCSV("read","line")<CR>'
+ 	exe ahead.'sort\ NYTProf\ CSV\ report<Tab>'.esc_mapl.'rpns           :call perlsupportprofiling#Perl_SmallProfSortInput()<CR>'
+	"
+  "===============================================================================================
+  "----- Menu : Run                             {{{2
+  "===============================================================================================
+	"
+  "   run the script from the local directory
+  "   ( the one which is being edited; other versions may exist elsewhere ! )
+  "
+	let	ahead	= 'amenu <silent> '.s:Perl_RootMenu.'.&Run.'
+	let	vhead	= 'vmenu <silent> '.s:Perl_RootMenu.'.&Run.'
+	"
+  exe ahead.'update,\ &run\ script<Tab>'.esc_mapl.'rr\ \ <C-F9>         :call Perl_Run()<CR>'
+  exe ahead.'update,\ check\ &syntax<Tab>'.esc_mapl.'rs\ \ <A-F9>       :call Perl_SyntaxCheck()<CR>'
+  exe 'amenu '.s:Perl_RootMenu.'.&Run.cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra\ \ <S-F9>  :PerlScriptArguments<Space>'
+  exe 'amenu .'s:Perl_RootMenu.'.&Run.perl\ s&witches<Tab>'.esc_mapl.'rw                :PerlSwitches<Space>'
+  "
+  "   set execution rights for user only ( user may be root ! )
+  "
+  if !s:MSWIN
+    exe ahead.'make\ script\ &executable<Tab>'.esc_mapl.'re              :call Perl_MakeScriptExecutable()<CR>'
+  endif
+  exe ahead.'-SEP1-                     :'
+  exe ahead.'run\ &make<Tab>'.esc_mapl.'rm                              :call Perl_Make()<CR>'
+	exe ahead.'&choose\ makefile<Tab>'.esc_mapl.'rcm                      :call Perl_ChooseMakefile()<CR>'
+	exe ahead.'&make\ clean<Tab>'.esc_mapl.'rmc                           :call Perl_MakeClean()<CR>'
+  exe ahead.'cmd\.\ line\ ar&g\.\ for\ make<Tab>'.esc_mapl.'rma         :call Perl_MakeArguments()<CR>'
+  exe ahead.'start\ &debugger<Tab>'.esc_mapl.'rd\ \ <F9>                :call Perl_Debugger()<CR>'
+  exe ahead.'-SEP2-                     :'
+
+  exe ahead.'show\ &installed\ Perl\ modules<Tab>'.esc_mapl.'ri  :call Perl_perldoc_show_module_list()<CR>'
+  exe ahead.'&generate\ Perl\ module\ list<Tab>'.esc_mapl.'rg    :call Perl_perldoc_generate_module_list()<CR><CR>'
+  "
+  exe ahead.'-SEP4-                     :'
+  exe ahead.'run\ perltid&y<Tab>'.esc_mapl.'ry                        :call Perl_Perltidy("n")<CR>'
+  exe vhead.'run\ perltid&y<Tab>'.esc_mapl.'ry                   <C-C>:call Perl_Perltidy("v")<CR>'
+	"
+	"
+  exe ahead.'-SEP3-                     :'
+  exe ahead.'run\ perl&critic<Tab>'.esc_mapl.'rpc                     :call Perl_Perlcritic()<CR>'
+  "
+  if g:Perl_MenuHeader == "yes"
+    exe ahead.'perlcritic\ severity<Tab>'.esc_mapl.'rpcs.severity     :call Perl_MenuTitle()<CR>'
+    exe ahead.'perlcritic\ severity<Tab>'.esc_mapl.'rpcs.-Sep5-       :'
+  endif
+
+  let levelnumber = 1
+  for level in s:PCseverityName[1:]
+    exe ahead.'perlcritic\ severity<Tab>'.esc_mapl.'rpcs.&'.level.'<Tab>(='.levelnumber.')    :call Perl_GetPerlcriticSeverity("'.level.'")<CR>'
+    let levelnumber = levelnumber+1
+  endfor
+  "
+  if g:Perl_MenuHeader == "yes"
+    exe ahead.'perlcritic\ &verbosity<Tab>'.esc_mapl.'rpcv.verbosity     :call Perl_MenuTitle()<CR>'
+    exe ahead.'perlcritic\ &verbosity<Tab>'.esc_mapl.'rpcv.-Sep6-            :'
+  endif
+
+  for level in s:PCverbosityName
+    exe ahead.'perlcritic\ &verbosity<Tab>'.esc_mapl.'rpcv.&'.level.'   :call Perl_GetPerlcriticVerbosity('.level.')<CR>'
+  endfor
+  exe ahead.'perlcritic\ &options<Tab>'.esc_mapl.'rpco                :call Perl_PerlcriticOptionsInput()<CR>'
+
+  exe ahead.'-SEP5-                     :'
+  exe ahead.'save\ buffer\ with\ &timestamp<Tab>'.esc_mapl.'rt        :call Perl_SaveWithTimestamp()<CR>'
+  exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh           :call Perl_Hardcopy("n")<CR>'
+  exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh      <C-C>:call Perl_Hardcopy("v")<CR>'
+  exe ahead.'-SEP6-                     :'
+  exe ahead.'settings\ and\ hot\ &keys<Tab>'.esc_mapl.'rk             :call Perl_Settings()<CR>'
+  "
+  if  !s:MSWIN
+    exe ahead.'&xterm\ size<Tab>'.esc_mapl.'rx                          :call Perl_XtermSize()<CR>'
+  endif
+  if g:Perl_OutputGvim == "vim"
+    exe ahead.'&output:\ VIM->buffer->xterm<Tab>'.esc_mapl.'ro          :call Perl_Toggle_Gvim_Xterm()<CR>'
+  else
+    if g:Perl_OutputGvim == "buffer"
+      exe ahead.'&output:\ BUFFER->xterm->vim<Tab>'.esc_mapl.'ro        :call Perl_Toggle_Gvim_Xterm()<CR>'
+    else
+      exe ahead.'&output:\ XTERM->vim->buffer<Tab>'.esc_mapl.'ro        :call Perl_Toggle_Gvim_Xterm()<CR>'
+    endif
+  endif
+	"
+  "===============================================================================================
+  "----- Menu : Help                             {{{2
+  "===============================================================================================
+	"
+	let	ahead	= 'anoremenu <silent> '.s:Perl_RootMenu.'.Help.'
+	let	vhead	= 'vnoremenu <silent> '.s:Perl_RootMenu.'.Help.'
+	let	ihead	= 'inoremenu <silent> '.s:Perl_RootMenu.'.Help.'
+	"
+	exe ahead.'read\ &perldoc<Tab>'.esc_mapl.'h                :call Perl_perldoc()<CR>'
+	exe ihead.'read\ &perldoc<Tab>'.esc_mapl.'h           <C-C>:call Perl_perldoc()<CR>'
+	exe ahead.'-SEP1-                              :'
+	exe ahead.'&help\ (Perl-Support)<Tab>'.esc_mapl.'hp        :call Perl_HelpPerlsupport()<CR>'
+	exe ihead.'&help\ (Perl-Support)<Tab>'.esc_mapl.'hp   <C-C>:call Perl_HelpPerlsupport()<CR>'
 	"
   "===============================================================================================
   "----- Menu : Regex menu (items)                              {{{2
   "===============================================================================================
-	let	ahead	= 'anoremenu <silent> '.s:Perl_RootMenu.'.Rege&x.'
-	let	vhead	= 'vnoremenu <silent> '.s:Perl_RootMenu.'.Rege&x.'
-	let	ihead	= 'inoremenu <silent> '.s:Perl_RootMenu.'.Rege&x.'
-  "
+	"
   exe " noremenu      ".s:Perl_RootMenu.'.Rege&x.-SEP7-                               :'
-  exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ &regex<Tab>\\xr          :call perlsupportregex#Perl_RegexPick( "Regexp", "n" )<CR>j'
-  exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ s&tring<Tab>\\xs         :call perlsupportregex#Perl_RegexPick( "String", "n" )<CR>j'
-  exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ &flag(s)<Tab>\\xf        :call perlsupportregex#Perl_RegexPickFlag( "n" )<CR>'
-  exe "vmenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ &regex<Tab>\\xr     <C-C>:call perlsupportregex#Perl_RegexPick( "Regexp", "v" )<CR>'."'>j"
-  exe "vmenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ s&tring<Tab>\\xs    <C-C>:call perlsupportregex#Perl_RegexPick( "String", "v" )<CR>'."'>j"
-  exe "vmenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ &flag(s)<Tab>\\xf   <C-C>:call perlsupportregex#Perl_RegexPickFlag( "v" )<CR>'."'>j"
+  exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ &regex<Tab>'.esc_mapl.'xr          :call perlsupportregex#Perl_RegexPick( "Regexp", "n" )<CR>j'
+  exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ s&tring<Tab>'.esc_mapl.'xs         :call perlsupportregex#Perl_RegexPick( "String", "n" )<CR>j'
+  exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ &flag(s)<Tab>'.esc_mapl.'xf        :call perlsupportregex#Perl_RegexPickFlag( "n" )<CR>'
+  exe "vmenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ &regex<Tab>'.esc_mapl.'xr     <C-C>:call perlsupportregex#Perl_RegexPick( "Regexp", "v" )<CR>'."'>j"
+  exe "vmenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ s&tring<Tab>'.esc_mapl.'xs    <C-C>:call perlsupportregex#Perl_RegexPick( "String", "v" )<CR>'."'>j"
+  exe "vmenu <silent> ".s:Perl_RootMenu.'.Rege&x.pick\ up\ &flag(s)<Tab>'.esc_mapl.'xf   <C-C>:call perlsupportregex#Perl_RegexPickFlag( "v" )<CR>'."'>j"
   "                                Menu
-  exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.&match<Tab>\\xm                     :call perlsupportregex#Perl_RegexVisualize( )<CR>'
-  exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.matc&h\ several\ targets<Tab>\\xmm  :call perlsupportregex#Perl_RegexMatchSeveral( )<CR>'
-  exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.&explain\ regex<Tab>\\xe            :call perlsupportregex#Perl_RegexExplain( "n" )<CR>'
-  exe "vmenu <silent> ".s:Perl_RootMenu.'.Rege&x.&explain\ regex<Tab>\\xe       <C-C>:call perlsupportregex#Perl_RegexExplain( "v" )<CR>'
+  exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.&match<Tab>'.esc_mapl.'xm                     :call perlsupportregex#Perl_RegexVisualize( )<CR>'
+  exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.matc&h\ several\ targets<Tab>'.esc_mapl.'xmm  :call perlsupportregex#Perl_RegexMatchSeveral( )<CR>'
+  exe "amenu <silent> ".s:Perl_RootMenu.'.Rege&x.&explain\ regex<Tab>'.esc_mapl.'xe            :call perlsupportregex#Perl_RegexExplain( "n" )<CR>'
+  exe "vmenu <silent> ".s:Perl_RootMenu.'.Rege&x.&explain\ regex<Tab>'.esc_mapl.'xe       <C-C>:call perlsupportregex#Perl_RegexExplain( "v" )<CR>'
 	"
   "===============================================================================================
   "----- Menu : POD menu (items)                              {{{2
   "===============================================================================================
+	"
   exe "amenu          ".s:Perl_RootMenu.'.&POD.-SEP4-                  :'
-  exe "amenu <silent> ".s:Perl_RootMenu.'.&POD.run\ &podchecker<Tab>\\pod  :call Perl_PodCheck()<CR>'
-  exe "amenu <silent> ".s:Perl_RootMenu.'.&POD.POD\ ->\ &html<Tab>\\podh   :call Perl_POD("html")<CR>'
-  exe "amenu <silent> ".s:Perl_RootMenu.'.&POD.POD\ ->\ &man<Tab>\\podm    :call Perl_POD("man")<CR>'
-  exe "amenu <silent> ".s:Perl_RootMenu.'.&POD.POD\ ->\ &text<Tab>\\podt   :call Perl_POD("text")<CR>'
+  exe "amenu <silent> ".s:Perl_RootMenu.'.&POD.run\ &podchecker<Tab>'.esc_mapl.'pod  :call Perl_PodCheck()<CR>'
+  exe "amenu <silent> ".s:Perl_RootMenu.'.&POD.POD\ ->\ &html<Tab>'.esc_mapl.'podh   :call Perl_POD("html")<CR>'
+  exe "amenu <silent> ".s:Perl_RootMenu.'.&POD.POD\ ->\ &man<Tab>'.esc_mapl.'podm    :call Perl_POD("man")<CR>'
+  exe "amenu <silent> ".s:Perl_RootMenu.'.&POD.POD\ ->\ &text<Tab>'.esc_mapl.'podt   :call Perl_POD("text")<CR>'
 	"
 	return
 endfunction    " ----------  end of function s:Perl_InitMenus  ----------
@@ -2546,6 +2543,16 @@ function! s:CreateAdditionalMaps ()
 	command! -nargs=0  NYTProfCSV call perlsupportprofiling#Perl_NYTprofReadCSV  ()
 	"
 	command! -nargs=0  NYTProfHTML call perlsupportprofiling#Perl_NYTprofReadHtml  ()
+	"
+	"-------------------------------------------------------------------------------
+	" settings - local leader
+	"-------------------------------------------------------------------------------
+	if ! empty ( g:Perl_MapLeader )
+		if exists ( 'g:maplocalleader' )
+			let ll_save = g:maplocalleader
+		endif
+		let g:maplocalleader = g:Perl_MapLeader
+	endif
 	"
 	" ---------- Key mappings : function keys ------------------------------------
 	"
@@ -2750,6 +2757,17 @@ function! s:CreateAdditionalMaps ()
 	if !exists("g:Perl_Ctrl_j") || ( exists("g:Perl_Ctrl_j") && g:Perl_Ctrl_j != 'off' )
 		nmap    <buffer>  <silent>  <C-j>    i<C-R>=Perl_JumpCtrlJ()<CR>
 		imap    <buffer>  <silent>  <C-j>     <C-R>=Perl_JumpCtrlJ()<CR>
+	endif
+	"
+	"-------------------------------------------------------------------------------
+	" settings - reset local leader
+	"-------------------------------------------------------------------------------
+	if ! empty ( g:Perl_MapLeader )
+		if exists ( 'll_save' )
+			let g:maplocalleader = ll_save
+		else
+			unlet g:maplocalleader
+		endif
 	endif
 	"
 	" ----------------------------------------------------------------------------
