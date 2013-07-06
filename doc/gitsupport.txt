@@ -1,8 +1,8 @@
-*gitsupport.txt*                  Git Support                      Mar 20 2013
+*gitsupport.txt*                  Git Support                      June 7 2013
 
 Git Support                                          *git-support* *gitsupport*
 
-                             Plug-in version 0.9
+                            Plug-in version 0.9.1
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
 
@@ -32,6 +32,7 @@ a quick overview and a short guide to this documentation.
  5.1    Executable                                |gitsupport-config-executable|
  5.2    Menus                                     |gitsupport-config-menus|
  5.3    Maps                                      |gitsupport-config-maps|
+ 5.4    Settings                                  |gitsupport-config-settings|
 
  A.    Troubleshooting - Known Issues             |gitsupport-troubleshooting|
  B.    Release Notes - Change Log                 |gitsupport-release-notes|
@@ -321,13 +322,17 @@ Is equivalent to: >
 	:GitDiff <param> ~
 
 The first version opens a buffer containing the output of Git's diff for the
-current buffer. The second version runs diff for the given parameters.
+current buffer (see |g:Git_DiffExpandEmpty| for changing this back to Git's
+standard behavior). The second version runs diff for the given parameters.
 
   Map       Meaning
  ----------------------------------------------------------------------------
   S-F1      help: show a list of all maps
   q         close the buffer
   u         update the buffer
+
+  of        file under cursor: open file (edit)
+  oj        file under cursor: open and jump to the position under the cursor
  ----------------------------------------------------------------------------
 
 Example:
@@ -339,6 +344,9 @@ Show the diff for a file Vector.cc and its header Vector.h: >
 	:GitDiff Vector.*
 Is equivalent to: >
 	git diff Vector.*
+
+Settings:
+- |g:Git_DiffExpandEmpty|
 
 ------------------------------------------------------------------------------
                                                                    *:GitFetch*
@@ -483,7 +491,14 @@ buffers listing the stashes or showing a stash.
                                                                   *:GitStatus*
 	:GitStatus ~
 
-Opens a buffer showing the current status.
+Opens a buffer showing the current status. Several different actions can be
+performed for the file under the cursor, see below.
+
+The map 'od' opens the diff for the file under the cursor. The normal behavior
+is to open the "default" diff between the index and the working tree. In the
+section containing the staged files, titled "Changes to be committed", this
+behavior is different. The default behavior is to open the diff displaying the
+staged changes. This can be modified using |g:Git_StatusStagedOpenDiff|.
 
   Map       Meaning
  ----------------------------------------------------------------------------
@@ -503,6 +518,9 @@ Opens a buffer showing the current status.
   r         file under cursor: reset
   r         file under cursor: remove (only for unmerged changes)
  ----------------------------------------------------------------------------
+
+Settings:
+- |g:Git_StatusStagedOpenDiff|
 
 ------------------------------------------------------------------------------
                                                                      *:GitTag*
@@ -682,15 +700,22 @@ committed:", "Changes not staged for commit:", ...
 The configuration is done via a number of global variables, which can be set
 in the .vimrc file.
 
-  Variable                  Default       Description and further information
+  Variable                    Default     Description and further information
  ----------------------------------------------------------------------------
-  g:Git_Executable          'git'         the Git executable
+  g:Git_Executable            'git'       the Git executable
                                             |gitsupport-config-executable|
-  g:Git_LoadMenus           'yes'         whether to load the menus
+  g:Git_LoadMenus             'yes'       whether to load the menus
                                           ('yes' or 'no')
                                             |gitsupport-config-menus|
-  g:Git_RootMenu            '&Git'        name and shortcut of the root menu
+  g:Git_RootMenu              '&Git'      name and shortcut of the root menu
                                             |gitsupport-config-menus|
+  g:Git_DiffExpandEmpty       'yes'       whether *:GitDiff* expands an empty
+                                          argument list to the current file
+                                            |gitsupport-config-settings|
+  g:Git_StatusStagedOpenDiff  'cached'    how to execute "open diff" from
+                                          inside the status buffer, section
+                                          "Changes to be committed"
+                                            |gitsupport-config-settings|
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -734,6 +759,55 @@ You can add hotkeys for your favorite commands by adding maps to your .vimrc.
 With these lines, <F10> will open the status buffer: >
 	 noremap <silent> <F10>       :GitStatus<CR>
 	inoremap <silent> <F10>  <C-C>:GitStatus<CR>
+
+------------------------------------------------------------------------------
+5.4  SETTINGS                                     *gitsupport-config-settings*
+------------------------------------------------------------------------------
+                                                       *g:Git_DiffExpandEmpty*
+The default behavior of ":GitDiff", when called without arguments, is to
+expand the argument list to the file contained in the current buffer, which is
+the same as calling: >
+	:GitDiff %
+This behavior can be changed by setting: >
+	let g:Git_DiffExpandEmpty = 'no'
+Now calling ":GitDiff" without any arguments opens a buffer displaying all
+changes from all files. But even with g:Git_DiffExpandEmpty == 'yes', you can
+still display a diff containing all changes by calling: >
+	:GitDiff --
+This is not detected to be an empty argument list.
+
+The possible settings are listed below:
+
+  Value             Meaning                      :GitDiff expands to ...
+ ----------------------------------------------------------------------------
+  'yes' (default)   expand empty argument list   git diff -- <file>
+  'no'              Git's standard behavior      git diff
+ ----------------------------------------------------------------------------
+
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
+------------------------------------------------------------------------------
+                                                  *g:Git_StatusStagedOpenDiff*
+Within the status buffer, the map 'od' can be used to display the diff for the
+file under the cursor. The normal behavior is to open the "default" diff
+between the index and the working tree. In the section containing the staged
+files, titled "Changes to be committed", this behavior is different and can be
+controlled by g:Git_StatusStagedOpenDiff. Setting >
+	let g:Git_StatusStagedOpenDiff = 'cached'
+means the diff will be opened displaying the staged changes.
+
+The other possible settings are listed below:
+
+  Value                Meaning            Open diff via ...
+ ----------------------------------------------------------------------------
+  'cached' (default)   staged changes     git diff --cached -- <file>
+  'head'               all changes        git diff HEAD -- <file>
+  any other            unstaged changes   git diff -- <file>
+ ----------------------------------------------------------------------------
+
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
 
 ==============================================================================
 A.  TROUBLESHOOTING - KNOWN ISSUES                *gitsupport-troubleshooting*

@@ -1,4 +1,4 @@
-README for git-support.vim (Version 0.9) / March 20 2013
+README for git-support.vim (Version 0.9.1pre) / June 7 2013
 
   *  INSTALLATION
   *  RELEASE NOTES 
@@ -122,6 +122,13 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 ----------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.1pre
 ----------------------------------------------------------------------
++ Added: Jump from diff output to the corresponding file.
++ Changed: Commands which open a file will jump to its window, if one exists.
++ Changed: Opening a diff in the status buffer for file in the section "staged".
+  Will now open a diff with the staged or unstaged changes, or both of them.
+  This behavior is modifiable (see g:Git_StatusStagedOpenDiff).
++ Changed: Calling :GitDiff without arguments can be returned to the standard
+  behavior of Git (see g:Git_DiffExpandEmpty).
 + Improved syntax highlighting.
 
 ----------------------------------------------------------------------

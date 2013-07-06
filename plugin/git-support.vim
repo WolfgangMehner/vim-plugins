@@ -9,7 +9,7 @@
 "  Organization:  
 "       Version:  see variable g:GitSupport_Version below
 "       Created:  06.10.2012
-"      Revision:  22.03.2013
+"      Revision:  07.06.2013
 "       License:  Copyright (c) 2012-2013, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -44,6 +44,16 @@ let g:GitSupport_Version= '0.9.1pre'     " version number of this script; do not
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
 "-------------------------------------------------------------------------------
+"
+"-------------------------------------------------------------------------------
+" s:ApplyDefaultSetting : Write default setting to a global variable.   {{{2
+"-------------------------------------------------------------------------------
+"
+function! s:ApplyDefaultSetting ( varname, value )
+	if ! exists ( 'g:'.a:varname )
+		exe 'let g:'.a:varname.' = '.string( a:value )
+	endif
+endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
 "
 "-------------------------------------------------------------------------------
 " s:ErrorMsg : Print an error message.   {{{2
@@ -176,6 +186,30 @@ function! s:ImportantMsg ( ... )
 endfunction    " ----------  end of function s:ImportantMsg  ----------
 "
 "-------------------------------------------------------------------------------
+" s:OpenFile : Open a file or jump to its window.   {{{2
+"-------------------------------------------------------------------------------
+"
+function! s:OpenFile ( file, ... )
+	if bufwinnr ( a:file ) == -1
+		" open buffer
+		belowright new
+		exe "edit ".fnameescape( a:file )
+	else
+		" jump to window
+		exe bufwinnr( a:file ).'wincmd w'
+	end
+	if a:0 >= 1
+		" jump to line
+		let pos = getpos( '.' )
+		let pos[1] = a:1   " line
+		if a:0 >= 2
+			let pos[2] = a:2   " col
+		endif
+		call setpos( '.', pos )
+	endif
+endfunction    " ----------  end of function s:OpenFile  ----------
+"
+"-------------------------------------------------------------------------------
 " s:VersionLess : Compare two version numbers.   {{{2
 "-------------------------------------------------------------------------------
 "
@@ -237,6 +271,9 @@ endif
 call s:GetGlobalSetting ( 'Git_Executable' )
 call s:GetGlobalSetting ( 'Git_LoadMenus' )
 call s:GetGlobalSetting ( 'Git_RootMenu' )
+"
+call s:ApplyDefaultSetting ( 'Git_DiffExpandEmpty',      'yes' )
+call s:ApplyDefaultSetting ( 'Git_StatusStagedOpenDiff', 'cached' )
 "
 let s:Enabled = 1
 let s:DisabledReason = ""
@@ -953,6 +990,76 @@ function! GitS_CommitDryRun( action, ... )
 endfunction    " ----------  end of function GitS_CommitDryRun  ----------
 "
 "-------------------------------------------------------------------------------
+" Diff : Auxiliary   {{{1
+"-------------------------------------------------------------------------------
+"
+"-------------------------------------------------------------------------------
+" s:Diff_GetFile : Get the file (and line/col) under the cursor.   {{{2
+"-------------------------------------------------------------------------------
+"
+function! s:Diff_GetFile( ... )
+	"
+	let f_name = ''
+	let f_line = -1
+	let f_col  = -1
+	"
+	let f_pos = line('.')
+	"
+	" get line and col
+	if a:0 > 0 && a:1 == 'line'
+		"
+		let r_pos = f_pos
+		let f_col = getpos( '.' )[2]
+		let f_off1 = 0
+		let f_off2 = 0
+		"
+		while r_pos > 0
+			"
+			if getline(r_pos) =~ '^[+ ]'
+				let f_off1 += 1
+				if getline(r_pos) =~ '^[+ ][+ ]'
+					let f_off2 += 1
+				endif
+			elseif getline(r_pos) =~ '^@@ '
+				let s_range = matchstr( getline(r_pos), '^@@ -\d\+,\d\+ +\zs\d\+\ze,\d\+ @@' )
+				let f_line = s_range - 1 + f_off1
+				let f_col  = max ( [ f_col-1, 1 ] )
+				break
+			elseif getline(r_pos) =~ '^@@@ '
+				let s_range = matchstr( getline(r_pos), '^@@@ -\d\+,\d\+ -\d\+,\d\+ +\zs\d\+\ze,\d\+ @@@' )
+				let f_line = s_range - 1 + f_off2
+				let f_col  = max ( [ f_col-2, 1 ] )
+				break
+			elseif getline(r_pos) =~ '^diff '
+				break
+			endif
+			"
+			let r_pos -= 1
+		endwhile
+		"
+		let f_pos = r_pos
+		"
+	endif
+	"
+	" get file
+	while f_pos > 0
+		"
+		if getline(f_pos) =~ '^diff --git'
+			let f_name = matchstr ( getline(f_pos), 'a\([/\\]\)\zs\(.*\)\ze b\1\2\s*$' )
+			break
+		elseif getline(f_pos) =~ '^diff --cc'
+			let f_name = matchstr ( getline(f_pos), '^diff --cc \zs.*$' )
+			break
+		endif
+		"
+		let f_pos -= 1
+	endwhile
+	"
+	return [ f_name, f_line, f_col ]
+	"
+endfunction    " ----------  end of function s:Diff_GetFile  ----------
+"
+"-------------------------------------------------------------------------------
 " GitS_Diff : execute 'git diff ...'   {{{1
 "-------------------------------------------------------------------------------
 "
@@ -961,18 +1068,45 @@ function! GitS_Diff( action, ... )
 	let param = ''
 	"
 	if a:action == 'help'
-		echo s:HelpTxtStd
+		let txt  = s:HelpTxtStd."\n\n"
+		let txt .= "of      : file under cursor: open file (edit)\n"
+		let txt .= "oj      : file under cursor: open and jump to the position under the cursor\n\n"
+		let txt .= "For settings see:\n"
+		let txt .= "  :help g:Git_DiffExpandEmpty"
+		echo txt
 		return
 	elseif a:action == 'quit'
 		close
 		return
 	elseif a:action == 'update'
 		"
-		if a:0 == 0         | " run again with old parameters
-		elseif empty( a:1 ) | let param = s:EscapeCurrent()
-		else                | let param = a:1
+		if a:0 == 0
+			" run again with old parameters
+		elseif empty( a:1 ) && g:Git_DiffExpandEmpty == 'yes'
+			let param = s:EscapeCurrent()
+		else
+			let param = a:1
 		endif
 		"
+	elseif a:action =~ '\<\%(\|edit\|jump\)\>'
+		"
+		if a:action == 'edit'
+	 		let [ f_name, f_line, f_col ] = s:Diff_GetFile ()
+			let f_name = s:GitRepoBase().'/'.f_name
+			"
+			call s:OpenFile( f_name )
+		elseif a:action == 'jump'
+			let [ f_name, f_line, f_col ] = s:Diff_GetFile ( 'line' )
+			let f_name = s:GitRepoBase().'/'.f_name
+			"
+			if f_line != -1
+				call s:OpenFile( f_name, f_line, f_col )
+			else
+				call s:OpenFile( f_name )
+			endif
+		endif
+		"
+		return
 	else
 		echoerr 'Unknown action "'.a:action.'".'
 		return
@@ -990,6 +1124,9 @@ function! GitS_Diff( action, ... )
 		exe 'nmap          <buffer> <S-F1> :call GitS_Diff("help")<CR>'
 		exe 'nmap <silent> <buffer> q      :call GitS_Diff("quit")<CR>'
 		exe 'nmap <silent> <buffer> u      :call GitS_Diff("update")<CR>'
+
+		exe 'nmap <silent> <buffer> of     :call GitS_Diff("edit")<CR>'
+		exe 'nmap <silent> <buffer> oj     :call GitS_Diff("jump")<CR>'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -1463,10 +1600,11 @@ let s:Status_SectionCodes = {
 			\ 'u': 'untracked',
 			\ 'i': 'ignored',
 			\ 'c': 'conflict',
+			\ 'd': 'diff',
 			\ }
 "
 "-------------------------------------------------------------------------------
-" s:Status_GetFile : Get the file under the cursor and its status. {{{2
+" s:Status_GetFile : Get the file under the cursor and its status.   {{{2
 "-------------------------------------------------------------------------------
 "
 function! s:Status_GetFile()
@@ -1478,8 +1616,7 @@ function! s:Status_GetFile()
 		let line = getline('.')
 		"
 		if line =~ '^##'
-			call s:ErrorMsg ( 'No file under the cursor.' )
-			return []
+			return [ '', '', 'No file under the cursor.' ]
 		elseif line =~ '^\%([MARC][MD]\|DM\)\s'
 			let s_code = 'b'
 		elseif line =~ '^[MARCD] \s'
@@ -1493,8 +1630,7 @@ function! s:Status_GetFile()
 		elseif line =~ '^\%(AA\|DD\|[AD]U\|U[ADU]\)\s'
 			let s_code = 'c'
 		else
-			call s:ErrorMsg ( 'Unknown section, aborting.' )
-			return []
+			return [ '', '', 'Unknown section, aborting.' ]
 		endif
 		"
 		let [ f_status, f_name ] = matchlist( line, '^\(..\)\s\(.*\)' )[1:2]
@@ -1503,58 +1639,69 @@ function! s:Status_GetFile()
 		"
 		" regular output
 		"
+		let c_line = getline('.')
 		let c_pos  = line('.')
 		let h_pos  = c_pos
 		let s_head = ''
 		"
-		" find header
-		while h_pos > 0
+		if c_line =~ '^#'
 			"
-			let s_head = matchstr( getline(h_pos), '^# \zs[[:alnum:][:space:]]\+\ze:$' )
+			" find header
+			while h_pos > 0
+				"
+				let s_head = matchstr( getline(h_pos), '^# \zs[[:alnum:][:space:]]\+\ze:$' )
+				"
+				if ! empty( s_head )
+					break
+				endif
+				"
+				let h_pos -= 1
+			endwhile
 			"
-			if ! empty( s_head )
-				break
+			" which header?
+			if s_head == ''
+				return [ '', '', 'Not in any section.' ]
+			elseif s_head == 'Changes to be committed'
+				let s_code = 's'
+			elseif s_head == 'Changed but not updated' || s_head == 'Changes not staged for commit'
+				let s_code = 'm'
+			elseif s_head == 'Untracked files'
+				let s_code = 'u'
+			elseif s_head == 'Ignored files'
+				let s_code = 'i'
+			elseif s_head == 'Unmerged paths'
+				let s_code = 'c'
+			else
+				return [ '', '', 'Unknown section "'.s_head.'", aborting.' ]
 			endif
 			"
-			let h_pos -= 1
-		endwhile
-		"
-		" which header?
-		if s_head == ''
-			call s:ErrorMsg ( 'Not in any section.' )
-			return []
-		elseif s_head == 'Changes to be committed'
-			let s_code = 's'
-		elseif s_head == 'Changed but not updated' || s_head == 'Changes not staged for commit'
-			let s_code = 'm'
-		elseif s_head == 'Untracked files'
-			let s_code = 'u'
-		elseif s_head == 'Ignored files'
-			let s_code = 'i'
-		elseif s_head == 'Unmerged paths'
-			let s_code = 'c'
-		else
-			call s:ErrorMsg ( 'Unknown section "'.s_head.'", aborting.' )
-			return []
-		endif
-		"
-		" get the filename
-		if s_code =~ '[smc]'
-			let mlist = matchlist( getline(c_pos), '^#\t\([[:alnum:][:space:]]\+\):\s\+\(\S.*\)$' )
-		else
-			let mlist = matchlist( getline(c_pos), '^#\t\(\)\(\S.*\)$' )
-		endif
-		"
-		" check the filename
-		if empty( mlist )
-			call s:ErrorMsg ( 'No file under the cursor.' )
-			return []
-		endif
-		"
-		let [ f_status, f_name ] = mlist[1:2]
-		"
-		if s_code == 'c'
-			let f_status = 'conflict'
+			" get the filename
+			if s_code =~ '[smc]'
+				let mlist = matchlist( c_line, '^#\t\([[:alnum:][:space:]]\+\):\s\+\(\S.*\)$' )
+			else
+				let mlist = matchlist( c_line, '^#\t\(\)\(\S.*\)$' )
+			endif
+			"
+			" check the filename
+			if empty( mlist )
+				return [ '', '', 'No file under the cursor.' ]
+			endif
+			"
+			let [ f_status, f_name ] = mlist[1:2]
+			"
+			if s_code == 'c'
+				let f_status = 'conflict'
+			endif
+			"
+		elseif b:GitSupport_VerboseOption == 1
+			"
+	 		let [ f_name, f_line, f_col ] = s:Diff_GetFile ()
+			"
+			if f_name == ''
+				return [ '', '', 'No file under the cursor.' ]
+			else
+				return[ 'd', 'modified', s:GitRepoBase().'/'.f_name ]
+			endif
 		endif
 		"
 	endif
@@ -1569,7 +1716,7 @@ function! s:Status_GetFile()
 endfunction    " ----------  end of function s:Status_GetFile  ----------
 "
 "-------------------------------------------------------------------------------
-" s:Status_FileAction : Execute a command for the file under the cursor. {{{2
+" s:Status_FileAction : Execute a command for the file under the cursor.   {{{2
 "-------------------------------------------------------------------------------
 "
 function! s:Status_FileAction( action )
@@ -1577,11 +1724,12 @@ function! s:Status_FileAction( action )
 	" the file under the cursor
 	let fileinfo = s:Status_GetFile()
 	"
-	if empty( fileinfo )
+	let [ s_code, f_status, f_name ] = fileinfo
+	"
+	if s_code == ''
+		call s:ErrorMsg ( f_name )
 		return 0
 	endif
-	"
-	let [ s_code, f_status, f_name ] = fileinfo
 	"
 	" section / action
 	"                 | edit  | diff  log   | add   ckout reset rm
@@ -1590,26 +1738,39 @@ function! s:Status_FileAction( action )
 	" untracked (u)   |  x    |  -     -    |  x     -     -     -
 	" ignored   (i)   |  x    |  -     -    |  x     -     -     -
 	" unmerged  (c)   |  x    |  x     x    |  x     -     -     x
+	" diff      (d)   |  x    |  x     x    |  -     -     x     -
 	"  (ckout = checkout)
 	"
-	" in section 'modified': action 'rm' only for status 'deleted'
+	" in section 'staged'   : action 'diff' may behave differently
+	" in section 'modified' : action 'rm' only for status 'deleted'
 	"
 	let f_name_esc = '-- '.s:EscapeFile( f_name )
 	"
 	if a:action == 'edit'
 		"
 		" any section, action "edit"
-		belowright new
-		exe "edit ".fnameescape( f_name )
+		call s:OpenFile( f_name )
 		"
-	elseif s_code =~ '[bsmc]' && a:action == 'diff'
+	elseif s_code == 's' && a:action == 'diff'
 		"
-		" section "staged", "modified" or "conflict", action "diff"
+		" section "staged", action "diff"
+		if g:Git_StatusStagedOpenDiff == 'cached'
+			call GitS_Diff( 'update', '--cached '.f_name_esc )
+		elseif g:Git_StatusStagedOpenDiff == 'head'
+			call GitS_Diff( 'update', 'HEAD '.f_name_esc )
+		else
+			call GitS_Diff( 'update', f_name_esc )
+		endif
+		"
+	elseif s_code =~ '[bmcd]' && a:action == 'diff'
+		"
+		" section "modified", "conflict" or "diff", action "diff"
+		" (this is also called for section "both" in short status output)
 		call GitS_Diff( 'update', f_name_esc )
 		"
-	elseif s_code =~ '[bsmc]' && a:action == 'log'
+	elseif s_code =~ '[bsmcd]' && a:action == 'log'
 		"
-		" section "staged", "modified" or "conflict", action "log"
+		" section "staged", "modified", "conflict" or "diff", action "log"
 		call GitS_Log( 'update', f_name_esc )
 		"
 	elseif s_code == 'i' && a:action == 'add'
@@ -1662,9 +1823,9 @@ function! s:Status_FileAction( action )
 			call s:ErrorMsg ( 'Checking out not implemented yet for file status "'.f_status.'".' )
 		endif
 		"
-	elseif s_code =~ '[bs]' && a:action == 'reset'
+	elseif s_code =~ '[bsd]' && a:action == 'reset'
 		"
-		" section "staged", action "reset"
+		" section "staged" or "diff", action "reset"
 		"
 		if f_status == 'modified' || f_status == 'new file' || f_status == 'deleted' || f_status =~ '^[MADRC].$'
 			" reset a modified, new or deleted file?
@@ -1722,7 +1883,9 @@ function! GitS_Status( action )
 		let txt .= "of      : file under cursor: open file (edit)\n"
 		let txt .= "ol      : file under cursor: open log\n"
 		let txt .= "r       : file under cursor: reset\n"
-		let txt .= "r       : file under cursor: remove (only for unmerged changes)"
+		let txt .= "r       : file under cursor: remove (only for unmerged changes)\n\n"
+		let txt .= "For settings see:\n"
+		let txt .= "  :help g:Git_StatusStagedOpenDiff"
 		echo txt
 		return
 	elseif a:action == 'quit'
@@ -1739,13 +1902,13 @@ function! GitS_Status( action )
 		" noop
 	elseif a:action =~ '\<\%(add\|checkout\|diff\|edit\|log\|reset\)\>'
 		"
-		if getline('.') =~ '^#' || b:GitSupport_ShortOption
+" 		if getline('.') =~ '^#' || b:GitSupport_ShortOption
 			if s:Status_FileAction ( a:action )
 				call GitS_Status( 'update' )
 			endif
-		else
-			call s:ErrorMsg ( 'Not in status section.' )
-		endif
+" 		else
+" 			call s:ErrorMsg ( 'Not in status section.' )
+" 		endif
 		"
 		return
 	else
@@ -1932,12 +2095,13 @@ function! s:InitMenus()
 	exe ahead.'Current\ File<TAB>Git :echo "This is a menu header!"<CR>'
 	exe ahead.'-Sep00-               :'
 	"
-	exe ahead.'&add<TAB>:GitAdd           :GitAdd<CR>'
-	exe ahead.'&blame<TAB>:GitBlame       :GitBlame<CR>'
-	exe ahead.'&checkout<TAB>:GitCheckout :GitCheckout<CR>'
-	exe ahead.'&diff<TAB>:GitDiff         :GitDiff<CR>'
-	exe ahead.'r&m<TAB>:GitRm             :GitRm<CR>'
-	exe ahead.'&reset<TAB>:GitReset       :GitReset<CR>'
+	exe ahead.'&add<TAB>:GitAdd           :GitAdd -- %<CR>'
+	exe ahead.'&blame<TAB>:GitBlame       :GitBlame -- %<CR>'
+	exe ahead.'&checkout<TAB>:GitCheckout :GitCheckout -- %<CR>'
+	exe ahead.'&diff<TAB>:GitDiff         :GitDiff -- %<CR>'
+	exe ahead.'&log<TAB>:GitLog           :GitLog -- %<CR>'
+	exe ahead.'r&m<TAB>:GitRm             :GitRm -- %<CR>'
+	exe ahead.'&reset<TAB>:GitReset       :GitReset -- %<CR>'
 	"
 	" Specials
 	let ahead = 'amenu '.s:Git_RootMenu.'.spe&cials.'

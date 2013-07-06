@@ -26,15 +26,16 @@ syn match  GitDiffHeader       "^--- .*$"  contained
 syn match  GitDiffHeader       "^+++ .*$"  contained
 
 syn match  GitTrailingWhite    "\s\+$"  contained
+syn match  GitTrailingWhiteM   "..\zs\s\+$"  contained
 
 syn match  GitDiffRange        "^@@[^@]\+@@"  contained
 syn match  GitDiffLineP        "^+.*$"        contained  contains=GitTrailingWhite
 syn match  GitDiffLineM        "^-.*$"        contained
 
 syn match  GitMergeRange       "^@@@[^@]\+@@@"   contained
-syn match  GitMergeLineP       "^+[+ ].*$"       contained  contains=GitTrailingWhite
+syn match  GitMergeLineP       "^+[+ ].*$"       contained  contains=GitTrailingWhiteM
 syn match  GitMergeLineM       "^-[- ].*$"       contained
-syn match  GitMergeLineP       "^ +.*$"          contained  contains=GitTrailingWhite
+syn match  GitMergeLineP       "^ +.*$"          contained  contains=GitTrailingWhiteM
 syn match  GitMergeLineM       "^ -.*$"          contained
 syn match  GitMergeConflict    "^++<<<<<<< .\+"  contained
 syn match  GitMergeConflict    "^++======="      contained
@@ -47,6 +48,7 @@ syn match  GitMergeConflict    "^++>>>>>>> .\+"  contained
 highlight default link GitDiffHeader     GitHeading
 highlight default link GitDiffRange      GitHighlight3
 highlight default link GitTrailingWhite  GitSevere
+highlight default link GitTrailingWhiteM GitTrailingWhite
 highlight default link GitDiffLineP      GitAdd
 highlight default link GitDiffLineM      GitRemove
 highlight default link GitMergeRange     GitHighlight3
