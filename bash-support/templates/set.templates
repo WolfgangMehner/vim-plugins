@@ -1,0 +1,32 @@
+== LIST: set == list ==
+'allexport',
+'braceexpand',
+'emacs',
+'errexit',
+'errtrace',
+'functrace',
+'hashall',
+'histexpand',
+'history',
+'ignoreeof',
+'keyword',
+'monitor',
+'noclobber',
+'noexec',
+'noglob',
+'notify',
+'nounset',
+'onecmd',
+'physical',
+'pipefail',
+'posix',
+'privileged',
+'verbose',
+'vi',
+'xtrace',
+== ENDLIST ==
+
+== Set == expandmenu, map:bse, sc:s ==
+|PickList( 'set option', 'set' )|
+set -o |PICK|<CURSOR>
+== ENDTEMPLATE ==

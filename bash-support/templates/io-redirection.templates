@@ -1,0 +1,36 @@
+== IO-Redir.take STDIN from file == insert ==
+ < <CURSOR>
+== IO-Redir.direct STDOUT to file == insert ==
+ > <CURSOR>
+== IO-Redir.direct STDOUT to file, append == insert ==
+ >> <CURSOR>
+== IO-Redir.direct STDOUT to STDERR == insert ==
+ >&2<CURSOR>
+== IO-Redir.direct file descr n to file == insert ==
+ <CURSOR>> 
+== IO-Redir.direct file descr n to file, append == insert ==
+ <CURSOR>>> 
+== IO-Redir.take file descr n from file == insert ==
+ <CURSOR>< 
+== IO-Redir.duplicate STDOUT to file descr n == insert ==
+ ><CURSOR>& 
+== IO-Redir.duplicate STDIN from file descr n == insert ==
+ <<CURSOR>& 
+== IO-Redir.direct STDOUT and STDERR to file == insert ==
+ &> <CURSOR>
+== IO-Redir.close STDIN == insert ==
+ <&- <CURSOR>
+== IO-Redir.close STDOUT == insert ==
+ >&- <CURSOR>
+== IO-Redir.close input from file descr n == insert ==
+ <CURSOR><&- 
+== IO-Redir.close output from file descr n == insert ==
+ <CURSOR>>&- 
+== IO-Redir.append STDOUT and STDERR == insert ==
+ &>> <CURSOR>
+== IO-Redir.here-document == insert ==
+<<-EOF
+<CURSOR><SPLIT>
+EOF
+# ===== end of here-document =====
+== ENDTEMPLATE ==

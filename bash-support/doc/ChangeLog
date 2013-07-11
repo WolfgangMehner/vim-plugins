@@ -1,0 +1,398 @@
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.12.1
+=======================================================================================
+- Minor additions and bugfixes in 2 menus.
+- Test -v added.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.12
+=======================================================================================
+- New global variable g:BASH_InsertFileHeader (suppress file description comment for new files)
+- New menu item 'view code snippet' (\nv).
+- New ex command BASH_ScriptCmdLineArguments.
+- 3 ex commands renamed.
+- Minor internal improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.11
+=======================================================================================
+- Rendering of manuals (\hm) and Bash help (\hh).
+- Bugfix: \hb, \hm, \hh not working.
+- Minor internal improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.10
+=======================================================================================
+- Resolve $HOME for linked home directories.
+- Wrong insertion for parameter substitution "match beginning; del longest
+  part" (thanks to John Orr).
+- Other minor bugs fixed.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.9
+=======================================================================================
+- Hotkey renamed: \st -> \su
+- New global variable allows loading menus only with filetype 'sh'.
+- Comments: echo "<line>" escapes double quotes in original text.
+- Other minor bugs fixed.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.8
+=======================================================================================
+- New comment submenu 'script sections'.
+- Two new hotkeys \css, \ckc for commenting.
+- Two new plugin tags: LICENSE,ORGANIZATION
+- Run menu: new item 'Bash cmd. line arg.' (\rba).  
+- I/O-Redir-menu: additional item'>&2'
+- System-wide installation: minimal Template file for a user will automatically
+  be added.
+- Hotkey renamed: \t -> \t1
+- A few code snippets for debugging added.
+- Bugfix: \cl did not work in insert mode.
+- Other minor bugs fixed.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.7
+=======================================================================================
+- The three hotkeys \cl, \cj, \cc allow a range, e.g. '3\cl' (see help text and
+	bash-hot-key.pdf).
+- Plugin loads faster: loading the templates is delayed until the first use.
+- Plugin now works with pathogen.vim.
+- Menus will always be generated (for the use with :emenu).
+- Bugfix: no local templates available with a system-wide installation (thanks to Iain Arnell).
+- Several improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.6
+=======================================================================================
+- New hotkey \ssa and menu entry for the selection of a subarray.
+- Bugfix: detection of a systemwide installation can fail.
+- Minor improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.5
+=======================================================================================
+- Bugfix: detection of a systemwide installation can fail.
+- Minor improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.4
+=======================================================================================
+- 2 new hotkeys: \t, \t2 (empty tests)
+- Windows: user and system installation.
+- Syntax check under Windows.
+- Several minor bugsfixed.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.3
+=======================================================================================
+- 3 hotkeys renamed: \sl -> \sei (elif), \sas -> \saa ( ${.[@]} ) , \hp -> \hbs.
+- 3 new hotkeys: \sa1 ( ${.[*]} ), \san ( ${#.[@]} ), \sai ( ${!.[@]} ).
+- 1 new menu entry (Tests)
+- Minor improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.2
+=======================================================================================
+- New hotkey and menu entry for [[ =~ ]]
+- New for Bash 4.1: shopt 'compat40', variables '$BASHOPTS', '$BASH_XTRACEFD'.
+- Bugfixes: local installation looks like a system-wide installation in seldom cases.
+- Bugfixes: typo in 4 menu entries.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.1.1
+=======================================================================================
+- Bugfixes: code snippets will not be found if plugin not installed beyond '$HOME/.vim'.
+- Bugfixes: undocumented global variable used in above non-standard installation.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.1
+=======================================================================================
+- The plugin now handles different template styles without editing and
+  reloading the main template file.
+- New hotkey and ex-command to switch template styles.
+- New global List/Dictionnary g:BASH_AlsoBash: add filename pattern (and
+  styles) for files not named *.sh .
+- Minor improvements.
+- Bugfixes: missing redraws in some cases. 
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.0.1
+=======================================================================================
+- New global variable g:BASH_Errorformat: adapt the error format used to parse
+  runtime messages to your locale setting.
+- Bugfix (Windows only): missing internal variable prevents proper initialization.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.0
+=======================================================================================
++ Completely new template system. User can change templates on the fly.
++ Additional mapping Ctrl-j : jump behind parenthesis or strings in the current line.
++ A few Posix character classes have better shortcuts.
++ Bugfix: insert mode for Posix character classes.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.14
+=======================================================================================
++ Debugging: ddd always called with bashdb(1).
++ More complete adaption to Bash 4.0: options, builtins, environment variables.
++ Bugfix: running and starting the debugger causes error if working directory is not
+  the directory of the current file.
++ Minor improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.13
+=======================================================================================
++ New menu item 'array element'.
++ New hotkeys \sa, \sas.
++ New submenu 'Snippets'.
++ Hotkeys for the POSIX character classes.
++ Hardcopy (run menu) can print any buffer.
++ Bugfix: 'Run->save + run script' (\rr, <C-F9>) : visual mode broken. 
++ Minor improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.12
+=======================================================================================
++ Hotkeys are shown in the menus.
++ New menu item and hotkey \hb : open the Bash manual.
++ New hotkey \rco : syntax check options.
++ File browser for code snippets choosable (new global variable).
++ Bugfix: wrapper script for use of a xterm could not handle parameters containing blanks.
++ Minor improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.11
+=======================================================================================
++ Additions for Bash version 4.0.
++ Comments menu (\cj): adjustment of end-of-line comments improved.
++ Two submenus rearranged.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.10
+=======================================================================================
+- new item in the Statements-menu: 'for ((...)) do done'.
+- new item in the Statements-menu: 'printf "%s"'.
+- new item in the Statements-menu: indirect parameter expansion ${!name}
+- Bugfix: unnecessary submenu beyond 'Environ'.
+- Bugfix: shopt menu had no insert mode.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.9.1
+=======================================================================================
+- Map leader for hotkeys now user definable: new global variable g:BASH_MapLeader.
+- Bugfix: 'Statements->no. of elem.s' inserts wrong text.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.9
+=======================================================================================
++ Can now be used under Windows, e.g. with win-bash (few restrictions).
++ Name completion when entering a builtin name.
++ Bugfix: help shows no selection when just 2 manuals are available.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.8
+=======================================================================================
++ New help menu: help reorganized, 3 new help hotkeys.
++ The help hotkeys now also work when Vim is run on the console.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.7.1
+=======================================================================================
++ Minor bugfix in the I/O-Redir-menu.
++ I/O-Redir-menu shows redirectors (sort of help).
++ I/O-Redir-menu: here-document item has a vmode.
++ File name expansion for the first command line argument entered with <S-F9>.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.7
+=======================================================================================
++ When a Bash script is started from the Vim command line errors and warnings (if any)
+  are caught in an error window allowing quickfix commands to be used.
++ Scripts which are not set executable can be run under Vim.
++ One new hotkey.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.6
+=======================================================================================
++ Superfluous control characters for mode switching (menus, hotkeys) removed. Caused beeps.
++ Most hotkeys now work in insert mode.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.5
+=======================================================================================
++ Menu item 'toggle comment' replaces 'code->comment' and 'comment->code'
++ Hotkey \co removed,  \cc is now a toggle.
++ Bugfix. Adjusting comments (\cj): # in '$#' and '${#...}' is no longer
+  regarded as a start of a comment.
++ Bugfix. \cl in insert mode called function for visual mode.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.4
+=======================================================================================
++ Format for the macros |DATE|, |TIME|, and |YEAR| can be defined by the user.
++ Help text improved.
++ Option 'nocasematch' added
++ Additional menu entries: 1 parameter substitution, 1 special variable, array index list. 
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.3
+=======================================================================================
++ Changes to allow a system-wide installation.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.2
+=======================================================================================
++ Snippets can now be managed in the console mode.
++ Three new key mappings for snippet handling.
++ Three items from the statements menu removed (quoting; but see file customization.vimrc).
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.1
+=======================================================================================
++ New menu item and key mapping to adjust end-of-line comments.
++ New insert mode mappings.
++ A few mappings have been renamed (to bring them into line with my C/C++ and Perl plugin).
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 2.0.1
+=======================================================================================
++ Bugfix: missing hotkey \ch added.
++ File wrapper.sh moved to the new directory 'bash-support/scripts'.
+
+---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 2.0
+---------------------------------------------------------------------------------------
++ PLUGIN DIRECTORIES REARRANGED.
++ One new mapping (\cs). 
++ Statement menu extended.
++ Bash keyword help (S-F1) improved.
++ Bugfix: empty new file after removing the header template can't be closed.
++ Bugfix : Tools entry missing when root menu not shown from the start.
+
+---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.15
+---------------------------------------------------------------------------------------
++ Needs Vim version 7.0+.
++ Inserting a function can be used in visual mode (+ new key mapping).
++ Bugfix: cursor misplaced after some visual mode operations.
+
+---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.14
+---------------------------------------------------------------------------------------
++ Setting the column for the start of line-end comments improved.
++ Mac OS X : circumvent a Vim bug which caused a crash when loading plugin version 1.13.
+
+---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.13
+---------------------------------------------------------------------------------------
++ The hotkeys F9 and \rd now also starts the debugger if vim is running without GUI.
++ The debugger frontend ddd can be started as preferred debugger.
++ New help entry in the main menu of this plugin (shows the plugin documentation).
++ A hardcopy shows the localized date and time in the header line.
+
+---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.12
+---------------------------------------------------------------------------------------
++ Bugfix: hotkey <S-F9> now working again.
++ Syntax check recognizes shopt options.
++ New regex menu: compose regular expressions with a few keystrokes from the menu.
+
+---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.11
+---------------------------------------------------------------------------------------
++ Start debugger bashdb with a keystroke.
++ Parameter substitutions completed.
++ Environment variables completed / menu rearranged.
++ Builtins completed.
++ Code <-> comment working in all modes.
++ Insert/remove echo for commenting/uncommenting statements.
++ Script will be made executable before running it (e.g. after a "Save As...").
++ Statement menu now in alphabetical order.
+
+---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.10.1
+---------------------------------------------------------------------------------------
++ Starting an xterm was not possible with some installations (bugfix).
+
+---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.10
+---------------------------------------------------------------------------------------
++ New Bash 3.0 set options added.
++ Shopt-menu added.
++ More builtins.
++ <S-F1> or \h displays help for the Bash builtin command under the cursor.
++ Key mappings for all run menu entries.
++ Line end comments start in a fixed column now (can be set from the menu).
++ Spaces in path names and file names are now possible.
++ Template files and snippet files are no longer kept in the list of alternate files.
++ Global variable is_bash is set to avoid a wrong highlighting for $(..) and $((..)).
+
+---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.9
+---------------------------------------------------------------------------------------
++ Running a Bash-script 
+  (1) The script can be run from the command line as usual.
+  (2) The output can be directed into a window with name "Bash-Output". 
+      The buffer and its content will disappear when closing the window. 
+      The buffer is reused when still open.
+  (3) The script can be run in an xterm.
++ The new hotkey Shift-F9 or the "cmd. line arg." sets command line arguments for the
+  current buffer (that is, each buffer can have its own arguments).
++ A code snippet with the file name extension "ni" or "noindent" will not be
+  indented on insertion.
++ 'Line End Comments' ignores blank lines in a marked block.
++ Calling a set-command (submenu "Set") for a marked block will set this option above
+  this block and unset it below.
+
+---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.8
+---------------------------------------------------------------------------------------
++ Installation simplified. 
++ Run syntax check / list errors in an error window
++ Append aligned comments to all lines of a marked block.
++ The root menu can be removed (default is not removed).
++ The dialog windows (GUI) have been replaced by more flexible command line inputs.
++ User will now be asked before a snippet file will be overwritten.
++ The undocumented and unnecessary hot key F12 has been removed.
+
+---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.7
+---------------------------------------------------------------------------------------
++ Only one entry in the gVim root menu.
++ All hotkeys are only defined for bash files.
++ Install script added.
++ Customization improved. 
++ Documentation improved.
++ Bug fix (template file handling)
+
+---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.6
+---------------------------------------------------------------------------------------
++ 28 key mappings for Vim without GUI. See bash-hot-keys.pdf (reference card).
++ Vim doc added (file bashsupport.txt).
+
+---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.5
+---------------------------------------------------------------------------------------
++ Tag substitution rewritten (Some characters in a substitution text for a tag 
+  prevented the tag from being substituted).
++ All bash variables can now be inserted from the menus.
++ A marked region can be surrounded by a for-, if, select- while- or until
+  statement (with indentation).
++ A marked text can be surrounded with quotes.
++ A marked region or a complete line can be surrounded with echo " ".
++ The echo " " can be removed from a line.
+
+---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.4
+---------------------------------------------------------------------------------------
++ Block comments are now read as templates or skeletons from files:
+    frame Comment,  function description,  file header
++ These templates can contain tags like |FILENAME|, |AUTHOR| etc. which are replaced
+  after reading.
++ indentation: multiline inserts and code snippets will be indented after insertion.
++ Most menu entries are now also active in normal mode.
++ Reading the templates is done in one function which can be called in an autocmd.
++ Code cleanup: register z no longer used. Most function calls are silent now.
+

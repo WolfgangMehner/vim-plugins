@@ -1,0 +1,83 @@
+
+== LIST: TestsArithmetic == hash ==
+	'arg1 is equal to arg2, -eq'              : '-eq',
+	'arg1 not equal to arg2, -ne'             : '-ne',
+	'arg1 less than arg2, -lt'                : '-lt',
+	'arg1 less than or equal to arg2, -le'    : '-le',
+	'arg1 greater than arg2, -gt'             : '-gt',
+	'arg1 greater than or equal to arg2, -ge' : '-ge',
+== ENDLIST ==
+
+== Tests.arithmetic tests == expandmenu, insert, sc:a, map:ta ==
+|PickList( 'arithmetic tests', 'TestsArithmetic' )|
+[ <CURSOR> |PICK|  ]
+== ENDTEMPLATE ==
+
+== LIST: TestsFilePermission == hash ==
+	'readable, -r'          : '-r',
+	'writable, -w'          : '-w',
+	'executable, -x'        : '-x',
+	'SUID-bit is set, -u'   : '-u',
+	'SGID-bit is set, -g'   : '-g',
+	'sticky bit is set, -k' : '-k',
+== ENDLIST ==
+
+== Tests.file permissions == expandmenu, insert, sc:p, map:tfp ==
+|PickList( 'file permission', 'TestsFilePermission' )|
+[ <CURSOR> |PICK|  ]
+== ENDTEMPLATE ==
+
+== LIST: TestsFileTypes == hash ==
+	'block special file, -b'     : '-b',
+	'character special file, -c' : '-c',
+	'directory, -d'              : '-d',
+	'named pipe (FIFO), -p'      : '-p',
+	'regular file, -f'           : '-f',
+	'socket, -S'                 : '-S',
+	'symboloc link, -L, -h'      : '-L',
+== ENDLIST ==
+
+== Tests.file types == expandmenu, insert, sc:t, map:tft ==
+|PickList( 'file type', 'TestsFileTypes' )|
+[ <CURSOR> |PICK|  ]
+== ENDTEMPLATE ==
+
+== LIST: TestsFileCharacteristics == hash ==
+	'file exists, -e, -a'                       : '-e',
+	'file exists, size greater zero, -s'        : '-s',
+	'file exists, owned by eff UID, -O'         : '-O',
+	'file exists, owned by eff GID, -G'         : '-G',
+	'file exists, modified since last read, -N' : '-N',
+	'file1 newer than file2, -nt'               : '-nt',
+	'file1 older than file2, -ot'               : '-ot',
+	'files have same device and inode numbers , -ef' : '-ef',
+== ENDLIST ==
+
+== Tests.file characteristics == expandmenu, insert, sc:c, map:tfc ==
+|PickList( 'file characteristics', 'TestsFileCharacteristics' )|
+[ <CURSOR> |PICK|  ]
+== ENDTEMPLATE ==
+
+== LIST: TestsStrings == hash ==
+	'length is zero, -z'        : '-z',
+	'length is non-zero, -n'    : '-n',
+	'strings are equal, =='     : '==',
+	'strings are not equal, !=' : '!=',
+	'sorts before, <'           : '<',
+	'sorts after, >'            : '>',
+== ENDLIST ==
+
+== Tests.string comparison == expandmenu, insert, sc:s, map:ts ==
+|PickList( 'string comparisons', 'TestsStrings' )|
+[ <CURSOR> |PICK|  ]
+== ENDTEMPLATE ==
+
+== Tests.option is enabled, -o == insert, map:toe, sc:o  ==
+[ -o <CURSOR> ]
+== Tests.variable has been set, -v == insert, map:tvs, sc:v  ==
+[ -v <CURSOR> ]
+== Tests.file descriptor is open, refers to a terminal, -t == insert, map:tfd, sc:d  ==
+[ -t <CURSOR> ]
+== Tests.string matches regexp == insert, map:tm, sc:m  ==
+[[ <CURSOR> =~  ]]
+== ENDTEMPLATE ==

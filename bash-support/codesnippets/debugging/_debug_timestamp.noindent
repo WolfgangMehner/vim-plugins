@@ -1,0 +1,16 @@
+
+DEBUG=${DEBUG:-0}           # 0 = no debug output, 1 = show debug output,
+                            # or enable debug with:  DEBUG=1 script.sh
+
+#===  FUNCTION  ================================================================
+#          NAME:  _debug_timestamp
+#   DESCRIPTION:  timestamp + optional information
+#                 timestamp: {seconds since 1970-01-01 00:00:00}.{nanoseconds}
+#    PARAMETERS:  identification, e.g. $LINENO (optional)
+#       RETURNS:  always 0
+#===============================================================================
+_debug_timestamp ()
+{
+	[ ${DEBUG} -ne 0 ] && echo -e "[ $(date "+%s.%N") ]${@:+ -- ${@}}"
+	return 0
+}	# ----------  end of function _debug_timestamp  ----------

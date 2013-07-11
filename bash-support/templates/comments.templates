@@ -1,0 +1,93 @@
+§ =============================================================
+§  Comments
+§ =============================================================
+
+== Comments.end-of-line comment == nomenu, append ==
+ # <CURSOR>
+== Comments.frame == map:cfr, sc:r ==
+#-------------------------------------------------------------------------------
+# <CURSOR>
+#-------------------------------------------------------------------------------
+== Comments.function == map:cfu, sc:f ==
+#---  FUNCTION  ----------------------------------------------------------------
+#          NAME:  |?FUNCTION_NAME|
+#   DESCRIPTION:  <CURSOR>
+#    PARAMETERS:  
+#       RETURNS:  
+#-------------------------------------------------------------------------------
+== Comments.file header == start, map:ch ==
+#!/bin/bash - 
+#===============================================================================
+#
+#          FILE: |FILENAME|
+# 
+#         USAGE: ./|FILENAME| 
+# 
+#   DESCRIPTION: 
+# 
+#       OPTIONS: ---
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: |AUTHOR| (|AUTHORREF|), |EMAIL|
+#  ORGANIZATION: |ORGANIZATION|
+#       CREATED: |DATE| |TIME|
+#      REVISION:  ---
+#===============================================================================
+
+set -o nounset                              # Treat unset variables as an error
+<CURSOR>
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+
+== Comments.date == append, map:cd, sc:d ==
+|DATE|
+== Comments.date-time == append, map:ct, sc:t ==
+|DATE| |TIME|
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Keywords, Special and Macros
+§ -------------------------------------------------------------
+
+== LIST: comments_sections == hash ==
+	'GLOBAL DECLARATIONS'     : 'GLOBAL DECLARATIONS',
+	'COMMAND LINE PROCESSING' : 'COMMAND LINE PROCESSING',
+	'SANITY CHECKS'           : 'SANITY CHECKS',
+	'FUNCTION DEFINITIONS'    : 'FUNCTION DEFINITIONS',
+	'TRAPS'                   : 'TRAPS',
+	'MAIN SCRIPT'             : 'MAIN SCRIPT',
+	'STATISTICS AND CLEAN-UP' : 'STATISTICS AND CLEAN-UP',
+== LIST: comments_keywords == hash ==
+	'bug'         : ':BUG:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'todo'        : ':TODO:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'tricky'      : ':TRICKY:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'warning'     : ':WARNING:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'workaround'  : ':WORKAROUND:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'new keyword' : ':<CURSOR>:|DATE| |TIME|:|AUTHORREF|: {+COMMENT+}',
+== LIST: comments_macros == hash ==
+	'AUTHOR'       : '|AUTHOR|',
+	'AUTHORREF'    : '|AUTHORREF|',
+	'COMPANY'      : '|COMPANY|',
+	'COPYRIGHT'    : '|COPYRIGHT|',
+	'EMAIL'        : '|EMAIL|',
+	'ORGANIZATION' : '|ORGANIZATION|',
+== ENDLIST ==
+
+§ -------------------------------------------------------------
+
+== Comments.script sections == expandmenu, map:css, sc:s ==
+|PickList( 'script sections', 'comments_sections' )|
+#===============================================================================
+#  |PICK|
+#===============================================================================
+== Comments.keyword comments == expandmenu, append, map:ckc, sc:k ==
+|PickList( 'keyword comment', 'comments_keywords' )|
+ # |PICK|
+== Comments.macros == expandmenu, insert, map:cma, sc:m ==
+|PickList( 'macro', 'comments_macros' )|
+|PICK|
+== ENDTEMPLATE ==
+
+== SEP: Comments.sep1 ==

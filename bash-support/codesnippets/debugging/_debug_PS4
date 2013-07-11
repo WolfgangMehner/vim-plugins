@@ -1,0 +1,13 @@
+# PS4 : timestamp; 'seconds.nanoseconds' since 1970-01-01 00:00:00 UT 
+PS4='+	[$(date "+%s.%N")]  '
+
+# PS4 : position, line number, function name
+PS4='+|${BASH_SOURCE##*/} ${LINENO}${FUNCNAME[0]:+ ${FUNCNAME[0]}}|  '
+
+# PS4 : position, line number, function name, subshell information
+PS4='+(${BASH_SOURCE##*/}: ${LINENO}) : ${FUNCNAME[0]} - [level ${SHLVL}, subshell ${BASH_SUBSHELL}, return code $?]
+'
+
+# PS4 : default prompt
+PS4='+'
+

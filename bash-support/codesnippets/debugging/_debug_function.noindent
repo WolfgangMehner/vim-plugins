@@ -1,0 +1,15 @@
+
+DEBUG=${DEBUG:-0}           # 0 = no debug output, 1 = show debug output,
+                            # or enable debug with:  DEBUG=1 script.sh
+
+#===  FUNCTION  ================================================================
+#          NAME:  _debug
+#   DESCRIPTION:  echo debug output controlled by a global variable
+#    PARAMETERS:  list,  e.g.;  "$LINENO: x=$x"
+#       RETURNS:  always 0
+#===============================================================================
+_debug ()
+{
+	[ ${DEBUG} -ne 0 ] && echo -e "${@}"
+	return 0
+}	# ----------  end of function _debug  ----------

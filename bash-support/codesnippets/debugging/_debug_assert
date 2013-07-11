@@ -1,0 +1,16 @@
+#===  FUNCTION  ================================================================
+#          NAME:  _assert
+#   DESCRIPTION:  Abort the script if assertion is false.
+#    PARAMETERS:  1) expression used as test inside brackets
+#                 2) optional information, e.g. $LINENO
+#       RETURNS:  0 / 99   assertion is true / false
+#===============================================================================
+function _assert ()
+{
+	if [ ! $1 ]; then
+		echo "${0##*/}${2:+:$2}: assertion '$1' failed."
+		exit 99
+	fi
+	return 0
+}    
+

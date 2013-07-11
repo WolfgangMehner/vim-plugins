@@ -1,0 +1,47 @@
+== Regexp.zero or one     == insert, map:xzo, sc:z  ==
+?(<SPLIT><CURSOR>|)
+== Regexp.zero or more    == insert, map:xzm, sc:z  ==
+*(<SPLIT><CURSOR>|)
+== Regexp.one or more     == insert, map:xom, sc:o  ==
++(<SPLIT><CURSOR>|)
+== Regexp.exactly one     == insert, map:xeo, sc:e  ==
+@(<SPLIT><CURSOR>|)
+== Regexp.anything except == insert, map:xae, sc:a  ==
+!(<SPLIT><CURSOR>|)
+== ENDTEMPLATE ==
+
+== SEP: Regexp.sep1 ==
+
+== LIST: POSIX_CharClasses == list ==
+  'alnum',
+  'alpha',
+  'ascii',
+  'blank',
+  'cntrl',
+  'digit',
+  'graph',
+  'lower',
+  'print',
+  'punct',
+  'space',
+  'upper',
+  'word',
+  'xdigit',
+== ENDLIST ==
+
+== Regexp.POSIX classes == expandmenu, insert, sc:p, map:xpc ==
+|PickList( 'POSIX char. classes', 'POSIX_CharClasses' )|
+[:|PICK|:]<CURSOR>
+== ENDTEMPLATE ==
+
+== LIST: BashRematch == list ==
+  '${BASH_REMATCH[0]}',
+  '${BASH_REMATCH[1]}',
+  '${BASH_REMATCH[2]}',
+  '${BASH_REMATCH[3]}',
+== ENDLIST ==
+
+== Regexp.BASH_REMATCH == expandmenu, insert, sc:b, map:xbr ==
+|PickList( 'BASH_REMATCH', 'BashRematch' )|
+|PICK|<CURSOR>
+== ENDTEMPLATE ==
