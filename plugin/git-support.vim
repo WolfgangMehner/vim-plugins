@@ -361,6 +361,7 @@ if s:Enabled
 	command!       -nargs=+                GitCommitMsg           :call GitS_Commit('msg','<args>','')
 	command!       -nargs=* -complete=file GitDiff                :call GitS_Diff('update','<args>')
 	command!       -nargs=*                GitFetch               :call GitS_Fetch('<args>','')
+	command!       -nargs=+ -complete=file GitGrep                :call GitS_Grep('update','<args>')
 	command!       -nargs=*                GitHelp                :call GitS_Help('update','<args>')
 	command!       -nargs=* -complete=file GitLog                 :call GitS_Log('update','<args>')
 	command!       -nargs=*                GitMerge               :call GitS_Merge('<args>','')
@@ -534,10 +535,10 @@ function! s:StandardRun( cmd, param, flags, ... )
 endfunction    " ----------  end of function s:StandardRun  ----------
 "
 "-------------------------------------------------------------------------------
-" GitS_Fold : fold text for 'git log'   {{{1
+" GitS_FoldLog : fold text for 'git diff/log/show/status'   {{{1
 "-------------------------------------------------------------------------------
 "
-function! GitS_Fold ()
+function! GitS_FoldLog ()
 	let line = getline( v:foldstart )
 	let head = '+-'.v:folddashes.' '
 	let tail = ' ('.( v:foldend - v:foldstart + 1 ).' lines) '
@@ -578,7 +579,25 @@ function! GitS_Fold ()
 	else
 		return head.line.tail
 	endif
-endfunction    " ----------  end of function GitS_Fold  ----------
+endfunction    " ----------  end of function GitS_FoldLog  ----------
+"
+"-------------------------------------------------------------------------------
+" GitS_FoldGrep : fold text for 'git grep'   {{{1
+"-------------------------------------------------------------------------------
+"
+function! GitS_FoldGrep ()
+	let line = getline( v:foldstart )
+	let head = '+-'.v:folddashes.' '
+	let tail = ' ('.( v:foldend - v:foldstart + 1 ).' lines) '
+	"
+	" take the filename from the first line
+	let file = matchstr ( line, '^[^:]\+\ze:' )
+	if file != ''
+		return file.tail
+	else
+		return head.line.tail
+	end
+endfunction    " ----------  end of function GitS_FoldGrep  ----------
 "
 "-------------------------------------------------------------------------------
 " GitS_Run : execute 'git ...'   {{{1
@@ -968,7 +987,7 @@ function! GitS_CommitDryRun( action, ... )
 		let b:GitSupport_CommitDryRunFlag = 1
 		"
 		setlocal filetype=gitsstatus
-		setlocal foldtext=GitS_Fold()
+		setlocal foldtext=GitS_FoldLog()
 		"
 		exe 'nmap          <buffer> <S-F1> :call GitS_CommitDryRun("help")<CR>'
 		exe 'nmap <silent> <buffer> q      :call GitS_CommitDryRun("quit")<CR>'
@@ -1119,7 +1138,7 @@ function! GitS_Diff( action, ... )
 		let b:GitSupport_DiffFlag = 1
 		"
 		setlocal filetype=gitsdiff
-		setlocal foldtext=GitS_Fold()
+		setlocal foldtext=GitS_FoldLog()
 		"
 		exe 'nmap          <buffer> <S-F1> :call GitS_Diff("help")<CR>'
 		exe 'nmap <silent> <buffer> q      :call GitS_Diff("quit")<CR>'
@@ -1154,6 +1173,85 @@ function! GitS_Fetch( param, flags )
 	return s:StandardRun ( 'fetch', a:param, a:flags, 'c' )
 	"
 endfunction    " ----------  end of function GitS_Fetch  ----------
+"
+"-------------------------------------------------------------------------------
+" GitS_Grep : execute 'git grep ...'   {{{1
+"-------------------------------------------------------------------------------
+"
+function! GitS_Grep( action, ... )
+	"
+	let param = ''
+	"
+	if a:action == 'help'
+		let txt  = s:HelpTxtStd."\n\n"
+		let txt .= "of      : file under cursor: open file (edit)\n"
+		let txt .= "oj      : file under cursor: open and jump to the position under the cursor"
+		echo txt
+		return
+	elseif a:action == 'quit'
+		close
+		return
+	elseif a:action == 'update'
+		"
+		if a:0 == 0         | " run again with old parameters
+		elseif empty( a:1 ) | let param = ''
+		else                | let param = a:1
+		endif
+		"
+	elseif a:action =~ '\<\%(\|edit\|jump\)\>'
+		"
+		if a:action == 'edit'
+" 	 		let [ f_name, f_line, f_col ] = s:Grep_GetFile ()
+" 			let f_name = s:GitRepoBase().'/'.f_name
+" 			"
+" 			call s:OpenFile( f_name )
+		elseif a:action == 'jump'
+" 			let [ f_name, f_line, f_col ] = s:Grep_GetFile ( 'line' )
+" 			let f_name = s:GitRepoBase().'/'.f_name
+" 			"
+" 			if f_line != -1
+" 				call s:OpenFile( f_name, f_line, f_col )
+" 			else
+" 				call s:OpenFile( f_name )
+" 			endif
+		endif
+		"
+		return
+	else
+		echoerr 'Unknown action "'.a:action.'".'
+		return
+	endif
+	"
+	let buf = s:CheckCWD ()
+	"
+	if s:OpenGitBuffer ( 'Git - grep' )
+		"
+		let b:GitSupport_GrepFlag = 1
+		"
+		setlocal filetype=gitsgrep
+		setlocal foldtext=GitS_FoldGrep()
+		"
+		exe 'nmap          <buffer> <S-F1> :call GitS_Grep("help")<CR>'
+		exe 'nmap <silent> <buffer> q      :call GitS_Grep("quit")<CR>'
+		exe 'nmap <silent> <buffer> u      :call GitS_Grep("update")<CR>'
+
+		exe 'nmap <silent> <buffer> of     :call GitS_Grep("edit")<CR>'
+		exe 'nmap <silent> <buffer> oj     :call GitS_Grep("jump")<CR>'
+	endif
+	"
+	call s:ChangeCWD ( buf )
+	"
+	if a:0 == 0
+		let param = b:GitSupport_Param
+	else
+		let b:GitSupport_Param = param
+	endif
+	"
+	let cmd = s:Git_Executable.' grep '.param
+	"
+	call s:UpdateGitBuffer ( cmd )
+	"
+endfunction    " ----------  end of function GitS_Grep  ----------
 "
 "-------------------------------------------------------------------------------
 " GitS_Help : execute 'git help'   {{{1
@@ -1266,7 +1364,7 @@ function! GitS_Log( action, ... )
 		let b:GitSupport_LogFlag = 1
 		"
 		setlocal filetype=gitslog
-		setlocal foldtext=GitS_Fold()
+		setlocal foldtext=GitS_FoldLog()
 		"
 		exe 'nmap          <buffer> <S-F1> :call GitS_Log("help")<CR>'
 		exe 'nmap <silent> <buffer> q      :call GitS_Log("quit")<CR>'
@@ -1449,7 +1547,7 @@ function! GitS_Show( action, ... )
 		let b:GitSupport_ShowFlag = 1
 		"
 		setlocal filetype=gitslog
-		setlocal foldtext=GitS_Fold()
+		setlocal foldtext=GitS_FoldLog()
 		"
 		exe 'nmap          <buffer> <S-F1> :call GitS_Show("help")<CR>'
 		exe 'nmap <silent> <buffer> q      :call GitS_Show("quit")<CR>'
@@ -1926,7 +2024,7 @@ function! GitS_Status( action )
 		let b:GitSupport_VerboseOption    = 0
 		"
 		setlocal filetype=gitsstatus
-		setlocal foldtext=GitS_Fold()
+		setlocal foldtext=GitS_FoldLog()
 		"
 		exe 'nmap          <buffer> <S-F1> :call GitS_Status("help")<CR>'
 		exe 'nmap <silent> <buffer> q      :call GitS_Status("quit")<CR>'
@@ -2075,6 +2173,7 @@ function! s:InitMenus()
 	exe ahead.'&commit<TAB>:GitCommit     :GitCommit<space>'
 	exe ahead.'&diff<TAB>:GitDiff         :GitDiff<space>'
 	exe ahead.'&fetch<TAB>:GitFetch       :GitFetch<space>'
+	exe ahead.'&grep<TAB>:GitGrep         :GitGrep<space>'
 	exe ahead.'&help<TAB>:GitHelp         :GitHelp<space>'
 	exe ahead.'&log<TAB>:GitLog           :GitLog<space>'
 	exe ahead.'&merge<TAB>:GitMerge       :GitMerge<space>'

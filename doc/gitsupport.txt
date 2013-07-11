@@ -26,8 +26,9 @@ a quick overview and a short guide to this documentation.
  4.1    Branch                                    |gitsupport-syn-branch|
  4.2    Commit                                    |gitsupport-syn-commit|
  4.3    Diff                                      |gitsupport-syn-diff|
- 4.4    Log                                       |gitsupport-syn-log|
- 4.5    Status                                    |gitsupport-syn-status|
+ 4.4    Grep                                      |gitsupport-syn-grep|
+ 4.5    Log                                       |gitsupport-syn-log|
+ 4.6    Status                                    |gitsupport-syn-status|
  5.    Configuration                              |gitsupport-configuration|
  5.1    Executable                                |gitsupport-config-executable|
  5.2    Menus                                     |gitsupport-config-menus|
@@ -85,6 +86,7 @@ run the commands in every subdirectory of the project.
   :GitCommitMsg <msg>           (run) git commit -m "<msg>"
   :GitDiff [<param>]            (buf) git diff <param>
   :GitFetch [<param>]           (run) git fetch <param>
+  :GitGrep <param>              (buf) git grep <param>
   :GitHelp [<param>]            (buf) git help <param>
   :GitLog [<param>]             (buf) git log <param>
   :GitMerge [<param>]           (run) git merge <param>
@@ -355,6 +357,12 @@ Settings:
 Executes "git fetch ...".
 
 ------------------------------------------------------------------------------
+                                                                   *:GitFetch*
+	:GitGrep <param> ~
+
+	*Todo		docu
+
+------------------------------------------------------------------------------
                                                                     *:GitHelp*
 	:GitHelp [<param>] ~
 
@@ -561,6 +569,9 @@ which should achieve a certain interoperability with Vim's colorschemes.
   GitAdd          an added file/line (uses 'DiffAdd')       diff output
   GitRemove       a removed file/line (uses 'DiffDelete')   diff output
   GitConflict     a (merge) conflict (uses 'DiffText')      diff output
+
+  GitGrepPath     a path (uses 'Directory')                 grep output
+  GitGrepLineNr   a line number (uses 'LineNr')             grep output
  ----------------------------------------------------------------------------
 
 Suggestions for a syntax highlighting which resemble Git's own highlighting
@@ -647,7 +658,19 @@ This highlighting is also used for ":GitStash show"
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
-4.4  LOG                                                  *gitsupport-syn-log*
+4.4  GREP                                                *gitsupport-syn-grep*
+------------------------------------------------------------------------------
+
+Highlights the path and (optional) line number at the beginning of each line.
+
+  Category                Short Description
+ ----------------------------------------------------------------------------
+  GitGrepPath             the path at the beginning of each line
+  GitGrepLineNr           the line number following it
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+4.5  LOG                                                  *gitsupport-syn-log*
 ------------------------------------------------------------------------------
 
 The name of each commit and the information about the author, date, ... are
@@ -666,7 +689,7 @@ This highlighting is also used for ":GitStash list"
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
-4.5  STATUS                                            *gitsupport-syn-status*
+4.6  STATUS                                            *gitsupport-syn-status*
 ------------------------------------------------------------------------------
 
 Various items are hightlighted, like the headlines of each section and the
@@ -742,6 +765,7 @@ The automatic creation of the menus is prevented by: >
 Now the menus can only be loaded by using the tool menu entry 'Tools->Load
 Git Support'.
 
+------------------------------------------------------------------------------
                                                               *g:Git_RootMenu*
 The name and shortcut of the root menu is set via g:Git_RootMenu. The
 character prefixed by '&' will be the shortcut.
@@ -825,7 +849,7 @@ A.  TROUBLESHOOTING - KNOWN ISSUES                *gitsupport-troubleshooting*
 * Windows: When entered on the Vim command line, commands containing filenames
 	as parameters cause errors such as "... file not found ...".
 	- This may happen if filenames contain special characters such as spaces.
-		The Vim command line escapes those differently then Windows expects then
+		The Vim command line escapes those differently then Windows expects them
 		to be escaped.
 	- However, a filename containing spaces can always be escape using quotes:
 			:GitAdd "help 1.txt"
