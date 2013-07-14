@@ -1,3 +1,7 @@
+§ =============================================================
+§  Special Parameters
+§ =============================================================
+
 == LIST: SpecialParameters == hash ==
   'number of posit. param., ${#}' :              '${#}',
   'all posit. param. (quoted spaces), ${*}' :    '${*}',

@@ -1,3 +1,7 @@
+§ =============================================================
+§  RegExp
+§ =============================================================
+
 == Regexp.zero or one     == insert, map:xzo, sc:z  ==
 ?(<SPLIT><CURSOR>|)
 == Regexp.zero or more    == insert, map:xzm, sc:z  ==

@@ -1,3 +1,7 @@
+§ =============================================================
+§  Environment
+§ =============================================================
+
 == LIST: environment == list ==
 'BASH',
 'BASHOPTS',
@@ -93,5 +97,4 @@
 |PickList( 'Environment', 'environment' )|
 |PICK|<CURSOR>
 == ENDTEMPLATE ==
-
 

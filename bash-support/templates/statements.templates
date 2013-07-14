@@ -14,47 +14,43 @@ case <CURSOR> in
 	;;
 
 esac    # --- end of case ---
-§%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 == Statements.elif == map:sei, shortcut:e  ==
 elif <CURSOR> ; then
-§%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 == Statements.for-in == map:sf, shortcut:f  ==
 for <CURSOR> in ; do
-<SPLIT>done
-§%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<SPLIT><-LOOP_BODY->
+done
 == Statements.for == map:sfo, shortcut:f  ==
 for (( CNTR=0; CNTR<<CURSOR>0; CNTR+=1 )); do
-<SPLIT>done
-§%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<SPLIT><-LOOP_BODY->
+done
 == Statements.if == map:si, shortcut:i  ==
 if <CURSOR> ; then
-<SPLIT>fi
-§%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<SPLIT><-IF_PART->
+fi
 == Statements.if-else == map:sie, shortcut:i  ==
 if <CURSOR> ; then
 <SPLIT><-IF_PART->
 else
-	<-ELSE_PART->
+	<+ELSE_PART+>
 fi
-§%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 == Statements.select == map:ss, shortcut:s  ==
 select <CURSOR> in ; do
 <SPLIT>done
-§%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 == Statements.until == map:su, shortcut:u  ==
 until <CURSOR> ; do
 <SPLIT>done
-§%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 == Statements.while == map:sw, shortcut:w  ==
 while <CURSOR> ; do
 <SPLIT>done
-§%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 == Statements.function == map:sfu, shortcut:f  ==
 |?FUNCTION_NAME| ()
 {
 <CURSOR><SPLIT>
 }	# ----------  end of function |FUNCTION_NAME|  ----------
 == ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
 
 == SEP: Statements.sep-print ==
 
@@ -63,6 +59,8 @@ echo -e "<CURSOR><SPLIT>"
 == Statements.printf == insert, map:sp, shortcut:p  ==
 printf "%s\n" <CURSOR><SPLIT>
 == ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
 
 == SEP: Statements.sep-array ==
 
@@ -79,6 +77,4 @@ ${#<CURSOR><SPLIT>[@]}
 == Statements.array indices== insert, map:sai, shortcut:i  ==
 ${!<CURSOR><SPLIT>[@]}
 == ENDTEMPLATE ==
-
-
 

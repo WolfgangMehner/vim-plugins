@@ -1,3 +1,7 @@
+§ =============================================================
+§  Shell Options
+§ =============================================================
+
 == LIST: shopt == list ==
 'autocd',
 'cdable_vars',
@@ -43,7 +47,7 @@
 'xpg_echo',
 == ENDLIST ==
 
-== Shopts == expandmenu, insert, map:bso, sc:s ==
+== Shopts == expandmenu, insert, map:bso, sc:o ==
 |PickList( 'Shopts', 'shopt' )|
 shopt -s |PICK|<CURSOR>
 == ENDTEMPLATE ==

@@ -128,9 +128,9 @@ Look at the bashsupport help with
 
   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  ++  The plug-in version 5.0+ is a rewriting of version 4.15+.               ++
-  ++  The versions 5.0+ are based on a new and more powerful template system  ++
-  ++  (please see |template-support|for more information).                    ++
+  ++  The plug-in version 4.0+ is a rewriting of version 3.12.1.              ++
+  ++  The versions 4.0+ are based on a new and more powerful template system  ++
+  ++  (please see ":help template-support" for more information).             ++
   ++  The template syntax has changed!                                        ++
   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

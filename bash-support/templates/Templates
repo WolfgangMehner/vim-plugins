@@ -20,15 +20,22 @@ SetStyle( 'default' )
 §  File Includes and Shortcuts
 § =============================================================
 
+§ :TODO:14.07.13 12:12:WM: several menus have the shortcut 's' and 'p'
+§ :TODO:14.07.13 12:50:WM: files "paramsub.templates" and "io-redirection.templates": maps, shortcuts? sort alphabetically?
+
+§ :CHANGED:14.07.13 12:12:WM: SpecParams, Environment, Builtins, Set and Shopts are not menus, their shortcut can not be set here
+§ :CHANGED:14.07.13 12:45:WM: changed shortcut of template "Shopts" to 'o', the way it was configured here
+§ :CHANGED:14.07.13 13:45:WM: changed various templates in "statements.templates"
+
 MenuShortcut( 'Comments',        'c' )
 MenuShortcut( 'Statements',      's' )
 MenuShortcut( 'Tests',           't' )
 MenuShortcut( 'ParamSub',        'p' )
-MenuShortcut( 'SpecParams',      's' )
-MenuShortcut( 'Environment',     'e' )
-MenuShortcut( 'Builtins',        'b' )
-MenuShortcut( 'set',             's' )
-MenuShortcut( 'Shopts',          'o' )
+§ SpecParams:  shortcut 'p'
+§ Environment: shortcut 'e'
+§ Builtins:    shortcut 'b'
+§ Set:         shortcut 's'
+§ Shopts:      shortcut 'o'
 MenuShortcut( 'Regexp',          'x' )
 MenuShortcut( 'IO-Redir',        'i' )
 

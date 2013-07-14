@@ -600,10 +600,12 @@ function! s:InitMenus()
 	exe vhead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj           :call BASH_AdjustLineEndComm()<CR>'
 	exe  head.'&set\ end-of-line\ com\.\ col\.<Tab>'.esc_mapl.'cs  <Esc>:call BASH_GetLineEndCommCol()<CR>'
 	"
+	exe ahead.'-Sep01-						<Nop>'
 	exe ahead.'&comment<TAB>'.esc_mapl.'cc															:call BASH_CodeComment()<CR>'
 	exe vhead.'&comment<TAB>'.esc_mapl.'cc															:call BASH_CodeComment()<CR>'
 	exe ahead.'&uncomment<TAB>'.esc_mapl.'cu														:call BASH_CommentCode(0)<CR>'
 	exe vhead.'&uncomment<TAB>'.esc_mapl.'cu														:call BASH_CommentCode(0)<CR>'
+	exe ahead.'-Sep02-						<Nop>'
 	"
 	"-------------------------------------------------------------------------------
 	" generate menus from the templates
@@ -663,15 +665,17 @@ function! s:InitMenus()
 		exe "imenu <silent> ".s:BASH_RootMenu.'.&Run.make\ script\ &executable<Tab>\\re     <C-C>:call BASH_MakeScriptExecutable()<CR>'
 	endif
 	"
+	exe ahead.'-SEP1-   :'
 	if	s:MSWIN
-		exe ahead.'&hardcopy\ to\ printer<Tab>rh        <C-C>:call BASH_Hardcopy("n")<CR>'
-		exe vhead.'&hardcopy\ to\ printer<Tab>rh        <C-C>:call BASH_Hardcopy("v")<CR>'
+		exe ahead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call BASH_Hardcopy("n")<CR>'
+		exe vhead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call BASH_Hardcopy("v")<CR>'
 	else
-		exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>rh   <C-C>:call BASH_Hardcopy("n")<CR>'
-		exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>rh   <C-C>:call BASH_Hardcopy("v")<CR>'
+		exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call BASH_Hardcopy("n")<CR>'
+		exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call BASH_Hardcopy("v")<CR>'
 	endif
 	"
-	exe ahead.'plugin\ &settings<Tab>rs                   :call BASH_Settings()<CR>'
+	exe ahead.'-SEP2-                                                 :'
+	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rs                   :call BASH_Settings()<CR>'
 	"
 	if	!s:MSWIN
 		exe " menu  <silent>  ".s:BASH_RootMenu.'.&Run.x&term\ size<Tab>'.esc_mapl.'rx                       :call BASH_XtermSize()<CR>'
@@ -722,8 +726,10 @@ function! s:InitMenus()
 	exe " menu  <silent>  ".s:BASH_RootMenu.'.&Help.&manual\ (utilities)<Tab>'.esc_mapl.'hm             :call BASH_help("man")<CR>'
 	exe "imenu  <silent>  ".s:BASH_RootMenu.'.&Help.&manual\ (utilities)<Tab>'.esc_mapl.'hm        <C-C>:call BASH_help("man")<CR>'
 	"                                  
-	exe " menu  <silent>  ".s:BASH_RootMenu.'.&Help.bash-&support<Tab>'.esc_mapl.'hbs           :call BASH_HelpBashSupport()<CR>'
-	exe "imenu  <silent>  ".s:BASH_RootMenu.'.&Help.bash-&support<Tab>'.esc_mapl.'hbs      <C-C>:call BASH_HelpBashSupport()<CR>'
+	exe " menu  <silent>  ".s:BASH_RootMenu.'.&Help.-SEP1-                                              :'
+	exe " menu  <silent>  ".s:BASH_RootMenu.'.&Help.help\ (Bash-&Support)<Tab>'.esc_mapl.'hbs           :call BASH_HelpBashSupport()<CR>'
+	exe "imenu  <silent>  ".s:BASH_RootMenu.'.&Help.help\ (Bash-&Support)<Tab>'.esc_mapl.'hbs      <C-C>:call BASH_HelpBashSupport()<CR>'
+	" :CHANGED:14.07.2013 13:52:WM: now more similar to how "Perl.Help" looks
 	"
 endfunction    " ----------  end of function s:InitMenus  ----------
 "
@@ -1261,7 +1267,7 @@ endfunction		" ---------- end of function  BASH_SyntaxCheckOptionsLocal  -------
 "       RETURNS:  
 "===============================================================================
 function! BASH_Settings ()
-	let	txt =     " bash-Support settings\n\n"
+	let	txt =     " Bash-Support settings\n\n"
 	let txt = txt.'                    author :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|AUTHOR|'      )."\"\n"
 	let txt = txt.'                 authorref :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|AUTHORREF|'   )."\"\n"
 	let txt = txt.'                   company :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|COMPANY|'     )."\"\n"
