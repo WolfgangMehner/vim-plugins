@@ -11,12 +11,12 @@ syn match Comment   "^§.*$"
 syn match Comment   "\%(==\)\@<=[^=]*$"
 
 " templates, lists, ...
-syn match Structure "^==\s*\%(TEMPLATE:\)\?[a-zA-Z0-9-+\.,_ ]\+==\%(.\+==\)\?"
+syn match Structure "^==\s*\%(TEMPLATE:\)\?[a-zA-Z0-9\-+.,_ ]\+==\%(.\+==\)\?"
 syn match Structure "^==\s*ENDTEMPLATE\s*=="
 
-syn match Structure "^==\s*HELP:[a-zA-Z0-9-+\.,_ ]\+==\%(.\+==\)\?"
+syn match Structure "^==\s*HELP:[a-zA-Z0-9\-+.,_ ]\+==\%(.\+==\)\?"
 
-syn match Structure "^==\s*SEP:[a-zA-Z0-9-+\.,_ ]\+=="
+syn match Structure "^==\s*SEP:[a-zA-Z0-9\-+.,_ ]\+=="
 
 syn match Structure "^==\s*LIST:\s*[a-zA-Z0-9_]\+\s*==\%(.\+==\)\?"
 syn match Structure "^==\s*ENDLIST\s*=="

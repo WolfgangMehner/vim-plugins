@@ -24,7 +24,7 @@ learn their maps at the same time.
 
 -- ... for Plug-Ins --
 
-The template support is controlled by an API and thus can be integrated in
+The template support is controlled by an API and thus can be integrated into
 another plug-in. A template library is essentially an object, several of which
 can exist in parallel. This makes it relatively easy to write a plug-in for
 the programming language of your choice.
@@ -38,14 +38,28 @@ Here is a list of high profile plug-ins which use the template support:
 0.  TABLE OF CONTENTS                              *template-support-contents*
 ==============================================================================
 
- 1.    Introduction                          |template-introduction|
+ 1.    Introduction                          |template-support-intro|
+ 2.    Basic Usage                           |template-support-basics|
+ 3.    Template Library                      |template-support-library|
+ 3.1    Personalization                      |template-support-lib-person|
+ 4.    Templates                             |template-support-templates|
+ 4.1    Macros                               |template-support-templ-macro|
+ 4.1.1   Predefined Macros                   |template-support-templ-predef|
+ 4.2    Tags                                 |template-support-templ-tags|
+ 4.3    Placement                            |template-support-templ-place|
+ 4.3.1   Visual Mode                         |template-support-templ-visual|
+ 4.4    Maps & Menus                         |template-support-templ-maps|
+ 5.    Lists                                 |template-support-lists|
+ 5.1    Formats                              |template-support-lists-format|
+ 5.2    Hashes                               |template-support-lists-hash|
+ 6.    Menus                                 |template-support-menus|
 
- 8.    Backwards Compatibility               |template-support-backwards|
  9.    API                                   |template-support-api|
  9.1    Basic Usage                          |template-support-api-basic|
  9.2    Creating Maps and Menus              |template-support-api-maps|
  9.3    Access                               |template-support-api-access|
  9.4    Miscellany                           |template-support-api-misc|
+ 10.   Backwards Compatibility               |template-support-backwards|
 
  A.    Syntax                                |template-support-syntax|
  A.1    Command Section                      |template-support-syntax-cmd|
@@ -60,42 +74,797 @@ Here is a list of high profile plug-ins which use the template support:
  D.    Change Log                            |template-support-change-log|
 
 ==============================================================================
-1.  INTRODUCTION                                       *template-introduction*
+1.  INTRODUCTION                                      *template-support-intro*
 ==============================================================================
 
-	*Todo	introduction
+The manual at hand documents the Maps & Menus Template Support. The next
+chapter |template-support-basics|, gives a short preview of the capabilities of
+the template support. Templates are listed, together with further
+configuration, in a so-called template library. Template libraries are
+explained in |template-support-library|, followed by the description of
+templates in |template-support-templates|. These chapters will enable the
+average user to configure his or her templates.
+
+Advanced topics are addressed in the following chapters. Lists are explained
+in |template-support-lists|. The customization of the automatic menu creation
+is explained in |template-support-menus|.
+
+Plug-In developers will find information on the API in |template-support-api|.
 
 ==============================================================================
-8.  BACKWARDS COMPATIBILITY                       *template-support-backwards*
+2.  BASIC USAGE                                      *template-support-basics*
 ==============================================================================
 
-The following behavior is not compatible with the old template systems of
-various plugins. This list does not include new features which are now
-supported.
+Templates are short pieces of text which can be included into source code or
+text of any other kind. But they are not just plain text, they can be extended
+with macros and tags to provide further convenience. Macros can be
+automatically replaced with the date or the filename, or they can be replaced
+with input from the user, for example the name of a new function.
 
-c-support:
-doxygen-support:
-perl-support:
--	No automatic uppercase for *|BASENAME|* .
--	The format for *|DATE|* , *|TIME|* and *|YEAR|* is now configured via the
-	template library. Plug-ins may provide other ways to do the configuration.
+The following example shows two templates, as they appear in a so-called
+template library. A template library is a text file which lists several
+templates, along with their maps and menu shortcuts.
+>
+	== file description == start ==
+	// ==================================================
+	//          File:  |FILENAME|
+	//   Description:  <CURSOR>
+	//
+	//        Author:  |AUTHOR|
+	//       Version:  1.0
+	//       Created:  |DATE|
+	// ==================================================
 
-perl-support:
--	The template head can not have the format >
-		== templatename == [ position == ] [ indentation == ]
-<	anymore, since the last part would be ignored. Use the list of template
-	options instead: >
-		== templatename == [ position, indentation == ]
-<	Both 'position' and 'indentation' are optional, of course.
+	== function == below ==
+	void |?FUNCTION_NAME| ( <CURSOR> )
+	{
+		<SPLIT>
+	}   /* end of function |FUNCTION_NAME| */
+	== ENDTEMPLATE ==
+<
+Each line (the so-called header) >
+	== <name> == <options> ==
+starts a new template, >
+	== ENDTEMPLATE ==
+marks the end of the template "function".
 
+When the template "file description" is inserted, it is placed at the start of
+the file (option "start"). The filename and the date are inserted where the
+macros *|FILENAME|* and *|DATE|* appear, the name of the user is also inserted.
+After insertion, the cursor is placed where the <CURSOR> tag appears (the
+cursor is represented by "|"):
+>
+	// ==================================================
+	//          File:  helloworld.cc
+	//   Description:  |
+	//
+	//        Author:  Me!
+	//       Version:  1.0
+	//       Created:  29.2.2000
+	// ==================================================
+<
+The template "function" is inserted below the current line (option "below").
+The user is asked to provide a replacement for the macro *|FUNCTION_NAME|* (it
+is marked with "?"), which is then inserted into the text:
+>
+	void say_hello ( | )
+	{
+
+	}   /* end of function say_hello */
+<
+The macro can also be used in visual mode (it contains the tag <SPLIT>). The
+template is then inserted surrounding the selected lines, which appear at the
+position of the split tag.
+
+Assume the line "printf(...)" is selected:
+>
+	// ...
+<
+	printf ( "Hello world!" ); ~
+>
+	// ...
+<
+After inserting the template, the code looks like this:
+>
+	// ...
+
+	void say_hello ( | )
+	{
+		printf ( "Hello world!" );
+	}   /* end of function say_hello */
+
+	// ...
+<
+==============================================================================
+3.  TEMPLATE LIBRARY                                *template-support-library*
+==============================================================================
+
+A template library is a text file which lists several templates, along with
+other objects, and commands to configure the behavior of the templates. This
+file must be given to the template support in order to be loaded. If you are
+working with a plug-in which uses the template support, the plug-in itself
+will take care of that.
+
+Along with templates, a library file can contain comments. Comments always
+start at the beginning of a line. The standard is for comments to start with
+the character '§'. This may vary, depending on which plug-in uses the template
+support.
+Comment lines end the current template, so comments should only be used
+outside of templates.
+
+Outside of templates, the library can contain commands. Among other things,
+they configure the behavior of the templates and the menus the template
+support creates.
+Commands always start at the beginning of the line and, as all other names in
+the library, are case sensitive.
+
+A template library can be organized in several files. The command: >
+	IncludeFile ( "<path>/<file>" )
+loads templates from another file (|template-support-IncludeFile|). The path
+is given relative to the including file. The call: >
+	IncludeFile ( "<path>/<file>", "abs" )
+interprets the path as a absolute path instead.
+
+The names of the templates also define the menu structure which the template
+support creates. Dots appearing in the names place the templates into
+submenus. The following library will create two menus and a submenu "special".
+>
+	== Comments.special.GNU license == below ==
+	//       License:  Copyright (c) |YEAR|, |AUTHOR|
+	//
+	//   This program is free software; you can redistribute it and/or
+	//   modify it under the terms of the GNU General Public License as
+	//   published by the Free Software Foundation, version 2 of the
+	//   License.
+	//   This program is distributed in the hope that it will be
+	//   useful, but WITHOUT ANY WARRANTY; without even the implied
+	//   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+	//   PURPOSE.
+	//   See the GNU General Public License version 2 for more details.
+	== Comments.file description == start ==
+	// ==================================================
+	//          File:  |FILENAME|
+	//   Description:  <CURSOR>
+	//
+	//        Author:  |AUTHOR|
+	//       Version:  1.0
+	//       Created:  |DATE|
+	// ==================================================
+
+	== Idioms.function definition == below ==
+	void |?FUNCTION_NAME| ( <CURSOR> )
+	{
+		<SPLIT>
+	}   /* end of function |FUNCTION_NAME| */
+	== ENDTEMPLATE ==
+<
+Menus and entries are generated in the order in which the corresponding
+templates are encountered in the library. The above example will generate this
+menu structure:
+>
+	Plug-In Menu
+	>-+ Comments
+	|	>-+ Special
+	|	|	>--- GNU license
+	|	>-- file description
+	>-+ Idioms
+	|	>-- function definition
+<
+This also means that a new menu entry can be added by simply putting a new
+template at that position in the library. Details on the menu creation can be
+found in |template-support-menus|.
+
+------------------------------------------------------------------------------
+3.1  PERSONALIZATION                              *template-support-lib-person*
+------------------------------------------------------------------------------
+
+A personalization of the template library can be achieved by using macros. The
+command 'SetMacro' (|template-support-SetMacro|) is used to set replacements
+for various macros (my settings as an example):
+>
+	SetMacro( 'AUTHOR',       'Wolfgang Mehner' )
+	SetMacro( 'AUTHORREF',    'wm' )
+	SetMacro( 'EMAIL',        'wolfgang-mehner@web.de' )
+	SetMacro( 'ORGANIZATION', '' )
+	SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
+<
+The replacements may contain other macros. When a template is inserted all
+macros will be substituted by the respective replacements.
+
+Other macros and replacements can be added at will, e.g. the following could
+be used in a template library for Bash: >
+	SetMacro( 'INTERPRETER', '/bin/sh' )
+Then the template for the file description may look as follows:
+>
+	== file description == start ==
+	#! |INTERPRETER|
+	# ==================================================
+	#          File:  |FILENAME|
+	#   Description:  <CURSOR>
+	#
+	#        Author:  |AUTHOR|
+	#       Version:  1.0
+	#       Created:  |DATE|
+	# ==================================================
+
+	== ENDTEMPLATE ==
+<
+The format of the included dates and times can be set in a similar fashion,
+using 'SetFormat' (|template-support-SetFormat|):
+>
+  SetFormat( 'DATE', '%D'      )
+  SetFormat( 'TIME', '%H:%M'   )
+  SetFormat( 'YEAR', 'year %Y' )
+<
+These special macros can never be set by 'SetMacro'. The following call will
+have no effect and produce a warning: >
+  SetMacro( 'DATE', "April Fools' Day" )
+<
+During template insertion, the macros *|DATE|* , *|TIME|* and *|YEAR|* will be
+replaced with the current date and time.
+
+==============================================================================
+4.  TEMPLATES                                     *template-support-templates*
+==============================================================================
+
+Templates are short pieces of text which are enhanced by so-called macros and
+tags. They define a simple markup language which determines the preparation of
+the text before it is inserted and control is handed back to the user.
+Beyond that, every template has a name which also determines its place in the
+menu structure the template support creates. Together with the template, its
+menu shortcut and map are defined. The whole accessibility of the template is
+specified in this one place.
+
+Each template starts with a header: >
+	== <name> == [ <options> == ]
+For consistency with other constructs, the following format is also supported: >
+	== TEMPLATE: <name> == [ <options> == ]
+The list of options can be omitted. 	
+
+The name of the template starts with a letter or underscore, and can not end
+with a whitespace. Whitespaces in between the name and "==" will be ignored.
+The name can contain these characters:
+	a-z, A-Z, 0-9
+	_ + - . , <Space>
+Dots have a special meaning. They determine the menu structure the template
+support will create (see |template-support-library| for a short introduction).
+
+The list of option defines the map and menu shortcut of the template, and some
+aspects of its behavior during insertion into a text, such as its placement
+relative to the position of the mouse cursor.
+
+The following example shows a possible template for the C statement "if":
+>
+	== Statements.if == below, map:si, sc:i ==
+	if ( <CURSOR> )
+	{
+
+	}
+	== ENDTEMPLATE ==
+<
+The option "below" specifies that the template should always be inserted in
+the lines below the current cursor position. The map is set by the option
+"map", it will be |<LocalLeader>|si. The option "sc" sets the shortcut of the
+entry within the menu "Statements".
+
+------------------------------------------------------------------------------
+4.1  MACROS                                     *template-support-templ-macro*
+------------------------------------------------------------------------------
+
+Templates are useful because in source code, certain structures are repeated
+regularly. Within this structures however, certain parts a variable. Templates
+represent those via macros. Macros have a name, which has to follow the same
+rules as C identifiers. They start with a letter or underscore, and can
+contain numbers after that. Within a template, macros are written as their
+names, surrounded by two bars:
+	*|AUTHOR|*
+Replacement for macros can be given in the template library itself: >
+	SetMacro( 'AUTHOR', 'Wolfgang Mehner' )
+These macros are replaced when inserting the template:
+>
+	== Comments.file description == start ==
+	# ==================================================
+	#          File:  |FILENAME|
+	#   Description:  <CURSOR>
+	#
+	#        Author:  |AUTHOR|
+	#       Version:  1.0
+	#       Created:  |DATE|
+	# ==================================================
+
+	== ENDTEMPLATE ==
+<
+The template library will appropriately replace *|FILENAME|* and *|DATE|* and
+take the replacement for *|AUTHOR|* from the template library.
+
+Another option is to ask the user for a replacement every time the template is
+inserted:
+>
+	== Idioms.function == below ==
+	void |?FUNCTION_NAME| ( <CURSOR> )
+	{
+		<SPLIT>
+	}   /* end of function |FUNCTION_NAME| */
+	== ENDTEMPLATE ==
+<
+The question mark in front of the name means the user will be prompted for a
+replacement for "FUNCTION_NAME". This replacement is then inserted twice. This
+becomes particularly useful if this name appears in another template. If a
+replacement for a certain macro has been given before, this replacement will
+be suggested the next time the user has to replace this macro:
+>
+	== Comments.function description == below ==
+	# ==================================================
+	#      Function:  |?FUNCTION_NAME|
+	#       Purpose:  <CURSOR>
+	#   Description:  TODO
+	# ==================================================
+
+	== ENDTEMPLATE ==
+<
+Certain uses come with special requirements on the format of the replacement.
+Consider an include guard, where usually an upper case version of the files
+name is used to name the guard, such as "_THISFILE_INC":
+>
+	== Preprocessor.include guard == below, noindent ==
+	#ifndef _|BASENAME:u|_INC
+	#define _|BASENAME:u|_INC
+	<CURSOR>
+	#endif   // -----  #ifndef _|BASENAME:u|_INC  -----
+	== ENDTEMPLATE ==
+<
+The macro *|BASENAME|* is automatically replaced with the name of the current
+file, not including the extension. The flag ":u" means the replacement will be
+inserted with all letters in uppercase. So a file named "string.h" will have
+an include guard named "_STRING_INC".
+
+The possible flags are listed below:
+	:l - change text to lowercase
+	:u - change text to uppercase
+	:c - capitalize text (change first letter to uppercase)
+	:L - legalize name (replace all non-word characters with underscores)
+
+------------------------------------------------------------------------------
+
+4.1.1  Predefined Macros                       *template-support-templ-predef*
+
+The replacements for various macros are handles automatically by the template
+support. Mostly, they will help with the basic documentation of the file: What
+was edited and when?
+
+	*|PATH|*     : the path of the current file
+	*|FILENAME|* : the name of the file
+	*|BASENAME|* : the name of the file without the suffix
+	*|SUFFIX|*   : the suffix of the file
+
+Except for using flags, the user has no further influence on the replacements
+of these macros, they can not be set via SetMacro().
+
+	*|TIME|*     : the current time
+	*|DATE|*     : the current date
+	*|YEAR|*     : the current year
+
+The format of the inserted dates and times can be set via SetFormat (see
+|template-support-SetFormat()|).
+
+------------------------------------------------------------------------------
+4.2  TAGS                                        *template-support-templ-tags*
+------------------------------------------------------------------------------
+
+Templates can contain tags, which influence the behavior after the template
+has been inserted into the current buffer. The simplest one is <CURSOR>,
+which specifies the position of the cursor after the template has been
+inserted. Consider the following example: 
+>
+	== Statements.if == below ==
+	if ( <CURSOR> )
+	{
+
+	}
+	== ENDTEMPLATE ==
+<
+After template insertion the cursor is placed between the round brackets and
+the user can write down the condition.
+
+Further convenience is introduced by jump tags. Instead of moving into the
+block using arrow keys, the user can be given the possibility to jump to the
+next position where editing is required:
+>
+	== Statements.if == below ==
+	if ( <CURSOR> )
+	{
+		<+IF_PART+>
+	}
+	== ENDTEMPLATE ==
+<
+The standard map for jumping is <ctrl+j>, also it may vary with each plug-in
+using the template support.
+Jump tags have one of the following formats:
+	<+NAME+>     <-NAME->
+	{+NAME+}     {-NAME-}
+The text will be indented automatically with the jump tags still appearing in
+it, so for every language the appropriate version has to be chosen. The name
+consists of arbitrary word characters (letters, digits and underscores) and
+can even be empty. The name has no other function than "documenting" the
+inserted code:
+>
+	== Statements.if, else == below ==
+	if ( <CURSOR> )
+	{
+		<+IF_PART+>
+	}
+	else
+	{
+		<+ELSE_PART+>
+	}
+	== ENDTEMPLATE ==
+
+------------------------------------------------------------------------------
+4.3  PLACEMENT                                  *template-support-templ-place*
+------------------------------------------------------------------------------
+
+Templates can be placed at different positions relative to the cursor. In most
+examples above the option "below" has been used. It means the template is
+inserted below the current line. The opposite can be achieved using "above",
+while "start" places the template at the beginning of the file, which makes
+sense for example for file descriptions:
+>
+	== Comments.file description == start ==
+	...
+	== Idioms.function definition == below ==
+	...
+	== ENDTEMPLATE ==
+<
+These options cause whole lines to be inserted. Two other options exist:
+>
+	== Comments.end-of-line comment == append ==
+	   /* <CURSOR> */
+	== Comments.date and time == insert ==
+	|DATE|, |TIME|<CURSOR>
+	== ENDTEMPLATE ==
+<
+The template "Comments.end-of-line comment" will be inserted at the end of the
+current line, while "Comments.date and time" will insert a timestamp at the
+cursor position.
+
+These placement modes are available:
+	start  - the text is placed above the first line
+	above  - the text is placed above the current line
+	below  - the text is placed below the current line (default)
+	append - the text is appended to the current line
+	insert - the text is inserted at the cursor position
+
+By default, the lines containing a newly inserted template are automatically
+indented. To suppress this behavior use the option "noindent". This can be
+used for code fragments which contain constructs the indentation program does
+not handle correctly.
+
+------------------------------------------------------------------------------
+
+4.3.1  Visual Mode                             *template-support-templ-visual*
+
+Oftentimes, existing code needs to be rearranged, for example some lines of
+code must be surrounded with an if-statement. For this reason, the <SPLIT>
+tag exists:
+>
+	== Statements.if == below ==
+	if ( <CURSOR> )
+	{
+		<SPLIT>
+	}
+	== ENDTEMPLATE ==
+<
+If the template is inserted in normal or insert mode, nothing changes. The tag
+will be removed automatically. In visual mode however, the selected line will
+be surrounded with the template. Consider these lines of code, where the lines
+containing "printf" are selected:
+>
+	// ...
+<
+	printf ( "Loading the file ..." ); ~
+	printf ( "... reading %d bytes.", n ) ~
+>
+	// ...
+<
+After inserting the template "Statements.if", the code looks like this:
+>
+	// ...
+
+	if ( | )
+	{
+		printf ( "Loading the file ..." ); ~
+		printf ( "... reading %d bytes.", n ) ~
+	}
+
+	// ...
+<
+Now the user can type in the condition.
+
+Jump and split tags might be in conflict. Consider the following example:
+>
+	== Statements.if, else == below ==
+	if ( <CURSOR> )
+	{
+		<SPLIT><+IF_PART+>
+	}
+	else
+	{
+		<+ELSE_PART+>
+	}
+	== ENDTEMPLATE ==
+<
+When using the template in visual mode, the jump tag <+IF_PART+> should not
+appear, since the if block already contains the selected line. This is why
+jump tag exist in different versions. The two version <-NAME-> and {-NAME-}
+are removed in visual mode. They behave opposite to the <SPLIT> tag, which is
+removed in every other mode. A better version of the above example looks like
+this:
+>
+	== Statements.if, else == below ==
+	if ( <CURSOR> )
+	{
+		<SPLIT><-IF_PART->
+	}
+	else
+	{
+		<+ELSE_PART+>
+	}
+	== ENDTEMPLATE ==
+<
+For templates containing a split tag, the option "noindent" is particularly
+useful, since it can prevent large sections of code from being indented
+unnecessarily. The following example shows a template for an include guard,
+using a C-macro "_THISFILE_INC":
+>
+	== Preprocessor.include guard == below, noindent ==
+	#ifndef _|BASENAME:u|_INC
+	#define _|BASENAME:u|_INC
+	<CURSOR><SPLIT>
+	#endif   // -----  #ifndef _|BASENAME:u|_INC  -----
+	== ENDTEMPLATE ==
+<
+Here, running the indentation program after insertion is an unnecessary effort
+and may potentially destroy hand-crafted indentation in a large piece of code.
+
+------------------------------------------------------------------------------
+4.4  MAPS & MENUS                                *template-support-templ-maps*
+------------------------------------------------------------------------------
+
+The template support automatically creates maps and menu entries for the
+templates in the library. The menu entries appear in the order the templates
+have been read. Including a file via >
+	IncludeFile ( "<path>/<file>" )
+will cause this file to be processed first, then the rest of the including
+file is read.
+
+The map and menu shortcut of a template are defined together with the
+template:
+>
+	== Statements.if == below, map:si, sc:i ==
+	if ( <CURSOR> )
+	{
+		<+IF_PART+>
+	}
+	== ENDTEMPLATE ==
+<
+The templates will have the map |<LocalLeader>|si and the shortcut "i".
+
+Menu entries are created by default. The option "nomenu" suppresses this
+behavior:
+>
+	== Comments.fix this == nomenu, append, map:cfx ==
+	// TODO: fix this
+	== ENDTEMPLATE ==
+<
+This template will not clutter the menu and can only be inserted via its map.
+
+An overview of all the options:
+	nomenu        - no menu entry is created
+	sc:<sc>       - a shortcut is created for the menu entry of this template
+	shortcut:<sc> - long version of sc:<sc>
+	map:<map>     - a map is created for this template
+
+==============================================================================
+5.  LISTS                                             *template-support-lists*
+==============================================================================
+
+Template libraries would regularly contain a huge number of templates with a
+repetitive structure. Consider these templates for a C template library:
+>
+	== Preprocessor.include math, map: pim ==
+	#include <math.h>
+	== Preprocessor.include stdlib, map:pisl ==
+	#include <stdlib.h>
+	== Preprocessor.include stdio, map:pisio ==
+	#include <stdio.h>
+	== Preprocessor.include string, map:pistr ==
+	#include <string.h>
+	== ENDTEMPLATE ==
+<
+This has several disadvantages. Besides being difficult to write and maintain,
+these templates would not be well accessible. The user would have to memorize
+a map for each and every one of them.
+
+This is why lists exist. They appear as objects in the template library. The
+header of a list starts with "LISTS:" and then contains a name, which has to
+follow the same rules as C identifiers. They start with a letter or
+underscore, and can contain numbers after that.
+>
+	== LIST: C_StandardLibs ==
+	'math',
+	'stdlib',
+	'stdio',
+	'string',
+	== ENDLIST ==
+
+	== Preprocessor.c libs == below, map:pcl ==
+	|PickList( '#include <~.h>', 'C_StandardLibs' )|
+	#include <|PICK|.h><CURSOR>
+	== ENDTEMPLATE ==
+<
+The template "Preprocessor.c libs" uses this list. The command: >
+	"|PickList( '<prompt>', '<list>' )|"
+determines which list is used. During template insertion the user is prompted
+to choose an entry from the list, but can also type another name. The prompt
+supports tab-completion and navigation with arrow keys. The first argument is
+a string which is displayed on the command line, to clarify the meaning of the
+choice. After the users makes the choice, the macro *|PICK|* is created, which
+contains the chosen item.
+Lists can be used again in another context, for example to support C++
+programming:
+>
+	== Preprocessor.c++, c libs == below, map:ppc ==
+	|PickList( '#include <c~>', 'C_StandardLibs' )|
+	#include <c|PICK|><CURSOR>
+	== ENDTEMPLATE ==
+<
+When the template is inserted via a map, the user is prompted to choose an
+entry from the list, thus only one map is required to choose from a huge
+number of options. When the template is accessed via the menu, two
+possibilities exists. Without further changes, the same prompt opens as when
+the template is used via a map. But whenever the template includes the
+"expandmenu" option, a submenu is created which lists all the entries, which
+allows the user to choose in the menu, rather than on the command line: >
+	== Preprocessor.c libs == below, expandmenu, map:pcl ==
+<
+------------------------------------------------------------------------------
+5.1  FORMATS                                *template-support-lists-format*
+------------------------------------------------------------------------------
+
+Lists also support options. The standard format for lists is named "list":
+>
+	== LIST: C_StandardLibs == list ==
+	'math', 'stdlib',
+	'stdio', 'string',
+	== ENDLIST ==
+<
+The text contained between "== LIST: name ==" and "== ENDLIST ==" is a
+comma-separated list of strings, which come as |expr-string| in double quotes
+or |literal-string| in single quotes.
+
+An easier way of writing lists are bare lists, defined with the option "bare":
+>
+	== LIST: C_StandardLibs == list, bare ==
+	math
+	stdlib
+	stdio
+	string
+	== ENDLIST ==
+<
+They contain each entry on a new line, leading and trailing whitespaces are
+ignored.
+
+------------------------------------------------------------------------------
+5.2  HASHES                                *template-support-lists-hash*
+------------------------------------------------------------------------------
+
+Hashes, or dictionaries, are another type of lists. They associate a key with
+a value:
+>
+	== LIST: String_Functions == hash ==
+		"strcpy"  : "{+DEST+}, {+SRC+}",
+		"strncpy" : "{+DEST+}, {+SRC+}, {+N+}",
+		"strcmp"  : "{+STR1+}, {+STR2+}",
+		"strncmp" : "{+STR1+}, {+STR2+}, {+N+}",
+		"strlen"  : "{+STR+}",
+	== ENDLIST ==
+<
+A hash is a comma-separated list of entries. Each entry contains a key and a
+value, separated by a colon.
+
+During template insertion, the user has to choose one of the keys. Then two
+macros *|KEY|* and *|VALUE|* are created, containing the chosen key and its
+associated value. Both can be used in the template.
+In this example, a function call is inserted, with jump tags named for the
+parameters:
+>
+	== Idioms.string function == insert, expandmenu ==
+	|PickList( "function: ", "String_Functions" )|
+	|KEY|<CURSOR> ( |VALUE| )
+	== ENDTEMPLATE ==
+<
+These templates also support the option "expandmenu". The menu will list all
+the keys.
+
+==============================================================================
+6.  MENUS                                             *template-support-menus*
+==============================================================================
+
+The template support automatically creates menus for every template. The user
+has a measure of influence on the result. Some of these options where already
+explained in |templates-support-templ-maps|, this chapter will introduce further
+capabilities.
+
+The menu entries appear in the order the templates have been read. Including a
+file via >
+	IncludeFile ( "<path>/<file>" )
+will cause this file to be processed first, then the rest of the including
+file is read.
+
+The menu structure is defined by the names of the menus. Dots appearing in the
+names place the templates into submenus:
+>
+	== Comments.file description == start, sc:f ==
+	...
+	== Statements.if == below, sc:i ==
+	...
+	== ENDTEMPLATE ==
+<
+The shortcut for the menu entry is defined in the header. The automatic
+creation of a menu entry for a template can be suppressed using the option
+"nomenu".
+
+The maps of submenus are set via the command 'MenuShortcut'
+(see |template-support-MenuShortcut()|):
+>
+	MenuShortcut ( "Comments.Special", "p" )
+	MenuShortcut ( "Comments", "c" )
+	MenuShortcut ( "Statements", "s" )
+<
+Each call sets the shortcut for the last submenu mentioned. So the above
+example sets the shortcut "c" for the menu "Comments", "s" for "Statements"
+and "p" for the submenu "Special" within "Comments". The placement of these
+calls has no influence on the order of menu creation, only the appearance of
+their names in template headers.
+
+The template library can also contain menu separators, a solid line appearing
+between two menu entries. They can help to provide a better overview in a menu
+with lots of entries. Menu separators are defined outside of templates using
+the syntax: >
+	== SEP: Statements.sep1 ==
+The header start with "SEP:" and then contains the name of the separator. The
+dots in the name again define which submenu the separator will appear in,
+while the relative position in relation to the other templates define the
+placement. The last part of the name following the last dot has no influence,
+but must be unique.
+Unlike templates and lists, separators do not have to be ended with a line
+like "== ENDTEMPLATE ==". Separators only span one line. Separators could
+utilize the syntax of function calls, such as "SetMacro()". However, they have
+been designed in this way to visually be on the same level as templates.
+
+------------------------------------------------------------------------------
+
+Note: A short remark for plug-in developers.
+
+Each menu entry also displays the map of the template, if it has one. By
+default, it is prefixes with the standard mapleader, a backslash. Using the
+API, this can be changed to the mapleader the user has set: >
+	call mmtemplates#core#Resource (
+		\ <template-library>, "set", "Templates::Mapleader", "<mapleader>" )
+(see |mmtemplates#core#Resource()|). This mapleader may also appear in menu
+entries the plug-in itself creates. As a convenience, the mapleader is
+provided by the API, already correctly escaped for menu creation: >
+	let [ esc_mapleader, msg ] = mmtemplates#core#Resource (
+		\ g:My_C_Templates, "escaped_mapleader" )
+<
 ==============================================================================
 9.  API                                                 *template-support-api*
 ==============================================================================
 
 This chapter is only relevant if you want to use the template system with your
-own plugin!
+own plug-in!
 
-The API enables other plugins to use the template system.
+The API enables other plug-ins to use the template system.
 
 Each template library is stored in a dictionary (|Dictionary|).
 -	This dictionary must be a global variable, because it it used for purposes
@@ -180,7 +949,7 @@ Load several files: >
 
 	call mmtemplates#core#ReadTemplates ( g:My_C_Templates,
 		\ "load", "$HOME/.vim/.../local.templates" )
-Load the templates in the two files.
+Loads the templates in the two files.
 
 
 Example 2.2:
@@ -315,7 +1084,7 @@ Example:
 
 This function is best used in maps such as this:
 >
-	let regex = mmtemplates#core#Resource ( g:My_C_Templates, "jumptag" )
+	let regex = mmtemplates#core#Resource ( g:My_C_Templates, "jumptag" )[0]
 
 	" ...
 
@@ -429,7 +1198,7 @@ in the library, that one is preferred.
 
 Example 1: Basic usage.
 
-Suppose your plugin creates the following menus:
+Suppose your plug-in creates the following menus:
 >
 	C-Support
 	>-+ Comments
@@ -607,19 +1376,19 @@ browser will already be set to the project include directory.
 Example 3:
 
 Set the property "Templates::Mapleader": >
-	call mmtemplates#core#Property (
+	call mmtemplates#core#Resource (
 		\ g:My_C_Templates, "set", "Templates::Mapleader", "." )
 <
 Create a new property "C::RunCompiler::Map": >
-	call mmtemplates#core#Property (
+	call mmtemplates#core#Resource (
 		\  g:My_C_Templates, "add","C::RunCompiler::Map", "rc" )
 <
 Get the mapleader (already escaped): >
-	let esc_mapleader = mmtemplates#core#Property (
+	let [ esc_mapleader, msg ] = mmtemplates#core#Resource (
 		\ g:My_C_Templates, "escaped_mapleader" )
 <
 Get the map (not escaped!): >
-	let [ map_run, msg ] mmtemplates#core#Property (
+	let [ map_run, msg ] = mmtemplates#core#Resource (
 		\ g:My_C_Templates, "get", "C::RunCompiler::Map" )
 
 Create the menu entry: >
@@ -634,7 +1403,8 @@ Create the menu entry: >
 Example 4:
 
 Get the current style: >
-	let current_style = mmtemplates#core#Resource ( g:My_C_Templates, "style" )
+	let [ current_style, msg ] = mmtemplates#core#Resource (
+		\ g:My_C_Templates, "style" )
 <
 ------------------------------------------------------------------------------
 9.4  MISCELLANY                                    *template-support-api-misc*
@@ -662,6 +1432,29 @@ separately, otherwise the entry 'frame comment' in the menu 'Comments': >
 	"Comments.frame comment"
 would turn into the entry: >
 	"Comments\.frame\ comment"
+
+==============================================================================
+10. BACKWARDS COMPATIBILITY                       *template-support-backwards*
+==============================================================================
+
+The following behavior is not compatible with the old template systems of
+various plug-ins. This list does not include new features which are now
+supported.
+
+c-support:
+doxygen-support:
+perl-support:
+-	No automatic uppercase for *|BASENAME|* .
+-	The format for *|DATE|* , *|TIME|* and *|YEAR|* is now configured via the
+	template library. Plug-ins may provide other ways to do the configuration.
+
+perl-support:
+-	The template header can not have the format >
+		== templatename == [ position == ] [ indentation == ]
+<	anymore, since the last part would be ignored. Use the list of template
+	options instead: >
+		== templatename == [ position, indentation == ]
+<	Both 'position' and 'indentation' are optional, of course.
 
 ==============================================================================
 A.  SYNTAX                                           *template-support-syntax*
@@ -834,11 +1627,12 @@ command section.
                                               *template-support-IncludeFile()*
 Include the file 'filename':
 
-	IncludeFile ( filename ) ~
+	IncludeFile ( filename [, "abs"] ) ~
 
 'filename' can contain a path which can be absolute or relative. Relative
 paths are interpreted in relation to the directory of the file containing the
-command.
+command. The path is always understood to be relative, except when the
+optional second argument "abs" is given.
 
 ------------------------------------------------------------------------------
                                                 *template-support-SetFormat()*
@@ -851,7 +1645,7 @@ sets the format of the date and time. They use the same format as the function
 |strftime()|.
 
 Example: >
-	SetMacro ( "TIME", "%H:%M" )
+	SetFormat ( "TIME", "%H:%M" )
 The macro *|TIME|* will now be replaced by something like 10:24.
 
 ------------------------------------------------------------------------------
@@ -919,14 +1713,14 @@ the path directly.
 
 After the user selected a file, several replacements for macros are created,
 which can be inserted in the template:
--	*|PICK_COMPL|*	: the complete path and name of the selected file
--	*|PATH_COMPL|*	: the complete path of the selected file
--	*|PICK|*				: the selected path and file relative to the directory given
-									in 'path'
--	*|PATH|*				: the path in *|PICK|*
--	*|FILENAME|*		: the name of the file
--	*|BASENAME|*		: the name of the file without the suffix
--	*|SUFFIX|*			: the suffix of the file
+-	*|PICK_COMPL|*  : the complete path and name of the selected file
+-	*|PATH_COMPL|*  : the complete path of the selected file
+-	*|PICK|*        : the selected path and file relative to the directory given
+                  in 'path'
+-	*|PATH|*        : the path in *|PICK|*
+-	*|FILENAME|*    : the name of the file
+-	*|BASENAME|*    : the name of the file without the suffix
+-	*|SUFFIX|*      : the suffix of the file
 
 Example: >
 
@@ -965,9 +1759,9 @@ dictionaries, the user has to choose one of the keys.
 
 After the user selected an entry, several replacements for macros are created,
 which can be inserted in the template:
--	*|VALUE|*	: the selected entry from the list or dictionary
--	*|KEY|*		: the selected key (dictionaries only)
--	*|PICK|*	: same as *|VALUE|*
+-	*|VALUE|* : the selected entry from the list or dictionary
+-	*|KEY|*   : the selected key (dictionaries only)
+-	*|PICK|*  : same as *|VALUE|*
 
 Example:
 >
@@ -1018,8 +1812,8 @@ Flags:
 -	""  : no change to the text
 -	"l" : change text to lowercase
 -	"u" : change text to uppercase
--	"c" : capitalize text
--	"L" : legalize name
+-	"c" : capitalize text (change first letter to uppercase)
+-	"L" : legalize name (replace all non-word characters with underscores)
 
 Example:
 >
@@ -1061,7 +1855,7 @@ The following sections list the options for templates and lists.
 C.1  TEMPLATES                                    *template-support-opt-templ*
 ------------------------------------------------------------------------------
 
-The template options appear in the head of the template:
+The template options appear in the header of the template:
 	== <name> == <options> == ~
 
 It is not required to specify any options. The defaults are given below.
@@ -1116,7 +1910,7 @@ Note: A shortcut can only be one character long. A map can be several
 C.2  LISTS                                         *template-support-opt-list*
 ------------------------------------------------------------------------------
 
-The list options appear in the head of the list:
+The list options appear in the header of the list:
 	== List: OutputModifiers == <options> == ~
 
 It is not required to specify any options. The defaults are given below.
@@ -1134,7 +1928,7 @@ Type:
 For a description see |template-support-syntax-list|.
 
 ------------------------------------------------------------------------------
-                  *template-support-bare*
+                                                       *template-support-bare*
 Interpretation:
 
 	bare - The list is interpreted as a bare list. Each line is considered to be
@@ -1159,6 +1953,10 @@ D.  Change Log                                   *template-support-change-log*
 
 API:
 - Added: Sub-menus can be created with priorities.
+- Added: Properties.
+- Added: The mapleader shown in the menu is configurable.
+- Added: The maps for "edit templates", "reread templates" and "choose style"
+  are configurable.
 
 Internal Changes:
 - Changes to the template data structure.
