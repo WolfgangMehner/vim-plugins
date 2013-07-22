@@ -1,8 +1,8 @@
-*templatesupport.txt*         MM Template Support                  Jan 02 2013
+*templatesupport.txt*         MM Template Support                  Jul 22 2013
 
 MM Template Support                                        *template-support*
 
-                            Plug-in version 0.9.1
+                           Plug-in version 0.9.1.1
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
 
@@ -13,12 +13,13 @@ MM Template Support                                        *template-support*
 
 This plug-in aims at providing extendible template libraries. A template
 library can assist in speeding up the writing of code, while at the same time
-ensuring a consistent style. The templates are written in an easy markup
-language, which enables the user to customize templates without much hassle.
+ensuring a consistent style. The templates are written in an easy to use
+markup language, which enables the user to customize templates without much
+hassle.
 
 Menus and maps to access the templates are created automatically. While maps
 might or might not be the preferred way of inserting templates (as well as
-using Vim in general), the menus always provided an overview of the templates
+using Vim in general), the menus always provide an overview of the templates
 and the associated maps. This makes it quite easy to use the templates and
 learn their maps at the same time.
 
@@ -331,7 +332,7 @@ support will create (see |template-support-library| for a short introduction).
 
 The list of option defines the map and menu shortcut of the template, and some
 aspects of its behavior during insertion into a text, such as its placement
-relative to the position of the mouse cursor.
+relative to the position of the cursor.
 
 The following example shows a possible template for the C statement "if":
 >
@@ -686,7 +687,7 @@ these templates would not be well accessible. The user would have to memorize
 a map for each and every one of them.
 
 This is why lists exist. They appear as objects in the template library. The
-header of a list starts with "LISTS:" and then contains a name, which has to
+header of a list starts with "LIST:" and then contains a name, which has to
 follow the same rules as C identifiers. They start with a letter or
 underscore, and can contain numbers after that.
 >
@@ -880,13 +881,12 @@ These functions provide the basic functionality to load template libraries and
 insert templates into a buffer. A further function expands macros in a text.
 
 ------------------------------------------------------------------------------
-                                              *mmtemplates#core#NewLibrary()*
+                                               *mmtemplates#core#NewLibrary()*
 To create a new template library call:
 
 	library = mmtemplates#core#NewLibrary ( ... ) ~
 
-No parameters.
-Options:
+Optional parameters:
 	"debug", level      - View debug information with the given level of detail.
 	                      (integer, default: show no debug information)
 Returns:
@@ -905,7 +905,7 @@ Templates are loaded using the function:
 
 Parameters:
 	library - The template library. (string or dict)
-Options:
+Optional parameters:
 	"load", file        - Load templates from 'file'. (string)
 	"reload", what      - Reload templates according to 'what', see below.
 	                      (string or integer)
@@ -928,7 +928,7 @@ The i'th file which has been loaded can be reloaded via: >
 	mmtemplates#core#ReadTemplates ( library, "reload", i )
 <
 With the switch "overwrite_warning", a warning is displayed whenever a
-template is encountered which already has a text for the current style.
+template is encountered which already has been set for the current style.
 
 
 Example 1:
@@ -975,7 +975,7 @@ To insert templates into the current buffer use:
 Parameters:
 	library - The template library. (string or dict)
 	name    - The name of the template. (string)
-Options:
+Optional parameters:
 	"i"                - > "insert"
 	"insert"           - Insert mode, special treatment of placement 'insert'.
 	"v"                - > "visual"
@@ -1049,7 +1049,6 @@ been loaded before via |mmtemplates#core#ReadTemplates()|.
 loaded.
 
 A file browser is then opened for the directory containing the file.
-	*Todo		configuration of the file browser
 
 Example:
 
@@ -1108,7 +1107,7 @@ The automatic creation of maps is carried out by the function:
 Parameters:
 	library     - The name of the variable containing the library. (string)
 	localleader - The local mapleader. (string)
-Options:
+Optional parameters:
 	"do_jump_map"     - Create a map for |mmtemplates#core#JumpToTag()|.
 	"do_special_maps" - Create maps for the special operations.
 No returns.
@@ -1125,7 +1124,7 @@ given.
 This function creates maps which are local to the buffer, so it must be called
 in the appropriate filetype-plugin, or by an autocommand.
 An error message is displayed whenever a mapping already exists. The existing
-mapping is not overwritten.
+mapping will not be overwritten.
 
 Example:
 
@@ -1148,7 +1147,7 @@ The automatic creation of menus is carried out by the function:
 Parameters:
 	library        - The name of the variable containing the library. (string)
 	rootmenu       - The name of the root menu. (string)
-Options:
+Optional parameters:
 	"global_name", name    - The name used in the menu headers.
 	                         (string, default: the value of 'rootmenu')
 	"existing_menu", names - The menus which already exist.
@@ -1302,7 +1301,7 @@ Access to a number of resources is provided by:
 Parameters:
 	library - The template library. (string or dict)
 	mode    - The operation which should be executed. (string)
-Options:
+Optional parameters:
 	... - Depending on 'mode'.
 Returns:
 	rval - Content and type depending on 'mode'.
@@ -1961,6 +1960,11 @@ API:
 Internal Changes:
 - Changes to the template data structure.
 - Major code cleanup.
+
+VERSION 0.9.1.1:
+- Released with no changes in the core functionality.
+- Change: Some commands are now executed silently.
+- Bugfix: Syntax highlighting.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9

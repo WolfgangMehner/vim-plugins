@@ -357,7 +357,7 @@ Settings:
 Executes "git fetch ...".
 
 ------------------------------------------------------------------------------
-                                                                   *:GitFetch*
+                                                                    *:GitGrep*
 	:GitGrep <param> ~
 
 	*Todo		docu
@@ -732,7 +732,7 @@ in the .vimrc file.
                                             |gitsupport-config-menus|
   g:Git_RootMenu              '&Git'      name and shortcut of the root menu
                                             |gitsupport-config-menus|
-  g:Git_DiffExpandEmpty       'yes'       whether *:GitDiff* expands an empty
+  g:Git_DiffExpandEmpty       'yes'       whether |:GitDiff| expands an empty
                                           argument list to the current file
                                             |gitsupport-config-settings|
   g:Git_StatusStagedOpenDiff  'cached'    how to execute "open diff" from
