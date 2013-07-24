@@ -1,0 +1,269 @@
+%%=====================================================================================
+%%
+%%         File:  bash-hotkeys.tex
+%%
+%%  Description:  bash-support.vim : Key mappings for Bash with/without GUI.
+%%                
+%%       Author:  Dr.-Ing. Fritz Mehner
+%%        Email:  mehner.fritz@fh-swf.de
+%%    Copyright:  Copyright (C)  2013 Dr.-Ing. Fritz Mehner (mehner.fritz@fh-swf.de)
+%%      Version:  see \Pluginversion
+%%      Created:  20.05.2013
+%%                
+%%=====================================================================================
+
+%%======================================================================
+%%  LaTeX settings       [[[1
+%%======================================================================
+
+\documentclass[oneside,10pt,landscape,DIV17]{scrartcl}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lastpage}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+
+\setlength\parindent{0pt}
+
+\newcommand{\Pluginversion}{4.0}
+\newcommand{\ReleaseDate}{\today}
+\newcommand{\Rep}{{\scriptsize{[n]}}}
+
+%%----------------------------------------------------------------------
+%%  fancyhdr
+%%----------------------------------------------------------------------
+\pagestyle{fancyplain}
+\fancyhf{}
+\fancyfoot[L]{\small \ReleaseDate}
+\fancyfoot[C]{\small bash-support.vim}
+\fancyfoot[R]{\small \textbf{Page \thepage{} / \pageref{LastPage}}}
+\renewcommand{\headrulewidth}{0.0pt}
+
+%%----------------------------------------------------------------------
+%%  luximono : Type1-font
+%%  Makes keyword stand out by using semibold letters.
+%%----------------------------------------------------------------------
+\usepackage[scaled]{luximono}
+
+%%----------------------------------------------------------------------
+%%  hyperref
+%%----------------------------------------------------------------------
+\usepackage[ps2pdf]{hyperref}
+\hypersetup{pdfauthor={Dr.-Ing. Fritz Mehner, FH Südwestfalen, Iserlohn, Germany}}
+\hypersetup{pdfkeywords={Vim, Perl}}
+\hypersetup{pdfsubject={Vim-plug-in,  bash-support.vim, hot keys}}
+\hypersetup{pdftitle={Vim-plug-in,  bash-support.vim, hot keys}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  START OF DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}%
+
+\begin{multicols}{3}
+%
+\begin{center}
+%
+%%======================================================================
+%%  title				[[[1
+%%======================================================================
+\textbf{\textsc{\small{Vim-Plug-in}}}\\
+\textbf{\LARGE{bash-support.vim}}\\
+\textbf{\textsc{\small{Version \Pluginversion}}}\\
+\vspace{5mm}%
+\textbf{\textsc{\Huge{Hot keys}}}\\ 
+\vspace{5mm}%
+Key mappings for Vim and gVim.\\
+Plug-in: http://vim.sourceforge.net\\
+Fritz Mehner (mehner.fritz@fh-swf.de)\\
+\vspace{1.0mm}
+{\normalsize (i)} insert mode, {\normalsize (n)} normal mode, {\normalsize (v)} visual mode\\
+\vspace{4.0mm}
+
+%%======================================================================
+%%  table, left part				[[[1
+%%======================================================================
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{60mm}|}
+%%----------------------------------------------------------------------
+%%  main menu
+%%----------------------------------------------------------------------
+\hline 
+\multicolumn{2}{|r|}{\textsl{\textbf{B}ash}}\\[1.0ex]
+\hline \verb'\bps'   & \textbf{p}arameter \textbf{s}ubstitution (list) \hfill (n, i)\\
+\hline \verb'\bsp'   & \textbf{s}pecial \textbf{p}arameters (list)     \hfill (n, i)\\
+\hline \verb'\ben'   & \textbf{en}vironment (list)                     \hfill (n, i)\\
+\hline \verb'\bbu'   & \textbf{bu}iltins (list)                        \hfill (n, i)\\
+\hline \verb'\bse'   & \textbf{se}t options (list)                     \hfill (n, i)\\
+\hline \verb'\bso'   & \textbf{s}h\textbf{o}pts (list)                 \hfill (n, i)\\
+\hline 
+%%----------------------------------------------------------------------
+%%  menu Comments
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{C}omments}}                       \\[1.0ex]
+\hline \Rep\verb'\cl'   & end-of-line comment               \hfill (n, i, v)\\
+\hline \Rep\verb'\cj'   & adjust end-of-line comments       \hfill (n, i, v)\\
+\hline     \verb'\cs'   & set end-of-line comment col.      \hfill (n)\\
+%
+\hline \Rep\verb'\cc'   & code $\rightarrow$ comment        \hfill (n, i, v)\\
+\hline \Rep\verb'\cu'   & uncomment code                    \hfill (n, i, v)\\
+%
+\hline     \verb'\cfr'  & frame comment                     \hfill (n, i)\\
+\hline     \verb'\cfu'  & function description              \hfill (n, i)\\
+\hline     \verb'\ch'   & file header                       \hfill (n, i)\\
+\hline     \verb'\cd'   & date                              \hfill (n, i)\\
+\hline     \verb'\ct'   & date \& time                      \hfill (n, i)\\
+\hline     \verb'\css'  & script sections                   \hfill (n, i)\\
+\hline     \verb'\ckc'  & keyword comments                  \hfill (n, i)\\
+\hline     \verb'\cma'  & plug-in macros                    \hfill (n, i)\\
+%
+\hline     \verb'\ce'   & \texttt{echo} "\textsl{actual line}"  \hfill (n, i)\\
+\hline     \verb'\cr'   & remove \texttt{echo} from actual line \hfill (n, i)\\
+\hline
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%======================================================================
+%%  table, middle part				[[[1
+%%======================================================================
+%
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{60mm}|}
+%%----------------------------------------------------------------------
+%%  menu Statements
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{S}tatements}}                    \\[1.0ex]
+\hline \verb'\sc'  & \verb'case in ... esac'               \hfill (n, i)\\
+\hline \verb'\sei' & \verb'elif then'                      \hfill (n, i)\\
+\hline \verb'\sf'  & \verb'for in do done'                 \hfill (n, i, v)\\
+\hline \verb'\sfo' & \verb'for ((...)) do done'            \hfill (n, i, v)\\
+\hline \verb'\si'  & \verb'if then fi'                     \hfill (n, i, v)\\
+\hline \verb'\sie' & \verb'if then else fi'                \hfill (n, i, v)\\
+\hline \verb'\ss'  & \verb'select in do done'              \hfill (n, i, v)\\
+\hline \verb'\su'  & \verb'until do done'                  \hfill (n, i, v)\\
+\hline \verb'\sw'  & \verb'while do done'                  \hfill (n, i, v)\\
+\hline \verb'\sfu' & \verb'function'                       \hfill (n, i, v)\\
+%
+\hline \verb'\se'  & \verb'echo -e ""'                     \hfill (n, i, v)\\
+\hline \verb'\sp'  & \verb'printf  "%s"'                   \hfill (n, i, v)\\
+%
+\hline \verb'\sae' & array element\ \ \ \verb'${.[.]}'     \hfill (n, i, v)\\
+\hline \verb'\saa' & arr. elem.s (all) \ \verb'${.[@]}'    \hfill (n, i, v)\\
+\hline \verb'\sas' & arr. elem.s (1 word) \ \verb'${.[*]}' \hfill (n, i, v)\\
+\hline \verb'\ssa' & subarray \ \verb'${.[@]::}'           \hfill (n, i, v)\\
+\hline \verb'\san' & no. of arr. elem.s \ \verb'${.[@]}'   \hfill (n, i, v)\\
+\hline \verb'\sai' & list of indices \ \verb'${.[*]}'      \hfill (n, i, v)\\
+\hline
+%%
+%%----------------------------------------------------------------------
+%%  menu Tests
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{T}ests}}                 \\[1.0ex]
+\hline \verb'\ta'  & arithmetic tests                  \hfill (n, i)\\
+\hline \verb'\tfp' & file permissions                  \hfill (n, i)\\
+\hline \verb'\tft' & file types                        \hfill (n, i)\\
+\hline \verb'\tfc' & file characteristics              \hfill (n, i)\\
+\hline \verb'\ts'  & string comparisons                \hfill (n, i)\\
+\hline \verb'\toe' & option is enabled                 \hfill (n, i)\\
+\hline \verb'\tvs' & variables has been set            \hfill (n, i)\\
+\hline \verb'\tfd' & file descr.  refers to a terminal \hfill (n, i)\\
+\hline \verb'\tm'  & string matches regexp             \hfill (n, i)\\
+\hline
+%%
+%%----------------------------------------------------------------------
+%%  menu IO-Redirection
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{I}O-Redirection}}                 \\[1.0ex]
+\hline \verb'\ior'   & IO-redirections (list)           \hfill (n, i)\\
+\hline \verb'\ioh'   & here-document                    \hfill (n, i)\\
+\hline
+%
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%======================================================================
+%%  table, right part				[[[1
+%%======================================================================
+%
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{62mm}|}
+%
+%%----------------------------------------------------------------------
+%%  menu Regexp
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{Rege\textbf{x}p}}     \\[1.0ex]
+\hline     \verb'xzo' & zero or one,      \verb' ?( | )'  \hfill (n, i)\\ 
+\hline     \verb'xzm' & zero or more,     \verb' *( | )'  \hfill (n, i)\\ 
+\hline     \verb'xom' & one or more,      \verb' +( | )'  \hfill (n, i)\\ 
+\hline     \verb'xeo' & exactly one,      \verb' @( | )'  \hfill (n, i)\\ 
+\hline     \verb'xae' & anything except,  \verb' !( | )'  \hfill (n, i)\\ 
+\hline     \verb'xpc' &  POSIX classes                  \hfill (n, i)\\ 
+\hline     \verb'xbr' &  \verb'${BASH_REMATCH[0'$\ldots$\verb'3]}'  \hfill (n, i)\\ 
+\hline
+%
+%%----------------------------------------------------------------------
+%%  menu Snippet
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{S\textbf{n}ippets}}               \\[1.0ex]
+\hline \verb'\nr'  & read code snippet         \hfill (n, i)\\
+\hline \verb'\nv'  & view code snippet         \hfill (n, i)\\
+\hline \verb'\nw'  & write code snippet        \hfill (n, i, v)\\
+\hline \verb'\ne'  & edit code snippet         \hfill (n, i)\\
+\hline \verb'\ntl' & edit templates            \hfill (n, i)\\
+\hline \verb'\ntr' & reread templates          \hfill (n, i)\\
+\hline \verb'\nts' & choose style              \hfill (n, i)\\
+\hline
+%%----------------------------------------------------------------------
+%%  menu Run
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{R}un}} \\[1.0ex]
+\hline \verb'\rr'  & update file, run script           \hfill (n, i, v$^1$)\\
+\hline \verb'\ra'  & set script cmd. line arguments    \hfill (n, i)\\
+\hline \verb'\rba' & set Bash cmd. line arguments      \hfill (n, i)\\
+\hline \verb'\rc'  & update file, check syntax         \hfill (n, i)\\
+\hline \verb'\rco' & syntax check options              \hfill (n, i)\\
+\hline \verb'\rd'  & start debugger$^1$                \hfill (n, i)\\
+\hline \verb'\re'  & make script executable$^1$        \hfill (n, i)\\
+\hline \verb'\rh'  & hardcopy buffer                   \hfill (n, i, v)\\
+\hline \verb'\rs'  & plug-in settings                  \hfill (n, i)\\
+\hline \verb'\rx'  & set xterm size$^1$                \hfill (n, i, GUI only)\\
+\hline \verb'\ro'  & change output destination         \hfill (n, i)\\
+\hline
+%%----------------------------------------------------------------------
+%%  menu Help
+%%----------------------------------------------------------------------
+\hline 
+\multicolumn{2}{|r|}{\textsl{\textbf{H}elp}}\\[1.0ex]
+\hline \verb'\hb'   & display the Bash manual           \hfill (n,i)\\
+\hline \verb'\hh'   & help (Bash builtins)              \hfill (n,i)\\
+\hline \verb'\hm'   & show manual (cmd. line utilities) \hfill (n,i)\\
+\hline \verb'\hp'   & help (plug-in)                    \hfill (n,i)\\
+\hline 
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+\vfill
+%
+\begin{minipage}[b]{75mm}%
+\scriptsize{%
+\vspace{10mm}
+\hrulefill\\
+$^1$ {Linux/U**x only}
+}%
+\end{minipage}\\
+%
+%
+\end{center}%
+\end{multicols}%
+%
+%%----- TABBING :  end  ----------
+\end{document}
+% vim: foldmethod=marker foldmarker=[[[,]]]

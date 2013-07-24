@@ -1,6 +1,6 @@
-*bashsupport.txt*                Bash Support                   July 09 2013
+*bashsupport.txt*                Bash Support                   July 24 2013
 
-bash Support                                      *bash-support* *bashsupport*
+Bash Support                                      *bash-support* *bashsupport*
                              Plugin version 4.0
                         for Vim version 7.0 and above
                        Fritz Mehner  <mehner@fh-swf.de>
@@ -634,11 +634,12 @@ appends end-of-line comments to the 4 lines starting with the current line.
 Legend:  (i) insert mode, (n) normal mode, (v) visual mode
          [n] range
 
-     \bbu    builtin                          (n, i)
-     \ben    environment                      (n, i)
-     \bse    set options                      (n, i)
-     \bso    shopts                           (n, i)
-     \bsp    special parameters               (n, i)
+     \bps    parameter substitution (list)    (n, i)
+     \bsp    special parameters (list)        (n, i)
+     \ben    environment (list)               (n, i)
+     \bbu    builtin (list)                   (n, i)
+     \bse    set options (list)               (n, i)
+     \bso    shopts (list)                    (n, i)
    
   -- Comments -------------------------------------------
 
@@ -691,6 +692,10 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \tfd    file descriptor is open          (n, i)
      \tm     string matches regexp            (n, i)
 
+  -- I/O-Redirection -------------------------------------
+     \ior    IO-redirections (list)           (n, i)
+     \ioh    here-document                    (n, i)
+
   -- Regular Expression ----------------------------------
 
      \xzo    zero or more, ?( | )            (n, i)
@@ -726,7 +731,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \rt     set xterm size                   (n, i)
      \ro     change output destination        (n, i)
 
-  -- bash help -------------------------------------------
+  -- Bash help -------------------------------------------
 
      \hb     Displays the Bash manual         (n, i)
      \hh     Displays help for the builtin    (n, i)
@@ -777,14 +782,14 @@ See |bashsupport-usage-vim| for more hotkeys.
 
 README.bashsupport                  Release notes, installation description.
 
-plugin/bash-support.vim             The bash plug-in for Vim/gVim.
+plugin/bash-support.vim             The Bash plug-in for Vim/gVim.
 bash-support/scripts/wrapper.sh     A wrapper script for the use of an xterm.
 
 doc/bashsupport.txt                 The help file for the local online help.
 
 bash-support/codesnippets/*         Some code snippets as a starting point.
 
-bash-support/templates/*            bash template files (see |bashsupport-comm-templates|).
+bash-support/templates/*            Bash template files (see |bashsupport-comm-templates|).
 
 bash-support/wordlists/*            Additional word lists (dictionaries).
 
@@ -859,7 +864,7 @@ g:BASH_AlsoBash                ''
                                            (see |bashsupport-snippets|).
            g:BASH_LoadMenus              : Load menus and mappings (yes/no) at start up.
            g:BASH_CreateMenusDelayed     : Load menus only with filetype 'sh'
-           g:BASH_Dictionary_File        : Path and file name of the bash word list used
+           g:BASH_Dictionary_File        : Path and file name of the Bash word list used
                                            for dictionary completion
                                            (see |bashsupport-dictionary|).
            g:BASH_RootMenu               : Name of the root menu item of this plug-in

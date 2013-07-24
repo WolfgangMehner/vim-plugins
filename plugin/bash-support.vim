@@ -556,8 +556,6 @@ endfunction    " ----------  end of function BASH_RereadTemplates  ----------
 "===============================================================================
 function! s:InitMenus()
 	"
-	" TODO: mapleader configurable
-	"
 	if ! has ( 'menu' )
 		return
 	endif
@@ -629,8 +627,6 @@ function! s:InitMenus()
 		exe "amenu  <silent> ".s:BASH_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne       :call BASH_CodeSnippet("edit")<CR>'
 		exe "imenu  <silent> ".s:BASH_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call BASH_CodeSnippet("edit")<CR>'
 		exe "amenu  <silent> ".s:BASH_RootMenu.'.S&nippets.-SepSnippets-                       :'
-		"
-		" :TODO:05.01.2013 11:06:WM: what to do if BASH_CodeSnippet is empty/directory does not exist?
 		"
 	endif
 	"
@@ -729,7 +725,6 @@ function! s:InitMenus()
 	exe " menu  <silent>  ".s:BASH_RootMenu.'.&Help.-SEP1-                                              :'
 	exe " menu  <silent>  ".s:BASH_RootMenu.'.&Help.help\ (Bash-&Support)<Tab>'.esc_mapl.'hbs           :call BASH_HelpBashSupport()<CR>'
 	exe "imenu  <silent>  ".s:BASH_RootMenu.'.&Help.help\ (Bash-&Support)<Tab>'.esc_mapl.'hbs      <C-C>:call BASH_HelpBashSupport()<CR>'
-	" :CHANGED:14.07.2013 13:52:WM: now more similar to how "Perl.Help" looks
 	"
 endfunction    " ----------  end of function s:InitMenus  ----------
 "
