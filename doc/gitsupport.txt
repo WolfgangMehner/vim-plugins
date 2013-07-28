@@ -68,48 +68,51 @@ The following commands are provided by Git Support. Each command is executed
 in the current working directory, just as it would work on the shell. You can
 run the commands in every subdirectory of the project.
 
-  Command                       Short Description
+  Command                          Short Description
  ----------------------------------------------------------------------------
-  :Git    <cmd> [<param>]       (run) git <cmd> <param>
-  :Git!   <cmd> [<param>]       (buf) git <cmd> <param>
-  :GitRun <cmd> [<param>]       (run) git <cmd> <param>
-  :GitBuf <cmd> [<param>]       (buf) git <cmd> <param>
+  |:Git|    <cmd> [<param>]          (run) git <cmd> <param>
+  |:Git|!   <cmd> [<param>]          (buf) git <cmd> <param>
+  |:GitRun| <cmd> [<param>]          (run) git <cmd> <param>
+  |:GitBuf| <cmd> [<param>]          (buf) git <cmd> <param>
 
-  :GitAdd [<param>]             (run) git add <param>
-  :GitBlame [<param>]           (buf) git blame <param>
-  :GitBranch                    (buf) git branch
-  :GitBranch <param>            (run) git branch <param>
-  :GitCheckout [<param>]        (run) git checkout <param>
-  :GitCommit [<param>]          (run) git commit <param>
-  :GitCommitFile [<file>]       (run) git commit -F <file>
-  :GitCommitMerge               (run) git commit -F <base>/.git/MERGE_MSG
-  :GitCommitMsg <msg>           (run) git commit -m "<msg>"
-  :GitDiff [<param>]            (buf) git diff <param>
-  :GitFetch [<param>]           (run) git fetch <param>
-  :GitGrep <param>              (buf) git grep <param>
-  :GitHelp [<param>]            (buf) git help <param>
-  :GitLog [<param>]             (buf) git log <param>
-  :GitMerge [<param>]           (run) git merge <param>
-  :GitMove [<param>]            (run) git mv <param>
-  :GitMv [<param>]              (run) git mv <param>
-  :GitPull [<param>]            (run) git pull <param>
-  :GitPush [<param>]            (run) git push <param>
-  :GitRemote                    (buf) git remote
-  :GitRemote <param>            (run) git remote <param>
-  :GitRemove [<param>]          (run) git rm <param>
-  :GitRm [<param>]              (run) git rm <param>
-  :GitReset [<param>]           (run) git reset <param>
-  :GitShow [<param>]            (buf) git show <param>
-  :GitStash [<param>]           (run) git stash <param>
-  :GitStash list [<param>]      (buf) git stash list <param>
-  :GitStash show [<param>]      (buf) git stash show <param>
-  :GitStatus                    (buf) git status
-  :GitTag                       (buf) git tag
-  :GitTag <param>               (run) git tag <param>
+  |:GitAdd| [<param>]                (run) git add <param>
+  |:GitBlame| [<param>]              (buf) git blame <param>
+  |:GitBranch|                       (buf) git branch
+  |:GitBranch| <param>               (run) git branch <param>
+  |:GitCheckout| [<param>]           (run) git checkout <param>
+  |:GitCommit| [<param>]             (run) git commit <param>
+  |:GitCommit| --dry-run [<param>]   (buf) git commit --dry-run <param>
+  |:GitCommitFile| [<file>]          (run) git commit -F <file>
+  |:GitCommitMerge|                  (run) git commit -F <base>/.git/MERGE_MSG
+  |:GitCommitMsg| <msg>              (run) git commit -m "<msg>"
+  |:GitDiff| [<param>]               (buf) git diff <param>
+  |:GitFetch| [<param>]              (run) git fetch <param>
+  |:GitGrep| <param>                 (buf) git grep <param>
+  |:GitGrepTop| <param>              (buf) git grep <param> (^1)
+  |:GitHelp| [<param>]               (buf) git help <param>
+  |:GitLog| [<param>]                (buf) git log <param>
+  |:GitMerge| [<param>]              (run) git merge <param>
+  |:GitMove| [<param>]               (run) git mv <param>
+  |:GitMv| [<param>]                 (run) git mv <param>
+  |:GitPull| [<param>]               (run) git pull <param>
+  |:GitPush| [<param>]               (run) git push <param>
+  |:GitRemote|                       (buf) git remote
+  |:GitRemote| <param>               (run) git remote <param>
+  |:GitRemove| [<param>]             (run) git rm <param>
+  |:GitRm| [<param>]                 (run) git rm <param>
+  |:GitReset| [<param>]              (run) git reset <param>
+  |:GitShow| [<param>]               (buf) git show <param>
+  |:GitStash| [<param>]              (run) git stash <param>
+  |:GitStash| list [<param>]         (buf) git stash list <param>
+  |:GitStash| show [<param>]         (buf) git stash show <param>
+  |:GitStatus|                       (buf) git status
+  |:GitTag|                          (buf) git tag
+  |:GitTag| <param>                  (run) git tag <param>
  ----------------------------------------------------------------------------
 
 (run) runs the command after asking for confirmation
 (buf) runs the command and redirects its output in a new buffer
+(^1)  runs the command within the context of the top-level directory
 
 When a command opens a new buffer, several maps are defined for this buffer.
 Hitting <SHIFT-F1> always prints a short help with all available maps.
@@ -357,10 +360,24 @@ Settings:
 Executes "git fetch ...".
 
 ------------------------------------------------------------------------------
-                                                                    *:GitGrep*
+                                                        *:GitGrep* *:GitGrepTop*
 	:GitGrep <param> ~
+	:GitGrepTop <param> ~
 
-	*Todo		docu
+The first version opens a buffer containing the output of Git's grep. The
+second version runs grep within the context of the top-level directory of the
+repository.
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
+
+  of        file under cursor: open file (edit)
+  oj        file under cursor: open and jump to the position under the cursor
+  <Enter>   file under cursor: open and jump to the position under the cursor
+ ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
                                                                     *:GitHelp*

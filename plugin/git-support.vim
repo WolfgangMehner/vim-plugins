@@ -82,15 +82,25 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 " call to s:OpenGitBuffer then opens the requested buffer or jumps to it if it
 " already exists. Finally, s:ChangeCWD sets the working directory of the Git
 " buffer.
+" The buffer 'data' is a list, containing first the number of the current buffer
+" at the time s:CheckCWD was called, and second the name of the directory.
+"
+" When called without parameters, changes to the directory stored in
+" b:GitSupport_CWD.
 "-------------------------------------------------------------------------------
 "
-function! s:ChangeCWD ( data )
+function! s:ChangeCWD ( ... )
 	"
 	" call originated from outside the Git buffer?
 	" also the case for a new buffer
-	if bufnr('%') != a:data[0]
-		"echomsg '2 - call from outside: '.a:data[0]
-		let b:GitSupport_CWD = a:data[1]
+	if a:0 == 0
+		if ! exists ( 'b:GitSupport_CWD' )
+			call s:ErrorMsg ( 'Not inside a Git buffer.' )
+			return
+		endif
+	elseif bufnr('%') != a:1[0]
+		"echomsg '2 - call from outside: '.a:1[0]
+		let b:GitSupport_CWD = a:1[1]
 	else
 		"echomsg '2 - call from inside: '.bufnr('%')
 		" noop
@@ -140,7 +150,7 @@ function! s:GetGlobalSetting ( varname )
 endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 "
 "-------------------------------------------------------------------------------
-" s:GitCmdLineArgs : Get the base directory of a repository.   {{{2
+" s:GitCmdLineArgs : Split command-line parameters into a list.   {{{2
 "-------------------------------------------------------------------------------
 "
 function! s:GitCmdLineArgs ( args )
@@ -362,6 +372,7 @@ if s:Enabled
 	command!       -nargs=* -complete=file GitDiff                :call GitS_Diff('update','<args>')
 	command!       -nargs=*                GitFetch               :call GitS_Fetch('<args>','')
 	command!       -nargs=+ -complete=file GitGrep                :call GitS_Grep('update','<args>')
+	command!       -nargs=+ -complete=file GitGrepTop             :call GitS_Grep('top','<args>')
 	command!       -nargs=*                GitHelp                :call GitS_Help('update','<args>')
 	command!       -nargs=* -complete=file GitLog                 :call GitS_Log('update','<args>')
 	command!       -nargs=*                GitMerge               :call GitS_Merge('<args>','')
@@ -914,15 +925,16 @@ function! GitS_Commit( mode, param, flags )
 		" message from ./.git/MERGE_MSG file
 		let file = s:GitRepoBase ()
 		"
-		" could not get base?
+		" could not get top-level?
 		if file == '' | return | endif
 		"
 		let file .= '/.git/MERGE_MSG'
 		"
 		" not readable?
 		if ! filereadable ( file )
-			echo 'could not read the file ".git/MERGE_MSG" /'
-						\ .' there does not seem to be a merge conflict (see :help GitCommitMerge)'
+			call s:ErrorMsg (
+						\ 'could not read the file ".git/MERGE_MSG" /',
+						\ 'there does not seem to be a merge conflict (see :help GitCommitMerge)' )
 			return
 		endif
 		"
@@ -1109,14 +1121,19 @@ function! GitS_Diff( action, ... )
 		"
 	elseif a:action =~ '\<\%(\|edit\|jump\)\>'
 		"
+		let base = s:GitRepoBase()
+		"
+		" could not get top-level?
+		if base == '' | return | endif
+		"
 		if a:action == 'edit'
 	 		let [ f_name, f_line, f_col ] = s:Diff_GetFile ()
-			let f_name = s:GitRepoBase().'/'.f_name
+			let f_name = base.'/'.f_name
 			"
 			call s:OpenFile( f_name )
 		elseif a:action == 'jump'
 			let [ f_name, f_line, f_col ] = s:Diff_GetFile ( 'line' )
-			let f_name = s:GitRepoBase().'/'.f_name
+			let f_name = base.'/'.f_name
 			"
 			if f_line != -1
 				call s:OpenFile( f_name, f_line, f_col )
@@ -1185,13 +1202,14 @@ function! GitS_Grep( action, ... )
 	if a:action == 'help'
 		let txt  = s:HelpTxtStd."\n\n"
 		let txt .= "of      : file under cursor: open file (edit)\n"
-		let txt .= "oj      : file under cursor: open and jump to the position under the cursor"
+		let txt .= "oj      : file under cursor: open and jump to the position under the cursor\n"
+		let txt .= "<Enter> : file under cursor: open and jump to the position under the cursor"
 		echo txt
 		return
 	elseif a:action == 'quit'
 		close
 		return
-	elseif a:action == 'update'
+	elseif a:action == 'update' || a:action == 'top'
 		"
 		if a:0 == 0         | " run again with old parameters
 		elseif empty( a:1 ) | let param = ''
@@ -1200,20 +1218,38 @@ function! GitS_Grep( action, ... )
 		"
 	elseif a:action =~ '\<\%(\|edit\|jump\)\>'
 		"
+		call s:ChangeCWD ()
+		"
+		let line = getline('.')
+		"
 		if a:action == 'edit'
-" 	 		let [ f_name, f_line, f_col ] = s:Grep_GetFile ()
-" 			let f_name = s:GitRepoBase().'/'.f_name
-" 			"
-" 			call s:OpenFile( f_name )
+			let f_name = matchstr ( line, '^[^:]\+\ze:' )
+			"
+			if f_name == ''
+				call s:ErrorMsg ( 'No file under the cursor.' )
+			else
+				call s:OpenFile( f_name )
+			endif
+			"
 		elseif a:action == 'jump'
-" 			let [ f_name, f_line, f_col ] = s:Grep_GetFile ( 'line' )
-" 			let f_name = s:GitRepoBase().'/'.f_name
-" 			"
-" 			if f_line != -1
-" 				call s:OpenFile( f_name, f_line, f_col )
-" 			else
-" 				call s:OpenFile( f_name )
-" 			endif
+			let mlist = matchlist ( line, '^\([^:]\+\):\%(\(\d\+\):\)\?' )
+			"
+			if empty ( mlist )
+				call s:ErrorMsg ( 'No file under the cursor.' )
+				return
+			endif
+			"
+			let f_name = mlist[1]
+			let f_line = mlist[2]
+			"
+			if f_name == ''
+				call s:ErrorMsg ( 'No file under the cursor.' )
+			elseif f_line == ''
+				call s:OpenFile( f_name )
+			else
+				call s:OpenFile( f_name, str2nr ( f_line ), 1 )
+			endif
+			"
 		endif
 		"
 		return
@@ -1223,6 +1259,16 @@ function! GitS_Grep( action, ... )
 	endif
 	"
 	let buf = s:CheckCWD ()
+	"
+	" for action 'top', set the working directory to the top-level directory
+	if a:action == 'top'
+		let base = s:GitRepoBase()
+		"
+		" could not get top-level?
+		if base == '' | return | endif
+		"
+		let buf[1] = base
+	endif
 	"
 	if s:OpenGitBuffer ( 'Git - grep' )
 		"
@@ -1235,8 +1281,9 @@ function! GitS_Grep( action, ... )
 		exe 'nmap <silent> <buffer> q      :call GitS_Grep("quit")<CR>'
 		exe 'nmap <silent> <buffer> u      :call GitS_Grep("update")<CR>'
 
-		exe 'nmap <silent> <buffer> of     :call GitS_Grep("edit")<CR>'
-		exe 'nmap <silent> <buffer> oj     :call GitS_Grep("jump")<CR>'
+		exe 'nmap <silent> <buffer> of      :call GitS_Grep("edit")<CR>'
+		exe 'nmap <silent> <buffer> oj      :call GitS_Grep("jump")<CR>'
+		exe 'nmap <silent> <buffer> <Enter> :call GitS_Grep("jump")<CR>'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -1290,7 +1337,6 @@ function! GitS_Help( action, ... )
 	endif
 	"
 	if s:GitHelpFormat == 'html'
-		echo 'test'
 		return s:StandardRun ( 'help', helpcmd, '' )
 	endif
 	"
@@ -1615,6 +1661,8 @@ function! GitS_StashList( action, ... )
 		return
 	endif
 	"
+	let buf = s:CheckCWD ()
+	"
 	if s:OpenGitBuffer ( 'Git - stash list' )
 		"
 		let b:GitSupport_StashListFlag = 1
@@ -1625,6 +1673,8 @@ function! GitS_StashList( action, ... )
 		exe 'nmap <silent> <buffer> q      :call GitS_StashList("quit")<CR>'
 		exe 'nmap <silent> <buffer> u      :call GitS_StashList("update")<CR>'
 	endif
+	"
+	call s:ChangeCWD ( buf )
 	"
 	if a:0 == 0
 		let param = b:GitSupport_Param
@@ -1664,6 +1714,8 @@ function! GitS_StashShow( action, ... )
 		return
 	endif
 	"
+	let buf = s:CheckCWD ()
+	"
 	if s:OpenGitBuffer ( 'Git - stash show' )
 		"
 		let b:GitSupport_StashShowFlag = 1
@@ -1673,6 +1725,8 @@ function! GitS_StashShow( action, ... )
 		exe 'nmap          <buffer> <S-F1> :call GitS_StashShow("help")<CR>'
 		exe 'nmap <silent> <buffer> q      :call GitS_StashShow("quit")<CR>'
 	endif
+	"
+	call s:ChangeCWD ( buf )
 	"
 	if a:0 == 0
 		let param = b:GitSupport_Param
@@ -1798,6 +1852,11 @@ function! s:Status_GetFile()
 			if f_name == ''
 				return [ '', '', 'No file under the cursor.' ]
 			else
+				let base = s:GitRepoBase()
+				" could not get top-level?
+				if base == ''
+					return [ '', '', 'could not obtain the top-level directory' ]
+				endif
 				return[ 'd', 'modified', s:GitRepoBase().'/'.f_name ]
 			endif
 		endif
@@ -2000,6 +2059,8 @@ function! GitS_Status( action )
 		" noop
 	elseif a:action =~ '\<\%(add\|checkout\|diff\|edit\|log\|reset\)\>'
 		"
+ 		call s:ChangeCWD ()
+		"
 " 		if getline('.') =~ '^#' || b:GitSupport_ShortOption
 			if s:Status_FileAction ( a:action )
 				call GitS_Status( 'update' )
@@ -2122,6 +2183,8 @@ function! GitS_TagList( action, ... )
 		return
 	endif
 	"
+	let buf = s:CheckCWD ()
+	"
 	if s:OpenGitBuffer ( 'Git - tag' )
 		"
 		let b:GitSupport_TagListFlag = 1
@@ -2132,6 +2195,8 @@ function! GitS_TagList( action, ... )
 		exe 'nmap <silent> <buffer> q      :call GitS_TagList("quit")<CR>'
 		exe 'nmap <silent> <buffer> u      :call GitS_TagList("update")<CR>'
 	endif
+	"
+	call s:ChangeCWD ( buf )
 	"
 	if a:0 == 0
 		let param = b:GitSupport_Param
@@ -2211,11 +2276,15 @@ function! s:InitMenus()
 	exe ahead.'&commit,\ msg\ from\ file<TAB>:GitCommitFile   :GitCommitFile<space>'
 	exe ahead.'&commit,\ msg\ from\ merge<TAB>:GitCommitMerge :GitCommitMerge<CR>'
 	exe ahead.'&commit,\ msg\ from\ cmdline<TAB>:GitCommitMsg :GitCommitMsg<space>'
+	exe ahead.'-Sep01-          :'
+	"
+	exe ahead.'&grep,\ use\ top-level\ dir<TAB>:GitGrepTop    :GitGrepTop <space>'
 	"
 	" Open Buffers
 	let ahead = 'amenu '.s:Git_RootMenu.'.'
 	"
 	exe ahead.'-Sep01-                      :'
+	"
 	exe ahead.'&run\ git<TAB>:Git           :Git<space>'
 	exe ahead.'&branch<TAB>:GitBranch       :GitBranch<CR>'
 	exe ahead.'&help\ \.\.\.<TAB>:GitHelp   :GitHelp<space>'
