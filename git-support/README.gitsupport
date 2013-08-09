@@ -130,6 +130,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 + Changed: Calling :GitDiff without arguments can be returned to the standard
   behavior of Git (see g:Git_DiffExpandEmpty).
 + Added: Command :GitGrep and :GitGrepTop.
++ Added: Custom menu entries.
 + Fixed: Jumping to a file from the status buffer did not work when the working
   directory changed.
 + Improved syntax highlighting.

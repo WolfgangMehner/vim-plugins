@@ -29,11 +29,12 @@ a quick overview and a short guide to this documentation.
  4.4    Grep                                      |gitsupport-syn-grep|
  4.5    Log                                       |gitsupport-syn-log|
  4.6    Status                                    |gitsupport-syn-status|
- 5.    Configuration                              |gitsupport-configuration|
- 5.1    Executable                                |gitsupport-config-executable|
- 5.2    Menus                                     |gitsupport-config-menus|
- 5.3    Maps                                      |gitsupport-config-maps|
- 5.4    Settings                                  |gitsupport-config-settings|
+ 5.    Custom Menus                               |gitsupport-menus|
+ 6.    Configuration                              |gitsupport-configuration|
+ 6.1    Executable                                |gitsupport-config-executable|
+ 6.2    Menus                                     |gitsupport-config-menus|
+ 6.3    Maps                                      |gitsupport-config-maps|
+ 6.4    Settings                                  |gitsupport-config-settings|
 
  A.    Troubleshooting - Known Issues             |gitsupport-troubleshooting|
  B.    Release Notes - Change Log                 |gitsupport-release-notes|
@@ -53,12 +54,14 @@ name appears in the section "Changes not staged for commit:". Each buffer has
 a map <SHIFT-F1> for showing a short help.
 
 All commands are listed in a menu "Git". It provides convenient access to all
-the commands and gives an overview of the plug-in's functionality.
+the commands and gives an overview of the plug-in's functionality. The plug-in
+supports custom menu entries, which can be configured easily.
 
 The next chapter |gitsupport-overview| gives an overview of the plug-in, fol-
 lowed by a detailed description of the commands in |gitsupport-commands|. The
-customization of the syntax highlighting is explained in |gitsupport-syntax|.
-The chapter |gitsupport-configuration| documents further configurations.
+customization of the syntax highlighting is explained in |gitsupport-syntax|,
+the customizable menu entries in |gitsupport-menus|.  The chapter
+|gitsupport-configuration| documents further configurations.
 
 ==============================================================================
 2.  OVERVIEW                                             *gitsupport-overview*
@@ -734,7 +737,56 @@ committed:", "Changes not staged for commit:", ...
  ----------------------------------------------------------------------------
 
 ==============================================================================
-5.  CONFIGURATION                                   *gitsupport-configuration*
+5.  CUSTOM MENUS                                            *gitsupport-menus*
+==============================================================================
+
+The custom menu entries offer convenient access to often used Git commands,
+especially those with regularly used combinations of flags. All custom menu
+entries appear in the sub menu "Git->custom". They are defined via the global
+variable 'g:Git_CustomMenu':
+>
+	let g:Git_CustomMenu = [
+	 \ [ 'log, grep &commit msg..', ':GitLog', ':GitLog -i --grep="<CURSOR>"' ],
+	 \ [ 'log, grep &diff output',  ':GitLog', ':GitLog -p -S "<CURSOR>"' ],
+	 \ [ 'log, &graph',             ':GitLog', ':GitLog --graph<EXECUTE>' ],
+	 \ [ '-SEP1-', '', '' ],
+	 \ [ '&merge, ff only',   ':GitMerge', ':GitMerge --ff-only <CURSOR>' ],
+	 \ [ '&merge, no commit', ':GitMerge', ':GitMerge --no-commit <CURSOR>' ],
+	 \ [ '&merge, abort',     ':GitMerge', ':GitMerge --abort<EXECUTE>' ],
+	 \ ]
+<
+The variable must contain a list of lists of strings. A |list| is constructed
+using square brackets containing a number of comma-separated entries. Each
+list contained in 'g:Git_CustomMenu' defines a menu entry. It consists of
+three strings. The first defines the submenu and the menu entry, the second
+the right-hand side of the menu entry and the third the command triggered by
+the entry.
+
+The menu entry is a string, where dots and ampersands have special meanings.
+Dots structure the menu by defining submenus. To put the entries from above
+into a submenu "log", use:
+>
+	let g:Git_CustomMenu = [
+	 \ [ '&log.grep &commit msg..', ':GitLog', ':GitLog -i --grep="<CURSOR>"' ],
+	 \ [ '&log.grep &diff output',  ':GitLog', ':GitLog -p -S "<CURSOR>"' ],
+	 \ [ '&log.-SEP1-',             '',        '' ],
+	 \ [ '&log.&graph',             ':GitLog', ':GitLog --graph<EXECUTE>' ],
+	 ...
+<
+Ampersands set shortcuts for menu entries and submenus. To include a literal
+dot or ampersands use '..' or '&&' respectively. Separators are inserted if
+the name of the entry starts and ends with a minus. They can also appear in
+submenus.
+
+The third string defines the command associated with the entry. If it contains
+the <EXECUTE> tag at the end, the command will be executed directly. The <CR>
+tag, which advanced Vim users will be familiar with, is also supported. If the
+command contains the <CURSOR> tag instead, the command will be shown on the
+command line, with the cursor at that position. Now the user can configure the
+call before executing it.
+
+==============================================================================
+6.  CONFIGURATION                                   *gitsupport-configuration*
 ==============================================================================
 
 The configuration is done via a number of global variables, which can be set
@@ -749,6 +801,8 @@ in the .vimrc file.
                                             |gitsupport-config-menus|
   g:Git_RootMenu              '&Git'      name and shortcut of the root menu
                                             |gitsupport-config-menus|
+  g:Git_CustomMenu            [ ... ]     custom menu entries
+                                            |gitsupport-menus|
   g:Git_DiffExpandEmpty       'yes'       whether |:GitDiff| expands an empty
                                           argument list to the current file
                                             |gitsupport-config-settings|
@@ -759,7 +813,7 @@ in the .vimrc file.
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
-5.1  EXECUTABLE                                 *gitsupport-config-executable*
+6.1  EXECUTABLE                                 *gitsupport-config-executable*
 ------------------------------------------------------------------------------
                                                             *g:Git_Executable*
 The executable is set by g:Git_Executable. You should use the English language
@@ -770,7 +824,7 @@ For Windows, set up the executable similar to this: >
 	let g:Git_Executable = 'C:\Programs\Git\bin\git.exe'
 
 ------------------------------------------------------------------------------
-5.2  MENUS                                           *gitsupport-config-menus*
+6.2  MENUS                                           *gitsupport-config-menus*
 ------------------------------------------------------------------------------
                                                              *g:Git_LoadMenus*
 The creation of the menus is controlled by g:Git_LoadMenus. The default
@@ -792,7 +846,7 @@ Example: >
 Sets the shortcut to 'i'.
 
 ------------------------------------------------------------------------------
-5.3  MAPS                                             *gitsupport-config-maps*
+6.3  MAPS                                             *gitsupport-config-maps*
 ------------------------------------------------------------------------------
 
 You can add hotkeys for your favorite commands by adding maps to your .vimrc.
@@ -802,7 +856,7 @@ With these lines, <F10> will open the status buffer: >
 	inoremap <silent> <F10>  <C-C>:GitStatus<CR>
 
 ------------------------------------------------------------------------------
-5.4  SETTINGS                                     *gitsupport-config-settings*
+6.4  SETTINGS                                     *gitsupport-config-settings*
 ------------------------------------------------------------------------------
                                                        *g:Git_DiffExpandEmpty*
 The default behavior of ":GitDiff", when called without arguments, is to

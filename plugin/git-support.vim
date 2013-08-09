@@ -251,6 +251,49 @@ function! s:VersionLess ( v1, v2 )
 	return -1
 endfunction    " ----------  end of function s:VersionLess  ----------
 " }}}2
+"-------------------------------------------------------------------------------
+"
+"-------------------------------------------------------------------------------
+" Custom menus.   {{{1
+"-------------------------------------------------------------------------------
+"
+"-------------------------------------------------------------------------------
+" s:GenerateCustomMenu : Generate custom menu entries.   {{{2
+"-------------------------------------------------------------------------------
+"
+function! s:GenerateCustomMenu ( prefix, data )
+	"
+	for [ entry_l, entry_r, cmd ] in a:data
+		" escape special characters and assemble entry
+		let entry_l = substitute ( entry_l, '\.\.', '\\.', 'g' )
+		let entry_l = escape ( entry_l, ' |' )
+		let entry_r = escape ( entry_r, ' .|' )
+		"
+		if entry_r == '' | let entry = a:prefix.'.'.entry_l
+		else             | let entry = a:prefix.'.'.entry_l.'<TAB>'.entry_r
+		endif
+		"
+		if cmd == ''
+			let cmd = ':'
+		endif
+		"
+		let silent = '<silent> '
+		"
+		" prepare command
+		if cmd =~ '<CURSOR>'
+			let mlist = matchlist ( cmd, '^\(.\+\)<CURSOR>\(.\{-}\)$' )
+			let cmd = mlist[1].mlist[2].repeat( '<LEFT>', len( mlist[2] ) )
+			let silent = ''
+		elseif cmd =~ '<EXECUTE>$'
+			let cmd = substitute ( cmd, '<EXECUTE>$', '<CR>', '' )
+		endif
+		"
+		exe 'amenu '.silent.entry.' '.cmd
+	endfor
+	"
+endfunction    " ----------  end of function s:GenerateCustomMenu  ----------
+" }}}2
+"-------------------------------------------------------------------------------
 "
 "-------------------------------------------------------------------------------
 " Modul setup.   {{{1
@@ -278,9 +321,15 @@ if ! exists ( 's:MenuVisible' )
 	let s:MenuVisible = 0           " menus are not visible at the moment
 endif
 "
+let s:Git_CustomMenu = [
+			\ [ '&log, grep commit msg..', ':GitLog', ':GitLog -i --grep="<CURSOR>"' ],
+			\ [ '&log, grep diff output',  ':GitLog', ':GitLog -p -S "<CURSOR>"' ],
+			\ ]
+"
 call s:GetGlobalSetting ( 'Git_Executable' )
 call s:GetGlobalSetting ( 'Git_LoadMenus' )
 call s:GetGlobalSetting ( 'Git_RootMenu' )
+call s:GetGlobalSetting ( 'Git_CustomMenu' )
 "
 call s:ApplyDefaultSetting ( 'Git_DiffExpandEmpty',      'yes' )
 call s:ApplyDefaultSetting ( 'Git_StatusStagedOpenDiff', 'cached' )
@@ -1021,11 +1070,23 @@ function! GitS_CommitDryRun( action, ... )
 endfunction    " ----------  end of function GitS_CommitDryRun  ----------
 "
 "-------------------------------------------------------------------------------
-" Diff : Auxiliary   {{{1
+" GitS_Diff : execute 'git diff ...'   {{{1
 "-------------------------------------------------------------------------------
 "
 "-------------------------------------------------------------------------------
 " s:Diff_GetFile : Get the file (and line/col) under the cursor.   {{{2
+"
+" Returns a list:
+"   [ <file-name>, <line>, <column> ]
+" The entries are as follows:
+"   file name - Name of the file under the cursor.
+"   line      - The line in the original file.
+"   column    - The column in the original file.
+"
+" If only the name of the file could be obtained, returns:
+"   [ <file-name>, -1, -1 ]
+" If no file could be found:
+"   [ '', -1, -1 ]
 "-------------------------------------------------------------------------------
 "
 function! s:Diff_GetFile( ... )
@@ -1089,9 +1150,11 @@ function! s:Diff_GetFile( ... )
 	return [ f_name, f_line, f_col ]
 	"
 endfunction    " ----------  end of function s:Diff_GetFile  ----------
+" }}}2
+"-------------------------------------------------------------------------------
 "
 "-------------------------------------------------------------------------------
-" GitS_Diff : execute 'git diff ...'   {{{1
+" GitS_Diff : execute 'git diff ...'
 "-------------------------------------------------------------------------------
 "
 function! GitS_Diff( action, ... )
@@ -1128,18 +1191,21 @@ function! GitS_Diff( action, ... )
 		"
 		if a:action == 'edit'
 	 		let [ f_name, f_line, f_col ] = s:Diff_GetFile ()
-			let f_name = base.'/'.f_name
-			"
-			call s:OpenFile( f_name )
 		elseif a:action == 'jump'
 			let [ f_name, f_line, f_col ] = s:Diff_GetFile ( 'line' )
-			let f_name = base.'/'.f_name
-			"
-			if f_line != -1
-				call s:OpenFile( f_name, f_line, f_col )
-			else
-				call s:OpenFile( f_name )
-			endif
+		endif
+		"
+		if f_name == ''
+			call s:ErrorMsg ( 'No file under the cursor.' )
+		endif
+		"
+		let f_name = base.'/'.f_name
+		"
+		if a:action == 'edit'
+					\ || ( a:action == 'jump' && f_line == -1 )
+			call s:OpenFile( f_name )
+		elseif a:action == 'jump'
+			call s:OpenFile( f_name, f_line, f_col )
 		endif
 		"
 		return
@@ -1741,7 +1807,7 @@ function! GitS_StashShow( action, ... )
 endfunction    " ----------  end of function GitS_StashShow  ----------
 "
 "-------------------------------------------------------------------------------
-" Status : Auxiliary   {{{1
+" GitS_Status : execute 'git status'   {{{1
 "-------------------------------------------------------------------------------
 "
 " s:Status_SectionCodes   {{{2
@@ -1757,6 +1823,19 @@ let s:Status_SectionCodes = {
 "
 "-------------------------------------------------------------------------------
 " s:Status_GetFile : Get the file under the cursor and its status.   {{{2
+"
+" Returns a list:
+"   [ <file-name>, <file-status>, <section-code> ]
+" The entries are as follows:
+"   file name    - Name of the file under the cursor.
+"   file status  - Status of the file: 'new file', 'modified', 'deleted',
+"                  'conflict' or one of the two-letter status codes of
+"                  'git status --short'
+"   section code - One character encoding the section the file was found in,
+"                  use 's:Status_SectionCodes' to decode the meaning.
+"
+" In case of an error, the list contains to empty strings and an error message:
+"   [ '', '', <error-message> ]
 "-------------------------------------------------------------------------------
 "
 function! s:Status_GetFile()
@@ -1868,7 +1947,7 @@ function! s:Status_GetFile()
 		let f_name = substitute ( f_name, '\\\(.\)', '\1', 'g' )
 	endif
 	"
-	return [ s_code, f_status, f_name ]
+	return [ f_name, f_status, s_code ]
 	"
 endfunction    " ----------  end of function s:Status_GetFile  ----------
 "
@@ -1881,10 +1960,10 @@ function! s:Status_FileAction( action )
 	" the file under the cursor
 	let fileinfo = s:Status_GetFile()
 	"
-	let [ s_code, f_status, f_name ] = fileinfo
+	let [ f_name, f_status, s_code ] = fileinfo
 	"
-	if s_code == ''
-		call s:ErrorMsg ( f_name )
+	if f_name == ''
+		call s:ErrorMsg ( s_code )
 		return 0
 	endif
 	"
@@ -2021,9 +2100,11 @@ function! s:Status_FileAction( action )
 	return 0
 	"
 endfunction    " ----------  end of function s:Status_FileAction  ----------
+" }}}2
+"-------------------------------------------------------------------------------
 "
 "-------------------------------------------------------------------------------
-" GitS_Status : execute 'git status'   {{{1
+" GitS_Status : execute 'git status'
 "-------------------------------------------------------------------------------
 "
 function! GitS_Status( action )
@@ -2254,44 +2335,58 @@ function! s:InitMenus()
 	exe ahead.'&tag<TAB>:GitTag           :GitTag<space>'
 	"
 	" Current File
-	let ahead = 'amenu '.s:Git_RootMenu.'.&file.'
+	let shead = 'amenu <silent> '.s:Git_RootMenu.'.&file.'
 	"
-	exe ahead.'Current\ File<TAB>Git :echo "This is a menu header!"<CR>'
-	exe ahead.'-Sep00-               :'
+	exe shead.'Current\ File<TAB>Git :echo "This is a menu header!"<CR>'
+	exe shead.'-Sep00-               :'
 	"
-	exe ahead.'&add<TAB>:GitAdd           :GitAdd -- %<CR>'
-	exe ahead.'&blame<TAB>:GitBlame       :GitBlame -- %<CR>'
-	exe ahead.'&checkout<TAB>:GitCheckout :GitCheckout -- %<CR>'
-	exe ahead.'&diff<TAB>:GitDiff         :GitDiff -- %<CR>'
-	exe ahead.'&log<TAB>:GitLog           :GitLog -- %<CR>'
-	exe ahead.'r&m<TAB>:GitRm             :GitRm -- %<CR>'
-	exe ahead.'&reset<TAB>:GitReset       :GitReset -- %<CR>'
+	exe shead.'&add<TAB>:GitAdd           :GitAdd -- %<CR>'
+	exe shead.'&blame<TAB>:GitBlame       :GitBlame -- %<CR>'
+	exe shead.'&checkout<TAB>:GitCheckout :GitCheckout -- %<CR>'
+	exe shead.'&diff<TAB>:GitDiff         :GitDiff -- %<CR>'
+	exe shead.'&log<TAB>:GitLog           :GitLog -- %<CR>'
+	exe shead.'r&m<TAB>:GitRm             :GitRm -- %<CR>'
+	exe shead.'&reset<TAB>:GitReset       :GitReset -- %<CR>'
 	"
 	" Specials
-	let ahead = 'amenu '.s:Git_RootMenu.'.spe&cials.'
+	let ahead = 'amenu          '.s:Git_RootMenu.'.s&pecials.'
+	let shead = 'amenu <silent> '.s:Git_RootMenu.'.s&pecials.'
 	"
 	exe ahead.'Specials<TAB>Git :echo "This is a menu header!"<CR>'
 	exe ahead.'-Sep00-          :'
 	"
 	exe ahead.'&commit,\ msg\ from\ file<TAB>:GitCommitFile   :GitCommitFile<space>'
-	exe ahead.'&commit,\ msg\ from\ merge<TAB>:GitCommitMerge :GitCommitMerge<CR>'
+	exe shead.'&commit,\ msg\ from\ merge<TAB>:GitCommitMerge :GitCommitMerge<CR>'
 	exe ahead.'&commit,\ msg\ from\ cmdline<TAB>:GitCommitMsg :GitCommitMsg<space>'
 	exe ahead.'-Sep01-          :'
 	"
-	exe ahead.'&grep,\ use\ top-level\ dir<TAB>:GitGrepTop    :GitGrepTop <space>'
+	exe ahead.'&grep,\ use\ top-level\ dir<TAB>:GitGrepTop    :GitGrepTop<space>'
 	"
-	" Open Buffers
-	let ahead = 'amenu '.s:Git_RootMenu.'.'
+	" Custom Menu
+	if ! empty ( s:Git_CustomMenu )
+		"
+		let ahead = 'amenu '.s:Git_RootMenu.'.&custom.'
+		"
+		exe ahead.'Custom<TAB>Git :echo "This is a menu header!"<CR>'
+		exe ahead.'-Sep00-        :'
+		"
+		call s:GenerateCustomMenu ( s:Git_RootMenu.'.custom', s:Git_CustomMenu )
+		"
+	endif
+	"
+	" Main Menu - open buffers
+	let ahead = 'amenu          '.s:Git_RootMenu.'.'
+	let shead = 'amenu <silent> '.s:Git_RootMenu.'.'
 	"
 	exe ahead.'-Sep01-                      :'
 	"
 	exe ahead.'&run\ git<TAB>:Git           :Git<space>'
-	exe ahead.'&branch<TAB>:GitBranch       :GitBranch<CR>'
+	exe shead.'&branch<TAB>:GitBranch       :GitBranch<CR>'
 	exe ahead.'&help\ \.\.\.<TAB>:GitHelp   :GitHelp<space>'
-	exe ahead.'&log<TAB>:GitLog             :GitLog<CR>'
-	exe ahead.'&remote<TAB>:GitRemote       :GitRemote<CR>'
-	exe ahead.'&status<TAB>:GitStatus       :GitStatus<CR>'
-	exe ahead.'&tag<TAB>:GitTag             :GitTag<CR>'
+	exe shead.'&log<TAB>:GitLog             :GitLog<CR>'
+	exe shead.'&remote<TAB>:GitRemote       :GitRemote<CR>'
+	exe shead.'&status<TAB>:GitStatus       :GitStatus<CR>'
+	exe shead.'&tag<TAB>:GitTag             :GitTag<CR>'
 	"
 endfunction    " ----------  end of function s:InitMenus  ----------
 "
