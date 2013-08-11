@@ -1,7 +1,7 @@
-*vimsupport.txt*                Vim Support                  February 13 2012
+*vimsupport.txt*                Vim Support                  August 11 2013
 
 Vim Support                                         *vim-support* *vimsupport*
-                              Plugin version 2.0
+                              Plugin version 2.1
                         for Vim version 7.0 and above
                   Fritz Mehner  <mehner.fritz at fh-swf.de>
                 Wolfgang Mehner  <wolfgang-mehner at web.de>
@@ -280,6 +280,11 @@ Example:
 <
 The number, name, and tag is taken from the last chapter header inserted.
 
+For using the maps while editing help-files set the variable
+g:Vim_CreateMapsForHelp in ~/.vimrc to 'yes' (default 'no'):
+>
+  let g:Vim_CreateMapsForHelp = 'yes'
+<
 ------------------------------------------------------------------------------
 1.7  MENU 'SNIPPETS'                                     *vimsupport-snippets*
 ------------------------------------------------------------------------------
@@ -398,10 +403,11 @@ appends end-of-line comments to the 4 lines starting with the current line.
 Legend:  (i) insert mode, (n) normal mode, (v) visual mode
          [n] range
 
-  -- help ----------------------------------------------
+  -- Help ----------------------------------------------
 
-     \h      Displays help for the function name  (n, i)
-             under the cursor (Vim help).
+     \hk     displays help for the function name  (n, i)
+             under the cursor (Vim help)
+     \hp     displays plugin help                 (n, i)
 
   -- Comments ------------------------------------------
 
@@ -541,6 +547,7 @@ Several global variables are checked by the plugin to customize it:
 ------------------------------------------------------------------------------
 Global Variable               Default Value
 ------------------------------------------------------------------------------
+g:Vim_CreateMapsForHelp     'no'
 g:Vim_LocalTemplateFile     $HOME.'/.vim/vim-support/templates/Templates'
 g:Vim_GlobalTemplateFile    $VIM.'/vimfiles/vim-support/templates/Templates'
 g:Vim_CodeSnippets          $HOME.'/.vim/vim-support/codesnippets' (Linux/U**X)
@@ -557,6 +564,7 @@ g:Vim_MapLeader             '\'
 ------------------------------------------------------------------------------
 Global Variable              Description
 ------------------------------------------------------------------------------
+g:Vim_CreateMapsForHelp     Create maps for modifiable help buffers ("yes", "no").
 g:Vim_LocalTemplateFile     sets the local template file (see|vimsupport-templates|)
 g:Vim_GlobalTemplateFile    sets the global template file (see|vimsupport-templates|)
 g:Vim_CodeSnippets          set the personal code snippet directory

@@ -37,9 +37,9 @@
 § -------------------------------------------------------------
 
 == Comments.date == append, map:cd, sc:d ==
-|DATE|
+|DATE|<CURSOR>
 == Comments.date-time == append, map:ct, sc:t ==
-|DATE| |TIME|
+|DATE| |TIME|<CURSOR>
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
@@ -69,6 +69,6 @@
  " |PICK|
 == Comments.macros == expandmenu, insert, map:cma, sc:m ==
 |PickList( 'macro', 'comments_macros' )|
-|PICK|
+|PICK|<CURSOR>
 == ENDTEMPLATE ==
 

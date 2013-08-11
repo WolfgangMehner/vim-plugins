@@ -30,10 +30,6 @@
 
 <CURSOR>
 
-== Documentation.separator == below, noindent ==
-------------------------------------------------------------------------------
-== ENDTEMPLATE ==
-
 == Documentation.chapter, contents == below, noindent, map:dcc, sc:c ==
  |CNUMBER|    |CNAME:c|                                   ||CTAG||
 == Documentation.section, contents == below, noindent, map:dcs, sc:s ==
@@ -46,6 +42,10 @@
 §  Miscellany
 § -------------------------------------------------------------
 
+== SEP: Documentation.sep1 ==
+
+== Documentation.separator == below, noindent ==
+------------------------------------------------------------------------------
 == Documentation.function description == below, noindent, map:df, sc:f ==
                                                      *|FUNCTION_NAME|*
 <CURSOR>:
@@ -71,6 +71,8 @@ Example:
 § -------------------------------------------------------------
 §  Highlighting
 § -------------------------------------------------------------
+
+== SEP: Documentation.sep2 ==
 
 == Documentation.magenta colored line == below, noindent, sc:m ==
 	<CURSOR> ~

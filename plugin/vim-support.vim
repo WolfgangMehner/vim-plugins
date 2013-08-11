@@ -10,10 +10,9 @@
 "   VIM Version:  7.0+
 "        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
 "  Organization:  FH Südwestfalen, Iserlohn
-"       Version:  1.0
+"       Version:  see variable g:VimSupportVersion below
 "       Created:  14.01.2012 10:49
-"      Revision:  $Id: vim-support.vim,v 1.7 2012/02/12 17:11:51 mehner Exp $
-"       License:  Copyright (c) 2012, Dr. Fritz Mehner
+"       License:  Copyright (c) 2012-2013, Dr. Fritz Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -36,7 +35,7 @@ if exists("g:VimSupportVersion") || &cp
  finish
 endif
 "
-let g:VimSupportVersion= "2.0"                  " version number of this script; do not change
+let g:VimSupportVersion= "2.1"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  GetGlobalSetting     {{{1
@@ -103,7 +102,7 @@ if	s:MSWIN
 else
   " ==========  Linux/Unix  ======================================================
 	"
-	if match( expand("<sfile>"), expand("$HOME") ) == 0
+	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
 		let s:installation					= 'local'
@@ -138,7 +137,6 @@ let s:Vim_GuiSnippetBrowser = 'gui'             " gui / commandline
 let s:Vim_LoadMenus         = 'yes'             " load the menus?
 let s:Vim_RootMenu          = '&Vim'            " name of the root menu
 let s:Vim_CreateMapsForHelp = 'no'              " create maps for modifiable help buffers as well
-" :TODO:05.01.2013 13:59:WM: new option "Vim_CreateMapsForHelp": rethink and document!
 "
 let s:Vim_MapLeader             = ''            " default: do not overwrite 'maplocalleader'
 let s:Vim_LineEndCommColDefault = 49
@@ -471,7 +469,7 @@ endfunction    " ----------  end of function s:GetFunctionParameters  ----------
 "===============================================================================
 function! Vim_FunctionComment () range
 	"
-	" TODO: multiple lines (is that possible?): remove continuation '\'
+ " :TODO:11.08.2013 19:02:wm: multiple lines (is that possible?): remove continuation '\'
 	let	linestring = getline(a:firstline)
 	for i in range(a:firstline+1,a:lastline)
 		let	linestring = linestring.' '.getline(i)
@@ -519,6 +517,18 @@ function! Vim_Help ()
 		endif
 	endif
 endfunction    " ----------  end of function Vim_Help  ----------
+"
+"------------------------------------------------------------------------------
+"  Vim_HelpVimSupport : help vimsupport     {{{1
+"------------------------------------------------------------------------------
+function! Vim_HelpVimSupport ()
+	try
+		:help vimsupport
+	catch
+		exe ':helptags '.s:plugin_dir.'/doc'
+		:help vimsupport
+	endtry
+endfunction    " ----------  end of function Vim_HelpVimSupport ----------
 "
 "===  FUNCTION  ================================================================
 "          NAME:  Vim_RereadTemplates     {{{1
@@ -694,8 +704,6 @@ function! s:InitMenus()
 		exe "imenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call Vim_CodeSnippet("e")<CR>'
 		exe "amenu  <silent> ".s:Vim_RootMenu.'.S&nippets.-SepSnippets-                       :'
 		"
-		" :TODO:05.01.2013 11:06:WM: what to do if Vim_CodeSnippet is empty/directory does not exist?
-		"
 	endif
 	"
 	call mmtemplates#core#CreateMenus ( 'g:Vim_Templates', s:Vim_RootMenu, 'do_specials', 'specials_menu', 'S&nippets' )
@@ -724,10 +732,9 @@ function! s:InitMenus()
 	let ahead = 'amenu <silent> '.s:Vim_RootMenu.'.Help.'
 	let ihead = 'imenu <silent> '.s:Vim_RootMenu.'.Help.'
 	"
-	" :TODO:05.01.2013 12:28:WM: new menu entry and new map: document!
   exe ahead.'&keyword\ help<Tab>'.esc_mapl.'hk\ \ <S-F1>    :call Vim_Help()<CR>'
 	exe ahead.'-SEP1- :'
-	" :TODO:05.01.2013 12:28:WM: jump to help for Vim-Support (see Latex_HelpLatexSupport)
+	exe ahead.'&help\ (Vim-Support)<Tab>'.esc_mapl.'hp        :call Vim_HelpVimSupport()<CR>'
 	"
 endfunction    " ----------  end of function s:InitMenus  ----------
 "
@@ -932,6 +939,8 @@ function! s:CreateAdditionalMaps ()
 	nnoremap    <buffer>  <silent>  <LocalLeader>rs         :call Vim_Settings()<CR>
 	nnoremap    <buffer>  <silent>  <LocalLeader>hk          :call Vim_Help()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>hk     <C-C>:call Vim_Help()<CR>
+	 noremap    <buffer>  <silent>  <LocalLeader>hp         :call Vim_HelpVimSupport()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>hp    <C-C>:call Vim_HelpVimSupport()<CR>
 	" 
 	if has("gui_running")
 		nnoremap    <buffer>  <silent>  <S-F1>             :call Vim_Help()<CR>

@@ -29,6 +29,8 @@ VIM::Msg( "<CURSOR>", "Warning" );
 § Use a tabulator at the beginning of a line, otherwise "$curbuf->..."
 § recognized as a comment. The indentation takes care of the layout.
 
+== SEP: Perl.sep1 ==
+
 == Perl.curbuf Count == insert, sc:c ==
 $curbuf->Count()
 == Perl.curbuf Name == insert, sc:n  ==
