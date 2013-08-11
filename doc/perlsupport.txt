@@ -1,4 +1,4 @@
-*perlsupport.txt*                Perl Support                    May 20 2013 
+*perlsupport.txt*                Perl Support                 August 11 2013 
 Perl Support                                      *perl-support* *perlsupport*
 
                              Plug-in version 5.2pre
@@ -1891,13 +1891,14 @@ You may therefore want not to use __END__ in your own modules.
 4.5  Tabulator width                                  *perlsupport-custom-tab*
 ------------------------------------------------------------------------------
 
-The Perl Style Guide recommends a tabulator setting of 4. You can force this
-setting for all files with file type 'perl' by uncommenting the two lines
+The Perl Style Guide recommends a tabulator setting of 4. The plugin forces
+this setting for all files with file type 'perl' in the file type plug-in
+'~/.vim/ftplugin/perl.vim':
 >
-  "setlocal tabstop=4
-  "setlocal shiftwidth=4
+  setlocal tabstop=4
+  setlocal shiftwidth=4
 <
-in the file type plug-in '~/.vim/ftplugin/perl.vim'.
+This can be changed by the user.
 
 ------------------------------------------------------------------------------
 4.6  System-wide installation (Unix/Linux only)      *perlsupport-system-wide*

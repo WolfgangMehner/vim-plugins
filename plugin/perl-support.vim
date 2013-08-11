@@ -39,7 +39,7 @@
 "
 "        Version:  see variable  g:Perl_PluginVersion  below
 "        Created:  09.07.2001
-"        License:  Copyright (c) 2001-2011, Fritz Mehner
+"        License:  Copyright (c) 2001-2013, Fritz Mehner
 "                  This program is free software; you can redistribute it
 "                  and/or modify it under the terms of the GNU General Public
 "                  License as published by the Free Software Foundation,
@@ -2482,25 +2482,9 @@ endfunction    " ----------  end of function Perl_InitializePerlInterface  -----
 "       RETURNS:  
 "===============================================================================
 function! s:CreateAdditionalMaps ()
-	" ---------- tabulator / shiftwidth ------------------------------------------
-	"  Set tabulator and shift width to 4 conforming to the Perl Style Guide.
-	"  Uncomment the next two lines to force these settings for all files with
-	"  filetype 'perl' .
 	"
-	setlocal  tabstop=4
-	setlocal  shiftwidth=4
 	if exists('g:Perl_Perltidy') && g:Perl_Perltidy == 'on' && executable("perltidy")
 		setlocal equalprg='perltidy'
-	endif
-	"
-	" ---------- Add ':' to the keyword characters -------------------------------
-	"            Tokens like 'File::Find' are recognized as one keyword
-	setlocal iskeyword+=:
-	"
-	" ---------- Do we have a mapleader other than '\' ? ------------
-	"
-	if exists("g:Perl_MapLeader")
-		let maplocalleader  = g:Perl_MapLeader
 	endif
 	"
 	" ---------- Perl dictionary -------------------------------------------------

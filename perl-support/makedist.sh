@@ -11,42 +11,27 @@
 #  REQUIREMENTS:  ---
 #          BUGS:  ---
 #         NOTES:  ---
-#        AUTHOR:  Dr.-Ing. Fritz Mehner (Mn), mehner@fh-swf.de
+#        AUTHOR:  Dr.-Ing. Fritz Mehner (Mn), mehner.fritz@fh-swf.de
 #       COMPANY:  Fachhochschule Südwestfalen, Iserlohn
 #       VERSION:  2.0
-#       CREATED:  17.08.2012 15:01:05 CEST
+#       CREATED:  04.01.2013 13:35:48 CEST
 #===============================================================================
 
-archive_name="perl-support"
-
-#-------------------------------------------------------------------------------
-#   Hotkeys: PDF und LaTeX-Quelle kopieren
-#-------------------------------------------------------------------------------
-cp hotkeys.latex/perl-hot-keys.tex doc/
-cp hotkeys.latex/perl-hot-keys.pdf doc/
-
-#-------------------------------------------------------------------------------
-#   persönliche Angaben aus dem Haupt-Template-File ändern
-#-------------------------------------------------------------------------------
-MainTemplateFile=./templates/Templates
-
-if [ -f $MainTemplateFile ] ; then
-  sed --in-place  '/SetMacro.*AUTHOR/s/Dr. Fritz Mehner/YOUR NAME/'        $MainTemplateFile
-  sed --in-place  '/SetMacro.*AUTHORREF/s/fgm//'                           $MainTemplateFile
-  sed --in-place  '/SetMacro.*EMAIL/s/mehner.fritz@fh-swf.de//'            $MainTemplateFile
-  sed --in-place  '/SetMacro.*ORGANIZATION/s/FH Südwestfalen, Iserlohn//'  $MainTemplateFile
-else
-  echo -e "Datei ${MainTemplateFile} nicht gefunden!\n"
-fi
-
-#-------------------------------------------------------------------------------
-#   Archiv erstellen
-#-------------------------------------------------------------------------------
-cd ..
-
-rm --force $archive_name'.zip'
+plugin='perl-support'
+MainTemplateFile='./templates/Templates'
 
 filelist="
+ ./${plugin}/README.perlsupport
+ ./${plugin}/codesnippets/*
+ ./${plugin}/doc/ChangeLog
+ ./${plugin}/doc/perl-hot-keys.pdf
+ ./${plugin}/doc/perl-hot-keys.tex
+ ./${plugin}/doc/pmdesc3.text
+ ./${plugin}/modules/*
+ ./${plugin}/rc/*
+ ./${plugin}/scripts/*
+ ./${plugin}/templates/*
+ ./${plugin}/wordlists/*
  ./autoload/mmtemplates/core.vim
  ./autoload/perlsupportprofiling.vim
  ./autoload/perlsupportregex.vim
@@ -55,18 +40,33 @@ filelist="
  ./ftplugin/perl.vim
  ./ftplugin/pod.vim
  ./ftplugin/qf.vim
- ./perl-support/codesnippets/*
- ./perl-support/doc/*
- ./perl-support/modules/*
- ./perl-support/rc/*
- ./perl-support/README.perlsupport
- ./perl-support/scripts/*
- ./perl-support/templates/*
- ./perl-support/wordlists/*
- ./plugin/perl-support.vim
  ./plugin/make.vim
+ ./plugin/perl-support.vim
  ./syntax/template.vim
 "
+#-------------------------------------------------------------------------------
+#   remove personalization from the main template file
+#-------------------------------------------------------------------------------
+if [ -f "$MainTemplateFile" ] ; then
+	cp	"${MainTemplateFile}" "${MainTemplateFile}".save
+	sed --in-place "s/^\(\s*SetMacro.*'AUTHOR'\s*,\s*'\)\([^']*\)\(.*\)/\1YOUR NAME\3/" "$MainTemplateFile"
+	sed --in-place "s/^\(\s*SetMacro.*'\(AUTHORREF\|COMPANY\|COPYRIGHT\|EMAIL\|LICENSE\|ORGANIZATION\)'\s*,\s*'\)\([^']*\)\(.*\)/\1\4/" "$MainTemplateFile"
+else
+  echo -e "File '${MainTemplateFile}' not found!\n"
+	exit 1
+fi
 
-zip  $archive_name $filelist
+#-------------------------------------------------------------------------------
+#   build archive, remove old one, restore personalized version
+#-------------------------------------------------------------------------------
+pushd .
+cd ..
+
+rm --force "${plugin}.zip"
+
+zip -r "${plugin}" ${filelist}
+
+popd
+
+mv "${MainTemplateFile}".save "${MainTemplateFile}"
 
