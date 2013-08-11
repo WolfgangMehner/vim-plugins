@@ -892,8 +892,8 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" USER DEFINED COMMANDS
 	"-------------------------------------------------------------------------------
-	command! -nargs=* -complete=file BashScriptArguments  call BASH_ScriptCmdLineArguments(<q-args>)
-	command! -nargs=* -complete=file BashArguments        call BASH_BashCmdLineArguments(<q-args>)
+	command! -buffer -nargs=* -complete=file BashScriptArguments  call BASH_ScriptCmdLineArguments(<q-args>)
+	command! -buffer -nargs=* -complete=file BashArguments        call BASH_BashCmdLineArguments(<q-args>)
 	"
 	"-------------------------------------------------------------------------------
 	" settings - local leader

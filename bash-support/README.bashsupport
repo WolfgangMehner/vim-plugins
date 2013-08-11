@@ -1,4 +1,4 @@
-README for bash-support.vim (Version 4.0) / July 07 2013
+README for bash-support.vim (Version 4.0) / August 11 2013
 
   *  INSTALLATION
   *  RELEASE NOTES
@@ -138,9 +138,8 @@ Look at the bashsupport help with
 - New template system (many thanks to Wolfgang Mehner)
 - A few new hotkeys and menu item.
 - A few hotkeys and menu items renamed.
+- Footer did not appear in doc/bash-hotkeys.pdf
 
-
-=======================================================================================
   OLDER RELEASE NOTES : see file 'ChangeLog'
 =======================================================================================
 
@@ -150,6 +149,7 @@ Look at the bashsupport help with
 
 README.bashsupport                  This file.
 
+ftplugin/sh.vim                     The bash filetype plugin.
 plugin/bash-support.vim             The bash plugin for Vim/gVim.
 bash-support/scripts/wrapper.sh     A wrapper script for the use of an xterm.
 

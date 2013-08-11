@@ -12,11 +12,16 @@
 %%                
 %%=====================================================================================
 
-\documentclass[oneside,10pt,landscape,DIV17]{scrartcl}
+%%======================================================================
+%%  LaTeX settings       [[[1
+%%======================================================================
+
+\documentclass[oneside,11pt,landscape,DIV16]{scrartcl}
 
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{times}
 \usepackage{lastpage}
 \usepackage{multicol}
 \usepackage{fancyhdr}
@@ -62,7 +67,7 @@
 \begin{center}
 %
 %%======================================================================
-%%  title
+%%  title				[[[1
 %%======================================================================
 \textbf{\textsc{\small{Vim-Plug-in}}}\\
 \textbf{\LARGE{bash-support.vim}}\\
@@ -78,7 +83,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \vspace{4.0mm}
 
 %%======================================================================
-%%  table, left part
+%%  table, left part				[[[1
 %%======================================================================
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{60mm}|}
@@ -87,11 +92,12 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 %%----------------------------------------------------------------------
 \hline 
 \multicolumn{2}{|r|}{\textsl{\textbf{B}ash}}\\[1.0ex]
-\hline \verb'\bbu'   & builtins                             \hfill (n,i)\\
-\hline \verb'\ben'   & environment                          \hfill (n,i)\\
-\hline \verb'\bse'   & set options                          \hfill (n,i)\\
-\hline \verb'\bso'   & shopts                               \hfill (n,i)\\
-\hline \verb'\bsp'   & special parameters                   \hfill (n,i)\\
+\hline \verb'\bps'   & \textbf{p}arameter \textbf{s}ubstitution (list) \hfill (n, i)\\
+\hline \verb'\bsp'   & \textbf{s}pecial \textbf{p}arameters (list)     \hfill (n, i)\\
+\hline \verb'\ben'   & \textbf{en}vironment (list)                     \hfill (n, i)\\
+\hline \verb'\bbu'   & \textbf{bu}iltins (list)                        \hfill (n, i)\\
+\hline \verb'\bse'   & \textbf{se}t options (list)                     \hfill (n, i)\\
+\hline \verb'\bso'   & \textbf{s}h\textbf{o}pts (list)                 \hfill (n, i)\\
 \hline 
 %%----------------------------------------------------------------------
 %%  menu Comments
@@ -121,7 +127,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
 %%======================================================================
-%%  table, middle part
+%%  table, middle part				[[[1
 %%======================================================================
 %
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
@@ -152,6 +158,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline \verb'\san' & no. of arr. elem.s \ \verb'${.[@]}'   \hfill (n, i, v)\\
 \hline \verb'\sai' & list of indices \ \verb'${.[*]}'      \hfill (n, i, v)\\
 \hline
+%%
 %%----------------------------------------------------------------------
 %%  menu Tests
 %%----------------------------------------------------------------------
@@ -167,6 +174,25 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline \verb'\tfd' & file descr.  refers to a terminal \hfill (n, i)\\
 \hline \verb'\tm'  & string matches regexp             \hfill (n, i)\\
 \hline
+%%
+%%----------------------------------------------------------------------
+%%  menu IO-Redirection
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{I}O-Redirection}}                 \\[1.0ex]
+\hline \verb'\ior'   & IO-redirections (list)           \hfill (n, i)\\
+\hline \verb'\ioh'   & here-document                    \hfill (n, i)\\
+\hline
+%
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%======================================================================
+%%  table, right part				[[[1
+%%======================================================================
+%
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{62mm}|}
 %
 %%----------------------------------------------------------------------
 %%  menu Regexp
@@ -181,16 +207,6 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline     \verb'xpc' &  POSIX classes                  \hfill (n, i)\\ 
 \hline     \verb'xbr' &  \verb'${BASH_REMATCH[0'$\ldots$\verb'3]}'  \hfill (n, i)\\ 
 \hline
-%
-\end{tabular}\\
-%%~~~~~ TABULAR :  end  ~~~~~~~~~~
-%
-%%======================================================================
-%%  table, right part
-%%======================================================================
-%
-%%~~~~~ TABULAR : begin ~~~~~~~~~~
-\begin{tabular}[]{|p{11mm}|p{62mm}|}
 %
 %%----------------------------------------------------------------------
 %%  menu Snippet
@@ -251,3 +267,4 @@ $^1$ {Linux/U**x only}
 %
 %%----- TABBING :  end  ----------
 \end{document}
+% vim: foldmethod=marker foldmarker=[[[,]]]
