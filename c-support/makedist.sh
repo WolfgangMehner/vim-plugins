@@ -11,57 +11,57 @@
 #  REQUIREMENTS:  ---
 #          BUGS:  ---
 #         NOTES:  ---
-#        AUTHOR:  Dr.-Ing. Fritz Mehner (Mn), mehner@fh-swf.de
+#        AUTHOR:  Dr.-Ing. Fritz Mehner (Mn), mehner.fritz@fh-swf.de
 #       COMPANY:  Fachhochschule Südwestfalen, Iserlohn
 #       VERSION:  2.0
-#       CREATED:  17.08.2012 15:01:05 CEST
+#       CREATED:  04.01.2013 13:35:48 CEST
 #===============================================================================
 
-archive_name="cvim"
-
-#-------------------------------------------------------------------------------
-#   Hotkeys: PDF und LaTeX-Quelle kopieren
-#-------------------------------------------------------------------------------
-cp hotkeys.latex/c-hotkeys.tex doc/
-cp hotkeys.latex/c-hotkeys.pdf doc/
-
-#-------------------------------------------------------------------------------
-#   persönliche Angaben aus dem Haupt-Template-File ändern
-#-------------------------------------------------------------------------------
-MainTemplateFile=./templates/Templates
-
-if [ -f $MainTemplateFile ] ; then
-  sed --in-place  '/SetMacro.*AUTHOR/s/Dr. Fritz Mehner/YOUR NAME/'        $MainTemplateFile
-  sed --in-place  '/SetMacro.*AUTHORREF/s/fgm//'                           $MainTemplateFile
-  sed --in-place  '/SetMacro.*EMAIL/s/mehner.fritz@fh-swf.de//'            $MainTemplateFile
-  sed --in-place  '/SetMacro.*ORGANIZATION/s/FH Südwestfalen, Iserlohn//'  $MainTemplateFile
-else
-  echo -e "Datei ${MainTemplateFile} nicht gefunden!\n"
-fi
-
-#-------------------------------------------------------------------------------
-#   Archiv erstellen
-#-------------------------------------------------------------------------------
-cd ..
-
-rm --force $archive_name'.zip'
+plugin='c-support'
+MainTemplateFile='./templates/Templates'
 
 filelist="
+ ./${plugin}/README.csupport
+ ./${plugin}/codesnippets/*
+ ./${plugin}/doc/ChangeLog
+ ./${plugin}/doc/c-hotkeys.pdf
+ ./${plugin}/doc/c-hotkeys.tex
+ ./${plugin}/rc/*
+ ./${plugin}/scripts/*
+ ./${plugin}/templates/*.template
+ ./${plugin}/templates/Templates
+ ./${plugin}/wordlists/*
  ./autoload/mmtemplates/core.vim
- ./c-support/codesnippets/*
- ./c-support/doc/*
- ./c-support/rc/*
- ./c-support/README.csupport
- ./c-support/scripts/*
- ./c-support/templates/*
- ./c-support/wordlists/*
  ./doc/csupport.txt
  ./doc/templatesupport.txt
  ./ftplugin/c.vim
- ./ftplugin/make.vim
  ./plugin/c.vim
+ ./plugin/make.vim
  ./syntax/template.vim
 "
+#-------------------------------------------------------------------------------
+#   remove personalization from the main template file
+#-------------------------------------------------------------------------------
+if [ -f "$MainTemplateFile" ] ; then
+	cp	"${MainTemplateFile}" "${MainTemplateFile}".save
+	sed --in-place "s/^\(\s*SetMacro.*'AUTHOR'\s*,\s*'\)\([^']*\)\(.*\)/\1YOUR NAME\3/" "$MainTemplateFile"
+	sed --in-place "s/^\(\s*SetMacro.*'\(AUTHORREF\|COMPANY\|COPYRIGHT\|EMAIL\|LICENSE\|ORGANIZATION\)'\s*,\s*'\)\([^']*\)\(.*\)/\1\4/" "$MainTemplateFile"
+else
+  echo -e "File '${MainTemplateFile}' not found!\n"
+	exit 1
+fi
 
-zip  $archive_name $filelist
+#-------------------------------------------------------------------------------
+#   build archive, remove old one, restore personalized version
+#-------------------------------------------------------------------------------
+pushd .
+cd ..
+
+rm --force cvim.zip
+
+zip -r cvim.zip ${filelist}
+
+popd
+
+mv "${MainTemplateFile}".save "${MainTemplateFile}"
 

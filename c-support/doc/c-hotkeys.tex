@@ -7,7 +7,7 @@
 %%                
 %%       Author:  Dr.-Ing. Fritz Mehner
 %%        Email:  mehner@fh-swf.de
-%%    Copyright:  Copyright (C)  2006-2012  Dr.-Ing. Fritz Mehner  (mehner@fh-swf.de)
+%%    Copyright:  Copyright (C) 2006-2013  Dr.-Ing. Fritz Mehner (mehner@fh-swf.de)
 %%      Version:  1.0
 %%      Created:  10.11.2006
 %%                
@@ -27,7 +27,7 @@
 
 \setlength\parindent{0pt}
 
-\newcommand{\Pluginversion}{6.0}
+\newcommand{\Pluginversion}{6.1}
 \newcommand{\ReleaseDate}{\today}
 \newcommand{\Rep}{{\tiny{[n]}}}
 
@@ -97,9 +97,10 @@ Plugin: http://vim.sourceforge.net\\
 \hline \Rep\verb'\cl'  & end-of-line comment                     \hfill (n,v,i)\\
 \hline \Rep\verb'\cj'  & adjust end-of-line comment              \hfill (n,v,i)\\
 \hline     \verb'\cs'  & set end-of-line comment column          \hfill (n)    \\
-\hline \Rep\verb'\c*'  & code $\Rightarrow$ comment \verb'/* */' \hfill (n,v)  \\
-\hline \Rep\verb'\cc'  & code $\Rightarrow$ comment \verb'//'    \hfill (n,v,o)\\
-\hline \Rep\verb'\co'  & comment $\Rightarrow$ code              \hfill (n,v,o)\\
+\hline \Rep\verb'\c*'  & code $\Rightarrow$ comment \verb'/* */' \hfill (n,v,i)  \\
+\hline \Rep\verb'\cc'  & code $\Rightarrow$ comment \verb'//'    \hfill (n,v,i)\\
+\hline \Rep\verb'\co'  & comment $\Rightarrow$ code              \hfill (n,v,i)\\
+\hline \Rep\verb'\cn'  & toggle non-C comment                    \hfill (n,v,i)\\
 
 \hline \verb'\cfr' & frame comment                           \hfill (n,i)\\
 \hline \verb'\cfu' & function comment                        \hfill (n,i)\\
@@ -293,11 +294,12 @@ Plugin: http://vim.sourceforge.net\\
 \hline \verb'\rl'  & link                                    \hfill (n,i)\\
 \hline \verb'\rr'  & run                                     \hfill (n,i)\\
 \hline \verb'\ra'  & set comand line arguments               \hfill (n,i)\\
+\hline \verb'\rd'  & start debugger                          \hfill (n,i)\\
 \hline \verb'\rm'  & run \texttt{ make}$^1$                  \hfill (n,i)\\
 \hline \verb'\rmc' & run \texttt{ make clean}$^1$            \hfill (n,i)\\
 \hline \verb'\rcm' & choose a makefile $^1$                  \hfill (n,i)\\
-\hline \verb'\rme' & executable to run$^1$                   \hfill (n,i)\\
 \hline \verb'\rma' & cmd. line arg. for \texttt{make}$^1$    \hfill (n,i)\\
+\hline \verb'\rme' & executable to run$^1$                   \hfill (n,i)\\
 %
 \hline \verb'\rp'  & run \texttt{splint}$^2$                 \hfill (n,i)\\
 \hline \verb'\rpa' & cmd. line arg. for \texttt{splint}      \hfill (n,i)\\
@@ -332,7 +334,16 @@ Plugin: http://vim.sourceforge.net\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %\vspace{60mm}
 %
+\begin{flushleft}
+\large{\textbf{Ex Commands}}\\[1.0ex]
 %
+Set command line arguments (same as \textbackslash\texttt{ra})\\[1.0ex]
+\texttt{ :CCmdlineArgs}\\[1.0ex]
+%
+Set severity for \texttt{cppcheck} (same as \textbackslash\texttt{rccs})\\[1.0ex]
+\texttt{ :CppcheckSeverity}\\[1.0ex]
+%
+\vfill
 \begin{minipage}[b]{65mm}%
 %\vspace{10mm}
 %
@@ -347,6 +358,8 @@ $^5$ defined in \verb'~/ftplugin/c.vim'
 }%
 %
 \end{minipage}
+%
+\end{flushleft}
 %
 \end{center}
 \end{multicols}

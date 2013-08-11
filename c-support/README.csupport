@@ -1,4 +1,4 @@
-README for c.vim (Version 6.1) / December 26 2012
+README for c.vim (Version 6.1) / August 11 2012
 
   *  DESCRIPTION
   *  INSTALLATION
@@ -162,13 +162,18 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
 ================================================================================
   RELEASE NOTES FOR VERSION 6.1
 ================================================================================
+- Map renamed: \re -> \rme.
 - New global variable g:C_InsertFileHeader (suppress file description comment for new files).
 - Two new ex commands: CCmdlineArgs, CMakeCmdlineArgs.
 - 'Run->cmd. line arg.' : tab expansion (files/directories)for all arguments.
 - Bugfix: template 'file description header' not loading (thanks to Marco Lasczok).
 - Bugfix: unnecessary characters in one template.
 - Prototype picker improved.
+- Toggle non-C-comments.
+- Run debugger.
+- Some global variables now changeable on the fly.
 - Several internal improvements.
+
 
   Please see file ./c-support/doc/ChangeLog .
 

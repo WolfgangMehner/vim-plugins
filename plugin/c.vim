@@ -452,6 +452,8 @@ function! s:C_InitMenus ()
 	exe ihead.'&run<Tab>\\rr\ \ \<C-F9\>                   <C-C>:call C_Run()<CR>'
 	exe 'anoremenu '.s:MenuRun.'.cmd\.\ line\ &arg\.<Tab>\\ra\ \ \<S-F9\>         :CCmdlineArgs<Space>'
 	exe 'inoremenu '.s:MenuRun.'.cmd\.\ line\ &arg\.<Tab>\\ra\ \ \<S-F9\>    <C-C>:CCmdlineArgs<Space>'
+	exe ahead.'run\ &debugger<Tab>\\rd                           :call C_Debugger()<CR>'
+	exe ihead.'run\ &debugger<Tab>\\rd                      <C-C>:call C_Debugger()<CR>'
 	"
 	exe ahead.'-SEP0-                            :'
 	exe ahead.'&make<Tab>\\rm                                    :call C_Make()<CR>'
@@ -462,10 +464,8 @@ function! s:C_InitMenus ()
 	exe ihead.'&make\ clean<Tab>\\rmc                       <C-C>:call C_MakeClean()<CR>'
 	exe 'anoremenu '.s:MenuRun.'.cmd\.\ line\ ar&g\.\ for\ make<Tab>\\rma          :CMakeCmdlineArgs<Space>'
 	exe 'inoremenu '.s:MenuRun.'.cmd\.\ line\ ar&g\.\ for\ make<Tab>\\rma     <C-C>:CMakeCmdlineArgs<Space>'
-	exe ahead.'executable\ to\ run<Tab>\\re                      :call C_ExeToRun()<CR>'
-	exe ihead.'executable\ to\ run<Tab>\\re                 <C-C>:call C_ExeToRun()<CR>'
-	exe ahead.'run\ &debugger<Tab>\\rd                           :call C_Debugger()<CR>'
-	exe ihead.'run\ &debugger<Tab>\\rd                      <C-C>:call C_Debugger()<CR>'
+	exe ahead.'executable\ to\ run<Tab>\\rme                     :call C_ExeToRun()<CR>'
+	exe ihead.'executable\ to\ run<Tab>\\rme                <C-C>:call C_ExeToRun()<CR>'
 	"
 	exe ahead.'-SEP1-                            :'
 	"
@@ -2686,8 +2686,8 @@ function! s:CreateAdditionalMaps ()
 	imap <buffer>  <silent>  <LocalLeader>rmc   <C-C>:call C_MakeClean()<CR>
 	map  <buffer>  <silent>  <LocalLeader>rd         :call C_Debugger()<CR>
 	imap <buffer>  <silent>  <LocalLeader>rd    <C-C>:call C_Debugger()<CR>
-	map  <buffer>  <silent>  <LocalLeader>re         :call C_ExeToRun()<CR>
-	imap <buffer>  <silent>  <LocalLeader>re    <C-C>:call C_ExeToRun()<CR>
+	map  <buffer>  <silent>  <LocalLeader>rme        :call C_ExeToRun()<CR>
+	imap <buffer>  <silent>  <LocalLeader>rme   <C-C>:call C_ExeToRun()<CR>
 	map  <buffer>            <LocalLeader>rma        :CMakeCmdlineArgs<Space>
 	imap <buffer>            <LocalLeader>rma   <C-C>:CMakeCmdlineArgs<Space>
 	map  <buffer>  <silent>  <LocalLeader>rp         :call C_SplintCheck()<CR>:call C_HlMessage()<CR>

@@ -1,4 +1,4 @@
-*csupport.txt*                  C/C++ Support                   April 1 2013
+*csupport.txt*                  C/C++ Support                 August 11 2013
 
 C/C++ Support                                           *c-support* *csupport*
                              Plugin version 6.1
@@ -881,7 +881,7 @@ opened if the compiler or linker reports errors or warnings during the make
 process.  Quickfix commands can now be used to jump to an error location.
 Make looks for a makefile in the current directory (but see below).
 
-When inside a makefile the hotkeys \rm, \rmc, \rcm,  and \rma are working (see
+When inside a makefile the hotkeys \rm, \rmc, and \rma are working (see
 |csupport-usage-vim|).
 The snippets collection contains a sample makefile which can easily adepted
 for small projcts.
@@ -978,7 +978,7 @@ navigation see tip under 'SAVE AND COMPILE' |csupport-run-buffer|.  Cppcheck
 has many options. Predefined groups of checks can be enabled by the menu item
 'cppcheck severity'.  The ex command
 >
-  :CMakeCmdlineArgs ...
+  :CppcheckSeverity ...
 <
 can also be used to set the severity for cppcheck.  Please see the original
 documentation for more information.
@@ -1273,11 +1273,14 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
     \rl       link                                (n,i)
     \rr       run                                 (n,i)
     \ra       set comand line arguments           (n,i)
+    \rd       run debugger                        (n,i)
+
     \rm       run make                            (n,i)
     \rmc      run 'make clean'                    (n,i)
     \rcm      choose makefile                     (n,i)
-    \re       executable to run                   (n,i)
+    \rme      executable to run                   (n,i)
     \rma      cmd. line arg. for make             (n,i)
+
     \rp       run splint                          (n,i)
     \rpa      cmd. line arg. for splint           (n,i)
     \rcc      run cppcheck                        (n,i)

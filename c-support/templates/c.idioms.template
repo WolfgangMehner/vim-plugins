@@ -62,7 +62,7 @@ if ( |POINTER|==NULL ) {
 	exit (EXIT_FAILURE);
 }
 
-free (|POINTER|);
+free ( |POINTER| );
 |POINTER|	= NULL;
 
 == Idioms.malloc == map:ima, shortcut:m  ==
@@ -72,7 +72,7 @@ if ( |POINTER|==NULL ) {
 	exit (EXIT_FAILURE);
 }
 
-free (|POINTER|);
+free ( |POINTER| );
 |POINTER|	= NULL;
 
 == Idioms.realloc == map:ire, shortcut:r  ==
@@ -85,7 +85,7 @@ if ( |POINTER|==NULL ) {
 == Idioms.sizeof == map:isi, shortcut:s, insert  ==
 sizeof(<CURSOR><SPLIT>)
 == Idioms.assert == map:ias, shortcut:a, insert  ==
-assert(<CURSOR><SPLIT>);
+assert( <CURSOR><SPLIT> );
 == Idioms.open-input-file == map:ii, shortcut:i  ==
 FILE	*|?FILEPOINTER|;										/* input-file pointer */
 char	*|FILEPOINTER|_file_name = "<CURSOR>";		/* input-file name    */

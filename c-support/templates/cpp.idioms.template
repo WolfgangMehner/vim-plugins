@@ -7,7 +7,7 @@ void<CURSOR>
 |FUNCTION_NAME| ( <+argument_list+> )
 {
 <SPLIT>	return <+return_value+>;
-}		// -----  end of function |FUNCTION_NAME|  ----- 
+}		// -----  end of function |FUNCTION_NAME|  -----
 == Idioms.function-static == map:isf, shortcut:t  ==
 // ===  FUNCTION  ======================================================================
 //         Name:  |?FUNCTION_NAME|
@@ -17,7 +17,7 @@ static void<CURSOR>
 |FUNCTION_NAME| ( <+argument_list+> )
 {
 <SPLIT>	return <+return_value+>;
-}		// -----  end of static function |FUNCTION_NAME|  ----- 
+}		// -----  end of static function |FUNCTION_NAME|  -----
 == Idioms.main == map:im, shortcut:m  ==
 #include	<stdlib.h>
 
@@ -29,16 +29,16 @@ int
 main ( int argc, char *argv[] )
 {<CURSOR>
 <SPLIT>	return EXIT_SUCCESS;
-}				// ----------  end of function main  ---------- 
+}				// ----------  end of function main  ----------
 == Idioms.enum == map:ie, shortcut:e  ==
 enum |?ENUM_NAME| {<CURSOR>
-<SPLIT>};				// ----------  end of enum |ENUM_NAME|  ---------- 
+<SPLIT>};				// ----------  end of enum |ENUM_NAME|  ----------
 == Idioms.struct == map:is, shortcut:s  ==
 struct |?STRUCT_NAME| {<CURSOR>
-<SPLIT>};				// ----------  end of struct |STRUCT_NAME|  ---------- 
+<SPLIT>};				// ----------  end of struct |STRUCT_NAME|  ----------
 == Idioms.union == map:iu, shortcut:u  ==
 union |?UNION_NAME| {<CURSOR>
-<SPLIT>};				// ----------  end of union |UNION_NAME|  ---------- 
+<SPLIT>};				// ----------  end of union |UNION_NAME|  ----------
 == Idioms.scanf == map:isc, shortcut:s, insert  ==
 scanf ( "<CURSOR>", & );
 == Idioms.printf == map:ipr, shortcut:p, insert  ==
@@ -50,7 +50,7 @@ if ( |POINTER|==NULL ) {
 	exit (EXIT_FAILURE);
 }
 
-free (|POINTER|);
+free ( |POINTER| );
 |POINTER|	= NULL;
 
 == Idioms.malloc == map:ima, shortcut:m  ==
@@ -60,7 +60,7 @@ if ( |POINTER|==NULL ) {
 	exit (EXIT_FAILURE);
 }
 
-free (|POINTER|);
+free ( |POINTER| );
 |POINTER|	= NULL;
 
 == Idioms.realloc == map:ire, shortcut:r  ==
@@ -73,10 +73,10 @@ if ( |POINTER|==NULL ) {
 == Idioms.sizeof == map:isi, shortcut:s, insert  ==
 sizeof(<CURSOR><SPLIT>)
 == Idioms.assert == map:ias, shortcut:a, insert  ==
-assert(<CURSOR><SPLIT>);
+assert( <CURSOR><SPLIT> );
 == Idioms.open-input-file == map:ii, shortcut:i  ==
-FILE	*|?FILEPOINTER|;										// input-file pointer 
-char	*|FILEPOINTER|_file_name = "<CURSOR>";		// input-file name    
+FILE	*|?FILEPOINTER|;										// input-file pointer
+char	*|FILEPOINTER|_file_name = "<CURSOR>";		// input-file name
 
 |FILEPOINTER|	= fopen( |FILEPOINTER|_file_name, "r" );
 if ( |FILEPOINTER| == NULL ) {
@@ -85,15 +85,15 @@ if ( |FILEPOINTER| == NULL ) {
 	exit (EXIT_FAILURE);
 }
 <SPLIT>{-continue_here-}
-if( fclose(|FILEPOINTER|) == EOF ) {			// close input file   
+if( fclose(|FILEPOINTER|) == EOF ) {			// close input file
 	fprintf ( stderr, "couldn't close file '%s'; %s\n",
 			|FILEPOINTER|_file_name, strerror(errno) );
 	exit (EXIT_FAILURE);
 }
 
 == Idioms.open-output-file == map:io, shortcut:o  ==
-FILE	*|?FILEPOINTER|;										// output-file pointer 
-char	*|FILEPOINTER|_file_name = "<CURSOR>";		// output-file name    
+FILE	*|?FILEPOINTER|;										// output-file pointer
+char	*|FILEPOINTER|_file_name = "<CURSOR>";		// output-file name
 
 |FILEPOINTER|	= fopen( |FILEPOINTER|_file_name, "w" );
 if ( |FILEPOINTER| == NULL ) {
@@ -102,7 +102,7 @@ if ( |FILEPOINTER| == NULL ) {
 	exit (EXIT_FAILURE);
 }
 <SPLIT>{-continue_here-}
-if( fclose(|FILEPOINTER|) == EOF ) {			// close output file   
+if( fclose(|FILEPOINTER|) == EOF ) {			// close output file
 	fprintf ( stderr, "couldn't close file '%s'; %s\n",
 			|FILEPOINTER|_file_name, strerror(errno) );
 	exit (EXIT_FAILURE);
