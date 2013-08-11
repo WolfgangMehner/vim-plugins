@@ -122,16 +122,14 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 ----------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.1pre
 ----------------------------------------------------------------------
-+ Added: Jump from diff output to the corresponding file.
++ Added: New maps for the buffers: blame, diff and status
 + Changed: Commands which open a file will jump to its window, if one exists.
-+ Changed: Opening a diff in the status buffer for file in the section "staged".
-  Will now open a diff with the staged or unstaged changes, or both of them.
-  This behavior is modifiable (see g:Git_StatusStagedOpenDiff).
-+ Changed: Calling :GitDiff without arguments can be returned to the standard
-  behavior of Git (see g:Git_DiffExpandEmpty).
++ Changed: Opening a diff in the status buffer (see g:Git_StatusStagedOpenDiff).
++ Changed: Calling :GitDiff without arguments (see g:Git_DiffExpandEmpty).
 + Added: Command :GitGrep and :GitGrepTop.
++ Added: Command :GitMergeUpstream.
 + Added: Custom menu entries.
-+ Fixed: Jumping to a file from the status buffer did not work when the working
++ Fixed: Jumping from the status buffer to a file did not work when the working
   directory changed.
 + Improved syntax highlighting.
 

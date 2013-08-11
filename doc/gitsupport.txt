@@ -95,6 +95,7 @@ run the commands in every subdirectory of the project.
   |:GitHelp| [<param>]               (buf) git help <param>
   |:GitLog| [<param>]                (buf) git log <param>
   |:GitMerge| [<param>]              (run) git merge <param>
+  |:GitMergeUpstream| [<param>]      (run) git merge <param> <upstream-branch>
   |:GitMove| [<param>]               (run) git mv <param>
   |:GitMv| [<param>]                 (run) git mv <param>
   |:GitPull| [<param>]               (run) git pull <param>
@@ -233,6 +234,11 @@ current buffer. The second version runs blame for the given parameters.
   S-F1      help: show a list of all maps
   q         close the buffer
   u         update the buffer
+
+  of        file under cursor: open file (edit)
+  oj        file under cursor: open and jump to the corresponding line
+
+  cs        commit under cursor: show
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -378,8 +384,8 @@ repository.
   u         update the buffer
 
   of        file under cursor: open file (edit)
-  oj        file under cursor: open and jump to the position under the cursor
-  <Enter>   file under cursor: open and jump to the position under the cursor
+  oj        file under cursor: open and jump to the corresponding line
+  <Enter>   file under cursor: open and jump to the corresponding line
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -397,7 +403,7 @@ given, opens the help for Git itself.
 
 Example:
 
-Show the help for the add command >
+Show the help for the add command: >
 	:GitHelp add
 Is equivalent to: >
 	git help add
@@ -418,11 +424,17 @@ The second version runs log for the given parameters.
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
-                                                                   *:GitMerge*
+                                                 *:GitMerge* *:GitMergeUpstream*
 	:GitMerge [<param>] ~
+	:GitMergeUpstream [<param>] ~
 
-Executes "git merge ...".
-
+The first version executes "git merge ...". The second version automatically
+obtains the name of the upstream branch and merges it into the current branch.
+Parameters can still be given: >
+	:GitMergeUpstream --ff-only
+Is equivalent to: >
+	git merge --ff-only <upstream-branch>
+<
 ------------------------------------------------------------------------------
                                                              *:GitMove* *:GitMv*
 	:GitMove [<param>] ~
