@@ -7,13 +7,17 @@
 %%                
 %%       Author:  Dr.-Ing. Fritz Mehner
 %%        Email:  mehner.fritz@fh-swf.de
-%%    Copyright:  Copyright (C)  2012  Dr.-Ing. Fritz Mehner  (mehner@fh-swf.de)
+%%    Copyright:  Copyright (C)  2012-2013  Dr.-Ing. Fritz Mehner  (mehner.fritz@fh-swf.de)
 %%      Version:  see \Pluginversion
 %%      Created:  20.12.2012
 %%                
 %%=====================================================================================
 
-\documentclass[oneside,10pt,landscape,DIV17]{scrartcl}
+%%======================================================================
+%%  LaTeX settings       [[[1
+%%======================================================================
+
+\documentclass[oneside,11pt,landscape,DIV16]{scrartcl}
 
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
@@ -24,7 +28,7 @@
 
 \setlength\parindent{0pt}
 
-\newcommand{\Pluginversion}{1.0}
+\newcommand{\Pluginversion}{1.1}
 \newcommand{\ReleaseDate}{\today}
 \newcommand{\Rep}{{\scriptsize{[n]}}}
 
@@ -64,7 +68,7 @@
 \begin{center}
 %
 %%======================================================================
-%%  title
+%%  title				[[[1
 %%======================================================================
 \textbf{\textsc{\small{Vim-Plug-in}}}\\
 \textbf{\LARGE{awk-support.vim}}\\
@@ -80,7 +84,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \vspace{4.0mm}
 
 %%======================================================================
-%%  table, left part
+%%  table, left part				[[[1
 %%======================================================================
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{60mm}|}
@@ -116,7 +120,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
 %%======================================================================
-%%  table, middle part
+%%  table, middle part				[[[1
 %%======================================================================
 %
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
@@ -177,7 +181,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
 %%======================================================================
-%%  table, right part
+%%  table, right part				[[[1
 %%======================================================================
 %
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
@@ -216,16 +220,25 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline \verb'\re '  & make script executable              \hfill (n, i)   \\
 \hline \verb'\rh '  & hardcopy buffer to FILENAME.ps      \hfill (n, i)   \\
 \hline \verb'\rse'  & settings and hot keys               \hfill (n, i)   \\
-\hline \verb'\rt '  & xterm size                          \hfill (n, i)   \\
+\hline \verb'\rx '  & xterm size                          \hfill (n, i)   \\
 \hline \verb'\ro '  & switch output destination           \hfill (n, i)   \\
 \hline
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
+\begin{flushleft}
+\large{\textbf{Ex Commands}}\\[1.0ex]
+%
+Set script command line arguments (same as \textbackslash\texttt{ra})\\[1.0ex]
+\texttt{ :AwkScriptArguments}\\[1.0ex]
+%
+Set Awk command line arguments (same as \textbackslash\texttt{raa})\\[1.0ex]
+\texttt{ :AwkArguments}\\[1.0ex]
+\end{flushleft}
 %
 \end{center}%
 \end{multicols}%
 %
-%
 %%----- TABBING :  end  ----------
 \end{document}
+% vim: foldmethod=marker foldmarker=[[[,]]]

@@ -2,7 +2,7 @@
 "
 "          File:  awk-support.vim
 " 
-"   Description:  awk support     (VIM Version 7.0+)
+"   Description:  awk support
 "
 "                  Write awk scripts by inserting comments, statements,
 "                  variables and builtins.
@@ -10,10 +10,10 @@
 "   VIM Version:  7.0+
 "        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
 "  Organization:  FH Südwestfalen, Iserlohn
-"       Version:  1.0
+"       Version:  see variable g:AwkSupportVersion below
 "       Created:  14.01.2012 10:49
 "      Revision:  0.1
-"       License:  Copyright (c) 2012, Dr. Fritz Mehner
+"       License:  Copyright (c) 2012-2013, Dr. Fritz Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -36,7 +36,7 @@ if exists("g:AwkSupportVersion") || &cp
  finish
 endif
 "
-let g:AwkSupportVersion= "1.0"                  " version number of this script; do not change
+let g:AwkSupportVersion= "1.1"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  awk_SetGlobalVariable     {{{1
@@ -128,7 +128,7 @@ if	s:MSWIN
 else
   " ==========  Linux/Unix  ======================================================
 	"
-	if match( expand("<sfile>"), expand("$HOME") ) == 0
+	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
 		let s:installation					= 'local'
@@ -628,8 +628,8 @@ function! s:InitMenus()
 	exe ahead.'plugin\ &settings<Tab>rse                 :call Awk_Settings()<CR>'
 	"
 	if	!s:MSWIN
-		exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.x&term\ size<Tab>'.esc_mapl.'rt                       :call Awk_XtermSize()<CR>'
-		exe "imenu  <silent>  ".s:Awk_RootMenu.'.&Run.x&term\ size<Tab>'.esc_mapl.'rt                  <C-C>:call Awk_XtermSize()<CR>'
+		exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.x&term\ size<Tab>'.esc_mapl.'rx                       :call Awk_XtermSize()<CR>'
+		exe "imenu  <silent>  ".s:Awk_RootMenu.'.&Run.x&term\ size<Tab>'.esc_mapl.'rx                  <C-C>:call Awk_XtermSize()<CR>'
 	endif
 	"
 	if	s:MSWIN
@@ -834,8 +834,8 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" USER DEFINED COMMANDS
 	"-------------------------------------------------------------------------------
-	command! -nargs=* -complete=file AwkScriptArguments  call Awk_ScriptCmdLineArguments(<q-args>)
-	command! -nargs=* -complete=file AwkArguments        call Awk_AwkCmdLineArguments(<q-args>)
+	command! -buffer -nargs=* -complete=file AwkScriptArguments  call Awk_ScriptCmdLineArguments(<q-args>)
+	command! -buffer -nargs=* -complete=file AwkArguments        call Awk_AwkCmdLineArguments(<q-args>)
 	"
 	"-------------------------------------------------------------------------------
 	" settings - local leader

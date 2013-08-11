@@ -1,8 +1,8 @@
-*awksupport.txt*                Awk Support                  December 26 2012
+*awksupport.txt*                Awk Support                   August 11 2012
 
 Awk Support                                         *awk-support* *awksupport*
-                              Plugin version 1.0
-                        for Awk version 7.0 and above
+                              Plugin version 1.1
+                        for Vim version 7.0 and above
                   Fritz Mehner  <mehner.fritz at fh-swf.de>
                 Wolfgang Mehner  <wolfgang-mehner at web.de>
 
@@ -75,22 +75,22 @@ from the standard Tools-menu.
 1.1.1 APPEND ALIGNED COMMENTS TO CONSECUTIVE LINES   *awksupport-comm-aligned*
 --------------------------------------------------
 
-In NORMAL MODE the menu item 'end-of-line comments' will append a comment to
+In NORMAL MODE the menu item 'end-of-line comment' will append a comment to
 the current line.
 In VISUAL MODE, this item will append aligned comments to all marked lines.
 Marking the 4 lines
 >
  x = 33
  y = 44
- 
+
  z = 55
 <
-and choosing 'end-of-line comments' will yield
+and choosing 'end-of-line comment' will yield
 >
  x = 33                                        # |
- y = 44                                        # 
+ y = 44                                        #
 
- z = 55                                        # 
+ z = 55                                        #
 <
 The cursor position above is marked by '|'. Empty lines will be ignored.
 
@@ -172,7 +172,6 @@ Usually these comments are not meant for the final documentation.
 --------------------------------
 An empty statement will be inserted and properly indented. The item 'if block'
 will insert an if-statement:
->
 >
  if (  ) {
    <-IF_PART->
@@ -331,7 +330,7 @@ variable in your $HOME/.vimrc :
 >
  let g:Awk_GuiSnippetBrowser = 'commandline'
 <
-The default value is 'gui'. 
+The default value is 'gui'.
 
 
 1.7.2  Edit Templates                              *awksupport-templates-edit*
@@ -398,7 +397,7 @@ can contain pipes and redirections, e.g.
 <
 For file names tab-expansion will work.  The ex command
 >
-	:AwkScriptArguments ... 
+  :AwkScriptArguments ...
 <
 can also be used to set the command line arguments for the current script.
 
@@ -419,7 +418,7 @@ until you change them.
 The arguments belong to the current buffer (that is, each buffer can have its
 own independent arguments). The input dialog has a history. The ex command
 >
-	:AwkArguments ... 
+  :AwkArguments ...
 <
 can also be used to set the command line arguments for Awk.
 
@@ -450,7 +449,7 @@ See :h printheader and :h strftime()  for more details.
 
 1.8.7 Settings                                           *awksupport-settings*
 --------------
-Displays some Awk Support plugin settings. 
+Displays some Awk Support plugin settings.
 
 1.8.8 Xterm Size                                            *awksupport-xterm*
 ----------------
@@ -570,11 +569,11 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \ft     time functions                  (n, i, v)
      \fb     bit manipulations functions     (n, i, v)
      \fin    internationalizationfunctions   (n, i, v)
-		 \fa     isarray()                       (n, i, v)
+     \fa     isarray()                       (n, i, v)
 
   -- Special Variables -----------------------------------
 
-     \va     built-in variables, auto-set         (n, i) 
+     \va     built-in variables, auto-set         (n, i)
      \vm     built-in variables, user-modifiable  (n, i)
 
   -- Regular Expression ----------------------------------
@@ -596,15 +595,15 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
   -- Run -------------------------------------------------
 
      \rr     save and run script              (n, i)
-		 \rs     syntax check                     (n, i)
-		 \rl     lint check                       (n, i)
-		 \ra     script command line arguments    (n, i)
-		 \raa    Awk command line arguments       (n, i)
-		 \re     make script executable           (n, i)
+     \rs     syntax check                     (n, i)
+     \rl     lint check                       (n, i)
+     \ra     script command line arguments    (n, i)
+     \raa    Awk command line arguments       (n, i)
+     \re     make script executable           (n, i)
      \rh     hardcopy buffer to FILENAME.ps   (n, i)
      \rse    settings and hot keys            (n, i)
-		 \rt     xterm size                       (n, i)
-		 \ro     switch output destination        (n, i)
+     \rx     xterm size                       (n, i)
+     \ro     switch output destination        (n, i)
 
   -- help ----------------------------------------------
 
@@ -617,7 +616,7 @@ Multiline inserts and code snippets will be indented after insertion.
 Changing the default map leader '\'
 -----------------------------------
 The map leader can be changed by the user by setting a global variable in the
-file .vimrc 
+file .vimrc
 >
  let g:Awk_MapLeader  = ','
 <
@@ -653,13 +652,13 @@ will work without them.
 
 awk-support/doc/*                   Hotkey reference card (PDF), changelog.
 
-awk-support/rc/customization.vimrc  Additional settings I use in '.vimrc': 
+awk-support/rc/customization.vimrc  Additional settings I use in '.vimrc':
                                     incremental search, tabstop, hot keys,
                                     font, use of dictionaries, ...  The file
                                     is commented. Append it to your '.vimrc'
                                     if you like.
 
-awk-support/rc/customization.gvimrc Additional settings I use in '.gvimrc': 
+awk-support/rc/customization.gvimrc Additional settings I use in '.gvimrc':
                                     hot keys, mouse settings, ...  The file is
                                     commented.  Append it to your '.gvimrc' if
                                     you like.
@@ -809,7 +808,7 @@ usually looks like this (my settings as an example):
  § =============================================================
  §  User Macros
  § =============================================================
- 
+
  SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
  SetMacro( 'AUTHORREF',   'fgm' )
  SetMacro( 'COMPANY',     '' )
@@ -817,24 +816,24 @@ usually looks like this (my settings as an example):
  SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
  SetMacro( 'LICENSE',     'GNU General Public License' )
  SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
- 
+
  SetFormat( 'DATE', '%x' )
  SetFormat( 'TIME', '%H:%M' )
  SetFormat( 'YEAR', '%Y' )
- 
+
  SetStyle( 'default' )
- 
+
  § =============================================================
  §  File Includes and Shortcuts
  § =============================================================
- 
+
  MenuShortcut( 'Comments',          'c' )
  MenuShortcut( 'Statements',        's' )
  MenuShortcut( 'Idioms',            'i' )
  MenuShortcut( 'Functions',         'f' )
  MenuShortcut( 'Special Variables', 'v' )
  MenuShortcut( 'Regex',             'x' )
- 
+
  IncludeFile( 'comments.templates' )
  IncludeFile( 'statements.templates' )
  IncludeFile( 'idioms.templates' )
@@ -888,7 +887,7 @@ personalize templates.
  ----------------------------------------------------------------------------
  <CURSOR>           The cursor position after insertion of a template.
  <+text+>,<-text->  See |awksupport-templates-jumptags|.
- {+text+},{-text-}  
+ {+text+},{-text-}
 
  <SPLIT>            The split point when inserting in visual mode
                     (see|awksupport-templates|)
@@ -921,10 +920,10 @@ master template file is '$HOME/.vim/awk-support/templates/Templates',  e.g.
 
 4.3.1 Template Definition                    *awksupport-templates-definition*
 The template behind a menu item is identified by a given name. The first part
-of the name identifies the menu name, the second part identifies the item. 
+of the name identifies the menu name, the second part identifies the item.
 A template definition starts with a template header with the following syntax:
 
-  == menu_name.template_name == options == 
+  == menu_name.template_name == options ==
 
 The options are described here: |template-support-options|.
 
@@ -935,13 +934,13 @@ There are four jump tag types which can be used as jump targets in templates:
  <+text+>   Can be jumped to by hitting Ctrl-j.
  {+text+}   Same as <+text+>. Used in cases where indentation gives unwanted
             results with the first one.
- 
+
  <-text->   Same as the two above. Will be removed if the template is used
  {-text-}   in visual mode.
 
 The text inside the brackets is userdefined and can be empty. The text can be
 composed from letters (uppercase and lowercase), digits, and underscores.
-After the insertion of an template these jump targets will be highlighted. 
+After the insertion of an template these jump targets will be highlighted.
 
 4.3.3  Command Ctrl-j                                      *awksupport-Ctrl-j*
 
@@ -967,7 +966,7 @@ you can type on.
 ==============================================================================
 
 For a user installation the plugin should go into the directory structure
-below 
+below
   $HOME/vimfiles/
 for a system installation below
   $VIM/vimfiles/
