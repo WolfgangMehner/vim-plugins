@@ -44,23 +44,35 @@ subparagraph
 
 == Text.list environment.description == map:tld, sc:d ==
 \begin{description}
+%
 \item [<CURSOR>] <+ITEM+>
+%
 \item [] <+ITEM+>
+%
 \end{description}
 == Text.list environment.enumerate == map:tle, sc:e ==
 \begin{enumerate}
+%
 \item <CURSOR>
+%
 \item <+ITEM+>
+%
 \end{enumerate}
 == Text.list environment.itemize == map:tli, sc:i ==
 \begin{itemize}
+%
 \item <CURSOR>
+%
 \item <+ITEM+>
+%
 \end{itemize}
 == Text.list environment.list == map:tll, sc:l ==
 \begin{list}{<CURSOR>}{}
+%
 \item <+ITEM+>
+%
 \item <+ITEM+>
+%
 \end{list}
 == ENDTEMPLATE ==
 

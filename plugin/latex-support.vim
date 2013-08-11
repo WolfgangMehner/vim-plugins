@@ -10,9 +10,8 @@
 "   VIM Version:  7.0+
 "        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
 "  Organization:  FH Südwestfalen, Iserlohn
-"       Version:  1.0
+"       Version:  see variable g:LatexSupportVersion below.
 "       Created:  27.12.2012
-"      Revision:  0.1
 "       License:  Copyright (c) 2012-2013, Dr. Fritz Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -162,7 +161,7 @@ else
 	let s:Latex_PdfPng      = 'convert'
 	let s:Latex_PsPdf       = 'ps2pdf'
 	"
-	if match( expand("<sfile>"), expand("$HOME") ) == 0
+	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
 		let s:installation					= 'local'
@@ -1157,11 +1156,16 @@ function! Latex_View ( format )
 		echomsg 'Viewer '.viewer.' does not exist or its name is not unique.'
 		return
 	endif
-  let file   = expand("%:r").'.'.fmt
-	if !filereadable( file )
-		echomsg 'File "'.file.'" does not exist or is not readable.'
+  let targetformat   = expand("%:r").'.'.fmt
+	if !filereadable( targetformat )
+		if filereadable( expand("%:r").'.dvi' )
+			call Latex_Conversions( 'dvi-'.fmt, 'no' )
+		else
+			echomsg 'File "'.targetformat.'" does not exist or is not readable.'
+			return
+		endif
 	endif
-  silent exe   '!'.viewer.' '.file.' &'
+  silent exe   '!'.viewer.' '.targetformat.' &'
 endfunction    " ----------  end of function Latex_View ----------
 "
 "------------------------------------------------------------------------------
