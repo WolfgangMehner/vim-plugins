@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:Templates_Version') && ! exists('g:Templates_DevelopmentOverwrite') )
 	finish
 endif
-let g:Templates_Version= '0.9.1.1'     " version number of this script; do not change
+let g:Templates_Version= '0.9.1-2'     " version number of this script; do not change
 "
 if ! exists ( 'g:Templates_MapInUseWarn' )
 	let g:Templates_MapInUseWarn = 1
@@ -2521,26 +2521,39 @@ endfunction    " ----------  end of function s:InsertIntoBuffer  ----------
 "
 function! s:PositionCursor ( placement, flag_mode, pos1, pos2 )
 	"
-	" TODO: syntax
+	" :TODO:12.08.2013 11:03:WM: changeable syntax?
+	" :TODO:12.08.2013 12:00:WM: change behavior?
 	"
 	exe ":".a:pos1
 	let mtch = search( '<CURSOR>\|{CURSOR}', 'c', a:pos2 )
-	if mtch != 0  " CURSOR found:
+	if mtch != 0
+		" tag found (and cursor moved, we are now at the position of the match)
 		let line = getline(mtch)
 		if line =~ '<CURSOR>$\|{CURSOR}$'
+			" the tag is at the end of the line
 			call setline( mtch, substitute( line, '<CURSOR>\|{CURSOR}', '', '' ) )
-			if a:flag_mode == 'v' && getline(".") =~ '^\s*$'
+			if a:flag_mode == 'v' && getline('.') =~ '^\s*$'
+			"if a:flag_mode == 'v' && getline('.') =~ '^\s*\%(<CURSOR>\|{CURSOR}\)\s*$'
+				" the line contains nothing but the tag: remove and join without
+				" changing the second line
 				normal J
+				"call setline( mtch, '' )
+				"normal gJ
 			else
+				" the line contains other characters: remove the tag and start appending
+				"call setline( mtch, substitute( line, '<CURSOR>\|{CURSOR}', '', '' ) )
 				startinsert!
 			endif
 		else
+			" the line contains other characters: remove the tag and start inserting
 			call setline( mtch, substitute( line, '<CURSOR>\|{CURSOR}', '', '' ) )
-			:startinsert
+			startinsert
 		endif
-	else          " no CURSOR found
+	else
+		" no tag found (and cursor not moved)
 		if a:placement == 'below'
-			exe ":".a:pos2       | " to the end of the block; needed for repeated inserts
+			" to the end of the block, needed for repeated inserts
+			exe ":".a:pos2
 		endif
 	endif
 	"

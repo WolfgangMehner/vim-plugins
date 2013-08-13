@@ -1,10 +1,18 @@
 " Vim syntax file
-"
+" Language: mm template engine : template library
+" Maintainer: Wolfgang Mehner <wolfgang-mehner@web.de>
+" Last Change: 12.08.2013
+" Version: 0.9.1-2
+
 if version < 600
-  syntax clear
+	syntax clear
 elseif exists("b:current_syntax")
-  "finish
+	finish
 endif
+
+"-------------------------------------------------------------------------------
+" Syntax
+"-------------------------------------------------------------------------------
 
 " comment
 syn match Comment   "^§.*$"
@@ -76,8 +84,11 @@ syn match String    "'\%([^']\|''\)*'"
 syn match String    "\"\%([^\\]\|\\.\)*\""
 
 syn match Tag       "|?\?[a-zA-Z][a-zA-Z0-9_:]*|"
-syn match Tag       "<[a-zA-Z][a-zA-Z0-9_]*>"
+syn match Tag       "<CURSOR>\|{CURSOR}"
+syn match Tag       "<SPLIT>"
+syn match Tag       "<CONTENT>"
 
-syn match Search    "[<{][+-]\w*[+-][}>]"
+syn match Search    "<\([+-]\)\w*\1>"
+syn match Search    "{\([+-]\)\w*\1}"
 
 let b:current_syntax = "template"

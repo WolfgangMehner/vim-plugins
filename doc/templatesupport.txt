@@ -1,8 +1,8 @@
-*templatesupport.txt*         MM Template Support                  Jul 22 2013
+*templatesupport.txt*         MM Template Support                  Aug 12 2013
 
 MM Template Support                                        *template-support*
 
-                           Plug-in version 0.9.1.1
+                           Plug-in version 0.9.1-2
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
 
@@ -467,6 +467,17 @@ inserted. Consider the following example:
 After template insertion the cursor is placed between the round brackets and
 the user can write down the condition.
 
+The cursor tag may cause the indentation to be slightly off after template
+insertion. Therefore a second version of the cursor tag exists: {CURSOR}. You
+should always choose the one which is more naturally compatible with the
+languages syntax, and in extension its automatic indentation:
+>
+	== Statements.block == below ==
+	{
+		{CURSOR}
+	}
+	== ENDTEMPLATE ==
+<
 Further convenience is introduced by jump tags. Instead of moving into the
 block using arrow keys, the user can be given the possibility to jump to the
 next position where editing is required:
@@ -1961,10 +1972,16 @@ Internal Changes:
 - Changes to the template data structure.
 - Major code cleanup.
 
-VERSION 0.9.1.1:
+VERSION 0.9.1-1:
 - Released with no changes in the core functionality.
 - Change: Some commands are now executed silently.
 - Bugfix: Syntax highlighting.
+- Extended the documentation.
+
+VERSION 0.9.1-2:
+- Released with no changes in the core functionality.
+- Change: Syntax highlighting.
+- Slightly extended the documentation.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9
