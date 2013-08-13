@@ -213,7 +213,6 @@ function! s:UpdateTemplateRegex ( regex, settings )
 	let a:regex.MacroName    = a:settings.MacroName
 	let a:regex.MacroNameC   = '\('.a:settings.MacroName.'\)'
 	let a:regex.MacroMatch   = '^'.a:settings.MacroStart.a:settings.MacroName.a:settings.MacroEnd.'$'
-	let a:regex.MacroSimple  = a:settings.MacroStart.a:settings.MacroName.a:settings.MacroEnd
 	"
 	" Syntax Categories
 	let a:regex.FunctionLine    = '^'.a:settings.MacroStart.'\('.a:regex.MacroNameC.'(\(.*\))\)'.a:settings.MacroEnd.'\s*\n'
@@ -223,6 +222,7 @@ function! s:UpdateTemplateRegex ( regex, settings )
 	let a:regex.FunctionInsert  = a:settings.MacroStart.'\(Insert\|InsertLine\)'.'(\(.\{-}\))'.a:settings.MacroEnd
 	let a:regex.MacroRequest    = a:settings.MacroStart.'?'.a:regex.MacroNameC.'\%(:\(\a\)\)\?'.a:settings.MacroEnd
 	let a:regex.MacroInsert     = a:settings.MacroStart.''.a:regex.MacroNameC.'\%(:\(\a\)\)\?'.a:settings.MacroEnd
+	let a:regex.MacroNoCapture  = a:settings.MacroStart.a:settings.MacroName.'\%(:\a\)\?'.a:settings.MacroEnd
 	let a:regex.ListItem        = a:settings.MacroStart.''.a:regex.MacroNameC.':ENTRY_*'.a:settings.MacroEnd
 	"
 	let a:regex.TextBlockFunctions = '^\%(C\|Comment\|Insert\|InsertLine\)$'
@@ -1484,7 +1484,7 @@ function! s:ReplaceMacros ( text, m_local )
 			let m_text = get ( s:library.macros, mlist[2], '' )
 		end
 		"
-		if m_text =~ s:library.regex_template.MacroSimple
+		if m_text =~ s:library.regex_template.MacroNoCapture
 			"
 			call add ( s:t_runtime.macro_stack, mlist[2] )
 			"

@@ -1979,7 +1979,8 @@ VERSION 0.9.1-1:
 - Extended the documentation.
 
 VERSION 0.9.1-2:
-- Released with no changes in the core functionality.
+- Released with slight changes in the core functionality.
+- Bugfix: Problem with macro replacements containing macros with flags.
 - Change: Syntax highlighting.
 - Slightly extended the documentation.
 
