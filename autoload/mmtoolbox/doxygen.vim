@@ -34,7 +34,7 @@
 " need at least 7.0
 if v:version < 700
   echohl WarningMsg
-	echo 'The plugin tools/c/doxygen.vim needs Vim version >= 7.'
+	echo 'The plugin mmtoolbox/doxygen.vim needs Vim version >= 7.'
 	echohl None
   finish
 endif
@@ -70,20 +70,20 @@ function! s:GetGlobalSetting ( varname )
 	endif
 endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 " }}}2
+"-------------------------------------------------------------------------------
 "
 "-------------------------------------------------------------------------------
 " Modul setup.   {{{1
 "-------------------------------------------------------------------------------
 "
+" platform specifics   {{{2
+"
 let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
 let s:SettingsEscChar = ' |"\'
-if s:MSWIN
-	let s:FilenameEscChar = ''
-else
-	let s:FilenameEscChar = ' \%#[]'
-endif
+"
+" settings   {{{2
 "
 let s:ConfigFile = 'Doxyfile' 	 				" doxygen configuration file
 let s:LogFile    = '.doxygen.log'
@@ -93,20 +93,22 @@ let s:Doxygen_Executable = 'doxygen'
 "
 call s:GetGlobalSetting ( 'Doxygen_Executable' )
 "
+let s:ErrorFormat = escape( '%f:%l: %m', s:SettingsEscChar )
+"
 let s:Enabled = 1
+"
+" check Doxygen executable   {{{2
 "
 if ! executable ( s:Doxygen_Executable )
 	let s:Enabled = 0
 endif
 "
-let s:ErrorFormat = escape( '%f:%l: %m', s:SettingsEscChar )
-"
 " custom commands {{{2
 "
 if s:Enabled == 1
-	command!       -nargs=? -complete=file DoxygenConfigFile :call mmtoolbox#doxygen#Property('config-file','<args>')
-	command!       -nargs=? -complete=file DoxygenLogFile    :call mmtoolbox#doxygen#Property('log-file','<args>')
-	command!       -nargs=? -complete=file DoxygenErrorFile  :call mmtoolbox#doxygen#Property('error-file','<args>')
+	command! -bang -nargs=? -complete=file DoxygenConfigFile :call mmtoolbox#doxygen#Property('config-file<bang>',<q-args>)
+	command! -bang -nargs=? -complete=file DoxygenLogFile    :call mmtoolbox#doxygen#Property('log-file<bang>',<q-args>)
+	command! -bang -nargs=? -complete=file DoxygenErrorFile  :call mmtoolbox#doxygen#Property('error-file<bang>',<q-args>)
 	command!       -nargs=? -complete=file DoxygenEditConfig :call mmtoolbox#doxygen#EditConfig()
 	command!       -nargs=0                DoxygenErrors     :call mmtoolbox#doxygen#Errors()
 else
@@ -152,7 +154,7 @@ endfunction    " ----------  end of function mmtoolbox#doxygen#AddMaps  --------
 "-------------------------------------------------------------------------------
 " AddMenu : Add menus.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#doxygen#AddMenu ( root, mapleader )
+function! mmtoolbox#doxygen#AddMenu ( root, esc_mapl )
 	"
 	" TODO
 	"
@@ -166,17 +168,30 @@ endfunction    " ----------  end of function mmtoolbox#doxygen#AddMenu  --------
 function! mmtoolbox#doxygen#Property ( key, val )
 	"
 	" check argument
-	if a:key == 'config-file'    | let var = 's:ConfigFile'
-	elseif a:key == 'log-file'   | let var = 's:LogFile'
-	elseif a:key == 'error-file' | let var = 's:ErrorFile'
+	if a:key == 'config-file!'
+		echo s:ConfigFile
+	elseif a:key == 'config-file'
+		" expand replaces the escape sequences from the cmdline
+		if a:val == '' | let s:ConfigFile = ''
+		else           | let s:ConfigFile = fnamemodify( expand( a:val ), ":p" )
+		endif
+	elseif a:key == 'log-file!'
+		echo s:LogFile
+	elseif a:key == 'log-file'
+		" expand replaces the escape sequences from the cmdline
+		if a:val == '' | let s:LogFile = ''
+		else           | let s:LogFile = fnamemodify( expand( a:val ), ":p" )
+		endif
+	elseif a:key == 'error-file!'
+		echo s:ErrorFile
+	elseif a:key == 'error-file'
+		" expand replaces the escape sequences from the cmdline
+		if a:val == '' | let s:ErrorFile = ''
+		else           | let s:ErrorFile = fnamemodify( expand( a:val ), ":p" )
+		endif
 	else
 		call s:ErrorMsg ( 'Doxygen : Unknown option: '.a:key )
 		return
-	endif
-	"
-	" get or set
-	if a:val == '' | exe 'echo '.var
-	else           | exe 'let '.var.' = fnamemodify( expand( a:val ), ":p" )'
 	endif
 	"
 endfunction    " ----------  end of function mmtoolbox#doxygen#Property  ----------
@@ -200,7 +215,7 @@ endfunction    " ----------  end of function mmtoolbox#doxygen#GenerateConfig  -
 "-------------------------------------------------------------------------------
 function! mmtoolbox#doxygen#EditConfig ()
 	" TODO: do some checks first?
-	exe 'e '.escape( s:ConfigFile, s:FilenameEscChar )
+	exe 'e '.fnameescape( s:ConfigFile )
 endfunction    " ----------  end of function mmtoolbox#doxygen#EditConfig  ----------
 "
 "-------------------------------------------------------------------------------
@@ -219,7 +234,7 @@ function! mmtoolbox#doxygen#Errors ()
 	cclose
 	"
 	" any errors?
-	if getfsize( escape ( s:ErrorFile, s:FilenameEscChar ) ) > 0
+	if getfsize( s:ErrorFile ) > 0
 		"
 		" save the current settings
 		let errorf_saved = &l:errorformat
@@ -227,7 +242,7 @@ function! mmtoolbox#doxygen#Errors ()
 		" read the file and process the errors
 		exe	'setlocal errorformat='.s:ErrorFormat
 		"
-		exe	':cfile '.escape( s:ErrorFile, s:FilenameEscChar )
+		exe	'cfile '.fnameescape( s:ErrorFile )
 		"
 		" restore the old settings
 		exe 'setlocal errorformat='.escape( errorf_saved, s:SettingsEscChar )
@@ -239,6 +254,7 @@ function! mmtoolbox#doxygen#Errors ()
 	"
 endfunction    " ----------  end of function mmtoolbox#doxygen#Errors  ----------
 " }}}1
+"-------------------------------------------------------------------------------
 "
 " =====================================================================================
 "  vim: foldmethod=marker

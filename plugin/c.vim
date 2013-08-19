@@ -208,7 +208,9 @@ let s:C_XtermDefaults         = '-fa courier -fs 12 -geometry 80x24'
 let s:C_GuiSnippetBrowser     = 'gui'										" gui / commandline
 let s:C_GuiTemplateBrowser    = 'gui'										" gui / explorer / commandline
 let s:C_UseToolbox            = 'yes'
-let s:C_UseTool_cmake         = 'yes'
+call s:C_SetGlobalVariable ( 'C_UseTool_cmake',   'no' )
+call s:C_SetGlobalVariable ( 'C_UseTool_doxygen', 'no' )
+call s:C_SetGlobalVariable ( 'C_UseTool_make',    'yes' )
 "
 let s:C_Ctrl_j								= 'on'
 "
@@ -1653,22 +1655,26 @@ endfunction    " ----------  end of function C_Arguments ----------
 "  C_Toggle_Gvim_Xterm : change output destination       {{{1
 "----------------------------------------------------------------------
 function! C_Toggle_Gvim_Xterm ()
+	"
+	" get the mapleader (correctly escaped)
+	let [ esc_mapl, err ] = mmtemplates#core#Resource ( g:C_Templates, 'escaped_mapleader' )
+	"
 	if s:C_OutputGvim == "vim"
 		exe "aunmenu  <silent>  ".s:MenuRun.'.&output:\ '.s:Output[0]
-		exe "amenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[1].'<Tab>\\ro        :call C_Toggle_Gvim_Xterm()<CR>'
-		exe "imenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[1].'<Tab>\\ro   <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
+		exe "amenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[1].'<Tab>'.esc_mapl.'ro        :call C_Toggle_Gvim_Xterm()<CR>'
+		exe "imenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[1].'<Tab>'.esc_mapl.'ro   <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
 		let	s:C_OutputGvim	= "buffer"
 	else
 		if s:C_OutputGvim == "buffer"
 			exe "aunmenu  <silent>  ".s:MenuRun.'.&output:\ '.s:Output[1]
-			exe "amenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[2].'<Tab>\\ro      :call C_Toggle_Gvim_Xterm()<CR>'
-			exe "imenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[2].'<Tab>\\ro <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
+			exe "amenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[2].'<Tab>'.esc_mapl.'ro      :call C_Toggle_Gvim_Xterm()<CR>'
+			exe "imenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[2].'<Tab>'.esc_mapl.'ro <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
 			let	s:C_OutputGvim	= "xterm"
 		else
 			" ---------- output : xterm -> gvim
 			exe "aunmenu  <silent>  ".s:MenuRun.'.&output:\ '.s:Output[2]
-			exe "amenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[0].'<Tab>\\ro      :call C_Toggle_Gvim_Xterm()<CR>'
-			exe "imenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[0].'<Tab>\\ro <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
+			exe "amenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[0].'<Tab>'.esc_mapl.'ro      :call C_Toggle_Gvim_Xterm()<CR>'
+			exe "imenu    <silent>  ".s:MenuRun.'.&output:\ '.s:Output[0].'<Tab>'.esc_mapl.'ro <C-C>:call C_Toggle_Gvim_Xterm()<CR>'
 			let	s:C_OutputGvim	= "vim"
 		endif
 	endif

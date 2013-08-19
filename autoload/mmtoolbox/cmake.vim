@@ -33,7 +33,7 @@
 " need at least 7.0
 if v:version < 700
 	echohl WarningMsg
-	echo 'The plugin tools/c/cmake.vim needs Vim version >= 7.'
+	echo 'The plugin mmtoolbox/cmake.vim needs Vim version >= 7.'
 	echohl None
 	finish
 endif
@@ -69,20 +69,20 @@ function! s:GetGlobalSetting ( varname )
 	endif
 endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 " }}}2
+"-------------------------------------------------------------------------------
 "
 "-------------------------------------------------------------------------------
 " Modul setup.   {{{1
 "-------------------------------------------------------------------------------
 "
+" platform specifics   {{{2
+"
 let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
 let s:SettingsEscChar = ' |"\'
-if s:MSWIN
-	let s:FilenameEscChar = ''
-else
-	let s:FilenameEscChar = ' \%#[]'
-endif
+"
+" settings   {{{2
 "
 let s:BaseDirectory = '.'
 let s:BuildLocation = '.'
@@ -94,6 +94,8 @@ call s:GetGlobalSetting ( 'CMake_Executable' )
 call s:GetGlobalSetting ( 'CMake_MakeTool' )
 "
 let s:Enabled = 1
+"
+" check executables   {{{2
 "
 if ! executable ( s:CMake_Executable ) || ! executable ( s:CMake_MakeTool )
 	let s:Enabled = 0
@@ -153,14 +155,14 @@ let s:Policies_List = [
 " custom commands {{{2
 "
 if s:Enabled == 1
-	command!       -nargs=? -complete=file CMakeBaseDirectory :call mmtoolbox#cmake#Property('base-dir','<args>')
-	command!       -nargs=? -complete=file CMakeBuildLocation :call mmtoolbox#cmake#Property('build-dir','<args>')
-	command! -bang -nargs=* -complete=file CMake              :call mmtoolbox#cmake#Run('<args>','<bang>'=='!')
-	command!       -nargs=? -complete=file CMakeHelpCommand   :call mmtoolbox#cmake#Help('command','<args>')
-	command!       -nargs=? -complete=file CMakeHelpModule    :call mmtoolbox#cmake#Help('module','<args>')
-	command!       -nargs=? -complete=file CMakeHelpPolicy    :call mmtoolbox#cmake#Help('policy','<args>')
-	command!       -nargs=? -complete=file CMakeHelpProperty  :call mmtoolbox#cmake#Help('property','<args>')
-	command!       -nargs=? -complete=file CMakeHelpVariable  :call mmtoolbox#cmake#Help('variable','<args>')
+	command! -bang -nargs=? -complete=file CMakeBaseDirectory :call mmtoolbox#cmake#Property('base-dir<bang>',<q-args>)
+	command! -bang -nargs=? -complete=file CMakeBuildLocation :call mmtoolbox#cmake#Property('build-dir<bang>',<q-args>)
+	command! -bang -nargs=* -complete=file CMake              :call mmtoolbox#cmake#Run(<q-args>,'<bang>'=='!')
+	command!       -nargs=? -complete=file CMakeHelpCommand   :call mmtoolbox#cmake#Help('command',<q-args>)
+	command!       -nargs=? -complete=file CMakeHelpModule    :call mmtoolbox#cmake#Help('module',<q-args>)
+	command!       -nargs=? -complete=file CMakeHelpPolicy    :call mmtoolbox#cmake#Help('policy',<q-args>)
+	command!       -nargs=? -complete=file CMakeHelpProperty  :call mmtoolbox#cmake#Help('property',<q-args>)
+	command!       -nargs=? -complete=file CMakeHelpVariable  :call mmtoolbox#cmake#Help('variable',<q-args>)
 else
 	"
 	" Disabled : Print why the script is disabled.   {{{3
@@ -206,7 +208,7 @@ endfunction    " ----------  end of function mmtoolbox#cmake#AddMaps  ----------
 "-------------------------------------------------------------------------------
 " AddMenu : Add menus.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#cmake#AddMenu ( root, mapleader )
+function! mmtoolbox#cmake#AddMenu ( root, esc_mapl )
 	"
 	exe 'amenu '.a:root.'.run\ CMake<Tab>:CMake!   :CMake! '
 	exe 'amenu '.a:root.'.&run\ make<Tab>:CMake     :CMake '
@@ -232,16 +234,23 @@ endfunction    " ----------  end of function mmtoolbox#cmake#AddMenu  ----------
 function! mmtoolbox#cmake#Property ( key, val )
 	"
 	" check argument
-	if a:key == 'base-dir'      | let var = 's:BaseDirectory'
-	elseif a:key == 'build-dir' | let var = 's:BuildLocation'
+	if a:key == 'base-dir!'
+		echo s:BaseDirectory
+	elseif a:key == 'base-dir'
+		" expand replaces the escape sequences from the cmdline
+		if a:val == '' | let s:BaseDirectory = ''
+		else           | let s:BaseDirectory = fnamemodify( expand( a:val ), ":p" )
+		endif
+	elseif a:key == 'build-dir!'
+		echo s:BuildLocation
+	elseif a:key == 'build-dir'
+		" expand replaces the escape sequences from the cmdline
+		if a:val == '' | let s:BuildLocation = ''
+		else           | let s:BuildLocation = fnamemodify( expand( a:val ), ":p" )
+		endif
 	else
 		call s:ErrorMsg ( 'CMake : Unknown option: '.a:key )
 		return
-	endif
-	"
-	" get or set
-	if a:val == '' | exe 'echo '.var
-	else           | exe 'let '.var.' = fnamemodify( expand( a:val ), ":p" )'
 	endif
 	"
 endfunction    " ----------  end of function mmtoolbox#cmake#Property  ----------
@@ -263,7 +272,7 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 	silent exe 'update'   | " write source file if necessary
 	cclose
 	"
-	exe	'lchdir '.escape( s:BuildLocation, s:FilenameEscChar )
+	exe	'lchdir '.fnameescape( s:BuildLocation )
 	"
 	if a:cmake_only == 1
 		"
@@ -275,7 +284,7 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 		" run CMake and process the errors
 		exe	'setglobal errorformat='.s:ErrorFormat_CMake
 		"
-		if a:args == '' | let args = escape ( s:BaseDirectory, s:FilenameEscChar )
+		if a:args == '' | let args = shellescape ( s:BaseDirectory )
 		else            | let args = a:args
 		endif
 		"
@@ -498,6 +507,7 @@ function! mmtoolbox#cmake#HelpJump ( type )
   "
 endfunction    " ----------  end of function mmtoolbox#cmake#HelpJump  ----------
 " }}}1
+"-------------------------------------------------------------------------------
 "
 " =====================================================================================
 "  vim: foldmethod=marker

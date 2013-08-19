@@ -34,7 +34,7 @@
 " need at least 7.0
 if v:version < 700
 	echohl WarningMsg
-	echo 'The plugin csupport/cmake.vim needs Vim version >= 7.'
+	echo 'The plugin mmtoolbox/helloworld.vim needs Vim version >= 7.'
 	echohl None
 	finish
 endif
@@ -45,6 +45,32 @@ if &cp || exists('g:HelloWorld_Version')
 	finish
 endif
 let g:HelloWorld_Version= '1.0'     " version number of this script; do not change
+"
+"-------------------------------------------------------------------------------
+" Auxiliary functions   {{{1
+"-------------------------------------------------------------------------------
+"
+"-------------------------------------------------------------------------------
+" s:ErrorMsg : Print an error message.   {{{2
+"-------------------------------------------------------------------------------
+function! s:ErrorMsg ( ... )
+	echohl WarningMsg
+	for line in a:000
+		echomsg line
+	endfor
+	echohl None
+endfunction    " ----------  end of function s:ErrorMsg  ----------
+"
+"-------------------------------------------------------------------------------
+" s:GetGlobalSetting : Get a setting from a global variable.   {{{2
+"-------------------------------------------------------------------------------
+function! s:GetGlobalSetting ( varname )
+	if exists ( 'g:'.a:varname )
+		exe 'let s:'.a:varname.' = g:'.a:varname
+	endif
+endfunction    " ----------  end of function s:GetGlobalSetting  ----------
+" }}}2
+"-------------------------------------------------------------------------------
 "
 "-------------------------------------------------------------------------------
 " Modul setup.   {{{1
@@ -87,15 +113,17 @@ endfunction    " ----------  end of function mmtoolbox#helloworld#AddMaps  -----
 "-------------------------------------------------------------------------------
 " AddMenu : Add menus.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#helloworld#AddMenu ( root, mapleader )
+function! mmtoolbox#helloworld#AddMenu ( root, esc_mapl )
 	"
 	" create menus using the given 'root'
 	"
-	exe 'amenu '.a:root.'.&hello\ world<TAB>'.a:mapleader.'hi   :echo "Hello world!"<CR>'
+	exe 'amenu '.a:root.'.&hello\ world<TAB>'.a:esc_mapl.'hi   :echo "Hello world!"<CR>'
 	"
 	" TODO
 	"
 endfunction    " ----------  end of function mmtoolbox#helloworld#AddMenu  ----------
+" }}}1
+"-------------------------------------------------------------------------------
 "
 " =====================================================================================
 "  vim: foldmethod=marker
