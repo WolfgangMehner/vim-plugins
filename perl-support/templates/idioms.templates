@@ -60,9 +60,9 @@ or die  "$0 : failed to open  pipe '$|PIPE|_command' : $!\n";
 close  $|PIPE|
 or warn "$0 : failed to close pipe '$|PIPE|_command' : $!\n";
 
-== Idioms.STDIN == sc:i, insert ==
+== Idioms.STDIN == sc:i, insert, map:isi ==
 <STDIN><CURSOR>
-== Idioms.STDOUT == sc:o, insert ==
+== Idioms.STDOUT == sc:o, insert, map:iso ==
 <STDOUT><CURSOR>
-== Idioms.STDERR == sc:e, insert ==
+== Idioms.STDERR == sc:e, insert, map:ise ==
 <STDERR><CURSOR>

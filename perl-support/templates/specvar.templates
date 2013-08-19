@@ -135,11 +135,7 @@
 |PICK|<CURSOR>
 == ENDTEMPLATE ==
 
-== Special Variables.DEFAULT == insert ==
-'DEFAULT'<CURSOR>
-== Special Variables.IGNORE == insert ==
-'IGNORE'<CURSOR>
-== Special Variables.use English ==
+== Special Variables.use English == insert, sc:u, map:vue ==
 use English;<CURSOR>
 == ENDTEMPLATE ==
 

@@ -7,11 +7,15 @@
 %%                
 %%       Author:  Dr.-Ing. Fritz Mehner
 %%        Email:  mehner@fh-swf.de
-%%    Copyright:  Copyright (C)  2003-2012  Dr.-Ing. Fritz Mehner  (mehner@fh-swf.de)
+%%    Copyright:  Copyright (C)  2003-2013  Dr.-Ing. Fritz Mehner  (mehner@fh-swf.de)
 %%      Version:  see \Pluginversion
 %%      Created:  06.06.2003
 %%                
 %%=====================================================================================
+
+%%======================================================================
+%%  LaTeX settings       [[[1
+%%======================================================================
 
 \documentclass[oneside,10pt,landscape,DIV17]{scrartcl}
 
@@ -24,7 +28,7 @@
 
 \setlength\parindent{0pt}
 
-\newcommand{\Pluginversion}{5.2}
+\newcommand{\Pluginversion}{5.2pre}
 \newcommand{\ReleaseDate}{\today}
 \newcommand{\Rep}{{\scriptsize{[n]}}}
 
@@ -64,7 +68,7 @@
 \begin{center}
 %
 %%======================================================================
-%%  title
+%%  title				[[[1
 %%======================================================================
 \textbf{\textsc{\small{Vim-Plug-in}}}\\
 \textbf{\LARGE{perl-support.vim}}\\
@@ -80,10 +84,17 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \vspace{4.0mm}
 
 %%======================================================================
-%%  table, left part
+%%  page 1, table, left part				[[[1
 %%======================================================================
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{60mm}|}
+%%----------------------------------------------------------------------
+%%  main menu
+%%----------------------------------------------------------------------
+\hline 
+\multicolumn{2}{|r|}{\textsl{\textbf{P}erl}}\\[1.0ex]
+\hline \verb'\ft'    & file tests                      \hfill (n,i)\\
+\hline 
 %%----------------------------------------------------------------------
 %%  show plug-in help
 %%----------------------------------------------------------------------
@@ -121,7 +132,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
 %%======================================================================
-%%  table, middle part
+%%  page 1, table, middle part				[[[1
 %%======================================================================
 %
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
@@ -189,7 +200,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
 %%======================================================================
-%%  table, right part
+%%  page 1, table, right part				[[[1
 %%======================================================================
 %
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
@@ -202,6 +213,8 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline     \verb'xpc' &  POSIX classes                 \hfill (n, i)\\ 
 \hline     \verb'xup' &  Unicode properties            \hfill (n, i)\\ 
 \hline     \verb'xex' &  extended Regex                \hfill (n, i)\\ 
+\hline     \verb'xms' &  metasymbols                   \hfill (n, i)\\ 
+%
 \hline \Rep\verb'\xr' &  pick up Regex                 \hfill (n, v)\\
 \hline \Rep\verb'\xs' &  pick up string                \hfill (n, v)\\
 \hline     \verb'\xf' &  pick up flag(s)               \hfill (n, v)\\
@@ -214,25 +227,53 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{S}pecial Variables}}            \\[1.0ex]
-\hline \verb'\vb'   & basics \hfill (n, i)\\
-\hline \verb'\ve'   & errors \hfill (n, i)\\
-\hline \verb'\vf'   & files  \hfill (n, i)\\
-\hline \verb'\vid'  & IDs    \hfill (n, i)\\
-\hline \verb'\vio'  & IO     \hfill (n, i)\\
-\hline \verb'\vr'   & regexp \hfill (n, i)\\
-\hline \verb'\vs'   & POSIX signals \hfill (n, i)\\
+\hline \verb'\vb'   & basics                           \hfill (n, i)\\
+\hline \verb'\ve'   & errors                           \hfill (n, i)\\
+\hline \verb'\vf'   & files                            \hfill (n, i)\\
+\hline \verb'\vid'  & IDs                              \hfill (n, i)\\
+\hline \verb'\vio'  & IO                               \hfill (n, i)\\
+\hline \verb'\vr'   & regexp                           \hfill (n, i)\\
+\hline \verb'\vs'   & POSIX signals                    \hfill (n, i)\\
+\hline \verb'\vue'  & use English                      \hfill (n, i)\\
 \hline
 %%----------------------------------------------------------------------
 %%  menu POD
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{P}OD}}                       \\[1.0ex]
+\hline \verb'\ppc'    & \verb'pod, cut'                 \hfill (n, i)\\
+\hline \verb'\pfc'    & \verb'for, cut'                 \hfill (n, i)\\
+\hline \verb'\pbh'    & \verb'begin html, end'          \hfill (n, i)\\
+\hline \verb'\pbm'    & \verb'begin man, end'           \hfill (n, i)\\
+\hline \verb'\pbt'    & \verb'begin text, end'          \hfill (n, i)\\
+\hline \verb'\ph1'    & \verb'head1'                    \hfill (n, i)\\
+\hline \verb'\ph2'    & \verb'head2'                    \hfill (n, i)\\
+\hline \verb'\ph3'    & \verb'head3'                    \hfill (n, i)\\
+\hline \verb'\pob'    & \verb'over, back'               \hfill (n, i)\\
+\hline \verb'\pi'     & \verb'item'                     \hfill (n, i)\\
 \hline \verb'\pod'    & run \verb'podchecker'           \hfill (n, i)\\
 \hline \verb'\podh'   & convert POD data to .html file  \hfill (n, i)\\
 \hline \verb'\podm'   & Convert POD data to *roff input \hfill (n, i)\\
 \hline \verb'\podt'   & Convert POD data to ASCII text  \hfill (n, i)\\
 \hline \verb'\pm'     & markup sequences                \hfill (n, i)\\
 \hline
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%
+\end{center}%
+\end{multicols}%
+%
+\newpage
+%
+%%======================================================================
+%%  page 2, table, left part				[[[1
+%%======================================================================
+%
+\begin{multicols}{2}
+%
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{61mm}|}
 %%----------------------------------------------------------------------
 %%  menu Profiling
 %%----------------------------------------------------------------------
@@ -253,23 +294,6 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline \verb'\rpno'    & open existing \verb'NYTProf' results  \hfill (n, i)\\
 \hline \verb'\rpnh'    & browse HTML files (\verb'NYTProf')\hfill (n, i)\\
 \hline
-\end{tabular}\\
-%%~~~~~ TABULAR :  end  ~~~~~~~~~~
-%
-%
-\end{center}%
-\end{multicols}%
-%
-\newpage
-%%----------------------------------------------------------------------
-%%  PAGE 2
-%%----------------------------------------------------------------------
-%
-%
-\begin{multicols}{2}
-%
-%%~~~~~ TABULAR : begin ~~~~~~~~~~
-\begin{tabular}[]{|p{11mm}|p{61mm}|}
 %%----------------------------------------------------------------------
 %%  menu run
 %%----------------------------------------------------------------------
@@ -306,6 +330,10 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 %
 \begin{tabbing}
 \hspace{30mm} \= \hspace{50mm} \= \kill
+%
+%%======================================================================
+%%  page 2, table, right part				[[[1
+%%======================================================================
 %
 %%----------------------------------------------------------------------
 %%  Run
@@ -378,3 +406,4 @@ For \texttt{Devel::NYTProf}\\[1.0ex]
 %
 %%----- TABBING :  end  ----------
 \end{document}
+% vim: foldmethod=marker foldmarker=[[[,]]]

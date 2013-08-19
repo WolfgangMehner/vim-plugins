@@ -5,43 +5,35 @@
 #
 #         USAGE:  ./makedist.sh
 #
-#   DESCRIPTION:  create archive perl-support.zip
+#   DESCRIPTION:  create archive vim-support.zip
 #
 #       OPTIONS:  ---
 #  REQUIREMENTS:  ---
 #          BUGS:  ---
 #         NOTES:  ---
-#        AUTHOR:  Dr.-Ing. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
+#        AUTHOR:  Dr.-Ing. Fritz Mehner (Mn), mehner@fh-swf.de
 #       COMPANY:  Fachhochschule Südwestfalen, Iserlohn
 #       VERSION:  2.0
-#       CREATED:  04.01.2013 13:35:48 CEST
+#       CREATED:  11.08.2013 19:22:37 CEST
 #===============================================================================
 
-plugin='perl-support'
+plugin='vim-support'
 MainTemplateFile='./templates/Templates'
 
 filelist="
- ./${plugin}/README.perlsupport
- ./${plugin}/codesnippets/*
- ./${plugin}/doc/ChangeLog
- ./${plugin}/doc/perl-hot-keys.pdf
- ./${plugin}/doc/perl-hot-keys.tex
- ./${plugin}/doc/pmdesc3.text
- ./${plugin}/modules/*
- ./${plugin}/rc/*
- ./${plugin}/scripts/*
- ./${plugin}/templates/*
- ./${plugin}/wordlists/*
  ./autoload/mmtemplates/core.vim
- ./autoload/perlsupportprofiling.vim
- ./autoload/perlsupportregex.vim
- ./doc/perlsupport.txt
+ ./doc/vimsupport.txt
  ./doc/templatesupport.txt
- ./ftplugin/perl.vim
- ./ftplugin/pod.vim
- ./ftplugin/qf.vim
- ./plugin/make.vim
- ./plugin/perl-support.vim
+ ./${plugin}/codesnippets/*
+ ./${plugin}/doc/vim-hotkeys.pdf
+ ./${plugin}/doc/vim-hotkeys.tex
+ ./${plugin}/doc/ChangeLog
+ ./${plugin}/rc/*
+ ./${plugin}/README.vimsupport
+ ./${plugin}/scripts/*
+ ./${plugin}/templates/*.templates
+ ./${plugin}/templates/Templates
+ ./plugin/vim-support.vim
  ./syntax/template.vim
 "
 #-------------------------------------------------------------------------------

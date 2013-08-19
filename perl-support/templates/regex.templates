@@ -87,34 +87,31 @@
 |PICK|
 == ENDTEMPLATE ==
 
-== Regex.grouping == insert ==
-(<SPLIT><CURSOR>)
-== Regex.alternation == insert ==
-(<SPLIT><CURSOR>|)
-== Regex.char class == insert ==
-[<SPLIT><CURSOR>]
-== Regex.count == insert ==
-{<SPLIT><CURSOR>,}
-== Regex.word boundary == insert ==
-\b<CURSOR>
-== Regex.digit == insert ==
-\d<CURSOR>
-== Regex.whitespace == insert ==
-\s<CURSOR>
-== Regex.word character == insert ==
-\w<CURSOR>
-== Regex.match property == insert ==
-\p{<SPLIT><CURSOR>}
-== Regex.non-word boundary == insert ==
-\B<CURSOR>
-== Regex.non-digit == insert ==
-\D<CURSOR>
-== Regex.non-whitespace == insert ==
-\S<CURSOR>
-== Regex.non-word character == insert ==
-\W<CURSOR>
-== Regex.do not match property == insert ==
-\P{<SPLIT><CURSOR>}
-== ENDTEMPLATE ==
+§§== Regex.grouping == insert ==
+§§(<SPLIT><CURSOR>)
+§§== Regex.alternation == insert ==
+§§(<SPLIT><CURSOR>|)
+§§== Regex.char class == insert ==
+§§[<SPLIT><CURSOR>]
+§§== Regex.count == insert ==
+§§{<SPLIT><CURSOR>,}
+§§== ENDTEMPLATE ==
 
+== LIST: Metasymbols == hash ==
+'word boundary \\b'           : '\b<CURSOR>',
+'digit \\d'                   : '\d<CURSOR>',
+'whitespace \\s'              : '\s<CURSOR>',
+'word character \\w'          : '\w<CURSOR>',
+'match property \\p{}'        : '\p{<SPLIT><CURSOR>}',
+'non-word boundary \\B'       : '\B<CURSOR>',
+'non-digit \\D'               : '\D<CURSOR>',
+'non-whitespace \\S'          : '\S<CURSOR>',
+'non-word character \\W'      : '\W<CURSOR>',
+'do not match property \\P{}' : '\P{<SPLIT><CURSOR>}',
+== ENDLIST ==
+
+== Regex.metasymbols == expandmenu, insert, sc:m, map:xms ==
+|PickList( 'Metasymbols', 'Metasymbols' )|
+|PICK|
+== ENDTEMPLATE ==
 

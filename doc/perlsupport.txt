@@ -1,4 +1,4 @@
-*perlsupport.txt*                Perl Support                 August 11 2013 
+*perlsupport.txt*                Perl Support                 August 19 2013 
 Perl Support                                      *perl-support* *perlsupport*
 
                              Plug-in version 5.2pre
@@ -1463,6 +1463,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \xpc       POSIX classes                      (in )
      \xup       Unicode properties                 (in )
      \xex       extended regex                     (in )
+     \xms       metasymbols                        (in )
   [n]\xr        pick up Regex                      ( nv)
   [n]\xs        pick up string                     ( nv)
      \xf        pick up flags                      ( nv)
@@ -1482,11 +1483,25 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
 
   -- POD -----------------------------------------------
 
+     \ppc       pod, cut                           (in )
+     \pfc       for, cut                           (in )
+     \pbh       begin html, end                    (in )
+     \pbm       begin man, end                     (in )
+     \pbt       begin text, end                    (in )
+     \ph1       head1                              (in )
+     \ph2       head2                              (in )
+     \ph3       head3                              (in )
+     \pob       over, back                         (in )
+     \pi        item                               (in )
      \pod       run podchecker                     (in )
      \podh      convert POD data to .html file     (in )
      \podm      convert POD data to *troff input)  (in )
      \podt      convert POD data to ASCII text     (in )
      \pm        markup sequences                   (inv)
+
+  -- File Tests  ---------------------------------------
+
+     \ft        File Tests
 
   -- Profiling -----------------------------------------
 
