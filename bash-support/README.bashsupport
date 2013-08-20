@@ -1,4 +1,4 @@
-README for bash-support.vim (Version 4.0) / August 11 2013
+README for bash-support.vim (Version 4.1pre) / August 20 2013
 
   *  INSTALLATION
   *  RELEASE NOTES
@@ -123,22 +123,12 @@ Look at the bashsupport help with
              +-----------------------------------------------+
 
 =======================================================================================
-  RELEASE NOTES FOR VERSION 4.0
+  RELEASE NOTES FOR VERSION 4.1
 =======================================================================================
 
-  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  ++  The plug-in version 4.0+ is a rewriting of version 3.12.1.              ++
-  ++  The versions 4.0+ are based on a new and more powerful template system  ++
-  ++  (please see ":help template-support" for more information).             ++
-  ++  The template syntax has changed!                                        ++
-  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-- New template system (many thanks to Wolfgang Mehner)
-- A few new hotkeys and menu item.
-- A few hotkeys and menu items renamed.
-- Footer did not appear in doc/bash-hotkeys.pdf
+- Filetype plugin added.
+- Minor bugfixes.
+- Documentation updated.
 
   OLDER RELEASE NOTES : see file 'ChangeLog'
 =======================================================================================

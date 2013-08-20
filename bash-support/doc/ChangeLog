@@ -1,4 +1,22 @@
 =======================================================================================
+  RELEASE NOTES FOR VERSION 4.0
+=======================================================================================
+
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++  The plug-in version 4.0+ is a rewriting of version 3.12.1.              ++
+  ++  The versions 4.0+ are based on a new and more powerful template system  ++
+  ++  (please see ":help template-support" for more information).             ++
+  ++  The template syntax has changed!                                        ++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+- New template system (many thanks to Wolfgang Mehner)
+- A few new hotkeys and menu item.
+- A few hotkeys and menu items renamed.
+- Footer did not appear in doc/bash-hotkeys.pdf
+
+=======================================================================================
   RELEASE NOTES FOR VERSION 3.12.1
 =======================================================================================
 - Minor additions and bugfixes in 2 menus.

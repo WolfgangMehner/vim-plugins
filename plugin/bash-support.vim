@@ -35,7 +35,7 @@ if exists("g:BASH_Version") || &cp
  finish
 endif
 "
-let g:BASH_Version= "4.0"                  " version number of this script; do not change
+let g:BASH_Version= "4.1pre"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  BASH_SetGlobalVariable     {{{1
@@ -704,10 +704,10 @@ function! s:InitMenus()
  	"-------------------------------------------------------------------------------
  	" comments     {{{2
  	"-------------------------------------------------------------------------------
-	exe " noremenu ".s:BASH_RootMenu.'.&Comments.&echo\ "<line>"<Tab>\\ce       :call BASH_echo_comment()<CR>j'
-	exe "inoremenu ".s:BASH_RootMenu.'.&Comments.&echo\ "<line>"<Tab>\\ce  <C-C>:call BASH_echo_comment()<CR>j'
-	exe " noremenu ".s:BASH_RootMenu.'.&Comments.&remove\ echo<Tab>\\cr         :call BASH_remove_echo()<CR>j'
-	exe "inoremenu ".s:BASH_RootMenu.'.&Comments.&remove\ echo<Tab>\\cr    <C-C>:call BASH_remove_echo()<CR>j'
+	exe " noremenu ".s:BASH_RootMenu.'.&Comments.&echo\ "<line>"<Tab>'.esc_mapl.'ce       :call BASH_echo_comment()<CR>j'
+	exe "inoremenu ".s:BASH_RootMenu.'.&Comments.&echo\ "<line>"<Tab>'.esc_mapl.'ce  <C-C>:call BASH_echo_comment()<CR>j'
+	exe " noremenu ".s:BASH_RootMenu.'.&Comments.&remove\ echo<Tab>'.esc_mapl.'cr         :call BASH_remove_echo()<CR>j'
+	exe "inoremenu ".s:BASH_RootMenu.'.&Comments.&remove\ echo<Tab>'.esc_mapl.'cr    <C-C>:call BASH_remove_echo()<CR>j'
 	"
  	"-------------------------------------------------------------------------------
  	" help     {{{2
