@@ -618,14 +618,14 @@ function! s:InitMenus()
   endif
 	"
 	if	s:MSWIN
-		exe ahead.'&hardcopy\ to\ printer<Tab>rh        <C-C>:call Awk_Hardcopy("n")<CR>'
-		exe vhead.'&hardcopy\ to\ printer<Tab>rh        <C-C>:call Awk_Hardcopy("v")<CR>'
+		exe ahead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call Awk_Hardcopy("n")<CR>'
+		exe vhead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call Awk_Hardcopy("v")<CR>'
 	else
-		exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>rh   <C-C>:call Awk_Hardcopy("n")<CR>'
-		exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>rh   <C-C>:call Awk_Hardcopy("v")<CR>'
+		exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call Awk_Hardcopy("n")<CR>'
+		exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call Awk_Hardcopy("v")<CR>'
 	endif
 	"
-	exe ahead.'plugin\ &settings<Tab>rse                 :call Awk_Settings()<CR>'
+	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rse                 :call Awk_Settings()<CR>'
 	"
 	if	!s:MSWIN
 		exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.x&term\ size<Tab>'.esc_mapl.'rx                       :call Awk_XtermSize()<CR>'
@@ -1108,22 +1108,23 @@ endfunction    " ----------  end of function Awk_RemoveGuiMenus  ----------
 function! Awk_Toggle_Gvim_Xterm ()
 
 	if has("gui_running")
+	let [ esc_mapl, err ] = mmtemplates#core#Resource ( g:Awk_Templates, 'escaped_mapleader' )
 		if s:Awk_OutputGvim == "vim"
 			exe "aunmenu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ VIM->buffer->xterm'
-			exe " menu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->xterm->vim<Tab>\\ro          :call Awk_Toggle_Gvim_Xterm()<CR>'
-			exe "imenu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->xterm->vim<Tab>\\ro     <C-C>:call Awk_Toggle_Gvim_Xterm()<CR>'
+			exe " menu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->xterm->vim<Tab>'.esc_mapl.'          :call Awk_Toggle_Gvim_Xterm()<CR>'
+			exe "imenu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->xterm->vim<Tab>'.esc_mapl.'     <C-C>:call Awk_Toggle_Gvim_Xterm()<CR>'
 			let	s:Awk_OutputGvim	= "buffer"
 		else
 			if s:Awk_OutputGvim == "buffer"
 				exe "aunmenu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->xterm->vim'
-				exe " menu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ XTERM->vim->buffer<Tab>\\ro        :call Awk_Toggle_Gvim_Xterm()<CR>'
-				exe "imenu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ XTERM->vim->buffer<Tab>\\ro   <C-C>:call Awk_Toggle_Gvim_Xterm()<CR>'
+				exe " menu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ XTERM->vim->buffer<Tab>'.esc_mapl.'        :call Awk_Toggle_Gvim_Xterm()<CR>'
+				exe "imenu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ XTERM->vim->buffer<Tab>'.esc_mapl.'   <C-C>:call Awk_Toggle_Gvim_Xterm()<CR>'
 				let	s:Awk_OutputGvim	= "xterm"
 			else
 				" ---------- output : xterm -> gvim
 				exe "aunmenu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ XTERM->vim->buffer'
-				exe " menu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ VIM->buffer->xterm<Tab>\\ro        :call Awk_Toggle_Gvim_Xterm()<CR>'
-				exe "imenu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ VIM->buffer->xterm<Tab>\\ro   <C-C>:call Awk_Toggle_Gvim_Xterm()<CR>'
+				exe " menu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ VIM->buffer->xterm<Tab>'.esc_mapl.'        :call Awk_Toggle_Gvim_Xterm()<CR>'
+				exe "imenu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ VIM->buffer->xterm<Tab>'.esc_mapl.'   <C-C>:call Awk_Toggle_Gvim_Xterm()<CR>'
 				let	s:Awk_OutputGvim	= "vim"
 			endif
 		endif
@@ -1143,15 +1144,16 @@ endfunction    " ----------  end of function Awk_Toggle_Gvim_Xterm ----------
 "----------------------------------------------------------------------
 function! Awk_Toggle_Gvim_Xterm_MS ()
 	if has("gui_running")
+	let [ esc_mapl, err ] = mmtemplates#core#Resource ( g:Awk_Templates, 'escaped_mapleader' )
 		if s:Awk_OutputGvim == "buffer"
 			exe "aunmenu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->term'
-			exe " menu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ TERM->buffer<Tab>\\ro         :call Awk_Toggle_Gvim_Xterm_MS()<CR>'
-			exe "imenu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ TERM->buffer<Tab>\\ro    <C-C>:call Awk_Toggle_Gvim_Xterm_MS()<CR>'
+			exe " menu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ TERM->buffer<Tab>'.esc_mapl.'         :call Awk_Toggle_Gvim_Xterm_MS()<CR>'
+			exe "imenu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ TERM->buffer<Tab>'.esc_mapl.'    <C-C>:call Awk_Toggle_Gvim_Xterm_MS()<CR>'
 			let	s:Awk_OutputGvim	= "xterm"
 		else
 			exe "aunmenu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ TERM->buffer'
-			exe " menu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->term<Tab>\\ro         :call Awk_Toggle_Gvim_Xterm_MS()<CR>'
-			exe "imenu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->term<Tab>\\ro    <C-C>:call Awk_Toggle_Gvim_Xterm_MS()<CR>'
+			exe " menu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->term<Tab>'.esc_mapl.'         :call Awk_Toggle_Gvim_Xterm_MS()<CR>'
+			exe "imenu    <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->term<Tab>'.esc_mapl.'    <C-C>:call Awk_Toggle_Gvim_Xterm_MS()<CR>'
 			let	s:Awk_OutputGvim	= "buffer"
 		endif
 	endif
