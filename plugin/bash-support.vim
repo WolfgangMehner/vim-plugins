@@ -1318,7 +1318,7 @@ function! BASH_CreateGuiMenus ()
 	if s:BASH_MenuVisible == 'no'
 		aunmenu <silent> &Tools.Load\ Bash\ Support
 		amenu   <silent> 40.1000 &Tools.-SEP100- :
-		amenu   <silent> 40.1010 &Tools.Unload\ Bash\ Support :call BASH_RemoveGuiMenus()<CR>
+		amenu   <silent> 40.1020 &Tools.Unload\ Bash\ Support :call BASH_RemoveGuiMenus()<CR>
 		"
 		call g:BASH_RereadTemplates('no')
 		call s:InitMenus () 
@@ -1335,7 +1335,7 @@ endfunction    " ----------  end of function BASH_CreateGuiMenus  ----------
 "===============================================================================
 function! BASH_ToolMenu ()
 	amenu   <silent> 40.1000 &Tools.-SEP100- :
-	amenu   <silent> 40.1010 &Tools.Load\ Bash\ Support :call BASH_CreateGuiMenus()<CR>
+	amenu   <silent> 40.1020 &Tools.Load\ Bash\ Support :call BASH_CreateGuiMenus()<CR>
 endfunction    " ----------  end of function BASH_ToolMenu  ----------
 
 "===  FUNCTION  ================================================================

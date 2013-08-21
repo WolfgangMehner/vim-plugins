@@ -5,7 +5,7 @@ Entry		Priority
 
 Tools.-SEP100-	40.1000
 Tools.Awk	40.1010
-Tools.Bash	40.1021
+Tools.Bash	40.1020
 Tools.C		40.1030
 Tools.Git	40.1080
 Tools.Latex	40.1110

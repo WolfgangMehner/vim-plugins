@@ -710,9 +710,9 @@ function! s:InitMenus()
 	exe ahead.'Convert.PS->PDF                      :call Latex_Conversions( "ps-pdf" , "no" )<CR>'
 
 	exe ahead.'-SEP3-                            :'
-  exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>\\rh           :call Latex_Hardcopy("n")<CR>'
-  exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>\\rh      <C-C>:call Latex_Hardcopy("v")<CR>'
-	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rse          :call Latex_Settings()<CR>'
+	exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh        :call Latex_Hardcopy("n")<CR>'
+	exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call Latex_Hardcopy("v")<CR>'
+	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rse                 :call Latex_Settings()<CR>'
 	"
 	"-------------------------------------------------------------------------------
 	" help

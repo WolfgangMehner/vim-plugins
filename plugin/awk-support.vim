@@ -558,6 +558,7 @@ function! s:InitMenus()
 	exe vhead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call Awk_AdjustLineEndComm()<CR>'
 	exe  head.'&set\ end-of-line\ com\.\ col\.<Tab>'.esc_mapl.'cs     <Esc>:call Awk_GetLineEndCommCol()<CR>'
 	"
+	exe ahead.'-Sep01-						<Nop>'
 	exe ahead.'&comment<TAB>'.esc_mapl.'cc		:call Awk_CodeComment()<CR>'
 	exe vhead.'&comment<TAB>'.esc_mapl.'cc		:call Awk_CodeComment()<CR>'
 	exe ahead.'&uncomment<TAB>'.esc_mapl.'cu	:call Awk_CommentCode(0)<CR>'
@@ -617,6 +618,7 @@ function! s:InitMenus()
     exe ahead.'make\ script\ &executable<Tab>'.esc_mapl.'re              :call Awk_MakeScriptExecutable()<CR>'
   endif
 	"
+	exe ahead.'-SEP1-   :'
 	if	s:MSWIN
 		exe ahead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call Awk_Hardcopy("n")<CR>'
 		exe vhead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call Awk_Hardcopy("v")<CR>'
@@ -625,6 +627,7 @@ function! s:InitMenus()
 		exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call Awk_Hardcopy("v")<CR>'
 	endif
 	"
+	exe ahead.'-SEP2-                                                :'
 	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rse                 :call Awk_Settings()<CR>'
 	"
 	if	!s:MSWIN
