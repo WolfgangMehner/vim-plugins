@@ -1372,6 +1372,7 @@ Several global variables are checked by the script to customize it:
  g:C_Libs                   '-lm'
  g:C_LineEndCommColDefault  49
  g:C_LoadMenus              'yes'
+ g:C_CreateMenusDelayed     'no'
  g:C_LocalTemplateFile      $HOME.'/.vim/c-support/templates/Templates'
  g:C_MapLeader              '\'
  g:C_MenuHeader             'yes'
@@ -1429,6 +1430,7 @@ The variable plugin_dir will automatically be set to one of the following values
  g:C_Libs                  : Libraries to link with.
  g:C_LineEndCommColDefault : Default starting column for end-of-line comments.
  g:C_LoadMenus             : Load menus and mappings ("yes", "no") at startup.
+ g:C_CreateMenusDelayed    : Load menus only with filetypes 'c' or 'cpp'
  g:C_LocalTemplateFile     : sets the local template file  (see |csupport-templates|)
  g:C_Man                   : The name of the man utility.
  g:C_MapLeader             : the map leader for hotkeys (see ||csupport-usage-vim|)
@@ -1970,9 +1972,18 @@ directory):
   - Use ':scriptnames' from the Vim command line.
 
 * Some hotkeys do not work.
-  - The hotkeys might be in use by your graphical desktop environment.  Under
-    KDE Ctrl-F9 is the hotkey which let you switch to the 9. desktop.  The key
+  - The hotkeys might be in use by your graphical desktop environment. Under
+    KDE Ctrl-F9 is the hotkey which let you switch to the 9. desktop. The key
     settings can usually be redefined.
+
+* The plug-in loads slowly.
+  - By default, the template library is read while the plug-in is loading,
+    since the templates also define most of the menu structure. To not slow
+    down the startup of Vim, you can choose to only create the C/C++-menu when
+    opening the first C/C++-file. For that, add this line to your ~/.vimrc:
+      let g:C_CreateMenusDelayed = 'yes'
+    The only downside is that you won't see the C/C++-menu before you start
+    working on a C-file, or use the menu entry "Tools->Load C Support".
 
 * Splint and/or CodeCheck menu item not visible.
   - The program is not installed or not found (path not set) or not executable.
