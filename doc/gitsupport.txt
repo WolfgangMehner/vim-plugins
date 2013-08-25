@@ -2,9 +2,9 @@
 
 Git Support                                          *git-support* *gitsupport*
 
-                            Plug-in version 0.9.1
+                            Plug-in version 0.9.1pre
                         for Vim version 7.0 and above
-                   Wolfgang Mehner <wolfgang-mehner@web.de>
+                 Wolfgang Mehner <wolfgang-mehner at web.de>
 
 Integration of Git for Vim/gVim. The plug-in at hand allows to use Git from
 within Vim, eliminating the need for context switches. The output of commands
@@ -79,7 +79,7 @@ run the commands in every subdirectory of the project.
   |:GitBuf| <cmd> [<param>]          (buf) git <cmd> <param>
 
   |:GitAdd| [<param>]                (run) git add <param>
-  |:GitBlame| [<param>]              (buf) git blame <param>
+  |:[range]GitBlame| [<param>]       (buf) git blame <param>
   |:GitBranch|                       (buf) git branch
   |:GitBranch| <param>               (run) git branch <param>
   |:GitCheckout| [<param>]           (run) git checkout <param>
@@ -223,11 +223,12 @@ Is equivalent to: >
 
 ------------------------------------------------------------------------------
                                                                    *:GitBlame*
-	:GitBlame ~
-	:GitBlame <param> ~
+	:[range]GitBlame ~
+	:[range]GitBlame <param> ~
 
 The first version opens a buffer containing the output of Git's blame for the
-current buffer. The second version runs blame for the given parameters.
+current buffer. The second version runs blame for the given parameters. When
+range is given, the output is limited to these lines.
 
   Map       Meaning
  ----------------------------------------------------------------------------

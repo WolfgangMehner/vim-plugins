@@ -301,8 +301,104 @@ endfunction    " ----------  end of function s:GenerateCustomMenu  ----------
 "-------------------------------------------------------------------------------
 "
 "-------------------------------------------------------------------------------
+" Test: Custom cmdline completion.   {{{1
+"-------------------------------------------------------------------------------
+"
+" Debug:
+let g:GitSupport_LastCmdlineComplete = []
+"
+"-------------------------------------------------------------------------------
+" s:GitS_CmdlineComplete : Git-specific command line completion.   {{{2
+"-------------------------------------------------------------------------------
+"
+function! GitS_CmdlineComplete ( ArgLead, CmdLine, CursorPos )
+	"
+	let git_cmd = tolower ( matchstr ( a:CmdLine, '^Git\zs\w*' ) )
+	"
+	if git_cmd == ''
+		let git_cmd = matchstr ( a:CmdLine, '^Git\s\+\zs\w*' )
+	endif
+	"
+	" files
+	let filelist = split ( glob ( a:ArgLead.'*' ), "\n" )
+	"
+	for i in range( 0, len(filelist)-1 )
+		if isdirectory ( filelist[i] )
+			let filelist[i] .= '/'
+		endif
+	endfor
+	"
+	" git objects: branched, tags, remotes
+	let gitlist = []
+	"
+	" branches
+	let gitlist += split ( s:StandardRun ( 'branch', '-a', 't' ), '\_[* ]\+\%(remotes/\)\?' )
+	"
+	" tags
+	let gitlist += split ( s:StandardRun ( 'tag', '', 't' ), "\n" )
+	"
+	" remotes
+	let gitlist += split ( s:StandardRun ( 'remote', '', 't' ), "\n" )
+	"
+	call filter ( gitlist, '0 == match ( v:val, "\\V'.escape(a:ArgLead,'\').'" )' )
+	"
+	let g:GitSupport_LastCmdlineComplete = [ git_cmd, a:ArgLead, gitlist ]
+	"
+" 	return filelist
+	return escape ( join ( filelist + gitlist, "\n" ), ' \?*"' )
+	"
+endfunction    " ----------  end of function GitS_CmdlineComplete  ----------
+" }}}2
+"-------------------------------------------------------------------------------
+"
+"-------------------------------------------------------------------------------
 " Modul setup.   {{{1
 "-------------------------------------------------------------------------------
+"
+" command lists, help topics   {{{2
+"
+let s:GitCommands = [
+			\ 'add',               'add--interactive',         'am',                'annotate',           'apply',
+			\ 'archive',           'bisect',                   'bisect--helper',    'blame',              'branch',
+			\ 'bundle',            'cat-file',                 'check-attr',        'checkout',           'checkout-index',
+			\ 'check-ref-format',  'cherry',                   'cherry-pick',       'citool',             'clean',
+			\ 'clone',             'commit',                   'commit-tree',       'config',             'count-objects',
+			\ 'credential-cache',  'credential-cache--daemon', 'credential-store',  'daemon',             'describe',
+			\ 'diff',              'diff-files',               'diff-index',        'difftool',           'difftool--helper',
+			\ 'diff-tree',         'fast-export',              'fast-import',       'fetch',              'fetch-pack',
+			\ 'filter-branch',     'fmt-merge-msg',            'for-each-ref',      'format-patch',       'fsck',
+			\ 'fsck-objects',      'gc',                       'get-tar-commit-id', 'grep',               'gui',
+			\ 'gui--askpass',      'hash-object',              'help',              'http-backend',       'http-fetch',
+			\ 'http-push',         'imap-send',                'index-pack',        'init',               'init-db',
+			\ 'instaweb',          'log',                      'lost-found',        'ls-files',           'ls-remote',
+			\ 'ls-tree',           'mailinfo',                 'mailsplit',         'merge',              'merge-base',
+			\ 'merge-file',        'merge-index',              'merge-octopus',     'merge-one-file',     'merge-ours',
+			\ 'merge-recursive',   'merge-resolve',            'merge-subtree',     'mergetool',          'merge-tree',
+			\ 'mktag',             'mktree',                   'mv',                'name-rev',           'notes',
+			\ 'pack-objects',      'pack-redundant',           'pack-refs',         'patch-id',           'peek-remote',
+			\ 'prune',             'prune-packed',             'pull',              'push',               'quiltimport',
+			\ 'read-tree',         'rebase',                   'receive-pack',      'reflog',             'relink',
+			\ 'remote',            'remote-ext',               'remote-fd',         'remote-ftp',         'remote-ftps',
+			\ 'remote-http',       'remote-https',             'remote-testgit',    'repack',             'replace',
+			\ 'repo-config',       'request-pull',             'rerere',            'reset',              'revert',
+			\ 'rev-list',          'rev-parse',                'rm',                'send-pack',          'shell',
+			\ 'sh-i18n--envsubst', 'shortlog',                 'show',              'show-branch',        'show-index',
+			\ 'show-ref',          'stage',                    'stash',             'status',             'stripspace',
+			\ 'submodule',         'symbolic-ref',             'tag',               'tar-tree',           'unpack-file',
+			\ 'unpack-objects',    'update-index',             'update-ref',        'update-server-info', 'upload-archive',
+			\ 'upload-pack',       'var',                      'verify-pack',       'verify-tag',         'web--browse',
+			\ 'whatchanged',       'write-tree',
+			\ ]
+"
+let s:HelpTopics = s:GitCommands + [
+			\ 'attributes', 'cli',               'core-tutorial', 'cvs-migration', 'diffcore',
+			\ 'gitk',       'glossary',          'hooks',         'ignore',        'modules',
+			\ 'namespaces', 'repository-layout', 'tutorial',      'tutorial-2',    'workflows'
+			\ ]
+"
+function! GitS_HelpTopicsComplete ( ArgLead, CmdLine, CursorPos )
+	return filter( copy( s:HelpTopics ), 'v:val =~ "\\V\\<'.escape(a:ArgLead,'\').'\\w\\*"' )
+endfunction    " ----------  end of function GitS_HelpTopicsComplete  ----------
 "
 " platform specifics   {{{2
 "
@@ -412,40 +508,40 @@ let s:HelpTxtStdNoUpdate .= "q       : close"
 " custom commands   {{{2
 "
 if s:Enabled
-	command  -bang -nargs=* -complete=file Git                    :call GitS_Run('<args>','<bang>'=='!'?'b':'')
-	command!       -nargs=* -complete=file GitRun                 :call GitS_Run('<args>','')
-	command!       -nargs=* -complete=file GitBuf                 :call GitS_Run('<args>','b')
-	command! -bang -nargs=* -complete=file GitAdd                 :call GitS_Add('<args>','<bang>'=='!'?'ef':'e')
-	command!       -nargs=* -complete=file GitBlame               :call GitS_Blame('update','<args>')
-	command!       -nargs=* -complete=file GitBranch              :call GitS_Branch('<args>','')
-	command!       -nargs=* -complete=file GitCheckout            :call GitS_Checkout('<args>','ce')
-	command!       -nargs=* -complete=file GitCommit              :call GitS_Commit('direct','<args>','')
-	command!       -nargs=? -complete=file GitCommitFile          :call GitS_Commit('file','<args>','')
-	command!       -nargs=0                GitCommitMerge         :call GitS_Commit('merge','','')
-	command!       -nargs=+                GitCommitMsg           :call GitS_Commit('msg','<args>','')
-	command!       -nargs=* -complete=file GitDiff                :call GitS_Diff('update','<args>')
-	command!       -nargs=*                GitFetch               :call GitS_Fetch('<args>','')
-	command!       -nargs=+ -complete=file GitGrep                :call GitS_Grep('update','<args>')
-	command!       -nargs=+ -complete=file GitGrepTop             :call GitS_Grep('top','<args>')
-	command!       -nargs=*                GitHelp                :call GitS_Help('update','<args>')
-	command!       -nargs=* -complete=file GitLog                 :call GitS_Log('update','<args>')
-	command!       -nargs=*                GitMerge               :call GitS_Merge('direct','<args>','')
-	command!       -nargs=*                GitMergeUpstream       :call GitS_Merge('upstream','<args>','')
-	command!       -nargs=* -complete=file GitMove                :call GitS_Move('<args>','')
-	command!       -nargs=* -complete=file GitMv                  :call GitS_Move('<args>','')
-	command!       -nargs=*                GitPull                :call GitS_Pull('<args>','')
-	command!       -nargs=*                GitPush                :call GitS_Push('<args>','')
-	command!       -nargs=* -complete=file GitRemote              :call GitS_Remote('<args>','')
-	command!       -nargs=* -complete=file GitRemove              :call GitS_Remove('<args>','e')
-	command!       -nargs=* -complete=file GitRm                  :call GitS_Remove('<args>','e')
-	command!       -nargs=* -complete=file GitReset               :call GitS_Reset('<args>','e')
-	command!       -nargs=* -complete=file GitShow                :call GitS_Show('update','<args>')
-	command!       -nargs=*                GitStash               :call GitS_Stash('<args>','')
-	command!       -nargs=0                GitStatus              :call GitS_Status('update')
-	command!       -nargs=*                GitTag                 :call GitS_Tag('<args>','')
+	command! -nargs=* -complete=file -bang                           GitAdd             :call GitS_Add(<q-args>,'<bang>'=='!'?'ef':'e')
+	command! -nargs=* -complete=file -range=0                        GitBlame           :call GitS_Blame('update',<q-args>,<line1>,<line2>)
+	command! -nargs=* -complete=file                                 GitBranch          :call GitS_Branch(<q-args>,'')
+	command! -nargs=* -complete=file                                 GitCheckout        :call GitS_Checkout(<q-args>,'ce')
+	command! -nargs=* -complete=file                                 GitCommit          :call GitS_Commit('direct',<q-args>,'')
+	command! -nargs=? -complete=file                                 GitCommitFile      :call GitS_Commit('file',<q-args>,'')
+	command! -nargs=0                                                GitCommitMerge     :call GitS_Commit('merge','','')
+	command! -nargs=+                                                GitCommitMsg       :call GitS_Commit('msg',<q-args>,'')
+	command! -nargs=* -complete=file                                 GitDiff            :call GitS_Diff('update',<q-args>)
+	command! -nargs=*                                                GitFetch           :call GitS_Fetch(<q-args>,'')
+	command! -nargs=+ -complete=file                                 GitGrep            :call GitS_Grep('update',<q-args>)
+	command! -nargs=+ -complete=file                                 GitGrepTop         :call GitS_Grep('top',<q-args>)
+	command! -nargs=* -complete=customlist,GitS_HelpTopicsComplete   GitHelp            :call GitS_Help('update',<q-args>)
+	command! -nargs=* -complete=file                                 GitLog             :call GitS_Log('update',<q-args>)
+	command! -nargs=*                                                GitMerge           :call GitS_Merge('direct',<q-args>,'')
+	command! -nargs=*                                                GitMergeUpstream   :call GitS_Merge('upstream',<q-args>,'')
+	command! -nargs=* -complete=file                                 GitMove            :call GitS_Move(<q-args>,'')
+	command! -nargs=* -complete=file                                 GitMv              :call GitS_Move(<q-args>,'')
+	command! -nargs=*                                                GitPull            :call GitS_Pull(<q-args>,'')
+	command! -nargs=*                                                GitPush            :call GitS_Push(<q-args>,'')
+	command! -nargs=* -complete=file                                 GitRemote          :call GitS_Remote(<q-args>,'')
+	command! -nargs=* -complete=file                                 GitRemove          :call GitS_Remove(<q-args>,'e')
+	command! -nargs=* -complete=file                                 GitRm              :call GitS_Remove(<q-args>,'e')
+	command! -nargs=* -complete=file                                 GitReset           :call GitS_Reset(<q-args>,'e')
+	command! -nargs=* -complete=file                                 GitShow            :call GitS_Show('update',<q-args>)
+	command! -nargs=*                                                GitStash           :call GitS_Stash(<q-args>,'')
+	command! -nargs=0                                                GitStatus          :call GitS_Status('update')
+	command! -nargs=*                                                GitTag             :call GitS_Tag(<q-args>,'')
+	command  -nargs=* -complete=file -bang                           Git                :call GitS_Run(<q-args>,'<bang>'=='!'?'b':'')
+	command! -nargs=* -complete=file                                 GitRun             :call GitS_Run(<q-args>,'')
+	command! -nargs=* -complete=file                                 GitBuf             :call GitS_Run(<q-args>,'b')
 else
-	command! -bang -nargs=*                Git                    :call GitS_Help('disabled')
-	command!       -nargs=*                GitHelp                :call GitS_Help('disabled')
+	command  -nargs=*                -bang                           Git                :call GitS_Help('disabled')
+	command! -nargs=*                                                GitHelp            :call GitS_Help('disabled')
 endif
 "
 " syntax highlighting   {{{2
@@ -836,8 +932,13 @@ function! s:Blame_GetFile()
 		let b:GitSupport_BlameFile = f_name
 	end
 	"
+	" LINE:
+	"   [^] commit [ofile] (INFO line)
+	" The token 'ofile' appears if the file has been renamed in the meantime.
+	" INFO: (not used)
+	"   author date time timezone
 	let line = getline('.')
-	let mlist = matchlist ( line, '^\^\?\(\x\+\)\s\+(\([^)]\+\)\s\(\d\+\))' )
+	let mlist = matchlist ( line, '^\^\?\(\x\+\)\s\+\%([^(]\{-}\s\+\)\?(\([^)]\+\)\s\(\d\+\))' )
 	"
 	if empty ( mlist )
 		return [ f_name, -1, '' ]
@@ -872,9 +973,17 @@ function! GitS_Blame( action, ... )
 		return
 	elseif a:action == 'update'
 		"
-		if a:0 == 0         | " run again with old parameters
-		elseif empty( a:1 ) | let param = s:EscapeCurrent()
-		else                | let param = a:1
+		if a:0 == 0
+			" run again with old parameters
+		else
+			if   empty( a:1 ) | let param = s:EscapeCurrent()
+			else              | let param = a:1
+			endif
+			"
+			if a:0 >= 3 && a:2 <= a:3
+				let param = '-L '.a:2.','.a:3.' '.param
+			endif
+			"
 		endif
 		"
 	elseif a:action =~ '\<\%(\|edit\|jump\)\>'

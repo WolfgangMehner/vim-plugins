@@ -129,6 +129,8 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 + Added: Command :GitGrep and :GitGrepTop.
 + Added: Command :GitMergeUpstream.
 + Added: Custom menu entries.
++ Added: Cmd. line completion for :GitHelp.
++ Added: Command :GitBlame supports ranges.
 + Fixed: Jumping from the status buffer to a file did not work when the working
   directory changed.
 + Improved syntax highlighting.
