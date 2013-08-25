@@ -137,13 +137,13 @@ endif
 "-------------------------------------------------------------------------------
 " Init : Initialize the script.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#doxygen#Init ()
+function! mmtoolbox#doxygen#GetInfo ()
 	if s:Enabled
 		return [ 'Doxygen', g:Doxygen_Version ]
 	else
 		return [ 'Doxygen', g:Doxygen_Version, 'disabled' ]
 	endif
-endfunction    " ----------  end of function mmtoolbox#doxygen#Init  ----------
+endfunction    " ----------  end of function mmtoolbox#doxygen#GetInfo  ----------
 "
 "-------------------------------------------------------------------------------
 " AddMaps : Add maps.   {{{1

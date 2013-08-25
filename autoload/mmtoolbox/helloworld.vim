@@ -84,7 +84,7 @@ let s:WorldAvailable = 1
 "-------------------------------------------------------------------------------
 " Init : Initialize the script.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#helloworld#Init ()
+function! mmtoolbox#helloworld#GetInfo ()
 	"
 	" returns [ <prettyname>, <version>, <flag1>, ... ]
 	"
@@ -95,7 +95,7 @@ function! mmtoolbox#helloworld#Init ()
 	else
 		return [ 'Hello World', g:HelloWorld_Version, 'disabled' ]
 	endif
-endfunction    " ----------  end of function mmtoolbox#helloworld#Init  ----------
+endfunction    " ----------  end of function mmtoolbox#helloworld#GetInfo  ----------
 "
 "-------------------------------------------------------------------------------
 " AddMaps : Add maps.   {{{1

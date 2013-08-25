@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:Toolbox_Version') && ! exists('g:Toolbox_DevelopmentOverwrite') )
 	finish
 endif
-let g:Toolbox_Version= '0.9'     " version number of this script; do not change
+let g:Toolbox_Version= '1.0pre'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions   {{{1
@@ -148,8 +148,8 @@ function! mmtoolbox#tools#Load ( toolbox, directories )
 			" try to load and initialize
 			try
 				" 
-				" call the init function
-				exe 'let retlist = mmtoolbox#'.name.'#Init()'
+				" get tool information
+				exe 'let retlist = mmtoolbox#'.name.'#GetInfo()'
 				"
 				" assemble the entry
 				let entry = {
@@ -334,6 +334,11 @@ function! mmtoolbox#tools#AddMenus ( toolbox, root )
 	elseif exists ( 'g:maplocalleader' ) | let mleader = g:maplocalleader
 	else                                 | let mleader = '\'
 	endif
+	"
+	if mleader == ''
+		let mleader = '\'
+	endif
+	"
 	let mleader = escape ( mleader, ' .|\' )
 	let mleader = substitute ( mleader, '\V&', '\&&', 'g' )
 	"
@@ -362,7 +367,7 @@ function! mmtoolbox#tools#AddMenus ( toolbox, root )
 			exe 'call mmtoolbox#'.entry.name.'#AddMenu('.string( menu_root ).',mleader)'
 		catch /.*/
 			" could not load the plugin: ?
-			call s:ErrorMsg ( "Could not create maps for the tool \"".name."\" (".v:exception.")",
+			call s:ErrorMsg ( "Could not create menus for the tool \"".name."\" (".v:exception.")",
 						\	" - occurred at " . v:throwpoint )
 		endtry
 	endfor

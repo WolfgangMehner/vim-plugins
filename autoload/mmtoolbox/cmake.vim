@@ -191,13 +191,13 @@ endif
 "-------------------------------------------------------------------------------
 " Init : Initialize the script.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#cmake#Init ()
+function! mmtoolbox#cmake#GetInfo ()
 	if s:Enabled
 		return [ 'CMake', g:CMake_Version ]
 	else
 		return [ 'CMake', g:CMake_Version, 'disabled' ]
 	endif
-endfunction    " ----------  end of function mmtoolbox#cmake#Init  ----------
+endfunction    " ----------  end of function mmtoolbox#cmake#GetInfo  ----------
 "
 "-------------------------------------------------------------------------------
 " AddMaps : Add maps.   {{{1
@@ -211,7 +211,7 @@ endfunction    " ----------  end of function mmtoolbox#cmake#AddMaps  ----------
 function! mmtoolbox#cmake#AddMenu ( root, esc_mapl )
 	"
 	exe 'amenu '.a:root.'.run\ CMake<Tab>:CMake!   :CMake! '
-	exe 'amenu '.a:root.'.&run\ make<Tab>:CMake     :CMake '
+	exe 'amenu '.a:root.'.&run\ make<Tab>:CMake    :CMake '
 	"
 	exe 'amenu '.a:root.'.-Sep01- <Nop>'
 	"
@@ -458,6 +458,8 @@ function! mmtoolbox#cmake#Help ( type, topic )
 	"
 	" overview or concrete topic?
 	if a:topic == '' && a:type == 'policy'
+		"
+		" get the policy list (requires special treatment)
 		let cmd  = 's:PolicyListText ()'
 		"
 		let topic    = a:type
@@ -465,6 +467,8 @@ function! mmtoolbox#cmake#Help ( type, topic )
 		"
 		let jump = ':call mmtoolbox#cmake#HelpJump("'.a:type.'")<CR>'
 	elseif a:topic == ''
+		"
+		" get the list of topics
 		let cmd  = 's:TextFromSystem ( "'.s:CMake_Executable.' '.switch.'-list '.a:topic.'" )'
 		"
 		let topic    = a:type
@@ -472,6 +476,8 @@ function! mmtoolbox#cmake#Help ( type, topic )
 		"
 		let jump = ':call mmtoolbox#cmake#HelpJump("'.a:type.'")<CR>'
 	else
+		"
+		" get help for a topic
 		let cmd  = 's:TextFromSystem ( "'.s:CMake_Executable.' '.switch.' '.a:topic.'" )'
 		"
 		let topic    = a:topic

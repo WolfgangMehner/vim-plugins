@@ -44,7 +44,7 @@ endif
 if &cp || ( exists('g:Make_Version') && ! exists('g:Make_DevelopmentOverwrite') )
 	finish
 endif
-let g:Make_Version= '0.9'     " version number of this script; do not change
+let g:Make_Version= '1.0pre'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions   {{{1
@@ -132,21 +132,27 @@ endif
 "-------------------------------------------------------------------------------
 " Init : Initialize the script.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#make#Init ()
+function! mmtoolbox#make#GetInfo ()
 	if s:Enabled
 		return [ 'Make', g:Make_Version ]
 	else
 		return [ 'Make', g:Make_Version, 'disabled' ]
 	endif
-endfunction    " ----------  end of function mmtoolbox#make#Init  ----------
+endfunction    " ----------  end of function mmtoolbox#make#GetInfo  ----------
 "
 "-------------------------------------------------------------------------------
 " AddMaps : Add maps.   {{{1
 "-------------------------------------------------------------------------------
 function! mmtoolbox#make#AddMaps ()
 	"
-	 noremap  <buffer>  <silent>  <LocalLeader>rm       :Make<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>rm  <C-C>:Make<CR>
+	 noremap  <buffer>  <silent>  <LocalLeader>rm        :Make<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>rm   <C-C>:Make<CR>
+	 noremap  <buffer>  <silent>  <LocalLeader>rmc       :Make clean<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>rmc  <C-C>:Make clean<CR>
+	 noremap  <buffer>            <LocalLeader>rma       :MakeCmdlineArgs<space>
+	inoremap  <buffer>            <LocalLeader>rma  <C-C>:MakeCmdlineArgs<space>
+	 noremap  <buffer>            <LocalLeader>rcm       :MakeFile<space>
+	inoremap  <buffer>            <LocalLeader>rcm  <C-C>:MakeFile<space>
 	"
 endfunction    " ----------  end of function mmtoolbox#make#AddMaps  ----------
 "
@@ -155,13 +161,12 @@ endfunction    " ----------  end of function mmtoolbox#make#AddMaps  ----------
 "-------------------------------------------------------------------------------
 function! mmtoolbox#make#AddMenu ( root, esc_mapl )
 	"
-	exe 'amenu '.a:root.'.run\ &make<Tab>:Make           :Make '
-	exe 'amenu '.a:root.'.make\ &clean<Tab>:Make\ clean  :Make clean<CR>'
-	exe 'amenu '.a:root.'.make\ &doc<Tab>:Make\ doc      :Make doc<CR>'
+	exe 'amenu '.a:root.'.run\ &make<Tab>:Make            :Make<CR>'
+	exe 'amenu '.a:root.'.make\ &clean<Tab>:Make\ clean   :Make clean<CR>'
+	exe 'amenu '.a:root.'.make\ &doc<Tab>:Make\ doc       :Make doc<CR>'
 	"
-	exe 'amenu '.a:root.'.-Sep01- <Nop>'
-	"
-	exe 'amenu '.a:root.'.make&file<Tab>:MakeFile  :MakeFile '
+	exe 'amenu '.a:root.'.&choose\ make&file<Tab>:MakeFile                      :MakeFile<space>'
+	exe 'amenu '.a:root.'.cmd\.\ line\ ar&g\.\ for\ make<Tab>:MakeCmdlineArgs   :MakeCmdlineArgs<space>'
 	"
 endfunction    " ----------  end of function mmtoolbox#make#AddMenu  ----------
 "
@@ -227,8 +232,13 @@ endfunction    " ----------  end of function mmtoolbox#make#Run  ----------
 " }}}1
 "-------------------------------------------------------------------------------
 "
-" :TODO:19.08.2013 09:01:WM: menus and maps (escaped mapleader!)
-" :TODO:19.08.2013 09:01:WM: maps for filetype 'make'
+" maps for files of type 'make'
+if has('autocmd')
+	autocmd FileType *
+				\ if &filetype == 'make'           |
+				\ 	call mmtoolbox#make#AddMaps () |
+				\	endif
+endif
 "
 " =====================================================================================
 "  vim: foldmethod=marker
