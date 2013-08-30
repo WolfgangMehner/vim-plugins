@@ -106,9 +106,9 @@ endif
 " custom commands {{{2
 "
 if s:Enabled == 1
-	command! -bang -nargs=? -complete=file DoxygenConfigFile :call mmtoolbox#doxygen#Property('config-file<bang>',<q-args>)
-	command! -bang -nargs=? -complete=file DoxygenLogFile    :call mmtoolbox#doxygen#Property('log-file<bang>',<q-args>)
-	command! -bang -nargs=? -complete=file DoxygenErrorFile  :call mmtoolbox#doxygen#Property('error-file<bang>',<q-args>)
+	command! -bang -nargs=? -complete=file DoxygenConfigFile :call mmtoolbox#doxygen#Property('<bang>'=='!'?'echo':'set','config-file',<q-args>)
+	command! -bang -nargs=? -complete=file DoxygenErrorFile  :call mmtoolbox#doxygen#Property('<bang>'=='!'?'echo':'set','error-file',<q-args>)
+	command! -bang -nargs=? -complete=file DoxygenLogFile    :call mmtoolbox#doxygen#Property('<bang>'=='!'?'echo':'set','log-file',<q-args>)
 	command!       -nargs=? -complete=file DoxygenEditConfig :call mmtoolbox#doxygen#EditConfig()
 	command!       -nargs=0                DoxygenErrors     :call mmtoolbox#doxygen#Errors()
 else
@@ -165,33 +165,53 @@ endfunction    " ----------  end of function mmtoolbox#doxygen#AddMenu  --------
 "-------------------------------------------------------------------------------
 " Property : Various settings.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#doxygen#Property ( key, val )
+function! mmtoolbox#doxygen#Property ( mode, key, ... )
 	"
-	" check argument
-	if a:key == 'config-file!'
-		echo s:ConfigFile
+	" check the mode
+	if a:mode !~ 'echo\|get\|set'
+		return s:ErrorMsg ( 'Doxygen : Unknown mode: '.a:mode )
+	endif
+	"
+	" check 3rd argument for 'set'
+	if a:mode == 'set'
+		if a:0 == 0
+			return s:ErrorMsg ( 'Doxygen : Not enough arguments for mode "set".' )
+		endif
+		let val = a:1
+	endif
+	"
+	" check the key
+	if a:key == 'config-file'
+		let var = 's:ConfigFile'
+	elseif a:key == 'error-file'
+		let var = 's:ErrorFile'
+	elseif a:key == 'log-file'
+		let var = 's:LogFile'
+	else
+		return s:ErrorMsg ( 'Doxygen : Unknown option: '.a:key )
+	endif
+	"
+	" perform the action
+	if a:mode == 'echo'
+		exe 'echo '.var
+		return
+	elseif a:mode == 'get'
+		exe 'return '.var
 	elseif a:key == 'config-file'
 		" expand replaces the escape sequences from the cmdline
-		if a:val == '' | let s:ConfigFile = ''
-		else           | let s:ConfigFile = fnamemodify( expand( a:val ), ":p" )
+		if val == '' | let s:ConfigFile = ''
+		else         | let s:ConfigFile = fnamemodify( expand( val ), ":p" )
 		endif
-	elseif a:key == 'log-file!'
-		echo s:LogFile
-	elseif a:key == 'log-file'
-		" expand replaces the escape sequences from the cmdline
-		if a:val == '' | let s:LogFile = ''
-		else           | let s:LogFile = fnamemodify( expand( a:val ), ":p" )
-		endif
-	elseif a:key == 'error-file!'
-		echo s:ErrorFile
 	elseif a:key == 'error-file'
 		" expand replaces the escape sequences from the cmdline
-		if a:val == '' | let s:ErrorFile = ''
-		else           | let s:ErrorFile = fnamemodify( expand( a:val ), ":p" )
+		if val == '' | let s:ErrorFile = ''
+		else         | let s:ErrorFile = fnamemodify( expand( val ), ":p" )
 		endif
-	else
-		call s:ErrorMsg ( 'Doxygen : Unknown option: '.a:key )
-		return
+	elseif a:key == 'log-file'
+		" expand replaces the escape sequences from the cmdline
+		if val == '' | let s:LogFile = ''
+		else         | let s:LogFile = fnamemodify( expand( val ), ":p" )
+		endif
 	endif
 	"
 endfunction    " ----------  end of function mmtoolbox#doxygen#Property  ----------

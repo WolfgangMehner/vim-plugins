@@ -103,8 +103,8 @@ endif
 " custom commands {{{2
 "
 if s:Enabled == 1
-	command! -bang -nargs=? -complete=file MakeFile          :call mmtoolbox#make#Property('makefile<bang>',<q-args>)
-	command! -bang -nargs=* -complete=file MakeCmdlineArgs   :call mmtoolbox#make#Property('cmdline-args<bang>',<q-args>)
+	command! -bang -nargs=* -complete=file MakeCmdlineArgs   :call mmtoolbox#make#Property('<bang>'=='!'?'echo':'set','cmdline-args',<q-args>)
+	command! -bang -nargs=? -complete=file MakeFile          :call mmtoolbox#make#Property('<bang>'=='!'?'echo':'set','makefile',<q-args>)
 	command!       -nargs=* -complete=file Make              :call mmtoolbox#make#Run(<q-args>)
 else
 	"
@@ -173,23 +173,43 @@ endfunction    " ----------  end of function mmtoolbox#make#AddMenu  ----------
 "-------------------------------------------------------------------------------
 " Property : Various settings.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#make#Property ( key, val )
+function! mmtoolbox#make#Property ( mode, key, ... )
 	"
-	" check argument
-	if a:key == 'makefile!'
-		echo s:Makefile
+	" check the mode
+	if a:mode !~ 'echo\|get\|set'
+		return s:ErrorMsg ( 'Make : Unknown mode: '.a:mode )
+	endif
+	"
+	" check 3rd argument for 'set'
+	if a:mode == 'set'
+		if a:0 == 0
+			return s:ErrorMsg ( 'Make : Not enough arguments for mode "set".' )
+		endif
+		let val = a:1
+	endif
+	"
+	" check the key
+	if a:key == 'cmdline-args'
+		let var = 's:CmdLineArgs'
+	elseif a:key == 'makefile'
+		let var = 's:Makefile'
+	else
+		return s:ErrorMsg ( 'Make : Unknown option: '.a:key )
+	endif
+	"
+	" perform the action
+	if a:mode == 'echo'
+		exe 'echo '.var
+		return
+	elseif a:mode == 'get'
+		exe 'return '.var
+	elseif a:key == 'cmdline-args'
+		let s:CmdLineArgs = val
 	elseif a:key == 'makefile'
 		" expand replaces the escape sequences from the cmdline
-		if a:val == '' | let s:Makefile = ''
-		else           | let s:Makefile = fnamemodify( expand( a:val ), ":p" )
+		if val == '' | let s:Makefile = ''
+		else         | let s:Makefile = fnamemodify( expand( val ), ":p" )
 		endif
-	elseif a:key == 'cmdline-args!'
-		echo s:CmdLineArgs
-	elseif a:key == 'cmdline-args'
-		let s:CmdLineArgs = a:val
-	else
-		call s:ErrorMsg ( 'Make : Unknown option: '.a:key )
-		return
 	endif
 	"
 endfunction    " ----------  end of function mmtoolbox#make#Property  ----------

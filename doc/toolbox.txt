@@ -7,8 +7,12 @@ MM Toolbox Support                                                  *toolbox*
                  Wolfgang Mehner <wolfgang-mehner at web.de>
                   Fritz Mehner  <mehner.fritz at fh-swf.de>
 
+	*Todo		overview
+
 ==============================================================================
+------------------------------------------------------------------------------
   TOOLS                                                     *toolbox-contents*
+------------------------------------------------------------------------------
 ==============================================================================
 
  Tools
@@ -21,21 +25,361 @@ MM Toolbox Support                                                  *toolbox*
 
   Toolbox Interface                                   |toolbox-interface|
 
-==============================================================================
-  CMake                                                        *toolbox-cmake*
-==============================================================================
+
 
 ==============================================================================
-  Doxygen                                                    *toolbox-doxygen*
+------------------------------------------------------------------------------
+  CMake                                             *cmake-tool* *toolbox-cmake*
+------------------------------------------------------------------------------
 ==============================================================================
 
+CMake Tool                                                       Aug 27 2013
+
+                             Plug-in version 0.9   
+                        for Vim version 7.0 and above
+                 Wolfgang Mehner <wolfgang-mehner at web.de>
+
+The CMake tool offers an integration of CMake's makefile generator. It also
+helps with calling the make tool in the build location, independently of the
+current working directory. CMake's help can be quickly accessed within Vim.
+
 ==============================================================================
+0.  TABLE OF CONTENTS                                 *toolbox-cmake-contents*
+==============================================================================
+
+ 1.    Introduction                               |toolbox-cmake-intro|
+ 2.    Commands                                   |toolbox-cmake-commands|
+ 2.1    API                                       |toolbox-cmake-api|
+ 3.    Configuration                              |toolbox-cmake-config|
+
+==============================================================================
+1.  INTRODUCTION                                         *toolbox-cmake-intro*
+==============================================================================
+
+After configuring the project's top-level directory with |:CMakeProjectDir|
+and setting the build location using |:CMakeBuildLocation|, CMake can be run
+by calling the ex-command |:CMake|! (with a bang). Command line arguments can
+be given directly, for example: >
+	:CMake! -DDO_TESTS=1
+After that, :CMake (without a bang) can be used to execute the make tool in
+the build location: >
+	:CMake -j3
+Errors will be listed in the quick-fix buffer.
+
+Help for CMake's commands can be accessed using |:CMakeHelpCommand|: >
+	:CMakeHelpCommand add_library
+This will open a new buffer containing the help. Calling the command without
+parameters will open a buffer showing a list of all commands: >
+	:CMakeHelpCommand
+Similar ex-commands exist for modules, policies, properties and variables, see
+below.
+
+  Command                       Short Description
+ ----------------------------------------------------------------------------
+  |:CMake|! [<args>]              run CMake with the given arguments
+  |:CMake| [<args>]               run make with the given arguments
+
+  |:CMakeProjectDir| [<dir>]      set the project directory
+  |:CMakeBuildLocation| [<dir>]   set the build location
+
+  |:CMakeHelpCommand| [<topic>]   help for commands
+  |:CMakeHelpModule| [<topic>]    help for modules
+  |:CMakeHelpPolicy| [<topic>]    help for policies
+  |:CMakeHelpProperty| [<topic>]  help for properties
+  |:CMakeHelpVariable| [<topic>]  help for variables
+ ----------------------------------------------------------------------------
+
+Detailed explanations are given in the next section |toolbox-cmake-commands|.
+
+==============================================================================
+2.  COMMANDS                                          *toolbox-cmake-commands*
+==============================================================================
+
+This chapter provides detailed explanations of all the commands.
+
+------------------------------------------------------------------------------
+                                                                      *:CMake*
+  :CMake! [<args>] ~
+
+Runs cmake with the given arguments. If no arguments are given, calls cmake
+with the directory set by |:CMakeProjectDir|.
+
+  :CMake [<args>] ~
+
+Runs make with the given arguments. Beforehand, the working directory is set
+to the directory configured with |:CMakeBuildLocation|.
+
+------------------------------------------------------------------------------
+                                        *:CMakeProjectDir* *:CMakeBuildLocation*
+  :CMakeProjectDir [<dir>] ~
+  :CMakeBuildLocation [<dir>] ~
+
+Sets the project directory or build location.
+
+  :CMakeProjectDir! ~
+  :CMakeBuildLocation! ~
+
+Echoes the current project directory or build location
+
+------------------------------------------------------------------------------
+                                        *:CMakeHelpCommand* *:CMakeHelpModule*
+                                        *:CMakeHelpPolicy*  *:CMakeHelpProperty*
+                                                          *:CMakeHelpVariable*
+  :CMakeHelpCommand [<topic>] ~
+  :CMakeHelpModule [<topic>] ~
+  :CMakeHelpPolicy [<topic>] ~
+  :CMakeHelpProperty [<topic>] ~
+  :CMakeHelpVariable [<topic>] ~
+
+Open a buffer containing the help for the topic in each category. If no topic
+is given, shows a list of all commands, modules, variables, ...
+
+In each of the help buffers, several maps are defined.
+
+  Map           Meaning
+ ----------------------------------------------------------------------------
+  doubleclick   jump to the topic under the cursor/back to the list
+  CTRL-]        jump to the topic under the cursor/back to the list
+  <Enter>       jump to the topic under the cursor/back to the list
+  q             close the buffer
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+2.1  API                                                   *toolbox-cmake-api*
+------------------------------------------------------------------------------
+
+	*Todo		api
+
+==============================================================================
+3.  CONFIGURATION                                       *toolbox-cmake-config*
+==============================================================================
+
+The tool is configured via a number of global variables, which can be set in
+the .vimrc file.
+
+  Variable                  Default       Description and further information
+ ----------------------------------------------------------------------------
+  |g:CMake_Executable|        'cmake'       the CMake executable
+  |g:CMake_MakeTool|          'make'        the make executable
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+                                                          *g:CMake_Executable*
+The executable is set by g:CMake_Executable: >
+  let g:CMake_Executable = 'cmake'
+<
+------------------------------------------------------------------------------
+                                                            *g:CMake_MakeTool*
+The make executable is set by g:CMake_MakeTool: >
+  let g:CMake_MakeTool = 'make'
+<
+
+
+==============================================================================
+------------------------------------------------------------------------------
+  Doxygen                                       *doxygen-tool* *toolbox-doxygen*
+------------------------------------------------------------------------------
+==============================================================================
+
+Doxygen Tool                                                     Aug 27 2013
+
+                             Plug-in version 0.9   
+                        for Vim version 7.0 and above
+                 Wolfgang Mehner <wolfgang-mehner at web.de>
+                  Fritz Mehner  <mehner.fritz at fh-swf.de>
+
+	*Todo		overview
+
+==============================================================================
+0.  TABLE OF CONTENTS                               *toolbox-doxygen-contents*
+==============================================================================
+
+ 1.    Introduction                               |toolbox-doxygen-intro|
+ 2.    Commands                                   |toolbox-doxygen-commands|
+ 2.1    API                                       |toolbox-doxygen-api|
+ 3.    Configuration                              |toolbox-doxygen-config|
+
+==============================================================================
+1.  INTRODUCTION                                       *toolbox-doxygen-intro*
+==============================================================================
+
+	*Todo		introduction
+
+  Command                       Short Description
+ ----------------------------------------------------------------------------
+  |:Doxygen| [<args>]             run Doxygen with the given arguments
+ ----------------------------------------------------------------------------
+
+Detailed explanations are given in the next section |toolbox-doxygen-commands|.
+
+==============================================================================
+2.  COMMANDS                                        *toolbox-doxygen-commands*
+==============================================================================
+
+This chapter provides detailed explanations of all the commands.
+
+------------------------------------------------------------------------------
+                                                                    *:Doxygen*
+  :Doxygen [<args>] ~
+
+	*Todo		docu
+
+------------------------------------------------------------------------------
+2.1  API                                                 *toolbox-doxygen-api*
+------------------------------------------------------------------------------
+
+	*Todo		api
+
+==============================================================================
+3.  CONFIGURATION                                     *toolbox-doxygen-config*
+==============================================================================
+
+The tool is configured via a number of global variables, which can be set in
+the .vimrc file.
+
+  Variable                  Default       Description and further information
+ ----------------------------------------------------------------------------
+  |g:Doxygen_Executable|      'doxygen'     the Doxygen executable
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+                                                        *g:Doxygen_Executable*
+The executable is set by g:Doxygen_Executable: >
+  let g:Doxygen_Executable = 'doxygen'
+<
+
+
+==============================================================================
+------------------------------------------------------------------------------
   Make                                                          *toolbox-make*
+------------------------------------------------------------------------------
 ==============================================================================
 
+Make Tool                                                        Aug 27 2013
+
+                             Plug-in version 1.0pre
+                        for Vim version 7.0 and above
+                  Fritz Mehner  <mehner.fritz at fh-swf.de>
+                 Wolfgang Mehner <wolfgang-mehner at web.de>
+
+The Make tool offers minimal make functionality, such as running make with the
+makefile located in a different directory.
+
 ==============================================================================
+0.  TABLE OF CONTENTS                                  *toolbox-make-contents*
+==============================================================================
+
+ 1.    Introduction                               |toolbox-make-intro|
+ 2.    Commands                                   |toolbox-make-commands|
+ 2.1    API                                       |toolbox-make-api|
+ 3.    Configuration                              |toolbox-make-config|
+
+==============================================================================
+1.  INTRODUCTION                                          *toolbox-make-intro*
+==============================================================================
+
+Make is run using the ex-command |:Make|. Command line arguments can either be
+given directly, >
+  :Make -j3
+  :Make clean
+or specified by using |:MakeCmdlineArgs|. Arguments given to :MakeCmdlineArgs
+are passed on to make every time :Make is called without arguments. This
+feature can be used to "memorize" complicated argument lists which have to be
+passed to make repeatedly. Even if an argument list has been memorized, :Make
+can always be called with other arguments to disregard the memorized list. A
+call to :MakeCmdlineArgs without arguments clears the memorized argument list.
+
+By default, :Make runs in the current working directory and therefore uses the
+local makefile. The command |:MakeFile| sets a specific makefile, which is
+used every time, even when :Make is call in a different directory. This makes
+it possible to use the tool for larger projects, which are organized in
+multiple directories. The specified file is used until another is chosen or
+the default behavior is restored by calling :MakeFile without arguments.
+
+  Command                       Short Description
+ ----------------------------------------------------------------------------
+  |:Make| [<args>]                run make with the given arguments
+  |:MakeCmdlineArgs| [<args>]     memorize cmd. line arguments for make
+  |:MakeCmdlineArgs|!             echo memorized cmd. line arguments
+  |:MakeFile| [<file>]            choose a makefile
+  |:MakeFile|!                    echo the current makefile
+ ----------------------------------------------------------------------------
+
+Detailed explanations are given in the next section |toolbox-make-commands|.
+
+==============================================================================
+2.  COMMANDS                                           *toolbox-make-commands*
+==============================================================================
+
+This chapter provides detailed explanations of all the commands.
+
+------------------------------------------------------------------------------
+                                                                       *:Make*
+  :Make [<args>] ~
+
+Runs make with the given arguments.  If no arguments are given, uses the ones
+specified with |:MakeCmdlineArgs|, which can be an empty argument list as well.
+
+Uses the local makefile, unless a makefile has been chosen using |:MakeFile|.
+
+------------------------------------------------------------------------------
+                                                            *:MakeCmdlineArgs*
+  :MakeCmdlineArgs [<args>] ~
+
+Sets command line arguments for :Make. If make is called without arguments,
+these "memorized" arguments are used. The command can be called without
+arguments to delete the memorized argument list.
+
+  :MakeCmdlineArgs! ~
+
+Echoes the currently memorized arguments on the command line.
+
+------------------------------------------------------------------------------
+                                                                   *:MakeFile*
+  :MakeFile [<file>] ~
+  :MakeFile ~
+
+Sets the makefile. If a specific file has been selected, it is always used,
+independent of the current working directory. If the makefile has not been
+chosen, or reset by calling :MakeFile without arguments, the makefile in the
+current working directory is used.
+
+  :MakeFile! ~
+
+Echoes the current makefile on the command line.
+
+------------------------------------------------------------------------------
+2.1  API                                                    *toolbox-make-api*
+------------------------------------------------------------------------------
+
+	*Todo		api
+
+==============================================================================
+3.  CONFIGURATION                                        *toolbox-make-config*
+==============================================================================
+
+The tool is configured via a number of global variables, which can be set in
+the .vimrc file.
+
+  Variable                  Default       Description and further information
+ ----------------------------------------------------------------------------
+  |g:Make_Executable|         'make'        the make executable
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+                                                           *g:Make_Executable*
+The executable is set by g:Make_Executable: >
+  let g:Make_Executable = 'make'
+<
+
+
+==============================================================================
+------------------------------------------------------------------------------
   Toolbox Interface                                        *toolbox-interface*
+------------------------------------------------------------------------------
 ==============================================================================
+
+	*Todo		interface
 
 ==============================================================================
 vim:tw=78:noet:ts=2:ft=help:norl:

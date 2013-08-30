@@ -84,7 +84,7 @@ let s:SettingsEscChar = ' |"\'
 "
 " settings   {{{2
 "
-let s:BaseDirectory = '.'
+let s:ProjectDir    = '.'
 let s:BuildLocation = '.'
 "
 let s:CMake_Executable = 'cmake'
@@ -155,8 +155,8 @@ let s:Policies_List = [
 " custom commands {{{2
 "
 if s:Enabled == 1
-	command! -bang -nargs=? -complete=file CMakeBaseDirectory :call mmtoolbox#cmake#Property('base-dir<bang>',<q-args>)
-	command! -bang -nargs=? -complete=file CMakeBuildLocation :call mmtoolbox#cmake#Property('build-dir<bang>',<q-args>)
+	command! -bang -nargs=? -complete=file CMakeProjectDir    :call mmtoolbox#cmake#Property('<bang>'=='!'?'echo':'set','project-dir',<q-args>)
+	command! -bang -nargs=? -complete=file CMakeBuildLocation :call mmtoolbox#cmake#Property('<bang>'=='!'?'echo':'set','build-dir',<q-args>)
 	command! -bang -nargs=* -complete=file CMake              :call mmtoolbox#cmake#Run(<q-args>,'<bang>'=='!')
 	command!       -nargs=? -complete=file CMakeHelpCommand   :call mmtoolbox#cmake#Help('command',<q-args>)
 	command!       -nargs=? -complete=file CMakeHelpModule    :call mmtoolbox#cmake#Help('module',<q-args>)
@@ -215,8 +215,8 @@ function! mmtoolbox#cmake#AddMenu ( root, esc_mapl )
 	"
 	exe 'amenu '.a:root.'.-Sep01- <Nop>'
 	"
-	exe 'amenu '.a:root.'.base\ &directory<Tab>:CMakeBaseDirectory  :CMakeBaseDirectory '
-	exe 'amenu '.a:root.'.build\ &location<Tab>:CMakeBuildLocation  :CMakeBuildLocation '
+	exe 'amenu '.a:root.'.project\ &directory<Tab>:CMakeProjectDir     :CMakeProjectDir '
+	exe 'amenu '.a:root.'.build\ &location<Tab>:CMakeBuildLocation     :CMakeBuildLocation '
 	"
 	exe 'amenu '.a:root.'.-Sep02- <Nop>'
 	"
@@ -231,26 +231,46 @@ endfunction    " ----------  end of function mmtoolbox#cmake#AddMenu  ----------
 "-------------------------------------------------------------------------------
 " Property : Various settings.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#cmake#Property ( key, val )
+function! mmtoolbox#cmake#Property ( mode, key, ... )
 	"
-	" check argument
-	if a:key == 'base-dir!'
-		echo s:BaseDirectory
-	elseif a:key == 'base-dir'
-		" expand replaces the escape sequences from the cmdline
-		if a:val == '' | let s:BaseDirectory = ''
-		else           | let s:BaseDirectory = fnamemodify( expand( a:val ), ":p" )
+	" check the mode
+	if a:mode !~ 'echo\|get\|set'
+		return s:ErrorMsg ( 'CMake : Unknown mode: '.a:mode )
+	endif
+	"
+	" check 3rd argument for 'set'
+	if a:mode == 'set'
+		if a:0 == 0
+			return s:ErrorMsg ( 'CMake : Not enough arguments for mode "set".' )
 		endif
-	elseif a:key == 'build-dir!'
-		echo s:BuildLocation
+		let val = a:1
+	endif
+	"
+	" check the key
+	if a:key == 'project-dir'
+		let var = 's:ProjectDir'
+	elseif a:key == 'build-dir'
+		let var = 's:BuildLocation'
+	else
+		return s:ErrorMsg ( 'CMake : Unknown option: '.a:key )
+	endif
+	"
+	" perform the action
+	if a:mode == 'echo'
+		exe 'echo '.var
+		return
+	elseif a:mode == 'get'
+		exe 'return '.var
+	elseif a:key == 'project-dir'
+		" expand replaces the escape sequences from the cmdline
+		if val == '' | let s:ProjectDir = ''
+		else         | let s:ProjectDir = fnamemodify( expand( val ), ":p" )
+		endif
 	elseif a:key == 'build-dir'
 		" expand replaces the escape sequences from the cmdline
-		if a:val == '' | let s:BuildLocation = ''
-		else           | let s:BuildLocation = fnamemodify( expand( a:val ), ":p" )
+		if val == '' | let s:BuildLocation = ''
+		else         | let s:BuildLocation = fnamemodify( expand( val ), ":p" )
 		endif
-	else
-		call s:ErrorMsg ( 'CMake : Unknown option: '.a:key )
-		return
 	endif
 	"
 endfunction    " ----------  end of function mmtoolbox#cmake#Property  ----------
@@ -284,13 +304,13 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 		" run CMake and process the errors
 		exe	'setglobal errorformat='.s:ErrorFormat_CMake
 		"
-		if a:args == '' | let args = shellescape ( s:BaseDirectory )
+		if a:args == '' | let args = shellescape ( s:ProjectDir )
 		else            | let args = a:args
 		endif
 		"
-		let errors = 'DIR : '.s:BaseDirectory."\n"
+		let errors = 'DIR : '.s:ProjectDir."\n"
 					\ .system ( s:CMake_Executable.' '.args )
-					\ .'ENDDIR : '.s:BaseDirectory
+					\ .'ENDDIR : '.s:ProjectDir
 		cexpr errors
 		"
 		" restore the old settings
@@ -325,9 +345,9 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 			" process the errors
 			exe	'setglobal errorformat='.s:ErrorFormat_CMake
 			"
-			let errors = 'DIR : '.s:BaseDirectory."\n"
+			let errors = 'DIR : '.s:ProjectDir."\n"
 						\ .errors
-						\ .'ENDDIR : '.s:BaseDirectory
+						\ .'ENDDIR : '.s:ProjectDir
 			cexpr errors
 			"
 			" restore the old settings
