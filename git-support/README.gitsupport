@@ -122,18 +122,19 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 ----------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.1pre
 ----------------------------------------------------------------------
-+ Added: New maps for the buffers: blame, diff and status
-+ Changed: Commands which open a file will jump to its window, if one exists.
-+ Changed: Opening a diff in the status buffer (see g:Git_StatusStagedOpenDiff).
-+ Changed: Calling :GitDiff without arguments (see g:Git_DiffExpandEmpty).
-+ Added: Command :GitGrep and :GitGrepTop.
-+ Added: Command :GitMergeUpstream.
-+ Added: Custom menu entries.
-+ Added: Cmd. line completion for :GitHelp.
-+ Added: Command :GitBlame supports ranges.
-+ Fixed: Jumping from the status buffer to a file did not work when the working
+- Added: New maps for the buffers: blame, diff and status
+- Changed: Commands which open a file will jump to its window, if one exists.
+- Changed: Opening a diff in the status buffer (see g:Git_StatusStagedOpenDiff).
+- Changed: Calling :GitDiff without arguments (see g:Git_DiffExpandEmpty).
+- Added: Command :GitGrep and :GitGrepTop.
+- Added: Command :GitMergeUpstream.
+- Added: Custom menu entries.
+- Added: Cmd. line completion for :GitHelp.
+- Added: Command :GitBlame supports ranges.
+- Fixed: Jumping from the status buffer to a file did not work when the working
   directory changed.
-+ Improved syntax highlighting.
+- Improved syntax highlighting.
+- Minor bugfixes and improvements.
 
 ----------------------------------------------------------------------
   RELEASE NOTES FOR OLDER VERSIONS

@@ -625,24 +625,32 @@ endfunction    " ----------  end of function s:OpenGitBuffer  ----------
 " s:UpdateGitBuffer : Put output in a read-only buffer.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! s:UpdateGitBuffer ( command )
+function! s:UpdateGitBuffer ( command, ... )
 	"
-	" save the position
-	let pos = line('.')
+	if a:0 == 1 && a:1
+		" return to old position
+		let pos = line('.')
+	else
+		let pos = 1
+	endif
 	"
 	" delete the previous contents
 	setlocal modifiable
 	setlocal noro
 	silent exe '1,$delete'
 	"
+	" pause syntax highlighting (for speed)
+	setlocal syntax=OFF
+	"
 	" insert the output of the command
-	let text = system ( a:command )
+	silent exe 'r! '.a:command
 	"
-	silent exe 'put! = text'
+	" restart syntax highlighting
+	setlocal syntax=ON
 	"
-	" delete the last line (empty) and return to position
- 	normal zR
-	normal Gdd
+	" delete the first line (empty) and go to position
+	normal zR
+	normal ggdd
 	silent exe ':'.pos
 	"
 	" read-only again
@@ -958,6 +966,7 @@ endfunction    " ----------  end of function s:Blame_GetFile  ----------
 "
 function! GitS_Blame( action, ... )
 	"
+	let update_only = 0
 	let param = ''
 	"
 	if a:action == 'help'
@@ -973,7 +982,9 @@ function! GitS_Blame( action, ... )
 		return
 	elseif a:action == 'update'
 		"
-		if a:0 == 0
+		let update_only = a:0 == 0
+		"
+		if update_only
 			" run again with old parameters
 		else
 			if   empty( a:1 ) | let param = s:EscapeCurrent()
@@ -1042,7 +1053,7 @@ function! GitS_Blame( action, ... )
 	"
 	call s:ChangeCWD ( buf )
 	"
-	if a:0 == 0
+	if update_only
 		let param = b:GitSupport_Param
 	else
 		let b:GitSupport_Param = param
@@ -1050,7 +1061,7 @@ function! GitS_Blame( action, ... )
 	"
 	let cmd = s:Git_Executable.' blame '.param
 	"
-	call s:UpdateGitBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd, update_only )
 	"
 endfunction    " ----------  end of function GitS_Blame  ----------
 "
@@ -1102,7 +1113,7 @@ function! GitS_BranchList( action )
 	"
 	let cmd = s:Git_Executable.' branch -avv'
 	"
-	call s:UpdateGitBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd, 1 )
 	"
 endfunction    " ----------  end of function GitS_BranchList  ----------
 "
@@ -1250,6 +1261,7 @@ endfunction    " ----------  end of function GitS_Commit  ----------
 "
 function! GitS_CommitDryRun( action, ... )
 	"
+	let update_only = 0
 	let param = ''
 	"
 	if a:action == 'help'
@@ -1260,7 +1272,9 @@ function! GitS_CommitDryRun( action, ... )
 		return
 	elseif a:action == 'update'
 		"
-		if a:0 == 0         | " run again with old parameters
+		let update_only = a:0 == 0
+		"
+		if update_only      | " run again with old parameters
 		elseif empty( a:1 ) | let param = ''
 		else                | let param = a:1
 		endif
@@ -1286,7 +1300,7 @@ function! GitS_CommitDryRun( action, ... )
 	"
 	call s:ChangeCWD ( buf )
 	"
-	if a:0 == 0
+	if update_only
 		let param = b:GitSupport_Param
 	else
 		let b:GitSupport_Param = param
@@ -1294,7 +1308,7 @@ function! GitS_CommitDryRun( action, ... )
 	"
 	let cmd = s:Git_Executable.' commit --dry-run '.param
 	"
-	call s:UpdateGitBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd, update_only )
 	"
 endfunction    " ----------  end of function GitS_CommitDryRun  ----------
 "
@@ -1391,6 +1405,7 @@ endfunction    " ----------  end of function s:Diff_GetFile  ----------
 "
 function! GitS_Diff( action, ... )
 	"
+	let update_only = 0
 	let param = ''
 	"
 	if a:action == 'help'
@@ -1406,7 +1421,9 @@ function! GitS_Diff( action, ... )
 		return
 	elseif a:action == 'update'
 		"
-		if a:0 == 0
+		let update_only = a:0 == 0
+		"
+		if update_only
 			" run again with old parameters
 		elseif empty( a:1 ) && g:Git_DiffExpandEmpty == 'yes'
 			let param = s:EscapeCurrent()
@@ -1465,7 +1482,7 @@ function! GitS_Diff( action, ... )
 	"
 	call s:ChangeCWD ( buf )
 	"
-	if a:0 == 0
+	if update_only
 		let param = b:GitSupport_Param
 	else
 		let b:GitSupport_Param = param
@@ -1473,7 +1490,7 @@ function! GitS_Diff( action, ... )
 	"
 	let cmd = s:Git_Executable.' diff '.param
 	"
-	call s:UpdateGitBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd, update_only )
 	"
 endfunction    " ----------  end of function GitS_Diff  ----------
 "
@@ -1531,6 +1548,7 @@ endfunction    " ----------  end of function s:Grep_GetFile  ----------
 "
 function! GitS_Grep( action, ... )
 	"
+	let update_only = 0
 	let param = ''
 	"
 	if a:action == 'help'
@@ -1545,7 +1563,9 @@ function! GitS_Grep( action, ... )
 		return
 	elseif a:action == 'update' || a:action == 'top'
 		"
-		if a:0 == 0         | " run again with old parameters
+		let update_only = a:0 == 0
+		"
+		if update_only      | " run again with old parameters
 		elseif empty( a:1 ) | let param = ''
 		else                | let param = a:1
 		endif
@@ -1603,7 +1623,7 @@ function! GitS_Grep( action, ... )
 	"
 	call s:ChangeCWD ( buf )
 	"
-	if a:0 == 0
+	if update_only
 		let param = b:GitSupport_Param
 	else
 		let b:GitSupport_Param = param
@@ -1611,7 +1631,7 @@ function! GitS_Grep( action, ... )
 	"
 	let cmd = s:Git_Executable.' grep '.param
 	"
-	call s:UpdateGitBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd, update_only )
 	"
 endfunction    " ----------  end of function GitS_Grep  ----------
 "
@@ -1863,7 +1883,7 @@ function! GitS_RemoteList( action )
 	"
 	let cmd = s:Git_Executable.' remote -v'
 	"
-	call s:UpdateGitBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd, 1 )
 	"
 endfunction    " ----------  end of function GitS_RemoteList  ----------
 "
@@ -1977,6 +1997,7 @@ endfunction    " ----------  end of function GitS_Stash  ----------
 "
 function! GitS_StashList( action, ... )
 	"
+	let update_only = 0
 	let param = ''
 	"
 	if a:action == 'help'
@@ -1987,7 +2008,9 @@ function! GitS_StashList( action, ... )
 		return
 	elseif a:action == 'update'
 		"
-		if a:0 == 0         | " run again with old parameters
+		let update_only = a:0 == 0
+		"
+		if update_only      | " run again with old parameters
 		elseif empty( a:1 ) | let param = ''
 		else                | let param = a:1
 		endif
@@ -2012,7 +2035,7 @@ function! GitS_StashList( action, ... )
 	"
 	call s:ChangeCWD ( buf )
 	"
-	if a:0 == 0
+	if update_only
 		let param = b:GitSupport_Param
 	else
 		let b:GitSupport_Param = param
@@ -2020,7 +2043,7 @@ function! GitS_StashList( action, ... )
 	"
 	let cmd = s:Git_Executable.' stash '.param
 	"
-	call s:UpdateGitBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd, update_only )
 	"
 endfunction    " ----------  end of function GitS_StashList  ----------
 "
@@ -2030,6 +2053,7 @@ endfunction    " ----------  end of function GitS_StashList  ----------
 "
 function! GitS_StashShow( action, ... )
 	"
+	let update_only = 0
 	let param = ''
 	"
 	if a:action == 'help'
@@ -2040,7 +2064,9 @@ function! GitS_StashShow( action, ... )
 		return
 	elseif a:action == 'update'
 		"
-		if a:0 == 0         | " run again with old parameters
+		let update_only = a:0 == 0
+		"
+		if update_only      | " run again with old parameters
 		elseif empty( a:1 ) | let param = ''
 		else                | let param = a:1
 		endif
@@ -2064,7 +2090,7 @@ function! GitS_StashShow( action, ... )
 	"
 	call s:ChangeCWD ( buf )
 	"
-	if a:0 == 0
+	if update_only
 		let param = b:GitSupport_Param
 	else
 		let b:GitSupport_Param = param
@@ -2072,7 +2098,7 @@ function! GitS_StashShow( action, ... )
 	"
 	let cmd = s:Git_Executable.' stash '.param
 	"
-	call s:UpdateGitBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd, update_only )
 	"
 endfunction    " ----------  end of function GitS_StashShow  ----------
 "
@@ -2379,6 +2405,8 @@ endfunction    " ----------  end of function s:Status_FileAction  ----------
 "
 function! GitS_Status( action )
 	"
+	let update_only = 0
+	"
 	if a:action == 'help'
 		let txt  = s:HelpTxtStd."\n\n"
 		let txt .= "i       : toggle \"show ignored files\"\n"
@@ -2400,7 +2428,7 @@ function! GitS_Status( action )
 		close
 		return
 	elseif a:action == 'update'
-		" noop
+		let update_only = 1
 	elseif a:action == 'ignored'
 		if ! s:HasStatusIgnore
 			return s:ErrorMsg ( '"show ignored files" not available in Git version '.s:GitVersion.'.' )
@@ -2481,7 +2509,7 @@ function! GitS_Status( action )
 	if b:GitSupport_ShortOption   == 1 && ! s:HasStatusBranch | let cmd .= ' --short'          | endif
 	if b:GitSupport_VerboseOption == 1                        | let cmd .= ' --verbose'        | endif
 	"
-	call s:UpdateGitBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd, update_only )
 	"
 endfunction    " ----------  end of function GitS_Status  ----------
 "
@@ -2513,6 +2541,7 @@ endfunction    " ----------  end of function GitS_Tag  ----------
 "
 function! GitS_TagList( action, ... )
 	"
+	let update_only = 0
 	let param = ''
 	"
 	if a:action == 'help'
@@ -2523,7 +2552,9 @@ function! GitS_TagList( action, ... )
 		return
 	elseif a:action == 'update'
 		"
-		if a:0 == 0         | " run again with old parameters
+		let update_only = a:0 == 0
+		"
+		if update_only      | " run again with old parameters
 		elseif empty( a:1 ) | let param = ''
 		else                | let param = a:1
 		endif
@@ -2548,7 +2579,7 @@ function! GitS_TagList( action, ... )
 	"
 	call s:ChangeCWD ( buf )
 	"
-	if a:0 == 0
+	if update_only
 		let param = b:GitSupport_Param
 	else
 		let b:GitSupport_Param = param
@@ -2556,7 +2587,7 @@ function! GitS_TagList( action, ... )
 	"
 	let cmd = s:Git_Executable.' tag '.param
 	"
-	call s:UpdateGitBuffer ( cmd )
+	call s:UpdateGitBuffer ( cmd, update_only )
 	"
 endfunction    " ----------  end of function GitS_TagList  ----------
 "

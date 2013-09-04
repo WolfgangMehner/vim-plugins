@@ -73,45 +73,45 @@ run the commands in every subdirectory of the project.
 
   Command                          Short Description
  ----------------------------------------------------------------------------
-  |:Git|    <cmd> [<param>]          (run) git <cmd> <param>
-  |:Git|!   <cmd> [<param>]          (buf) git <cmd> <param>
-  |:GitRun| <cmd> [<param>]          (run) git <cmd> <param>
-  |:GitBuf| <cmd> [<param>]          (buf) git <cmd> <param>
+  |:Git|    <cmd> [<args>]           (run) git <cmd> <args>
+  |:Git|!   <cmd> [<args>]           (buf) git <cmd> <args>
+  |:GitRun| <cmd> [<args>]           (run) git <cmd> <args>
+  |:GitBuf| <cmd> [<args>]           (buf) git <cmd> <args>
 
-  |:GitAdd| [<param>]                (run) git add <param>
-  |:[range]GitBlame| [<param>]       (buf) git blame <param>
+  |:GitAdd| [<args>]                 (run) git add <args>
+  |:GitBlame| [<args>]               (buf) git blame <args> (supports ranges)
   |:GitBranch|                       (buf) git branch
-  |:GitBranch| <param>               (run) git branch <param>
-  |:GitCheckout| [<param>]           (run) git checkout <param>
-  |:GitCommit| [<param>]             (run) git commit <param>
-  |:GitCommit| --dry-run [<param>]   (buf) git commit --dry-run <param>
+  |:GitBranch| <args>                (run) git branch <args>
+  |:GitCheckout| [<args>]            (run) git checkout <args>
+  |:GitCommit| [<args>]              (run) git commit <args>
+  |:GitCommit| --dry-run [<args>]    (buf) git commit --dry-run <args>
   |:GitCommitFile| [<file>]          (run) git commit -F <file>
   |:GitCommitMerge|                  (run) git commit -F <base>/.git/MERGE_MSG
   |:GitCommitMsg| <msg>              (run) git commit -m "<msg>"
-  |:GitDiff| [<param>]               (buf) git diff <param>
-  |:GitFetch| [<param>]              (run) git fetch <param>
-  |:GitGrep| <param>                 (buf) git grep <param>
-  |:GitGrepTop| <param>              (buf) git grep <param> (^1)
-  |:GitHelp| [<param>]               (buf) git help <param>
-  |:GitLog| [<param>]                (buf) git log <param>
-  |:GitMerge| [<param>]              (run) git merge <param>
-  |:GitMergeUpstream| [<param>]      (run) git merge <param> <upstream-branch>
-  |:GitMove| [<param>]               (run) git mv <param>
-  |:GitMv| [<param>]                 (run) git mv <param>
-  |:GitPull| [<param>]               (run) git pull <param>
-  |:GitPush| [<param>]               (run) git push <param>
+  |:GitDiff| [<args>]                (buf) git diff <args>
+  |:GitFetch| [<args>]               (run) git fetch <args>
+  |:GitGrep| <args>                  (buf) git grep <args>
+  |:GitGrepTop| <args>               (buf) git grep <args> (^1)
+  |:GitHelp| [<args>]                (buf) git help <args>
+  |:GitLog| [<args>]                 (buf) git log <args>
+  |:GitMerge| [<args>]               (run) git merge <args>
+  |:GitMergeUpstream| [<args>]       (run) git merge <args> <upstream-branch>
+  |:GitMove| [<args>]                (run) git mv <args>
+  |:GitMv| [<args>]                  (run) git mv <args>
+  |:GitPull| [<args>]                (run) git pull <args>
+  |:GitPush| [<args>]                (run) git push <args>
   |:GitRemote|                       (buf) git remote
-  |:GitRemote| <param>               (run) git remote <param>
-  |:GitRemove| [<param>]             (run) git rm <param>
-  |:GitRm| [<param>]                 (run) git rm <param>
-  |:GitReset| [<param>]              (run) git reset <param>
-  |:GitShow| [<param>]               (buf) git show <param>
-  |:GitStash| [<param>]              (run) git stash <param>
-  |:GitStash| list [<param>]         (buf) git stash list <param>
-  |:GitStash| show [<param>]         (buf) git stash show <param>
+  |:GitRemote| <args>                (run) git remote <args>
+  |:GitRemove| [<args>]              (run) git rm <args>
+  |:GitRm| [<args>]                  (run) git rm <args>
+  |:GitReset| [<args>]               (run) git reset <args>
+  |:GitShow| [<args>]                (buf) git show <args>
+  |:GitStash| [<args>]               (run) git stash <args>
+  |:GitStash| list [<args>]          (buf) git stash list <args>
+  |:GitStash| show [<args>]          (buf) git stash show <args>
   |:GitStatus|                       (buf) git status
   |:GitTag|                          (buf) git tag
-  |:GitTag| <param>                  (run) git tag <param>
+  |:GitTag| <args>                   (run) git tag <args>
  ----------------------------------------------------------------------------
 
 (run) runs the command after asking for confirmation
@@ -121,12 +121,12 @@ run the commands in every subdirectory of the project.
 When a command opens a new buffer, several maps are defined for this buffer.
 Hitting <SHIFT-F1> always prints a short help with all available maps.
 
-The default parameter for GitAdd, GitBlame, GitCheckout, GitCommitFile,
+The default argument for GitAdd, GitBlame, GitCheckout, GitCommitFile,
 GitDiff, GitRm, GitRemove and GitReset is the current buffer.
 
-When called without parameters, the commands GitBranch and GitRemote open a
+When called without arguments, the commands GitBranch and GitRemote open a
 buffer, otherwise they run the respective Git command with the given
-parameters.
+arguments.
 
 ------------------------------------------------------------------------------
 2.1  MENU                                           *gitsupport-overview-menu*
@@ -153,7 +153,7 @@ tation for further help.
 
 To be completely honest, the plug-in in its current state is probably best
 suited for my own workflow. This is the main reason why simply running
-|:GitCommit| without parameters currently does not work, and why there is a
+|:GitCommit| without arguments currently does not work, and why there is a
 |:GitCommitFile| command.
 
 I keep a file like 'project/commit.txt' around and protocol the changes while
@@ -184,10 +184,10 @@ buffers can be closed via <q> and updated via <u>.
 
 ------------------------------------------------------------------------------
                                                         *:Git* *:GitRun* *:GitBuf*
-	:Git <cmd> [<param>] ~
-	:GitRun <cmd> [<param>] ~
-	:Git! <cmd> [<param>] ~
-	:GitBuf <cmd> [<param>] ~
+	:Git <cmd> [<args>] ~
+	:GitRun <cmd> [<args>] ~
+	:Git! <cmd> [<args>] ~
+	:GitBuf <cmd> [<args>] ~
 
 Executes "git <cmd> ...". The last two versions redirect the output into a
 buffer.
@@ -201,11 +201,11 @@ buffer.
 
 ------------------------------------------------------------------------------
                                                                      *:GitAdd*
-	:GitAdd [<param>] ~
-	:GitAdd! [<param>] ~
+	:GitAdd [<args>] ~
+	:GitAdd! [<args>] ~
 
-Executes "git add ...". The second version forces the add. If no parameters
-are given, adds the current buffer.
+Executes "git add ...". The second version forces the add. If no arguments are
+given, adds the current buffer.
 
 Examples:
 
@@ -224,10 +224,10 @@ Is equivalent to: >
 ------------------------------------------------------------------------------
                                                                    *:GitBlame*
 	:[range]GitBlame ~
-	:[range]GitBlame <param> ~
+	:[range]GitBlame <args> ~
 
 The first version opens a buffer containing the output of Git's blame for the
-current buffer. The second version runs blame for the given parameters. When
+current buffer. The second version runs blame for the given arguments. When a
 range is given, the output is limited to these lines.
 
   Map       Meaning
@@ -245,7 +245,7 @@ range is given, the output is limited to these lines.
 ------------------------------------------------------------------------------
                                                                   *:GitBranch*
 	:GitBranch ~
-	:GitBranch <param> ~
+	:GitBranch <args> ~
 
 The first version opens a buffer listing all branches, including remote ones.
 The second version executes "git branch ...".
@@ -259,10 +259,10 @@ The second version executes "git branch ...".
 
 ------------------------------------------------------------------------------
                                                                 *:GitCheckout*
-	:GitCheckout [<param>] ~
+	:GitCheckout [<args>] ~
 
-Executes "git checkout ...". If no parameters are given, checks out the
-current file.
+Executes "git checkout ...". If no arguments are given, checks out the current
+file.
 
 Examples:
 
@@ -277,19 +277,19 @@ Check out the branch "master": >
 
 ------------------------------------------------------------------------------
                                      *:GitCommit* *:GitCommitFile* *:GitCommitMsg*
-	:GitCommit [<param>] ~
+	:GitCommit [<args>] ~
 	:GitCommitFile [<file>] ~
 	:GitCommitMsg <msg> ~
 
-The first version runs "git commit" with the given parameters. If the
-parameters include the "--dry-run" flag, the output is redirected into a
-buffer. The second version takes the commit message from the given file
-(default: current buffer). The third version uses the commit message provided
-on the command line.
+The first version runs "git commit" with the given arguments. If the arguments
+include the "--dry-run" flag, the output is redirected into a buffer. The
+second version takes the commit message from the given file (default: current
+buffer). The third version uses the commit message provided on the command
+line.
 
-Note The command :GitCommit currently can not be run without parameters.
-     Supply the commit message using either the -m or -F options, or by using
-     the other versions :GitCommitFile or :GitCommitMsg.
+Note The command :GitCommit currently can not be run without arguments. Supply
+     the commit message using either the -m or -F options, or by using the
+     other versions :GitCommitFile or :GitCommitMsg.
 
                                                              *:GitCommitMerge*
 Commit a merge:
@@ -334,11 +334,11 @@ Is equivalent to: >
 ------------------------------------------------------------------------------
                                                                     *:GitDiff*
 	:GitDiff ~
-	:GitDiff <param> ~
+	:GitDiff <args> ~
 
 The first version opens a buffer containing the output of Git's diff for the
 current buffer (see |g:Git_DiffExpandEmpty| for changing this back to Git's
-standard behavior). The second version runs diff for the given parameters.
+standard behavior). The second version runs diff for the given arguments.
 
   Map       Meaning
  ----------------------------------------------------------------------------
@@ -365,14 +365,14 @@ Settings:
 
 ------------------------------------------------------------------------------
                                                                    *:GitFetch*
-	:GitFetch [<param>] ~
+	:GitFetch [<args>] ~
 
 Executes "git fetch ...".
 
 ------------------------------------------------------------------------------
                                                         *:GitGrep* *:GitGrepTop*
-	:GitGrep <param> ~
-	:GitGrepTop <param> ~
+	:GitGrep <args> ~
+	:GitGrepTop <args> ~
 
 The first version opens a buffer containing the output of Git's grep. The
 second version runs grep within the context of the top-level directory of the
@@ -391,7 +391,7 @@ repository.
 
 ------------------------------------------------------------------------------
                                                                     *:GitHelp*
-	:GitHelp [<param>] ~
+	:GitHelp [<args>] ~
 
 Opens a buffer containing the help for one of Git's commands. If no command is
 given, opens the help for Git itself.
@@ -412,10 +412,10 @@ Is equivalent to: >
 ------------------------------------------------------------------------------
                                                                      *:GitLog*
 	:GitLog ~
-	:GitLog <param> ~
+	:GitLog <args> ~
 
 The first version opens a buffer containing the log for the current branch.
-The second version runs log for the given parameters.
+The second version runs log for the given arguments.
 
   Map       Meaning
  ----------------------------------------------------------------------------
@@ -426,39 +426,39 @@ The second version runs log for the given parameters.
 
 ------------------------------------------------------------------------------
                                                  *:GitMerge* *:GitMergeUpstream*
-	:GitMerge [<param>] ~
-	:GitMergeUpstream [<param>] ~
+	:GitMerge [<args>] ~
+	:GitMergeUpstream [<args>] ~
 
 The first version executes "git merge ...". The second version automatically
 obtains the name of the upstream branch and merges it into the current branch.
-Parameters can still be given: >
+arguments can still be given: >
 	:GitMergeUpstream --ff-only
 Is equivalent to: >
 	git merge --ff-only <upstream-branch>
 <
 ------------------------------------------------------------------------------
                                                              *:GitMove* *:GitMv*
-	:GitMove [<param>] ~
-	:GitMv [<param>] ~
+	:GitMove [<args>] ~
+	:GitMv [<args>] ~
 
 Both versions behave the same. Executes "git mv ...".
 
 ------------------------------------------------------------------------------
                                                                     *:GitPull*
-	:GitPull [<param>] ~
+	:GitPull [<args>] ~
 
 Executes "git pull ...".
 
 ------------------------------------------------------------------------------
                                                                     *:GitPush*
-	:GitPush [<param>] ~
+	:GitPush [<args>] ~
 
 Executes "git push ...".
 
 ------------------------------------------------------------------------------
                                                                   *:GitRemote*
 	:GitRemote ~
-	:GitRemote <param> ~
+	:GitRemote <args> ~
 
 The first version opens a buffer listing all the remotes together with their
 URLs. The second version executes "git remote ...".
@@ -472,10 +472,10 @@ URLs. The second version executes "git remote ...".
 
 ------------------------------------------------------------------------------
                                                            *:GitRemove* *:GitRm*
-	:GitRemove [<param>] ~
-	:GitRm [<param>] ~
+	:GitRemove [<args>] ~
+	:GitRm [<args>] ~
 
-Both versions behave the same. Executes "git rm ...". If no parameters are
+Both versions behave the same. Executes "git rm ...". If no arguments are
 given, removes the current buffer.
 
 Example:
@@ -487,9 +487,9 @@ Is equivalent to: >
 
 ------------------------------------------------------------------------------
                                                                    *:GitReset*
-	:GitReset [<param>] ~
+	:GitReset [<args>] ~
 
-Executes "git reset ...". If no parameters are given, resets the current
+Executes "git reset ...". If no arguments are given, resets the current
 buffer.
 
 Example:
@@ -501,7 +501,7 @@ Is equivalent to: >
 
 ------------------------------------------------------------------------------
                                                                     *:GitShow*
-	:GitShow [<param>] ~
+	:GitShow [<args>] ~
 
 Opens a buffer containing the output of "git show ...".
 
@@ -514,9 +514,9 @@ Opens a buffer containing the output of "git show ...".
 
 ------------------------------------------------------------------------------
                                                                    *:GitStash*
-	:GitStash [<param>] ~
-	:GitStash list [<param>] ~
-	:GitStash show [<param>] ~
+	:GitStash [<args>] ~
+	:GitStash list [<args>] ~
+	:GitStash show [<args>] ~
 
 The first version executes "git stash ...". The second and third version open
 buffers listing the stashes or showing a stash.
@@ -566,7 +566,7 @@ Settings:
 ------------------------------------------------------------------------------
                                                                      *:GitTag*
 	:GitTag [-n[<num>]] [--contains <commit>] [-l [<pattern>...]] ~
-	:GitTag <param> ~
+	:GitTag <args> ~
 
 The first version opens a buffer listing the tags. The second version executes
 "git tag ...".
@@ -768,12 +768,12 @@ variable 'g:Git_CustomMenu':
 	 \ [ '&merge, abort',     ':GitMerge', ':GitMerge --abort<EXECUTE>' ],
 	 \ ]
 <
-The variable must contain a list of lists of strings. A |list| is constructed
+The variable must contain a list of lists of strings. A |List| is constructed
 using square brackets containing a number of comma-separated entries. Each
 list contained in 'g:Git_CustomMenu' defines a menu entry. It consists of
 three strings. The first defines the submenu and the menu entry, the second
-the right-hand side of the menu entry and the third the command triggered by
-the entry.
+the right-aligned side of the menu entry and the third the command triggered
+by the entry.
 
 The menu entry is a string, where dots and ampersands have special meanings.
 Dots structure the menu by defining submenus. To put the entries from above
@@ -931,7 +931,7 @@ A.  TROUBLESHOOTING - KNOWN ISSUES                *gitsupport-troubleshooting*
 			:help |gitsupport-config-executable|
 
 * Windows: When entered on the Vim command line, commands containing filenames
-	as parameters cause errors such as "... file not found ...".
+	as arguments cause errors such as "... file not found ...".
 	- This may happen if filenames contain special characters such as spaces.
 		The Vim command line escapes those differently then Windows expects them
 		to be escaped.
