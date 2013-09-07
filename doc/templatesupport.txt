@@ -2,9 +2,9 @@
 
 MM Template Support                                        *template-support*
 
-                           Plug-in version 0.9.1-2
+                           Plug-in version 0.9.1-3
                         for Vim version 7.0 and above
-                   Wolfgang Mehner <wolfgang-mehner@web.de>
+                 Wolfgang Mehner <wolfgang-mehner at web.de>
 
 
      --- The Maps & Menus Template Support ... ---
@@ -1972,17 +1972,24 @@ Internal Changes:
 - Changes to the template data structure.
 - Major code cleanup.
 
-VERSION 0.9.1-1:
+------------------------------------------------------------------------------
+
+PATCH 0.9.1-1:
 - Released with no changes in the core functionality.
 - Change: Some commands are now executed silently.
 - Bugfix: Syntax highlighting.
 - Extended the documentation.
 
-VERSION 0.9.1-2:
+PATCH 0.9.1-2:
 - Released with slight changes in the core functionality.
 - Bugfix: Problem with macro replacements containing macros with flags.
 - Change: Syntax highlighting.
 - Slightly extended the documentation.
+
+PATCH 0.9.1-3:
+- Released with slight changes in the core functionality.
+- Change: Warnings about overwritten maps are only printed once for every
+  filetype.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9

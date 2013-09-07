@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:Templates_Version') && ! exists('g:Templates_DevelopmentOverwrite') )
 	finish
 endif
-let g:Templates_Version= '0.9.1-2'     " version number of this script; do not change
+let g:Templates_Version= '0.9.1-3'     " version number of this script; do not change
 "
 if ! exists ( 'g:Templates_MapInUseWarn' )
 	let g:Templates_MapInUseWarn = 1
@@ -68,6 +68,8 @@ let s:Flagactions = {
 			\ }
 "
 let s:StandardPriority = 500
+"
+let g:CheckedFiletypes = {}
 "
 "----------------------------------------------------------------------
 "  s:StandardMacros : The standard macros.   {{{2
@@ -2847,6 +2849,13 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 	"  generate new commands
 	" ==================================================
 	"
+	if has_key ( g:CheckedFiletypes, &filetype )
+		let echo_warning = 0
+	else
+		let g:CheckedFiletypes[ &filetype ] = 1
+		let echo_warning = g:Templates_MapInUseWarn != 0
+	endif
+	"
 	" go through all the templates
 	for t_name in t_lib.menu_order
 		"
@@ -2862,7 +2871,7 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 			"
 			" map already existing?
 			if ! empty ( maparg( leader.mp, mode ) )
-				if g:Templates_MapInUseWarn != 0
+				if echo_warning
 					call s:ErrorMsg ( 'Mapping already in use: "'.leader.mp.'", mode "'.mode.'"' )
 				endif
 				continue
@@ -2890,7 +2899,9 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 	if do_jump_map
 		let jump_key = '<C-j>'   " TODO: configurable
 		if ! empty ( maparg( jump_key ) )
-			call s:ErrorMsg ( 'Mapping already in use: "'.jump_key.'"' )
+			if echo_warning
+				call s:ErrorMsg ( 'Mapping already in use: "'.jump_key.'"' )
+			endif
 		else
 			let jump_regex = string ( escape ( t_lib.regex_template.JumpTagBoth, '|' ) )
 			let cmd .= 'nnoremap '.options.' '.jump_key.' i<C-R>=mmtemplates#core#JumpToTag('.jump_regex.')<CR>'.sep
@@ -2910,7 +2921,9 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		"
 		for [ mp, action ] in items ( special_maps )
 			if ! empty ( maparg( leader.mp ) )
-				call s:ErrorMsg ( 'Mapping already in use: "'.leader.mp.'"' )
+				if echo_warning
+					call s:ErrorMsg ( 'Mapping already in use: "'.leader.mp.'"' )
+				endif
 			else
 				let cmd .= ' noremap '.options.' '.leader.mp.'      '.action.sep
 				let cmd .= 'inoremap '.options.' '.leader.mp.' <Esc>'.action.sep
