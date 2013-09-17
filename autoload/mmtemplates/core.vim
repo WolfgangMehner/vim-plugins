@@ -42,7 +42,7 @@ if &cp || ( exists('g:Templates_Version') && g:Templates_Version != 'searching' 
 	finish
 endif
 "
-let s:Templates_Version = '0.9.3'     " version number of this script; do not change
+let s:Templates_Version = '1.0alpha'     " version number of this script; do not change
 "
 "----------------------------------------------------------------------
 "  --- Find Newest Version ---   {{{2
@@ -261,24 +261,36 @@ function! s:UpdateFileReadRegex ( regex, settings )
 	"
 	" Blocks
 	let delim                 = a:settings.BlockDelimiter
+	let a:regex.Styles1Hint   = '^'.delim.'\s*IF\s\+|STYLE|\s\+IS\s'
 	let a:regex.Styles1Start  = '^'.delim.'\s*IF\s\+|STYLE|\s\+IS\s\+'.a:regex.MacroNameC.'\s*'.delim
 	let a:regex.Styles1End    = '^'.delim.'\s*ENDIF\s*'.delim
 
+	let a:regex.Styles2Hint   = '^'.delim.'\s*USE\s\+STYLES\s*:'
 	let a:regex.Styles2Start  = '^'.delim.'\s*USE\s\+STYLES\s*:'
 				\                     .'\s*\('.a:settings.MacroList.'\)'.'\s*'.delim
 	let a:regex.Styles2End    = '^'.delim.'\s*ENDSTYLES\s*'.delim
 	"
+	let a:regex.FiletypeHint  = '^'.delim.'\s*USE\s\+FILETYPES\s*:'
+	let a:regex.FiletypeStart = '^'.delim.'\s*USE\s\+FILETYPES\s*:'
+				\                     .'\s*\('.a:settings.MacroList.'\)'.'\s*'.delim
+	let a:regex.FiletypeEnd   = '^'.delim.'\s*ENDFILETYPES\s*'.delim
+	"
 	" Texts
+	let a:regex.TemplateHint  = '^'.delim.'\s*\%(TEMPLATE:\)\?\s*'.a:settings.TemplateName.'\s*'.delim
+				\                     .'\s*\%(\('.a:settings.TextOpt.'\)\s*'.delim.'\)\?'
 	let a:regex.TemplateStart = '^'.delim.'\s*\%(TEMPLATE:\)\?\s*'.a:regex.TemplateNameC.'\s*'.delim
 				\                     .'\s*\%(\('.a:settings.TextOpt.'\)\s*'.delim.'\)\?'
 	let a:regex.TemplateEnd   = '^'.delim.'\s*ENDTEMPLATE\s*'.delim
 	"
+	let a:regex.HelpHint      = '^'.delim.'\s*HELP:'
 	let a:regex.HelpStart     = '^'.delim.'\s*HELP:\s*'.a:regex.TemplateNameC.'\s*'.delim
 				\                     .'\s*\%(\('.a:settings.TextOpt.'\)\s*'.delim.'\)\?'
 	"let a:regex.HelpEnd       = '^'.delim.'\s*ENDHELP\s*'.delim
 	"
+	let a:regex.MenuSepHint   = '^'.delim.'\s*SEP:'
 	let a:regex.MenuSep       = '^'.delim.'\s*SEP:\s*'.a:regex.TemplateNameC.'\s*'.delim
 	"
+	let a:regex.ListHint      = '^'.delim.'\s*LIST:'
 	let a:regex.ListStart     = '^'.delim.'\s*LIST:\s*'.a:regex.MacroNameC.'\s*'.delim
 				\                     .'\s*\%(\('.a:settings.TextOpt.'\)\s*'.delim.'\)\?'
 	let a:regex.ListEnd       = '^'.delim.'\s*ENDLIST\s*'.delim
@@ -478,15 +490,29 @@ function! s:ErrorMsg ( ... )
 endfunction    " ----------  end of function s:ErrorMsg  ----------
 "
 "----------------------------------------------------------------------
+" s:ImportantMsg : Print an important message.   {{{2
+"-------------------------------------------------------------------------------
+"
+function! s:ImportantMsg ( ... )
+	echohl Search
+	for line in a:000
+		echomsg line
+	endfor
+	echohl None
+endfunction    " ----------  end of function s:ImportantMsg  ----------
+"
+"-------------------------------------------------------------------------------
 "  s:DebugMsg : Print debug information.   {{{2
 "----------------------------------------------------------------------
 "
-function! s:DebugMsg ( msg, ... )
-	if s:DebugLevel
-		if a:0 == 0 || ( a:1 <= s:DebugLevel )
-			echo a:msg
-		endif
+function! s:DebugMsg ( lvl, ... )
+	if s:DebugLevel < a:lvl
+		return
 	endif
+	"
+	for line in a:000
+		echomsg line
+	endfor
 endfunction    " ----------  end of function s:DebugMsg  ----------
 "
 "----------------------------------------------------------------------
@@ -559,7 +585,7 @@ function! mmtemplates#core#NewLibrary ( ... )
 				\
 				\ 'library_files'  : [],
 				\ }
-	" entry used by maps: 'map_commands'
+	" entries used by maps: 'map_commands!<filetype>'
 	"
 	call extend ( library.macros,     s:StandardMacros,     'keep' )
 	call extend ( library.properties, s:StandardProperties, 'keep' )
@@ -777,7 +803,7 @@ function! s:AddTemplate ( type, name, settings, lines )
 		"  new template
 		" --------------------------------------------------
 		let s:library.templates[ name.'!!type' ] = type.','.placement.','.indentation
-		let s:library.templates[ name.'!!menu' ] = visual.",".string(mp).",".entry.",'',".string(sc)
+		let s:library.templates[ name.'!!menu' ] = s:t_runtime.use_ft_string.",".visual.",".string(mp).",".entry.",'',".string(sc)
 		"
 		call add ( s:library.menu_order, name )
 		"
@@ -849,7 +875,7 @@ function! s:AddSeparator ( type, name, settings )
 	else
 		"
 		let s:library.templates[ name.'!!type' ] = 'sep,,0'
-		let s:library.templates[ name.'!!menu' ] = "0,'',11,'',''"
+		let s:library.templates[ name.'!!menu' ] = "[],0,'',11,'',''"
 		"
 		call add ( s:library.menu_order, name )
 		"
@@ -907,7 +933,7 @@ endfunction    " ----------  end of function s:UseStyles  ----------
 function! s:RevertStyles ( times )
 	"
 	" get the current top, and check whether any more styles can be removed
-	let state_lim = s:t_runtime.state_stack[ s:StateStackStyleTop ]
+	let state_lim = s:t_runtime.state_stack[-1].style_stack_top
 	let state_top = len( s:t_runtime.styles_stack )
 	"
 	if state_lim > ( state_top - a:times )
@@ -926,6 +952,64 @@ function! s:RevertStyles ( times )
 	endif
 	"
 endfunction    " ----------  end of function s:RevertStyles  ----------
+"
+"----------------------------------------------------------------------
+"  s:UseFiletypes : Set the filetypes.   {{{2
+"----------------------------------------------------------------------
+"
+function! s:UseFiletypes ( filetypes )
+	"
+	" 'use_filetypes' empty? -> we may have new filetypes
+	" otherwise              -> must be a subset, so no new filetypes
+	if empty ( s:t_runtime.use_filetypes )
+		" :TODO:05.09.2013 19:26:WM: Call 'AddFiletypes' ?
+		" add the filetypes to the list
+		"call s:AddFiletypes ( a:filetypes )
+	else
+		" are the filetypes a sub-set of the currently used filetypes?
+		for s in a:filetypes
+			if -1 == index ( s:t_runtime.use_filetypes, s )
+				call s:ErrorMsg ( 'Filetype "'.s.'" currently not in use.' )
+				return
+			endif
+		endfor
+	endif
+	"
+	" push the new filetype and use it as the current filetype
+	call add ( s:t_runtime.filetypes_stack, a:filetypes )
+	let  s:t_runtime.use_filetypes = a:filetypes
+	let  s:t_runtime.use_ft_string = string( s:t_runtime.use_filetypes )
+	"
+endfunction    " ----------  end of function s:UseFiletypes  ----------
+"
+"----------------------------------------------------------------------
+"  s:RevertFiletypes : Revert the filetypes.   {{{2
+"----------------------------------------------------------------------
+"
+function! s:RevertFiletypes ( times )
+	"
+	" get the current top, and check whether any more filetypes can be removed
+	let state_lim = s:t_runtime.state_stack[-1].filetype_stack_top
+	let state_top = len( s:t_runtime.filetypes_stack )
+	"
+	if state_lim > ( state_top - a:times )
+		call s:ErrorMsg ( 'Can not close any more filetype sections.' )
+		return
+	endif
+	"
+	" remove the top
+	call remove ( s:t_runtime.filetypes_stack, -1 * a:times, -1 )
+	"
+	" reset the current filetype
+	if state_top > a:times
+		let s:t_runtime.use_filetypes = s:t_runtime.filetypes_stack[ -1 ]
+		let s:t_runtime.use_ft_string = string( s:t_runtime.use_filetypes )
+	else
+		let s:t_runtime.use_filetypes = []
+		let s:t_runtime.use_ft_string = "['default']"
+	endif
+	"
+endfunction    " ----------  end of function s:RevertFiletypes  ----------
 "
 "----------------------------------------------------------------------
 "  === Read Templates: Template File Namespace ===   {{{1
@@ -1011,7 +1095,7 @@ function! s:SetPath ( name, value )
 		return
 	endif
 	"
-	let s:library.resources[ 'path!'.a:name ] = a:value
+	call mmtemplates#core#Resource ( s:library, 'set', 'path', a:name, a:value )
 	"
 endfunction    " ----------  end of function s:SetPath  ----------
 "
@@ -1039,7 +1123,7 @@ endfunction    " ----------  end of function s:MenuShortcut  ----------
 "
 function! s:SetMap ( name, map )
 	"
-	echo 'SetMap: TO BE IMPLEMENTED'
+	call s:ErrorMsg ( 'SetMap: TO BE IMPLEMENTED' )
 	"
 endfunction    " ----------  end of function s:SetMap  ----------
 "
@@ -1069,7 +1153,7 @@ function! s:SetShortcut ( name, shortcut )
 		return
 	endif
 	"
-	echo 'SetShortcut: TO BE IMPLEMENTED'
+	call s:ErrorMsg ( 'SetShortcut: TO BE IMPLEMENTED' )
 	"
 endfunction    " ----------  end of function s:SetShortcut  ----------
 "
@@ -1096,12 +1180,12 @@ function! s:IncludeFile ( templatefile, ... )
 " 	if templatefile =~ regex.AbsolutePath
 " 		let templatefile = s:ConcatNormalizedFilename ( templatefile )
 " 	else
-"		let templatefile = s:ConcatNormalizedFilename ( s:t_runtime.state_stack[ s:StateStackFile ], templatefile )
+"		let templatefile = s:ConcatNormalizedFilename ( s:t_runtime.state_stack[-1].current_path, templatefile )
 " 	endif
 	if read_abs
 		let templatefile = s:ConcatNormalizedFilename ( templatefile )
 	else
-		let templatefile = s:ConcatNormalizedFilename ( s:t_runtime.state_stack[ s:StateStackFile ], templatefile )
+		let templatefile = s:ConcatNormalizedFilename ( s:t_runtime.state_stack[-1].current_path, templatefile )
 	endif
 	"
 	" file does not exists or was already visited?
@@ -1116,18 +1200,21 @@ function! s:IncludeFile ( templatefile, ... )
 	" ==================================================
 	"
 	" add to the state stack
-	call add ( s:t_runtime.state_stack, len( s:t_runtime.styles_stack ) )      " length of styles_stack
-	call add ( s:t_runtime.state_stack, s:GetNormalizedPath ( templatefile ) ) " current path
+	call add ( s:t_runtime.state_stack, {
+				\ 'current_path'       : s:GetNormalizedPath( templatefile ),
+				\ 'style_stack_top'    : len( s:t_runtime.styles_stack ),
+				\ 'filetype_stack_top' : len( s:t_runtime.filetypes_stack ),
+				\ } )
 	"
 	" mark file as read
 	let s:t_runtime.files_visited[templatefile] = 1
 	"
 	" debug:
-	call s:DebugMsg ( 'Reading '.templatefile.' ...', 2 )
+	call s:DebugMsg ( 3, 'Reading '.templatefile.' ...' )
 	"
-	let state       = 'command'
-	let t_start     = 0
-	let last_styles = ''
+	let state        = 'command'
+	let t_start      = 0
+	let last_section = ''
 	"
 	" ==================================================
 	"  go trough the file
@@ -1211,7 +1298,7 @@ function! s:IncludeFile ( templatefile, ... )
 				let mlist = matchlist ( line, regex.Styles1Start )
 				if ! empty ( mlist )
 					call s:UseStyles ( [ mlist[1] ] )
-					let last_styles = mlist[0]
+					let last_section = mlist[0]
 					continue
 				endif
 				"
@@ -1225,13 +1312,27 @@ function! s:IncludeFile ( templatefile, ... )
 				let mlist = matchlist ( line, regex.Styles2Start )
 				if ! empty ( mlist )
 					call s:UseStyles ( split( mlist[1], '\s*,\s*' ) )
-					let last_styles = mlist[0]
+					let last_section = mlist[0]
 					continue
 				endif
 				"
 				" switch styles?
 				if line =~ regex.Styles2End
 					call s:RevertStyles ( 1 )
+					continue
+				endif
+				"
+				" switch filetypes?
+				let mlist = matchlist ( line, regex.FiletypeStart )
+				if ! empty ( mlist )
+					call s:UseFiletypes ( split( mlist[1], '\s*,\s*' ) )
+					let last_section = mlist[0]
+					continue
+				endif
+				"
+				" switch filetypes?
+				if line =~ regex.FiletypeEnd
+					call s:RevertFiletypes ( 1 )
 					continue
 				endif
 				"
@@ -1341,18 +1442,26 @@ function! s:IncludeFile ( templatefile, ... )
 	endif
 	"
 	" all style sections closed?
-	let state_lim = s:t_runtime.state_stack[ s:StateStackStyleTop ]
+	let state_lim = s:t_runtime.state_stack[-1].style_stack_top
 	let state_top = len( s:t_runtime.styles_stack )
 	if state_lim < state_top
 		call s:RevertStyles ( state_top - state_lim )
-		call s:ErrorMsg ( 'Styles section has not been closed: '.last_styles )
+		call s:ErrorMsg ( 'Section has not been closed: '.last_section )
+	endif
+	"
+	" all filetype sections closed?
+	let state_lim = s:t_runtime.state_stack[-1].filetype_stack_top
+	let state_top = len( s:t_runtime.filetypes_stack )
+	if state_lim < state_top
+		call s:RevertFiletypes ( state_top - state_lim )
+		call s:ErrorMsg ( 'Section has not been closed: '.last_section )
 	endif
 	"
 	" debug:
-	call s:DebugMsg ( '... '.templatefile.' done.', 2 )
+	call s:DebugMsg ( 3, '... '.templatefile.' done.' )
 	"
 	" restore the previous state
-	call remove ( s:t_runtime.state_stack, -1 * s:StateStackLength, -1 )
+	call remove ( s:t_runtime.state_stack, -1 )
 	"
 endfunction    " ----------  end of function s:IncludeFile  ----------
 "
@@ -1381,10 +1490,13 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 	" library and runtime information
 	let s:library   = t_lib
 	let s:t_runtime = {
-				\ 'state_stack'   : [],
-				\ 'use_styles'    : [],
-				\ 'styles_stack'  : [],
-				\ 'files_visited' : {},
+				\ 'state_stack'     : [],
+				\ 'use_styles'      : [],
+				\ 'styles_stack'    : [],
+				\ 'use_filetypes'   : [],
+				\ 'use_ft_string'   : [],
+				\ 'filetypes_stack' : [],
+				\ 'files_visited'   : {},
 				\
 				\ 'overwrite_warning' : 0,
 				\ }
@@ -1469,9 +1581,11 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 		endif
 		"
 		" remove old maps
-		if has_key ( t_lib, 'map_commands' )
-			call remove ( t_lib, 'map_commands' )
-		endif
+		for key in keys( t_lib )
+			if key =~ '^map_commands!'
+				call remove ( t_lib, key )
+			endif
+		endfor
 		"
 	endif
 	"
@@ -1480,9 +1594,7 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 	" ==================================================
 	"
 	" debug:
-	if s:DebugLevel > 0
-		let time_start = reltime()
-	endif
+	let time_start = reltime()
 	"
 	for f in templatefiles
 		"
@@ -1495,9 +1607,16 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 		" runtime information:
 		" - set up the state stack: length of styles_stack + current path
 		" - reset the current styles
-		let s:t_runtime.state_stack   = [ 0, s:GetNormalizedPath ( f ) ]
-		let s:t_runtime.use_styles    = []
-		let s:t_runtime.styles_stack  = []
+		let s:t_runtime.state_stack = [ {
+					\ 'current_path'       : s:GetNormalizedPath( f ),
+					\ 'style_stack_top'    : 0,
+					\ 'filetype_stack_top' : 0,
+					\ } ]
+		let s:t_runtime.use_styles      = []
+		let s:t_runtime.styles_stack    = []
+		let s:t_runtime.use_filetypes   = []
+		let s:t_runtime.use_ft_string   = "['default']"
+		let s:t_runtime.filetypes_stack = []
 		"
 		" read the top-level file
 		call s:IncludeFile ( f, 'abs' )
@@ -1507,9 +1626,7 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 	call sort ( s:library.styles )          " sort the styles
 	"
 	" debug:
-	if s:DebugLevel > 0
-		echo 'Loading library: '.reltimestr( reltime( time_start ) )
-	endif
+	call s:DebugMsg ( 2, 'Loading library ('.templatefiles[0].'): '.reltimestr( reltime( time_start ) ) )
 	"
 	if mode == 'reload'
 		echo 'Reloaded the template library.'
@@ -2044,10 +2161,10 @@ function! s:PrepareHelp ( cmds, text )
 	endif
 	"
 	if method == 'System'
-		echo 'call system ( '.string ( call ).' )'   | " debug
+		call s:DebugMsg ( 3, 'call system ( '.string ( call ).' )' )
 		exe 'call system ( '.string ( call ).' )'
 	elseif method == 'Vim'
-		echo call   | " debug
+		call s:DebugMsg ( 3, call )
 		exe call
 	endif
 	"
@@ -2404,7 +2521,7 @@ function! s:PrepareTemplate ( name, ... )
 			endif
 			let m_local[ m_name ] = a:[i+1]
 			let i += 2
-		elseif a:[i] == '<CURSOR>'
+		elseif a:[i] =~ '<CURSOR>\|{CURSOR}'
 			let remove_cursor = 0
 			let i += 1
 		elseif a:[i] == '<SPLIT>'
@@ -2444,7 +2561,7 @@ function! s:PrepareTemplate ( name, ... )
 	endif
 	"
 	if remove_cursor
-		let text = s:LiteralReplacement( text, '<CURSOR>', '', 'g' )
+		let text = substitute( text, '<CURSOR>\|{CURSOR}', '', 'g' )
 	endif
 	if remove_split
 		let text = s:LiteralReplacement( text, '<SPLIT>',  '', 'g' )
@@ -2891,24 +3008,6 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 	endif
 	"
 	" ==================================================
-	"  reuse previous commands
-	" ==================================================
-	"
-	if has_key ( t_lib, 'map_commands' )
-		"let TimeStart = reltime()
-		exe t_lib.map_commands
-		if ! empty ( a:localleader )
-			if exists ( 'll_save' )
-				let g:maplocalleader = ll_save
-			else
-				unlet g:maplocalleader
-			endif
-		endif
-		"echo 'Executing maps: '.reltimestr( reltime( TimeStart ) )
-		return
-	endif
-	"
-	" ==================================================
 	"  setup
 	" ==================================================
 	"
@@ -2921,6 +3020,8 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 	let do_special_maps = 0
 	"
 	let cmd     = ''
+	"
+	let opt_ft  = 'default'
 	"
 	" ==================================================
 	"  options
@@ -2935,6 +3036,9 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		elseif a:[i] == 'do_special_maps'
 			let do_special_maps = 1
 			let i += 1
+		elseif a:[i] == 'filetype' && i+1 <= a:0
+			let opt_ft = a:[i+1]
+			let i += 2
 		else
 			if type ( a:[i] ) == type ( '' ) | call s:ErrorMsg ( 'Unknown option: "'.a:[i].'"' )
 			else                             | call s:ErrorMsg ( 'Unknown option at position '.i.'.' ) | endif
@@ -2943,7 +3047,25 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		"
 	endwhile
 	"
-	"let TimeStart = reltime()
+	" ==================================================
+	"  reuse previous commands
+	" ==================================================
+	"
+	if has_key ( t_lib, 'map_commands!'.opt_ft )
+		let time_start = reltime()
+		exe t_lib['map_commands!'.opt_ft]
+		if ! empty ( a:localleader )
+			if exists ( 'll_save' )
+				let g:maplocalleader = ll_save
+			else
+				unlet g:maplocalleader
+			endif
+		endif
+		call s:DebugMsg ( 5, 'Executing maps: '.reltimestr( reltime( time_start ) ) )
+		return
+	endif
+	"
+	let time_start = reltime()
 	"
 	" ==================================================
 	"  generate new commands
@@ -2959,7 +3081,12 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 	" go through all the templates
 	for t_name in t_lib.menu_order
 		"
-		exe 'let [ visual, mp ] = ['.t_lib.templates[ t_name.'!!menu' ].'][0:1]'
+		exe 'let [ filetypes, visual, mp ] = ['.t_lib.templates[ t_name.'!!menu' ].'][0:2]'
+		"
+		" wrong filetype?
+		if -1 == index ( filetypes, opt_ft )
+			continue
+		endif
 		"
 		" no map?
 		" separators have an empty string "map", so they are skipped here
@@ -3031,7 +3158,7 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		endfor
 	endif
 	"
-	let t_lib.map_commands = cmd
+	let t_lib['map_commands!'.opt_ft] = cmd
 	exe cmd
 	"
 	" ==================================================
@@ -3046,7 +3173,7 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		endif
 	endif
 	"
-	"echo 'Generating maps: '.reltimestr( reltime( TimeStart ) )
+	call s:DebugMsg ( 5, 'Generating maps: '.reltimestr( reltime( time_start ) ) )
 	"
 endfunction    " ----------  end of function mmtemplates#core#CreateMaps  ----------
 "
@@ -3149,7 +3276,7 @@ function! s:CreateTemplateMenus ( t_lib, root_menu, global_name, t_lib_name )
 	" go through all the templates
 	for t_name in a:t_lib.menu_order
 		"
-		exe 'let [ visual, mp, entry, _, shortcut ] = ['.a:t_lib.templates[ t_name.'!!menu' ].']'
+		exe 'let [ ignore1, visual, mp, entry, ignore2, shortcut ] = ['.a:t_lib.templates[ t_name.'!!menu' ].']'
 		"
 		" no menu entry?
 		if entry == 0
@@ -3611,7 +3738,7 @@ function! mmtemplates#core#Resource ( library, mode, ... )
 		elseif resource == 'macro'
 			let t_lib.macros[ key ] = value
 		elseif resource == 'path'
-			let t_lib.resources[ 'path!'.key ] = value
+			let t_lib.resources[ 'path!'.key ] = fnamemodify( expand( value ), ":p" )
 		elseif resource == 'property'
 			if has_key ( t_lib.properties, key )
 				let t_lib.properties[ key ] = value

@@ -2,7 +2,7 @@
 
 MM Template Support                                        *template-support*
 
-                            Plug-in version 0.9.3
+                           Plug-in version 1.0alpha
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -1389,6 +1389,8 @@ Parameters:
 Optional parameters:
 	"do_jump_map"     - Create a map for |mmtemplates#core#JumpToTag()|.
 	"do_special_maps" - Create maps for the special operations.
+	"filetype", ftype - Create maps for the filetype ftype.
+	                    (string, default: "default")
 No returns.
 
 If 'localleader' is an empty string, the standard mapleader is used.
@@ -1837,6 +1839,12 @@ StyleBlock2 (sequence):
 	<start> == ENDSTYLES ==
 
 
+FiletypeBlock (sequence):
+	<start> == USE FILETYPES : MacroNameList ==
+	StatementList
+	<start> == ENDSTYLES ==
+
+
 Template (sequence):
 	<start> == [ TEMPLATE : ] TemplateName == [ OptionList == ]
 	-several lines-
@@ -2259,6 +2267,13 @@ Note: Bare lists are not the default.
 ==============================================================================
 D.  CHANGE LOG                                   *template-support-change-log*
 ==============================================================================
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.0alpha
+------------------------------------------------------------------------------
+
+- Added: Templates can be associated with a filetype, and its maps only
+  created for that filetype.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.3
