@@ -2483,16 +2483,16 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 		" part0 and part1 can consist of several lines
 		"
 		if placement == 'insert'
-			" [_,line,col,off] = getpos()
-			let [_,l1,c1,o1] = getpos("'<")
-			let [_,l2,c2,o2] = getpos("'>")
-			call cursor ( l2, c2, o2 )
-			exe 'normal! a'.part[1]
-			call cursor ( l1, c1, o1 )
-			exe 'normal! i'.part[0]
+			" windows:  register @* does not work
+			" solution: recover area of the visual mode and yank,
+			"           puts the selected area into the buffer @"
+			let pos1 = line("'<")
+			let pos2 = line("'>") + len(split( text, '\n' )) - 1
+			normal gvy
+			let repl = escape ( part[0].@".part[1], '\&~' )
+			" substitute the selected area (using the '< and '> marks)
+			exe ':s/\%''<.*\%''>./'.repl.'/'
 			let indentation = 0
-			let pos1 = l1
-			let pos2 = l2 + len(split( text, '\n' )) - 1
 		elseif placement == 'below'
 			silent '<put! = part[0]
 			silent '>put  = part[1]
