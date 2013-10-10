@@ -213,6 +213,7 @@ function! s:OpenFile ( file, ... )
 		" jump to window
 		exe bufwinnr( a:file ).'wincmd w'
 	end
+	"
 	if a:0 >= 1
 		" jump to line
 		let pos = getpos( '.' )
@@ -221,6 +222,10 @@ function! s:OpenFile ( file, ... )
 			let pos[2] = a:2   " col
 		endif
 		call setpos( '.', pos )
+	endif
+	"
+	if foldlevel('.') && g:Git_OpenFoldAfterJump == 'yes'
+		normal zO
 	endif
 endfunction    " ----------  end of function s:OpenFile  ----------
 "
@@ -433,6 +438,7 @@ call s:GetGlobalSetting ( 'Git_RootMenu' )
 call s:GetGlobalSetting ( 'Git_CustomMenu' )
 "
 call s:ApplyDefaultSetting ( 'Git_DiffExpandEmpty',      'yes' )
+call s:ApplyDefaultSetting ( 'Git_OpenFoldAfterJump',    'yes' )
 call s:ApplyDefaultSetting ( 'Git_StatusStagedOpenDiff', 'cached' )
 "
 let s:Enabled = 1
