@@ -807,7 +807,7 @@ function! BASH_CodeSnippet(mode)
     "
     if a:mode == "write" || a:mode == "writemarked"
 			if has("gui_running") && s:BASH_GuiSnippetBrowser == 'gui'
-				let l:snippetfile=browse(0,"write a code snippet",g:BASH_CodeSnippets,"")
+				let l:snippetfile=browse(1,"write a code snippet",g:BASH_CodeSnippets,"")
 			else
 				let	l:snippetfile=input("write snippet ", g:BASH_CodeSnippets, "file" )
 			endif
@@ -1705,7 +1705,7 @@ endfunction		" ---------- end of function  BASH_SyntaxCheck  ----------
 function! BASH_Debugger ()
 	if !executable(s:BASH_bashdb)
 		echohl Search
-		echo   s:BASH_bashdb' is not executable or not installed! '
+		echo   s:BASH_bashdb.' is not executable or not installed! '
 		echohl None
 		return
 	endif
@@ -1751,20 +1751,17 @@ endfunction		" ---------- end of function  BASH_Debugger  ----------
 function! BASH_MakeScriptExecutable ()
   let filename  = fnameescape( expand("%:p") )
 	if &filetype != 'sh'
-		echo '"'.filename.'" not Bash script.'
+		echo '"'.filename.'" is not a Bash script.'
 		return
 	endif
   if executable(filename) == 0 
+    redraw
     silent exe "!chmod u+x ".filename
-    redraw!
     if v:shell_error
-      echohl WarningMsg
-      echo 'Could not make "'.filename.'" executable !'
+      echohl WarningMsg | echo 'Could not make "'.filename.'" executable !' | echohl None
     else
-      echohl Search
-      echo 'Made "'.filename.'" executable.'
+      echohl Search | echo 'Made "'.filename.'" executable.' | echohl None
     endif
-    echohl None
 	else
 		echo '"'.filename.'" is already executable.'
   endif
