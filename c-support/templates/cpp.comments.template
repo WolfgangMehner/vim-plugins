@@ -30,7 +30,7 @@
 //        Version:  1.0
 //        Created:  |DATE| |TIME|
 //       Revision:  none
-//       Compiler:  gcc
+//       Compiler:  g++
 //
 //         Author:  |AUTHOR| (|AUTHORREF|), |EMAIL|
 //   Organization:  |ORGANIZATION|
@@ -46,7 +46,7 @@
 //        Version:  1.0
 //        Created:  |DATE| |TIME|
 //       Revision:  none
-//       Compiler:  gcc
+//       Compiler:  g++
 //
 //         Author:  |AUTHOR| (|AUTHORREF|), |EMAIL|
 //   Organization:  |ORGANIZATION|

@@ -1,4 +1,4 @@
-README for c.vim (Version 6.1) / August 11 2012
+README for c.vim (Version 6.1) / October 27 2013
 
   *  DESCRIPTION
   *  INSTALLATION
@@ -232,14 +232,15 @@ rc/customization.vimrc       Additional settings I use in .vimrc :  incremental
   CREDITS
 ================================================================================
 
-	Most of the people who have contributed ideas, patches,  and bug reports, is
-	thanked in the file ChangeLog.
+  Most of the people who have contributed ideas, patches,  and bug reports, is
+  thanked in the file ChangeLog.
   I would like to especially thank my son Wolfgang Mehner, who has repeatedly
   proposed improvements and introduced new ideas.
 
   Some ideas are taken from the following documents:
   1. Recommended C Style and Coding Standards (Indian Hill Style Guide)
       http://ieng9.ucsd.edu/~cs30x/indhill-cstyle.html
+      http://www.sourceformat.com/pdf/cpp-coding-standard-indianhill.pdf
   2. Programming in C++, Ellemtel Telecommunication Systems Laboratories
       www.it.bton.ac.uk/burks/burks/language/cpp/cppstyle/ellhome.htm
   3. C++ Coding Standard, Todd Hoff

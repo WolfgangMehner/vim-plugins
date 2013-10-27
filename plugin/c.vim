@@ -969,12 +969,16 @@ endfunction    " ----------  end of function C_PPIf0Remove ----------
 function! C_CodeSnippet(mode)
 
 	if isdirectory(s:C_CodeSnippets)
+		if has("browsefilter") && exists( "b:browsefilter" )
+ 			let browsefilter_save	= b:browsefilter
+			let b:browsefilter 		= "*"
+		endif
 		"
 		" read snippet file, put content below current line and indent
 		"
 		if a:mode == "r"
 			if has("browse") && s:C_GuiSnippetBrowser == 'gui'
-				let	l:snippetfile=browse(0,"read a code snippet",s:C_CodeSnippets,"")
+				let	l:snippetfile=browse(0,"read a code snippet",s:C_CodeSnippets,"*.*")
 			else
 				let	l:snippetfile=input("read snippet ", s:C_CodeSnippets, "file" )
 			endif
@@ -997,7 +1001,7 @@ function! C_CodeSnippet(mode)
 		"
 		if a:mode == "e"
 			if has("browse") && s:C_GuiSnippetBrowser == 'gui'
-				let	l:snippetfile	= browse(0,"edit a code snippet",s:C_CodeSnippets,"")
+				let	l:snippetfile	= browse(1,"edit a code snippet",s:C_CodeSnippets,"")
 			else
 				let	l:snippetfile=input("edit snippet ", s:C_CodeSnippets, "file" )
 			endif
@@ -1023,7 +1027,7 @@ function! C_CodeSnippet(mode)
 		"
 		if a:mode == "w" || a:mode == "wv"
 			if has("browse") && s:C_GuiSnippetBrowser == 'gui'
-				let	l:snippetfile	= browse(0,"write a code snippet",s:C_CodeSnippets,"")
+				let	l:snippetfile	= browse(1,"write a code snippet",s:C_CodeSnippets,"")
 			else
 				let	l:snippetfile=input("write snippet ", s:C_CodeSnippets, "file" )
 			endif
@@ -1041,6 +1045,10 @@ function! C_CodeSnippet(mode)
 			endif
 		endif
 
+		if has("browsefilter") && exists( "b:browsefilter" )
+			let b:browsefilter	= browsefilter_save
+		endif
+		"
 	else
 		echo "code snippet directory ".s:C_CodeSnippets." does not exist (please create it)"
 	endif
