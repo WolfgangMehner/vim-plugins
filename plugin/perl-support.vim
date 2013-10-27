@@ -649,7 +649,7 @@ function! Perl_CodeSnippet(mode)
     "
     if a:mode == "write" || a:mode == "writemarked"
 			if has("gui_running") && s:Perl_GuiSnippetBrowser == 'gui'
-				let l:snippetfile=browse(0,"write a code snippet",g:Perl_CodeSnippets,"")
+				let l:snippetfile=browse(1,"write a code snippet",g:Perl_CodeSnippets,"")
 			else
 				let	l:snippetfile=input("write snippet ", g:Perl_CodeSnippets, "file" )
 			endif
@@ -2596,7 +2596,7 @@ function! s:CreateAdditionalMaps ()
 	"
 	nnoremap    <buffer>  <silent>  <LocalLeader>nr         :call Perl_CodeSnippet("read")<CR>
 	nnoremap    <buffer>  <silent>  <LocalLeader>nw         :call Perl_CodeSnippet("write")<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>nw    <Esc>:call Perl_CodeSnippet("wv")<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>nw    <Esc>:call Perl_CodeSnippet("writemarked")<CR>
 	nnoremap    <buffer>  <silent>  <LocalLeader>ne         :call Perl_CodeSnippet("edit")<CR>
 	nnoremap    <buffer>  <silent>  <LocalLeader>nv         :call Perl_CodeSnippet("view")<CR>
 	"
