@@ -133,6 +133,8 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 - Added: Command :GitBlame supports ranges.
 - Fixed: Jumping from the status buffer to a file did not work when the working
   directory changed.
+- Changed: After jumping to a file/buffer, open all folds under the cursor (see
+  g:Git_OpenFoldAfterJump).
 - Improved syntax highlighting.
 - Minor bugfixes and improvements.
 

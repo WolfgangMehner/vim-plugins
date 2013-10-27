@@ -752,7 +752,7 @@ committed:", "Changes not staged for commit:", ...
 ==============================================================================
 5.  CUSTOM MENUS                                            *gitsupport-menus*
 ==============================================================================
-
+                                                            *g:Git_CustomMenu*
 The custom menu entries offer convenient access to often used Git commands,
 especially those with regularly used combinations of flags. All custom menu
 entries appear in the sub menu "Git->custom". They are defined via the global
@@ -807,22 +807,18 @@ in the .vimrc file.
 
   Variable                    Default     Description and further information
  ----------------------------------------------------------------------------
-  g:Git_Executable            'git'       the Git executable
-                                            |gitsupport-config-executable|
-  g:Git_LoadMenus             'yes'       whether to load the menus
+  |g:Git_Executable|            'git'       the Git executable
+  |g:Git_LoadMenus|             'yes'       whether to load the menus
                                           ('yes' or 'no')
-                                            |gitsupport-config-menus|
-  g:Git_RootMenu              '&Git'      name and shortcut of the root menu
-                                            |gitsupport-config-menus|
-  g:Git_CustomMenu            [ ... ]     custom menu entries
-                                            |gitsupport-menus|
-  g:Git_DiffExpandEmpty       'yes'       whether |:GitDiff| expands an empty
+  |g:Git_RootMenu|              '&Git'      name and shortcut of the root menu
+  |g:Git_CustomMenu|            [ ... ]     custom menu entries
+  |g:Git_DiffExpandEmpty|       'yes'       whether |:GitDiff| expands an empty
                                           argument list to the current file
-                                            |gitsupport-config-settings|
-  g:Git_StatusStagedOpenDiff  'cached'    how to execute "open diff" from
-                                          inside the status buffer, section
+  |g:Git_OpenFoldAfterJump|     'yes'       whether commands which open a file
+                                          open the folds under the cursor
+  |g:Git_StatusStagedOpenDiff|  'cached'    how to execute "open diff" from
+                                          inside the status buffer in section
                                           "Changes to be committed"
-                                            |gitsupport-config-settings|
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -890,6 +886,23 @@ The possible settings are listed below:
  ----------------------------------------------------------------------------
   'yes' (default)   expand empty argument list   git diff -- <file>
   'no'              Git's standard behavior      git diff
+ ----------------------------------------------------------------------------
+
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
+------------------------------------------------------------------------------
+                                                     *g:Git_OpenFoldAfterJump*
+Some maps jump from Git buffers to files. By default they open all the folds
+under the cursor via 'zO'. This behavior can be switched off by settings: >
+	let g:Git_OpenFoldAfterJump = 'no'
+<
+The possible settings are listed below:
+
+  Value             Meaning
+ ----------------------------------------------------------------------------
+  'yes' (default)   open all the folds under the cursor
+  'no'              do not
  ----------------------------------------------------------------------------
 
 The behavior can be changed on the fly by settings the variable to a different
