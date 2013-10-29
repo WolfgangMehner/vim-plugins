@@ -197,7 +197,6 @@ let s:Perl_CreateMenusDelayed    = 'yes'
 "
 let s:Perl_InsertFileHeader			   = 'yes'
 let s:Perl_Wrapper                 = g:Perl_PluginDir.'/perl-support/scripts/wrapper.sh'
-let s:Perl_EfmPerl                 = g:Perl_PluginDir.'/perl-support/scripts/efm_perl.pl'
 let s:Perl_PerlModuleListGenerator = g:Perl_PluginDir.'/perl-support/scripts/pmdesc3.pl'
 let s:Perl_PerltidyBackup			     = "no"
 "
@@ -966,34 +965,19 @@ function! Perl_SyntaxCheck ()
 	call s:Perl_SaveGlobalOption('errorformat')
 	call s:Perl_SaveGlobalOption('makeprg')
 	"
-	if s:MSWIN && ( l:fullname =~ ' ' ||  s:Perl_EfmPerl =~ ' ' )
-    "
-    " Use tools/efm_perl.pl from the VIM distribution.
-    " This wrapper can handle filenames containing blanks.
-    " Errorformat from tools/efm_perl.pl .
-		" direct call 
-    "
-		let tmpfile = tempname()
-    exe ':set errorformat=%f:%l:%m'
-		silent exe ":!\"".s:Perl_EfmPerl."\" -c % > ".tmpfile
-		exe ":cfile ".tmpfile
-  else
-    "
-		" no whitespaces
-    " Errorformat from compiler/perl.vim (VIM distribution).
-    "
-    exe ':set makeprg=perl\ -c'
-    exe ':set errorformat=
-        \%-G%.%#had\ compilation\ errors.,
-        \%-G%.%#syntax\ OK,
-        \%m\ at\ %f\ line\ %l.,
-        \%+A%.%#\ at\ %f\ line\ %l\\,%.%#,
-       \%+C%.%#'
-	  let	l:fullname	= fnameescape( l:fullname )
-  	silent exe  ':make  '.l:fullname
-  endif
+	" Errorformat from compiler/perl.vim (VIM distribution).
+	"
+	exe ':set makeprg=perl\ -c'
+	exe ':set errorformat=
+				\%-G%.%#had\ compilation\ errors.,
+				\%-G%.%#syntax\ OK,
+				\%m\ at\ %f\ line\ %l.,
+				\%+A%.%#\ at\ %f\ line\ %l\\,%.%#,
+				\%+C%.%#'
+	let	l:fullname	= shellescape( l:fullname )
+	silent exe  ':make  '.l:fullname
 
-  exe ":botright cwindow"
+	exe ":botright cwindow"
 	call s:Perl_RestoreGlobalOption('makeprg')
 	call s:Perl_RestoreGlobalOption('errorformat')
   "

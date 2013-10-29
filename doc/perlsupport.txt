@@ -1,4 +1,4 @@
-*perlsupport.txt*                Perl Support                 August 19 2013 
+*perlsupport.txt*                Perl Support                October 29 2013 
 Perl Support                                      *perl-support* *perlsupport*
 
                              Plug-in version 5.2pre
@@ -852,13 +852,6 @@ line, separate output buffer and xterm (see |perlsupport-output|).
 -------------------
 The script is run as "perl -wc  xxx.pl" with most warnings enabled to check
 the syntax.
-The Perl script efm_perl.pl (from the VIM standard distribution with a minor
-improvement) is needed for checking the syntax of a file with a file name or a
-pathname containing blanks.  Due to a weakness in the file name representation
-in the Perl output, messages have to be filtered in order to be processed
-correctly by the VIM quickfix system.
-This script has to be executable under UNIX.
-
 For convenience consider to use maps like
 >
   noremap  <silent> <F5>    :copen<CR>
@@ -1664,7 +1657,6 @@ perl-support/modules/             Directory for the list of installed Perl modul
 
 perl-support/scripts/csv2err.pl   Perl script; generate Vim-quickfix
                                   compatible error files.
-perl-support/scripts/efm_perl.pl  Perl script; Reformats the error messages of the Perl interpreter
 perl-support/scripts/pmdesc3.pl   Perl script; generates a list of all installed Perl modules
 perl-support/scripts/wrapper.sh   The wrapper script for the use of an xterm.
 
