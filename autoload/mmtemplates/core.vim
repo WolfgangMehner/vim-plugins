@@ -3205,7 +3205,7 @@ function! mmtemplates#core#CreateMenus ( library, root_menu, ... )
 	let root_menu     = global_name.'.'
 	let specials_menu = '&Run'
 	let priority      = s:StandardPriority
-	let existing     = []
+	let existing      = []
 	"
 	" jobs
 	let do_reset     = 0

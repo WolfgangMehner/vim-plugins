@@ -172,6 +172,9 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
 - Toggle non-C-comments.
 - Run debugger.
 - Some global variables now changeable on the fly.
+- Menus now show the correct mapleader.
+- Added Doxygen templates.
+- Added help menu entries: help English, help Doxygen
 - Several internal improvements.
 
 

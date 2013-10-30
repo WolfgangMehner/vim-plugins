@@ -22,22 +22,48 @@ MenuShortcut( 'Idioms',       'i' )
 MenuShortcut( 'Preprocessor', 'p' )
 MenuShortcut( 'Snippets',     'n' )
 MenuShortcut( 'C++',          'c' )
-§
-IncludeFile( 'snippets.template'     )
-§
+
+IncludeFile( 'snippets.template' )
+
+§ different comments for styles "C", "CPP" and "Doxygen":
+
 == USE STYLES : C ==
-IncludeFile( 'c.comments.template'     )
-IncludeFile( 'c.cpp.template'          )
+IncludeFile( 'c.comments.template' )
+== ENDSTYLES ==
+
+== USE STYLES : CPP ==
+IncludeFile( 'cpp.comments.template' )
+== ENDSTYLES ==
+
+== USE STYLES : Doxygen ==
+IncludeFile( 'doxygen.template' )
+== ENDSTYLES ==
+
+§ the rest of the templates are the same for the two styles "C" and "Doxygen";
+§ you may also group "Doxygen" and "CPP" if you like this better:
+
+== USE STYLES : C, Doxygen ==
+IncludeFile( 'c.statements.template'   )
 IncludeFile( 'c.idioms.template'       )
 IncludeFile( 'c.preprocessor.template' )
-IncludeFile( 'c.statements.template'   )
+IncludeFile( 'c.cpp.template'          )
 == ENDSTYLES ==
-§
+
 == USE STYLES : CPP ==
-IncludeFile( 'cpp.comments.template'     )
-IncludeFile( 'cpp.cpp.template'          )
+IncludeFile( 'cpp.statements.template'   )
 IncludeFile( 'cpp.idioms.template'       )
 IncludeFile( 'cpp.preprocessor.template' )
-IncludeFile( 'cpp.statements.template'   )
+IncludeFile( 'cpp.cpp.template'          )
 == ENDSTYLES ==
+
+§ =============================================================
+§  Help
+§ =============================================================
+
+SetMacro( 'HELP_BROWSER', 'firefox' )
+
+SetMacro( 'HelpPathEnglish', 'http://en.wiktionary.org/wiki/' )
+SetMacro( 'HelpPathDoxygen', 'http://www.stack.nl/~dimitri/doxygen/commands.html' )
+
+IncludeFile( 'help.template' )
 

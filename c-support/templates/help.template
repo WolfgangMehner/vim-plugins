@@ -1,0 +1,31 @@
+§ every time a help template is used, it executes a shell command,
+§ which follows this general format:
+§   |HELP_BROWSER| |HelpPathXYZ|<word under the cursor>
+§ e.g. if you set:
+§   SetMacro( 'HELP_BROWSER', 'firefox -new-window' )
+§ the system call would be something like:
+§   firefox -new-window http://en.wiktionary.org/wiki/example
+
+§ help english:
+§ we delete non-word characters before calling the help
+§
+§ help Doxygen:
+§ we do some voodoo to
+§ - find all Doxygen commands, preceded by '\' or '@'
+§ - get Doxygen command like \f$ or @f{environment}{ to work
+§ in case we do not find such a command under the cursor,
+§ we open the page anyway, which should put the list of commands on screen
+
+== HELP: Help.english == map:he, sc:e ==
+|Word( '' )|
+|Substitute( '\W', '', 'g' )|
+|System( '|HELP_BROWSER| |HelpPathEnglish||PICK:l|' )|
+== HELP: Help.doxygen cmd == map:hd, sc:d ==
+|Pattern( '[\\@]\zs\%(f{\w\+\*\?}{\?\|f[}\$\[\]]\|\w\+\)' )|
+|Substitute( 'f[\$\[\]]', 'fdollar', '' )|
+|Substitute( 'f{\w\+\*\?}{\?', 'fcurlyopen', '' )|
+|Substitute( 'f}', 'fcurlyclose', '' )|
+|System( '|HELP_BROWSER| |HelpPathDoxygen|#cmd|PICK|' )|
+|Default( '|HELP_BROWSER| |HelpPathDoxygen|' )|
+== ENDTEMPLATE ==
+
