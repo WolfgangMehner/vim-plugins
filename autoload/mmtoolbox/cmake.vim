@@ -276,7 +276,7 @@ function! mmtoolbox#cmake#Property ( mode, key, ... )
 endfunction    " ----------  end of function mmtoolbox#cmake#Property  ----------
 "
 "-------------------------------------------------------------------------------
-" Modul setup.   {{{1
+" Modul setup (abort early?).   {{{1
 "-------------------------------------------------------------------------------
 if s:Enabled == 0
 	finish

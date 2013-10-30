@@ -215,13 +215,14 @@ function! mmtoolbox#make#Property ( mode, key, ... )
 endfunction    " ----------  end of function mmtoolbox#make#Property  ----------
 "
 "-------------------------------------------------------------------------------
-" Modul setup.   {{{1
+" Modul setup (abort early?).   {{{1
 "-------------------------------------------------------------------------------
 if s:Enabled == 0
 	finish
 endif
 "
 "-------------------------------------------------------------------------------
+"
 " Run : Run make.   {{{1
 "-------------------------------------------------------------------------------
 function! mmtoolbox#make#Run ( args )
@@ -233,7 +234,7 @@ function! mmtoolbox#make#Run ( args )
 	if a:args == '' | let cmdlinearg = s:CmdLineArgs
 	else            | let cmdlinearg = a:args
 	endif
-	" :TODO:18.08.2013 21:45:WM: 's:CmdLineArgs' is not correctly escaped for use under Windows
+	" :TODO:18.08.2013 21:45:WM: 'cmdlinearg' is not correctly escaped for use under Windows
 	"
 	" run make
 	if s:Makefile == ''
