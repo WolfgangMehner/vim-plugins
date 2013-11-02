@@ -51,6 +51,7 @@ current working directory. CMake's help can be quickly accessed within Vim.
  2.    Commands                                   |toolbox-cmake-commands|
  2.1    API                                       |toolbox-cmake-api|
  3.    Configuration                              |toolbox-cmake-config|
+ 4.    Known Issues                               |toolbox-cmake-issues|
 
 ==============================================================================
 1.  INTRODUCTION                                         *toolbox-cmake-intro*
@@ -60,17 +61,17 @@ After configuring the project's top-level directory with |:CMakeProjectDir|
 and setting the build location using |:CMakeBuildLocation|, CMake can be run
 by calling the ex-command |:CMake|! (with a bang). Command line arguments can
 be given directly, for example: >
-	:CMake! -DDO_TESTS=1
+  :CMake! -DDO_TESTS=1
 After that, :CMake (without a bang) can be used to execute the make tool in
 the build location: >
-	:CMake -j3
+  :CMake -j3
 Errors will be listed in the quick-fix buffer.
 
 Help for CMake's commands can be accessed using |:CMakeHelpCommand|: >
-	:CMakeHelpCommand add_library
+  :CMakeHelpCommand add_library
 This will open a new buffer containing the help. Calling the command without
 parameters will open a buffer showing a list of all commands: >
-	:CMakeHelpCommand
+  :CMakeHelpCommand
 Similar ex-commands exist for modules, policies, properties and variables, see
 below.
 
@@ -148,8 +149,33 @@ In each of the help buffers, several maps are defined.
 2.1  API                                                   *toolbox-cmake-api*
 ------------------------------------------------------------------------------
 
-	*Todo		api
+The various directories can be set via an API. This allows for setting up the
+configuration via a script.
 
+------------------------------------------------------------------------------
+                                                    *mmtoolbox#cmake#Property*
+The project and build directory can be set using:
+
+  mmtoolbox#cmake#Property ( mode, key [, value] ) ~
+
+Parameters:
+  mode  - "echo", "get" or "set" (string)
+  key   - the name of one of the properties (string)
+  value - the new value of the property,
+          only with mode "set" (string, optional)
+Returns:
+  -
+
+The property is one of the following:
+  "project-dir"  - The project's top-level directory.
+  "build-dir"    - The build location.
+
+To set the directories for a project, use: >
+  call mmtoolbox#cmake#Property ( "set",
+      \ "project-dir", "$HOME/Projects/MyProject" )
+  call mmtoolbox#cmake#Property ( "set",
+      \ "build", "$HOME/Projects/MyProject/build" )
+<
 ==============================================================================
 3.  CONFIGURATION                                       *toolbox-cmake-config*
 ==============================================================================
@@ -173,6 +199,16 @@ The executable is set by g:CMake_Executable: >
 The make executable is set by g:CMake_MakeTool: >
   let g:CMake_MakeTool = 'make'
 <
+==============================================================================
+4.  KNOWN ISSUES                                        *toolbox-cmake-issues*
+==============================================================================
+
+* Some of the errors are not recognized by the quickfix mechanism.
+  - Unfortunately, CMake's automatically generated Makefiles seem to output
+    some errors, which can not be recognized by Vim's standard error format
+    for C. If you come across any such errors, please send use an example and
+    we will try to extend the error format.
+
 
 
 ==============================================================================
@@ -188,7 +224,10 @@ Doxygen Tool                                                     Aug 27 2013
                  Wolfgang Mehner <wolfgang-mehner at web.de>
                   Fritz Mehner  <mehner.fritz at fh-swf.de>
 
-	*Todo		overview
+The Doxygen tool integrates Doxygen. After generating a documentation, the
+errors can be displayed in a quickfix list at any time. The tool assists with
+generating Doxygen configuration files and with handling other Doxygen-related
+files.
 
 ==============================================================================
 0.  TABLE OF CONTENTS                               *toolbox-doxygen-contents*
@@ -203,11 +242,38 @@ Doxygen Tool                                                     Aug 27 2013
 1.  INTRODUCTION                                       *toolbox-doxygen-intro*
 ==============================================================================
 
-	*Todo		introduction
+As a first step, the Doxygen configuration file can be set using the ex-
+command |:DoxygenConfigFile|: >
+  :DoxygenConfigFile ./Doxyfile
+This file will now be used, independently of the working directory, Now
+Doxygen can be run via |:Doxygen|. Afterwards, the errors are displayed in a
+|quickfix| list. They can be shown later using |:DoxygenErrors|.
+
+A new configuration file can be generated using |:DoxygenGenerateConfig|. The
+user is prompted for a location and name of the new config file. This file is
+then generated and its name stored as it would be using |:DoxygenConfigFile|.
+The file can be conveniently accessed later via |:DoxygenEditConfig|.
+
+Whenever Doxygen is run, the output is written into a log file. The name and
+location can be configured using |:DoxygenLogFile|. By default, this file will
+also contain the errors encountered during generating the documentation. If
+the option 'WARN_LOGFILE' is set in the Doxygen config file, the error file
+should be set via |:DoxygenErrorFile|. Then |:Doxygen| and |:DoxygenErrors|
+will be read the errors from this file.
 
   Command                       Short Description
  ----------------------------------------------------------------------------
   |:Doxygen| [<args>]             run Doxygen with the given arguments
+
+  |:DoxygenConfigFile| [<file>]   set the configuration file
+  |:DoxygenErrorFile| [<file>]    set the error file
+  |:DoxygenLogFile| [<file>]      set the log file
+
+  |:DoxygenGenerateConfig|        generate a configuration file
+  |:DoxygenEditConfig|            edit the configuration file
+  |:DoxygenViewLog|               view the log file
+  |:DoxygenErrors|                |quickfix| list for Doxygen errors
+  |:DoxygenHelp|                  help for the Doxygen plug-in
  ----------------------------------------------------------------------------
 
 Detailed explanations are given in the next section |toolbox-doxygen-commands|.
@@ -222,14 +288,119 @@ This chapter provides detailed explanations of all the commands.
                                                                     *:Doxygen*
   :Doxygen [<args>] ~
 
-	*Todo		docu
+Runs Doxygen. If called without arguments, uses the config file set via
+|:DoxygenConfigFile|. The output produced by Doxygen is written into the log
+file (see |:DoxygenViewLog| and |:DoxygenViewLog|). It may also contain the
+error messages.
+The errors are then read back from the error file (see |:DoxygenErrorFile|) to
+produce a |quickfix| list. The errors can also be view later using
+|:DoxygenErrors|.
+
+------------------------------------------------------------------------------
+                                                          *:DoxygenConfigFile*
+  :DoxygenConfigFile [<file>] ~
+
+Sets the Doxygen configuration file. If a specific file has been selected, it
+is always used, independent of the current working directory. The directory of
+the file is used as the working directory for running Doxygen (see |:Doxygen|).
+
+  :DoxygenConfigFile! ~
+
+Echoes the current configuration file on the command line.
+
+------------------------------------------------------------------------------
+                                                           *:DoxygenErrorFile*
+  :DoxygenErrorFile [<file>] ~
+
+Sets the Doxygen error file. If a specific file has been selected, it is
+always used, independent of the current working directory. The file is used to
+read the errors for |:DoxygenErrors|.
+
+  :DoxygenErrorFile! ~
+
+Echoes the current error file on the command line.
+
+------------------------------------------------------------------------------
+                                                             *:DoxygenLogFile*
+  :DoxygenLogFile [<file>] ~
+
+Sets the Doxygen log file. If a specific file has been selected, it is always
+used, independent of the current working directory. The file can be viewed by
+calling |:DoxygenViewLog|.
+
+  :DoxygenLogFile! ~
+
+Echoes the current log file on the command line.
+
+------------------------------------------------------------------------------
+                                                      *:DoxygenGenerateConfig*
+  :DoxygenGenerateConfig ~
+
+The user is asked to pick a location and name for a new config file, which is
+then generated automatically. Upon successful completion, the name of the
+config file is set as it would be using |:DoxygenConfigFile|.
+
+------------------------------------------------------------------------------
+                                                          *:DoxygenEditConfig*
+  :DoxygenEditConfig ~
+
+Opens the configuration file set via |:DoxygenConfigFile| for editing.
+
+------------------------------------------------------------------------------
+                                                             *:DoxygenViewLog*
+  :DoxygenViewLog ~
+
+Views the log file set via |:DoxygenLogFile|.
+
+------------------------------------------------------------------------------
+                                                              *:DoxygenErrors*
+  :DoxygenErrors ~
+
+Reads the errors from the error file set via |:DoxygenErrorFile| and generates
+a |quickfix| list.
+
+------------------------------------------------------------------------------
+                                                                *:DoxygenHelp*
+  :DoxygenHelp ~
+
+Opens the help for the Doxygen tool.
 
 ------------------------------------------------------------------------------
 2.1  API                                                 *toolbox-doxygen-api*
 ------------------------------------------------------------------------------
 
-	*Todo		api
+The various filenames can be set via an API. This allows for setting up the
+configuration via a script.
 
+------------------------------------------------------------------------------
+                                                  *mmtoolbox#doxygen#Property*
+The filenames can be set using:
+
+  mmtoolbox#doxygen#Property ( mode, key [, value] ) ~
+
+Parameters:
+  mode  - "echo", "get" or "set" (string)
+  key   - the name of one of the properties (string)
+  value - the new value of the property,
+          only with mode "set" (string, optional)
+Returns:
+  -
+
+The property is one of the following:
+  "config-file" - The configuration file.
+  "error-file"  - The error file.
+  "log-file"    - The log file.
+
+To set the configuration file for a project, use: >
+  call mmtoolbox#doxygen#Property ( "set",
+      \ "config-file", "$HOME/Projects/MyProject/doc/Doxyfile" )
+<
+To set the error file: >
+  call mmtoolbox#doxygen#Property ( "set", "error-file",
+      \ "$HOME/Projects/MyProject/doc/doxy_warnings.txt" )
+This requires the Doxygen configuration file to include the following line: >
+  WARN_LOGFILE = "doxy_warnings.txt"
+<
 ==============================================================================
 3.  CONFIGURATION                                     *toolbox-doxygen-config*
 ==============================================================================
@@ -337,7 +508,6 @@ Echoes the currently memorized arguments on the command line.
 ------------------------------------------------------------------------------
                                                                    *:MakeFile*
   :MakeFile [<file>] ~
-  :MakeFile ~
 
 Sets the makefile. If a specific file has been selected, it is always used,
 independent of the current working directory. If the makefile has not been
@@ -352,8 +522,34 @@ Echoes the current makefile on the command line.
 2.1  API                                                    *toolbox-make-api*
 ------------------------------------------------------------------------------
 
-	*Todo		api
+The Makefile and command-line arguments can be set via an API. This allows for
+setting up the configuration via a script.
 
+------------------------------------------------------------------------------
+                                                     *mmtoolbox#make#Property*
+The Makefile and command-line arguments can be set using:
+
+  mmtoolbox#make#Property ( mode, key [, value] ) ~
+
+Parameters:
+  mode  - "echo", "get" or "set" (string)
+  key   - the name of one of the properties (string)
+  value - the new value of the property,
+          only with mode "set" (string, optional)
+Returns:
+  -
+
+The property is one of the following:
+  "cmdline-args" - The memorized command-line arguments.
+  "makefile"     - The name and location of the makefile.
+
+To set the makefile for a project, use: >
+  call mmtoolbox#make#Property ( "set",
+      \ "makefile", "$HOME/Projects/MyProject" )
+<
+To always run three jobs in parallel: >
+  call mmtoolbox#make#Property ( "set", "cmdline-args", "-j3" )
+<
 ==============================================================================
 3.  CONFIGURATION                                        *toolbox-make-config*
 ==============================================================================

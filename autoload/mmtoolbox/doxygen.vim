@@ -9,8 +9,8 @@
 "                 See help file csupport_doxygen.txt .
 " 
 "   VIM Version:  7.0+
-"        Author:  Dr.-Ing. Fritz Mehner, mehner@fh-swf.de
-"                 Wolfgang Mehner, wolfgang-mehner@web.de
+"        Author:  Wolfgang Mehner, wolfgang-mehner@web.de
+"                 Dr.-Ing. Fritz Mehner, mehner@fh-swf.de
 "  Organization:  
 "       Version:  see variable g:Doxygen_Version below
 "       Created:  10.06.2012
@@ -271,18 +271,16 @@ function! mmtoolbox#doxygen#Run ( args )
 	silent exe 'update'   | " write source file if necessary
 	cclose
 	"
-	if ! filereadable( s:ConfigFile )
-		" :TODO:27.10.2013 19:09:WM: file not readable?
-" 		return s:ErrorMsg ( 'Doxygen : File not readable: '.s:ConfigFile )
-		call s:ErrorMsg ( 'Doxygen : File not readable: '.s:ConfigFile )
-		normal :DoxygenConfigFile 
-		return
-" 		silent call DoxygenSelectConfigFile ()
-	endif
-	"
 	" arguments
-	if a:args == '' | let cmdlinearg = shellescape ( s:ConfigFile )
-	else            | let cmdlinearg = a:args
+	if a:args == ''
+		if ! filereadable( s:ConfigFile )
+			" :TODO:27.10.2013 19:09:WM: file not readable?
+			return s:ErrorMsg ( 'Doxygen : File not readable: '.s:ConfigFile )
+		endif
+		"
+		let cmdlinearg = shellescape ( s:ConfigFile )
+	else
+		let cmdlinearg = a:args
 	endif
 	" :TODO:27.10.2013 19:28:WM: 'cmdlinearg' is not correctly escaped for use under Windows
 	"
