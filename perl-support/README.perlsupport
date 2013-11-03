@@ -144,8 +144,11 @@ For a system-wide installation please see the help file 'doc/perlsupport.txt'.
 - New global variable g:Perl_InsertFileHeader (suppress file description comment for new files).
 - Two new ex commands: PerlScriptArguments, PerlSwitches
 - Specifying command line arguments and Perl command line switches improved.
+- Bugfix: g:Perl_LoadMenus now works.
 - Bugfix: g:Perl_MapLeader now works.
 - Some settings moved to the filetype plugin.
+- Removed superfluous settings from the filetype plugin.
+- Integration of Make moved into the toolbox.
 - Minor improvements.
 
 ---------------------------------------------------------------------------------------

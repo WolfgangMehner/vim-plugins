@@ -112,6 +112,8 @@ let s:Perl_LocalTemplateFile	= ''
 let s:Perl_LocalTemplateDir		= ''
 let g:Perl_FilenameEscChar 		= ''
 "
+let s:Perl_ToolboxDir					= []
+"
 if  s:MSWIN
   " ==========  MS Windows  ======================================================
 	"
@@ -123,6 +125,7 @@ if  s:MSWIN
 		let g:Perl_PluginDir 					= substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
 		let s:Perl_LocalTemplateFile	= g:Perl_PluginDir.'/perl-support/templates/Templates'
 		let s:Perl_LocalTemplateDir		= fnamemodify( s:Perl_LocalTemplateFile, ":p:h" ).'/'
+		let s:Perl_ToolboxDir				 += [ g:Perl_PluginDir.'/autoload/mmtoolbox/' ]
 	else
 		" SYSTEM WIDE INSTALLATION
 		let g:Perl_Installation				= 'system'
@@ -131,6 +134,9 @@ if  s:MSWIN
 		let s:Perl_GlobalTemplateFile	= s:Perl_GlobalTemplateDir.'/Templates'
 		let s:Perl_LocalTemplateFile	= $HOME.'/vimfiles/perl-support/templates/Templates'
 		let s:Perl_LocalTemplateDir		= fnamemodify( s:Perl_LocalTemplateFile, ":p:h" ).'/'
+		let s:Perl_ToolboxDir				 += [
+					\	g:Perl_PluginDir.'/autoload/mmtoolbox/',
+					\	$HOME.'/vimfiles/autoload/mmtoolbox/' ]
 	end
 	"
   let g:Perl_FilenameEscChar 			= ''
@@ -144,6 +150,7 @@ else
 		let g:Perl_PluginDir  				= expand("<sfile>:p:h:h")
 		let s:Perl_LocalTemplateFile	= g:Perl_PluginDir.'/perl-support/templates/Templates'
 		let s:Perl_LocalTemplateDir		= fnamemodify( s:Perl_LocalTemplateFile, ":p:h" ).'/'
+		let s:Perl_ToolboxDir				 += [ g:Perl_PluginDir.'/autoload/mmtoolbox/' ]
 	else
 		" SYSTEM WIDE INSTALLATION
 		let g:Perl_Installation				= 'system'
@@ -152,6 +159,9 @@ else
 		let s:Perl_GlobalTemplateFile	= s:Perl_GlobalTemplateDir.'/Templates'
 		let s:Perl_LocalTemplateFile	= $HOME.'/.vim/perl-support/templates/Templates'
 		let s:Perl_LocalTemplateDir		= fnamemodify( s:Perl_LocalTemplateFile, ":p:h" ).'/'
+		let s:Perl_ToolboxDir				 += [
+					\	g:Perl_PluginDir.'/autoload/mmtoolbox/',
+					\	$HOME.'/.vim/autoload/mmtoolbox/' ]
 	endif
 	"
   let g:Perl_FilenameEscChar 			= ' \%#[]'
@@ -203,6 +213,9 @@ let s:Perl_PerltidyBackup			     = "no"
 call s:perl_SetGlobalVariable ( 'Perl_MapLeader', '' )
 let s:Perl_RootMenu								= '&Perl'
 "
+let s:Perl_UseToolbox             = 'yes'
+call s:perl_SetGlobalVariable ( 'Perl_UseTool_make',    'yes' )
+"
 "------------------------------------------------------------------------------
 "
 "  Look for global variables (if any), to override the defaults.
@@ -230,6 +243,7 @@ call s:perl_SetLocalVariable('Perl_Printheader            ')
 call s:perl_SetLocalVariable('Perl_ProfilerTimestamp      ')
 call s:perl_SetLocalVariable('Perl_TemplateOverriddenMsg  ')
 call s:perl_SetLocalVariable('Perl_TimestampFormat        ')
+call s:perl_SetLocalVariable('Perl_UseToolbox             ')
 call s:perl_SetLocalVariable('Perl_XtermDefaults          ')
 
 if exists('g:Perl_GlobalTemplateFile') && !empty(g:Perl_GlobalTemplateFile)
@@ -936,6 +950,17 @@ function! Perl_Settings ()
 	if !empty(s:Perl_PerlExecutableVersion)
 		let txt = txt."  Perl interface version  :  ".s:Perl_PerlExecutableVersion."\n"
 	endif
+	" ----- toolbox -----------------------------
+	if s:Perl_UseToolbox == 'yes'
+		let toollist = mmtoolbox#tools#GetList ( s:Perl_Toolbox )
+		if empty ( toollist )
+			let txt .= "                  toolbox :  -no tools-\n"
+		else
+			let sep  = "\n"."                             "
+			let txt .=      "                  toolbox :  "
+						\ .join ( toollist, sep )."\n"
+		endif
+	endif
   let txt = txt."\n"
   let txt = txt."    Additional hot keys\n\n"
   let txt = txt."                Shift-F1  :  read perldoc (for word under cursor)\n"
@@ -1149,96 +1174,6 @@ function! Perl_Run ()
   endif
   "
 endfunction    " ----------  end of function Perl_Run  ----------
-"
-" globals to cummunicate with a make plugin:
-"
-let g:Make_CmdLineArgs  = ''    " command line arguments for Run-make; initially empty
-let g:Make_Makefile			= ''
-
-"===  FUNCTION  ================================================================
-"          NAME:  Perl_MakeArguments     {{{1
-"   DESCRIPTION:  read command line arguments for make(1)
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Perl_MakeArguments ()
-	let	g:Make_CmdLineArgs= Perl_Input("make command line arguments : ",g:Make_CmdLineArgs, 'file' )
-endfunction    " ----------  end of function Perl_MakeArguments ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Perl_MakeClean     {{{1
-"   DESCRIPTION:  run 'make clean'
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Perl_MakeClean()
-	" run make clean
-	if g:Make_Makefile == ''
-		exe	":!make clean"
-	else
-		exe	':lchdir  '.fnamemodify( g:Make_Makefile, ":p:h" )
-		if  s:MSWIN
-			exe	':!make -f "'.g:Make_Makefile.'" clean'
-		else
-			exe	':!make -f '.g:Make_Makefile.' clean'
-		endif
-		exe	":lchdir -"
-	endif
-endfunction    " ----------  end of function Perl_MakeClean ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Perl_ChooseMakefile     {{{1
-"   DESCRIPTION:  choose a makefile
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Perl_ChooseMakefile ()
-	let g:Make_Makefile	= ''
-	let mkfile	= findfile( "Makefile", ".;" )    " try to find a Makefile
-	if mkfile == ''
-    let mkfile  = findfile( "makefile", ".;" )  " try to find a makefile
-	endif
-	if mkfile == ''
-		let mkfile	= getcwd()
-	endif
-	let	g:Make_Makefile	= Perl_Input ( "choose a Makefile: ", mkfile, "file" )
-	if  s:MSWIN
-		let	g:Make_Makefile	= substitute( g:Make_Makefile, '\\ ', ' ', 'g' )
-	endif
-endfunction    " ----------  end of function Perl_ChooseMakefile  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Perl_Make     {{{1
-"   DESCRIPTION:  run make(1)
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Perl_Make()
-	exe	":cclose"
-	" update : write source file if necessary
-	exe	":update"
-	" run make
-	if g:Make_Makefile == ''
-		if filereadable('Makefile.PL')
-			:!perl Makefile.PL
-		endif
-		exe	":!make ".g:Make_CmdLineArgs
-	else
-		exe	':lchdir  '.fnamemodify( g:Make_Makefile, ":p:h" )
-		if !filereadable(g:Make_Makefile) && filereadable('Makefile.PL')
-			:!perl Makefile.PL
-		endif
-		if  s:MSWIN
-			exe	':!make -f "'.g:Make_Makefile.'" '.g:Make_CmdLineArgs
-		else
-			exe	':!make -f '.g:Make_Makefile.' '.g:Make_CmdLineArgs
-		endif
-		exe	":lchdir -"
-	endif
-	exe	":botright cwindow"
-	"
-endfunction    " ----------  end of function Perl_Make ----------
-"
 "
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_Debugger     {{{1
@@ -1943,18 +1878,6 @@ function! Perl_PerlcriticOptionsInput ()
 endfunction    " ----------  end of function Perl_PerlcriticOptionsInput  ----------
 "
 "===  FUNCTION  ================================================================
-"          NAME:  Perl_CreateMenusDelayed     {{{1
-"   DESCRIPTION:  create GUI menus delayed
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Perl_CreateMenusDelayed ()
-	if s:Perl_CreateMenusDelayed == 'yes' && s:Perl_MenuVisible == 'no'
-		call Perl_CreateGuiMenus()
-	endif
-endfunction    " ----------  end of function Perl_CreateMenusDelayed  ----------
-"
-"===  FUNCTION  ================================================================
 "          NAME:  Perl_CreateGuiMenus     {{{1
 "   DESCRIPTION:  create GUI menus immediate
 "    PARAMETERS:  -
@@ -2161,7 +2084,10 @@ function! s:Perl_InitMenus ()
 	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', 'S&nippets' , 'priority', 600 )
 	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', '&Profiling', 'priority', 700 )
 	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', '&Run'      , 'priority', 800 )
-	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', '&Help'     , 'priority', 900 )
+	if s:Perl_UseToolbox == 'yes' && mmtoolbox#tools#Property ( s:Perl_Toolbox, 'empty-menu' ) == 0
+		call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', '&Tool Box', 'priority', 900 )
+	endif
+	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', '&Help'     , 'priority', 1000 )
 	"
   "===============================================================================================
   "----- Menu : Comments                              {{{2
@@ -2263,19 +2189,12 @@ function! s:Perl_InitMenus ()
   exe 'amenu '.s:Perl_RootMenu.'.&Run.cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra\ \ <S-F9>  :PerlScriptArguments<Space>'
   exe 'amenu .'s:Perl_RootMenu.'.&Run.perl\ s&witches<Tab>'.esc_mapl.'rw                :PerlSwitches<Space>'
   "
-  "   set execution rights for user only ( user may be root ! )
-  "
+  " set execution rights for user only ( user may be root ! )
   if !s:MSWIN
     exe ahead.'make\ script\ &executable<Tab>'.esc_mapl.'re              :call Perl_MakeScriptExecutable()<CR>'
   endif
-  exe ahead.'-SEP1-                     :'
-  exe ahead.'run\ &make<Tab>'.esc_mapl.'rm                              :call Perl_Make()<CR>'
-	exe ahead.'&choose\ makefile<Tab>'.esc_mapl.'rcm                      :call Perl_ChooseMakefile()<CR>'
-	exe ahead.'&make\ clean<Tab>'.esc_mapl.'rmc                           :call Perl_MakeClean()<CR>'
-  exe ahead.'cmd\.\ line\ ar&g\.\ for\ make<Tab>'.esc_mapl.'rma         :call Perl_MakeArguments()<CR>'
-  exe ahead.'start\ &debugger<Tab>'.esc_mapl.'rd\ \ <F9>                :call Perl_Debugger()<CR>'
+	"
   exe ahead.'-SEP2-                     :'
-
   exe ahead.'show\ &installed\ Perl\ modules<Tab>'.esc_mapl.'ri  :call Perl_perldoc_show_module_list()<CR>'
   exe ahead.'&generate\ Perl\ module\ list<Tab>'.esc_mapl.'rg    :call Perl_perldoc_generate_module_list()<CR><CR>'
   "
@@ -2329,6 +2248,14 @@ function! s:Perl_InitMenus ()
   endif
 	"
   "===============================================================================================
+  "----- Menu : Tools                            {{{2
+  "===============================================================================================
+	"
+	if s:Perl_UseToolbox == 'yes' && mmtoolbox#tools#Property ( s:Perl_Toolbox, 'empty-menu' ) == 0
+		call mmtoolbox#tools#AddMenus ( s:Perl_Toolbox, s:Perl_RootMenu.'.&Tool\ Box' )
+	endif
+	"
+  "===============================================================================================
   "----- Menu : Help                             {{{2
   "===============================================================================================
 	"
@@ -2371,21 +2298,6 @@ function! s:Perl_InitMenus ()
 	"
 	return
 endfunction    " ----------  end of function s:Perl_InitMenus  ----------
-
-"===  FUNCTION  ================================================================
-"          NAME:  Perl_ShowMenus     {{{1
-"   DESCRIPTION:  display the Perl menu
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! s:Perl_ShowMenus ()
-	call s:Perl_RereadTemplates ('no') 
-	if s:Perl_LoadMenus == 'yes'
-		call s:Perl_InitMenus () 
-    let s:Perl_MenuVisible = 'yes'
-		call s:Perl_ToolMenuUnloadItem()
-	endif 
-endfunction    " ----------  end of function s:Perl_ShowMenus  ----------
 
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_ToolMenu     {{{1
@@ -2663,21 +2575,11 @@ function! s:CreateAdditionalMaps ()
 	noremap    <buffer>  <silent>  <LocalLeader>rs         :call Perl_SyntaxCheck()<CR>
 	noremap    <buffer>            <LocalLeader>ra         :PerlScriptArguments<Space>
 	noremap    <buffer>            <LocalLeader>rw         :PerlSwitches<Space>
-	noremap    <buffer>  <silent>  <LocalLeader>rcm        :call Perl_ChooseMakefile()<CR>
 	"
-	noremap    <buffer>  <silent>  <LocalLeader>rm         :call Perl_Make()<CR>
-	noremap    <buffer>  <silent>  <LocalLeader>rmc        :call Perl_MakeClean()<CR>
-	noremap    <buffer>  <silent>  <LocalLeader>rma        :call Perl_MakeArguments()<CR>
-
 	inoremap    <buffer>  <silent>  <LocalLeader>rr    <C-C>:call Perl_Run()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rs    <C-C>:call Perl_SyntaxCheck()<CR>
 	inoremap    <buffer>            <LocalLeader>ra    <C-C>:PerlScriptArguments<Space>
 	inoremap    <buffer>            <LocalLeader>rw    <C-C>:PerlSwitches<Space>
-	inoremap    <buffer>  <silent>  <LocalLeader>rcm   <C-C>:call Perl_ChooseMakefile()<CR>
-	"
-	inoremap    <buffer>  <silent>  <LocalLeader>rm    <C-C>:call Perl_Make()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>rmc   <C-C>:call Perl_MakeClean()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>rma   <C-C>:call Perl_MakeArguments()<CR>
 	"
 	noremap    <buffer>  <silent>  <LocalLeader>rd    :call Perl_Debugger()<CR>
 	noremap    <buffer>  <silent>    <F9>             :call Perl_Debugger()<CR>
@@ -2726,6 +2628,14 @@ function! s:CreateAdditionalMaps ()
 	if !exists("g:Perl_Ctrl_j") || ( exists("g:Perl_Ctrl_j") && g:Perl_Ctrl_j != 'off' )
 		nmap    <buffer>  <silent>  <C-j>    i<C-R>=Perl_JumpCtrlJ()<CR>
 		imap    <buffer>  <silent>  <C-j>     <C-R>=Perl_JumpCtrlJ()<CR>
+	endif
+	"
+	"-------------------------------------------------------------------------------
+	" tool box
+	"-------------------------------------------------------------------------------
+	"
+	if s:Perl_UseToolbox == 'yes'
+		call mmtoolbox#tools#AddMaps ( s:Perl_Toolbox )
 	endif
 	"
 	"-------------------------------------------------------------------------------
@@ -2782,7 +2692,24 @@ endif
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 
 "===============================================================================
-"===============================================================================
+"
+" Plug-in setup:  {{{1
+"
+"------------------------------------------------------------------------------
+"  setup the toolbox
+"------------------------------------------------------------------------------
+"
+if s:Perl_UseToolbox == 'yes'
+	"
+	let s:Perl_Toolbox = mmtoolbox#tools#NewToolbox ( 'Perl' )
+	call mmtoolbox#tools#Property ( s:Perl_Toolbox, 'mapleader', g:Perl_MapLeader )
+	"
+	call mmtoolbox#tools#Load ( s:Perl_Toolbox, s:Perl_ToolboxDir )
+	"
+	" debugging only:
+	"call mmtoolbox#tools#Info ( s:Perl_Toolbox )
+	"
+endif
 "
 call Perl_ToolMenu()
 
@@ -2797,7 +2724,11 @@ if has("autocmd")
 	"
 	autocmd FileType *
 				\	if ( &filetype == 'perl' || &filetype == 'pod') |
-				\		call Perl_CreateMenusDelayed() |
+				\		if ! exists( 'g:Perl_Templates' ) |
+				\			if s:Perl_LoadMenus == 'yes' | call Perl_CreateGuiMenus ()        |
+				\			else                         | call s:Perl_RereadTemplates ('no') |
+				\			endif |
+				\		endif |
 				\		call s:CreateAdditionalMaps() |
 				\		call mmtemplates#core#CreateMaps ( 'g:Perl_Templates', g:Perl_MapLeader ) |
 				\	endif

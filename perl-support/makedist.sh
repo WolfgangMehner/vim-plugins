@@ -33,14 +33,17 @@ filelist="
  ./${plugin}/templates/*
  ./${plugin}/wordlists/*
  ./autoload/mmtemplates/core.vim
+ ./autoload/mmtoolbox/make.vim
+ ./autoload/mmtoolbox/tools.vim
  ./autoload/perlsupportprofiling.vim
  ./autoload/perlsupportregex.vim
  ./doc/perlsupport.txt
  ./doc/templatesupport.txt
+ ./doc/toolbox.txt
+ ./ftplugin/make.vim
  ./ftplugin/perl.vim
  ./ftplugin/pod.vim
  ./ftplugin/qf.vim
- ./plugin/make.vim
  ./plugin/perl-support.vim
  ./syntax/template.vim
 "
