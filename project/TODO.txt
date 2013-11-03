@@ -7,16 +7,19 @@ C/C++:
   * 'Run' menu entries removed.
   * Maps configured in ftplugin.
   * Reference documentation of toolbox.
+  * Reference toolbox in 'c-hotkeys.tex'?
   * Document 'g:C_UseToolbox' and 'g:C_UseTool_*'.
   * Menu entry 'Run->executable to run' is not part of the Make integration
     anymore, since the Make integration moves to the toolbox. It is to be
     documented as configuration for 'Run->run', similar to 'Run->cmdline arg.'.
+    Shortcut changes to '\ce'.
 
 Perl:
 - Documentation: Change documentation with regard to Make integration.
   * 'Run' menu entries removed.
   * Maps configured in ftplugin.
   * Reference documentation of toolbox.
+  * Reference toolbox in 'perl-hotkeys.tex'?
   * Document 'g:Perl_UseToolbox' and 'g:Perl_UseTool_make'.
 
 Toolbox:

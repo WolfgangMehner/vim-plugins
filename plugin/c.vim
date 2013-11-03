@@ -195,6 +195,7 @@ call s:C_SetGlobalVariable ( 'C_MapLeader', '' )       " default: do not overwri
 let s:C_CExtension     				= 'c'                    " C file extension; everything else is C++
 let s:C_CodeCheckExeName      = 'check'
 let s:C_CodeCheckOptions      = '-K13'
+let s:C_ExecutableToRun       = ''
 let s:C_LineEndCommColDefault = 49
 let s:C_LoadMenus      				= 'yes'
 let s:C_CreateMenusDelayed    = 'no'
@@ -218,6 +219,8 @@ let s:C_SourceCodeExtensions  = 'c cc cp cxx cpp CPP c++ C i ii'
 let s:C_CppcheckSeverity			= 'all'
 let s:C_InsertFileHeader			= 'yes'
 let s:C_NonCComment						= '#'
+"
+let s:C_MenusVisible          = 'no'		" state variable controlling the C-menus
 "
 "------------------------------------------------------------------------------
 "
@@ -294,7 +297,6 @@ let s:C_Com2          			= '*/'     " C-style : comment end
 let s:C_TJT									= '[ 0-9a-zA-Z_]*'
 let s:C_TemplateJumpTarget1 = '<+'.s:C_TJT.'+>\|{+'.s:C_TJT.'+}'
 let s:C_TemplateJumpTarget2 = '<-'.s:C_TJT.'->\|{-'.s:C_TJT.'-}'
-let s:C_TemplatesLoaded			= 'no'
 
 let s:C_ForTypes     = [
     \ 'char'                  ,
@@ -468,22 +470,12 @@ function! s:C_InitMenus ()
 	exe ihead.'&link<Tab>'.esc_mapl.'rl\ \ \ \ \<F9\>                <C-C>:call C_Link()<CR>:call C_HlMessage()<CR>'
 	exe ahead.'&run<Tab>'.esc_mapl.'rr\ \ \<C-F9\>                        :call C_Run()<CR>'
 	exe ihead.'&run<Tab>'.esc_mapl.'rr\ \ \<C-F9\>                   <C-C>:call C_Run()<CR>'
+	exe ahead.'executable\ to\ run<Tab>'.esc_mapl.'re                     :call C_ExeToRun()<CR>'
+	exe ihead.'executable\ to\ run<Tab>'.esc_mapl.'re                <C-C>:call C_ExeToRun()<CR>'
 	exe 'anoremenu '.s:MenuRun.'.cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra\ \ \<S-F9\>         :CCmdlineArgs<Space>'
 	exe 'inoremenu '.s:MenuRun.'.cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra\ \ \<S-F9\>    <C-C>:CCmdlineArgs<Space>'
 	exe ahead.'run\ &debugger<Tab>'.esc_mapl.'rd                           :call C_Debugger()<CR>'
 	exe ihead.'run\ &debugger<Tab>'.esc_mapl.'rd                      <C-C>:call C_Debugger()<CR>'
-	"
-	exe ahead.'-SEP0-                                                      :'
-	exe ahead.'&make<Tab>'.esc_mapl.'rm                                    :call C_Make()<CR>'
-	exe ihead.'&make<Tab>'.esc_mapl.'rm                               <C-C>:call C_Make()<CR>'
-	exe ahead.'&choose\ makefile<Tab>'.esc_mapl.'rcm                       :call C_ChooseMakefile()<CR>'
-	exe ihead.'&choose\ makefile<Tab>'.esc_mapl.'rcm                  <C-C>:call C_ChooseMakefile()<CR>'
-	exe ahead.'&make\ clean<Tab>'.esc_mapl.'rmc                            :call C_MakeClean()<CR>'
-	exe ihead.'&make\ clean<Tab>'.esc_mapl.'rmc                       <C-C>:call C_MakeClean()<CR>'
-	exe 'anoremenu '.s:MenuRun.'.cmd\.\ line\ ar&g\.\ for\ make<Tab>'.esc_mapl.'rma          :CMakeCmdlineArgs<Space>'
-	exe 'inoremenu '.s:MenuRun.'.cmd\.\ line\ ar&g\.\ for\ make<Tab>'.esc_mapl.'rma     <C-C>:CMakeCmdlineArgs<Space>'
-	exe ahead.'executable\ to\ run<Tab>'.esc_mapl.'rme                     :call C_ExeToRun()<CR>'
-	exe ihead.'executable\ to\ run<Tab>'.esc_mapl.'rme                <C-C>:call C_ExeToRun()<CR>'
 	"
 	exe ahead.'-SEP1-                                                      :'
 	"
@@ -1706,79 +1698,6 @@ function! C_XtermSize ()
 endfunction    " ----------  end of function C_XtermSize ----------
 "
 "------------------------------------------------------------------------------
-"  run make(1)       {{{1
-"------------------------------------------------------------------------------
-let s:C_ExecutableToRun	= ''
-let s:C_Makefile				= ''
-let s:C_MakeCmdLineArgs = ''   " command line arguments for Run-make; initially empty
-"
-"------------------------------------------------------------------------------
-"  C_ChooseMakefile : choose a makefile       {{{1
-"------------------------------------------------------------------------------
-function! C_ChooseMakefile ()
-	let s:C_Makefile	= ''
-	let mkfile	= findfile( "Makefile", ".;" )    " try to find a Makefile
-	if mkfile == ''
-    let mkfile  = findfile( "makefile", ".;" )  " try to find a makefile
-	endif
-	if mkfile == ''
-		let mkfile	= getcwd()
-	endif
-	let	s:C_Makefile	= C_Input ( "choose a Makefile: ", mkfile, "file" )
-	if  s:MSWIN
-		let	s:C_Makefile	= substitute( s:C_Makefile, '\\ ', ' ', 'g' )
-	endif
-endfunction    " ----------  end of function C_ChooseMakefile  ----------
-"
-"------------------------------------------------------------------------------
-"  C_Make : run make       {{{1
-"------------------------------------------------------------------------------
-function! C_Make()
-	exe	":cclose"
-	" update : write source file if necessary
-	exe	":update"
-	" run make
-	if s:C_Makefile == ''
-		exe	":make ".s:C_MakeCmdLineArgs
-	else
-		exe	':lchdir  '.fnamemodify( s:C_Makefile, ":p:h" )
-		if  s:MSWIN
-			exe	':make -f "'.s:C_Makefile.'" '.s:C_MakeCmdLineArgs
-		else
-			exe	':make -f '.s:C_Makefile.' '.s:C_MakeCmdLineArgs
-		endif
-		exe	":lchdir -"
-	endif
-	exe	":botright cwindow"
-	"
-endfunction    " ----------  end of function C_Make ----------
-"
-"------------------------------------------------------------------------------
-"  C_MakeClean : run 'make clean'       {{{1
-"------------------------------------------------------------------------------
-function! C_MakeClean()
-	" run make clean
-	if s:C_Makefile == ''
-		exe	":!make clean"
-	else
-		exe	':lchdir  '.fnamemodify( s:C_Makefile, ":p:h" )
-		if  s:MSWIN
-			exe	':!make -f "'.s:C_Makefile.'" clean'
-		else
-			exe	':!make -f '.s:C_Makefile.' clean'
-		endif
-		exe	":lchdir -"
-	endif
-endfunction    " ----------  end of function C_MakeClean ----------
-
-"------------------------------------------------------------------------------
-"  C_MakeArguments : get make command line arguments       {{{1
-"------------------------------------------------------------------------------
-function! C_MakeArguments ( ... )
-	let	s:C_MakeCmdLineArgs	= join( a:000 )
-endfunction    " ----------  end of function C_MakeArguments ----------
-
-"------------------------------------------------------------------------------
 "  C_ExeToRun : choose executable to run       {{{1
 "------------------------------------------------------------------------------
 function! C_ExeToRun ()
@@ -2357,17 +2276,6 @@ function! s:C_RemoveSpecialCharacters ( )
 	setlocal nomodifiable
 	silent normal gg
 endfunction		" ---------- end of function  s:C_RemoveSpecialCharacters   ----------
-
-"------------------------------------------------------------------------------
-"  C_CreateMenusDelayed     {{{1
-"------------------------------------------------------------------------------
-let s:C_MenusVisible = 'no'								" state variable controlling the C-menus
-"
-function! C_CreateMenusDelayed ()
-	if s:C_CreateMenusDelayed == 'yes' && s:C_MenusVisible == 'no'
-		call C_CreateGuiMenus()
-	endif
-endfunction    " ----------  end of function C_CreateMenusDelayed  ----------
 "
 "------------------------------------------------------------------------------
 "  C_CreateGuiMenus     {{{1
@@ -2382,14 +2290,16 @@ function! C_CreateGuiMenus ()
 		let  s:C_MenusVisible = 'yes'
 	endif
 endfunction    " ----------  end of function C_CreateGuiMenus  ----------
-
-function! C_CheckAndRereadTemplates ()
-	if s:C_TemplatesLoaded == 'no'
+"
+"------------------------------------------------------------------------------
+"  s:CheckAndRereadTemplates     {{{1
+"------------------------------------------------------------------------------
+function! s:CheckAndRereadTemplates ()
+	if ! exists ( 'g:C_Templates' )
 		call s:C_RereadTemplates('no')        
-		let  s:C_TemplatesLoaded	= 'yes'
 	endif
-endfunction    " ----------  end of function C_CheckAndRereadTemplates  ----------
-
+endfunction    " ----------  end of function s:CheckAndRereadTemplates  ----------
+"
 "===  FUNCTION  ================================================================
 "          NAME:  C_RereadTemplates     {{{1
 "   DESCRIPTION:  rebuild commands and the menu from the (changed) template file
@@ -2566,7 +2476,7 @@ endfunction    " ----------  end of function C_ExpandSingleMacro  ----------
 function! C_InsertTemplateWrapper ()
 	" prevent insertion for a file generated from a link error:
 	"
-	call C_CheckAndRereadTemplates()
+	call s:CheckAndRereadTemplates()
 	if isdirectory(expand('%:p:h')) && s:C_InsertFileHeader == 'yes'
 		if index( s:C_SourceCodeExtensionsList, expand('%:e') ) >= 0 
  			call mmtemplates#core#InsertTemplate(g:C_Templates, 'Comments.file description impl')
@@ -2613,7 +2523,6 @@ function! s:CreateAdditionalMaps ()
 	"
 	" ---------- commands : run -------------------------------------
   command! -nargs=* -complete=file CCmdlineArgs     call C_Arguments(<q-args>)
-  command! -nargs=* -complete=file CMakeCmdlineArgs call C_MakeArguments(<q-args>)
 	"
 	" ---------- F-key mappings  ------------------------------------
 	"
@@ -2745,20 +2654,12 @@ function! s:CreateAdditionalMaps ()
 	imap <buffer>  <silent>  <LocalLeader>rl    <C-C>:call C_Link()<CR>:call C_HlMessage()<CR>
 	map  <buffer>  <silent>  <LocalLeader>rr         :call C_Run()<CR>
 	imap <buffer>  <silent>  <LocalLeader>rr    <C-C>:call C_Run()<CR>
+	map  <buffer>  <silent>  <LocalLeader>re         :call C_ExeToRun()<CR>
+	imap <buffer>  <silent>  <LocalLeader>re    <C-C>:call C_ExeToRun()<CR>
 	map  <buffer>            <LocalLeader>ra         :CCmdlineArgs<Space>
 	imap <buffer>            <LocalLeader>ra    <C-C>:CCmdlineArgs<Space>
-	map  <buffer>  <silent>  <LocalLeader>rm         :call C_Make()<CR>
-	imap <buffer>  <silent>  <LocalLeader>rm    <C-C>:call C_Make()<CR>
-	map  <buffer>  <silent>  <LocalLeader>rcm        :call C_ChooseMakefile()<CR>
-	imap <buffer>  <silent>  <LocalLeader>rcm   <C-C>:call C_ChooseMakefile()<CR>
-	map  <buffer>  <silent>  <LocalLeader>rmc        :call C_MakeClean()<CR>
-	imap <buffer>  <silent>  <LocalLeader>rmc   <C-C>:call C_MakeClean()<CR>
 	map  <buffer>  <silent>  <LocalLeader>rd         :call C_Debugger()<CR>
 	imap <buffer>  <silent>  <LocalLeader>rd    <C-C>:call C_Debugger()<CR>
-	map  <buffer>  <silent>  <LocalLeader>rme        :call C_ExeToRun()<CR>
-	imap <buffer>  <silent>  <LocalLeader>rme   <C-C>:call C_ExeToRun()<CR>
-	map  <buffer>            <LocalLeader>rma        :CMakeCmdlineArgs<Space>
-	imap <buffer>            <LocalLeader>rma   <C-C>:CMakeCmdlineArgs<Space>
 	map  <buffer>  <silent>  <LocalLeader>rp         :call C_SplintCheck()<CR>:call C_HlMessage()<CR>
 	imap <buffer>  <silent>  <LocalLeader>rp    <C-C>:call C_SplintCheck()<CR>:call C_HlMessage()<CR>
 	map  <buffer>  <silent>  <LocalLeader>rpa        :call C_SplintArguments()<CR>
@@ -2876,7 +2777,11 @@ if has("autocmd")
 	"
 	autocmd FileType *
 				\	if ( &filetype == 'cpp' || &filetype == 'c') |
-				\		call C_CreateMenusDelayed() |
+				\		if ! exists( 'g:C_Templates' ) |
+				\			if s:C_LoadMenus == 'yes' | call C_CreateGuiMenus ()        |
+				\			else                      | call s:C_RereadTemplates ('no') |
+				\			endif |
+				\		endif |
 				\		call s:CreateAdditionalMaps() |
 				\		call mmtemplates#core#CreateMaps ( 'g:C_Templates', g:C_MapLeader ) |
 				\	endif

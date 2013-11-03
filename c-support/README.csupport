@@ -173,6 +173,8 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
 - Run debugger.
 - Some global variables now changeable on the fly.
 - Menus now show the correct mapleader.
+- Bugfix: g:C_LoadMenus now works.
+- Bugfix: Prevent unnecessary rereading of the template library.
 - Added Doxygen templates.
 - Added help menu entries: help English, help Doxygen
 - Several internal improvements.
@@ -230,6 +232,11 @@ rc/customization.vimrc       Additional settings I use in .vimrc :  incremental
                              search, tabstop, hot keys, font, use of
                              dictionaries, ...  The file is commented. Append
                              it to your .vimrc if you like.
+
+rc/project/in.vim            Example for using the project plug-in's "in="
+                             option (see :help project-syntax) to set up the
+                             toolbox. For example, a project's Makefile could be
+                             set up this way.
 
 ================================================================================
   CREDITS
