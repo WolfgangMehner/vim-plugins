@@ -1,4 +1,4 @@
-README for vim-support.vim (Version 2.1) / August 11 2013
+README for vim-support.vim (Version 2.2pre) / August 11 2013
 
   *  INSTALLATION
   *  RELEASE NOTES 
@@ -78,15 +78,9 @@ For a system-wide installation please see the help file 'doc/vimsupport.txt'.
 =======================================================================================
 
 ---------------------------------------------------------------------------------------
-  RELEASE NOTES FOR VERSION 2.1
+  RELEASE NOTES FOR VERSION 2.2pre
 ---------------------------------------------------------------------------------------
-+ Menus generated in correct order.
-+ Menus show the correct mapleader.
-+ Maps are created for modifiable help buffers, depending on the option "g:Vim_CreateMapsForHelp".
-+ Changed map for Vim keyword help: \h -> \hk
-+ Map creation is triggered by the "FileType" event.
-+ New hotkey \hp.
-+ Minor changes and bugfixes.
++ Fixed map for "adjust end-of-line com.".
 
 =======================================================================================
   FILES

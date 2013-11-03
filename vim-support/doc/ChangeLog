@@ -1,4 +1,15 @@
 ---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 2.1
+---------------------------------------------------------------------------------------
++ Menus generated in correct order.
++ Menus show the correct mapleader.
++ Maps are created for modifiable help buffers, depending on the option "g:Vim_CreateMapsForHelp".
++ Changed map for Vim keyword help: \h -> \hk
++ Map creation is triggered by the "FileType" event.
++ New hotkey \hp.
++ Minor changes and bugfixes.
+
+---------------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 2.0
 ---------------------------------------------------------------------------------------
 + Initial public release.

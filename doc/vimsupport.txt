@@ -1,7 +1,7 @@
 *vimsupport.txt*                Vim Support                  August 11 2013
 
 Vim Support                                         *vim-support* *vimsupport*
-                              Plugin version 2.1
+                              Plugin version 2.2pre
                         for Vim version 7.0 and above
                   Fritz Mehner  <mehner.fritz at fh-swf.de>
                 Wolfgang Mehner  <wolfgang-mehner at web.de>
