@@ -68,18 +68,6 @@ function! s:GetGlobalSetting ( varname )
 	endif
 endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 "
-"===  FUNCTION  ================================================================
-"          NAME:  ApplyDefaultSetting     {{{1
-"   DESCRIPTION:  make a local setting global
-"    PARAMETERS:  varname - variable to set
-"       RETURNS:  
-"===============================================================================
-function! s:ApplyDefaultSetting ( varname )
-	if ! exists ( 'g:'.a:varname )
-		exe 'let g:'.a:varname.' = s:'.a:varname
-	endif
-endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
-"
 "------------------------------------------------------------------------------
 " *** PLATFORM SPECIFIC ITEMS ***     {{{1
 "------------------------------------------------------------------------------
@@ -175,7 +163,6 @@ let s:BASH_RootMenu          	= '&Bash'           " name of the root menu
 let s:BASH_Debugger           = 'term'
 let s:BASH_bashdb             = 'bashdb'
 "
-let s:BASH_MapLeader             	= ''            " default: do not overwrite 'maplocalleader'
 let s:BASH_LineEndCommColDefault	= 49
 let s:BASH_Printheader   					= "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
 let s:BASH_TemplateJumpTarget 		= ''
@@ -201,7 +188,7 @@ call s:GetGlobalSetting ( 'BASH_GlobalTemplateFile' )
 call s:GetGlobalSetting ( 'BASH_CreateMenusDelayed' )
 call s:GetGlobalSetting ( 'BASH_LineEndCommColDefault' )
 
-call s:ApplyDefaultSetting ( 'BASH_MapLeader'    )
+call s:BASH_SetGlobalVariable ( 'BASH_MapLeader', '' )       " default: do not overwrite 'maplocalleader'
 "
 " set default geometry if not specified
 "
@@ -655,10 +642,10 @@ function! s:InitMenus()
   "
 	"
 	if	!s:MSWIN
-		exe " menu <silent> ".s:BASH_RootMenu.'.&Run.start\ &debugger<Tab><F9>\ \ \\rd           :call BASH_Debugger()<CR>'
-		exe "imenu <silent> ".s:BASH_RootMenu.'.&Run.start\ &debugger<Tab><F9>\ \ \\rd      <C-C>:call BASH_Debugger()<CR>'
-		exe " menu <silent> ".s:BASH_RootMenu.'.&Run.make\ script\ &executable<Tab>\\re          :call BASH_MakeScriptExecutable()<CR>'
-		exe "imenu <silent> ".s:BASH_RootMenu.'.&Run.make\ script\ &executable<Tab>\\re     <C-C>:call BASH_MakeScriptExecutable()<CR>'
+		exe " menu <silent> ".s:BASH_RootMenu.'.&Run.start\ &debugger<Tab><F9>\ \ '.esc_mapl.'rd           :call BASH_Debugger()<CR>'
+		exe "imenu <silent> ".s:BASH_RootMenu.'.&Run.start\ &debugger<Tab><F9>\ \ '.esc_mapl.'rd      <C-C>:call BASH_Debugger()<CR>'
+		exe " menu <silent> ".s:BASH_RootMenu.'.&Run.make\ script\ &executable<Tab>'.esc_mapl.'re          :call BASH_MakeScriptExecutable()<CR>'
+		exe "imenu <silent> ".s:BASH_RootMenu.'.&Run.make\ script\ &executable<Tab>'.esc_mapl.'re     <C-C>:call BASH_MakeScriptExecutable()<CR>'
 	endif
 	"
 	exe ahead.'-SEP1-   :'
