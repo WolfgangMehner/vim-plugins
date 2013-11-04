@@ -8,6 +8,7 @@
 § -------------------------------------------------------------
 == LIST: document_classes == list, bare  ==
 article
+beamer
 book   
 letter 
 proc   

@@ -1,0 +1,148 @@
+§ =============================================================
+§  Beamer
+§ =============================================================
+
+§ -------------------------------------------------------------
+§  Themes
+§ -------------------------------------------------------------
+
+== LIST: beamer_themes == list, bare ==
+	Antibes
+	Bergen
+	Berkeley
+	Berlin
+	Copenhagen
+	Darmstadt
+	Dresden
+	Frankfurt
+	Goettingen
+	Hannover
+	Ilmenau
+	JuanLesPins
+	Luebeck
+	Madrid
+	Malmoe
+	Marburg
+	Montpellier
+	PaloAlto
+	Pittsburgh
+	Rochester
+	Singapore
+	Szeged
+	Warsaw
+	boxes
+	default
+== ENDLIST ==
+
+== Beamer.usetheme == expandmenu, below, sc:u ==
+|PickList( 'theme', 'beamer_themes' )|
+\usetheme<CURSOR>{|PICK|}
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Slides
+§ -------------------------------------------------------------
+
+== SEP: Beamer.sep-slides ==
+
+== LIST: beamer_col_align == hash ==
+	'bottom'  : 'b',
+	'center'  : 'c',
+	'top (t)' : 't',
+	'top (T)' : 'T',
+== ENDLIST ==
+
+== Beamer.frame == below, map:bf, sc:f ==
+\begin{frame}<CURSOR>{<+TITLE+>}{<+SUBTITLE+>}
+<SPLIT>
+\end{frame}
+== Beamer.columns == expandmenu, below, map:bc, sc:c ==
+|PickList( 'alignment', 'beamer_col_align' )|
+\begin{columns}[|VALUE|<CURSOR>]
+	\begin{column}{<+WIDTH+>|BEAMER_UNIT|}
+		<SPLIT><-COLUMN->
+	\end{column}
+	\begin{column}{<+WIDTH+>|BEAMER_UNIT|}
+		<+COLUMN+>
+	\end{column}
+\end{columns}
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Overlay
+§ -------------------------------------------------------------
+
+== SEP: Beamer.sep-overlay ==
+
+== Beamer.itemize == below, map:bi, sc:i ==
+\begin{itemize}
+	\item<1-> <CURSOR><SPLIT>
+	\item<2-> <+ITEM+>
+	\item<3-> <+ITEM+>
+\end{itemize}
+== Beamer.overprint == below, map:bo, sc:o ==
+\begin{overprint}
+	\onslide<1>
+		<CURSOR><SPLIT>
+	\onslide<2>
+		<+SLIDE+>
+\end{overprint}
+== Beamer.pause == below, sc:p ==
+\pause[<CURSOR>]
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Title
+§ -------------------------------------------------------------
+
+== SEP: Beamer.sep-title ==
+
+== Beamer.title, settings == below, sc:t ==
+\title<CURSOR>[<+SHORT+>]{<+TITLE+>}
+\author[<+SHORT+>]{|AUTHOR|}
+\institute[<+SHORT+>]{<+INSTITUTE+>}
+\date[|DATE|]{<+DATE+>}
+== Beamer.title, maketitle == below, sc:t ==
+\maketitle<CURSOR>
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Graphics
+§ -------------------------------------------------------------
+
+== SEP: Beamer.sep-graphics ==
+
+== Beamer.graphicspath == below, sc:p ==
+\graphicspath{{<CURSOR>}}
+== Beamer.includegraphics == below, map:bg, sc:g ==
+|PickFile( 'image', 'graphics_path' )|
+\includegraphics[width=<CURSOR>|BEAMER_UNIT|]{|PICK|}
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Highlighting
+§ -------------------------------------------------------------
+
+== SEP: Beamer.sep-highlight ==
+
+== LIST: textcolors == list, bare ==
+white
+black
+red
+green
+blue
+cyan
+magenta
+yellow
+== ENDLIST ==
+
+== Beamer.alert == insert ==
+\alert<CURSOR><<+SLIDES+>>{<SPLIT><-TEXT->}
+== Beamer.block == below, map:bbl, sc:b ==
+\begin{block}{<CURSOR>}
+	<SPLIT><-CONTENT->
+\end{block}
+== Beamer.textcolor == insert ==
+|PickList( 'color name', 'textcolors' )|
+\textcolor{|PICK|}{<CURSOR><SPLIT><-TEXT->}
+== ENDTEMPLATE ==

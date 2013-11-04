@@ -14,6 +14,12 @@ C/C++:
     documented as configuration for 'Run->run', similar to 'Run->cmdline arg.'.
     Shortcut changes to '\ce'.
 
+LaTeX:
+- Documentation: Menu 'Beamer' missing.
+- Documentation: Menu 'Help' missing.
+- Reference Card: Menu 'Beamer' missing.
+- Reference Card: Entry 'Help->english' missing.
+
 Perl:
 - Documentation: Change documentation with regard to Make integration.
   * 'Run' menu entries removed.

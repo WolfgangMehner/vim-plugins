@@ -224,7 +224,7 @@ mathtt
 == Math.spaces == expandmenu, insert, map:msp, sc:s ==
 |PickList( 'choose', 'spaces' )|
 \|PICK|<CURSOR>
-== Math.accents == expandmenu, insert, map:mac, sc:s ==
+== Math.accents == expandmenu, insert, map:mac, sc:a ==
 |PickList( 'choose', 'accents' )|
 \|PICK|{<CURSOR>}
 == Math.font styles == expandmenu, insert, map:mfs, sc:s ==

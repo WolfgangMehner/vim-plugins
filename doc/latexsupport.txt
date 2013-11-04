@@ -52,9 +52,10 @@ keystrokes.
 5.3.2  The jump tags <+text+> etc.                  |latexsupport-templates-jumptags|
 5.3.3  Command Ctrl-j                               |latexsupport-Ctrl-j|
 
-6.     LATEX DICTIONARY                             |latexsupport-dictionary|
+6.     LaTeX Dictionary                             |latexsupport-dictionary|
 
-7.     RELEASE NOTES                                |latexsupport-release-notes|
+7.     Troubleshooting                              |latexsupport-troubleshooting|
+8.     Release Notes                                |latexsupport-release-notes|
 
 
 ==============================================================================
@@ -1017,7 +1018,19 @@ second line (continuation line).
 You can use Vim's dictionary feature CTRL-X, CTRL-K (and CTRL-P, CTRL-N).
 
 ==============================================================================
-7.  RELEASE NOTES                                 *latexsupport-release-notes*
+7.  TROUBLESHOOTING                             *latexsupport-troubleshooting*
+==============================================================================
+
+* Some menus, such as "LaTeX -> Math -> greek lowercase" are not displayed
+  correctly.
+  - The character encoding used inside Vim is controlled by the option
+    |'encoding'| (the encoding of files can be different, see |'fileencoding'|).
+    It can be set by adding this lines to your '$HOME/.vimrc':
+      :set encoding=utf-8
+    Create one if there is none, or better use customization.vimrc.
+
+==============================================================================
+8.  RELEASE NOTES                                 *latexsupport-release-notes*
 ==============================================================================
 
 See files README.latexsupport and doc/ChangeLog.

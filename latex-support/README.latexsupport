@@ -80,6 +80,7 @@ For a system-wide installation please see the help file 'doc/latexsupport.txt'.
 ---------------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 1.1pre
 ---------------------------------------------------------------------------------------
+- Beamer templates and snippets added.
 - Template added.
 - Minor bugfixes and improvements.
 
