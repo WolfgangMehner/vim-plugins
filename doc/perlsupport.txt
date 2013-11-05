@@ -1,7 +1,7 @@
-*perlsupport.txt*                Perl Support                October 29 2013 
+*perlsupport.txt*                Perl Support               November 05 2013 
 Perl Support                                      *perl-support* *perlsupport*
 
-                             Plug-in version 5.2pre
+                             Plug-in version 5.2
                         for Vim version 7.0 and above
                        Fritz Mehner  <mehner@fh-swf.de>
 
@@ -62,20 +62,21 @@ profiler can be done with a keystroke.
  1.9.2    Check syntax                    |perlsupport-syntax-check|
  1.9.3    Command line arguments          |perlsupport-cmdline-args|
  1.9.4    Perl command line switches      |perlsupport-perl-switches|
- 1.9.5    Running make                    |perlsupport-run-make|
- 1.9.6    Debug                           |perlsupport-run-debug|
- 1.9.7    Read perldoc                    |perlsupport-perldoc|
- 1.9.8    Generate Perl module list       |perlsupport-module-list-generation|
- 1.9.9    Show installed Perl modules     |perlsupport-module-list|
- 1.9.10   Run perltidy                    |perlsupport-perltidy|
- 1.9.11   Profiler                        |perlsupport-profiler|
- 1.9.12   Run perlcritic                  |perlsupport-perlcritic|
- 1.9.13   Save buffer with timestamp      |perlsupport-timestamp|
- 1.9.14   Hardcopy                        |perlsupport-hardcopy|
- 1.9.15   Settings                        |perlsupport-settings|
- 1.9.16   Xterm size                      |perlsupport-xterm|
- 1.9.17   Change Output Destination       |perlsupport-output|
- 1.10    Help                             |perlsupport-help|
+ 1.9.5    Debug                           |perlsupport-run-debug|
+ 1.9.6    Read perldoc                    |perlsupport-perldoc|
+ 1.9.7    Generate Perl module list       |perlsupport-module-list-generation|
+ 1.9.8    Show installed Perl modules     |perlsupport-module-list|
+ 1.9.9    Run perltidy                    |perlsupport-perltidy|
+ 1.9.10   Profiler                        |perlsupport-profiler|
+ 1.9.11   Run perlcritic                  |perlsupport-perlcritic|
+ 1.9.12   Save buffer with timestamp      |perlsupport-timestamp|
+ 1.9.13   Hardcopy                        |perlsupport-hardcopy|
+ 1.9.14   Settings                        |perlsupport-settings|
+ 1.9.15   Xterm size                      |perlsupport-xterm|
+ 1.9.16   Change Output Destination       |perlsupport-output|
+ 1.10    Tool Box                         |perlsupport-toolbox|
+ 1.10.1   Make                            |perlsupport-toolbox-make|
+ 1.11    Help                             |perlsupport-help|
  2.      Usage without GUI                |perlsupport-mappings|
  3.      Function Keys                    |perlsupport-function-keys|
  4.      Customization and configuration  |perlsupport-customization|
@@ -900,18 +901,7 @@ own independent switches). The input dialog has a history.
 If the buffer gets a new name with "save as" the switches will now belong to
 the buffer with the new name.
 
-1.9.5  RUNNING MAKE                                     *perlsupport-run-make*
--------------------
-The item 'run make' tries to run the make(1) utility. This comes in handy e.g.
-for a module developer who needs to start 'make test' frequently in order to
-run tests. The item 'cmd. line arg. for make' takes the necessary arguments,
-e.g.  'test'.
-Choose a special makefile using the item 'choose makefile'. The plugin tries
-to find one ('Makefile' or 'makefile') searching from the current directory
-upwards. If no one was found the current working directory will be suggested.
-use tab-expansion and command-line editing to find or specify a makefile.
-
-1.9.6  DEBUG                                           *perlsupport-run-debug*
+1.9.5  DEBUG                                           *perlsupport-run-debug*
 ------------
 Start a debugger from the menu item Run->debug, with hotkey \rd or F9. One of
 three debuggers can be started. The preference can be set with the variable
@@ -943,7 +933,7 @@ Debugging without GUI
 The hotkey \rd or F9 can be used to start the debugger inside the vim window.
 The script will be run with 'perl -d my-script.pl my-arguments'.
 
-1.9.7  READ PERLDOC                                  *perlsupport-perldoc*
+1.9.6  READ PERLDOC                                  *perlsupport-perldoc*
 -------------------
 If a (key-)word is under the cursor the item 'read perldoc' tries to look up
 the Perl documentation for this word using perldoc.  If a whitespace is under
@@ -959,7 +949,7 @@ On a UNIX platform errors produced by perldoc will be suppressed (a few
 module descriptions have POD errors!).
 
 
-1.9.8  GENERATE PERL MODULE LIST          *perlsupport-module-list-generation*
+1.9.7  GENERATE PERL MODULE LIST          *perlsupport-module-list-generation*
 --------------------------------
 The item 'Run -> generate Perl module list' generates a text file (default:
 $HOME/.vim/perl-support/modules/perl-modules.list ) which contains one line
@@ -979,7 +969,7 @@ $HOME/.vim/perl-support/modules/pmdesc3.pl (based on pmdesc2 by Aristotle, see
 generation may take a while.  pmdesc3.pl has a POD included; see file
 doc/pmdesc3.text .
 
-1.9.9  SHOW INSTALLED PERL MODULES                  *perlsupport-module-list*
+1.9.8  SHOW INSTALLED PERL MODULES                  *perlsupport-module-list*
 ----------------------------------
 The item 'Run -> show installed Perl modules' loads the module list in a new
 window.  The full documentation for that module can be opened in a perldoc
@@ -990,8 +980,8 @@ Vim (without GUI): only \h is working.
 The module list can be folded (see |folding|). The Folding is defined by the
 Perl package name separator '::'.
 
-1.9.10  RUN PERLTIDY                                    *perlsupport-perltidy*
---------------------
+1.9.9  RUN PERLTIDY                                     *perlsupport-perltidy*
+-------------------
 The buffer can be formatted with perltidy. If nothing is marked the whole
 buffer will be formatted. If a region is marked only this region will be
 formatted. This can for instance be used for alignments. The 5 lines
@@ -1034,7 +1024,7 @@ directory:
 The default is 'off'.
 
 
-1.9.11  PROFILER                                        *perlsupport-profiler*
+1.9.10  PROFILER                                        *perlsupport-profiler*
 ----------------
 
 This plug-in is prepared to work with 3 profilers:
@@ -1043,7 +1033,7 @@ This plug-in is prepared to work with 3 profilers:
   Devel::FastProf      - "fast" per-line Perl profiler
   Devel::NYTProf       - Powerful feature-rich perl source code profiler
 
-1.9.11.1  Devel::SmallProf                             *perlsupport-smallprof*
+1.9.10.1  Devel::SmallProf                             *perlsupport-smallprof*
 --------------------------
 The menu item 'Profiler->SmallProf->run profiler' runs the profiler for the
 script in the current buffer.  The results will go to the file smallprof.out
@@ -1109,7 +1099,7 @@ setting in the file '~/.vimrc' seems also to influence the statistics:
 Without this setting the report only includes the statistics for the file
 profiled. With this setting the report includes the other modules used.
 
-1.9.11.2  Devel::FastProf                               *perlsupport-fastprof*
+1.9.10.2  Devel::FastProf                               *perlsupport-fastprof*
 -------------------------
 The menu item 'Profiler->FastProf->run profiler' runs the profiler for the
 script in the current buffer.  The results will go to the file fastprof.out in
@@ -1128,7 +1118,7 @@ blank and another <Tab> to list the criteria. The selection will be
 highlighted.
 According to the documentation FastProf is not available for Windows.
 
-1.9.11.3  Devel::NYTProf                                 *perlsupport-nytprof*
+1.9.10.3  Devel::NYTProf                                 *perlsupport-nytprof*
 ------------------------
 The menu item 'Profiler->NYTProf->run profiler' runs the profiler for the
 script in the current buffer.  The results will go to the subdirectory nytprof
@@ -1176,7 +1166,7 @@ The viewer can also be called from the command line:
 <
 or using the hotkey \rpnh.
 
-1.9.12 RUN PERLCRITIC                                 *perlsupport-perlcritic*
+1.9.11 RUN PERLCRITIC                                 *perlsupport-perlcritic*
 ---------------------
 "perlcritic" is a Perl source code analyzer (by Jeffrey Ryan Thalhammer;
 search CPAN for the latest version; see also |perlsupport-dependencies|).
@@ -1269,7 +1259,7 @@ directory.  See the manual for more information ('man perlcritic' or
 For easier navigation in the error list see tip under
 |perlsupport-syntax-check|.
 
-1.9.13 SAVE BUFFER WITH TIMESTAMP                      *perlsupport-timestamp*
+1.9.12 SAVE BUFFER WITH TIMESTAMP                      *perlsupport-timestamp*
 ---------------------------------
 Save the current buffer into a new file. The filename gets a trailing
 timestamp.  The format is YYYYMMDD.HHMMSS.  This corresponds to the default
@@ -1282,7 +1272,7 @@ file ~/vimrc , e.g.
 This feature can be used to comfortably save different profiling results but
 it will work with any named buffer.
 
-1.9.14 HARDCOPY                                         *perlsupport-hardcopy*
+1.9.13 HARDCOPY                                         *perlsupport-hardcopy*
 ---------------
 Generates a PostScript file from the whole buffer or from a marked region.  On
 a MS-Windows system a printer dialog is displayed.
@@ -1306,19 +1296,19 @@ or by setting a global variable in the file .vimrc , e.g. :
 <
 See :h printheader and :h strftime()  for more details.
 
-1.9.15 SETTINGS AND HOTKEYS                             *perlsupport-settings*
+1.9.14 SETTINGS AND HOTKEYS                             *perlsupport-settings*
 ---------------------------
 This menu item shows actual settings for the plug-in. Some of them can change
 during a session (e.g. current output destination or perlcritic verbosity).
 
-1.9.16 XTERM SIZE                                          *perlsupport-xterm*
+1.9.15 XTERM SIZE                                          *perlsupport-xterm*
 -----------------
 The size of the xterm used for debugging (|perlsupport-run-debug|) or for
 running the script (below) can be set by this menu item. The default is 80
 columns with 24 lines.
 This feature is not available under MS-Windows.
 
-1.9.17 CHANGE OUTPUT DESTINATION                          *perlsupport-output*
+1.9.16 CHANGE OUTPUT DESTINATION                          *perlsupport-output*
 --------------------------------
 Running a Perl script can be done in three ways:
 (1) The script can be run from the command line as usual.
@@ -1353,7 +1343,28 @@ The default is "-fa courier -fs 12 -geometry 80x24" :
 See 'xterm -help' for more options. Xterms are not available under MS-Windows.
 
 ------------------------------------------------------------------------------
-1.10  'help'                                                *perlsupport-help*
+1.10  Menu 'Tool Box'                                    *perlsupport-toolbox*
+------------------------------------------------------------------------------
+
+Tools which can be used by several plugins are located in the Tool Box.
+Examples are tools for make(1) or doxygen.  The Tool Box has its own
+documentation:|toolbox|. 
+To switch the Tool Box off add the following line to the file .vimrc
+>
+  let g:Perl_UseToolbox     = 'no'
+<
+1.10.1 Make                                         *perlsupport-toolbox-make*
+
+The tool box for make provides a small set hotkeys, menu items, and ex commands 
+for controlling make. Please see|toolbox-make|.
+To switch the make tool box off add the following line to the file .vimrc
+>
+  let g:Perl_UseTool_make  = 'no'
+<
+The hotkeys for the maek tool are defined in the file ~/.vimftplugin/perl.vim .
+
+------------------------------------------------------------------------------
+1.11  Menu 'help'                                           *perlsupport-help*
 ------------------------------------------------------------------------------
 
 The root menu item 'help' (hotkey \hp ) shows this plug-in help in a help
@@ -1517,12 +1528,8 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \rs        update file, check syntax          (in )
      \ra        set command line argument          (in )
      \rw        set Perl command line switches     (in )
-     \rm        run make                           (in )
-     \rcm       choose makefile                    (in )
-     \rmc       run 'make clean'                   (in )
-     \rma       command line argument for make     (in )
-     \rd        start debugger                     (in )
      \re        make script executable (*)         (in )
+     \rd        start debugger                     (in )
      \ri        show installed Perl modules        (in )
      \rg        generation Perl module list        (in )
      \ry        run perltidy                       (inv)
@@ -1535,6 +1542,13 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \rk        settings and hotkeys               (in )
      \rx        set xterm size (*)                 (in )
      \ro        change output destination          (in )
+
+  -- Tool Box ------------------------------------------
+
+     \rm        run make                           (in )
+     \rmc       run make clean                     (in )
+     \rma       command line arguments for make    (in )
+     \rcm       choose make file                   (in )
 
   -- Help ----------------------------------------------
 
@@ -1655,8 +1669,7 @@ perl-support/codesnippets/*       Some Perl code snippets as a starting point.
 
 perl-support/modules/             Directory for the list of installed Perl modules
 
-perl-support/scripts/csv2err.pl   Perl script; generate Vim-quickfix
-                                  compatible error files.
+perl-support/scripts/csv2err.pl   Perl script; generate Vim-quickfix compatible error files.
 perl-support/scripts/pmdesc3.pl   Perl script; generates a list of all installed Perl modules
 perl-support/scripts/wrapper.sh   The wrapper script for the use of an xterm.
 

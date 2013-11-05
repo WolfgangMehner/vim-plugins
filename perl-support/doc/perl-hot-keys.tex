@@ -7,7 +7,7 @@
 %%                
 %%       Author:  Dr.-Ing. Fritz Mehner
 %%        Email:  mehner@fh-swf.de
-%%    Copyright:  Copyright (C)  2003-2013  Dr.-Ing. Fritz Mehner  (mehner@fh-swf.de)
+%%    Copyright:  Copyright (C)  2003-2013  Dr.-Ing. Fritz Mehner (mehner.fritz@fh-swf.de)
 %%      Version:  see \Pluginversion
 %%      Created:  06.06.2003
 %%                
@@ -28,7 +28,7 @@
 
 \setlength\parindent{0pt}
 
-\newcommand{\Pluginversion}{5.2pre}
+\newcommand{\Pluginversion}{5.2}
 \newcommand{\ReleaseDate}{\today}
 \newcommand{\Rep}{{\scriptsize{[n]}}}
 
@@ -304,10 +304,6 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline \verb'\ra'    & set command line arguments               \hfill (n, i)   \\
 \hline \verb'\rw'    & set Perl cmd.\ line switches             \hfill (n, i)   \\
 \hline \verb'\re'    & make script executable                   \hfill (n, i)   \\
-\hline \verb'\rm'    & run \texttt{make}                        \hfill (n, i)   \\
-\hline \verb'\rcm'   & choose makefile                          \hfill (n, i)   \\
-\hline \verb'\rm'    & \texttt{make clean}                      \hfill (n, i)   \\
-\hline \verb'\rma'   & command line arguments for \texttt{make} \hfill (n, i)   \\
 \hline \verb'\rd'    & start debugger                           \hfill (n, i)   \\
 \hline \verb'\ri'    & show installed Perl modules              \hfill (n, i)   \\
 \hline \verb'\rg'    & generate Perl module list                \hfill (n, i)   \\
@@ -321,6 +317,16 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline \verb'\rk'    & settings and hotkeys                     \hfill (n, i)   \\
 \hline \verb'\rx'    & set xterm size                           \hfill (n, i {\tiny GUI only})\\
 \hline \verb'\ro'    & change output destination                \hfill (n, i)   \\
+\hline
+%%----------------------------------------------------------------------
+%%  menu run
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{Tool Box}} \\[1.0ex]
+\hline \verb'\rm'    & run \texttt{make}                        \hfill (n, i)   \\
+\hline \verb'\rcm'   & choose makefile                          \hfill (n, i)   \\
+\hline \verb'\rmc'   & \texttt{make clean}                      \hfill (n, i)   \\
+\hline \verb'\rma'   & command line arguments for \texttt{make} \hfill (n, i)   \\
 \hline
 \end{tabular}%
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~

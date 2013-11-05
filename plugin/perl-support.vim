@@ -57,7 +57,7 @@
 if exists("g:Perl_PluginVersion") || &compatible
   finish
 endif
-let g:Perl_PluginVersion= "5.2pre"
+let g:Perl_PluginVersion= "5.2"
 "
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_SetGlobalVariable     {{{1
@@ -2193,6 +2193,7 @@ function! s:Perl_InitMenus ()
   if !s:MSWIN
     exe ahead.'make\ script\ &executable<Tab>'.esc_mapl.'re              :call Perl_MakeScriptExecutable()<CR>'
   endif
+  exe ahead.'start\ &debugger<Tab>'.esc_mapl.'rd\ \ <F9>                :call Perl_Debugger()<CR>'
 	"
   exe ahead.'-SEP2-                     :'
   exe ahead.'show\ &installed\ Perl\ modules<Tab>'.esc_mapl.'ri  :call Perl_perldoc_show_module_list()<CR>'
@@ -2583,7 +2584,7 @@ function! s:CreateAdditionalMaps ()
 	"
 	noremap    <buffer>  <silent>  <LocalLeader>rd    :call Perl_Debugger()<CR>
 	noremap    <buffer>  <silent>    <F9>             :call Perl_Debugger()<CR>
-	inoremap    <buffer>  <silent>    <F9>        <C-C>:call Perl_Debugger()<CR>
+	inoremap   <buffer>  <silent>    <F9>        <C-C>:call Perl_Debugger()<CR>
 	"
 	if s:UNIX
 		noremap    <buffer>  <silent>  <LocalLeader>re         :call Perl_MakeScriptExecutable()<CR>
