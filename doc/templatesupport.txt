@@ -1,4 +1,4 @@
-*templatesupport.txt*         MM Template Support                  Aug 12 2013
+*templatesupport.txt*         MM Template Support                  Nov 10 2013
 
 MM Template Support                                        *template-support*
 
@@ -53,7 +53,10 @@ Here is a list of high profile plug-ins which use the template support:
  5.    Lists                                 |template-support-lists|
  5.1    Formats                              |template-support-lists-format|
  5.2    Hashes                               |template-support-lists-hash|
- 6.    Menus                                 |template-support-menus|
+ 6.    Advanced Features                     |template-support-advanced|
+ 6.1    File Pickers                         |template-support-adv-files|
+ 7.    Menus                                 |template-support-menus|
+ 8.    Help templates                        |template-support-help-templ|
 
  9.    API                                   |template-support-api|
  9.1    Basic Usage                          |template-support-api-basic|
@@ -87,8 +90,11 @@ templates in |template-support-templates|. These chapters will enable the
 average user to configure his or her templates.
 
 Advanced topics are addressed in the following chapters. Lists are explained
-in |template-support-lists|. The customization of the automatic menu creation
-is explained in |template-support-menus|.
+in |template-support-lists|, followed in |template-support-advanced| by more
+advanced features. The customization of the automatic menu creation is
+explained in |template-support-menus|. Help templates offer a mechanism to
+quickly access different documentations, they are documented in
+|template-support-help-templ|.
 
 Plug-In developers will find information on the API in |template-support-api|.
 
@@ -446,7 +452,7 @@ of these macros, they can not be set via SetMacro().
 	*|YEAR|*     : the current year
 
 The format of the inserted dates and times can be set via SetFormat (see
-|template-support-SetFormat()|).
+|template-support-SetFormat|).
 
 ------------------------------------------------------------------------------
 4.2  TAGS                                        *template-support-templ-tags*
@@ -799,7 +805,71 @@ These templates also support the option "expandmenu". The menu will list all
 the keys.
 
 ==============================================================================
-6.  MENUS                                             *template-support-menus*
+6.  ADVANCED FEATURES                              *template-support-advanced*
+==============================================================================
+
+Editing source code comes with challenges common to many different languages
+and systems.
+
+Many languages deal with files placed in one or more significant directory,
+such as C's include directories or modules in other languages. File pickers
+assist in working with these directories (|template-support-adv-files|).
+
+------------------------------------------------------------------------------
+6.1  FILE PICKERS                                 *template-support-adv-files*
+------------------------------------------------------------------------------
+
+In many languages files are addressed in relation to some significant
+directory, such the include mechanism of the C preprocessor or LaTeX's
+\graphicspath{} command. To assist in dealing with those files, the template
+support offers so-called file pickers.
+
+File pickers are templates which use the command PickFile( <prompt>, <path> )
+(|template-support-PickFile|), which asks the user to interactively select a
+file:
+>
+	SetPath( 'global_include', '/usr/include/' )
+
+	== Include.global include == below ==
+	|PickFile( 'global include directory', 'global_include' )|
+	#include "|PICK|"<CURSOR>
+	== Include.global, filename only == below ==
+	|PickFile( 'global include directory', 'global_include' )|
+	#include <|FILENAME|><CURSOR>
+	== ENDTEMPLATE ==
+<
+The first argument to the function is a prompt which is being displayed while
+the user selects the file. The second argument is the name of a path set
+beforehand, such as "global_include". After the user selects a file, several
+macros are created which can be used in the template. *|PICK|* is the path and
+name of the file, relative to the path given as the second argument.
+*|FILENAME|* is only the name of the file. For a list of all macros, see
+|template-support-PickFile|.
+
+Names for paths are created using the function SetPath( <name>, <path> )
+(see |template-support-SetPath|), which is a lot like SetMacro.
+
+For example, if the user picks "/usr/include/GL/gl.h", the first template
+would result in the line >
+	#include "GL/gl.h"
+being inserted, while the second template would insert >
+	#include <gl.h>
+The paths "/usr/include" or "/usr/include/GL" would have to be in the include
+path, of course.
+
+The second argument can also be a path. In fact, if it does not match an
+identifier, it is always assumed to be a path:
+>
+	== Include.local include == below ==
+	|PickFile( 'local include directory', './' )|
+	#include "|PICK|"<CURSOR>
+	== ENDTEMPLATE ==
+<
+This template lets the user pick a file relative to the current working
+directory.
+
+==============================================================================
+7.  MENUS                                             *template-support-menus*
 ==============================================================================
 
 The template support automatically creates menus for every template. The user
@@ -846,7 +916,7 @@ the syntax: >
 	== SEP: Statements.sep1 ==
 The header start with "SEP:" and then contains the name of the separator. The
 dots in the name again define which submenu the separator will appear in,
-while the relative position in relation to the other templates define the
+while the relative position in relation to the other templates defines the
 placement. The last part of the name following the last dot has no influence,
 but must be unique.
 Unlike templates and lists, separators do not have to be ended with a line
@@ -869,6 +939,110 @@ provided by the API, already correctly escaped for menu creation: >
 	let [ esc_mapleader, msg ] = mmtemplates#core#Resource (
 		\ g:My_C_Templates, "escaped_mapleader" )
 <
+==============================================================================
+8.  HELP TEMPLATES                                *template-support-help-templ*
+==============================================================================
+
+A quick access to the documentation is important for every language. Help
+templates offer a mechanism to pick up a word under the cursor and make a
+system call using this text. For example, a browser could be opened with help
+for a certain command.
+
+Help templates look a lot like templates in the library, but do not insert
+text. They share a lot of other features with regular templates though, they
+will create a menu entry and can have shortcuts and maps.
+
+The syntax of help templates is very close to that of regular templates,
+except that their name is prefixed by "HELP:"
+>
+	SetMacro( 'HELP_BROWSER', 'firefox' )
+	SetMacro( 'HelpPathEnglish', 'http://en.wiktionary.org/wiki/' )
+
+	== HELP: Help.english == map:he, sc:e ==
+	|Word( '' )|
+	|Substitute( '\W', '', 'g' )|
+	|System( '|HELP_BROWSER| |HelpPathEnglish||PICK:l|' )|
+	== ENDTEMPLATE ==
+<
+The help template "Help.english" picks up the word under the cursor, removes
+every non-word character from that string and then calls >
+	firefox http://en.wiktionary.org/wiki/...
+This will open a new tab containing the article about the word under the
+cursor, which is very helpful while writing documentation.
+
+A help template always performs three steps:
+1. Pick up text under the cursor.
+2. Change the text (optional).
+3. Make a system call or a call on the Vim command line.
+
+1. Picking Text
+
+To pick up text under the cursor, the function Word(<flag>) is used. If the
+flag is 'W', the |WORD| under the cursor is picked up: >
+	|Word('W')|
+Otherwise the |word| under the cursor is picked: >
+	|Word('')|
+Lastly, the word can be picked using a regular expression (see |regex|): >
+	|Pattern( '[\\@]\w\+' )|
+This call picks a word prefix by "\" or "@", which in a C comment could be a
+Doxygen command.
+The text which has just been picked up is then stored in a sort of register,
+which for the purpose of the further explanation shall be called "acc".
+
+2. Editing the Text
+
+After picking up text, the register "acc" can be changed by one or more calls
+to the function Substitute( <pattern>, <sub>, <flag> ). For example, to remove
+every non-word character: >
+	|Substitute( '\W', '', 'g' )|
+Substitute replaces the contents of "acc" using Vim's |substitute()| function:
+	acc = substitute( acc, <pattern>, <sub>, <flag> )
+If the flag is an empty string, the first occurrence of <pattern> is replaced
+with <sub>. If flag equals "g", all occurrences are replaced. The function
+LiteralSub(<string>,<sub>,<flag>) works similarly, except that the first
+argument is not interpreted as a regular expression.
+
+3. Calling Help
+
+After picking up and changing the text, a call is made using System(<call>) or
+Vim(<call>). The argument is a string and it can contain macros which are
+replaced before the call. The macro *|PICK|* is replaced with "acc", the
+picked and changed text. The call is however only made if "acc" is not the
+empty string.
+If either an empty string has been picked up in step 1, or the string is empty
+after step 2, the call is made using the command given in Default(<call>). If
+no default call is given, no action is performed for an empty string.
+
+The following help template shows help for Doxygen commands:
+>
+	SetMacro( 'HelpPathDoxygen', 'http://www.stack.nl/~dimitri/doxygen/commands.html' )
+
+	== HELP: Help.doxygen cmd == map:hd, sc:d ==
+	|Pattern( '[\\@]\w\+' )|
+	|Substitute( '[\\@]', '', '' )|
+	|System( '|HELP_BROWSER| |HelpPathDoxygen|#cmd|PICK|' )|
+	|Default( '|HELP_BROWSER| |HelpPathDoxygen|' )|
+	== ENDTEMPLATE ==
+<
+First, a Doxygen command is picked up under the cursor, then the leading "\"
+or "@" is removed. Then a system call such as: >
+	firefox http://www.stack.nl/~dimitri/doxygen/commands.html#cmdparam
+is made. If there was no Doxygen command under the cursor, the following call
+is made instead, which will show a table of all Doxygen commands: >
+	firefox http://www.stack.nl/~dimitri/doxygen/commands.html
+<
+Note: The examples still worked in November, 2013.
+
+
+
+  -------------------------------------------------------------------------- ~
+
+  -------------------------------------------------------------------------- ~
+
+  -------------------------------------------------------------------------- ~
+
+
+
 ==============================================================================
 9.  API                                                 *template-support-api*
 ==============================================================================
@@ -1466,6 +1640,16 @@ perl-support:
 		== templatename == [ position, indentation == ]
 <	Both 'position' and 'indentation' are optional, of course.
 
+
+
+  -------------------------------------------------------------------------- ~
+
+  -------------------------------------------------------------------------- ~
+
+  -------------------------------------------------------------------------- ~
+
+
+
 ==============================================================================
 A.  SYNTAX                                           *template-support-syntax*
 ==============================================================================
@@ -1722,7 +1906,7 @@ resource by this name serves as the path. Otherwise the string path is used as
 the path directly.
 
 After the user selected a file, several replacements for macros are created,
-which can be inserted in the template:
+which can be inserted into the template:
 -	*|PICK_COMPL|*  : the complete path and name of the selected file
 -	*|PATH_COMPL|*  : the complete path of the selected file
 -	*|PICK|*        : the selected path and file relative to the directory given
@@ -1992,6 +2176,7 @@ PATCH 0.9.1-3:
   filetype.
 - Bugfix: Inserting templates in visual mode with placement "insert" could
 	cause rare problems interacting with the indent program.
+- Extended the documentation.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9
