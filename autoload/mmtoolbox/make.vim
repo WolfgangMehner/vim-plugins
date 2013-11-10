@@ -6,15 +6,14 @@
 "
 "                 Vim/gVim integration of Make.
 "
-"                 See help file csupport_make.txt .
+"                 See help file toolboxmake.txt .
 " 
 "   VIM Version:  7.0+
-"        Author:  Dr.-Ing. Fritz Mehner, mehner.fritz@fh-swf.de
-"                 Wolfgang Mehner, wolfgang-mehner@web.de
+"        Author:  Wolfgang Mehner, wolfgang-mehner@web.de
 "  Organization:  
 "       Version:  see variable g:Make_Version below
 "       Created:  06.05.2013
-"      Revision:  ---
+"      Revision:  10.11.2013
 "       License:  Copyright (c) 2013, Fritz Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -44,7 +43,7 @@ endif
 if &cp || ( exists('g:Make_Version') && ! exists('g:Make_DevelopmentOverwrite') )
 	finish
 endif
-let g:Make_Version= '1.0pre'     " version number of this script; do not change
+let g:Make_Version= '1.0'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions   {{{1
@@ -144,16 +143,6 @@ endfunction    " ----------  end of function mmtoolbox#make#GetInfo  ----------
 " AddMaps : Add maps.   {{{1
 "-------------------------------------------------------------------------------
 function! mmtoolbox#make#AddMaps ()
-	"
-	 noremap  <buffer>  <silent>  <LocalLeader>rm        :Make<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>rm   <C-C>:Make<CR>
-	 noremap  <buffer>  <silent>  <LocalLeader>rmc       :Make clean<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>rmc  <C-C>:Make clean<CR>
-	 noremap  <buffer>            <LocalLeader>rma       :MakeCmdlineArgs<space>
-	inoremap  <buffer>            <LocalLeader>rma  <C-C>:MakeCmdlineArgs<space>
-	 noremap  <buffer>            <LocalLeader>rcm       :MakeFile<space>
-	inoremap  <buffer>            <LocalLeader>rcm  <C-C>:MakeFile<space>
-	"
 endfunction    " ----------  end of function mmtoolbox#make#AddMaps  ----------
 "
 "-------------------------------------------------------------------------------
@@ -252,14 +241,6 @@ function! mmtoolbox#make#Run ( args )
 endfunction    " ----------  end of function mmtoolbox#make#Run  ----------
 " }}}1
 "-------------------------------------------------------------------------------
-"
-" maps for files of type 'make'
-if has('autocmd')
-	autocmd FileType *
-				\ if &filetype == 'make'           |
-				\ 	call mmtoolbox#make#AddMaps () |
-				\	endif
-endif
 "
 " =====================================================================================
 "  vim: foldmethod=marker

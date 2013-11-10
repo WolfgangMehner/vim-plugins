@@ -1348,7 +1348,7 @@ See 'xterm -help' for more options. Xterms are not available under MS-Windows.
 
 Tools which can be used by several plugins are located in the Tool Box.
 Examples are tools for make(1) or doxygen.  The Tool Box has its own
-documentation:|toolbox|. 
+documentation:|toolbox|.
 To switch the Tool Box off add the following line to the file .vimrc
 >
   let g:Perl_UseToolbox     = 'no'
@@ -1361,7 +1361,7 @@ To switch the make tool box off add the following line to the file .vimrc
 >
   let g:Perl_UseTool_make  = 'no'
 <
-The hotkeys for the maek tool are defined in the file ~/.vimftplugin/perl.vim .
+The hotkeys for the make tool are defined in the file ~/.vim/ftplugin/perl.vim .
 
 ------------------------------------------------------------------------------
 1.11  Menu 'help'                                           *perlsupport-help*

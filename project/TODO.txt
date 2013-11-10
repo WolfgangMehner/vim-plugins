@@ -1,9 +1,9 @@
 Project
-- Remove 'plugin/make.vim'.
-- Tag 'perlsupport-5.2' is wrong.
+- (WM) Remove 'plugin/make.vim'.
+- (WM) Tag 'perlsupport-5.2' is wrong.
 
 C/C++:
-- Documentation: Change documentation with regard to Make integration.
+- (FM) Documentation: Change documentation with regard to Make integration.
   * 'Run' menu entries removed.
   * Maps configured in ftplugin.
   * Reference documentation of toolbox.
@@ -15,13 +15,13 @@ C/C++:
     Shortcut changes to '\ce'.
 
 LaTeX:
-- Documentation: Menu 'Beamer' missing.
-- Documentation: Menu 'Help' missing.
-- Reference Card: Menu 'Beamer' missing.
-- Reference Card: Entry 'Help->english' missing.
+- (FM) Documentation: Menu 'Beamer' missing.
+- (FM) Documentation: Menu 'Help' missing.
+- (FM) Reference Card: Menu 'Beamer' missing.
+- (FM) Reference Card: Entry 'Help->english' missing.
 
 Perl:
-- Documentation: Change documentation with regard to Make integration.
+- (FM, DONE) Documentation: Change documentation with regard to Make integration.
   * 'Run' menu entries removed.
   * Maps configured in ftplugin.
   * Reference documentation of toolbox.
@@ -29,7 +29,10 @@ Perl:
   * Document 'g:Perl_UseToolbox' and 'g:Perl_UseTool_make'.
 
 Toolbox:
-- Document each tool in a separate file?
-- Add property 'enabled' (echo and get only).
+- (WM, DONE) Document each tool in a separate file.
+- (WM) Add property 'enabled' (echo and get only).
+- (WM) Menu entries for Doxygen tool.
+- (WM) Confirm when setting some properties (CMakeProjectDir, DoxygenConfigFile, ...)
+  to an empty string.
 
 " vim: expandtab:tw=80

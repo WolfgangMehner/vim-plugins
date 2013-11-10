@@ -6,11 +6,10 @@
 "
 "                 Vim/gVim integration of Doxygen.
 "
-"                 See help file csupport_doxygen.txt .
+"                 See help file toolboxdoxygen.txt .
 " 
 "   VIM Version:  7.0+
 "        Author:  Wolfgang Mehner, wolfgang-mehner@web.de
-"                 Dr.-Ing. Fritz Mehner, mehner@fh-swf.de
 "  Organization:  
 "       Version:  see variable g:Doxygen_Version below
 "       Created:  10.06.2012

@@ -1,0 +1,144 @@
+*toolboxmake.txt*                  Make Tool                       Nov 10 2013
+
+Make Tool                                                       *toolbox-make*
+
+                             Plug-in version 1.0
+                        for Vim version 7.0 and above
+                 Wolfgang Mehner <wolfgang-mehner at web.de>
+
+The Make tool offers minimal make functionality, such as running make with the
+makefile located in a different directory.
+
+==============================================================================
+0.  TABLE OF CONTENTS                                  *toolbox-make-contents*
+==============================================================================
+
+ 1.    Introduction                               |toolbox-make-intro|
+ 2.    Commands                                   |toolbox-make-commands|
+ 2.1    API                                       |toolbox-make-api|
+ 3.    Configuration                              |toolbox-make-config|
+
+==============================================================================
+1.  INTRODUCTION                                          *toolbox-make-intro*
+==============================================================================
+
+Make is run using the ex-command |:Make|. Command line arguments can either be
+given directly, >
+  :Make -j3
+  :Make clean
+or specified by using |:MakeCmdlineArgs|. Arguments given to :MakeCmdlineArgs
+are passed on to make every time :Make is called without arguments. This
+feature can be used to "memorize" complicated argument lists which have to be
+passed to make repeatedly. Even if an argument list has been memorized, :Make
+can always be called with other arguments to disregard the memorized list. A
+call to :MakeCmdlineArgs without arguments clears the memorized argument list.
+
+By default, :Make runs in the current working directory and therefore uses the
+local makefile. The command |:MakeFile| sets a specific makefile, which is
+used every time, even when :Make is call in a different directory. This makes
+it possible to use the tool for larger projects, which are organized in
+multiple directories. The specified file is used until another is chosen or
+the default behavior is restored by calling :MakeFile without arguments.
+
+  Command                       Short Description
+ ----------------------------------------------------------------------------
+  |:Make| [<args>]                run make with the given arguments
+  |:MakeCmdlineArgs| [<args>]     memorize cmd. line arguments for make
+  |:MakeCmdlineArgs|!             echo memorized cmd. line arguments
+  |:MakeFile| [<file>]            choose a makefile
+  |:MakeFile|!                    echo the current makefile
+ ----------------------------------------------------------------------------
+
+Detailed explanations are given in the next section |toolbox-make-commands|.
+
+==============================================================================
+2.  COMMANDS                                           *toolbox-make-commands*
+==============================================================================
+
+This chapter provides detailed explanations of all the commands.
+
+------------------------------------------------------------------------------
+                                                                       *:Make*
+  :Make [<args>] ~
+
+Runs make with the given arguments.  If no arguments are given, uses the ones
+specified with |:MakeCmdlineArgs|, which can be an empty argument list as well.
+
+Uses the local makefile, unless a makefile has been chosen using |:MakeFile|.
+
+------------------------------------------------------------------------------
+                                                            *:MakeCmdlineArgs*
+  :MakeCmdlineArgs [<args>] ~
+
+Sets command line arguments for :Make. If make is called without arguments,
+these "memorized" arguments are used. The command can be called without
+arguments to delete the memorized argument list.
+
+  :MakeCmdlineArgs! ~
+
+Echoes the currently memorized arguments on the command line.
+
+------------------------------------------------------------------------------
+                                                                   *:MakeFile*
+  :MakeFile [<file>] ~
+
+Sets the makefile. If a specific file has been selected, it is always used,
+independent of the current working directory. If the makefile has not been
+chosen, or reset by calling :MakeFile without arguments, the makefile in the
+current working directory is used.
+
+  :MakeFile! ~
+
+Echoes the current makefile on the command line.
+
+------------------------------------------------------------------------------
+2.1  API                                                    *toolbox-make-api*
+------------------------------------------------------------------------------
+
+The Makefile and command-line arguments can be set via an API. This allows for
+setting up the configuration via a script.
+
+------------------------------------------------------------------------------
+                                                     *mmtoolbox#make#Property*
+The Makefile and command-line arguments can be set using:
+
+  mmtoolbox#make#Property ( mode, key [, value] ) ~
+
+Parameters:
+  mode  - "echo", "get" or "set" (string)
+  key   - the name of one of the properties (string)
+  value - the new value of the property,
+          only with mode "set" (string, optional)
+Returns:
+  -
+
+The property is one of the following:
+  "cmdline-args" - The memorized command-line arguments.
+  "makefile"     - The name and location of the makefile.
+
+To set the makefile for a project, use: >
+  call mmtoolbox#make#Property ( "set",
+      \ "makefile", "$HOME/Projects/MyProject" )
+<
+To always run three jobs in parallel: >
+  call mmtoolbox#make#Property ( "set", "cmdline-args", "-j3" )
+<
+==============================================================================
+3.  CONFIGURATION                                        *toolbox-make-config*
+==============================================================================
+
+The tool is configured via a number of global variables, which can be set in
+the .vimrc file.
+
+  Variable                  Default       Description and further information
+ ----------------------------------------------------------------------------
+  |g:Make_Executable|         'make'        the make executable
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+                                                           *g:Make_Executable*
+The executable is set by g:Make_Executable: >
+  let g:Make_Executable = 'make'
+<
+==============================================================================
+vim:tw=78:noet:ts=2:ft=help:norl:

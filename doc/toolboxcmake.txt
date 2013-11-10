@@ -1,0 +1,180 @@
+*toolboxcmake.txt*                 CMake Tool                      Nov 10 2013
+
+CMake Tool                                                     *toolbox-cmake*
+
+                             Plug-in version 0.9   
+                        for Vim version 7.0 and above
+                 Wolfgang Mehner <wolfgang-mehner at web.de>
+
+The CMake tool offers an integration of CMake's makefile generator. It also
+helps with calling the make tool in the build location, independently of the
+current working directory. CMake's help can be quickly accessed within Vim.
+
+==============================================================================
+0.  TABLE OF CONTENTS                                 *toolbox-cmake-contents*
+==============================================================================
+
+ 1.    Introduction                               |toolbox-cmake-intro|
+ 2.    Commands                                   |toolbox-cmake-commands|
+ 2.1    API                                       |toolbox-cmake-api|
+ 3.    Configuration                              |toolbox-cmake-config|
+ 4.    Known Issues                               |toolbox-cmake-issues|
+
+==============================================================================
+1.  INTRODUCTION                                         *toolbox-cmake-intro*
+==============================================================================
+
+After configuring the project's top-level directory with |:CMakeProjectDir|
+and setting the build location using |:CMakeBuildLocation|, CMake can be run
+by calling the ex-command |:CMake|! (with a bang). Command line arguments can
+be given directly, for example: >
+  :CMake! -DDO_TESTS=1
+After that, :CMake (without a bang) can be used to execute the make tool in
+the build location: >
+  :CMake -j3
+Errors will be listed in the quick-fix buffer.
+
+Help for CMake's commands can be accessed using |:CMakeHelpCommand|: >
+  :CMakeHelpCommand add_library
+This will open a new buffer containing the help. Calling the command without
+parameters will open a buffer showing a list of all commands: >
+  :CMakeHelpCommand
+Similar ex-commands exist for modules, policies, properties and variables, see
+below.
+
+  Command                       Short Description
+ ----------------------------------------------------------------------------
+  |:CMake|! [<args>]              run CMake with the given arguments
+  |:CMake| [<args>]               run make with the given arguments
+
+  |:CMakeProjectDir| [<dir>]      set the project directory
+  |:CMakeBuildLocation| [<dir>]   set the build location
+
+  |:CMakeHelpCommand| [<topic>]   help for commands
+  |:CMakeHelpModule| [<topic>]    help for modules
+  |:CMakeHelpPolicy| [<topic>]    help for policies
+  |:CMakeHelpProperty| [<topic>]  help for properties
+  |:CMakeHelpVariable| [<topic>]  help for variables
+ ----------------------------------------------------------------------------
+
+Detailed explanations are given in the next section |toolbox-cmake-commands|.
+
+==============================================================================
+2.  COMMANDS                                          *toolbox-cmake-commands*
+==============================================================================
+
+This chapter provides detailed explanations of all the commands.
+
+------------------------------------------------------------------------------
+                                                                      *:CMake*
+  :CMake! [<args>] ~
+
+Runs cmake with the given arguments. If no arguments are given, calls cmake
+with the directory set by |:CMakeProjectDir|.
+
+  :CMake [<args>] ~
+
+Runs make with the given arguments. Beforehand, the working directory is set
+to the directory configured with |:CMakeBuildLocation|.
+
+------------------------------------------------------------------------------
+                                        *:CMakeProjectDir* *:CMakeBuildLocation*
+  :CMakeProjectDir [<dir>] ~
+  :CMakeBuildLocation [<dir>] ~
+
+Sets the project directory or build location.
+
+  :CMakeProjectDir! ~
+  :CMakeBuildLocation! ~
+
+Echoes the current project directory or build location
+
+------------------------------------------------------------------------------
+                                        *:CMakeHelpCommand* *:CMakeHelpModule*
+                                        *:CMakeHelpPolicy*  *:CMakeHelpProperty*
+                                                          *:CMakeHelpVariable*
+  :CMakeHelpCommand [<topic>] ~
+  :CMakeHelpModule [<topic>] ~
+  :CMakeHelpPolicy [<topic>] ~
+  :CMakeHelpProperty [<topic>] ~
+  :CMakeHelpVariable [<topic>] ~
+
+Open a buffer containing the help for the topic in each category. If no topic
+is given, shows a list of all commands, modules, variables, ...
+
+In each of the help buffers, several maps are defined.
+
+  Map           Meaning
+ ----------------------------------------------------------------------------
+  doubleclick   jump to the topic under the cursor/back to the list
+  CTRL-]        jump to the topic under the cursor/back to the list
+  <Enter>       jump to the topic under the cursor/back to the list
+  q             close the buffer
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+2.1  API                                                   *toolbox-cmake-api*
+------------------------------------------------------------------------------
+
+The various directories can be set via an API. This allows for setting up the
+configuration via a script.
+
+------------------------------------------------------------------------------
+                                                    *mmtoolbox#cmake#Property*
+The project and build directory can be set using:
+
+  mmtoolbox#cmake#Property ( mode, key [, value] ) ~
+
+Parameters:
+  mode  - "echo", "get" or "set" (string)
+  key   - the name of one of the properties (string)
+  value - the new value of the property,
+          only with mode "set" (string, optional)
+Returns:
+  -
+
+The property is one of the following:
+  "project-dir"  - The project's top-level directory.
+  "build-dir"    - The build location.
+
+To set the directories for a project, use: >
+  call mmtoolbox#cmake#Property ( "set",
+      \ "project-dir", "$HOME/Projects/MyProject" )
+  call mmtoolbox#cmake#Property ( "set",
+      \ "build", "$HOME/Projects/MyProject/build" )
+<
+==============================================================================
+3.  CONFIGURATION                                       *toolbox-cmake-config*
+==============================================================================
+
+The tool is configured via a number of global variables, which can be set in
+the .vimrc file.
+
+  Variable                  Default       Description and further information
+ ----------------------------------------------------------------------------
+  |g:CMake_Executable|        'cmake'       the CMake executable
+  |g:CMake_MakeTool|          'make'        the make executable
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+                                                          *g:CMake_Executable*
+The executable is set by g:CMake_Executable: >
+  let g:CMake_Executable = 'cmake'
+<
+------------------------------------------------------------------------------
+                                                            *g:CMake_MakeTool*
+The make executable is set by g:CMake_MakeTool: >
+  let g:CMake_MakeTool = 'make'
+<
+==============================================================================
+4.  KNOWN ISSUES                                        *toolbox-cmake-issues*
+==============================================================================
+
+* Some of the errors are not recognized by the quickfix mechanism.
+  - Unfortunately, CMake's automatically generated Makefiles seem to output
+    some errors, which can not be recognized by Vim's standard error format
+    for C. If you come across any such errors, please send use an example and
+    we will try to extend the error format.
+
+==============================================================================
+vim:tw=78:noet:ts=2:ft=help:norl:

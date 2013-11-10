@@ -6,7 +6,7 @@
 "
 "                 Vim/gVim integration of CMake.
 "
-"                 See help file csupport_cmake.txt .
+"                 See help file toolboxcmake.txt .
 " 
 "   VIM Version:  7.0+
 "        Author:  Wolfgang Mehner, wolfgang-mehner@web.de
