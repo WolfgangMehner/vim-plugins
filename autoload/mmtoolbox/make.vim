@@ -82,6 +82,24 @@ let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
 let s:SettingsEscChar = ' |"\'
 "
+if s:MSWIN
+	"
+	"-------------------------------------------------------------------------------
+	" MS Windows
+	"-------------------------------------------------------------------------------
+	"
+	let s:plugin_dir = substitute( expand('<sfile>:p:h:h:h'), '\\', '/', 'g' )
+	"
+else
+	"
+	"-------------------------------------------------------------------------------
+	" Linux/Unix
+	"-------------------------------------------------------------------------------
+	"
+	let s:plugin_dir = expand('<sfile>:p:h:h:h')
+	"
+endif
+"
 " settings   {{{2
 "
 let s:Makefile    = ''
@@ -105,6 +123,7 @@ if s:Enabled == 1
 	command! -bang -nargs=* -complete=file MakeCmdlineArgs   :call mmtoolbox#make#Property('<bang>'=='!'?'echo':'set','cmdline-args',<q-args>)
 	command! -bang -nargs=? -complete=file MakeFile          :call mmtoolbox#make#Property('<bang>'=='!'?'echo':'set','makefile',<q-args>)
 	command!       -nargs=* -complete=file Make              :call mmtoolbox#make#Run(<q-args>)
+	command!       -nargs=0                MakeHelp          :call mmtoolbox#make#Help()
 else
 	"
 	" Disabled : Print why the script is disabled.   {{{3
@@ -154,8 +173,14 @@ function! mmtoolbox#make#AddMenu ( root, esc_mapl )
 	exe 'amenu '.a:root.'.make\ &clean<Tab>:Make\ clean   :Make clean<CR>'
 	exe 'amenu '.a:root.'.make\ &doc<Tab>:Make\ doc       :Make doc<CR>'
 	"
+	exe 'amenu '.a:root.'.-Sep01- <Nop>'
+	"
 	exe 'amenu '.a:root.'.&choose\ make&file<Tab>:MakeFile                      :MakeFile<space>'
 	exe 'amenu '.a:root.'.cmd\.\ line\ ar&g\.\ for\ make<Tab>:MakeCmdlineArgs   :MakeCmdlineArgs<space>'
+	"
+	exe 'amenu '.a:root.'.-Sep02- <Nop>'
+	"
+	exe 'amenu '.a:root.'.&help<Tab>:MakeHelp  :MakeHelp<CR>'
 	"
 endfunction    " ----------  end of function mmtoolbox#make#AddMenu  ----------
 "
@@ -178,7 +203,9 @@ function! mmtoolbox#make#Property ( mode, key, ... )
 	endif
 	"
 	" check the key
-	if a:key == 'cmdline-args'
+	if a:key == 'enabled'
+		let var = 's:Enabled'
+	elseif a:key == 'cmdline-args'
 		let var = 's:CmdLineArgs'
 	elseif a:key == 'makefile'
 		let var = 's:Makefile'
@@ -199,9 +226,24 @@ function! mmtoolbox#make#Property ( mode, key, ... )
 		if val == '' | let s:Makefile = ''
 		else         | let s:Makefile = fnamemodify( expand( val ), ":p" )
 		endif
+	else
+		" action is 'set', but key is non of the above
+		return s:ErrorMsg ( 'Make : Option is read-only, can not set: '.a:key )
 	endif
 	"
 endfunction    " ----------  end of function mmtoolbox#make#Property  ----------
+"
+"-------------------------------------------------------------------------------
+" Help : Plugin help.   {{{1
+"-------------------------------------------------------------------------------
+function! mmtoolbox#make#Help ()
+	try
+		help toolbox-make
+	catch
+		exe 'helptags '.s:plugin_dir.'/doc'
+		help toolbox-make
+	endtry
+endfunction    " ----------  end of function mmtoolbox#make#Help  ----------
 "
 "-------------------------------------------------------------------------------
 " Modul setup (abort early?).   {{{1

@@ -113,6 +113,14 @@ In each of the help buffers, several maps are defined.
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
+                                                                  *:CMakeHelp*
+  :CMakeHelp ~
+
+Opens the help for the CMake tool.
+
+If the tool is not working properly, prints the reason.
+
+------------------------------------------------------------------------------
 2.1  API                                                   *toolbox-cmake-api*
 ------------------------------------------------------------------------------
 
@@ -131,11 +139,13 @@ Parameters:
   value - the new value of the property,
           only with mode "set" (string, optional)
 Returns:
-  -
+  value - the current value of the property,
+          only with mode "get" (various)
 
 The property is one of the following:
-  "project-dir"  - The project's top-level directory.
-  "build-dir"    - The build location.
+  "enabled"     - non-zero if the tool is enabled (integer, no "set")
+  "project-dir" - the project's top-level directory (string)
+  "build-dir"   - the build location (string)
 
 To set the directories for a project, use: >
   call mmtoolbox#cmake#Property ( "set",

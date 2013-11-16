@@ -82,6 +82,24 @@ let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
 let s:SettingsEscChar = ' |"\'
 "
+if s:MSWIN
+	"
+	"-------------------------------------------------------------------------------
+	" MS Windows
+	"-------------------------------------------------------------------------------
+	"
+	let s:plugin_dir = substitute( expand('<sfile>:p:h:h:h'), '\\', '/', 'g' )
+	"
+else
+	"
+	"-------------------------------------------------------------------------------
+	" Linux/Unix
+	"-------------------------------------------------------------------------------
+	"
+	let s:plugin_dir = expand('<sfile>:p:h:h:h')
+	"
+endif
+"
 " settings   {{{2
 "
 let s:ProjectDir    = '.'
@@ -163,6 +181,7 @@ if s:Enabled == 1
 	command!       -nargs=? -complete=file CMakeHelpPolicy    :call mmtoolbox#cmake#Help('policy',<q-args>)
 	command!       -nargs=? -complete=file CMakeHelpProperty  :call mmtoolbox#cmake#Help('property',<q-args>)
 	command!       -nargs=? -complete=file CMakeHelpVariable  :call mmtoolbox#cmake#Help('variable',<q-args>)
+	command!       -nargs=0                CMakeHelp          :call mmtoolbox#cmake#HelpPlugin()
 else
 	"
 	" Disabled : Print why the script is disabled.   {{{3
@@ -226,6 +245,10 @@ function! mmtoolbox#cmake#AddMenu ( root, esc_mapl )
 	exe 'amenu '.a:root.'.help\ &property<Tab>:CMakeHelpProperty   :CMakeHelpProperty<CR>'
 	exe 'amenu '.a:root.'.help\ &variables<Tab>:CMakeHelpVariable  :CMakeHelpVariable<CR>'
 	"
+	exe 'amenu '.a:root.'.-SEP03- <Nop>'
+	"
+	exe 'amenu '.a:root.'.&help<Tab>:CMakeHelp  :CMakeHelp<CR>'
+	"
 endfunction    " ----------  end of function mmtoolbox#cmake#AddMenu  ----------
 "
 "-------------------------------------------------------------------------------
@@ -247,7 +270,9 @@ function! mmtoolbox#cmake#Property ( mode, key, ... )
 	endif
 	"
 	" check the key
-	if a:key == 'project-dir'
+	if a:key == 'enabled'
+		let var = 's:Enabled'
+	elseif a:key == 'project-dir'
 		let var = 's:ProjectDir'
 	elseif a:key == 'build-dir'
 		let var = 's:BuildLocation'
@@ -271,9 +296,25 @@ function! mmtoolbox#cmake#Property ( mode, key, ... )
 		if val == '' | let s:BuildLocation = ''
 		else         | let s:BuildLocation = fnamemodify( expand( val ), ":p" )
 		endif
+	else
+		" action is 'set', but key is non of the above
+		return s:ErrorMsg ( 'CMake : Option is read-only, can not set: '.a:key )
 	endif
 	"
 endfunction    " ----------  end of function mmtoolbox#cmake#Property  ----------
+"
+"-------------------------------------------------------------------------------
+" HelpPlugin : Plugin help.   {{{1
+"-------------------------------------------------------------------------------
+function! mmtoolbox#cmake#HelpPlugin ()
+	try
+		echo 'helptags '.s:plugin_dir.'/doc'
+		help toolbox-cmake
+	catch
+		exe 'helptags '.s:plugin_dir.'/doc'
+		help toolbox-cmake
+	endtry
+endfunction    " ----------  end of function mmtoolbox#cmake#HelpPlugin  ----------
 "
 "-------------------------------------------------------------------------------
 " Modul setup (abort early?).   {{{1

@@ -199,6 +199,10 @@ function! mmtoolbox#doxygen#AddMenu ( root, esc_mapl )
 	"
 	exe 'amenu '.a:root.'.&error\ file<Tab>:DoxygenErrorFile  :DoxygenErrorFile '
 	"
+	exe 'amenu '.a:root.'.-SEP01- <Nop>'
+	"
+	exe 'amenu '.a:root.'.&help<Tab>:DoxygenHelp  :DoxygenHelp<CR>'
+	"
 endfunction    " ----------  end of function mmtoolbox#doxygen#AddMenu  ----------
 "
 "-------------------------------------------------------------------------------
@@ -220,7 +224,9 @@ function! mmtoolbox#doxygen#Property ( mode, key, ... )
 	endif
 	"
 	" check the key
-	if a:key == 'config-file'
+	if a:key == 'enabled'
+		let var = 's:Enabled'
+	elseif a:key == 'config-file'
 		let var = 's:ConfigFile'
 	elseif a:key == 'error-file'
 		let var = 's:ErrorFile'
@@ -251,9 +257,24 @@ function! mmtoolbox#doxygen#Property ( mode, key, ... )
 		if val == '' | let s:LogFile = ''
 		else         | let s:LogFile = fnamemodify( expand( val ), ":p" )
 		endif
+	else
+		" action is 'set', but key is non of the above
+		return s:ErrorMsg ( 'Doxygen : Option is read-only, can not set: '.a:key )
 	endif
 	"
 endfunction    " ----------  end of function mmtoolbox#doxygen#Property  ----------
+"
+"-------------------------------------------------------------------------------
+" Help : Plugin help.   {{{1
+"-------------------------------------------------------------------------------
+function! mmtoolbox#doxygen#Help ()
+	try
+		help toolbox-doxygen
+	catch
+		exe 'helptags '.s:plugin_dir.'/doc'
+		help toolbox-doxygen
+	endtry
+endfunction    " ----------  end of function mmtoolbox#doxygen#Help  ----------
 "
 "-------------------------------------------------------------------------------
 " Modul setup (abort early?).   {{{1
@@ -389,19 +410,6 @@ function! mmtoolbox#doxygen#Errors ()
 	lchdir -
 	"
 endfunction    " ----------  end of function mmtoolbox#doxygen#Errors  ----------
-"
-"-------------------------------------------------------------------------------
-" Help : Plugin help.   {{{1
-"-------------------------------------------------------------------------------
-function! mmtoolbox#doxygen#Help ()
-	try
-		echo 'Help dir: '.s:plugin_dir.'/doc'
-		help doxygen-tool
-	catch
-		exe 'helptags '.s:plugin_dir.'/doc'
-		help doxygen-tool
-	endtry
-endfunction    " ----------  end of function mmtoolbox#doxygen#Help  ----------
 " }}}1
 "-------------------------------------------------------------------------------
 "

@@ -92,6 +92,14 @@ current working directory is used.
 Echoes the current makefile on the command line.
 
 ------------------------------------------------------------------------------
+                                                                   *:MakeHelp*
+  :MakeHelp ~
+
+Opens the help for the Make tool.
+
+If the tool is not working properly, prints the reason.
+
+------------------------------------------------------------------------------
 2.1  API                                                    *toolbox-make-api*
 ------------------------------------------------------------------------------
 
@@ -110,11 +118,13 @@ Parameters:
   value - the new value of the property,
           only with mode "set" (string, optional)
 Returns:
-  -
+  value - the current value of the property,
+          only with mode "get" (various)
 
 The property is one of the following:
-  "cmdline-args" - The memorized command-line arguments.
-  "makefile"     - The name and location of the makefile.
+  "enabled"      - non-zero if the tool is enabled (integer, no "set")
+  "cmdline-args" - the memorized command-line arguments (string)
+  "makefile"     - the name and location of the makefile (string)
 
 To set the makefile for a project, use: >
   call mmtoolbox#make#Property ( "set",

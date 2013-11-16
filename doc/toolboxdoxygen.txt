@@ -147,6 +147,8 @@ a |quickfix| list.
 
 Opens the help for the Doxygen tool.
 
+If the tool is not working properly, prints the reason.
+
 ------------------------------------------------------------------------------
 2.1  API                                                 *toolbox-doxygen-api*
 ------------------------------------------------------------------------------
@@ -166,12 +168,14 @@ Parameters:
   value - the new value of the property,
           only with mode "set" (string, optional)
 Returns:
-  -
+  value - the current value of the property,
+          only with mode "get" (various)
 
 The property is one of the following:
-  "config-file" - The configuration file.
-  "error-file"  - The error file.
-  "log-file"    - The log file.
+  "enabled"     - non-zero if the tool is enabled (integer, no "set")
+  "config-file" - the configuration file (string)
+  "error-file"  - the error file (string)
+  "log-file"    - the log file (string)
 
 To set the configuration file for a project, use: >
   call mmtoolbox#doxygen#Property ( "set",

@@ -56,7 +56,7 @@ Here is a list of high profile plug-ins which use the template support:
  6.    Advanced Features                     |template-support-advanced|
  6.1    File Pickers                         |template-support-adv-files|
  7.    Menus                                 |template-support-menus|
- 8.    Help templates                        |template-support-help-templ|
+ 8.    Help Templates                        |template-support-help-templ|
 
  9.    API                                   |template-support-api|
  9.1    Basic Usage                          |template-support-api-basic|
