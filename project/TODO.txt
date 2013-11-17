@@ -30,9 +30,9 @@ Perl:
 
 Toolbox:
 - (WM, DONE) Document each tool in a separate file.
-- (WM) Add property 'enabled' (echo and get only).
-- (WM) Menu entries for Doxygen tool.
-- (WM) Confirm when setting some properties (CMakeProjectDir, DoxygenConfigFile, ...)
+- (WM, DONE) Add property 'enabled' (echo and get only).
+- (WM, DONE) Menu entries for Doxygen tool.
+- (WM, DONE) Confirm when setting some properties (CMakeProjectDir, DoxygenConfigFile, ...)
   to an empty string.
 
 " vim: expandtab:tw=80

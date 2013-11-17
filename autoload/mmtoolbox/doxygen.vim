@@ -51,6 +51,13 @@ let g:Doxygen_Version= '0.9'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " s:ErrorMsg : Print an error message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
 "-------------------------------------------------------------------------------
 function! s:ErrorMsg ( ... )
 	echohl WarningMsg
@@ -62,6 +69,14 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 "
 "-------------------------------------------------------------------------------
 " s:GetGlobalSetting : Get a setting from a global variable.   {{{2
+"
+" Parameters:
+"   varname - name of the variable (string)
+" Returns:
+"   -
+"
+" If g:<varname> exists, assign:
+"   s:<varname> = g:<varname>.
 "-------------------------------------------------------------------------------
 function! s:GetGlobalSetting ( varname )
 	if exists ( 'g:'.a:varname )
@@ -70,15 +85,90 @@ function! s:GetGlobalSetting ( varname )
 endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 "
 "-------------------------------------------------------------------------------
-" s:UserInput : Input using a highlighting prompt.   {{{2
+" s:ImportantMsg : Print an important message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
 "-------------------------------------------------------------------------------
-function! s:UserInput ( promp, text, ... )
+function! s:ImportantMsg ( ... )
+	echohl Search
+	echo join ( a:000, "\n" )
+	echohl None
+endfunction    " ----------  end of function s:ImportantMsg  ----------
+"
+"-------------------------------------------------------------------------------
+" s:Question : Ask the user a yes/no question.   {{{1
+"
+" Parameters:
+"   prompt    - prompt, shown to the user (string)
+"   highlight - "normal" or "warning" (string, default "normal")
+" Returns:
+"   retval - the user input (integer)
+"
+" The possible values of 'retval' are:
+"    1 - answer was yes ("y")
+"    0 - answer was no ("n")
+"   -1 - user aborted ("ESC" or "CTRL-C")
+"-------------------------------------------------------------------------------
+function! s:Question ( prompt, ... )
+	"
+	let ret = -2
+	"
+	" highlight prompt
+	if a:0 == 0 || a:1 == 'normal'
+		echohl Search
+	elseif a:1 == 'warning'
+		echohl Error
+	else
+		echoerr 'Unknown option : "'.a:1.'"'
+		return
+	end
+	"
+	" question
+	echo a:prompt.' [y/n]: '
+	"
+	" answer: "y", "n", "ESC" or "CTRL-C"
+	while ret == -2
+		let c = nr2char( getchar() )
+		"
+		if c == "y"
+			let ret = 1
+		elseif c == "n"
+			let ret = 0
+		elseif c == "\<ESC>" || c == "\<C-C>"
+			let ret = -1
+		endif
+	endwhile
+	"
+	" reset highlighting
+	echohl None
+	"
+	return ret
+endfunction    " ----------  end of function s:Question  ----------
+"
+"-------------------------------------------------------------------------------
+" s:UserInput : Input using a highlighting prompt.   {{{2
+"
+" Parameters:
+"   prompt - prompt, shown to the user (string)
+"   text   - default reply (string)
+"   compl  - type of completion, see :help command-completion (string, optional)
+" Returns:
+"   retval - the user input (string)
+"
+" Returns an empty string if the input procedure was aborted by the user.
+"-------------------------------------------------------------------------------
+function! s:UserInput ( prompt, text, ... )
 	echohl Search                                        " highlight prompt
 	call inputsave()                                     " preserve typeahead
 	if a:0 == 0 || a:1 == ''
-		let retval = input( a:promp, a:text )              " read input
+		let retval = input( a:prompt, a:text )             " read input
 	else
-		let retval = input( a:promp, a:text, a:1 )         " read input (with completion)
+		let retval = input( a:prompt, a:text, a:1 )        " read input (with completion)
 	end
 	call inputrestore()                                  " restore typeahead
 	echohl None                                          " reset highlighting
@@ -160,9 +250,7 @@ else
 		else
 			let txt .= "unknown reason"
 		endif
-		echohl Search
-		echo txt
-		echohl None
+		call s:ImportantMsg ( txt )
 		return
 	endfunction    " ----------  end of function mmtoolbox#doxygen#Disabled  ----------
 	" }}}3
@@ -195,11 +283,22 @@ endfunction    " ----------  end of function mmtoolbox#doxygen#AddMaps  --------
 "-------------------------------------------------------------------------------
 function! mmtoolbox#doxygen#AddMenu ( root, esc_mapl )
 	"
-	" TODO
-	"
-	exe 'amenu '.a:root.'.&error\ file<Tab>:DoxygenErrorFile  :DoxygenErrorFile '
+	exe 'amenu '.a:root.'.&run\ Doxygen<Tab>:Doxygen            :Doxygen<CR>'
+	exe 'amenu '.a:root.'.view\ &errors<Tab>:DoxygenErrors      :DoxygenErrors<CR>'
+	exe 'amenu '.a:root.'.view\ &log<Tab>:DoxygenViewLog        :DoxygenViewLog<CR>'
 	"
 	exe 'amenu '.a:root.'.-SEP01- <Nop>'
+	"
+	exe 'amenu '.a:root.'.&generate\ config\.<Tab>:DoxygenGenerateConfig  :DoxygenGenerateConfig<CR>'
+	exe 'amenu '.a:root.'.edit\ &config\.<Tab>:DoxygenEditConfig          :DoxygenEditConfig<CR>'
+	"
+	exe 'amenu '.a:root.'.-SEP02- <Nop>'
+	"
+	exe 'amenu '.a:root.'.&select\ config\.\ file<Tab>:DoxygenConfigFile  :DoxygenConfigFile '
+	exe 'amenu '.a:root.'.&select\ error\.\ file<Tab>:DoxygenErrorFile    :DoxygenErrorFile '
+	exe 'amenu '.a:root.'.&select\ log\.\ file<Tab>:DoxygenLogFile        :DoxygenLogFile '
+	"
+	exe 'amenu '.a:root.'.-SEP03- <Nop>'
 	"
 	exe 'amenu '.a:root.'.&help<Tab>:DoxygenHelp  :DoxygenHelp<CR>'
 	"
@@ -244,18 +343,24 @@ function! mmtoolbox#doxygen#Property ( mode, key, ... )
 		exe 'return '.var
 	elseif a:key == 'config-file'
 		" expand replaces the escape sequences from the cmdline
-		if val == '' | let s:ConfigFile = ''
-		else         | let s:ConfigFile = fnamemodify( expand( val ), ":p" )
+		if val =~ '\S'
+			let s:ConfigFile = fnamemodify( expand( val ), ":p" )
+		elseif s:Question ( 'set config file to an empty string?' ) == 1
+			let s:ConfigFile = ''
 		endif
 	elseif a:key == 'error-file'
 		" expand replaces the escape sequences from the cmdline
-		if val == '' | let s:ErrorFile = ''
-		else         | let s:ErrorFile = fnamemodify( expand( val ), ":p" )
+		if val =~ '\S'
+			let s:ErrorFile = fnamemodify( expand( val ), ":p" )
+		elseif s:Question ( 'set error file to an empty string?' ) == 1
+			let s:ErrorFile = ''
 		endif
 	elseif a:key == 'log-file'
 		" expand replaces the escape sequences from the cmdline
-		if val == '' | let s:LogFile = ''
-		else         | let s:LogFile = fnamemodify( expand( val ), ":p" )
+		if val =~ '\S'
+			let s:LogFile = fnamemodify( expand( val ), ":p" )
+		elseif s:Question ( 'set local file to an empty string?' ) == 1
+			let s:LogFile = ''
 		endif
 	else
 		" action is 'set', but key is non of the above
@@ -355,7 +460,7 @@ function! mmtoolbox#doxygen#EditConfig ()
 		return s:ErrorMsg ( 'Doxygen : File not readable: '.s:ConfigFile )
 	endif
 	"
-	exe 'edit '.fnameescape( s:ConfigFile )
+	exe 'split '.fnameescape( s:ConfigFile )
 endfunction    " ----------  end of function mmtoolbox#doxygen#EditConfig  ----------
 "
 "-------------------------------------------------------------------------------

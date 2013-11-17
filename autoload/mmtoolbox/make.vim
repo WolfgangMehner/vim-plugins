@@ -51,6 +51,13 @@ let g:Make_Version= '1.0'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " s:ErrorMsg : Print an error message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
 "-------------------------------------------------------------------------------
 function! s:ErrorMsg ( ... )
 	echohl WarningMsg
@@ -62,6 +69,14 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 "
 "-------------------------------------------------------------------------------
 " s:GetGlobalSetting : Get a setting from a global variable.   {{{2
+"
+" Parameters:
+"   varname - name of the variable (string)
+" Returns:
+"   -
+"
+" If g:<varname> exists, assign:
+"   s:<varname> = g:<varname>.
 "-------------------------------------------------------------------------------
 function! s:GetGlobalSetting ( varname )
 	if exists ( 'g:'.a:varname )

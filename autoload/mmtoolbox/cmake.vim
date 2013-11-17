@@ -51,6 +51,13 @@ let g:CMake_Version= '0.9'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " s:ErrorMsg : Print an error message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
 "-------------------------------------------------------------------------------
 function! s:ErrorMsg ( ... )
 	echohl WarningMsg
@@ -62,12 +69,86 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 "
 "-------------------------------------------------------------------------------
 " s:GetGlobalSetting : Get a setting from a global variable.   {{{2
+"
+" Parameters:
+"   varname - name of the variable (string)
+" Returns:
+"   -
+"
+" If g:<varname> exists, assign:
+"   s:<varname> = g:<varname>.
 "-------------------------------------------------------------------------------
 function! s:GetGlobalSetting ( varname )
 	if exists ( 'g:'.a:varname )
 		exe 'let s:'.a:varname.' = g:'.a:varname
 	endif
 endfunction    " ----------  end of function s:GetGlobalSetting  ----------
+"
+"-------------------------------------------------------------------------------
+" s:ImportantMsg : Print an important message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:ImportantMsg ( ... )
+	echohl Search
+	echo join ( a:000, "\n" )
+	echohl None
+endfunction    " ----------  end of function s:ImportantMsg  ----------
+"
+"-------------------------------------------------------------------------------
+" s:Question : Ask the user a question.   {{{1
+"
+" Parameters:
+"   prompt    - prompt, shown to the user (string)
+"   highlight - "normal" or "warning" (string, default "normal")
+" Returns:
+"   retval - the user input (integer)
+"
+" The possible values of 'retval' are:
+"    1 - answer was yes ("y")
+"    0 - answer was no ("n")
+"   -1 - user aborted ("ESC" or "CTRL-C")
+"-------------------------------------------------------------------------------
+function! s:Question ( prompt, ... )
+	"
+	let ret = -2
+	"
+	" highlight prompt
+	if a:0 == 0 || a:1 == 'normal'
+		echohl Search
+	elseif a:1 == 'warning'
+		echohl Error
+	else
+		echoerr 'Unknown option : "'.a:1.'"'
+		return
+	end
+	"
+	" question
+	echo a:prompt.' [y/n]: '
+	"
+	" answer: "y", "n", "ESC" or "CTRL-C"
+	while ret == -2
+		let c = nr2char( getchar() )
+		"
+		if c == "y"
+			let ret = 1
+		elseif c == "n"
+			let ret = 0
+		elseif c == "\<ESC>" || c == "\<C-C>"
+			let ret = -1
+		endif
+	endwhile
+	"
+	" reset highlighting
+	echohl None
+	"
+	return ret
+endfunction    " ----------  end of function s:Question  ----------
 " }}}2
 "-------------------------------------------------------------------------------
 "
@@ -194,9 +275,7 @@ else
 		else
 			let txt .= "unknown reason"
 		endif
-		echohl Search
-		echo txt
-		echohl None
+		call s:ImportantMsg ( txt )
 		return
 	endfunction    " ----------  end of function mmtoolbox#cmake#Disabled  ----------
 	" }}}3
@@ -288,13 +367,17 @@ function! mmtoolbox#cmake#Property ( mode, key, ... )
 		exe 'return '.var
 	elseif a:key == 'project-dir'
 		" expand replaces the escape sequences from the cmdline
-		if val == '' | let s:ProjectDir = ''
-		else         | let s:ProjectDir = fnamemodify( expand( val ), ":p" )
+		if val =~ '\S'
+			let s:ProjectDir = fnamemodify( expand( val ), ":p" )
+		elseif s:Question ( 'set project directory to an empty string?' ) == 1
+			let s:ProjectDir = ''
 		endif
 	elseif a:key == 'build-dir'
 		" expand replaces the escape sequences from the cmdline
-		if val == '' | let s:BuildLocation = ''
-		else         | let s:BuildLocation = fnamemodify( expand( val ), ":p" )
+		if val =~ '\S'
+			let s:BuildLocation = fnamemodify( expand( val ), ":p" )
+		elseif s:Question ( 'set build location to an empty string?' ) == 1
+			let s:BuildLocation = ''
 		endif
 	else
 		" action is 'set', but key is non of the above
@@ -308,7 +391,6 @@ endfunction    " ----------  end of function mmtoolbox#cmake#Property  ---------
 "-------------------------------------------------------------------------------
 function! mmtoolbox#cmake#HelpPlugin ()
 	try
-		echo 'helptags '.s:plugin_dir.'/doc'
 		help toolbox-cmake
 	catch
 		exe 'helptags '.s:plugin_dir.'/doc'
