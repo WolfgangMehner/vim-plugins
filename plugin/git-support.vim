@@ -47,6 +47,15 @@ let g:GitSupport_Version= '0.9.1pre'     " version number of this script; do not
 "
 "-------------------------------------------------------------------------------
 " s:ApplyDefaultSetting : Write default setting to a global variable.   {{{2
+"
+" Parameters:
+"   varname - name of the variable (string)
+"   value   - default value (string)
+" Returns:
+"   -
+"
+" If g:<varname> does not exists, assign:
+"   g:<varname> = value
 "-------------------------------------------------------------------------------
 "
 function! s:ApplyDefaultSetting ( varname, value )
@@ -56,20 +65,14 @@ function! s:ApplyDefaultSetting ( varname, value )
 endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
 "
 "-------------------------------------------------------------------------------
-" s:ErrorMsg : Print an error message.   {{{2
-"-------------------------------------------------------------------------------
-"
-function! s:ErrorMsg ( ... )
-	echohl WarningMsg
-	for line in a:000
-		echomsg line
-	endfor
-	echohl None
-endfunction    " ----------  end of function s:ErrorMsg  ----------
-"
-"-------------------------------------------------------------------------------
 " s:ChangeCWD : Check the buffer and the CWD.   {{{2
 "
+" Parameters:
+"   [ bufnr, dir ] - data (list: integer and string, optional)
+" Returns:
+"   -
+"
+" Example:
 " First check the current working directory:
 "   let data = s:CheckCWD ()
 " then jump to the Git buffer:
@@ -77,7 +80,8 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 " then call this function to correctly set the directory of the buffer:
 "   call s:ChangeCWD ( data )
 "
-" The function s:ChangeCWD queries the working directory of the buffer your
+" Usage:
+" The function s:CheckCWD queries the working directory of the buffer your
 " starting out in, which is the buffer where you called the Git command. The
 " call to s:OpenGitBuffer then opens the requested buffer or jumps to it if it
 " already exists. Finally, s:ChangeCWD sets the working directory of the Git
@@ -86,7 +90,7 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 " at the time s:CheckCWD was called, and second the name of the directory.
 "
 " When called without parameters, changes to the directory stored in
-" b:GitSupport_CWD.
+" 'b:GitSupport_CWD'.
 "-------------------------------------------------------------------------------
 "
 function! s:ChangeCWD ( ... )
@@ -114,6 +118,11 @@ endfunction    " ----------  end of function s:ChangeCWD  ----------
 "-------------------------------------------------------------------------------
 " s:CheckCWD : Check the buffer and the CWD.   {{{2
 "
+" Parameters:
+"   -
+" Returns:
+"   [ bufnr, dir ] - data (list: integer and string)
+"
 " Usage: see s:ChangeCWD
 "-------------------------------------------------------------------------------
 "
@@ -123,8 +132,32 @@ function! s:CheckCWD ()
 endfunction    " ----------  end of function s:CheckCWD  ----------
 "
 "-------------------------------------------------------------------------------
+" s:ErrorMsg : Print an error message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+"
+function! s:ErrorMsg ( ... )
+	echohl WarningMsg
+	for line in a:000
+		echomsg line
+	endfor
+	echohl None
+endfunction    " ----------  end of function s:ErrorMsg  ----------
+"
+"-------------------------------------------------------------------------------
 " s:EscapeCurrent : Escape the name of the current file for the shell,   {{{2
 "     and prefix it with "--".
+"
+" Parameters:
+"   -
+" Returns:
+"   file_argument - the escaped filename (string)
 "-------------------------------------------------------------------------------
 "
 function! s:EscapeCurrent ()
@@ -133,14 +166,27 @@ endfunction    " ----------  end of function s:EscapeCurrent  ----------
 "
 "-------------------------------------------------------------------------------
 " s:EscapeFile : Escape a file for usage on the shell.   {{{2
+"
+" Parameters:
+"   filename - the name of the file (string)
+" Returns:
+"   file_argument - the escaped filename (string)
 "-------------------------------------------------------------------------------
 "
-function! s:EscapeFile ( file )
-	return shellescape ( a:file )
+function! s:EscapeFile ( filename )
+	return shellescape ( a:filename )
 endfunction    " ----------  end of function s:EscapeFile  ----------
 "
 "-------------------------------------------------------------------------------
 " s:GetGlobalSetting : Get a setting from a global variable.   {{{2
+"
+" Parameters:
+"   varname - name of the variable (string)
+" Returns:
+"   -
+"
+" If g:<varname> exists, assign:
+"   s:<varname> = g:<varname>
 "-------------------------------------------------------------------------------
 "
 function! s:GetGlobalSetting ( varname )
@@ -152,9 +198,12 @@ endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 "-------------------------------------------------------------------------------
 " s:GitCmdLineArgs : Split command-line parameters into a list.   {{{2
 "
+" Parameters:
+"   args - the arguments in one string (string)
 " Returns:
-"   [ <arg1>, <arg2>, ... ]
-" In case of an error, a list with one empty string is returned
+"   [ <arg1>, <arg2>, ... ] - the split arguments (list of strings)
+"
+" In case of an error, a list with one empty string is returned:
 "   [ '' ]
 "-------------------------------------------------------------------------------
 "
@@ -173,6 +222,11 @@ endfunction    " ----------  end of function s:GitCmdLineArgs  ----------
 "
 "-------------------------------------------------------------------------------
 " s:GitRepoBase : Get the base directory of a repository.   {{{2
+"
+" Parameters:
+"   -
+" Returns:
+"   path - the name of the base directory (string)
 "-------------------------------------------------------------------------------
 "
 function! s:GitRepoBase ()
@@ -190,28 +244,44 @@ endfunction    " ----------  end of function s:GitRepoBase  ----------
 "
 "-------------------------------------------------------------------------------
 " s:ImportantMsg : Print an important message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
 "-------------------------------------------------------------------------------
 "
 function! s:ImportantMsg ( ... )
 	echohl Search
-	for line in a:000
-		echomsg line
-	endfor
+	echo join ( a:000, "\n" )
 	echohl None
 endfunction    " ----------  end of function s:ImportantMsg  ----------
 "
 "-------------------------------------------------------------------------------
 " s:OpenFile : Open a file or jump to its window.   {{{2
+"
+" Parameters:
+"   filename - the name of the file (string)
+"   line     - line number (integer, optional)
+"   column   - column version number (integer, optional)
+" Returns:
+"   -
+"
+" If the file is already open, jump to its window. Otherwise open a window
+" showing the file. If the line number is given, jump to this line in the
+" buffer. If the column number is given, jump to the column.
 "-------------------------------------------------------------------------------
 "
-function! s:OpenFile ( file, ... )
-	if bufwinnr ( a:file ) == -1
+function! s:OpenFile ( filename, ... )
+	if bufwinnr ( a:filename ) == -1
 		" open buffer
 		belowright new
-		exe "edit ".fnameescape( a:file )
+		exe "edit ".fnameescape( a:filename )
 	else
 		" jump to window
-		exe bufwinnr( a:file ).'wincmd w'
+		exe bufwinnr( a:filename ).'wincmd w'
 	end
 	"
 	if a:0 >= 1
@@ -225,12 +295,18 @@ function! s:OpenFile ( file, ... )
 	endif
 	"
 	if foldlevel('.') && g:Git_OpenFoldAfterJump == 'yes'
-		normal zO
+		normal zv
 	endif
 endfunction    " ----------  end of function s:OpenFile  ----------
 "
 "-------------------------------------------------------------------------------
 " s:VersionLess : Compare two version numbers.   {{{2
+"
+" Parameters:
+"   v1 - 1st version number (string)
+"   v2 - 2nd version number (string)
+" Returns:
+"   less - true, if v1 < v2 (string)
 "-------------------------------------------------------------------------------
 "
 function! s:VersionLess ( v1, v2 )
@@ -269,6 +345,14 @@ endfunction    " ----------  end of function s:VersionLess  ----------
 "
 "-------------------------------------------------------------------------------
 " s:GenerateCustomMenu : Generate custom menu entries.   {{{2
+"
+" Parameters:
+"   prefix - defines the menu the entries will be placed in (string)
+"   data   - custom menu entries (list of lists of strings)
+" Returns:
+"   -
+"
+" See :help g:Git_CustomMenu for a describtion of the format 'data' uses.
 "-------------------------------------------------------------------------------
 "
 function! s:GenerateCustomMenu ( prefix, data )
@@ -568,23 +652,37 @@ highlight default link GitConflict    DiffText
 "
 "-------------------------------------------------------------------------------
 " s:Question : Ask the user a question.   {{{1
+"
+" Parameters:
+"   prompt    - prompt, shown to the user (string)
+"   highlight - "normal" or "warning" (string, default "normal")
+" Returns:
+"   retval - the user input (integer)
+"
+" The possible values of 'retval' are:
+"    1 - answer was yes ("y")
+"    0 - answer was no ("n")
+"   -1 - user aborted ("ESC" or "CTRL-C")
 "-------------------------------------------------------------------------------
 "
 function! s:Question ( text, ... )
 	"
 	let ret = -2
 	"
+	" highlight prompt
 	if a:0 == 0 || a:1 == 'normal'
-		echohl Search                               " highlight prompt
+		echohl Search
 	elseif a:1 == 'warning'
-		echohl Error                                " highlight prompt
+		echohl Error
 	else
 		echoerr 'Unknown option : "'.a:1.'"'
 		return
 	end
 	"
+	" question
 	echo a:text.' [y/n]: '
 	"
+	" answer: "y", "n", "ESC" or "CTRL-C"
 	while ret == -2
 		let c = nr2char( getchar() )
 		"
@@ -596,13 +694,30 @@ function! s:Question ( text, ... )
 			let ret = -1
 		endif
 	endwhile
-	echohl None                                   " reset highlighting
+	"
+	" reset highlighting
+	echohl None
 	"
 	return ret
 endfunction    " ----------  end of function s:Question  ----------
 "
 "-------------------------------------------------------------------------------
 " s:OpenGitBuffer : Put output in a read-only buffer.   {{{1
+"
+" Parameters:
+"   buf_name - name of the buffer (string)
+" Returns:
+"   opened -  true, if a new buffer was opened (integer)
+"
+" If a buffer called 'buf_name' already exists, jump to that buffer. Otherwise,
+" open a buffer of the given name an set it up as a "temporary" buffer. It is
+" deleted after the window is closed.
+"
+" Settings:
+" - noswapfile
+" - bufhidden=wipe
+" - tabstop=8
+" - foldmethod=syntax
 "-------------------------------------------------------------------------------
 "
 function! s:OpenGitBuffer ( buf_name )
@@ -629,6 +744,17 @@ endfunction    " ----------  end of function s:OpenGitBuffer  ----------
 "
 "-------------------------------------------------------------------------------
 " s:UpdateGitBuffer : Put output in a read-only buffer.   {{{1
+"
+" Parameters:
+"   command - the command to run (string)
+"   stay    - if true, return to the old position in the buffer
+"             (integer, default: 0)
+" Returns:
+"   success - true, if the command was run successfully (integer)
+"
+" The output of the command is used to replace the text in the current buffer.
+" If 'stay' is true, return to the same line the cursor was placed in before
+" the update. After updating, 'modified' is cleared.
 "-------------------------------------------------------------------------------
 "
 function! s:UpdateGitBuffer ( command, ... )
@@ -646,13 +772,17 @@ function! s:UpdateGitBuffer ( command, ... )
 	silent exe '1,$delete'
 	"
 	" pause syntax highlighting (for speed)
-	setlocal syntax=OFF
+	if &syntax != ''
+		setlocal syntax=OFF
+	endif
 	"
 	" insert the output of the command
 	silent exe 'r! '.a:command
 	"
 	" restart syntax highlighting
-	setlocal syntax=ON
+	if &syntax != ''
+		setlocal syntax=ON
+	endif
 	"
 	" delete the first line (empty) and go to position
 	normal zR
@@ -671,21 +801,21 @@ endfunction    " ----------  end of function s:UpdateGitBuffer  ----------
 " s:StandardRun : execute 'git <cmd> ...'   {{{1
 "
 " Parameters:
-"   cmd     - The Git command to run (string). This is not the Git executable!
-"   param   - The parameters (string).
-"   flags   - All set flags (string).
-"   allowed - All allowed flags (string, default: 'cet').
+"   cmd     - the Git command to run (string), this is not the Git executable!
+"   param   - the parameters (string)
+"   flags   - all set flags (string)
+"   allowed - all allowed flags (string, default: 'cet')
 " Returns:
-"   text    - The text produced by the command (string).
-"             Only if the flag 't' is set.
+"   text    - the text produced by the command (string),
+"             only if the flag 't' is set
 "
 " Flags are characters. The parameter 'flags' is a concatenation of all set
 " flags, the parameter 'allowed' is a concatenation of all allowed flags.
 "
 " Flags:
-"   c - Ask for confirmation.
-"   e - Expand empty 'param' to current buffer.
-"   t - Return the text instead of echoing it.
+"   c - ask for confirmation
+"   e - expand empty 'param' to current buffer
+"   t - return the text instead of echoing it
 "-------------------------------------------------------------------------------
 "
 function! s:StandardRun( cmd, param, flags, ... )
@@ -909,12 +1039,15 @@ endfunction    " ----------  end of function GitS_Add  ----------
 "-------------------------------------------------------------------------------
 " s:Blame_GetFile : Get the file, line and the commit under the cursor.   {{{2
 "
+" Parameters:
+"   -
 " Returns:
-"   [ <file-name>, <line>, <commit> ]
+"   [ <file-name>, <line>, <commit> ] - data (list: string, integer, string)
+"
 " The entries are as follows:
-"   file name - Name of the file under the cursor.
-"   line      - The line in the original file.
-"   commit    - The commit.
+"   file name - name of the file under the cursor (string)
+"   line      - the line in the original file (integer)
+"   commit    - the commit (string)
 "
 " If only the name of the file could be obtained, returns:
 "   [ <file-name>, -1, ... ]
@@ -1325,15 +1458,18 @@ endfunction    " ----------  end of function GitS_CommitDryRun  ----------
 "-------------------------------------------------------------------------------
 " s:Diff_GetFile : Get the file (and line/col) under the cursor.   {{{2
 "
-" Only obtains the line if the optional parameter 'line' is given:
-" 	let [ ... ] = s:Diff_GetFile ( 'line' )
-"
+" Parameters:
+"   line - if the argument equals 'line', return line number (string, optional)
 " Returns:
-"   [ <file-name>, <line>, <column> ]
+"   [ <file-name>, <line>, <column> ] - data (list: string, integer, integer)
+"
 " The entries are as follows:
-"   file name - Name of the file under the cursor.
-"   line      - The line in the original file.
-"   column    - The column in the original file.
+"   file name - name of the file under the cursor (string)
+"   line      - the line in the original file (integer)
+"   column    - the column in the original file (integer)
+"
+" Only obtains the line if the optional parameter 'line' is given:
+"   let [ ... ] = s:Diff_GetFile ( 'line' )
 "
 " If only the name of the file could be obtained, returns:
 "   [ <file-name>, -1, -1 ]
@@ -1519,11 +1655,14 @@ endfunction    " ----------  end of function GitS_Fetch  ----------
 "-------------------------------------------------------------------------------
 " s:Grep_GetFile : Get the file and line under the cursor.   {{{2
 "
+" Parameters:
+"   -
 " Returns:
-"   [ <file-name>, <line> ]
+"   [ <file-name>, <line> ] - data (list: string, integer)
+"
 " The entries are as follows:
-"   file name - Name of the file under the cursor.
-"   line      - The line in the original file.
+"   file name - name of the file under the cursor (string)
+"   line      - the line in the original file (integer)
 "
 " If only the name of the file could be obtained, returns:
 "   [ <file-name>, -1 ]
@@ -2126,15 +2265,23 @@ let s:Status_SectionCodes = {
 "-------------------------------------------------------------------------------
 " s:Status_GetFile : Get the file under the cursor and its status.   {{{2
 "
+" Parameters:
+"   -
 " Returns:
-"   [ <file-name>, <file-status>, <section-code> ]
+"   [ <file-name>, <file-status>, <section-code> ] - data (list: 3x string)
+"
 " The entries are as follows:
-"   file name    - Name of the file under the cursor.
-"   file status  - Status of the file: 'new file', 'modified', 'deleted',
-"                  'conflict' or one of the two-letter status codes of
-"                  'git status --short'
-"   section code - One character encoding the section the file was found in,
-"                  use 's:Status_SectionCodes' to decode the meaning.
+"   file name    - name of the file under the cursor (string)
+"   file status  - status of the file, see below (string)
+"   section code - one character encoding the section the file was found in,
+"                  use 's:Status_SectionCodes' to decode the meaning (string)
+"
+" Status:
+" - "new file"
+" - "modified"
+" - "deleted"
+" - "conflict"
+" - one of the two-letter status codes of "git status --short"
 "
 " In case of an error, the list contains to empty strings and an error message:
 "   [ '', '', <error-message> ]
@@ -2255,6 +2402,27 @@ endfunction    " ----------  end of function s:Status_GetFile  ----------
 "
 "-------------------------------------------------------------------------------
 " s:Status_FileAction : Execute a command for the file under the cursor.   {{{2
+"
+" Parameters:
+"   action - the action to perform, see below (string)
+" Returns:
+"   success - true, if the command was run successfully (integer)
+"
+" Uses 's:Status_GetFile' to obtain the section and file under the cursor. Then
+" the action is performed, if allowed for this section. The actions are named
+" for Git commands, except for "edit" (ckout = checkout):
+"
+"    section / action
+"                  | edit  | diff  log   | add   ckout reset rm
+"  staged    (b/s) |  x    |  x     x    |  -     -     x     -
+"  modified  (b/m) |  x    |  x     x    |  x     x     -     ?
+"  untracked (u)   |  x    |  -     -    |  x     -     -     -
+"  ignored   (i)   |  x    |  -     -    |  x     -     -     -
+"  unmerged  (c)   |  x    |  x     x    |  x     -     -     x
+"  diff      (d)   |  x    |  x     x    |  -     -     x     -
+"
+"  in section 'staged'   : action 'diff' may behave differently
+"  in section 'modified' : action 'rm' only for status 'deleted'
 "-------------------------------------------------------------------------------
 "
 function! s:Status_FileAction( action )
@@ -2268,19 +2436,6 @@ function! s:Status_FileAction( action )
 		call s:ErrorMsg ( s_code )
 		return 0
 	endif
-	"
-	" section / action
-	"                 | edit  | diff  log   | add   ckout reset rm
-	" staged    (b/s) |  x    |  x     x    |  -     -     x     -
-	" modified  (b/m) |  x    |  x     x    |  x     x     -     ?
-	" untracked (u)   |  x    |  -     -    |  x     -     -     -
-	" ignored   (i)   |  x    |  -     -    |  x     -     -     -
-	" unmerged  (c)   |  x    |  x     x    |  x     -     -     x
-	" diff      (d)   |  x    |  x     x    |  -     -     x     -
-	"  (ckout = checkout)
-	"
-	" in section 'staged'   : action 'diff' may behave differently
-	" in section 'modified' : action 'rm' only for status 'deleted'
 	"
 	let f_name_esc = '-- '.s:EscapeFile( f_name )
 	"
