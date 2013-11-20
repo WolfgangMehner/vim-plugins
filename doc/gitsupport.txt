@@ -112,10 +112,13 @@ run the commands in every subdirectory of the project.
   |:GitStatus|                       (buf) git status
   |:GitTag|                          (buf) git tag
   |:GitTag| <args>                   (run) git tag <args>
+
+  |:GitK| <args>                     (gui) gitk <args>
  ----------------------------------------------------------------------------
 
 (run) runs the command after asking for confirmation
 (buf) runs the command and redirects its output in a new buffer
+(gui) starts the application
 (^1)  runs the command within the context of the top-level directory
 
 When a command opens a new buffer, several maps are defined for this buffer.
@@ -578,6 +581,12 @@ The first version opens a buffer listing the tags. The second version executes
   u         update the buffer (list only)
  ----------------------------------------------------------------------------
 
+------------------------------------------------------------------------------
+                                                                       *:GitK*
+	:GitK <args> ~
+
+Starts gitk with the given arguments.
+
 ==============================================================================
 4.  SYNTAX HIGHLIGHTING                                    *gitsupport-syntax*
 ==============================================================================
@@ -808,6 +817,7 @@ in the .vimrc file.
   Variable                    Default     Description and further information
  ----------------------------------------------------------------------------
   |g:Git_Executable|            'git'       the Git executable
+  |g:Git_GitKExecutable|        'gitk'      the gitk executable
   |g:Git_LoadMenus|             'yes'       whether to load the menus
                                           ('yes' or 'no')
   |g:Git_RootMenu|              '&Git'      name and shortcut of the root menu
@@ -828,10 +838,14 @@ in the .vimrc file.
 The executable is set by g:Git_Executable. You should use the English language
 environment: >
 	let g:Git_Executable = 'LANG=en_US git'
-
+<
 For Windows, set up the executable similar to this: >
 	let g:Git_Executable = 'C:\Programs\Git\bin\git.exe'
-
+<
+                                                        *g:Git_GitKExecutable*
+Set the gitk executable. You should use the English language environment: >
+	let g:Git_Executable = 'LANG=en_US gitk'
+<
 ------------------------------------------------------------------------------
 6.2  MENUS                                           *gitsupport-config-menus*
 ------------------------------------------------------------------------------
@@ -863,7 +877,7 @@ You can add hotkeys for your favorite commands by adding maps to your .vimrc.
 With these lines, <F10> will open the status buffer: >
 	 noremap <silent> <F10>       :GitStatus<CR>
 	inoremap <silent> <F10>  <C-C>:GitStatus<CR>
-
+<
 ------------------------------------------------------------------------------
 6.4  SETTINGS                                     *gitsupport-config-settings*
 ------------------------------------------------------------------------------

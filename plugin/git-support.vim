@@ -503,9 +503,10 @@ let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
 " settings   {{{2
 "
-let s:Git_Executable = 'git'      " Git's executable
-let s:Git_LoadMenus  = 'yes'      " load the menus?
-let s:Git_RootMenu   = '&Git'     " name of the root menu
+let s:Git_Executable     = 'git'    " Git's executable
+let s:Git_GitKExecutable = 'gitk'   " Git's executable
+let s:Git_LoadMenus      = 'yes'    " load the menus?
+let s:Git_RootMenu       = '&Git'   " name of the root menu
 "
 if ! exists ( 's:MenuVisible' )
 	let s:MenuVisible = 0           " menus are not visible at the moment
@@ -517,6 +518,7 @@ let s:Git_CustomMenu = [
 			\ ]
 "
 call s:GetGlobalSetting ( 'Git_Executable' )
+call s:GetGlobalSetting ( 'Git_GitKExecutable' )
 call s:GetGlobalSetting ( 'Git_LoadMenus' )
 call s:GetGlobalSetting ( 'Git_RootMenu' )
 call s:GetGlobalSetting ( 'Git_CustomMenu' )
@@ -629,6 +631,7 @@ if s:Enabled
 	command  -nargs=* -complete=file -bang                           Git                :call GitS_Run(<q-args>,'<bang>'=='!'?'b':'')
 	command! -nargs=* -complete=file                                 GitRun             :call GitS_Run(<q-args>,'')
 	command! -nargs=* -complete=file                                 GitBuf             :call GitS_Run(<q-args>,'b')
+	command! -nargs=* -complete=file                                 GitK               :call GitS_GitK(<q-args>)
 else
 	command  -nargs=*                -bang                           Git                :call GitS_Help('disabled')
 	command! -nargs=*                                                GitHelp            :call GitS_Help('disabled')
@@ -2753,6 +2756,17 @@ function! GitS_TagList( action, ... )
 endfunction    " ----------  end of function GitS_TagList  ----------
 "
 "-------------------------------------------------------------------------------
+" GitS_GitK : execute 'gitk ...'   {{{1
+"-------------------------------------------------------------------------------
+"
+function! GitS_GitK( param )
+	"
+	" :TODO:19.11.2013 23:05:WM: checks before execution
+	silent exe '!'.s:Git_GitKExecutable.' '.a:param.' &'
+	"
+endfunction    " ----------  end of function GitS_GitK  ----------
+"
+"-------------------------------------------------------------------------------
 " s:InitMenus : Initialize menus.   {{{1
 "-------------------------------------------------------------------------------
 "
@@ -2794,6 +2808,8 @@ function! s:InitMenus()
 	exe ahead.'&stash<TAB>:GitStash       :GitStash<space>'
 	exe ahead.'&status<TAB>:GitStatus     :GitStatus<space>'
 	exe ahead.'&tag<TAB>:GitTag           :GitTag<space>'
+	exe ahead.'-Sep01-                    :'
+	exe ahead.'git&k<TAB>:GitK            :GitK<space>'
 	"
 	" Current File
 	let shead = 'amenu <silent> '.s:Git_RootMenu.'.&file.'
