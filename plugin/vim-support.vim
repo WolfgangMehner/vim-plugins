@@ -421,7 +421,7 @@ endfunction    " ----------  end of function Vim_CommentCode  ----------
 "          NAME:  GetFunctionParameters     {{{1
 "   DESCRIPTION:  get function name and parameters
 "    PARAMETERS:  fun_line - function head
-"       RETURNS:  scope     - The scope. (string, 's', 'g' or empty) 
+"       RETURNS:  scope     - The scope. (string, 's:', 'g:' or empty)
 "                 fun_name  - The name of the function (string, id without the scope)
 "                 param_str - Names of the parameters. (list of strings)
 "                 ellipsis  - Has an ellipsis? (boolean)
@@ -449,7 +449,6 @@ function! s:GetFunctionParameters ( fun_line )
 	let param_str  = substitute ( param_str, '\s*$', '', '' )
 	let param_list = split ( param_str, '\s*,\s*' )
 	"
-	let scope    = scope[0]
 	let ellipsis = ! empty ( ellipsis )
 	let range    = ! empty ( range )
 	"
@@ -493,7 +492,7 @@ function! Vim_FunctionComment () range
 	endif
 	"
 	call mmtemplates#core#InsertTemplate ( g:Vim_Templates, 'Comments.function',
-				\ '|FUNCTION_NAME|', fun_name, '|PARAMETERS|', param_list,
+				\ '|FUNCTION_NAME|', scope.fun_name, '|PARAMETERS|', param_list,
 				\ 'placement', placement, 'range', a:firstline, a:lastline )
 	"
 endfunction    " ----------  end of function Vim_FunctionComment  ----------
@@ -915,6 +914,7 @@ function! s:CreateAdditionalMaps ()
 	"
   nnoremap    <buffer>  <silent>  <LocalLeader>ca         :call Vim_FunctionComment()<CR>
   inoremap    <buffer>  <silent>  <LocalLeader>ca    <Esc>:call Vim_FunctionComment()<CR>
+  vnoremap    <buffer>  <silent>  <LocalLeader>ca         :call Vim_FunctionComment()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" snippets

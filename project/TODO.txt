@@ -13,6 +13,9 @@ C/C++:
     anymore, since the Make integration moves to the toolbox. It is to be
     documented as configuration for 'Run->run', similar to 'Run->cmdline arg.'.
     Shortcut changes to '\ce'.
+- (WM) Doxygen:
+  * Templates for "overload".
+  * Append "short, aftermember" to several lines.
 
 LaTeX:
 - (FM) Documentation: Menu 'Beamer' missing.
@@ -34,5 +37,8 @@ Toolbox:
 - (WM, DONE) Menu entries for Doxygen tool.
 - (WM, DONE) Confirm when setting some properties (CMakeProjectDir, DoxygenConfigFile, ...)
   to an empty string.
+
+Snippets:
+- (FM, DONE?) Set first parameter ("save") in "browse()" to '1' for writing snippets
 
 " vim: expandtab:tw=80

@@ -80,7 +80,10 @@ For a system-wide installation please see the help file 'doc/vimsupport.txt'.
 ---------------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 2.2pre
 ---------------------------------------------------------------------------------------
-+ Fixed map for "adjust end-of-line com.".
++ Map "adjust end-of-line com." now works in visual mode.
++ Map "function description (auto)" now works in visual mode.
++ Automatic function description now considers scopes.
++ Fixed template "Comments.function".
 
 =======================================================================================
   FILES

@@ -10,7 +10,7 @@
 "-------------------------------------------------------------------------------
 == Comments.function == map:cfu, sc:f ==
 "===  FUNCTION  ================================================================
-"          NAME:  |?FUNCTION_NAME:c|     {{{1
+"          NAME:  |?FUNCTION_NAME|     {{{1
 "   DESCRIPTION:  <CURSOR>
 "    PARAMETERS:  -|PARAMETERS:EMPTY|
 "    PARAMETERS:  |PARAMETERS:FIRST| - {+DESCRIPTION+}
