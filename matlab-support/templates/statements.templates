@@ -1,0 +1,66 @@
+§ =============================================================
+§  Statements
+§ =============================================================
+
+§ -------------------------------------------------------------
+§  Loops
+§ -------------------------------------------------------------
+
+== Statements.for == below, map:sf, sc:f ==
+for i = <CURSOR>
+    <SPLIT>{-LOOP_BODY-}
+end
+== Statements.for, vector == below, map:sv, sc:v ==
+for i = 1:length ( |?VECTOR| )
+    <CURSOR><SPLIT>
+end
+== Statements.while == below, map:sw, sc:w ==
+while <CURSOR>
+    <SPLIT>{-LOOP_BODY-}
+end
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  If-Then-Else
+§ -------------------------------------------------------------
+
+== Statements.if, end == below, map:sif, sc:i ==
+if <CURSOR> 
+    <SPLIT>{-IF_PART-}
+end
+== Statements.if, else == below, map:sie, sc:i ==
+if <CURSOR> 
+    <SPLIT>{-IF_PART-}
+else
+    {+ELSE_PART+}
+end
+== Statements.elseif == below, map:sei, sc:e ==
+elseif <CURSOR>
+    {+ELSEIF_PART+}
+== Statements.else == below, map:sel, sc:e ==
+else
+    <CURSOR>
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Switch
+§ -------------------------------------------------------------
+
+== Statements.switch == below, map:ss, sc:s ==
+switch <CURSOR>
+    case {+CASE+}
+        {+CODE+}
+
+    otherwise
+        {+OTHERWISE+}
+end
+== Statements.case == below, map:sc, sc:c ==
+case <CURSOR>
+    {+CODE+}
+== Statements.otherwise == below, map:so, sc:o ==
+otherwise
+    <CURSOR>
+== ENDTEMPLATE ==
+
+§--------------------------------------------------------------
+§ vim:et:sw=4:ts=4:

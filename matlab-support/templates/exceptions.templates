@@ -1,0 +1,50 @@
+§ =============================================================
+§  Exceptions
+§ =============================================================
+
+MenuShortcut( 'Exceptions.MException', 'm' )
+
+§ -------------------------------------------------------------
+§  Exception Object
+§ -------------------------------------------------------------
+
+== Exceptions.MException.identifier == insert, map:ei, sc:i ==
+|?EXCEPTION_OBJ|.identifier
+== Exceptions.MException.message == insert, map:em, sc:m ==
+|?EXCEPTION_OBJ|.message
+== Exceptions.MException.stack == insert, map:es, sc:s ==
+|?EXCEPTION_OBJ|.stack
+== Exceptions.MException.stack, filename == insert, sc:f ==
+|?EXCEPTION_OBJ|.stack(<CURSOR>).file
+== Exceptions.MException.stack, function name == insert, sc:n ==
+|?EXCEPTION_OBJ|.stack(<CURSOR>).name
+== Exceptions.MException.stack, line == insert, sc:l ==
+|?EXCEPTION_OBJ|.stack(<CURSOR>).line
+== Exceptions.MException.cause == insert, map:ec, sc:c ==
+|?EXCEPTION_OBJ|.cause{<CURSOR>}
+== Exceptions.MException.constructor == insert ==
+MException ( <CURSOR> );
+== Exceptions.MException.getReport == insert ==
+getReport( |?EXCEPTION_OBJ| );
+== Exceptions.MException.rethrow == insert, map:er, sc:r ==
+rethrow ( |?EXCEPTION_OBJ| );
+== Exceptions.MException.throw == insert ==
+throw ( |?EXCEPTION_OBJ| );
+== Exceptions.MException.throwAsCaller == insert ==
+throwAsCaller ( |?EXCEPTION_OBJ| );
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Try-Catch Block
+§ -------------------------------------------------------------
+
+== Exceptions.try == below, map:et, sc:t ==
+try
+    <CURSOR><SPLIT>
+catch |?EXCEPTION_OBJ|
+    {+EXC_HANDLING+}
+end
+== ENDTEMPLATE ==
+
+§--------------------------------------------------------------
+§ vim:et:sw=4:ts=4:

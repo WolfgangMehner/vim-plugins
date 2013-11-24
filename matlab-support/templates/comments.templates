@@ -1,0 +1,98 @@
+§ =============================================================
+§  Comments
+§
+§  Usage:
+§   'Comments.file description' and 'Comments.function description'
+§   are used for the automated function description. Their names
+§   should remain unchanged. The macro names 'FUNCTION_NAME',
+§   'PARAMETERS' and 'RETURNS' are fixed as well.
+§ =============================================================
+
+MenuShortcut( 'Comments.Lists', 'l' )
+
+== Comments.end-of-line == append, map:ce, sc:e ==
+ % <CURSOR>
+§--------------------------------------------------------------
+== Comments.file description == start, map:cfi, sc:f ==
+%|BASENAME:u| <CURSOR>.
+%   {+DETAILS+}
+%
+%   Parameters: -|PARAMETERS:EMPTY|
+%   Parameters: |PARAMETERS:FIRST| - {+DESCRIPTION+}. ({+TYPE+})
+%               |PARAMETERS:ENTRY| - {+DESCRIPTION+}. ({+TYPE+})
+%   Returns:    -|RETURNS:EMPTY|
+%   Returns:    |RETURNS:FIRST| - {+DESCRIPTION+}. ({+TYPE+})
+%               |RETURNS:ENTRY| - {+DESCRIPTION+}. ({+TYPE+})
+%
+%   See also: TODO
+
+§--------------------------------------------------------------
+== Comments.function description == below, map:cfu, sc:f ==
+%|?FUNCTION_NAME:u| <CURSOR>.
+%   {+DETAILS+}
+%
+%   Parameters: -|PARAMETERS:EMPTY|
+%   Parameters: |PARAMETERS:FIRST| - {+DESCRIPTION+}. ({+TYPE+})
+%               |PARAMETERS:ENTRY| - {+DESCRIPTION+}. ({+TYPE+})
+%   Returns:    -|RETURNS:EMPTY|
+%   Returns:    |RETURNS:FIRST| - {+DESCRIPTION+}. ({+TYPE+})
+%               |RETURNS:ENTRY| - {+DESCRIPTION+}. ({+TYPE+})
+== Comments.parameter description == below, map:cpa, sc:p ==
+%               <CURSOR> - {+DESCRIPTION+}. ({+TYPE+})
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Keywords, Special and Macros
+§ -------------------------------------------------------------
+
+== LIST: comments_keywords == hash ==
+    'bug'         : ':BUG:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+    'todo'        : ':TODO:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+    'tricky'      : ':TRICKY:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+    'warning'     : ':WARNING:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+    'workaround'  : ':WORKAROUND:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+    'new keyword' : ':<CURSOR>:|DATE| |TIME|:|AUTHORREF|: {+COMMENT+}',
+== LIST: comments_special == list ==
+    'EMPTY',
+    'FALL THROUGH',
+    'NO RETURN',
+    'NOT REACHED',
+    'REMAINS TO BE IMPLEMENTED',
+== LIST: comments_macros == hash ==
+    'Author'       : '|AUTHOR|',
+    'AuthorRef'    : '|AUTHORREF|',
+    'Organization' : '|ORGANIZATION|',
+    'Copyright'    : '|COPYRIGHT|',
+    'Email'        : '|EMAIL|',
+
+
+    'Path'       : '|PATH|',
+    'Filename'   : '|FILENAME|',
+    'Basename'   : '|BASENAME|',
+    'Basename:u' : '|BASENAME:u|',
+    'Suffix'     : '|SUFFIX|',
+
+    'Date' : '|DATE|',
+    'Time' : '|TIME|',
+    'Year' : '|YEAR|',
+== ENDLIST ==
+
+§ -------------------------------------------------------------
+
+== Comments.keyword comment == expandmenu, append, map:ck, sc:k ==
+|PickList( 'keyword', 'comments_keywords' )|
+ % |PICK|
+== Comments.special comments == expandmenu, append, map:cs, sc:s ==
+|PickList( 'special comment', 'comments_special' )|
+ % |PICK|<CURSOR>
+== Comments.macros == expandmenu, insert, map:cm, sc:m ==
+|PickList( 'macro', 'comments_macros' )|
+|PICK|<CURSOR>
+== Comments.date == insert, map:cd, sc:d ==
+|DATE|
+== Comments.date time == insert, sc:t ==
+|DATE| |TIME|
+== ENDTEMPLATE ==
+
+§--------------------------------------------------------------
+§ vim:et:sw=4:ts=4:

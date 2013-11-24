@@ -1,0 +1,50 @@
+§ =============================================================
+§  User Macros
+§ =============================================================
+
+SetMacro( 'AUTHOR',       'Your Name' )
+SetMacro( 'AUTHORREF',    '' )
+SetMacro( 'EMAIL',        '' )
+SetMacro( 'ORGANIZATION', '' )
+SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
+
+SetFormat( 'DATE', '%x' )
+SetFormat( 'TIME', '%H:%M' )
+SetFormat( 'YEAR', '%Y' )
+
+SetMacro( 'HELP_BROWSER', 'firefox' )
+
+§ =============================================================
+§  File Includes
+§ =============================================================
+
+MenuShortcut( 'Comments',   'c' )
+MenuShortcut( 'Statements', 's' )
+MenuShortcut( 'Idioms',     'i' )
+MenuShortcut( 'Classes',    'l' )
+MenuShortcut( 'Exceptions', 'e' )
+MenuShortcut( 'Help',       'h' )
+
+IncludeFile( 'comments.templates' )
+IncludeFile( 'statements.templates' )
+IncludeFile( 'idioms.templates' )
+IncludeFile( 'classes.templates' )
+IncludeFile( 'exceptions.templates' )
+
+§ =============================================================
+§  Help
+§ =============================================================
+
+SetMacro( 'HelpPathEnglish',   'http://en.wiktionary.org/wiki/' )
+SetMacro( 'HelpPathMathWorks', 'http://www.mathworks.de/help/techdoc/' )
+
+== HELP: Help.english == map:he, sc:e ==
+|Word( '' )|
+|Substitute( '\W', '', 'g' )|
+|System( '|HELP_BROWSER| |HelpPathEnglish||PICK:l|' )|
+== HELP: Help.Matlab function == map:hf, sc:f ==
+|Word( '' )|
+|Substitute( '\W', '', 'g' )|
+|System( '|HELP_BROWSER| |HelpPathMathWorks|ref/|PICK|.html' )|
+|Default( '|HELP_BROWSER| |HelpPathMathWorks|' )|
+== ENDTEMPLATE ==

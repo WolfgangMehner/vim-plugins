@@ -1,0 +1,833 @@
+"===============================================================================
+"
+"          File:  matlab-support.vim
+"
+"   Description:  Matlab IDE for Vim/gVim.
+"
+"                 See help file matlabsupport.txt .
+"
+"   VIM Version:  7.0+
+"        Author:  Wolfgang Mehner, wolfgang-mehner@web.de
+"  Organization:  
+"       Version:  see variable g:Matlab_Version below
+"       Created:  11.04.2010
+"      Revision:  24.11.2013
+"       License:  Copyright (c) 2012-2013, Wolfgang Mehner
+"                 This program is free software; you can redistribute it and/or
+"                 modify it under the terms of the GNU General Public License as
+"                 published by the Free Software Foundation, version 2 of the
+"                 License.
+"                 This program is distributed in the hope that it will be
+"                 useful, but WITHOUT ANY WARRANTY; without even the implied
+"                 warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+"                 PURPOSE.
+"                 See the GNU General Public License version 2 for more details.
+"===============================================================================
+"
+"-------------------------------------------------------------------------------
+" Basic checks.   {{{1
+"-------------------------------------------------------------------------------
+"
+" need at least 7.0
+if v:version < 700
+	echohl WarningMsg
+	echo 'The plugin matlab-support.vim needs Vim version >= 7.'
+	echohl None
+	finish
+endif
+"
+" prevent duplicate loading
+" need compatible
+if &cp || ( exists('g:Matlab_Version') && ! exists('g:Matlab_DevelopmentOverwrite') )
+	finish
+endif
+let g:Matlab_Version= '0.9'     " version number of this script; do not change
+"
+"-------------------------------------------------------------------------------
+" Auxiliary functions.   {{{1
+"-------------------------------------------------------------------------------
+"
+"-------------------------------------------------------------------------------
+" s:ApplyDefaultSetting : Write default setting to a global variable.   {{{2
+"
+" Parameters:
+"   varname - name of the variable (string)
+"   value   - default value (string)
+" Returns:
+"   -
+"
+" If g:<varname> does not exists, assign:
+"   g:<varname> = value
+"-------------------------------------------------------------------------------
+"
+function! s:ApplyDefaultSetting ( varname, value )
+	if ! exists ( 'g:'.a:varname )
+		exe 'let g:'.a:varname.' = '.string( a:value )
+	endif
+endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
+"
+"-------------------------------------------------------------------------------
+" s:ErrorMsg : Print an error message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+"
+function! s:ErrorMsg ( ... )
+	echohl WarningMsg
+	for line in a:000
+		echomsg line
+	endfor
+	echohl None
+endfunction    " ----------  end of function s:ErrorMsg  ----------
+"
+"-------------------------------------------------------------------------------
+" s:GetGlobalSetting : Get a setting from a global variable.   {{{2
+"
+" Parameters:
+"   varname - name of the variable (string)
+" Returns:
+"   -
+"
+" If g:<varname> exists, assign:
+"   s:<varname> = g:<varname>
+"-------------------------------------------------------------------------------
+"
+function! s:GetGlobalSetting ( varname )
+	if exists ( 'g:'.a:varname )
+		exe 'let s:'.a:varname.' = g:'.a:varname
+	endif
+endfunction    " ----------  end of function s:GetGlobalSetting  ----------
+"
+"-------------------------------------------------------------------------------
+" s:ImportantMsg : Print an important message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+"
+function! s:ImportantMsg ( ... )
+	echohl Search
+	echo join ( a:000, "\n" )
+	echohl None
+endfunction    " ----------  end of function s:ImportantMsg  ----------
+" }}}2
+"-------------------------------------------------------------------------------
+"
+"-------------------------------------------------------------------------------
+" Modul setup.   {{{1
+"-------------------------------------------------------------------------------
+"
+"-------------------------------------------------------------------------------
+" Installation.   {{{2
+"-------------------------------------------------------------------------------
+"
+let s:MSWIN = has("win16") || has("win32")   || has("win64")    || has("win95")
+let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
+"
+let s:installation           = '*undefined*'  " 'local' or 'system'
+let s:plugin_dir             = ''             " the directory hosting ftplugin/ plugin/ matlab-support/ ...
+let s:Matlab_GlbTemplateFile = ''             " the global templates, undefined for s:installation == 'local'
+let s:Matlab_LclTemplateFile = ''             " the local templates
+"
+if s:MSWIN
+	"
+	"-------------------------------------------------------------------------------
+	" MS Windows
+	"-------------------------------------------------------------------------------
+	"
+	if match(      substitute( expand('<sfile>'), '\\', '/', 'g' ), 
+				\   '\V'.substitute( expand('$HOME'),   '\\', '/', 'g' ) ) == 0
+		"
+		" user installation assumed
+		let s:installation           = 'local'
+		let s:plugin_dir             = substitute( expand('<sfile>:p:h:h'), '\\', '/', 'g' )
+		let s:Matlab_LclTemplateDir  = s:plugin_dir.'/matlab-support/templates'
+		let s:Matlab_LclTemplateFile = s:Matlab_LclTemplateDir.'/Templates'
+	else
+		"
+		" system wide installation
+		let s:installation           = 'system'
+		let s:plugin_dir             = $VIM.'/vimfiles'
+		let s:Matlab_GlbTemplateDir  = s:plugin_dir.'/matlab-support/templates'
+		let s:Matlab_LclTemplateDir  = $HOME.'/vimfiles/matlab-support/templates'
+		let s:Matlab_GlbTemplateFile = s:Matlab_GlbTemplateDir.'/Templates'
+		let s:Matlab_LclTemplateFile = s:Matlab_LclTemplateDir.'/Templates'
+	endif
+	"
+else
+	"
+	"-------------------------------------------------------------------------------
+	" Linux/Unix
+	"-------------------------------------------------------------------------------
+	"
+	if match( expand('<sfile>'), '\V'.resolve(expand('$HOME')) ) == 0
+		"
+		" user installation assumed
+		let s:installation           = 'local'
+		let s:plugin_dir             = expand('<sfile>:p:h:h')
+		let s:Matlab_LclTemplateDir  = s:plugin_dir.'/matlab-support/templates'
+		let s:Matlab_LclTemplateFile = s:Matlab_LclTemplateDir.'/Templates'
+	else
+		"
+		" system wide installation
+		let s:installation           = 'system'
+		let s:plugin_dir             = $VIM.'/vimfiles'
+		let s:Matlab_GlbTemplateDir  = s:plugin_dir.'/matlab-support/templates'
+		let s:Matlab_LclTemplateDir  = $HOME.'/.vim/matlab-support/templates'
+		let s:Matlab_GlbTemplateFile = s:Matlab_GlbTemplateDir.'/Templates'
+		let s:Matlab_LclTemplateFile = s:Matlab_LclTemplateDir.'/Templates'
+	endif
+	"
+endif
+"
+"-------------------------------------------------------------------------------
+" Various setting.   {{{2
+"-------------------------------------------------------------------------------
+"
+let s:CmdLineEscChar = ' |"\'
+"
+let s:Matlab_LoadMenus       = 'auto'     " load the menus?
+let s:Matlab_RootMenu        = '&Matlab'  " name of the root menu
+"
+let s:Matlab_MapLeader       = ''         " default: do not overwrite 'maplocalleader'
+"
+let s:Matlab_MlintExecutable = 'mlint'    " default: mlint on system path
+"
+if ! exists ( 's:MenuVisible' )
+	let s:MenuVisible = 0                " menus are not visible at the moment
+endif
+"
+call s:GetGlobalSetting ( 'Matlab_GlbTemplateFile' )
+call s:GetGlobalSetting ( 'Matlab_LclTemplateFile' )
+call s:GetGlobalSetting ( 'Matlab_LoadMenus' )
+call s:GetGlobalSetting ( 'Matlab_RootMenu' )
+call s:GetGlobalSetting ( 'Matlab_MlintExecutable' )
+"
+call s:ApplyDefaultSetting ( 'Matlab_MapLeader', '' )
+"
+" }}}2
+"-------------------------------------------------------------------------------
+"
+"-------------------------------------------------------------------------------
+" Matlab_CodeComment : Code -> Comment   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Matlab_CodeComment() range
+	"
+	" add '% ' at the beginning of the lines
+	silent exe ":".a:firstline.",".a:lastline."s/^/% /"
+	"
+endfunction    " ----------  end of function Matlab_CodeComment  ----------
+"
+"-------------------------------------------------------------------------------
+" Matlab_CommentCode : Comment -> Code   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Matlab_CommentCode( toggle ) range
+	"
+	" remove comments:
+	" - remove '% ' from the beginning of the line
+	" - if that is not possible, try to remove just '%'
+	" and, in toggling mode:
+	" - if the line is not a comment, comment it
+	for i in range( a:firstline, a:lastline )
+		if getline( i ) =~ '^% '
+			silent exe i."s/^% //"
+		elseif getline( i ) =~ '^%'
+			silent exe i."s/^%//"
+		elseif a:toggle
+			silent exe i."s/^/% /"
+		endif
+	endfor
+	"
+endfunction    " ----------  end of function Matlab_CommentCode  ----------
+"
+"-------------------------------------------------------------------------------
+" s:GetFunctionParameters : Get the name, parameters, ... of a function.   {{{1
+"
+" Parameters:
+"   fun_line - the function definition (string)
+" Returns:
+"   [ <fun_name>, <returns>, <params> ] - data (list: string, list, list)
+"
+" The entries are as follows:
+"   file name - name of the function (string)
+"   returns   - the name of the return arguments (list of strings)
+"   params    - the names of the parameters (list of strings)
+"
+" In case of an error, an empty list is returned.
+"-------------------------------------------------------------------------------
+function! s:GetFunctionParameters( fun_line )
+	"
+	" 1st expression: the syntax category
+	" 2nd expression: as before, but with brackets to catch the match
+	" 
+	let identifier   = '[a-zA-Z][a-zA-Z0-9_]*'
+	let identifier_c = '\('.identifier.'\)'
+	let in_bracket   = '[^)\]]*'
+	let in_bracket_c = '\('.in_bracket.'\)'
+	let spaces       = '\s*'
+	let spaces_c     = '\('.spaces.'\)'
+	let tail_c       = '\(.*\)$'
+	"
+	let mlist = matchlist ( a:fun_line, '^'.spaces_c.'function\s*'.tail_c )
+	"
+	" no function?
+	if empty( mlist )
+		return []
+	endif
+	"
+	" found a function!
+	let tail   = mlist[2]
+	let fun_name   = ''
+	let return_str = ''
+	let param_str  = ''
+	"
+	" no return
+	let mlist = matchlist( tail, '^'.identifier_c.'\s*(\s*'.in_bracket_c.')' )
+	if ! empty( mlist )
+		let fun_name   = mlist[1]
+		let return_str = ''
+		let param_str  = mlist[2]
+	endif
+	"
+	" single return
+	let mlist = matchlist( tail, '^'.identifier_c.'\s*=\s*'.identifier_c.'\s*(\s*'.in_bracket_c.')' )
+	if ! empty( mlist )
+		let fun_name   = mlist[2]
+		let return_str = mlist[1]
+		let param_str  = mlist[3]
+	endif
+	"
+	" multiple returns
+	let mlist = matchlist( tail, '^\[\s*'.in_bracket_c.'\]\s*=\s*'.identifier_c.'\s*(\s*'.in_bracket_c.')' )
+	if ! empty( mlist )
+		let fun_name   = mlist[2]
+		let return_str = mlist[1]
+		let param_str  = mlist[3]
+	endif
+	"
+	let param_str  = substitute ( param_str, '\s*$', '', '' )
+	let param_list = split ( param_str, '\s*,\s*' )
+	"
+	let return_str  = substitute ( return_str, '\s*$', '', '' )
+	let return_list = split ( return_str, '\s*,\s*' )
+	"
+	if empty ( fun_name )
+		return []
+	else
+		return [ fun_name, return_list, param_list ]
+	endif
+	"
+endfunction    " ----------  end of function s:GetFunctionParameters  ----------
+"
+"-------------------------------------------------------------------------------
+" Matlab_FunctionComment : Automatically comment a function.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Matlab_FunctionComment() range
+	"
+	" TODO: varargin, varargout
+	" TODO: multiple lines possible?
+	" TODO: remove '...' operator
+	let	linestring = getline(a:firstline)
+	for i in range(a:firstline+1,a:lastline)
+		let	linestring = linestring.' '.getline(i)
+	endfor
+	"
+	let res_list = s:GetFunctionParameters( linestring )
+	"
+	if empty( res_list )
+		return s:ImportantMsg ( 'No function found.' )
+	endif
+	"
+	" get all the parts
+	let [ fun_name, return_list, param_list ] = res_list
+	let base_name = mmtemplates#core#ExpandText ( g:Matlab_Templates, '|BASENAME|' )
+	"
+	" description of the file or another function?
+	if fun_name == base_name
+		call mmtemplates#core#InsertTemplate ( g:Matlab_Templates, 'Comments.file description',
+					\ '|PARAMETERS|', param_list, '|RETURNS|', return_list )
+	else
+		call mmtemplates#core#InsertTemplate ( g:Matlab_Templates, 'Comments.function description',
+					\ '|FUNCTION_NAME|', fun_name, '|PARAMETERS|', param_list, '|RETURNS|', return_list )
+	endif
+	"
+endfunction    " ----------  end of function Matlab_FunctionComment  ----------
+"
+"-------------------------------------------------------------------------------
+" Matlab_CheckCode : Use mlint to check the code.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Matlab_CheckCode() range
+	"
+	silent exe 'update'   | " write source file if necessary
+	cclose
+	"
+	" assemble all the information
+	let currentdir          = getcwd()
+	let currentbuffer       = bufname('%')
+	let fullname            = currentdir.'/'.currentbuffer
+	let fullname            = shellescape( fullname, 1 )
+	"
+	" prepare and check the executable
+	if ! executable( s:Matlab_MlintExecutable )
+		return s:ErrorMsg (
+					\ 'Command "'.mlint.'" not found. Not configured correctly?',
+					\ 'Further information: :help matlabsupport-config-mlint'
+		)
+	endif
+	"
+	" call 'mlint' and process the output (new version)
+	let errors = system ( s:Matlab_MlintExecutable.' -id '.fullname )
+	"
+	if empty ( errors )
+		call s:ImportantMsg ( 'No warnings.' )
+	else
+		let errorf_saved = &g:errorformat
+		"
+		exe 'set errorformat='
+					\ .'%-PFILE\ %f,%-QFILEEND,'
+					\ .'L\ %l\ (C\ %c):\ %m,L\ %l\ (C\ %c-%*\\d):\ %m'
+		let errors = 'FILE '.currentbuffer."\n".errors.'FILEEND'
+		silent exe 'cexpr errors'
+		"
+		exe 'set errorformat='.escape( errorf_saved, s:CmdLineEscChar )
+		"
+		botright cwindow
+		cc
+	endif
+	"
+endfunction    " ----------  end of function Matlab_CheckCode  ----------
+"
+"-------------------------------------------------------------------------------
+" Matlab_IgnoreWarning : Ignore the current mlint warning.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Matlab_IgnoreWarning() range
+	"
+	" the list of errors
+	let qf_list = getqflist ()
+	"
+	if empty ( qf_list )
+		return s:ImportantMsg ( 'No warnings.' )
+	endif
+	"
+	" assemble all the information
+	let my_buf  = bufnr ( '%' )
+	let my_line = line  ( '.' )
+	let my_col  = col   ( '.' )
+	let text    = ''
+	let type    = ''
+	"
+	" look for the right error
+	" number of errors on the line:
+	" - none        : abort
+	" - one         : continue with this error
+	" - two or more : the column must match as well
+	for error in qf_list
+		if error.valid == 0 || error.bufnr != my_buf || error.lnum != my_line
+			continue
+		endif
+		if error.col == my_col
+			let text = error.text
+			break
+		elseif empty ( text )
+			let text = error.text
+			continue
+		else
+			return s:ImportantMsg ( 'More than one warning for this line. Go to the correct location.' )
+		endif
+	endfor
+	"
+	if empty ( text )
+		return s:ImportantMsg ( 'No warning for this line.' )
+	endif
+	"
+	let type = matchstr ( text, '^\w\+' )
+	"
+	" append or add to the special comment
+	let line  = getline ( '.' )
+	let mlist = matchlist ( line, '%#ok\%(:\|<\)\([a-zA-Z,]\+\)>\?\s*$' )
+	if ! empty ( mlist )
+		" line contains %#ok, check if the error-code is contained as well
+		if -1 == match ( mlist[1], type )
+			exe ':.s/\(>\?\)\s*$/,'.type.'\1'
+		else
+			call s:ImportantMsg ( 'Error is already being ignored.' )
+		endif
+	else
+		" append %#ok:...
+		exe ':.s/\s*$/ %#ok<'.type.'>'
+	endif
+	"
+	" reposition the cursor
+	call cursor ( my_line, my_col )
+	"
+endfunction    " ----------  end of function Matlab_IgnoreWarning  ----------
+"
+"-------------------------------------------------------------------------------
+" s:SetupTemplates : Initial loading of the templates.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! s:SetupTemplates()
+	"
+	"-------------------------------------------------------------------------------
+	" setup template library
+	"-------------------------------------------------------------------------------
+	let g:Matlab_Templates = mmtemplates#core#NewLibrary ()
+	"
+	" mapleader
+	if empty ( g:Matlab_MapLeader )
+		call mmtemplates#core#Resource ( g:Matlab_Templates, 'set', 'property', 'Templates::Mapleader', '\' )
+	else
+		call mmtemplates#core#Resource ( g:Matlab_Templates, 'set', 'property', 'Templates::Mapleader', g:Matlab_MapLeader )
+	endif
+	"
+	" map: choose style
+	call mmtemplates#core#Resource ( g:Matlab_Templates, 'set', 'property', 'Templates::ChooseStyle::Map', 'nts' )
+	"
+	" syntax: comments
+	call mmtemplates#core#ChangeSyntax ( g:Matlab_Templates, 'comment', '§' )
+	"
+	"-------------------------------------------------------------------------------
+	" load template library
+	"-------------------------------------------------------------------------------
+	if s:installation == 'system'
+		call mmtemplates#core#ReadTemplates ( g:Matlab_Templates, 'load', s:Matlab_GlbTemplateFile )
+		"
+		if filereadable ( s:Matlab_LclTemplateFile )
+			call mmtemplates#core#ReadTemplates ( g:Matlab_Templates, 'load', s:Matlab_LclTemplateFile )
+		endif
+		"
+	elseif s:installation == 'local'
+		call mmtemplates#core#ReadTemplates ( g:Matlab_Templates, 'load', s:Matlab_LclTemplateFile )
+	endif
+endfunction    " ----------  end of function s:SetupTemplates  ----------
+"
+"-------------------------------------------------------------------------------
+" Matlab_HelpPlugin : Plug-in help.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Matlab_HelpPlugin ()
+	try
+		help matlab-support
+	catch
+		exe 'helptags '.s:plugin_dir.'/doc'
+		help matlab-support
+	endtry
+endfunction    " ----------  end of function Matlab_HelpPlugin  ----------
+"
+"-------------------------------------------------------------------------------
+" s:CreateMaps : Create additional maps.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! s:CreateMaps ()
+	"
+	"-------------------------------------------------------------------------------
+	" settings - local leader
+	"-------------------------------------------------------------------------------
+	if ! empty ( g:Matlab_MapLeader )
+		if exists ( 'g:maplocalleader' )
+			let ll_save = g:maplocalleader
+		endif
+		let g:maplocalleader = g:Matlab_MapLeader
+	endif
+	"
+	"-------------------------------------------------------------------------------
+	" comments
+	"-------------------------------------------------------------------------------
+	 noremap    <buffer>  <silent>  <LocalLeader>cc         :call Matlab_CodeComment()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cc    <Esc>:call Matlab_CodeComment()<CR>
+	 noremap    <buffer>  <silent>  <LocalLeader>cu         :call Matlab_CommentCode(0)<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cu    <Esc>:call Matlab_CommentCode(0)<CR>
+	 noremap    <buffer>  <silent>  <LocalLeader>ct         :call Matlab_CommentCode(1)<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>ct    <Esc>:call Matlab_CommentCode(1)<CR>
+	"
+	 noremap    <buffer>  <silent>  <LocalLeader>ca         :call Matlab_FunctionComment()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>ca    <Esc>:call Matlab_FunctionComment()<CR>
+	"
+	"-------------------------------------------------------------------------------
+	" templates - specials
+	"-------------------------------------------------------------------------------
+	"
+	nnoremap    <buffer>  <silent> <LocalLeader>ntl         :call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,-1)<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>ntl    <C-C>:call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,-1)<CR>
+	if s:installation == 'system'
+		nnoremap  <buffer>  <silent> <LocalLeader>ntg         :call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,1)<CR>
+		inoremap  <buffer>  <silent> <LocalLeader>ntg    <C-C>:call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,1)<CR>
+	endif
+	nnoremap    <buffer>  <silent> <LocalLeader>ntr         :call mmtemplates#core#ReadTemplates(g:Matlab_Templates,"reload","all")<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>ntr    <C-C>:call mmtemplates#core#ReadTemplates(g:Matlab_Templates,"reload","all")<CR>
+	nnoremap    <buffer>  <silent> <LocalLeader>nts         :call mmtemplates#core#ChooseStyle(g:Matlab_Templates,"!pick")<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>nts    <C-C>:call mmtemplates#core#ChooseStyle(g:Matlab_Templates,"!pick")<CR>
+	"
+	"-------------------------------------------------------------------------------
+	" code checker
+	"-------------------------------------------------------------------------------
+	 noremap    <buffer>  <silent>  <LocalLeader>rc         :call Matlab_CheckCode()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rc    <Esc>:call Matlab_CheckCode()<CR>
+	 noremap    <buffer>  <silent>  <LocalLeader>ri         :call Matlab_IgnoreWarning()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>ri    <Esc>:call Matlab_IgnoreWarning()<CR>
+	"
+	"-------------------------------------------------------------------------------
+	" settings
+	"-------------------------------------------------------------------------------
+	 noremap    <buffer>  <silent>  <LocalLeader>rs         :call Matlab_Settings()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rs    <Esc>:call Matlab_Settings()<CR>
+	"
+	"-------------------------------------------------------------------------------
+	" help
+	"-------------------------------------------------------------------------------
+	 noremap    <buffer>  <silent>  <LocalLeader>hs         :call Matlab_HelpPlugin()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>hs    <Esc>:call Matlab_HelpPlugin()<CR>
+	"
+	"-------------------------------------------------------------------------------
+	" settings - reset local leader
+	"-------------------------------------------------------------------------------
+	if ! empty ( g:Matlab_MapLeader )
+		if exists ( 'll_save' )
+			let g:maplocalleader = ll_save
+		else
+			unlet g:maplocalleader
+		endif
+	endif
+	"
+	"-------------------------------------------------------------------------------
+	" templates
+	"-------------------------------------------------------------------------------
+	call mmtemplates#core#CreateMaps ( 'g:Matlab_Templates', g:Matlab_MapLeader, 'do_jump_map' )
+	"
+endfunction    " ----------  end of function s:CreateMaps  ----------
+"
+"-------------------------------------------------------------------------------
+" s:InitMenus : Initialize menus.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! s:InitMenus()
+	"
+	if ! has ( 'menu' )
+		return
+	endif
+	"
+	" Preparation
+	call mmtemplates#core#CreateMenus ( 'g:Matlab_Templates', s:Matlab_RootMenu, 'do_reset' )
+	"
+	" get the mapleader (correctly escaped)
+	let [ esc_mapl, err ] = mmtemplates#core#Resource ( g:Matlab_Templates, 'escaped_mapleader' )
+	"
+	exe 'amenu '.s:Matlab_RootMenu.'.Matlab  <Nop>'
+	exe 'amenu '.s:Matlab_RootMenu.'.-Sep00- <Nop>'
+	"
+	"-------------------------------------------------------------------------------
+	" menu headers
+	"-------------------------------------------------------------------------------
+	"
+	call mmtemplates#core#CreateMenus ( 'g:Matlab_Templates', s:Matlab_RootMenu, 'sub_menu', '&Comments', 'priority', 500 )
+	" the other, automatically created menus go here; their priority is the standard priority 500
+	call mmtemplates#core#CreateMenus ( 'g:Matlab_Templates', s:Matlab_RootMenu, 'sub_menu', 'S&nippets', 'priority', 600 )
+	call mmtemplates#core#CreateMenus ( 'g:Matlab_Templates', s:Matlab_RootMenu, 'sub_menu', '&Run'     , 'priority', 700 )
+	call mmtemplates#core#CreateMenus ( 'g:Matlab_Templates', s:Matlab_RootMenu, 'sub_menu', '&Help'    , 'priority', 800 )
+	"
+	"-------------------------------------------------------------------------------
+	" comments
+	"-------------------------------------------------------------------------------
+	"
+	let ahead = 'amenu '.s:Matlab_RootMenu.'.Comments.'
+	let vhead = 'vmenu '.s:Matlab_RootMenu.'.Comments.'
+	"
+	exe ahead.'&comment<TAB>'.esc_mapl.'cc    :call Matlab_CodeComment()<CR>'
+	exe vhead.'&comment<TAB>'.esc_mapl.'cc    :call Matlab_CodeComment()<CR>'
+	exe ahead.'&uncomment<TAB>'.esc_mapl.'cu  :call Matlab_CommentCode(0)<CR>'
+	exe vhead.'&uncomment<TAB>'.esc_mapl.'cu  :call Matlab_CommentCode(0)<CR>'
+	exe ahead.'&toggle<TAB>'.esc_mapl.'ct     :call Matlab_CommentCode(1)<CR>'
+	exe vhead.'&toggle<TAB>'.esc_mapl.'ct     :call Matlab_CommentCode(1)<CR>'
+	exe ahead.'-Sep01-                        :'
+	"
+	exe ahead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca       :call Matlab_FunctionComment()<CR>'
+	exe vhead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca  <Esc>:call Matlab_FunctionComment()<CR>'
+	exe ahead.'-Sep02-                                                 :'
+	"
+	"-------------------------------------------------------------------------------
+	" templates
+	"-------------------------------------------------------------------------------
+	"
+	call mmtemplates#core#CreateMenus ( 'g:Matlab_Templates', s:Matlab_RootMenu, 'do_templates' )
+	"
+	"-------------------------------------------------------------------------------
+	" snippets
+	"-------------------------------------------------------------------------------
+	"
+	let ahead = 'amenu '.s:Matlab_RootMenu.'.Snippets.'
+	let vhead = 'vmenu '.s:Matlab_RootMenu.'.Snippets.'
+	"
+	" :TODO:24.11.2013 16:04:WM: snippets
+	"
+	exe ahead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntl      :call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,-1)<CR>'
+	if s:installation == 'system'
+		exe ahead.'edit\ &global\ templates<Tab>'.esc_mapl.'ntg   :call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,1)<CR>'
+	endif
+	exe ahead.'reread\ &templates<Tab>'.esc_mapl.'ntr           :call mmtemplates#core#ReadTemplates(g:Matlab_Templates,"reload","all")<CR>'
+	"
+	" styles
+	call mmtemplates#core#CreateMenus ( 'g:Matlab_Templates', s:Matlab_RootMenu, 'do_styles',
+				\ 'specials_menu', 'Snippets'	)
+	"
+	"-------------------------------------------------------------------------------
+	" run
+	"-------------------------------------------------------------------------------
+	"
+	let ahead = 'amenu '.s:Matlab_RootMenu.'.Run.'
+	let vhead = 'vmenu '.s:Matlab_RootMenu.'.Run.'
+	"
+	exe ahead.'&check\ code<TAB>'.esc_mapl.'rc      :call Matlab_CheckCode()<CR>'
+	exe ahead.'&ignore\ warning<TAB>'.esc_mapl.'ri  :call Matlab_IgnoreWarning()<CR>'
+	exe ahead.'-Sep01-                              :'
+	"
+	exe ahead.'&settings<TAB>'.esc_mapl.'rs  :call Matlab_Settings()<CR>'
+	"
+	"-------------------------------------------------------------------------------
+	" help
+	"-------------------------------------------------------------------------------
+	"
+	let ahead = 'amenu '.s:Matlab_RootMenu.'.Help.'
+	let vhead = 'vmenu '.s:Matlab_RootMenu.'.Help.'
+	"
+	exe ahead.'-Sep01-                                     :'
+	exe ahead.'&help\ (Matlab-Support)<TAB>'.esc_mapl.'hs  :call Matlab_HelpPlugin()<CR>'
+	"
+endfunction    " ----------  end of function s:InitMenus  ----------
+"
+"-------------------------------------------------------------------------------
+" s:ToolMenu : Add or remove tool menu entries.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! s:ToolMenu( action )
+	"
+	if ! has ( 'menu' )
+		return
+	endif
+	"
+	if a:action == 'setup'
+		amenu   <silent> 40.1000 &Tools.-SEP100- :
+		amenu   <silent> 40.1140 &Tools.Load\ Matlab\ Support   :call Matlab_AddMenus()<CR>
+	elseif a:action == 'loading'
+		aunmenu <silent> &Tools.Load\ Matlab\ Support
+		amenu   <silent> 40.1140 &Tools.Unload\ Matlab\ Support :call Matlab_RemoveMenus()<CR>
+	elseif a:action == 'unloading'
+		aunmenu <silent> &Tools.Unload\ Matlab\ Support
+		amenu   <silent> 40.1140 &Tools.Load\ Matlab\ Support   :call Matlab_AddMenus()<CR>
+	endif
+	"
+endfunction    " ----------  end of function s:ToolMenu  ----------
+"
+"-------------------------------------------------------------------------------
+" Matlab_AddMenus : Add menus.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Matlab_AddMenus()
+	if s:MenuVisible == 0
+		" make sure the templates are loaded
+		call s:SetupTemplates ()
+		" initialize if not existing
+		call s:ToolMenu ( 'loading' )
+		call s:InitMenus ()
+		" the menu is now visible
+		let s:MenuVisible = 1
+	endif
+endfunction    " ----------  end of function Matlab_AddMenus  ----------
+"
+"-------------------------------------------------------------------------------
+" Matlab_RemoveMenus : Remove menus.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Matlab_RemoveMenus()
+	if s:MenuVisible == 1
+		" destroy if visible
+		call s:ToolMenu ( 'unloading' )
+		if has ( 'menu' )
+			exe 'aunmenu <silent> '.s:Matlab_RootMenu
+		endif
+		" the menu is now invisible
+		let s:MenuVisible = 0
+	endif
+endfunction    " ----------  end of function Matlab_RemoveMenus  ----------
+"
+"-------------------------------------------------------------------------------
+" Matlab_Settings : Print the settings on the command line.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Matlab_Settings()
+	"
+	let [ templ_style, msg ] = mmtemplates#core#Resource( g:Matlab_Templates, 'style' )
+	"
+	if executable( s:Matlab_MlintExecutable ) | let mlint_status = 'yes'
+	else                                      | let mlint_status = 'no'  | endif
+	"
+	let	txt = " Matlab-Support settings\n\n"
+				\ .'                   author :  "'.mmtemplates#core#ExpandText( g:Matlab_Templates, '|AUTHOR|'       )."\"\n"
+				\ .'                authorref :  "'.mmtemplates#core#ExpandText( g:Matlab_Templates, '|AUTHORREF|'    )."\"\n"
+				\ .'             organization :  "'.mmtemplates#core#ExpandText( g:Matlab_Templates, '|ORGANIZATION|' )."\"\n"
+				\ .'                    email :  "'.mmtemplates#core#ExpandText( g:Matlab_Templates, '|EMAIL|'        )."\"\n"
+				\ .'         copyright holder :  "'.mmtemplates#core#ExpandText( g:Matlab_Templates, '|COPYRIGHT|'    )."\"\n"
+				\ .'           template style :  "'.templ_style."\"\n"
+				\ .'      plugin installation :  "'.s:installation."\"\n"
+	if s:installation == 'system'
+		let txt .= '     global template file :  '.s:Matlab_GlbTemplateFile."\n"
+		if filereadable( s:Matlab_LclTemplateFile )
+			let txt .= '      local template file :  '.s:Matlab_LclTemplateFile."\n"
+		else
+			let txt .= '      local template file :  <none>'."\n"
+		endif
+	else
+		let txt .= '      local template file :  '.s:Matlab_LclTemplateFile."\n"
+	endif
+	let txt .=
+				\  '       mlint path and exe :  '.s:Matlab_MlintExecutable."\n"
+				\ .'         mlint executable :  <'.mlint_status.">\n"
+				\ .'    using template engine :  Version '.g:Templates_Version." by Wolfgang Mehner\n"
+				\ ."\n"
+				\ ."________________________________________________________________________________\n"
+				\ ." Matlab-Support, Version ".g:Matlab_Version." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
+	echo txt
+endfunction    " ----------  end of function Matlab_Settings  ----------
+"
+"-------------------------------------------------------------------------------
+" Setup: Templates and menus.   {{{1
+"-------------------------------------------------------------------------------
+"
+" tool menu entry
+call s:ToolMenu ( 'setup' )
+"
+" load the templates right now?
+if s:Matlab_LoadMenus == 'startup'
+	call Matlab_AddMenus ()
+endif
+"
+if has( 'autocmd' )
+	autocmd FileType *
+				\	if &filetype == 'matlab' && ! exists( 'g:Matlab_Templates' ) |
+				\		if s:Matlab_LoadMenus == 'auto' | call Matlab_AddMenus () |
+				\		else                            | call s:SetupTemplates () |
+				\		endif |
+				\	endif
+	autocmd FileType *
+				\	if &filetype == 'matlab' |
+				\		call s:CreateMaps() |
+				\	endif
+endif
+" }}}1
+"-------------------------------------------------------------------------------
+"
+" =====================================================================================
+"  vim: foldmethod=marker

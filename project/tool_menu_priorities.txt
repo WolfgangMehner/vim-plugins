@@ -10,6 +10,7 @@ Tools.C		40.1030
 Tools.Git	40.1080
 Tools.Latex	40.1110
 Tools.Lua	40.1122
+Tools.Matlab	40.1140
 Tools.Perl	40.1160
 Tools.Vim	40.1170
 

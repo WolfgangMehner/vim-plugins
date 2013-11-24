@@ -1,0 +1,23 @@
+§ =============================================================
+§  Idioms
+§ =============================================================
+
+== Idioms.primary function == start, map:ip, sc:p ==
+|Insert( 'Idioms.function', '<CURSOR>', '|FUNCTION_NAME|', '|BASENAME|' )|
+== Idioms.function == below, map:if, sc:f ==
+function <CURSOR> = |?FUNCTION_NAME| ( varargin )
+    <SPLIT>
+end
+== ENDTEMPLATE ==
+
+SetPath( 'matlab_path', './' )
+
+== Idioms.add to MATLAB path == below, map:im, sc:m ==
+path ( path, '<CURSOR>' );
+== Idioms.add to path, pick == below, map:imp, sc:m ==
+|PickFile( 'select a directory', 'matlab_path' )|
+path ( path, '|PATH|' );
+== ENDTEMPLATE ==
+
+§--------------------------------------------------------------
+§ vim:et:sw=4:ts=4:

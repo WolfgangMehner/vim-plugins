@@ -1,7 +1,7 @@
 README for git-support.vim (Version 0.9.1pre) / June 7 2013
 
   *  INSTALLATION
-  *  RELEASE NOTES 
+  *  RELEASE NOTES
   *  FILES
   *  CREDITS
 
@@ -100,6 +100,7 @@ There are a lot of features and options which can be used and influenced:
   *  the Git executable
   *  removing the Git menu
   *  the syntax highlighting
+  *  the behavior of various commands
 
 Look at the Git-Support help with:
 
