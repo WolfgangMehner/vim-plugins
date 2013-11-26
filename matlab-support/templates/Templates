@@ -22,14 +22,12 @@ MenuShortcut( 'Comments',   'c' )
 MenuShortcut( 'Statements', 's' )
 MenuShortcut( 'Idioms',     'i' )
 MenuShortcut( 'Classes',    'l' )
-MenuShortcut( 'Exceptions', 'e' )
 MenuShortcut( 'Help',       'h' )
 
 IncludeFile( 'comments.templates' )
 IncludeFile( 'statements.templates' )
 IncludeFile( 'idioms.templates' )
 IncludeFile( 'classes.templates' )
-IncludeFile( 'exceptions.templates' )
 
 § =============================================================
 §  Help

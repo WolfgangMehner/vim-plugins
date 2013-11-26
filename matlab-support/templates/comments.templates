@@ -59,22 +59,21 @@ MenuShortcut( 'Comments.Lists', 'l' )
     'NOT REACHED',
     'REMAINS TO BE IMPLEMENTED',
 == LIST: comments_macros == hash ==
-    'Author'       : '|AUTHOR|',
-    'AuthorRef'    : '|AUTHORREF|',
-    'Organization' : '|ORGANIZATION|',
-    'Copyright'    : '|COPYRIGHT|',
-    'Email'        : '|EMAIL|',
+    'author'       : '|AUTHOR|',
+    'authorRef'    : '|AUTHORREF|',
+    'organization' : '|ORGANIZATION|',
+    'copyright'    : '|COPYRIGHT|',
+    'email'        : '|EMAIL|',
 
+    'path'       : '|PATH|',
+    'filename'   : '|FILENAME|',
+    'basename'   : '|BASENAME|',
+    'basename:u' : '|BASENAME:u|',
+    'suffix'     : '|SUFFIX|',
 
-    'Path'       : '|PATH|',
-    'Filename'   : '|FILENAME|',
-    'Basename'   : '|BASENAME|',
-    'Basename:u' : '|BASENAME:u|',
-    'Suffix'     : '|SUFFIX|',
-
-    'Date' : '|DATE|',
-    'Time' : '|TIME|',
-    'Year' : '|YEAR|',
+    'date' : '|DATE|',
+    'time' : '|TIME|',
+    'year' : '|YEAR|',
 == ENDLIST ==
 
 § -------------------------------------------------------------
@@ -90,7 +89,7 @@ MenuShortcut( 'Comments.Lists', 'l' )
 |PICK|<CURSOR>
 == Comments.date == insert, map:cd, sc:d ==
 |DATE|
-== Comments.date time == insert, sc:t ==
+== Comments.date time == insert ==
 |DATE| |TIME|
 == ENDTEMPLATE ==
 

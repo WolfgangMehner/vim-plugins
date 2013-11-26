@@ -383,27 +383,31 @@ function! Matlab_CheckCode() range
 	" prepare and check the executable
 	if ! executable( s:Matlab_MlintExecutable )
 		return s:ErrorMsg (
-					\ 'Command "'.mlint.'" not found. Not configured correctly?',
-					\ 'Further information: :help matlabsupport-config-mlint'
-		)
+					\ 'Command "'.s:Matlab_MlintExecutable.'" not found. Not configured correctly?',
+					\ 'Further information: :help matlabsupport-config-mlint' )
 	endif
 	"
 	" call 'mlint' and process the output (new version)
-	let errors = system ( s:Matlab_MlintExecutable.' -id '.fullname )
+	let errors_mlint = system ( s:Matlab_MlintExecutable.' -id '.fullname )
 	"
-	if empty ( errors )
+	if empty( errors_mlint )
+		let errors = ''
+	else
+		let errors = 'FILE '.currentbuffer."\n".errors_mlint.'FILEEND'
+	endif
+	"
+	let errorf_saved = &g:errorformat
+	"
+	exe 'set errorformat='
+				\ .'%-PFILE\ %f,%-QFILEEND,'
+				\ .'L\ %l\ (C\ %c):\ %m,L\ %l\ (C\ %c-%*\\d):\ %m'
+	silent exe 'cexpr errors'
+	"
+	exe 'set errorformat='.escape( errorf_saved, s:CmdLineEscChar )
+	"
+	if empty ( errors_mlint )
 		call s:ImportantMsg ( 'No warnings.' )
 	else
-		let errorf_saved = &g:errorformat
-		"
-		exe 'set errorformat='
-					\ .'%-PFILE\ %f,%-QFILEEND,'
-					\ .'L\ %l\ (C\ %c):\ %m,L\ %l\ (C\ %c-%*\\d):\ %m'
-		let errors = 'FILE '.currentbuffer."\n".errors.'FILEEND'
-		silent exe 'cexpr errors'
-		"
-		exe 'set errorformat='.escape( errorf_saved, s:CmdLineEscChar )
-		"
 		botright cwindow
 		cc
 	endif
@@ -435,23 +439,30 @@ function! Matlab_IgnoreWarning() range
 	" - none        : abort
 	" - one         : continue with this error
 	" - two or more : the column must match as well
+	let err_on_line = 0
+	"
 	for error in qf_list
-		if error.valid == 0 || error.bufnr != my_buf || error.lnum != my_line
+		" ignore invalid errors, errors on other lines
+		if ! error.valid || error.bufnr != my_buf || error.lnum != my_line
 			continue
 		endif
+		"
+		" matches the location precisely
 		if error.col == my_col
 			let text = error.text
+			let err_on_line = 1
 			break
-		elseif empty ( text )
-			let text = error.text
-			continue
-		else
-			return s:ImportantMsg ( 'More than one warning for this line. Go to the correct location.' )
 		endif
+		"
+		let text = error.text
+		let err_on_line += 1
+		continue
 	endfor
 	"
 	if empty ( text )
 		return s:ImportantMsg ( 'No warning for this line.' )
+	elseif err_on_line > 1
+		return s:ImportantMsg ( 'There is more than one warning for this line. Go to the correct location.' )
 	endif
 	"
 	let type = matchstr ( text, '^\w\+' )
@@ -643,8 +654,8 @@ function! s:InitMenus()
 	" comments
 	"-------------------------------------------------------------------------------
 	"
-	let ahead = 'amenu '.s:Matlab_RootMenu.'.Comments.'
-	let vhead = 'vmenu '.s:Matlab_RootMenu.'.Comments.'
+	let ahead = 'amenu <silent> '.s:Matlab_RootMenu.'.Comments.'
+	let vhead = 'vmenu <silent> '.s:Matlab_RootMenu.'.Comments.'
 	"
 	exe ahead.'&comment<TAB>'.esc_mapl.'cc    :call Matlab_CodeComment()<CR>'
 	exe vhead.'&comment<TAB>'.esc_mapl.'cc    :call Matlab_CodeComment()<CR>'
@@ -668,8 +679,8 @@ function! s:InitMenus()
 	" snippets
 	"-------------------------------------------------------------------------------
 	"
-	let ahead = 'amenu '.s:Matlab_RootMenu.'.Snippets.'
-	let vhead = 'vmenu '.s:Matlab_RootMenu.'.Snippets.'
+	let ahead = 'amenu <silent> '.s:Matlab_RootMenu.'.Snippets.'
+	let vhead = 'vmenu <silent> '.s:Matlab_RootMenu.'.Snippets.'
 	"
 	" :TODO:24.11.2013 16:04:WM: snippets
 	"
@@ -687,8 +698,8 @@ function! s:InitMenus()
 	" run
 	"-------------------------------------------------------------------------------
 	"
-	let ahead = 'amenu '.s:Matlab_RootMenu.'.Run.'
-	let vhead = 'vmenu '.s:Matlab_RootMenu.'.Run.'
+	let ahead = 'amenu <silent> '.s:Matlab_RootMenu.'.Run.'
+	let vhead = 'vmenu <silent> '.s:Matlab_RootMenu.'.Run.'
 	"
 	exe ahead.'&check\ code<TAB>'.esc_mapl.'rc      :call Matlab_CheckCode()<CR>'
 	exe ahead.'&ignore\ warning<TAB>'.esc_mapl.'ri  :call Matlab_IgnoreWarning()<CR>'
@@ -700,8 +711,8 @@ function! s:InitMenus()
 	" help
 	"-------------------------------------------------------------------------------
 	"
-	let ahead = 'amenu '.s:Matlab_RootMenu.'.Help.'
-	let vhead = 'vmenu '.s:Matlab_RootMenu.'.Help.'
+	let ahead = 'amenu <silent> '.s:Matlab_RootMenu.'.Help.'
+	let vhead = 'vmenu <silent> '.s:Matlab_RootMenu.'.Help.'
 	"
 	exe ahead.'-Sep01-                                     :'
 	exe ahead.'&help\ (Matlab-Support)<TAB>'.esc_mapl.'hs  :call Matlab_HelpPlugin()<CR>'
@@ -809,7 +820,7 @@ endfunction    " ----------  end of function Matlab_Settings  ----------
 " tool menu entry
 call s:ToolMenu ( 'setup' )
 "
-" load the templates right now?
+" load the menu right now?
 if s:Matlab_LoadMenus == 'startup'
 	call Matlab_AddMenus ()
 endif

@@ -11,8 +11,8 @@ for i = <CURSOR>
     <SPLIT>{-LOOP_BODY-}
 end
 == Statements.for, vector == below, map:sv, sc:v ==
-for i = 1:length ( |?VECTOR| )
-    <CURSOR><SPLIT>
+for i = 1:length ( <CURSOR> )
+    <SPLIT>{-LOOP_BODY-}
 end
 == Statements.while == below, map:sw, sc:w ==
 while <CURSOR>
@@ -23,6 +23,8 @@ end
 § -------------------------------------------------------------
 §  If-Then-Else
 § -------------------------------------------------------------
+
+== SEP: Statements.sep_if ==
 
 == Statements.if, end == below, map:sif, sc:i ==
 if <CURSOR> 
@@ -45,6 +47,8 @@ else
 § -------------------------------------------------------------
 §  Switch
 § -------------------------------------------------------------
+
+== SEP: Statements.sep_switch ==
 
 == Statements.switch == below, map:ss, sc:s ==
 switch <CURSOR>

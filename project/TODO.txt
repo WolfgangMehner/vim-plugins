@@ -17,6 +17,11 @@ C/C++:
   * Templates for "overload".
   * Append "short, aftermember" to several lines.
 
+Git:
+- Current method for jumping to Git buffers does not work for tabs.
+- How about jumping to windows?
+- Give directory as an argument to ':GitStatus'.
+
 LaTeX:
 - (FM) Documentation: Menu 'Beamer' missing.
 - (FM) Documentation: Menu 'Help' missing.

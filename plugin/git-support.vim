@@ -4,6 +4,8 @@
 " 
 "   Description:  Provides access to Git's functionality from inside Vim.
 " 
+"                 See help file gitsupport.txt .
+"
 "   VIM Version:  7.0+
 "        Author:  Wolfgang Mehner, wolfgang-mehner@web.de
 "  Organization:  
@@ -28,10 +30,10 @@
 "
 " need at least 7.0
 if v:version < 700
-  echohl WarningMsg
+	echohl WarningMsg
 	echo 'The plugin git-support.vim needs Vim version >= 7.'
 	echohl None
-  finish
+	finish
 endif
 "
 " prevent duplicate loading
@@ -2873,6 +2875,11 @@ endfunction    " ----------  end of function s:InitMenus  ----------
 "-------------------------------------------------------------------------------
 "
 function! s:ToolMenu( action )
+	"
+	if ! has ( 'menu' )
+		return
+	endif
+	"
 	if a:action == 'setup'
 		amenu   <silent> 40.1000 &Tools.-SEP100- :
 		amenu   <silent> 40.1080 &Tools.Load\ Git\ Support   :call Git_AddMenus()<CR>
@@ -2883,6 +2890,7 @@ function! s:ToolMenu( action )
 		aunmenu <silent> &Tools.Unload\ Git\ Support
 		amenu   <silent> 40.1080 &Tools.Load\ Git\ Support   :call Git_AddMenus()<CR>
 	endif
+	"
 endfunction    " ----------  end of function s:ToolMenu  ----------
 "
 "-------------------------------------------------------------------------------
@@ -2890,7 +2898,7 @@ endfunction    " ----------  end of function s:ToolMenu  ----------
 "-------------------------------------------------------------------------------
 "
 function! Git_AddMenus()
-	if s:MenuVisible == 0 && has ( 'menu' )
+	if s:MenuVisible == 0
 		" initialize if not existing
 		call s:ToolMenu ( 'loading' )
 		call s:InitMenus ()
@@ -2904,10 +2912,12 @@ endfunction    " ----------  end of function Git_AddMenus  ----------
 "-------------------------------------------------------------------------------
 "
 function! Git_RemoveMenus()
-	if s:MenuVisible == 1 && has ( 'menu' )
+	if s:MenuVisible == 1
 		" destroy if visible
 		call s:ToolMenu ( 'unloading' )
-		exe 'aunmenu <silent> '.s:Git_RootMenu
+		if has ( 'menu' )
+			exe 'aunmenu <silent> '.s:Git_RootMenu
+		endif
 		" the menu is now invisible
 		let s:MenuVisible = 0
 	endif
@@ -2918,16 +2928,14 @@ endfunction    " ----------  end of function Git_RemoveMenus  ----------
 "-------------------------------------------------------------------------------
 "
 " tool menu entry
-if has ( 'menu' )
-	call s:ToolMenu ( 'setup' )
-endif
+call s:ToolMenu ( 'setup' )
 "
-" load the menus right now?
+" load the menu right now?
 if s:Git_LoadMenus == 'yes'
 	call Git_AddMenus ()
 endif
-"
 " }}}1
+"-------------------------------------------------------------------------------
 "
 " =====================================================================================
 "  vim: foldmethod=marker
