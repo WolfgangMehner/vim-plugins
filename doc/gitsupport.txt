@@ -807,6 +807,13 @@ command contains the <CURSOR> tag instead, the command will be shown on the
 command line, with the cursor at that position. Now the user can configure the
 call before executing it.
 
+Furthermore, <WORD> is replaced with the |word| under the cursor (|<cword>| or
+|<cWORD>| can be used as well). The tag <FILE> is replaced with the name of the
+current file.
+
+The file "git-support/rc/additions.vimrc" contains the standard value for
+'g:Git_CustomMenu', as a basis for customization.
+
 ==============================================================================
 6.  CONFIGURATION                                   *gitsupport-configuration*
 ==============================================================================
@@ -949,23 +956,33 @@ A.  TROUBLESHOOTING - KNOWN ISSUES                *gitsupport-troubleshooting*
 ==============================================================================
 
 * How can I see what was loaded?
-	- Use ':scriptnames' from the Vim command line.
+  - Use ':scriptnames' from the Vim command line.
 
 * git is not running.
-	- Is "git" executable from the command line?
-	- Is the $PATH variable set correctly?
-	- Are the settings correct? See:
-			:help |gitsupport-config-executable|
+  - Is "git" executable from the command line?
+  - Is the $PATH variable set correctly?
+  - Are the settings correct? See:
+      :help |gitsupport-config-executable|
 
 * Windows: When entered on the Vim command line, commands containing filenames
-	as arguments cause errors such as "... file not found ...".
-	- This may happen if filenames contain special characters such as spaces.
-		The Vim command line escapes those differently then Windows expects them
-		to be escaped.
-	- However, a filename containing spaces can always be escape using quotes:
-			:GitAdd "help 1.txt"
-	- If you already are in the corresponding buffer, simply use:
-			:GitAdd
+  as arguments cause errors such as "... file not found ...".
+  - This may happen if filenames contain special characters such as spaces.
+    The Vim command line escapes those differently then Windows expects them
+    to be escaped.
+  - However, a filename containing spaces can always be escape using quotes:
+      :GitAdd "help 1.txt"
+  - If you already are in the corresponding buffer, simply use:
+      :GitAdd
+
+------------------------------------------------------------------------------
+
+* :GitBlame does not work correctly when the visual area consists only of the
+  first line.
+  - This seems to be a weakness with Vim's support for ranges. At least I
+    could not find a way around this.
+  - Workaround: Run :GitBlame on the first two lines.
+  - The usefulness of :GitBlame supporting ranges by far outweighs this
+    downside, in my opinion.
 
 ==============================================================================
 B.  RELEASE NOTES - CHANGE LOG                      *gitsupport-release-notes*

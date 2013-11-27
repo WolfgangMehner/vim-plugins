@@ -18,9 +18,16 @@ C/C++:
   * Append "short, aftermember" to several lines.
 
 Git:
-- Current method for jumping to Git buffers does not work for tabs.
-- How about jumping to windows?
-- Give directory as an argument to ':GitStatus'.
+- (WM) Current method for jumping to Git buffers does not work for tabs.
+  * (DONE) Open the buffer in a new window.
+  * Optionally: Jump across tab pages.
+- (WM) How about jumping to windows?
+  * (DONE) Open the buffer in a new window.
+  * Optionally: Jump across tab pages.
+- (WM) Add more suggestions for custom menu entries to 's:Git_CustomMenu'.
+- (WM) Add current custom menu entries to documentation and/or "git-support/rc/",
+  as a starting point for customization.
+- (WM) Give directory as an argument to ':GitStatus'.
 
 LaTeX:
 - (FM) Documentation: Menu 'Beamer' missing.

@@ -384,6 +384,9 @@ function! s:GenerateCustomMenu ( prefix, data )
 			let cmd = substitute ( cmd, '<EXECUTE>$', '<CR>', '' )
 		endif
 		"
+		let cmd = substitute ( cmd, '<WORD>', '<cword>', 'g' )
+		let cmd = substitute ( cmd, '<FILE>', '%',       'g' )
+		"
 		exe 'amenu '.silent.entry.' '.cmd
 	endfor
 	"
@@ -446,6 +449,7 @@ endfunction    " ----------  end of function GitS_CmdlineComplete  ----------
 " Modul setup.   {{{1
 "-------------------------------------------------------------------------------
 "
+"-------------------------------------------------------------------------------
 " command lists, help topics   {{{2
 "
 let s:GitCommands = [
@@ -515,8 +519,16 @@ if ! exists ( 's:MenuVisible' )
 endif
 "
 let s:Git_CustomMenu = [
-			\ [ '&log, grep commit msg..', ':GitLog', ':GitLog -i --grep="<CURSOR>"' ],
-			\ [ '&log, grep diff output',  ':GitLog', ':GitLog -p -S "<CURSOR>"' ],
+			\ [ '&grep, word under cursor',  ':GitGrepTop', ':GitGrepTop <WORD><EXECUTE>' ],
+			\ [ '&grep, version x..y',       ':GitGrepTop', ':GitGrepTop -i "Version[^[:digit:]]\+<CURSOR>"' ],
+			\ [ '-SEP1-',                    '',            '' ],
+			\ [ '&log, grep commit msg..',   ':GitLog',     ':GitLog -i --grep="<CURSOR>"' ],
+			\ [ '&log, grep diff word',      ':GitLog',     ':GitLog -p -S "<CURSOR>"' ],
+			\ [ '&log, grep diff line',      ':GitLog',     ':GitLog -p -G "<CURSOR>"' ],
+			\ [ '-SEP2-',                    '',            '' ],
+			\ [ '&merge, fast-forward only', ':GitMerge',   ':GitMerge --ff-only <CURSOR>' ],
+			\ [ '&merge, no commit',         ':GitMerge',   ':GitMerge --no-commit <CURSOR>' ],
+			\ [ '&merge, abort',             ':GitMerge',   ':GitMerge --abort<EXECUTE>' ],
 			\ ]
 "
 call s:GetGlobalSetting ( 'Git_Executable' )
@@ -654,6 +666,7 @@ highlight default link GitRemove      DiffDelete
 highlight default link GitConflict    DiffText
 "
 " }}}2
+"-------------------------------------------------------------------------------
 "
 "-------------------------------------------------------------------------------
 " s:Question : Ask the user a question.   {{{1
@@ -727,8 +740,8 @@ endfunction    " ----------  end of function s:Question  ----------
 "
 function! s:OpenGitBuffer ( buf_name )
 	"
-	" a buffer like this already exists?
-	if bufnr ( a:buf_name ) != -1
+	" a buffer like this already opened on the current tab page?
+	if bufwinnr ( a:buf_name ) != -1
 		" yes -> go to the window containing the buffer
 		exe bufwinnr( a:buf_name ).'wincmd w'
 		return 0
@@ -736,13 +749,19 @@ function! s:OpenGitBuffer ( buf_name )
 	"
 	" no -> open a new window
 	aboveleft new
-	silent exe 'file '.escape( a:buf_name, ' ' )
 	"
-	" settings of the new buffer
-	setlocal noswapfile
-	setlocal bufhidden=wipe
-	setlocal tabstop=8
-	setlocal foldmethod=syntax
+	" buffer exists elsewhere?
+	if bufnr ( a:buf_name ) != -1
+		" yes -> settings of the new buffer
+		silent exe 'edit #'.bufnr( a:buf_name )
+	else
+		" no -> settings of the new buffer
+		silent exe 'file '.escape( a:buf_name, ' ' )
+		setlocal noswapfile
+		setlocal bufhidden=wipe
+		setlocal tabstop=8
+		setlocal foldmethod=syntax
+	end
 	"
 	return 1
 endfunction    " ----------  end of function s:OpenGitBuffer  ----------
@@ -1135,7 +1154,7 @@ function! GitS_Blame( action, ... )
 			else              | let param = a:1
 			endif
 			"
-			if a:0 >= 3 && a:2 <= a:3
+			if a:0 >= 3 && a:2 <= a:3 && ! ( a:2 == 1 && a:3 == 1 )
 				let param = '-L '.a:2.','.a:3.' '.param
 			endif
 			"
@@ -1387,6 +1406,7 @@ function! GitS_Commit( mode, param, flags )
 		return
 	endif
 	"
+	" :TODO:27.11.2013 15:18:WM: use s:StandardRun
 	let text = system ( cmd )
 	"
 	if v:shell_error == 0 && text =~ '^\s*$'
@@ -2785,12 +2805,14 @@ function! s:InitMenus()
 	"
 	" Commands
 	let ahead = 'amenu '.s:Git_RootMenu.'.&git\ \.\.\..'
+	let vhead = 'vmenu '.s:Git_RootMenu.'.&git\ \.\.\..'
 	"
 	exe ahead.'Commands<TAB>Git :echo "This is a menu header!"<CR>'
 	exe ahead.'-Sep00-          :'
 	"
 	exe ahead.'&add<TAB>:GitAdd           :GitAdd<space>'
 	exe ahead.'&blame<TAB>:GitBlame       :GitBlame<space>'
+	exe vhead.'&blame<TAB>:GitBlame       :GitBlame<space>'
 	exe ahead.'&branch<TAB>:GitBranch     :GitBranch<space>'
 	exe ahead.'&checkout<TAB>:GitCheckout :GitCheckout<space>'
 	exe ahead.'&commit<TAB>:GitCommit     :GitCommit<space>'
@@ -2815,12 +2837,14 @@ function! s:InitMenus()
 	"
 	" Current File
 	let shead = 'amenu <silent> '.s:Git_RootMenu.'.&file.'
+	let vhead = 'vmenu <silent> '.s:Git_RootMenu.'.&file.'
 	"
 	exe shead.'Current\ File<TAB>Git :echo "This is a menu header!"<CR>'
 	exe shead.'-Sep00-               :'
 	"
 	exe shead.'&add<TAB>:GitAdd           :GitAdd -- %<CR>'
 	exe shead.'&blame<TAB>:GitBlame       :GitBlame -- %<CR>'
+	exe vhead.'&blame<TAB>:GitBlame       :GitBlame -- %<CR>'
 	exe shead.'&checkout<TAB>:GitCheckout :GitCheckout -- %<CR>'
 	exe shead.'&diff<TAB>:GitDiff         :GitDiff -- %<CR>'
 	exe shead.'&log<TAB>:GitLog           :GitLog -- %<CR>'

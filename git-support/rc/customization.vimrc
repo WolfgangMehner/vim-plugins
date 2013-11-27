@@ -216,3 +216,17 @@ highlight GitConflict    cterm=bold  ctermfg=White  ctermbg=Red  gui=bold  guifg
 " highlight GitRemove      ctermfg=Red                             guifg=Red
 " highlight GitConflict    cterm=bold  ctermfg=White  ctermbg=Red  gui=bold  guifg=White  guibg=Red
 "
+" " custom menu
+" let s:Git_CustomMenu = [
+" 			\ [ '&grep, word under cursor',  ':GitGrepTop', ':GitGrepTop <WORD><EXECUTE>' ],
+" 			\ [ '&grep, version x..y',       ':GitGrepTop', ':GitGrepTop -i "Version[^[:digit:]]\+<CURSOR>"' ],
+" 			\ [ '-SEP1-',                    '',            '' ],
+" 			\ [ '&log, grep commit msg..',   ':GitLog',     ':GitLog -i --grep="<CURSOR>"' ],
+" 			\ [ '&log, grep diff word',      ':GitLog',     ':GitLog -p -S "<CURSOR>"' ],
+" 			\ [ '&log, grep diff line',      ':GitLog',     ':GitLog -p -G "<CURSOR>"' ],
+" 			\ [ '-SEP2-',                    '',            '' ],
+" 			\ [ '&merge, fast-forward only', ':GitMerge',   ':GitMerge --ff-only <CURSOR>' ],
+" 			\ [ '&merge, no commit',         ':GitMerge',   ':GitMerge --no-commit <CURSOR>' ],
+" 			\ [ '&merge, abort',             ':GitMerge',   ':GitMerge --abort<EXECUTE>' ],
+" 			\ ]
+"
