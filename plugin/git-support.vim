@@ -427,13 +427,13 @@ function! GitS_CmdlineComplete ( ArgLead, CmdLine, CursorPos )
 	let gitlist = []
 	"
 	" branches
-	let gitlist += split ( s:StandardRun ( 'branch', '-a', 't' ), '\_[* ]\+\%(remotes/\)\?' )
+	let gitlist += split ( s:StandardRun ( 'branch', '-a', 't' ), '\_[* ]\+\%(remotes/\)\?' )[1]
 	"
 	" tags
-	let gitlist += split ( s:StandardRun ( 'tag', '', 't' ), "\n" )
+	let gitlist += split ( s:StandardRun ( 'tag', '', 't' ), "\n" )[1]
 	"
 	" remotes
-	let gitlist += split ( s:StandardRun ( 'remote', '', 't' ), "\n" )
+	let gitlist += split ( s:StandardRun ( 'remote', '', 't' ), "\n" )[1]
 	"
 	call filter ( gitlist, '0 == match ( v:val, "\\V'.escape(a:ArgLead,'\').'" )' )
 	"
@@ -890,8 +890,8 @@ endfunction    " ----------  end of function s:UpdateGitBuffer  ----------
 "   flags   - all set flags (string)
 "   allowed - all allowed flags (string, default: 'cet')
 " Returns:
-"   text    - the text produced by the command (string),
-"             only if the flag 't' is set
+"   [ ret, text ] - the status code and text produced by the command (string),
+"                   only if the flag 't' is set
 "
 " Flags are characters. The parameter 'flags' is a concatenation of all set
 " flags, the parameter 'allowed' is a concatenation of all allowed flags.
@@ -927,10 +927,10 @@ function! s:StandardRun( cmd, param, flags, ... )
 	"
 	let text = system ( cmd )
 	"
-	if v:shell_error != 0
+	if a:flags =~ 't'
+		return [ v:shell_error, substitute ( text, '\_s*$', '', '' ) ]
+	elseif v:shell_error != 0
 		echo "\"".cmd."\" failed:\n\n".text           | " failure
-	elseif a:flags =~ 't'
-		return substitute ( text, '\_s*$', '', '' )     " success
 	elseif text =~ '^\_s*$'
 		echo "ran successfully"                       | " success
 	else
@@ -2011,8 +2011,8 @@ function! GitS_Merge( mode, param, flags )
 		"
 	elseif a:mode == 'upstream'
 		"
-		let b_current = s:StandardRun ( 'symbolic-ref', '-q HEAD', 't' )
-		let b_upstream = s:StandardRun ( 'for-each-ref', " --format='%(upstream:short)' ".shellescape( b_current ), 't' )
+		let b_current = s:StandardRun ( 'symbolic-ref', '-q HEAD', 't' )[1]
+		let b_upstream = s:StandardRun ( 'for-each-ref', " --format='%(upstream:short)' ".shellescape( b_current ), 't' )[1]
 		"
 		if b_upstream == ''
 			return s:ImportantMsg ( 'No upstream branch.' )
@@ -2150,6 +2150,41 @@ endfunction    " ----------  end of function GitS_Reset  ----------
 " GitS_Show : execute 'git show ...'   {{{1
 "-------------------------------------------------------------------------------
 "
+"-------------------------------------------------------------------------------
+" s:Show_AnalyseObject : Analyse the object given to show.   {{{2
+"
+" Parameters:
+"   args - command line args given to :GitShow (string)
+" Returns:
+"   [ <last>, <type> ] - data (list: string, string)
+"
+" The entries are as follows:
+"   last - the last argument (string)
+"   type - type of the object: "blob", "commit", "tag" or "tree" (string)
+"
+" If the object or type could not be obtained:
+"   [ '', '' ]
+"-------------------------------------------------------------------------------
+"
+function! s:Show_AnalyseObject( args )
+	"
+	let args = s:GitCmdLineArgs ( a:args )
+	if args[-1] == ''
+		return [ '', '' ]
+	else
+		let [ ret, type ] = s:StandardRun ( 'cat-file', " -t ".shellescape( args[-1] ), 't' )
+	endif
+	"
+	if ret != 0
+		return [ '', '' ]
+	endif
+	"
+	return [ args[-1], type ]
+	"
+endfunction    " ----------  end of function s:Show_AnalyseObject  ----------
+" }}}2
+"-------------------------------------------------------------------------------
+"
 function! GitS_Show( action, ... )
 	"
 	let param = ''
@@ -2162,13 +2197,34 @@ function! GitS_Show( action, ... )
 		return
 	elseif a:action == 'update'
 		"
-		if a:0 == 0         | " run again with old parameters
-		elseif empty( a:1 ) | let param = ''
-		else                | let param = a:1
+		if a:0 == 0
+			" run again with old parameters
+			"
+			let [ last_arg, type ] = [ '', '' ]
+		elseif a:1 =~ '^\s*$'
+			let param = ''
+			"
+			let [ last_arg, type ] = [ 'HEAD', 'commit' ]
+		else
+			" new arguments
+			let param = a:1
+			"
+			let [ last_arg, type ] = s:Show_AnalyseObject ( param )
+			"
 		endif
 		"
 	else
 		echoerr 'Unknown action "'.a:action.'".'
+		return
+	endif
+	"
+	" BLOB: treat separately
+	if type == 'blob'
+		let last_arg = substitute ( last_arg, ':', '.', '' )
+		let last_arg = substitute ( last_arg, '/', '.', 'g' )
+		call s:OpenGitBuffer ( last_arg )
+		call s:UpdateGitBuffer ( s:Git_Executable.' show '.param )
+		filetype detect
 		return
 	endif
 	"

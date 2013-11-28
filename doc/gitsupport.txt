@@ -512,7 +512,9 @@ Is equivalent to: >
                                                                     *:GitShow*
 	:GitShow [<args>] ~
 
-Opens a buffer containing the output of "git show ...".
+Opens a buffer containing the output of "git show ...". For commits and
+annotated tags, shows the commit/tag message and the diff. For blobs a
+separate buffer is opened.
 
   Map       Meaning
  ----------------------------------------------------------------------------
@@ -729,7 +731,8 @@ Highlights the path and (optional) line number at the beginning of each line.
 
 The name of each commit and the information about the author, date, ... are
 highlighted. Folds are created for each commit.
-This highlighting is also used for ":GitStash list"
+This highlighting is also used for ":GitStash list", ":GitShow <commit>" and
+":GitShow <tag>".
 
   Category                Short Description
  ----------------------------------------------------------------------------
@@ -740,6 +743,8 @@ This highlighting is also used for ":GitStash list"
                           -> uses GitHighlight1
   GitStashName            the name of a stash (line "stash@{123}: ...")
                           -> no highlighting by default
+  GitTagName              the name of the tag (line "tag <name>")
+                          -> uses GitHighlight2
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------

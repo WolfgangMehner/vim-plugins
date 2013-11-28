@@ -27,11 +27,15 @@ syn match  GitLogInfo    "^\w\+:\s.\+$"  contained
 syn region GitStash      start=/^stash@{\d\+}:\s/ end=/^\%(stash@{\d\+}:\s\)\@=/ contains=GitStashName,GitDiffRegion fold keepend
 syn match  GitStashName  "^stash@{\d\+}:\s.\+$" contained
 
+syn region GitAnnoTag    start=/^tag\s/ end=/^\%(\u\)\@!/ contains=GitTagName,GitLogInfo fold keepend
+syn match  GitTagName    "^tag\s.\+$" contained
+
 "-------------------------------------------------------------------------------
 " Highlight
 "-------------------------------------------------------------------------------
 
 highlight default link GitLogHash  GitHighlight2
 highlight default link GitLogInfo  GitHighlight1
+highlight default link GitTagName  GitHighlight2
 
 let b:current_syntax = "gitslog"
