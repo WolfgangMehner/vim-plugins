@@ -658,77 +658,96 @@ let	s:c_cppcomment= '\(\/\*.\{-}\*\/\|\/\/.*$\)'
 
 function! C_AdjustLineEndComm ( ) range
 	"
-	if !exists("b:C_LineEndCommentColumn")
-		let	b:C_LineEndCommentColumn	= s:C_LineEndCommColDefault
-	endif
-
-	let save_cursor = getpos(".")
-
-	let	save_expandtab	= &expandtab
-	exe	":set expandtab"
-
-	let	linenumber	= a:firstline
-	exe ":".a:firstline
-
-	while linenumber <= a:lastline
-		let	line= getline(".")
-
-		" line is not a pure comment but contains one
-		"
-		if  match( line, '^\s*'.s:c_cppcomment ) < 0 &&  match( line, s:c_cppcomment ) > 0
-      "
-      " disregard comments starting in a string
-      "
-			let	idx1	      = -1
-			let	idx2	      = -1
-			let	commentstart= -2
-			let	commentend	= 0
-			while commentstart < idx2 && idx2 < commentend
-				let start	      = commentend
-				let idx2	      = match( line, s:c_cppcomment, start )
-				let commentstart= match   ( line, '"[^"]\+"', start )
-				let commentend	= matchend( line, '"[^"]\+"', start )
-			endwhile
-      "
-      " try to adjust the comment
-      "
-			let idx1	= 1 + match( line, '\s*'.s:c_cppcomment, start )
-			let idx2	= 1 + idx2
-			call setpos(".", [ 0, linenumber, idx1, 0 ] )
-			let vpos1	= virtcol(".")
-			call setpos(".", [ 0, linenumber, idx2, 0 ] )
-			let vpos2	= virtcol(".")
-
-			if   ! (   vpos2 == b:C_LineEndCommentColumn
-						\	|| vpos1 > b:C_LineEndCommentColumn
-						\	|| idx2  == 0 )
-
-				exe ":.,.retab"
-				" insert some spaces
-				if vpos2 < b:C_LineEndCommentColumn
-					let	diff	= b:C_LineEndCommentColumn-vpos2
-					call setpos(".", [ 0, linenumber, vpos2, 0 ] )
-					let	@"	= ' '
-					exe "normal	".diff."P"
-				endif
-
-				" remove some spaces
-				if vpos1 < b:C_LineEndCommentColumn && vpos2 > b:C_LineEndCommentColumn
-					let	diff	= vpos2 - b:C_LineEndCommentColumn
-					call setpos(".", [ 0, linenumber, b:C_LineEndCommentColumn, 0 ] )
-					exe "normal	".diff."x"
-				endif
-
-			endif
-		endif
-		let linenumber=linenumber+1
-		normal j
-	endwhile
+	" comment character (for use in regular expression)
+	let cc = '\%(/\*\|//\)'
 	"
-	" restore tab expansion settings and cursor position
-	let &expandtab	= save_expandtab
-	call setpos('.', save_cursor)
-
+	" patterns to ignore when adjusting line-end comments (maybe incomplete):
+	" - double-quoted strings, includes \n \" \\ ...
+	let align_regex = '"\%(\\.\|[^"]\)*"'
+	"
+	" local position
+	if !exists( 'b:C_LineEndCommentColumn' )
+		let b:C_LineEndCommentColumn = s:C_LineEndCommColDefault
+	endif
+	let correct_idx = b:C_LineEndCommentColumn
+	"
+	" === plug-in specific code ends here                 ===
+	" === the behavior is governed by the variables above ===
+	"
+	" save the cursor position
+	let save_cursor = getpos('.')
+	"
+	for line in range( a:firstline, a:lastline )
+		silent exe ':'.line
+		"
+		let linetxt = getline('.')
+		"
+		" "pure" comment line left unchanged
+		if match ( linetxt, '^\s*'.cc ) == 0
+			"echo 'line '.line.': "pure" comment'
+			continue
+		endif
+		"
+		let b_idx1 = 1 + match ( linetxt, '\s*'.cc.'.*$', 0 )
+		let b_idx2 = 1 + match ( linetxt,       cc.'.*$', 0 )
+		"
+		" not found?
+		if b_idx1 == 0
+			"echo 'line '.line.': no end-of-line comment'
+			continue
+		endif
+		"
+		" walk through ignored patterns
+		let idx_start = 0
+		"
+		while 1
+			let this_start = match ( linetxt, align_regex, idx_start )
+			"
+			if this_start == -1
+				break
+			else
+				let idx_start = matchend ( linetxt, align_regex, idx_start )
+				"echo 'line '.line.': ignoring >>>'.strpart(linetxt,this_start,idx_start-this_start).'<<<'
+			endif
+		endwhile
+		"
+		let b_idx1 = 1 + match ( linetxt, '\s*'.cc.'.*$', idx_start )
+		let b_idx2 = 1 + match ( linetxt,       cc.'.*$', idx_start )
+		"
+		" not found?
+		if b_idx1 == 0
+			"echo 'line '.line.': no end-of-line comment'
+			continue
+		endif
+		"
+		call cursor ( line, b_idx2 )
+		let v_idx2 = virtcol('.')
+		"
+		" do b_idx1 last, so the cursor is in the right position for substitute below
+		call cursor ( line, b_idx1 )
+		let v_idx1 = virtcol('.')
+		"
+		" already at right position?
+		if ( v_idx2 == correct_idx )
+			"echo 'line '.line.': already at right position'
+			continue
+		endif
+		" ... or line too long?
+		if ( v_idx1 >  correct_idx )
+			"echo 'line '.line.': line too long'
+			continue
+		endif
+		"
+		" substitute all whitespaces behind the cursor (regex '\%#') and the next character,
+		" to ensure the match is at least one character long
+		silent exe 'substitute/\%#\s*\(\S\)/'.repeat( ' ', correct_idx - v_idx1 ).'\1/'
+		"echo 'line '.line.': adjusted'
+		"
+	endfor
+	"
+	" restore the cursor position
+	call setpos ( '.', save_cursor )
+	"
 endfunction		" ---------- end of function  C_AdjustLineEndComm  ----------
 "
 "------------------------------------------------------------------------------

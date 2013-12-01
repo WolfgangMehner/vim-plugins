@@ -177,6 +177,7 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
 - Bugfix: Prevent unnecessary rereading of the template library.
 - Added Doxygen templates.
 - Added help menu entries: help English, help Doxygen
+- Improved "adjust end-of-line comment".
 - Several internal improvements.
 
 
