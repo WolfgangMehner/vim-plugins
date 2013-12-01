@@ -144,7 +144,7 @@ if s:MSWIN
 	" MS Windows
 	"-------------------------------------------------------------------------------
 	"
-	if match(      substitute( expand('<sfile>'), '\\', '/', 'g' ), 
+	if match(      substitute( expand('<sfile>'), '\\', '/', 'g' ),
 				\   '\V'.substitute( expand('$HOME'),   '\\', '/', 'g' ) ) == 0
 		"
 		" user installation assumed
@@ -202,6 +202,8 @@ let s:Matlab_MapLeader       = ''         " default: do not overwrite 'maplocall
 "
 let s:Matlab_MlintExecutable = 'mlint'    " default: mlint on system path
 "
+let s:Matlab_LineEndCommColDefault = 49
+"
 if ! exists ( 's:MenuVisible' )
 	let s:MenuVisible = 0                " menus are not visible at the moment
 endif
@@ -211,11 +213,151 @@ call s:GetGlobalSetting ( 'Matlab_LclTemplateFile' )
 call s:GetGlobalSetting ( 'Matlab_LoadMenus' )
 call s:GetGlobalSetting ( 'Matlab_RootMenu' )
 call s:GetGlobalSetting ( 'Matlab_MlintExecutable' )
+call s:GetGlobalSetting ( 'Matlab_LineEndCommColDefault' )
 "
 call s:ApplyDefaultSetting ( 'Matlab_MapLeader', '' )
 "
 " }}}2
 "-------------------------------------------------------------------------------
+"
+"-------------------------------------------------------------------------------
+" Matlab_EndOfLineComment : Append end-of-line comment.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Matlab_EndOfLineComment () range
+	"
+	" local position
+	if !exists( 'b:Matlab_LineEndCommentColumn' )
+		let b:Matlab_LineEndCommentColumn = s:Matlab_LineEndCommColDefault
+	endif
+	"
+	" ----- trim whitespaces -----
+	exe a:firstline.','.a:lastline.'s/\s*$//'
+	"
+	for line in range( a:lastline, a:firstline, -1 )
+		silent exe ':'.line
+		if getline(line) !~ '^\s*$'
+			let linelength = virtcol( [line,'$'] ) - 1
+			let diff       = 1
+			if linelength < b:Matlab_LineEndCommentColumn
+				let diff = b:Matlab_LineEndCommentColumn - 1 - linelength
+			endif
+			exe 'normal '.diff.'A '
+			call mmtemplates#core#InsertTemplate (g:Matlab_Templates, 'Comments.end-of-line comment')
+		endif
+	endfor
+	"
+endfunction    " ----------  end of function Matlab_EndOfLineComment  ----------
+"
+"-------------------------------------------------------------------------------
+" Matlab_AdjustEndOfLineComm : Adjust end-of-line comment.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Matlab_AdjustEndOfLineComm () range
+	"
+	" comment character (for use in regular expression)
+	let cc = '%'
+	"
+	" patterns to ignore when adjusting line-end comments (maybe incomplete):
+	" - single-quoted strings, includes '' \n \\ ...
+	" :TODO:01.12.2013 14:26:WM: does Matlab support escape sequences like that?
+	let align_regex = "'\\%(''\\|\\\\.\\|[^']\\)*'"
+	"
+	" local position
+	if !exists( 'b:Matlab_LineEndCommentColumn' )
+		let b:Matlab_LineEndCommentColumn = s:Matlab_LineEndCommColDefault
+	endif
+	let correct_idx = b:Matlab_LineEndCommentColumn
+	"
+	" === plug-in specific code ends here                 ===
+	" === the behavior is governed by the variables above ===
+	"
+	" save the cursor position
+	let save_cursor = getpos('.')
+	"
+	for line in range( a:firstline, a:lastline )
+		silent exe ':'.line
+		"
+		let linetxt = getline('.')
+		"
+		" "pure" comment line left unchanged
+		if match ( linetxt, '^\s*'.cc ) == 0
+			"echo 'line '.line.': "pure" comment'
+			continue
+		endif
+		"
+		let b_idx1 = 1 + match ( linetxt, '\s*'.cc.'.*$', 0 )
+		let b_idx2 = 1 + match ( linetxt,       cc.'.*$', 0 )
+		"
+		" not found?
+		if b_idx1 == 0
+			"echo 'line '.line.': no end-of-line comment'
+			continue
+		endif
+		"
+		" walk through ignored patterns
+		let idx_start = 0
+		"
+		while 1
+			let this_start = match ( linetxt, align_regex, idx_start )
+			"
+			if this_start == -1
+				break
+			else
+				let idx_start = matchend ( linetxt, align_regex, idx_start )
+				"echo 'line '.line.': ignoring >>>'.strpart(linetxt,this_start,idx_start-this_start).'<<<'
+			endif
+		endwhile
+		"
+		let b_idx1 = 1 + match ( linetxt, '\s*'.cc.'.*$', idx_start )
+		let b_idx2 = 1 + match ( linetxt,       cc.'.*$', idx_start )
+		"
+		" not found?
+		if b_idx1 == 0
+			"echo 'line '.line.': no end-of-line comment'
+			continue
+		endif
+		"
+		call cursor ( line, b_idx2 )
+		let v_idx2 = virtcol('.')
+		"
+		" do b_idx1 last, so the cursor is in the right position for substitute below
+		call cursor ( line, b_idx1 )
+		let v_idx1 = virtcol('.')
+		"
+		" already at right position?
+		if ( v_idx2 == correct_idx )
+			"echo 'line '.line.': already at right position'
+			continue
+		endif
+		" ... or line too long?
+		if ( v_idx1 >  correct_idx )
+			"echo 'line '.line.': line too long'
+			continue
+		endif
+		"
+		" substitute all whitespaces behind the cursor (regex '\%#') and the next character,
+		" to ensure the match is at least one character long
+		silent exe 'substitute/\%#\s*\(\S\)/'.repeat( ' ', correct_idx - v_idx1 ).'\1/'
+		"echo 'line '.line.': adjusted'
+		"
+	endfor
+	"
+	" restore the cursor position
+	call setpos ( '.', save_cursor )
+	"
+endfunction    " ----------  end of function Matlab_AdjustEndOfLineComm  ----------
+"
+"-------------------------------------------------------------------------------
+" Matlab_SetEndOfLineCommPos : Set end-of-line comment position.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Matlab_SetEndOfLineCommPos () range
+	"
+	let b:Matlab_LineEndCommentColumn = virtcol('.')
+	call s:ImportantMsg ( 'line end comments will start at column '.b:Matlab_LineEndCommentColumn )
+	"
+endfunction    " ----------  end of function Matlab_SetEndOfLineCommPos  ----------
 "
 "-------------------------------------------------------------------------------
 " Matlab_CodeComment : Code -> Comment   {{{1
@@ -270,7 +412,7 @@ function! s:GetFunctionParameters( fun_line )
 	"
 	" 1st expression: the syntax category
 	" 2nd expression: as before, but with brackets to catch the match
-	" 
+	"
 	let identifier   = '[a-zA-Z][a-zA-Z0-9_]*'
 	let identifier_c = '\('.identifier.'\)'
 	let in_bracket   = '[^)\]]*'
@@ -558,6 +700,13 @@ function! s:CreateMaps ()
 	"-------------------------------------------------------------------------------
 	" comments
 	"-------------------------------------------------------------------------------
+	 noremap    <buffer>  <silent>  <LocalLeader>cl         :call Matlab_EndOfLineComment()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cl    <Esc>:call Matlab_EndOfLineComment()<CR>
+	 noremap    <buffer>  <silent>  <LocalLeader>cj         :call Matlab_AdjustEndOfLineComm()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cj    <Esc>:call Matlab_AdjustEndOfLineComm()<CR>
+	 noremap    <buffer>  <silent>  <LocalLeader>cs         :call Matlab_SetEndOfLineCommPos()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cs    <Esc>:call Matlab_SetEndOfLineCommPos()<CR>
+	"
 	 noremap    <buffer>  <silent>  <LocalLeader>cc         :call Matlab_CodeComment()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>cc    <Esc>:call Matlab_CodeComment()<CR>
 	 noremap    <buffer>  <silent>  <LocalLeader>cu         :call Matlab_CommentCode(0)<CR>
@@ -571,37 +720,44 @@ function! s:CreateMaps ()
 	"-------------------------------------------------------------------------------
 	" templates - specials
 	"-------------------------------------------------------------------------------
-	"
 	nnoremap    <buffer>  <silent> <LocalLeader>ntl         :call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,-1)<CR>
 	inoremap    <buffer>  <silent> <LocalLeader>ntl    <C-C>:call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,-1)<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>ntl    <C-C>:call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,-1)<CR>
 	if s:installation == 'system'
 		nnoremap  <buffer>  <silent> <LocalLeader>ntg         :call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,1)<CR>
 		inoremap  <buffer>  <silent> <LocalLeader>ntg    <C-C>:call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,1)<CR>
+		vnoremap  <buffer>  <silent> <LocalLeader>ntg    <C-C>:call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,1)<CR>
 	endif
 	nnoremap    <buffer>  <silent> <LocalLeader>ntr         :call mmtemplates#core#ReadTemplates(g:Matlab_Templates,"reload","all")<CR>
 	inoremap    <buffer>  <silent> <LocalLeader>ntr    <C-C>:call mmtemplates#core#ReadTemplates(g:Matlab_Templates,"reload","all")<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>ntr    <C-C>:call mmtemplates#core#ReadTemplates(g:Matlab_Templates,"reload","all")<CR>
 	nnoremap    <buffer>  <silent> <LocalLeader>nts         :call mmtemplates#core#ChooseStyle(g:Matlab_Templates,"!pick")<CR>
 	inoremap    <buffer>  <silent> <LocalLeader>nts    <C-C>:call mmtemplates#core#ChooseStyle(g:Matlab_Templates,"!pick")<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>nts    <C-C>:call mmtemplates#core#ChooseStyle(g:Matlab_Templates,"!pick")<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" code checker
 	"-------------------------------------------------------------------------------
-	 noremap    <buffer>  <silent>  <LocalLeader>rc         :call Matlab_CheckCode()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>rc         :call Matlab_CheckCode()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rc    <Esc>:call Matlab_CheckCode()<CR>
-	 noremap    <buffer>  <silent>  <LocalLeader>ri         :call Matlab_IgnoreWarning()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>rc    <Esc>:call Matlab_CheckCode()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>ri         :call Matlab_IgnoreWarning()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>ri    <Esc>:call Matlab_IgnoreWarning()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>ri    <Esc>:call Matlab_IgnoreWarning()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" settings
 	"-------------------------------------------------------------------------------
-	 noremap    <buffer>  <silent>  <LocalLeader>rs         :call Matlab_Settings()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>rs         :call Matlab_Settings()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rs    <Esc>:call Matlab_Settings()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>rs    <Esc>:call Matlab_Settings()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" help
 	"-------------------------------------------------------------------------------
-	 noremap    <buffer>  <silent>  <LocalLeader>hs         :call Matlab_HelpPlugin()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>hs         :call Matlab_HelpPlugin()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>hs    <Esc>:call Matlab_HelpPlugin()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>hs    <Esc>:call Matlab_HelpPlugin()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" settings - reset local leader
@@ -657,17 +813,25 @@ function! s:InitMenus()
 	let ahead = 'amenu <silent> '.s:Matlab_RootMenu.'.Comments.'
 	let vhead = 'vmenu <silent> '.s:Matlab_RootMenu.'.Comments.'
 	"
+	exe ahead.'end-of-&line\ comment<TAB>'.esc_mapl.'cl            :call Matlab_EndOfLineComment()<CR>'
+	exe vhead.'end-of-&line\ comment<TAB>'.esc_mapl.'cl            :call Matlab_EndOfLineComment()<CR>'
+	exe ahead.'ad&just\ end-of-line\ com\.<TAB>'.esc_mapl.'cj      :call Matlab_AdjustEndOfLineComm()<CR>'
+	exe vhead.'ad&just\ end-of-line\ com\.<TAB>'.esc_mapl.'cj      :call Matlab_AdjustEndOfLineComm()<CR>'
+	exe ahead.'&set\ end-of-line\ com\.\ col\.<TAB>'.esc_mapl.'cs  :call Matlab_SetEndOfLineCommPos()<CR>'
+	exe vhead.'&set\ end-of-line\ com\.\ col\.<TAB>'.esc_mapl.'cs  :call Matlab_SetEndOfLineCommPos()<CR>'
+	exe ahead.'-Sep01-                        :'
+	"
 	exe ahead.'&comment<TAB>'.esc_mapl.'cc    :call Matlab_CodeComment()<CR>'
 	exe vhead.'&comment<TAB>'.esc_mapl.'cc    :call Matlab_CodeComment()<CR>'
 	exe ahead.'&uncomment<TAB>'.esc_mapl.'cu  :call Matlab_CommentCode(0)<CR>'
 	exe vhead.'&uncomment<TAB>'.esc_mapl.'cu  :call Matlab_CommentCode(0)<CR>'
 	exe ahead.'&toggle<TAB>'.esc_mapl.'ct     :call Matlab_CommentCode(1)<CR>'
 	exe vhead.'&toggle<TAB>'.esc_mapl.'ct     :call Matlab_CommentCode(1)<CR>'
-	exe ahead.'-Sep01-                        :'
+	exe ahead.'-Sep02-                        :'
 	"
-	exe ahead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca       :call Matlab_FunctionComment()<CR>'
-	exe vhead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca  <Esc>:call Matlab_FunctionComment()<CR>'
-	exe ahead.'-Sep02-                                                 :'
+	exe ahead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca  :call Matlab_FunctionComment()<CR>'
+	exe vhead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca  :call Matlab_FunctionComment()<CR>'
+	exe ahead.'-Sep03-                                                 :'
 	"
 	"-------------------------------------------------------------------------------
 	" templates

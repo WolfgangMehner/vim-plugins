@@ -23,23 +23,27 @@ The MathWorks, Inc and MATLAB are registered trademarks of The MathWorks, Inc.
  1.    Introduction                     |matlabsupport-introduction|
  2.    Usage                            |matlabsupport-usage|
  2.1    Comments                        |matlabsupport-usage-comments|
- 2.1.1   Comment Lines                  |matlabsupport-usage-comments-lines|
- 2.1.2   Automated Comments             |matlabsupport-usage-comments-auto|
- 2.2    Help                            |matlabsupport-usage-help|
+ 2.1.1   End-of-Line Comments           |matlabsupport-usage-comments-eol|
+ 2.1.2   Comment Lines                  |matlabsupport-usage-comments-lines|
+ 2.1.3   Automated Comments             |matlabsupport-usage-comments-auto|
+ 2.2    Snippets                        |matlabsupport-usage-snippets|
  2.3    Use mlint                       |matlabsupport-usage-mlint|
  2.3.1   Using QuickFix                 |matlabsupport-usage-mlint-qf|
+ 2.4    Help                            |matlabsupport-usage-help|
  3.    Templates                        |matlabsupport-templates|
  3.1    Introduction                    |matlabsupport-templates-introduction|
  3.2    Jump Tags                       |matlabsupport-templates-jump-tags|
  3.3    Split Tags                      |matlabsupport-templates-split-tags|
- 3.4    The "Snippets" Menu             |matlabsupport-templates-menu|
+ 3.4    Auxiliary Functions             |matlabsupport-templates-aux|
  4.    Configuration                    |matlabsupport-configuration|
  4.1    Menus                           |matlabsupport-config-menus|
  4.2    Maps                            |matlabsupport-config-maps|
- 4.3    Mlint                           |matlabsupport-config-mlint|
- 4.4    Template Library                |matlabsupport-config-template-lib|
- 4.5    Template Customization          |matlabsupport-config-template-cstm|
- 4.6    Browser                         |matlabsupport-config-browser|
+ 4.3    Comments                        |matlabsupport-config-comments|
+ 4.4    Snippets                        |matlabsupport-config-snippets|
+ 4.5    Mlint                           |matlabsupport-config-mlint|
+ 4.6    Template Library                |matlabsupport-config-template-lib|
+ 4.7    Template Customization          |matlabsupport-config-template-cstm|
+ 4.8    Browser                         |matlabsupport-config-browser|
  5.    System-wide Installation         |matlabsupport-system-wide|
 
  A.    Troubleshooting - Known Issues   |matlabsupport-troubleshooting|
@@ -68,6 +72,7 @@ The features of the plug-in are:
 - Open the online documentation for a given function.
     |matlabsupport-usage-help|
 - Invoke the code checker "mlint". |matlabsupport-usage-mlint|
+- Manage code snippets. |matlabsupport-usage-snippets|
 - An extendible template library. |matlabsupport-templates|
 
 The usage of most features is described in the chapter |matlabsupport-usage|.
@@ -84,8 +89,7 @@ advanced user (see |templatesupport.txt|).
 ==============================================================================
 
 Features are accessible via menu entries and maps. Most maps are preceded by a
-mapleader. The leader is backslash, if you are using the standard
-configuration.
+mapleader. The leader is backslash, if the standard configuration is used.
 
 ------------------------------------------------------------------------------
 2.1  COMMENTS                                   *matlabsupport-usage-comments*
@@ -96,34 +100,75 @@ Besides the templates, there is some other functionality provided in the menu
 
   Feature                    Menu Entry                     Map
  ----------------------------------------------------------------------------
+  add end-of-line comments   Comments.end-of-line comment   <LocalLeader>cl
+  adjust end-of-line com.    Comments.adjust end-of-line c. <LocalLeader>cj
+  set end-of-line column     Comments.set end-of-line col.  <LocalLeader>cs
+
   comment lines              Comments.comment               <LocalLeader>cc
   uncomment lines            Comments.uncomment             <LocalLeader>cu
   toggle comments            Comments.toggle                <LocalLeader>ct
+
   automatic function         Comments.func. desc. (auto)    <LocalLeader>ca
     description 
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
 
-2.1.1  Comment Lines                      *matlabsupport-usage-comments-lines*
+2.1.1  End-of-Line Comments                 *matlabsupport-usage-comments-eol*
 
-In normal and insert mode, the comment, uncomment and toggle functions will
-change the current line. In visual mode the entire selected range is
-influenced.
-The maps can also be used together with a range, such as: >
-  4\cc
-to comment the current line and the three lines below it.
+End-of-line comments can be added using the map \cl or the menu entry
+"Comments.end-of-line comment". They will all start in the same column. The
+number of this column is set to a default value at first (see
+|g:Matlab_LineEndCommentColumn|), but can be set for each buffer individually
+using "Comments.set end-of-line col.". This causes the column currently under
+the cursor to be used in the future.
+Existing comments can be adjusted to this column using \cj or the menu entry
+"Comments.adjust end-of-line com.".
+
+In normal and insert mode, the current line will be changed. In visual mode
+the entire selected range is edited. The maps can also be used with a line
+count: >
+	3\cl
+to add end-of-line comments to three lines at once.
 
 Example:
 
-If you select the lines: >
+If the mouse cursor is placed on the first line: >
+
+  s.name = 'file.txt';
+  s.type = 'csv';
+  s.cols = 4;
+<
+and the map 3\cl is used, the result will be: >
+
+  s.name = 'file.txt';                          % <CURSOR IS PLACED HERE>
+  s.type = 'csv';                               %
+  s.cols = 4;                                   %
+<
+Now each field of the struct can be documented.
+
+------------------------------------------------------------------------------
+
+2.1.2  Comment Lines                      *matlabsupport-usage-comments-lines*
+
+Lines of code can be changed into comments and vice versa with just a few
+keystrokes.  In normal and insert mode, the comment, uncomment and toggle
+functions will change the current line. In visual mode the entire selected
+range is influenced.
+The maps can also be used together with a count, such as: >
+  4\cc
+to change the current line and the three lines below it into comments.
+
+Example:
+
+If the following lines are select: >
 
   % file  = 'settings1.txt';
   % debug = true;
   file  = 'settings2.txt';
   debug = false;
-
-and use toggle, the result will be: >
+<
+and the map \ct (toggle) is used, the result will be: >
 
   file  = 'settings1.txt';
   debug = true;
@@ -132,7 +177,7 @@ and use toggle, the result will be: >
 <
 ------------------------------------------------------------------------------
 
-2.1.2  Automated Comments                  *matlabsupport-usage-comments-auto*
+2.1.3  Automated Comments                  *matlabsupport-usage-comments-auto*
 
 A skeleton for a comment can be created automatically for a given function.
 This works on the current line or a selected range of lines. After choosing
@@ -167,32 +212,11 @@ After typing a brief description, use <CTRL-J> to jump to the various tags: >
 and fill in the information (see Sec. |matlabsupport-templates-jump-tags|).
 
 ------------------------------------------------------------------------------
-2.2  HELP                                           *matlabsupport-usage-help*
+2.2  SNIPPETS                                   *matlabsupport-usage-snippets*
 ------------------------------------------------------------------------------
 
-The menu "Help" speeds up the access to various resources, such as the online
-documentation of Matlab functions or an English dictionary.
+	*Todo		snippets
 
-  Feature                    Menu Entry                     Map
- ----------------------------------------------------------------------------
-  open English dictionary    Help.english                   <LocalLeader>he
-  open reference for a       Help.Matlab function           <LocalLeader>hf
-    function
-  open plug-in help          Help.help (Matlab support)     <LocalLeader>hs
- ----------------------------------------------------------------------------
-
-The online reference can by opened very conveniently for Matlab functions.
-Simply place the cursor on the name of a function in your source code, and use
-the menu entry or the map to open the online reference for that function.
-(See Section |matlabsupport-config-browser| for the configuration.)
-
-Example:
-
-Place the cursor on "sin" and invoke the map: >
-  a = sin ( r * pi );
-The following URL will be opened in your browser: >
-  http://www.mathworks.de/help/techdoc/ref/sin.html
-<
 ------------------------------------------------------------------------------
 2.3  USE MLINT                                     *matlabsupport-usage-mlint*
 ------------------------------------------------------------------------------
@@ -249,6 +273,33 @@ The fastest way of using them is to put maps like this into your .vimrc file:
 You can now use F5 and F6 to open and close the quickfix window and F7 and F8
 to jump to the errors.
 
+------------------------------------------------------------------------------
+2.4  HELP                                           *matlabsupport-usage-help*
+------------------------------------------------------------------------------
+
+The menu "Help" speeds up the access to various resources, such as the online
+documentation of Matlab functions or an English dictionary.
+
+  Feature                    Menu Entry                     Map
+ ----------------------------------------------------------------------------
+  open English dictionary    Help.english                   <LocalLeader>he
+  open reference for a       Help.Matlab function           <LocalLeader>hf
+    function
+  open plug-in help          Help.help (Matlab support)     <LocalLeader>hs
+ ----------------------------------------------------------------------------
+
+The online reference can by opened very conveniently for Matlab functions.
+Simply place the cursor on the name of a function in your source code, and use
+the menu entry or the map to open the online reference for that function.
+(See Section |matlabsupport-config-browser| for the configuration.)
+
+Example:
+
+Place the cursor on "sin" and invoke the map: >
+  a = sin ( r * pi );
+The following URL will be opened in your browser: >
+  http://www.mathworks.de/help/techdoc/ref/sin.html
+<
 ==============================================================================
 3.  TEMPLATES                                        *matlabsupport-templates*
 ==============================================================================
@@ -314,7 +365,7 @@ looks like this:
 After adding the condition, use <CTRL-J> to jump to the else-part.
 
 ------------------------------------------------------------------------------
-3.4  THE "SNIPPETS" MENU                        *matlabsupport-templates-menu*
+3.4  AUXILIARY FUNCTIONS                         *matlabsupport-templates-aux*
 ------------------------------------------------------------------------------
 
 The template system comes with several auxiliary functions.
@@ -329,9 +380,8 @@ The template system comes with several auxiliary functions.
   choose a style             Snippets.choose style          <LocalLeader>nts
  ----------------------------------------------------------------------------
 
-'Snippets.edit templates' will open a file browser in the directory containing
+"Snippets.edit templates" will open a file browser in the directory containing
 your template library. This feature is merely a fast way to jump to the files.
-
 After the templates have been edited, they need to be read again.
 
 See the documentation of the template system for a more in-depth discussion:
@@ -349,9 +399,11 @@ set in the .vimrc file.
   Variable                  Default       Description
  ----------------------------------------------------------------------------
   |g:Matlab_LoadMenus|        'auto'        when to load the menus ('startup',
-                                          'auto' or 'manual')
+                                            'auto' or 'manual')
   |g:Matlab_RootMenu|         '&Matlab'     name and shortcut of the root menu
   |g:Matlab_MapLeader|        ''            the |maplocalleader| used for maps
+  |g:Matlab_LineEndCommentColumn|           standard column used for end-of-
+                            49              line comments
   |g:Matlab_MlintExecutable|  'mlint'       the mlint executable
   |g:Matlab_LclTemplateFile|  (see below)   the local top-level template file
   |g:Matlab_GlbTemplateFile|  (see below)   the global top-level template file
@@ -376,8 +428,8 @@ This has the disadvantage that the templates have to be loaded during the
 startup of Vim, which might cause a noticeable slowdown on older systems.
 The automatic creation of the menus is prevented by: >
   let g:Matlab_LoadMenus = 'manual'
-Now the menus can only be loaded by using the tool menu entry 'Tools->Load
-Matlab Support'.
+Now the menus can only be loaded by using the tool menu entry "Tools.Load
+Matlab Support".
 
                                                            *g:Matlab_RootMenu*
 The name and shortcut of the root menu is set via g:Matlab_RootMenu. The
@@ -400,7 +452,24 @@ Example: >
 Sets the mapleader to '#'.
 
 ------------------------------------------------------------------------------
-4.3  MLINT                                        *matlabsupport-config-mlint*
+4.3  COMMENTS                                  *matlabsupport-config-comments*
+------------------------------------------------------------------------------
+                                               *g:Matlab_LineEndCommentColumn*
+The standard column used for end-of-line comments is configured using
+g:Matlab_LineEndCommentColumn. The column can then be set individually for
+each buffer, using the menu entry "Comments.set end-of-line com. col.".
+
+Example: >
+  let g:Matlab_LineEndCommentColumn = 59
+<
+------------------------------------------------------------------------------
+4.4  SNIPPETS                                  *matlabsupport-config-snippets*
+------------------------------------------------------------------------------
+
+	*Todo		snippets
+
+------------------------------------------------------------------------------
+4.5  MLINT                                        *matlabsupport-config-mlint*
 ------------------------------------------------------------------------------
                                                     *g:Matlab_MlintExecutable*
 If mlint can be found on the system path, no further configuration is
@@ -411,7 +480,7 @@ Example: >
 This is where mlint can be found on the authors system.
 
 ------------------------------------------------------------------------------
-4.4  TEMPLATE LIBRARY                      *matlabsupport-config-template-lib*
+4.6  TEMPLATE LIBRARY                      *matlabsupport-config-template-lib*
 ------------------------------------------------------------------------------
                                                     *g:Matlab_LclTemplateFile*
                                                     *g:Matlab_GlbTemplateFile*
@@ -452,11 +521,11 @@ Sets the local template file accordingly.
 	*Todo		examples for windows
 
 ------------------------------------------------------------------------------
-4.5  TEMPLATE CUSTOMIZATION               *matlabsupport-config-template-cstm*
+4.7  TEMPLATE CUSTOMIZATION               *matlabsupport-config-template-cstm*
 ------------------------------------------------------------------------------
 
 The template library is customized via your local template file. (Use the
-menu entry 'Snippets.edit templates' to get there.)
+menu entry "Snippets.edit templates" to get there.)
 
 You should fill in your name and other information here:
 >
@@ -477,7 +546,7 @@ current locale, the time will be inserted as 10:24 and the year will be
 represented using four digits.
 
 ------------------------------------------------------------------------------
-4.6  BROWSER                                    *matlabsupport-config-browser*
+4.8  BROWSER                                    *matlabsupport-config-browser*
 ------------------------------------------------------------------------------
 
 Opening the online reference for various items is a feature of the template
