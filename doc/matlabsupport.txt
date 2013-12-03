@@ -104,9 +104,9 @@ Besides the templates, there is some other functionality provided in the menu
   adjust end-of-line com.    Comments.adjust end-of-line c. <LocalLeader>cj
   set end-of-line column     Comments.set end-of-line col.  <LocalLeader>cs
 
-  comment lines              Comments.comment               <LocalLeader>cc
-  uncomment lines            Comments.uncomment             <LocalLeader>cu
-  toggle comments            Comments.toggle                <LocalLeader>ct
+  code to comment            Comments.code -> comment       <LocalLeader>cc
+  comment to code            Comments.comment -> code       <LocalLeader>co
+  toggle comments            Comments.toggle code <-> com.  <LocalLeader>ct
 
   automatic function         Comments.func. desc. (auto)    <LocalLeader>ca
     description 
@@ -128,7 +128,7 @@ Existing comments can be adjusted to this column using \cj or the menu entry
 In normal and insert mode, the current line will be changed. In visual mode
 the entire selected range is edited. The maps can also be used with a line
 count: >
-	3\cl
+  3\cl
 to add end-of-line comments to three lines at once.
 
 Example:
@@ -163,8 +163,8 @@ Example:
 
 If the following lines are select: >
 
-  % file  = 'settings1.txt';
-  % debug = true;
+  %file  = 'settings1.txt';
+  %debug = true;
   file  = 'settings2.txt';
   debug = false;
 <
@@ -172,8 +172,8 @@ and the map \ct (toggle) is used, the result will be: >
 
   file  = 'settings1.txt';
   debug = true;
-  % file  = 'settings2.txt';
-  % debug = false;
+  %file  = 'settings2.txt';
+  %debug = false;
 <
 ------------------------------------------------------------------------------
 
@@ -216,6 +216,14 @@ and fill in the information (see Sec. |matlabsupport-templates-jump-tags|).
 ------------------------------------------------------------------------------
 
 	*Todo		snippets
+
+  Feature                    Menu Entry                     Map
+ ----------------------------------------------------------------------------
+  insert code snippet        Snippets.insert code snippet   <LocalLeader>ni
+  create code snippet        Snippets.create code snippet   <LocalLeader>nc
+  view code snippet          Snippets.view code snippet     <LocalLeader>nv
+  edit code snippet          Snippets.edit code snippet     <LocalLeader>ne
+ ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
 2.3  USE MLINT                                     *matlabsupport-usage-mlint*
@@ -404,6 +412,8 @@ set in the .vimrc file.
   |g:Matlab_MapLeader|        ''            the |maplocalleader| used for maps
   |g:Matlab_LineEndCommentColumn|           standard column used for end-of-
                             49              line comments
+  |g:Matlab_SnippetDir|       (see below)   directory with code snippers
+  |g:Matlab_SnippetBrowser|   'gui'         browser to select code snippets
   |g:Matlab_MlintExecutable|  'mlint'       the mlint executable
   |g:Matlab_LclTemplateFile|  (see below)   the local top-level template file
   |g:Matlab_GlbTemplateFile|  (see below)   the global top-level template file
@@ -465,7 +475,8 @@ Example: >
 ------------------------------------------------------------------------------
 4.4  SNIPPETS                                  *matlabsupport-config-snippets*
 ------------------------------------------------------------------------------
-
+                                                     *g:Matlab_SnippetDir*
+                                                     *g:Matlab_SnippetBrowser*
 	*Todo		snippets
 
 ------------------------------------------------------------------------------

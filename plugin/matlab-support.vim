@@ -203,6 +203,8 @@ let s:Matlab_MapLeader       = ''         " default: do not overwrite 'maplocall
 let s:Matlab_MlintExecutable = 'mlint'    " default: mlint on system path
 "
 let s:Matlab_LineEndCommColDefault = 49
+let s:Matlab_SnippetDir            = s:plugin_dir.'/matlab-support/codesnippets/'
+let s:Matlab_SnippetBrowser        = 'gui'
 "
 if ! exists ( 's:MenuVisible' )
 	let s:MenuVisible = 0                " menus are not visible at the moment
@@ -214,6 +216,8 @@ call s:GetGlobalSetting ( 'Matlab_LoadMenus' )
 call s:GetGlobalSetting ( 'Matlab_RootMenu' )
 call s:GetGlobalSetting ( 'Matlab_MlintExecutable' )
 call s:GetGlobalSetting ( 'Matlab_LineEndCommColDefault' )
+call s:GetGlobalSetting ( 'Matlab_SnippetDir' )
+call s:GetGlobalSetting ( 'Matlab_SnippetBrowser' )
 "
 call s:ApplyDefaultSetting ( 'Matlab_MapLeader', '' )
 "
@@ -366,7 +370,7 @@ endfunction    " ----------  end of function Matlab_SetEndOfLineCommPos  -------
 function! Matlab_CodeComment() range
 	"
 	" add '% ' at the beginning of the lines
-	silent exe ":".a:firstline.",".a:lastline."s/^/% /"
+	silent exe ":".a:firstline.",".a:lastline."s/^/%/"
 	"
 endfunction    " ----------  end of function Matlab_CodeComment  ----------
 "
@@ -377,14 +381,11 @@ endfunction    " ----------  end of function Matlab_CodeComment  ----------
 function! Matlab_CommentCode( toggle ) range
 	"
 	" remove comments:
-	" - remove '% ' from the beginning of the line
-	" - if that is not possible, try to remove just '%'
+	" - remove '%' from the beginning of the line
 	" and, in toggling mode:
 	" - if the line is not a comment, comment it
 	for i in range( a:firstline, a:lastline )
-		if getline( i ) =~ '^% '
-			silent exe i."s/^% //"
-		elseif getline( i ) =~ '^%'
+		if getline( i ) =~ '^%'
 			silent exe i."s/^%//"
 		elseif a:toggle
 			silent exe i."s/^/% /"
@@ -506,6 +507,134 @@ function! Matlab_FunctionComment() range
 	endif
 	"
 endfunction    " ----------  end of function Matlab_FunctionComment  ----------
+"
+"-------------------------------------------------------------------------------
+" Matlab_CodeSnippet : Code snippets.   {{{1
+"
+" Parameters:
+"   action - "insert", "create", "vcreate", "view" or "edit" (string)
+"-------------------------------------------------------------------------------
+"
+function! Matlab_CodeSnippet ( action )
+	"
+	"-------------------------------------------------------------------------------
+	" setup
+	"-------------------------------------------------------------------------------
+	"
+	" check directory
+	if ! isdirectory( s:Matlab_SnippetDir )
+		return s:ErrorMsg (
+					\ 'Code snippet directory '.s:Matlab_SnippetDir.' does not exist.',
+					\ '(Please create it.)' )
+	endif
+	"
+	" save option 'browsefilter'
+	if has( 'browsefilter' ) && exists( 'b:browsefilter' )
+		let browsefilter_save = b:browsefilter
+		let b:browsefilter    = '*'
+	endif
+	"
+	"-------------------------------------------------------------------------------
+	" do action
+	"-------------------------------------------------------------------------------
+	"
+	if a:action == 'insert'
+		"
+		"-------------------------------------------------------------------------------
+		" action "insert"
+		"-------------------------------------------------------------------------------
+		"
+		" select file
+		if has('browse') && s:Matlab_SnippetBrowser == 'gui'
+			let snippetfile = browse ( 0, 'insert a code snippet', s:Matlab_SnippetDir, '' )
+		else
+			let snippetfile = input ( 'insert snippet ', s:Matlab_SnippetDir, 'file' )
+		endif
+		"
+		" insert snippet
+		if filereadable(snippetfile)
+			let linesread = line('$')
+			"
+			let old_cpoptions = &cpoptions            " prevent the alternate buffer from being set to this files
+			setlocal cpoptions-=a
+			"
+			exe 'read '.snippetfile
+			"
+			let &cpoptions = old_cpoptions            " restore previous options
+			"
+			let linesread = line('$') - linesread - 1 " number of lines inserted
+			"
+			" :TODO:03.12.2013 14:29:WM: indent here?
+			" indent lines
+			if linesread >= 0 && match( snippetfile, '\.\(ni\|noindent\)$' ) < 0
+				silent exe 'normal ='.linesread.'+'
+			endif
+		endif
+		"
+		" delete first line if empty
+		if line('.') == 2 && getline(1) =~ '^$'
+			silent exe ':1,1d'
+		endif
+		"
+	elseif a:action == 'create' || a:action == 'vcreate'
+		"
+		"-------------------------------------------------------------------------------
+		" action "create" or "vcreate"
+		"-------------------------------------------------------------------------------
+		"
+		" select file
+		if has('browse') && s:Matlab_SnippetBrowser == 'gui'
+			let snippetfile = browse ( 1, 'create a code snippet', s:Matlab_SnippetDir, '' )
+		else
+			let snippetfile = input ( 'create snippet ', s:Matlab_SnippetDir, 'file' )
+		endif
+		"
+		" create snippet
+		if ! empty( snippetfile )
+			" new file or overwrite?
+			if ! filereadable( snippetfile ) || confirm( 'File '.snippetfile.' exists! Overwrite? ', "&Cancel\n&No\n&Yes" ) == 3
+				if a:action == 'create' && confirm( 'Write whole file as a snippet? ', "&Cancel\n&No\n&Yes" ) == 3
+					exe 'write! '.fnameescape( snippetfile )
+				elseif a:action == 'vcreate'
+					exe '*write! '.fnameescape( snippetfile )
+				endif
+			endif
+		endif
+		"
+	elseif a:action == 'view' || a:action == 'edit'
+		"
+		"-------------------------------------------------------------------------------
+		" action "view" or "edit"
+		"-------------------------------------------------------------------------------
+		if a:action == 'view' | let saving = 0
+		else                  | let saving = 1 | endif
+		"
+		" select file
+		if has('browse') && s:Matlab_SnippetBrowser == 'gui'
+			let snippetfile = browse ( saving, a:action.' a code snippet', s:Matlab_SnippetDir, '' )
+		else
+			let snippetfile = input ( a:action.' snippet ', s:Matlab_SnippetDir, 'file' )
+		endif
+		"
+		" :TODO:02.12.2013 18:01:WM: use update or leave the buffer as is?
+		" open file
+		if ! empty( snippetfile )
+			exe 'update! | split | '.a:action.' '.fnameescape( snippetfile )
+		endif
+	else
+		call s:ErrorMsg ( 'UNknown action "'.a:action.'".' )
+	endif
+	"
+	"-------------------------------------------------------------------------------
+	" wrap up
+	"-------------------------------------------------------------------------------
+	"
+	" restore option 'browsefilter'
+	if has( 'browsefilter' ) && exists( 'b:browsefilter' )
+		let b:browsefilter = browsefilter_save
+	endif
+	"
+endfunction    " ----------  end of function Matlab_CodeSnippet  ----------
 "
 "-------------------------------------------------------------------------------
 " Matlab_CheckCode : Use mlint to check the code.   {{{1
@@ -709,13 +838,29 @@ function! s:CreateMaps ()
 	"
 	 noremap    <buffer>  <silent>  <LocalLeader>cc         :call Matlab_CodeComment()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>cc    <Esc>:call Matlab_CodeComment()<CR>
-	 noremap    <buffer>  <silent>  <LocalLeader>cu         :call Matlab_CommentCode(0)<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>cu    <Esc>:call Matlab_CommentCode(0)<CR>
+	 noremap    <buffer>  <silent>  <LocalLeader>co         :call Matlab_CommentCode(0)<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>co    <Esc>:call Matlab_CommentCode(0)<CR>
 	 noremap    <buffer>  <silent>  <LocalLeader>ct         :call Matlab_CommentCode(1)<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>ct    <Esc>:call Matlab_CommentCode(1)<CR>
 	"
 	 noremap    <buffer>  <silent>  <LocalLeader>ca         :call Matlab_FunctionComment()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>ca    <Esc>:call Matlab_FunctionComment()<CR>
+	"
+	"-------------------------------------------------------------------------------
+	" snippets
+	"-------------------------------------------------------------------------------
+	nnoremap    <buffer>  <silent> <LocalLeader>ni         :call Matlab_CodeSnippet('insert')<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>ni    <C-C>:call Matlab_CodeSnippet('insert')<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>ni    <C-C>:call Matlab_CodeSnippet('insert')<CR>
+	nnoremap    <buffer>  <silent> <LocalLeader>nc         :call Matlab_CodeSnippet('create')<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>nc    <C-C>:call Matlab_CodeSnippet('create')<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>nc    <C-C>:call Matlab_CodeSnippet('vcreate')<CR>
+	nnoremap    <buffer>  <silent> <LocalLeader>nv         :call Matlab_CodeSnippet('view')<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>nv    <C-C>:call Matlab_CodeSnippet('view')<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>nv    <C-C>:call Matlab_CodeSnippet('view')<CR>
+	nnoremap    <buffer>  <silent> <LocalLeader>ne         :call Matlab_CodeSnippet('edit')<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>ne    <C-C>:call Matlab_CodeSnippet('edit')<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>ne    <C-C>:call Matlab_CodeSnippet('edit')<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" templates - specials
@@ -819,19 +964,19 @@ function! s:InitMenus()
 	exe vhead.'ad&just\ end-of-line\ com\.<TAB>'.esc_mapl.'cj      :call Matlab_AdjustEndOfLineComm()<CR>'
 	exe ahead.'&set\ end-of-line\ com\.\ col\.<TAB>'.esc_mapl.'cs  :call Matlab_SetEndOfLineCommPos()<CR>'
 	exe vhead.'&set\ end-of-line\ com\.\ col\.<TAB>'.esc_mapl.'cs  :call Matlab_SetEndOfLineCommPos()<CR>'
-	exe ahead.'-Sep01-                        :'
+	exe ahead.'-Sep01-                                             :'
 	"
-	exe ahead.'&comment<TAB>'.esc_mapl.'cc    :call Matlab_CodeComment()<CR>'
-	exe vhead.'&comment<TAB>'.esc_mapl.'cc    :call Matlab_CodeComment()<CR>'
-	exe ahead.'&uncomment<TAB>'.esc_mapl.'cu  :call Matlab_CommentCode(0)<CR>'
-	exe vhead.'&uncomment<TAB>'.esc_mapl.'cu  :call Matlab_CommentCode(0)<CR>'
-	exe ahead.'&toggle<TAB>'.esc_mapl.'ct     :call Matlab_CommentCode(1)<CR>'
-	exe vhead.'&toggle<TAB>'.esc_mapl.'ct     :call Matlab_CommentCode(1)<CR>'
-	exe ahead.'-Sep02-                        :'
+	exe ahead.'&code\ ->\ comment<TAB>'.esc_mapl.'cc         :call Matlab_CodeComment()<CR>'
+	exe vhead.'&code\ ->\ comment<TAB>'.esc_mapl.'cc         :call Matlab_CodeComment()<CR>'
+	exe ahead.'c&omment\ ->\ code<TAB>'.esc_mapl.'co         :call Matlab_CommentCode(0)<CR>'
+	exe vhead.'c&omment\ ->\ code<TAB>'.esc_mapl.'co         :call Matlab_CommentCode(0)<CR>'
+	exe ahead.'&toggle\ code\ <->\ com\.<TAB>'.esc_mapl.'ct  :call Matlab_CommentCode(1)<CR>'
+	exe vhead.'&toggle\ code\ <->\ com\.<TAB>'.esc_mapl.'ct  :call Matlab_CommentCode(1)<CR>'
+	exe ahead.'-Sep02-                                       :'
 	"
 	exe ahead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca  :call Matlab_FunctionComment()<CR>'
 	exe vhead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca  :call Matlab_FunctionComment()<CR>'
-	exe ahead.'-Sep03-                                                 :'
+	exe ahead.'-Sep03-                                            :'
 	"
 	"-------------------------------------------------------------------------------
 	" templates
@@ -846,7 +991,12 @@ function! s:InitMenus()
 	let ahead = 'amenu <silent> '.s:Matlab_RootMenu.'.Snippets.'
 	let vhead = 'vmenu <silent> '.s:Matlab_RootMenu.'.Snippets.'
 	"
-	" :TODO:24.11.2013 16:04:WM: snippets
+	exe ahead.'&insert\ code\ snippet<Tab>'.esc_mapl.'ni       :call Matlab_CodeSnippet("insert")<CR>'
+	exe ahead.'&create\ code\ snippet<Tab>'.esc_mapl.'nc       :call Matlab_CodeSnippet("create")<CR>'
+	exe vhead.'&create\ code\ snippet<Tab>'.esc_mapl.'nc  <C-C>:call Matlab_CodeSnippet("vcreate")<CR>'
+	exe ahead.'&view\ code\ snippet<Tab>'.esc_mapl.'nv         :call Matlab_CodeSnippet("view")<CR>'
+	exe ahead.'&edit\ code\ snippet<Tab>'.esc_mapl.'ne         :call Matlab_CodeSnippet("edit")<CR>'
+	exe ahead.'-Sep01-                                       :'
 	"
 	exe ahead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntl      :call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,-1)<CR>'
 	if s:installation == 'system'
