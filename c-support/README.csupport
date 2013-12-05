@@ -178,6 +178,7 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
 - Added Doxygen templates.
 - Added help menu entries: help English, help Doxygen
 - Improved "adjust end-of-line comment".
+- Bugfix: Setup of local templates in case of global installation.
 - Several internal improvements.
 
 

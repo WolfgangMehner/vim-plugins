@@ -127,6 +127,7 @@ Look at the bashsupport help with
 =======================================================================================
 
 - Filetype plugin added.
+- Bugfix: Setup of local templates in case of global installation.
 - Minor bugfixes.
 - Documentation updated.
 
