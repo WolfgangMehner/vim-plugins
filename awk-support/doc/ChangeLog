@@ -1,6 +1,15 @@
 ---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.1
+---------------------------------------------------------------------------------------
+- Map renamed: \rt -> \rx .
+- Wrapper-script missing.
+- Resolve home for linked home directories.
+- Footer did not appear in doc/awk-hotkeys.pdf
+- Bugfix: mapleader issues fixed.
+
+---------------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 1.0
 ---------------------------------------------------------------------------------------
-+ Initial public release.
+- Initial public release.
 
 

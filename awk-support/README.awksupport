@@ -1,4 +1,4 @@
-README for awk-support.vim (Version 1.1) / August 20 2013
+README for awk-support.vim (Version 1.2pre) / August 20 2013
 
   *  INSTALLATION
   *  RELEASE NOTES 
@@ -78,13 +78,9 @@ For a system-wide installation please see the help file 'doc/awksupport.txt'.
 =======================================================================================
 
 ---------------------------------------------------------------------------------------
-  RELEASE NOTES FOR VERSION 1.1
+  RELEASE NOTES FOR VERSION 1.2pre
 ---------------------------------------------------------------------------------------
-- Map renamed: \rt -> \rx .
-- Wrapper-script missing.
-- Resolve home for linked home directories.
-- Footer did not appear in doc/awk-hotkeys.pdf
-- Bugfix: mapleader issues fixed.
+- Bugfix: Setup of local templates in case of global installation.
 
   OLDER RELEASE NOTES : see file 'doc/ChangeLog'
 =======================================================================================
