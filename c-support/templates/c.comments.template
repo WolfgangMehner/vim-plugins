@@ -1,3 +1,11 @@
+§ =============================================================
+§  Comments
+§ =============================================================
+
+§ -------------------------------------------------------------
+§  frames, descriptions
+§ -------------------------------------------------------------
+
 == Comments.end-of-line-comment == append, nomenu ==
 /* <CURSOR> */
 == Comments.frame == map:cfr, shortcut:f  ==
@@ -26,6 +34,14 @@
  *  Description:  <CURSOR>
  * =====================================================================================
  */
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  files, sections
+§ -------------------------------------------------------------
+
+== SEP: Comments.sep_file ==
+
 == Comments.file description impl == map:cfdi, shortcut:c, start, noindent ==
 /*
  * =====================================================================================
@@ -118,6 +134,15 @@
 == Comments.H file sections  == expandmenu, append, map:chs, shortcut:s ==
 |PickList( 'H file sections', 'comments_h_sections' )|
 /* #####   |PICK|######################################## */<CURSOR>
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  keywords, special and macros
+§  date and time
+§ -------------------------------------------------------------
+
+== SEP: Comments.sep_develop ==
+
 == Comments.keyword comments == expandmenu, append, map:ckc, shortcut:k ==
 |PickList( 'keyword comments', 'comments_keywords' )|
  /* |PICK| <CURSOR> */

@@ -12,6 +12,9 @@ SetMacro( 'ORGANIZATION','' )
 
 SetStyle( 'C' )
 
+§ prefix used for Doxygen commands, '\' or '@'
+SetMacro( 'DOX_CMD', '\' )
+
 § ==========================================================
 §  File Includes and Shortcuts
 § ==========================================================

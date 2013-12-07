@@ -1,45 +1,63 @@
+§ =============================================================
+§  Doxygen Comments
+§ =============================================================
+
 § -------------------------------------------------------------
-§  descriptions
+§  frames, descriptions
 § -------------------------------------------------------------
+
+§ The template "Comments.end-of-line-comment" is used for the menu entry
+§ "Comments.end-of-line comment", which is created by the plug-in itself.
+§ Do not change the name!
 
 == Comments.end-of-line-comment == append, nomenu ==
 /* <CURSOR> */
+== ENDTEMPLATE ==
+
 == Comments.frame == map:cfr, shortcut:f  ==
-/*!
- *  <CURSOR>
- */
+//-----------------------------------------------------------------------------
+//  <CURSOR>
+//-----------------------------------------------------------------------------
 == Comments.function == map:cfu, shortcut:f  ==
 /*!
- *  \brief  |DESCRIPTION|<CURSOR>
+ *  |DOX_CMD|brief  |DESCRIPTION|<CURSOR>
  *  
- *  \param  <+NAME+> <+DESCRIPTION+>
- *  \return <+DESCRIPTION+>
+ *  |DOX_CMD|param  <+NAME+> <+DESCRIPTION+>
+ *  |DOX_CMD|return <+DESCRIPTION+>
  *  <+DETAILED+>
  */
 == Comments.method == map:cme, shortcut:m  ==
 /*!
- *  \brief  |DESCRIPTION|<CURSOR>
+ *  |DOX_CMD|brief  |DESCRIPTION|<CURSOR>
  *  
- *  \param  <+NAME+> <+DESCRIPTION+>
- *  \return <+DESCRIPTION+>
+ *  |DOX_CMD|param  <+NAME+> <+DESCRIPTION+>
+ *  |DOX_CMD|return <+DESCRIPTION+>
  *  <+DETAILED+>
  */
 == Comments.class == map:ccl, shortcut:c  ==
 /*!
- *  \brief  |DESCRIPTION|<CURSOR>
+ *  |DOX_CMD|brief  |DESCRIPTION|<CURSOR>
  *  
- *  {+DETAILED+}
+ *  <+DETAILED+>
  */
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  files, sections
+§ -------------------------------------------------------------
+
+== SEP: Comments.sep_file ==
+
 == Comments.file description impl == map:cfdi, shortcut:c, start, noindent ==
 /*!
- *    \file  |FILENAME|
- *   \brief  |DESCRIPTION|<CURSOR>
+ *    |DOX_CMD|file  |FILENAME|
+ *   |DOX_CMD|brief  |DESCRIPTION|<CURSOR>
  *  
  *  <+DETAILED+>
  *  
- *  \author  |AUTHOR| (|AUTHORREF|), |EMAIL|
+ *  |DOX_CMD|author  |AUTHOR| (|AUTHORREF|), |EMAIL|
  *  
- *  \internal
+ *  |DOX_CMD|internal
  *       Created:  |DATE|
  *      Revision:  none
  *      Compiler:  gcc
@@ -52,14 +70,14 @@
 
 == Comments.file description header == map:cfdh, shortcut:h, start, noindent ==
 /*!
- *    \file  |FILENAME|
- *   \brief  |DESCRIPTION|<CURSOR>
+ *    |DOX_CMD|file  |FILENAME|
+ *   |DOX_CMD|brief  |DESCRIPTION|<CURSOR>
  *  
  *  <+DETAILED+>
  *  
- *  \author  |AUTHOR| (|AUTHORREF|), |EMAIL|
+ *  |DOX_CMD|author  |AUTHOR| (|AUTHORREF|), |EMAIL|
  *  
- *  \internal
+ *  |DOX_CMD|internal
  *       Created:  |DATE|
  *      Revision:  none
  *      Compiler:  gcc
@@ -70,76 +88,20 @@
  *  GNU General Public License as published by the Free Software Foundation.
  */
 
-== ENDTEMPLATE ==
-
-§ -------------------------------------------------------------
-§  special Doxygen sub-menu
-§ -------------------------------------------------------------
-
-MenuShortcut( 'Comments.Doxygen',  'd' )
-
-== Comments.Doxygen.description == below, map:cdd, sc:d ==
-/*!
- *  \brief  <CURSOR>
- */
-== Comments.Doxygen.overwrite == below, map:cdo, sc:o ==
-/*!
- *  \overwrite
- */
-== Comments.Doxygen.brief == below, map:cdb, sc:b ==
- *  \brief  <CURSOR>
-== Comments.Doxygen.template parameter == below, map:cdt, sc:t ==
- *  \tparam <CURSOR>
-== Comments.Doxygen.parameter == below, map:cdp, sc:p ==
- *  \param  <CURSOR>
-== Comments.Doxygen.return == below, map:cdr, sc:r ==
- *  \return <CURSOR>
-== Comments.Doxygen.exception == below, map:cde, sc:e ==
- *  \throw  <CURSOR>
-== Comments.Doxygen.brief, after member == append, map:cda, sc:a ==
-   /*!< \brief <CURSOR> */
-== Comments.Doxygen.defgroup == below, sc:g ==
-/*!
- *  \defgroup |?DOXYGEN_GROUP|
- *  
- *  \brief    <CURSOR>
- *  
- *  <+DETAILED+>
- */
-== Comments.Doxygen.addtogroup, start == below, sc:g ==
-/*!
- *  \addtogroup |?DOXYGEN_GROUP|
- *  @{
- */
-== Comments.Doxygen.addtogroup, end == below, sc:g ==
-/*!
- *  @}
- */
-== Comments.Doxygen.ingroup == below, map:cdg, sc:i ==
- *  \ingroup |?DOXYGEN_GROUP|
- *  
-== Comments.Doxygen.LaTeX formula, in-text == insert, map:cfs, sc:l ==
-\f$ <CURSOR><SPLIT> \f$
-== Comments.Doxygen.LaTeX formula, separate == below, map:cfl, sc:l ==
- *  \f[
- *    <CURSOR><SPLIT>
- *  \f]
-== Comments.Doxygen.LaTeX formula, environment == below, map:cfe, sc:l ==
- *  \f{<CURSOR>}{
- *    <SPLIT>{-FORMULA-}
- *  \f}
-== ENDTEMPLATE ==
-
-§ -------------------------------------------------------------
-§  lists
-§ -------------------------------------------------------------
-
 == Comments.C file sections  == expandmenu, append, map:ccs, shortcut:s ==
 |PickList( 'C file sections', 'comments_c_sections' )|
 /* #####   |PICK|#################### */<CURSOR>
 == Comments.H file sections  == expandmenu, append, map:chs, shortcut:s ==
 |PickList( 'H file sections', 'comments_h_sections' )|
 /* #####   |PICK|######################################## */<CURSOR>
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  keywords, special and macros
+§ -------------------------------------------------------------
+
+== SEP: Comments.sep_develop ==
+
 == Comments.keyword comments == expandmenu, append, map:ckc, shortcut:k ==
 |PickList( 'keyword comments', 'comments_keywords' )|
  /* |PICK| <CURSOR> */
@@ -149,5 +111,299 @@ MenuShortcut( 'Comments.Doxygen',  'd' )
 == Comments.macros == expandmenu, insert, map:cma, shortcut:m ==
 |PickList( 'macro', 'comments_macros' )|
 ||PICK||<CURSOR>
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  special Doxygen sub-menu
+§ -------------------------------------------------------------
+
+== SEP: Comments.sep_doxygen ==
+
+MenuShortcut( 'Comments.Doxygen',  'd' )
+
+§ missing:
+§ - name
+
+== LIST: doxygen_command == list, bare ==
+a
+addindex
+addtogroup
+anchor
+arg
+attention
+author
+authors
+b
+brief
+bug
+c
+callgraph
+callergraph
+category
+cite
+class
+code
+cond
+copybrief
+copydetails
+copydoc
+copyright
+date
+def
+defgroup
+deprecated
+details
+dir
+docbookonly
+dontinclude
+dot
+dotfile
+e
+else
+elseif
+em
+endcode
+endcond
+enddocbookonly
+enddot
+endhtmlonly
+endif
+endinternal
+endlatexonly
+endlink
+endmanonly
+endmsc
+endrtfonly
+endsecreflist
+endverbatim
+endxmlonly
+enum
+example
+exception
+extends
+file
+fn
+headerfile
+hideinitializer
+htmlinclude
+htmlonly
+idlexcept
+if
+ifnot
+image
+implements
+include
+includelineno
+ingroup
+internal
+invariant
+interface
+latexonly
+li
+line
+link
+mainpage
+manonly
+memberof
+msc
+mscfile
+n
+name
+namespace
+nosubgrouping
+note
+overload
+p
+package
+page
+par
+paragraph
+param
+post
+pre
+private
+privatesection
+property
+protected
+protectedsection
+protocol
+public
+publicsection
+pure
+ref
+refitem
+related
+relates
+relatedalso
+relatesalso
+remark
+remarks
+result
+return
+returns
+retval
+rtfonly
+sa
+secreflist
+section
+see
+short
+showinitializer
+since
+skip
+skipline
+snippet
+struct
+subpage
+subsection
+subsubsection
+tableofcontents
+test
+throw
+throws
+todo
+tparam
+typedef
+union
+until
+var
+verbatim
+verbinclude
+version
+vhdlflow
+warning
+weakgroup
+xmlonly
+xrefitem
+== LIST: doxygen_esc_char == list ==
+	'$',
+	'@',
+	'&',
+	'~',
+	'<',
+	'>',
+	'#',
+	'%',
+	'"',
+	'.',
+	'::',
+== LIST: doxygen_page_cmd == hash ==
+	'mainpage' : '{+TITLE_OPT_+}',
+	'page'     : '{+REF+} {+TITLE+}',
+	'subpage'  : '{+REF+} {+TEXT_OPT_+}',
+
+	'tableofcontents' : '',
+
+	'section'       : '{+REF+} {+TITLE+}',
+	'subsection'    : '{+REF+} {+TITLE+}',
+	'subsubsection' : '{+REF+} {+TITLE+}',
+	'paragraph'     : '{+REF+} {+TITLE+}',
+
+	'anchor' : '{+REF+}',
+	'ref'    : '{+REF+} {+TEXT_OPT_+}',
+== ENDLIST ==
+
+§ The template "Comments.Doxygen.brief, after member" is used for the menu entry
+§ "Comments.Doxygen.brief, after member", which is created by the plug-in itself.
+§ Do not change the name!
+
+== Comments.Doxygen.brief, after member == append, nomenu ==
+/*!< |DOX_CMD|brief <CURSOR> */
+== ENDTEMPLATE ==
+
+§ basic blocks
+
+== Comments.Doxygen.frame == below, map:dfr, sc:f ==
+/*!
+ *  |DOX_CMD|brief  <CURSOR>
+ */
+== Comments.Doxygen.overload block == below, map:do, sc:o ==
+/*!
+ *  |DOX_CMD|overload<CURSOR>
+ */
+== ENDTEMPLATE ==
+
+== SEP: Comments.Doxygen.sep1 ==
+
+§ basic commands
+
+== Comments.Doxygen.commands == below, map:dc, sc:c ==
+|PickList( 'Doxygen command', 'doxygen_command' )|
+ *  |DOX_CMD||KEY| <CURSOR>
+== Comments.Doxygen.brief == below, map:dbr, sc:b ==
+ *  |DOX_CMD|brief  <CURSOR>
+== Comments.Doxygen.parameter == below, map:dpa, sc:p ==
+ *  |DOX_CMD|param  <CURSOR>
+== Comments.Doxygen.return == below, map:dre, sc:r ==
+ *  |DOX_CMD|return <CURSOR>
+== Comments.Doxygen.escaped char == expandmenu, insert, map:de, sc:e ==
+|PickList( 'character', 'doxygen_esc_char' )|
+|DOX_CMD||KEY|<CURSOR>
+== ENDTEMPLATE ==
+
+== SEP: Comments.Doxygen.sep2 ==
+
+§ groups
+
+== Comments.Doxygen.defgroup block == below, map:dgd, sc:g ==
+/*!
+ *  |DOX_CMD|defgroup |?DOXYGEN_GROUP|
+ *  
+ *  |DOX_CMD|brief    <CURSOR>
+ *  
+ *  <+DETAILED+>
+ */
+== Comments.Doxygen.addtogroup blocks == below, noindent, map:dga, sc:g ==
+/*!
+ *  |DOX_CMD|addtogroup <CURSOR>|?DOXYGEN_GROUP|
+ *  |DOX_CMD|{
+ */
+
+<SPLIT>
+
+/*!
+ *  |DOX_CMD|}
+ */
+== Comments.Doxygen.ingroup == below, map:dgi, sc:i ==
+ *  |DOX_CMD|ingroup <CURSOR>|?DOXYGEN_GROUP|
+ *  
+== Comments.Doxygen.member group blocks == below, noindent, map:dgm, sc:m ==
+/*!
+ *  |DOX_CMD|name {+HEADER+}
+ */
+/*! |DOX_CMD|{ */
+
+<SPLIT>
+
+/*! |DOX_CMD|} */
+== ENDTEMPLATE ==
+
+== SEP: Comments.Doxygen.sep3 ==
+
+§ LaTeX formulas
+
+== Comments.Doxygen.LaTeX formula, in-text == insert, map:dfi, sc:f ==
+|DOX_CMD|f$ <CURSOR><SPLIT> |DOX_CMD|f$
+== Comments.Doxygen.LaTeX formula, separate == below, map:dfs, sc:f ==
+ *  |DOX_CMD|f[
+ *    <CURSOR><SPLIT>
+ *  |DOX_CMD|f]
+== Comments.Doxygen.LaTeX formula, environment == below, map:dfe, sc:f ==
+ *  |DOX_CMD|f{<CURSOR>}{
+ *    <SPLIT>{-FORMULA-}
+ *  |DOX_CMD|f}
+== ENDTEMPLATE ==
+
+== SEP: Comments.Doxygen.sep4 ==
+
+§ pages
+
+== Comments.Doxygen.page command == expandmenu, below, map:dpc, sc:a ==
+|PickList( 'Doxygen command', 'doxygen_page_cmd' )|
+ *  |DOX_CMD||KEY|<CURSOR> |VALUE|
+== Comments.Doxygen.page block == below, map:dpb, sc:a ==
+/*!
+ *  |DOX_CMD|page<CURSOR> {+REF+} {+TITLE+}
+ */
 == ENDTEMPLATE ==
 
