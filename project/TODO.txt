@@ -2,6 +2,14 @@ Project
 - (WM) Remove 'plugin/make.vim'.
 - (WM) Tag 'perlsupport-5.2' is wrong.
 
+Templates:
+- (WM) Correct escape for menu names.
+  * At least these special characters must be escaped: <space> . | \ &
+  * Expanded menus for lists.
+- (WM) API 'EditTemplateFiles'.
+  * Configuration of the file browser (+ documentation).
+  * Check whether an indexed file actually exists.
+
 C/C++:
 - (FM) Documentation: Change documentation with regard to Make integration.
   * 'Run' menu entries removed.
