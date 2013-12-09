@@ -1,13 +1,22 @@
+# PS4 : timestamp; the current time in 24-hour HH:MM:SS format
+PS4='+[\t]  '
+
 # PS4 : timestamp; 'seconds.nanoseconds' since 1970-01-01 00:00:00 UT 
-PS4='+	[$(date "+%s.%N")]  '
+PS4='+[$(date "+%s.%N")]  '
 
 # PS4 : position, line number, function name
+# The following line avoids error messages due to an unset FUNCNAME[0] :
+# set +o nounset                  # Treat unset variables as an error
+#
 PS4='+|${BASH_SOURCE##*/} ${LINENO}${FUNCNAME[0]:+ ${FUNCNAME[0]}}|  '
 
 # PS4 : position, line number, function name, subshell information
-PS4='+(${BASH_SOURCE##*/}: ${LINENO}) : ${FUNCNAME[0]} - [level ${SHLVL}, subshell ${BASH_SUBSHELL}, return code $?]
-'
+# The following line avoids error messages due to an unset FUNCNAME[0] :
+# set +o nounset                  # Treat unset variables as an error
+#
+PS4='+(${BASH_SOURCE##*/}: ${LINENO}) : ${FUNCNAME[0]} - [level ${SHLVL}, '
+PS4=$PS4'subshell ${BASH_SUBSHELL}, return code $?]\n  '
 
 # PS4 : default prompt
-PS4='+'
+PS4='+ '
 

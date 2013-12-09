@@ -3,7 +3,7 @@
 § =============================================================
 
 == Comments.end-of-line comment == nomenu, append ==
- # <CURSOR>
+# <CURSOR>
 == Comments.frame == map:cfr, sc:r ==
 #-------------------------------------------------------------------------------
 # <CURSOR>
@@ -41,10 +41,10 @@ set -o nounset                              # Treat unset variables as an error
 
 § -------------------------------------------------------------
 
-== Comments.date == append, map:cd, sc:d ==
-|DATE|
-== Comments.date+time == append, map:ct, sc:t ==
-|DATE| |TIME|
+== Comments.date == insert, map:cd, sc:d ==
+|DATE|<CURSOR>
+== Comments.date+time == insert, map:ct, sc:t ==
+|DATE| |TIME|<CURSOR>
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------

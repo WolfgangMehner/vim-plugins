@@ -1,0 +1,51 @@
+§ =============================================================
+§  RegExp
+§ =============================================================
+
+== PatternMatching.zero or one     == insert, map:pzo, sc:z  ==
+?(<SPLIT><CURSOR>|)
+== PatternMatching.zero or more    == insert, map:pzm, sc:z  ==
+*(<SPLIT><CURSOR>|)
+== PatternMatching.one or more     == insert, map:pom, sc:o  ==
++(<SPLIT><CURSOR>|)
+== PatternMatching.exactly one     == insert, map:peo, sc:e  ==
+@(<SPLIT><CURSOR>|)
+== PatternMatching.anything except == insert, map:pae, sc:a  ==
+!(<SPLIT><CURSOR>|)
+== ENDTEMPLATE ==
+
+== SEP: PatternMatching.sep1 ==
+
+== LIST: POSIX_CharClasses == list ==
+  'alnum',
+  'alpha',
+  'ascii',
+  'blank',
+  'cntrl',
+  'digit',
+  'graph',
+  'lower',
+  'print',
+  'punct',
+  'space',
+  'upper',
+  'word',
+  'xdigit',
+== ENDLIST ==
+
+== PatternMatching.POSIX classes == expandmenu, insert, sc:p, map:ppc ==
+|PickList( 'POSIX char. classes', 'POSIX_CharClasses' )|
+[:|PICK|:]<CURSOR>
+== ENDTEMPLATE ==
+
+== LIST: BashRematch == list ==
+  '${BASH_REMATCH[0]}',
+  '${BASH_REMATCH[1]}',
+  '${BASH_REMATCH[2]}',
+  '${BASH_REMATCH[3]}',
+== ENDLIST ==
+
+== PatternMatching.BASH_REMATCH == expandmenu, insert, sc:b, map:pbr ==
+|PickList( 'BASH_REMATCH', 'BashRematch' )|
+|PICK|<CURSOR>
+== ENDTEMPLATE ==

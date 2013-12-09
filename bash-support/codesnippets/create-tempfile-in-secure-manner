@@ -3,7 +3,6 @@ TMPDIR=${TMPDIR:-/tmp}                          # defaults to /tmp if unset
 
 #-------------------------------------------------------------------------------
 # Creates a particular temporary directory inside $TMPDIR.
-# mkdir(1) is an atomic check-and-create operation.
 #-------------------------------------------------------------------------------
 TEMPORARY_DIR=$(mktemp -d "$TMPDIR/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX") || \
     { echo "ERROR creating a temporary file"; exit 1; }

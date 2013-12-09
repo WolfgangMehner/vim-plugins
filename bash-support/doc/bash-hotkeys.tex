@@ -28,7 +28,7 @@
 
 \setlength\parindent{0pt}
 
-\newcommand{\Pluginversion}{4.0}
+\newcommand{\Pluginversion}{4.1}
 \newcommand{\ReleaseDate}{\today}
 \newcommand{\Rep}{{\scriptsize{[n]}}}
 
@@ -195,17 +195,17 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \begin{tabular}[]{|p{11mm}|p{62mm}|}
 %
 %%----------------------------------------------------------------------
-%%  menu Regexp
+%%  menu Pattern Matching
 %%----------------------------------------------------------------------
 \hline
-\multicolumn{2}{|r|}{\textsl{Rege\textbf{x}p}}     \\[1.0ex]
-\hline     \verb'xzo' & zero or one,      \verb' ?( | )'  \hfill (n, i)\\ 
-\hline     \verb'xzm' & zero or more,     \verb' *( | )'  \hfill (n, i)\\ 
-\hline     \verb'xom' & one or more,      \verb' +( | )'  \hfill (n, i)\\ 
-\hline     \verb'xeo' & exactly one,      \verb' @( | )'  \hfill (n, i)\\ 
-\hline     \verb'xae' & anything except,  \verb' !( | )'  \hfill (n, i)\\ 
-\hline     \verb'xpc' &  POSIX classes                  \hfill (n, i)\\ 
-\hline     \verb'xbr' &  \verb'${BASH_REMATCH[0'$\ldots$\verb'3]}'  \hfill (n, i)\\ 
+\multicolumn{2}{|r|}{\textsl{\textbf{P}attern Matching}}     \\[1.0ex]
+\hline     \verb'pzo' & zero or one,      \verb' ?( | )'  \hfill (n, i)\\ 
+\hline     \verb'pzm' & zero or more,     \verb' *( | )'  \hfill (n, i)\\ 
+\hline     \verb'pom' & one or more,      \verb' +( | )'  \hfill (n, i)\\ 
+\hline     \verb'peo' & exactly one,      \verb' @( | )'  \hfill (n, i)\\ 
+\hline     \verb'pae' & anything except,  \verb' !( | )'  \hfill (n, i)\\ 
+\hline     \verb'ppc' & POSIX classes                     \hfill (n, i)\\ 
+\hline     \verb'pbr' &  \verb'${BASH_REMATCH[0'$\ldots$\verb'3]}'  \hfill (n, i)\\ 
 \hline
 %
 %%----------------------------------------------------------------------

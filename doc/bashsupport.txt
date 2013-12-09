@@ -1,7 +1,7 @@
-*bashsupport.txt*                Bash Support                   July 24 2013
+*bashsupport.txt*                Bash Support               December 07 2013
 
 Bash Support                                      *bash-support* *bashsupport*
-                             Plugin version 4.0
+                             Plugin version 4.1
                         for Vim version 7.0 and above
                        Fritz Mehner  <mehner@fh-swf.de>
 
@@ -33,7 +33,7 @@ writing shell scripts. This plug-in can be used for Bash version 4.0.
  1.2.1    Normal mode, insert mode               |bashsupport-stat-norm-ins|
  1.2.2    Visual mode                            |bashsupport-stat-visual|
  1.3     Menus'Tests' ... 'Shopts'               |bashsupport-tests|
- 1.4     Menu 'Regexp'                           |bashsupport-regexp|
+ 1.4     Menu 'PatternMatching'                  |bashsupport-pattern|
  1.5     Menu 'I/O-Redir'                        |bashsupport-io-redir|
  1.6     Menu 'Snippets'                         |bashsupport-snippets|
  1.6.1    Code Snippets                          |bashsupport-codesnippets|
@@ -270,13 +270,13 @@ The whole statement will be indented after insertion.
 Insert tests, parameter substitutions, ... I/O-redirections. 
 
 ------------------------------------------------------------------------------
-1.4  MENU 'Regexp'                                        *bashsupport-regexp*
+1.4  MENU 'PatternMatching'                              *bashsupport-pattern*
 ------------------------------------------------------------------------------
 
-This menu can be used to compose regular expressions with a few keystrokes.
-In normal and insert mode the items insert the shown constructs after the
-cursor. The first group ( "zero or more" ... "anything expect") can enclose a
-marked text.  The marked text
+This menu can be used to compose globs and regular expressions with a few
+keystrokes.  In normal and insert mode the items insert the shown constructs
+after the cursor. The first group ( "zero or more" ... "anything expect") can
+enclose a marked text.  The marked text
 >
  xxxxx
 <
@@ -696,15 +696,15 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \ior    IO-redirections (list)           (n, i)
      \ioh    here-document                    (n, i)
 
-  -- Regular Expression ----------------------------------
+  -- Pattern Matching ------------------------------------
 
-     \xzo    zero or more, ?( | )            (n, i)
-     \xzm    zero or more, *( | )            (n, i)
-     \xom    one or more, +( | )             (n, i)
-     \xeo    exactly one, @( | )             (n, i)
-     \xae    anything except, !( | )         (n, i)
-     \xpc    POSIX classes                   (n, i)
-     \xbr    BASH_REMATCH                    (n, i)
+     \pzo    zero or more, ?( | )            (n, i)
+     \pzm    zero or more, *( | )            (n, i)
+     \pom    one or more, +( | )             (n, i)
+     \peo    exactly one, @( | )             (n, i)
+     \pae    anything except, !( | )         (n, i)
+     \ppc    POSIX classes                   (n, i)
+     \pbr    BASH_REMATCH                    (n, i)
 
   -- Snippets --------------------------------------------
 
@@ -991,7 +991,7 @@ usually looks like this (my settings as an example):
  SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
  SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
  SetMacro( 'LICENSE',     'GNU General Public License' )
- SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
+ SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn, Germany' )
 
  SetFormat( 'DATE', '%x' )
  SetFormat( 'TIME', '%H:%M' )
@@ -1007,25 +1007,20 @@ usually looks like this (my settings as an example):
  MenuShortcut( 'Statements',      's' )
  MenuShortcut( 'Tests',           't' )
  MenuShortcut( 'ParamSub',        'p' )
- MenuShortcut( 'SpecParams',      's' )
- MenuShortcut( 'Environment',     'e' )
- MenuShortcut( 'Builtins',        'b' )
- MenuShortcut( 'set',             's' )
- MenuShortcut( 'Shopts',          'o' )
- MenuShortcut( 'Regexp',          'r' )
+ MenuShortcut( 'PatternMatching', 'p' )
  MenuShortcut( 'IO-Redir',        'i' )
- 
- IncludeFile( 'comments.templates'       )
- IncludeFile( 'statements.templates'     )
- IncludeFile( 'tests.templates'          )
- IncludeFile( 'paramsub.templates'       )
- IncludeFile( 'specialparams.templates'  )
- IncludeFile( 'environment.templates'    )
- IncludeFile( 'builtins.templates'       )
- IncludeFile( 'set.templates'            )
- IncludeFile( 'shelloptions.templates'   )
- IncludeFile( 'regexp.templates'         )
- IncludeFile( 'io-redirection.templates' )
+
+ IncludeFile( 'comments.templates'        )
+ IncludeFile( 'statements.templates'      )
+ IncludeFile( 'tests.templates'           )
+ IncludeFile( 'paramsub.templates'        )
+ IncludeFile( 'specialparams.templates'   )
+ IncludeFile( 'environment.templates'     )
+ IncludeFile( 'builtins.templates'        )
+ IncludeFile( 'set.templates'             )
+ IncludeFile( 'shelloptions.templates'    )
+ IncludeFile( 'io-redirection.templates'  )
+ IncludeFile( 'patternmatching.templates' )
 <
 Lines starting with a paragraph sign are comments. The section starting with
 >
