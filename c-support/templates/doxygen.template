@@ -1,6 +1,12 @@
 § =============================================================
 §  Doxygen Comments
+§  - the templates in the "Comments" menu are created for the
+§    style "Doxygen"
+§  - the templates in the "Doxygen" menu are created for the
+§    style "default", so that they work for every style
 § =============================================================
+
+== USE STYLES: Doxygen ==
 
 § -------------------------------------------------------------
 §  frames, descriptions
@@ -11,7 +17,7 @@
 § Do not change the name!
 
 == Comments.end-of-line-comment == append, nomenu ==
-/* <CURSOR> */
+// <CURSOR>
 == ENDTEMPLATE ==
 
 == Comments.frame == map:cfr, shortcut:f  ==
@@ -104,22 +110,26 @@
 
 == Comments.keyword comments == expandmenu, append, map:ckc, shortcut:k ==
 |PickList( 'keyword comments', 'comments_keywords' )|
- /* |PICK| <CURSOR> */
+ // |PICK| <CURSOR>
 == Comments.special comments == expandmenu, append, map:csc, shortcut:s ==
 |PickList( 'special comments', 'comments_special' )|
- /* |PICK| */<CURSOR>
+ // |PICK|<CURSOR>
 == Comments.macros == expandmenu, insert, map:cma, shortcut:m ==
 |PickList( 'macro', 'comments_macros' )|
 ||PICK||<CURSOR>
+== Comments.date == insert, map:cd, shortcut:d ==
+|DATE|<CURSOR>
+== Comments.date time == insert, map:ct, shortcut:t ==
+|DATE| |TIME|<CURSOR>
 == ENDTEMPLATE ==
+
+== ENDSTYLES ==
 
 § -------------------------------------------------------------
 §  special Doxygen sub-menu
 § -------------------------------------------------------------
 
-== SEP: Comments.sep_doxygen ==
-
-MenuShortcut( 'Comments.Doxygen',  'd' )
+== USE STYLES: default ==
 
 § missing:
 § - name
@@ -303,49 +313,53 @@ xrefitem
 	'ref'    : '{+REF+} {+TEXT_OPT_+}',
 == ENDLIST ==
 
-§ The template "Comments.Doxygen.brief, after member" is used for the menu entry
-§ "Comments.Doxygen.brief, after member", which is created by the plug-in itself.
+§ The template "Doxygen.brief, after member" is used for the menu entry
+§ "Doxygen.brief, after member", which is created by the plug-in itself.
 § Do not change the name!
 
-== Comments.Doxygen.brief, after member == append, nomenu ==
+§ menu and map used for "brief, after member":
+SetProperty( 'Doxygen::BriefAM::Menu', 'Doxygen' )
+SetProperty( 'Doxygen::BriefAM::Map',  'dba' )
+
+== Doxygen.brief, after member == append, nomenu ==
 /*!< |DOX_CMD|brief <CURSOR> */
 == ENDTEMPLATE ==
 
 § basic blocks
 
-== Comments.Doxygen.frame == below, map:dfr, sc:f ==
+== Doxygen.frame == below, map:dfr, sc:f ==
 /*!
  *  |DOX_CMD|brief  <CURSOR>
  */
-== Comments.Doxygen.overload block == below, map:do, sc:o ==
+== Doxygen.overload block == below, map:do, sc:o ==
 /*!
  *  |DOX_CMD|overload<CURSOR>
  */
 == ENDTEMPLATE ==
 
-== SEP: Comments.Doxygen.sep1 ==
+== SEP: Doxygen.sep1 ==
 
 § basic commands
 
-== Comments.Doxygen.commands == below, map:dc, sc:c ==
+== Doxygen.commands == below, map:dc, sc:c ==
 |PickList( 'Doxygen command', 'doxygen_command' )|
  *  |DOX_CMD||KEY| <CURSOR>
-== Comments.Doxygen.brief == below, map:dbr, sc:b ==
+== Doxygen.brief == below, map:dbr, sc:b ==
  *  |DOX_CMD|brief  <CURSOR>
-== Comments.Doxygen.parameter == below, map:dpa, sc:p ==
+== Doxygen.parameter == below, map:dpa, sc:p ==
  *  |DOX_CMD|param  <CURSOR>
-== Comments.Doxygen.return == below, map:dre, sc:r ==
+== Doxygen.return == below, map:dre, sc:r ==
  *  |DOX_CMD|return <CURSOR>
-== Comments.Doxygen.escaped char == expandmenu, insert, map:de, sc:e ==
+== Doxygen.escaped char == expandmenu, insert, map:de, sc:e ==
 |PickList( 'character', 'doxygen_esc_char' )|
 |DOX_CMD||KEY|<CURSOR>
 == ENDTEMPLATE ==
 
-== SEP: Comments.Doxygen.sep2 ==
+== SEP: Doxygen.sep2 ==
 
 § groups
 
-== Comments.Doxygen.defgroup block == below, map:dgd, sc:g ==
+== Doxygen.defgroup block == below, map:dgd, sc:g ==
 /*!
  *  |DOX_CMD|defgroup |?DOXYGEN_GROUP|
  *  
@@ -353,7 +367,7 @@ xrefitem
  *  
  *  <+DETAILED+>
  */
-== Comments.Doxygen.addtogroup blocks == below, noindent, map:dga, sc:g ==
+== Doxygen.addtogroup blocks == below, noindent, map:dga, sc:g ==
 /*!
  *  |DOX_CMD|addtogroup <CURSOR>|?DOXYGEN_GROUP|
  *  |DOX_CMD|{
@@ -364,10 +378,10 @@ xrefitem
 /*!
  *  |DOX_CMD|}
  */
-== Comments.Doxygen.ingroup == below, map:dgi, sc:i ==
+== Doxygen.ingroup == below, map:dgi, sc:i ==
  *  |DOX_CMD|ingroup <CURSOR>|?DOXYGEN_GROUP|
  *  
-== Comments.Doxygen.member group blocks == below, noindent, map:dgm, sc:m ==
+== Doxygen.member group blocks == below, noindent, map:dgm, sc:m ==
 /*!
  *  |DOX_CMD|name {+HEADER+}
  */
@@ -378,32 +392,34 @@ xrefitem
 /*! |DOX_CMD|} */
 == ENDTEMPLATE ==
 
-== SEP: Comments.Doxygen.sep3 ==
+== SEP: Doxygen.sep3 ==
 
 § LaTeX formulas
 
-== Comments.Doxygen.LaTeX formula, in-text == insert, map:dfi, sc:f ==
+== Doxygen.LaTeX formula, in-text == insert, map:dfi, sc:f ==
 |DOX_CMD|f$ <CURSOR><SPLIT> |DOX_CMD|f$
-== Comments.Doxygen.LaTeX formula, separate == below, map:dfs, sc:f ==
+== Doxygen.LaTeX formula, separate == below, map:dfs, sc:f ==
  *  |DOX_CMD|f[
  *    <CURSOR><SPLIT>
  *  |DOX_CMD|f]
-== Comments.Doxygen.LaTeX formula, environment == below, map:dfe, sc:f ==
+== Doxygen.LaTeX formula, environment == below, map:dfe, sc:f ==
  *  |DOX_CMD|f{<CURSOR>}{
  *    <SPLIT>{-FORMULA-}
  *  |DOX_CMD|f}
 == ENDTEMPLATE ==
 
-== SEP: Comments.Doxygen.sep4 ==
+== SEP: Doxygen.sep4 ==
 
 § pages
 
-== Comments.Doxygen.page command == expandmenu, below, map:dpc, sc:a ==
+== Doxygen.page command == expandmenu, below, map:dpc, sc:a ==
 |PickList( 'Doxygen command', 'doxygen_page_cmd' )|
  *  |DOX_CMD||KEY|<CURSOR> |VALUE|
-== Comments.Doxygen.page block == below, map:dpb, sc:a ==
+== Doxygen.page block == below, map:dpb, sc:a ==
 /*!
  *  |DOX_CMD|page<CURSOR> {+REF+} {+TITLE+}
  */
 == ENDTEMPLATE ==
+
+== ENDSTYLES ==
 

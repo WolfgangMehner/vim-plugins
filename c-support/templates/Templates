@@ -20,6 +20,7 @@ SetMacro( 'DOX_CMD', '\' )
 § ==========================================================
 
 MenuShortcut( 'Comments',     'c' )
+MenuShortcut( 'Doxygen',      'd' )
 MenuShortcut( 'Statements',   's' )
 MenuShortcut( 'Idioms',       'i' )
 MenuShortcut( 'Preprocessor', 'p' )
@@ -38,9 +39,8 @@ IncludeFile( 'c.comments.template' )
 IncludeFile( 'cpp.comments.template' )
 == ENDSTYLES ==
 
-== USE STYLES : Doxygen ==
-IncludeFile( 'doxygen.template' )
-== ENDSTYLES ==
+§sets the style "Doxygen" internally
+§IncludeFile( 'doxygen.template' )
 
 § the rest of the templates are the same for the two styles "C" and "Doxygen";
 § you may also group "Doxygen" and "CPP" if you like this better:

@@ -21,9 +21,11 @@ C/C++:
     anymore, since the Make integration moves to the toolbox. It is to be
     documented as configuration for 'Run->run', similar to 'Run->cmdline arg.'.
     Shortcut changes to '\ce'.
+- (FM) Check documentation: Doxygen templates.
 - (WM) Doxygen:
-  * Templates for "overload".
-  * Append "short, aftermember" to several lines.
+  * (DONE) Templates for "overload".
+  * (DONE) Append "short, after member" to several lines.
+  * Add escaped characters "\" and "|" once the template engine supports this.
 
 Git:
 - (WM) Current method for jumping to Git buffers does not work for tabs.

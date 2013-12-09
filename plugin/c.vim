@@ -447,8 +447,8 @@ function! s:C_InitMenus ()
 	exe ahead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntl       :call mmtemplates#core#EditTemplateFiles(g:C_Templates,-1)<CR>'
 	exe ihead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntl  <C-C>:call mmtemplates#core#EditTemplateFiles(g:C_Templates,-1)<CR>'
 	if g:C_Installation == 'system'
-		exe ahead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntg       :call mmtemplates#core#EditTemplateFiles(g:C_Templates,1)<CR>'
-		exe ihead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntg  <C-C>:call mmtemplates#core#EditTemplateFiles(g:C_Templates,1)<CR>'
+		exe ahead.'edit\ &global\ templates<Tab>'.esc_mapl.'ntg       :call mmtemplates#core#EditTemplateFiles(g:C_Templates,0)<CR>'
+		exe ihead.'edit\ &global\ templates<Tab>'.esc_mapl.'ntg  <C-C>:call mmtemplates#core#EditTemplateFiles(g:C_Templates,0)<CR>'
 	endif
 	"
 	exe ahead.'reread\ &templates<Tab>'.esc_mapl.'ntr       :call mmtemplates#core#ReadTemplates(g:C_Templates,"reload","all")<CR>'
@@ -572,6 +572,28 @@ function! s:C_InitMenus ()
 	exe "amenu          ".MenuComments.'.-SEP12-                                       :'
 	exe "amenu <silent> ".MenuComments.'.\/*\ &xxx\ *\/\ \ <->\ \ \/\/\ xxx<Tab>'.esc_mapl.'cx   :call C_CommentToggle()<CR>'
 	exe "vmenu <silent> ".MenuComments.'.\/*\ &xxx\ *\/\ \ <->\ \ \/\/\ xxx<Tab>'.esc_mapl.'cx   :call C_CommentToggle()<CR>'
+	"
+	"===============================================================================================
+	"----- Menu : C-Doxygen ---------------------------------------------------   {{{2
+	"===============================================================================================
+	"
+	let [ MenuDoxygen, err ] = mmtemplates#core#Resource ( g:C_Templates, 'get', 'property', 'Doxygen::BriefAM::Menu' )
+	"
+	if err == '' && MenuDoxygen != ''
+		let	MenuDoxygen	= s:C_RootMenu.mmtemplates#core#EscapeMenu( MenuDoxygen, 'menu' )
+		"
+		let [ bam_map, err ] = mmtemplates#core#Resource ( g:C_Templates, 'get', 'property', 'Doxygen::BriefAM::Map' )
+		"
+		if err == '' && bam_map != ''
+			let bam_map = esc_mapl.mmtemplates#core#EscapeMenu( bam_map, 'right' )
+		else
+			let bam_map = esc_mapl.'dba'
+		endif
+		"
+		exe "amenu          ".MenuDoxygen.'.-SEP-brief-                              :'
+		exe "amenu <silent> ".MenuDoxygen.'.brief,\ &after\ member<Tab>'.bam_map.'   :call C_EndOfLineComment("doxygen")<CR>'
+		exe "vmenu <silent> ".MenuDoxygen.'.brief,\ &after\ member<Tab>'.bam_map.'   :call C_EndOfLineComment("doxygen")<CR>'
+	endif
 	"
 	"===============================================================================================
 	"----- Menu : C-Idioms ----------------------------------------------------   {{{2
@@ -769,13 +791,23 @@ endfunction		" ---------- end of function  C_GetLineEndCommCol  ----------
 "------------------------------------------------------------------------------
 "  C_EndOfLineComment: single line-end comment    {{{1
 "------------------------------------------------------------------------------
-function! C_EndOfLineComment ( ) range
+function! C_EndOfLineComment ( ... ) range
+	"
 	if !exists("b:C_LineEndCommentColumn")
 		let	b:C_LineEndCommentColumn	= s:C_LineEndCommColDefault
 	endif
-	" ----- trim whitespaces -----
+	"
+	" which template?
+	let template = 'Comments.end-of-line-comment'
+	"
+	if a:0 > 0 && a:1 == 'doxygen'
+		let template = 'Doxygen.brief, after member'
+	endif
+	"
+	" trim whitespaces
 	exe a:firstline.','.a:lastline.'s/\s*$//'
-
+	"
+	" do lines
 	for line in range( a:lastline, a:firstline, -1 )
 		silent exe ":".line
 		if getline(line) !~ '^\s*$'
@@ -785,7 +817,7 @@ function! C_EndOfLineComment ( ) range
 				let diff	= b:C_LineEndCommentColumn -1 -linelength
 			endif
 			exe "normal	".diff."A "
-			call mmtemplates#core#InsertTemplate(g:C_Templates, 'Comments.end-of-line-comment')
+			call mmtemplates#core#InsertTemplate(g:C_Templates, template)
 		endif
 	endfor
 endfunction		" ---------- end of function  C_EndOfLineComment  ----------
@@ -2346,6 +2378,10 @@ function! s:C_RereadTemplates ( displaymsg )
 	call mmtemplates#core#ChangeSyntax ( g:C_Templates, 'comment', '§' )
 	let s:C_TemplateJumpTarget = mmtemplates#core#Resource ( g:C_Templates, "jumptag" )[0]
 	"
+	" property: Doxygen menu
+	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'Doxygen::BriefAM::Menu', '' )
+	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'Doxygen::BriefAM::Map', '' )
+	"
 	let	messsage = ''
 	"
 	if g:C_Installation == 'system'
@@ -2594,6 +2630,15 @@ function! s:CreateAdditionalMaps ()
 	vnoremap   <buffer>  <silent>  <LocalLeader>cx         :call C_CommentToggle( )<CR>
 	inoremap   <buffer>  <silent>  <LocalLeader>cx    <Esc>:call C_CommentToggle( )<CR>
 	" 
+	" ---------- Doxygen menu  ---------------------------------------------------
+	"
+	let [ bam_map, err ] = mmtemplates#core#Resource ( g:C_Templates, 'get', 'property', 'Doxygen::BriefAM::Map' )
+	"
+	if err == '' && bam_map != ''
+		silent exe ' noremap   <buffer>  <silent>  <LocalLeader>'.bam_map.'         :call C_EndOfLineComment("doxygen")<CR>'
+		silent exe 'inoremap   <buffer>  <silent>  <LocalLeader>'.bam_map.'    <Esc>:call C_EndOfLineComment("doxygen")<CR>'
+	endif
+	"
 	" ---------- statements menu  ------------------------------------------------
 	"
 	" ---------- preprocessor menu  ----------------------------------------------
@@ -2655,8 +2700,8 @@ function! s:CreateAdditionalMaps ()
 	nnoremap    <buffer>  <silent> <LocalLeader>ntl       :call mmtemplates#core#EditTemplateFiles(g:C_Templates,-1)<CR>
 	inoremap    <buffer>  <silent> <LocalLeader>ntl  <C-C>:call mmtemplates#core#EditTemplateFiles(g:C_Templates,-1)<CR>
 	if g:C_Installation == 'system'
-		nnoremap  <buffer>  <silent> <LocalLeader>ntg       :call mmtemplates#core#EditTemplateFiles(g:C_Templates,1)<CR>
-		inoremap  <buffer>  <silent> <LocalLeader>ntg  <C-C>:call mmtemplates#core#EditTemplateFiles(g:C_Templates,1)<CR>
+		nnoremap  <buffer>  <silent> <LocalLeader>ntg       :call mmtemplates#core#EditTemplateFiles(g:C_Templates,0)<CR>
+		inoremap  <buffer>  <silent> <LocalLeader>ntg  <C-C>:call mmtemplates#core#EditTemplateFiles(g:C_Templates,0)<CR>
 	endif
 	nnoremap    <buffer>  <silent> <LocalLeader>ntr       :call mmtemplates#core#ReadTemplates(g:C_Templates,"reload","all")<CR>
 	inoremap    <buffer>  <silent> <LocalLeader>ntr  <C-C>:call mmtemplates#core#ReadTemplates(g:C_Templates,"reload","all")<CR>
