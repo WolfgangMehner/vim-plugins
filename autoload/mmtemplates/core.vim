@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:Templates_Version') && ! exists('g:Templates_DevelopmentOverwrite') )
 	finish
 endif
-let g:Templates_Version= '0.9.1-3'     " version number of this script; do not change
+let g:Templates_Version= '0.9.2'     " version number of this script; do not change
 "
 if ! exists ( 'g:Templates_MapInUseWarn' )
 	let g:Templates_MapInUseWarn = 1
@@ -363,7 +363,10 @@ endfunction    " ----------  end of function s:UserInput ----------
 "----------------------------------------------------------------------
 "
 function! mmtemplates#core#UserInputEx ( ArgLead, CmdLine, CursorPos )
-	return filter( copy( s:UserInputList ), 'v:val =~ "\\V\\<'.escape(a:ArgLead,'\').'\\w\\*"' )
+	if empty( a:ArgLead )
+		return copy( s:UserInputList )
+	endif
+	return filter( copy( s:UserInputList ), 'v:val =~ ''\V\<'.escape(a:ArgLead,'\').'\w\*''' )
 endfunction    " ----------  end of function mmtemplates#core#UserInputEx  ----------
 " }}}3
 "
@@ -844,12 +847,12 @@ let s:FileReadNameSpace = {
 			\ 'SetFormat'    : 'ss',
 			\ 'SetMacro'     : 'ss',
 			\ 'SetPath'      : 'ss',
+			\ 'SetProperty'  : 'ss',
 			\ 'SetStyle'     : 's',
 			\
 			\ 'MenuShortcut' : 'ss',
 			\ }
 " 			\ 'SetMap'       : 'ss',
-" 			\ 'SetProperty'  : 'ss',
 " 			\ 'SetShortcut'  : 'ss',
 "
 "----------------------------------------------------------------------
@@ -948,12 +951,16 @@ function! s:SetMap ( name, map )
 endfunction    " ----------  end of function s:SetMap  ----------
 "
 "----------------------------------------------------------------------
-"  s:SetProperty : TODO (template function).   {{{2
+"  s:SetProperty : Set an existing property.   {{{2
 "----------------------------------------------------------------------
 "
-function! s:SetProperty ( name, shortcut )
+function! s:SetProperty ( name, value )
 	"
-	echo 'SetProperty: TO BE IMPLEMENTED'
+	let [ _, err ] = mmtemplates#core#Resource ( s:library, 'set', 'property', a:name , a:value )
+	"
+	if err != ''
+		return s:ErrorMsg ( 'Can not set the property "'.a:name.'".' )
+	endif
 	"
 endfunction    " ----------  end of function s:SetProperty  ----------
 "
@@ -3044,7 +3051,7 @@ endfunction    " ----------  end of function s:CreateSubmenu  ----------
 "
 function! s:CreateTemplateMenus ( t_lib, root_menu, global_name, t_lib_name )
 	"
-	let map_ldr = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::Mapleader' ] )
+	let map_ldr = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::Mapleader' ], 'right' )
 	"
 	" go through all the templates
 	for t_name in a:t_lib.menu_order
@@ -3133,13 +3140,13 @@ function! s:CreateSpecialsMenus ( t_lib, root_menu, global_name, t_lib_name, spe
 	" remove trailing point
 	let specials_menu = substitute( a:specials_menu, '\.$', '', '' )
 	"
-	let map_ldr   = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::Mapleader' ] )
-	let map_edit  = map_ldr.mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::EditTemplates::Map' ] )
-	let map_read  = map_ldr.mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::RereadTemplates::Map' ] )
-	let map_style = map_ldr.mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::ChooseStyle::Map' ] )
-	let sc_edit   = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::EditTemplates::Shortcut' ] )
-	let sc_read   = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::RereadTemplates::Shortcut' ] )
-	let sc_style  = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::ChooseStyle::Shortcut' ] )
+	let map_ldr   = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::Mapleader' ], 'right' )
+	let map_edit  = map_ldr.mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::EditTemplates::Map' ], 'right' )
+	let map_read  = map_ldr.mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::RereadTemplates::Map' ], 'right' )
+	let map_style = map_ldr.mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::ChooseStyle::Map' ], 'right' )
+	let sc_edit   = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::EditTemplates::Shortcut' ], 'right' )
+	let sc_read   = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::RereadTemplates::Shortcut' ], 'right' )
+	let sc_style  = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::ChooseStyle::Shortcut' ], 'right' )
 	"
 	" create the specials menu
 	call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, specials_menu, s:StandardPriority )
@@ -3309,10 +3316,35 @@ endfunction    " ----------  end of function mmtemplates#core#CreateMenus  -----
 " mmtemplates#core#EscapeMenu : Escape a string so it can be used as a menu item.   {{{1
 "----------------------------------------------------------------------
 "
-function! mmtemplates#core#EscapeMenu ( str )
+function! mmtemplates#core#EscapeMenu ( str, ... )
 	"
-	let str = escape     ( a:str, ' \.|' )
-	let str = substitute (   str, '&', '\&\&', 'g' )
+	let mode = 'entry'
+	"
+	if a:0 > 0
+		if type( a:1 ) != type( '' )
+			return s:ErrorMsg ( 'Argument "mode" must be given as a string.' )
+		elseif a:1 == 'menu'
+			let mode = 'menu'
+		elseif a:1 == 'entry'
+			let mode = 'entry'
+		elseif a:1 == 'right'
+			let mode = 'right'
+		else
+			return s:ErrorMsg ( 'Unknown mode: '.a:1 )
+		endif
+	endif
+	"
+	" whole menu: do not escape '.'
+	if mode == 'menu'
+		let str = escape ( a:str, ' \|' )
+	else
+		let str = escape ( a:str, ' \|.' )
+	endif
+	"
+	" right-aligned text: do not escape '&'
+	if mode != 'right'
+		let str = substitute (   str, '&', '\&\&', 'g' )
+	endif
 	"
 	return str
 	"
@@ -3405,7 +3437,7 @@ function! mmtemplates#core#Resource ( library, mode, ... )
 	if a:mode == 'add' || a:mode == 'get' || a:mode == 'set'
 		" continue below
 	elseif a:mode == 'escaped_mapleader'
-		return [ mmtemplates#core#EscapeMenu( t_lib.properties[ 'Templates::Mapleader' ] ), '' ]
+		return [ mmtemplates#core#EscapeMenu( t_lib.properties[ 'Templates::Mapleader' ], 'right' ), '' ]
 	elseif a:mode == 'jumptag'
 		return [ t_lib.regex_template.JumpTagBoth, '' ]
 	elseif a:mode == 'style'
