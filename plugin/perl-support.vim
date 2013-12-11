@@ -14,7 +14,7 @@
 "                  speed and comfort when writing Perl. Please read the
 "                  documentation.
 "
-"  Configuration:  There are at least some personal details which should be 
+"  Configuration:  There are at least some personal details which should be
 "                   configured (see the files README.perlsupport and
 "                   perlsupport.txt).
 "
@@ -57,7 +57,7 @@
 if exists("g:Perl_PluginVersion") || &compatible
   finish
 endif
-let g:Perl_PluginVersion= "5.2"
+let g:Perl_PluginVersion= "5.3pre"
 "
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_SetGlobalVariable     {{{1
@@ -118,7 +118,7 @@ if  s:MSWIN
   " ==========  MS Windows  ======================================================
 	"
 	" change '\' to '/' to avoid interpretation as escape character
-	if match(	substitute( expand("<sfile>"), '\', '/', 'g' ), 
+	if match(	substitute( expand("<sfile>"), '\', '/', 'g' ),
 				\		substitute( expand("$HOME"),   '\', '/', 'g' ) ) == 0
 		" USER INSTALLATION ASSUMED
 		let g:Perl_Installation				= 'local'
@@ -292,7 +292,7 @@ let s:PCverbosityName	= [ '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11
 "    PARAMETERS:  prompt - prompt
 "                 text   - default reply
 "                 ...    - completion (optional)
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_Input ( prompt, text, ... )
 	echohl Search																					" highlight prompt
@@ -374,24 +374,24 @@ function! Perl_EndOfLineComment ( ) range
 endfunction		" ---------- end of function  Perl_EndOfLineComment  ----------
 "
 "------------------------------------------------------------------------------
-"  Perl_AlignLineEndComm: adjust line-end comments  
+"  Perl_AlignLineEndComm: adjust line-end comments
 "------------------------------------------------------------------------------
 "
 " patterns to ignore when adjusting line-end comments (incomplete):
 " some heuristics used (only Perl can parse Perl)
 let	s:AlignRegex	= [
 	\	'\$#' ,
-	\	'"[^"]\+"' ,
-	\	"'[^']\\+'" ,
-	\	"`[^`]\+`" ,
-	\	'\(m\|qr\)#[^#]\+#' ,
-	\	'\(m\|qr\)\?\([\?\/]\)\(.*\)\(\2\)\([imsxg]*\)'  ,
-	\	'\(m\|qr\)\([[:punct:]]\)\(.*\)\(\2\)\([imsxg]*\)'  ,
-	\	'\(m\|qr\){\(.*\)}\([imsxg]*\)'  ,
-	\	'\(m\|qr\)(\(.*\))\([imsxg]*\)'  ,
-	\	'\(m\|qr\)\[\(.*\)\]\([imsxg]*\)'  ,
-	\	'\(s\|tr\)#[^#]\+#[^#]\+#' ,
-	\	'\(s\|tr\){[^}]\+}{[^}]\+}' ,
+	\	"'\\%(\\\\'\\|[^']\\)*'"  ,
+	\	'"\%(\\.\|[^"]\)*"'  ,
+	\	'`[^`]\+`' ,
+	\	'\%(m\|qr\)#[^#]\+#' ,
+	\	'\%(m\|qr\)\?\([\?\/]\).*\1[imsxg]*'  ,
+	\	'\%(m\|qr\)\([[:punct:]]\).*\2[imsxg]*'  ,
+	\	'\%(m\|qr\){.*}[imsxg]*'  ,
+	\	'\%(m\|qr\)(.*)[imsxg]*'  ,
+	\	'\%(m\|qr\)\[.*\][imsxg]*'  ,
+	\	'\%(s\|tr\)#[^#]\+#[^#]\+#' ,
+	\	'\%(s\|tr\){[^}]\+}{[^}]\+}' ,
 	\	]
 
 "===  FUNCTION  ================================================================
@@ -400,82 +400,95 @@ let	s:AlignRegex	= [
 "===============================================================================
 function! Perl_AlignLineEndComm ( ) range
 	"
-	if !exists("b:Perl_LineEndCommentColumn")
-		let	b:Perl_LineEndCommentColumn	= s:Perl_LineEndCommColDefault
+	" comment character (for use in regular expression)
+	let cc = '#'                       " start of a Perl comment
+	"
+	" patterns to ignore when adjusting line-end comments (maybe incomplete):
+ 	let align_regex	= join( s:AlignRegex, '\|' )
+	"
+	" local position
+	if !exists( 'b:Perl_LineEndCommentColumn' )
+		let b:Perl_LineEndCommentColumn = s:Perl_LineEndCommColDefault
 	endif
-
-	let save_cursor = getpos(".")
-
-	let	save_expandtab	= &expandtab
-	exe	":set expandtab"
-
-	let	linenumber	= a:firstline
-	exe ":".a:firstline
-
-	while linenumber <= a:lastline
-		let	line= getline(".")
+	let correct_idx = b:Perl_LineEndCommentColumn
+	"
+	" === plug-in specific code ends here                 ===
+	" === the behavior is governed by the variables above ===
+	"
+	" save the cursor position
+	let save_cursor = getpos('.')
+	"
+	for line in range( a:firstline, a:lastline )
+		silent exe ':'.line
 		"
-		" line is not a pure comment but may contains a comment:
+		let linetxt = getline('.')
 		"
-		if match( line, '^\s*#' ) < 0 && match( line, '#.*$' ) > 0
-      "
-      " disregard comments starting in a string
-      "
-			let	idx1	      = -1
-			let	idx2	      = -1
-			let	commentstart= -2
-			let	commentend	= 0
-			while commentstart < idx2 && idx2 < commentend
-				let start	      = commentend
-				let idx2	      = match( line, '#.*$', start )
-				" loop over the items to ignore
-        for regex in s:AlignRegex
-          if match( line, regex ) > -1
-            let commentstart	= match   ( line, regex, start )
-            let commentend		= matchend( line, regex, start )
-            break
-          endif
-        endfor
-			endwhile
-      "
-      " try to adjust the comment
-      "
-			let idx1	= 1 + match( line, '\s*#.*$', start )
-			let idx2	= 1 + idx2
-			call setpos(".", [ 0, linenumber, idx1, 0 ] )
-			let vpos1	= virtcol(".")
-			call setpos(".", [ 0, linenumber, idx2, 0 ] )
-			let vpos2	= virtcol(".")
-
-			if   ! (   vpos2 == b:Perl_LineEndCommentColumn
-						\	|| vpos1 > b:Perl_LineEndCommentColumn
-						\	|| idx2  == 0 )
-
-				exe ":.,.retab"
-				" insert some spaces
-				if vpos2 < b:Perl_LineEndCommentColumn
-					let	diff	= b:Perl_LineEndCommentColumn-vpos2
-					call setpos(".", [ 0, linenumber, vpos2, 0 ] )
-					let	@"	= ' '
-					exe "normal	".diff."P"
-				endif
-
-				" remove some spaces
-				if vpos1 < b:Perl_LineEndCommentColumn && vpos2 > b:Perl_LineEndCommentColumn
-					let	diff	= vpos2 - b:Perl_LineEndCommentColumn
-					call setpos(".", [ 0, linenumber, b:Perl_LineEndCommentColumn, 0 ] )
-					exe "normal	".diff."x"
-				endif
-
-			endif
+		" "pure" comment line left unchanged
+		if match ( linetxt, '^\s*'.cc ) == 0
+			"echo 'line '.line.': "pure" comment'
+			continue
 		endif
-		let linenumber=linenumber+1
-		normal j
-	endwhile
-	" restore tab expansion settings and cursor position
-	let &expandtab	= save_expandtab
-	call setpos('.', save_cursor)
-
+		"
+		let b_idx1 = 1 + match ( linetxt, '\s*'.cc.'.*$', 0 )
+		let b_idx2 = 1 + match ( linetxt,       cc.'.*$', 0 )
+		"
+		" not found?
+		if b_idx1 == 0
+			"echo 'line '.line.': no end-of-line comment'
+			continue
+		endif
+		"
+		" walk through ignored patterns
+		let idx_start = 0
+		"
+		while 1
+			let this_start = match ( linetxt, align_regex, idx_start )
+			"
+			if this_start == -1
+				break
+			else
+				let idx_start = matchend ( linetxt, align_regex, idx_start )
+				"echo 'line '.line.': ignoring >>>'.strpart(linetxt,this_start,idx_start-this_start).'<<<'
+			endif
+		endwhile
+		"
+		let b_idx1 = 1 + match ( linetxt, '\s*'.cc.'.*$', idx_start )
+		let b_idx2 = 1 + match ( linetxt,       cc.'.*$', idx_start )
+		"
+		" not found?
+		if b_idx1 == 0
+			"echo 'line '.line.': no end-of-line comment'
+			continue
+		endif
+		"
+		call cursor ( line, b_idx2 )
+		let v_idx2 = virtcol('.')
+		"
+		" do b_idx1 last, so the cursor is in the right position for substitute below
+		call cursor ( line, b_idx1 )
+		let v_idx1 = virtcol('.')
+		"
+		" already at right position?
+		if ( v_idx2 == correct_idx )
+			"echo 'line '.line.': already at right position'
+			continue
+		endif
+		" ... or line too long?
+		if ( v_idx1 >  correct_idx )
+			"echo 'line '.line.': line too long'
+			continue
+		endif
+		"
+		" substitute all whitespaces behind the cursor (regex '\%#') and the next character,
+		" to ensure the match is at least one character long
+		silent exe 'substitute/\%#\s*\(\S\)/'.repeat( ' ', correct_idx - v_idx1 ).'\1/'
+		"echo 'line '.line.': adjusted'
+		"
+	endfor
+	"
+	" restore the cursor position
+	call setpos ( '.', save_cursor )
+	"
 endfunction		" ---------- end of function  Perl_AlignLineEndComm  ----------
 "
 let s:Perl_CmtCounter   = 0
@@ -586,9 +599,9 @@ endfunction    " ----------  end of function Perl_UncommentBlock ----------
 "   DESCRIPTION:  toggle comment
 "===============================================================================
 function! Perl_CommentToggle () range
-	let	comment=1									" 
+	let	comment=1									"
 	for line in range( a:firstline, a:lastline )
-		if match( getline(line), '^#') == -1					" no comment 
+		if match( getline(line), '^#') == -1					" no comment
 			let comment = 0
 			break
 		endif
@@ -689,7 +702,7 @@ function! Perl_CodeSnippet(mode)
 endfunction   " ---------- end of function  Perl_CodeSnippet  ----------
 "
 "------------------------------------------------------------------------------
-"  Perl-Run : Perl_perldoc - lookup word under the cursor or ask   
+"  Perl-Run : Perl_perldoc - lookup word under the cursor or ask
 "------------------------------------------------------------------------------
 "
 let s:Perl_PerldocBufferName       = "PERLDOC"
@@ -741,7 +754,7 @@ function! Perl_perldoc()
     " search order:  library module --> builtin function --> FAQ keyword
     "
     let delete_perldoc_errors = ""
-    if s:UNIX && ( match( $shell, '\ccsh$' ) >= 0 ) 
+    if s:UNIX && ( match( $shell, '\ccsh$' ) >= 0 )
 			" not for csh, tcsh
       let delete_perldoc_errors = " 2>/dev/null"
     endif
@@ -911,7 +924,7 @@ endfunction   " ---------- end of function  Perl_perldoc_generate_module_list  -
 "          NAME:  Perl_Settings     {{{1
 "   DESCRIPTION:  display various plugin settings
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_Settings ()
   let txt =     "  Perl-Support settings\n\n"
@@ -977,7 +990,7 @@ endfunction   " ---------- end of function  Perl_Settings  ----------
 "          NAME:  Perl_SyntaxCheck     {{{1
 "   DESCRIPTION:  syntax check
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_SyntaxCheck ()
   exe ":cclose"
@@ -1024,7 +1037,7 @@ endfunction   " ---------- end of function  Perl_SyntaxCheck  ----------
 "          NAME:  Perl_Toggle_Gvim_Xterm     {{{1
 "   DESCRIPTION:  toggle output destination (vim/buffer/xterm)
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_Toggle_Gvim_Xterm ()
 
@@ -1078,7 +1091,7 @@ let s:Perl_OutputBufferNumber = -1
 "          NAME:  Perl_Run     {{{1
 "   DESCRIPTION:  run the current buffer
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_Run ()
   "
@@ -1179,7 +1192,7 @@ endfunction    " ----------  end of function Perl_Run  ----------
 "          NAME:  Perl_Debugger     {{{1
 "   DESCRIPTION:  start debugger
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_Debugger ()
   "
@@ -1244,7 +1257,7 @@ endfunction   " ---------- end of function  Perl_Debugger  ----------
 "          NAME:  Perl_XtermSize     {{{1
 "   DESCRIPTION:  read xterm geometry
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_XtermSize ()
   let regex = '-geometry\s\+\d\+x\d\+'
@@ -1263,7 +1276,7 @@ endfunction   " ---------- end of function  Perl_XtermSize  ----------
 "          NAME:  Perl_MakeScriptExecutable     {{{1
 "   DESCRIPTION:  make script executable
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_MakeScriptExecutable ()
   let filename  = fnameescape( expand("%:p") )
@@ -1287,7 +1300,7 @@ endfunction   " ---------- end of function  Perl_MakeScriptExecutable  ---------
 "          NAME:  Perl_PodCheck     {{{1
 "   DESCRIPTION:  run POD checker
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_PodCheck ()
   exe ":cclose"
@@ -1330,7 +1343,7 @@ endfunction   " ---------- end of function  Perl_PodCheck  ----------
 "          NAME:  Perl_POD     {{{1
 "   DESCRIPTION:  convert POD into html / man / text
 "    PARAMETERS:  format - target format
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_POD ( format )
 	let	source			= expand("%:p")
@@ -1365,7 +1378,7 @@ endfunction   " ---------- end of function  Perl_POD  ----------
 "          NAME:  Perl_BrowseTemplateFiles     {{{1
 "   DESCRIPTION:  browse the template files
 "    PARAMETERS:  type - local / global
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_BrowseTemplateFiles ( type )
 	let	templatefile	= eval( 's:Perl_'.a:type.'TemplateFile' )
@@ -1394,7 +1407,7 @@ endfunction    " ----------  end of function Perl_BrowseTemplateFiles  ---------
 "          NAME:  Perl_OpenFold     {{{1
 "   DESCRIPTION:  Open fold and go to the first or last line of this fold
 "    PARAMETERS:  mode - below / start
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_OpenFold ( mode )
 	if foldclosed(".") >= 0
@@ -1416,7 +1429,7 @@ endfunction    " ----------  end of function Perl_OpenFold  ----------
 "          NAME:  Perl_HighlightJumpTargets     {{{1
 "   DESCRIPTION:  highlight the jump targets
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_HighlightJumpTargets ()
 	if s:Perl_Ctrl_j == 'on'
@@ -1428,7 +1441,7 @@ endfunction    " ----------  end of function Perl_HighlightJumpTargets  --------
 "          NAME:  Perl_JumpCtrlJ     {{{1
 "   DESCRIPTION:  replaces the template system function for C-j
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_JumpCtrlJ ()
   let match	= search( s:Perl_TemplateJumpTarget, 'c' )
@@ -1436,7 +1449,7 @@ function! Perl_JumpCtrlJ ()
 		" remove the target
 		call setline( match, substitute( getline('.'), s:Perl_TemplateJumpTarget, '', '' ) )
 	else
-		" try to jump behind parenthesis or strings in the current line 
+		" try to jump behind parenthesis or strings in the current line
 		if match( getline(".")[col(".") - 1], "[\]})\"'`]"  ) != 0
 			call search( "[\]})\"'`]", '', line(".") )
 		endif
@@ -1452,13 +1465,13 @@ let s:Perl_perltidy_module_executable      = 'no'
 "          NAME:  Perl_Perltidy     {{{1
 "   DESCRIPTION:  run perltidy(1) as a compiler
 "    PARAMETERS:  mode - n:normal / v:visual
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_Perltidy (mode)
 
   let Sou   = expand("%")               " name of the file in the current buffer
-	if   (&filetype != 'perl') && 
-				\ ( a:mode != 'v' || input( "'".Sou."' seems not to be a Perl file. Continue (y/n) : " ) != 'y' ) 
+	if   (&filetype != 'perl') &&
+				\ ( a:mode != 'v' || input( "'".Sou."' seems not to be a Perl file. Continue (y/n) : " ) != 'y' )
 		echomsg "'".Sou."' seems not to be a Perl file."
 		return
 	endif
@@ -1535,7 +1548,7 @@ endfunction   " ---------- end of function  Perl_Perltidy  ----------
 "          NAME:  Perl_SaveWithTimestamp     {{{1
 "   DESCRIPTION:  Save buffer with timestamp
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_SaveWithTimestamp ()
   let file   = fnameescape( expand("%") ) " name of the file in the current buffer
@@ -1558,7 +1571,7 @@ endfunction   " ---------- end of function  Perl_SaveWithTimestamp  ----------
 "          NAME:  Perl_Hardcopy     {{{1
 "   DESCRIPTION:  print PostScript to file
 "    PARAMETERS:  mode - n:normal / v:visual
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_Hardcopy (mode)
   let outfile = expand("%")
@@ -1598,7 +1611,7 @@ endfunction   " ---------- end of function  Perl_Hardcopy  ----------
 "          NAME:  Perl_HelpPerlsupport     {{{1
 "   DESCRIPTION:  display plugin help
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_HelpPerlsupport ()
   try
@@ -1610,7 +1623,7 @@ function! Perl_HelpPerlsupport ()
 endfunction    " ----------  end of function Perl_HelpPerlsupport ----------
 "
 "------------------------------------------------------------------------------
-"  run : perlcritic     
+"  run : perlcritic
 "------------------------------------------------------------------------------
 "
 " All formats consist of 2 parts:
@@ -1654,7 +1667,7 @@ let s:PCerrorFormat11			= '%f:%l:%m'            . s:PCInnerErrorFormat
 "          NAME:  Perl_Perlcritic     {{{1
 "   DESCRIPTION:  run perlcritic(1) liek a compiler
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_Perlcritic ()
   let l:currentbuffer = bufname("%")
@@ -1708,7 +1721,7 @@ function! Perl_Perlcritic ()
 			endif
 		endfor
 	endif
-	" 
+	"
   let perlcriticoptions	=
 		  \      ' -severity '.s:Perl_PerlcriticSeverity
       \     .' -verbose '.eval("s:PCverbosityFormat".s:Perl_PerlcriticVerbosity)
@@ -1755,10 +1768,10 @@ endfunction   " ---------- end of function  Perl_Perlcritic  ----------
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_PerlcriticSeverityList     {{{1
 "   DESCRIPTION:  perlcritic severity : callback function for completion
-"    PARAMETERS:  ArgLead - 
-"                 CmdLine - 
-"                 CursorPos - 
-"       RETURNS:  
+"    PARAMETERS:  ArgLead -
+"                 CmdLine -
+"                 CursorPos -
+"       RETURNS:
 "===============================================================================
 function!	Perl_PerlcriticSeverityList ( ArgLead, CmdLine, CursorPos )
 	return filter( copy( s:PCseverityName[1:] ), 'v:val =~ "\\<'.a:ArgLead.'\\w*"' )
@@ -1767,10 +1780,10 @@ endfunction    " ----------  end of function Perl_PerlcriticSeverityList  ------
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_PerlcriticVerbosityList     {{{1
 "   DESCRIPTION:  perlcritic verbosity : callback function for completion
-"    PARAMETERS:  ArgLead - 
-"                 CmdLine - 
-"                 CursorPos - 
-"       RETURNS:  
+"    PARAMETERS:  ArgLead -
+"                 CmdLine -
+"                 CursorPos -
+"       RETURNS:
 "===============================================================================
 function!	Perl_PerlcriticVerbosityList ( ArgLead, CmdLine, CursorPos )
 	return filter( copy( s:PCverbosityName), 'v:val =~ "\\<'.a:ArgLead.'\\w*"' )
@@ -1780,7 +1793,7 @@ endfunction    " ----------  end of function Perl_PerlcriticVerbosityList  -----
 "          NAME:  Perl_GetPerlcriticSeverity     {{{1
 "   DESCRIPTION:  perlcritic severity : used in command definition
 "    PARAMETERS:  severity - perlcritic severity
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_GetPerlcriticSeverity ( severity )
 	let s:Perl_PerlcriticSeverity = 3                         " the default
@@ -1792,7 +1805,7 @@ function! Perl_GetPerlcriticSeverity ( severity )
 		" parameter is numeric
 		let s:Perl_PerlcriticSeverity = sev
 		"
-	elseif sev =~ '^\a\+$' 
+	elseif sev =~ '^\a\+$'
 		" parameter is a word
 		let	nr	= index( s:PCseverityName, tolower(sev) )
 		if nr > 0
@@ -1810,7 +1823,7 @@ endfunction    " ----------  end of function Perl_GetPerlcriticSeverity  -------
 "          NAME:  Perl_PerlcriticSeverityInput
 "   DESCRIPTION:  read perlcritic severity from the command line
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_PerlcriticSeverityInput ()
 		let retval = input( "perlcritic severity  (current = '".s:PCseverityName[s:Perl_PerlcriticSeverity]."' / tab exp.): ", '', 'customlist,Perl_PerlcriticSeverityList' )
@@ -1823,7 +1836,7 @@ endfunction    " ----------  end of function Perl_PerlcriticSeverityInput  -----
 "          NAME:  Perl_GetPerlcriticVerbosity     {{{1
 "   DESCRIPTION:  perlcritic verbosity : used in command definition
 "    PARAMETERS:  verbosity - perlcritic verbosity
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_GetPerlcriticVerbosity ( verbosity )
 	let s:Perl_PerlcriticVerbosity = 4
@@ -1842,7 +1855,7 @@ endfunction    " ----------  end of function Perl_GetPerlcriticVerbosity  ------
 "          NAME:  Perl_PerlcriticVerbosityInput     {{{1
 "   DESCRIPTION:  read perlcritic verbosity from the command line
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_PerlcriticVerbosityInput ()
 		let retval = input( "perlcritic verbosity  (current = ".s:Perl_PerlcriticVerbosity." / tab exp.): ", '', 'customlist,Perl_PerlcriticVerbosityList' )
@@ -1854,8 +1867,8 @@ endfunction    " ----------  end of function Perl_PerlcriticVerbosityInput  ----
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_GetPerlcriticOptions     {{{1
 "   DESCRIPTION:  perlcritic options : used in command definition
-"    PARAMETERS:  ... - 
-"       RETURNS:  
+"    PARAMETERS:  ... -
+"       RETURNS:
 "===============================================================================
 function! Perl_GetPerlcriticOptions ( ... )
 	let s:Perl_PerlcriticOptions = ""
@@ -1868,7 +1881,7 @@ endfunction    " ----------  end of function Perl_GetPerlcriticOptions  --------
 "          NAME:  Perl_PerlcriticOptionsInput     {{{1
 "   DESCRIPTION:  read perlcritic options from the command line
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_PerlcriticOptionsInput ()
 		let retval = input( "perlcritic options (current = '".s:Perl_PerlcriticOptions."'): " )
@@ -1881,7 +1894,7 @@ endfunction    " ----------  end of function Perl_PerlcriticOptionsInput  ------
 "          NAME:  Perl_CreateGuiMenus     {{{1
 "   DESCRIPTION:  create GUI menus immediate
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_CreateGuiMenus ()
   if s:Perl_MenuVisible != 'yes'
@@ -1889,7 +1902,7 @@ function! Perl_CreateGuiMenus ()
     amenu   <silent> 40.1000 &Tools.-SEP100- :
     amenu   <silent> 40.1160 &Tools.Unload\ Perl\ Support :call Perl_RemoveGuiMenus()<CR>
 		call s:Perl_RereadTemplates('no')
-		call s:Perl_InitMenus () 
+		call s:Perl_InitMenus ()
     let s:Perl_MenuVisible = 'yes'
   endif
 endfunction    " ----------  end of function Perl_CreateGuiMenus  ----------
@@ -1898,7 +1911,7 @@ endfunction    " ----------  end of function Perl_CreateGuiMenus  ----------
 "          NAME:  Perl_RereadTemplates     {{{1
 "   DESCRIPTION:  rebuild commands and the menu from the (changed) template file
 "    PARAMETERS:  displaymsg - yes / no
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! s:Perl_RereadTemplates ( displaymsg )
 	"
@@ -1941,7 +1954,7 @@ function! s:Perl_RereadTemplates ( displaymsg )
 		if finddir( s:Perl_LocalTemplateDir ) == ''
 			" try to create a local template directory
 			if exists("*mkdir")
-				try 
+				try
 					call mkdir( s:Perl_LocalTemplateDir, "p" )
 				catch /.*/
 				endtry
@@ -1976,7 +1989,7 @@ function! s:Perl_RereadTemplates ( displaymsg )
 			call mmtemplates#core#ReadTemplates ( g:Perl_Templates, 'load', s:Perl_LocalTemplateFile )
 			let	messsage	= "Templates read from '".s:Perl_LocalTemplateFile."'"
 		else
-			echomsg "Local template file '".s:Perl_LocalTemplateFile."' not readable." 
+			echomsg "Local template file '".s:Perl_LocalTemplateFile."' not readable."
 			return
 		endif
 		"
@@ -1996,9 +2009,9 @@ silent call Perl_GetPerlcriticVerbosity(s:Perl_PerlcriticVerbosity)
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_do_tags     {{{1
 "   DESCRIPTION:  tag a new file with Perl::Tags
-"    PARAMETERS:  filename - 
+"    PARAMETERS:  filename -
 "                 tagfile - name of the tag file
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_do_tags(filename, tagfile)
 
@@ -2025,8 +2038,8 @@ endfunction    " ----------  end of function Perl_do_tags  ----------
 "          NAME:  Perl_ModuleListFold     {{{1
 "   DESCRIPTION:  compute foldlevel for a module list
 "                 debug with "set debug=msg"
-"    PARAMETERS:  lnum - 
-"       RETURNS:  
+"    PARAMETERS:  lnum -
+"       RETURNS:
 "===============================================================================
 function! Perl_ModuleListFold (lnum)
 	let line1 		= split( getline(a:lnum-1), '::' )
@@ -2046,7 +2059,7 @@ endfunction    " ----------  end of function Perl_ModuleListFold  ----------
 "          NAME:  Perl_MenuTitle     {{{1
 "   DESCRIPTION:  display warning
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_MenuTitle ()
 		echohl WarningMsg | echo "This is a menu header." | echohl None
@@ -2056,7 +2069,7 @@ endfunction    " ----------  end of function Perl_MenuTitle  ----------
 "          NAME:  Perl_InitMenus     {{{1
 "   DESCRIPTION:  initialize the hardcoded menu items
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! s:Perl_InitMenus ()
 	"
@@ -2304,7 +2317,7 @@ endfunction    " ----------  end of function s:Perl_InitMenus  ----------
 "          NAME:  Perl_ToolMenu     {{{1
 "   DESCRIPTION:  generate the tool menu item
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_ToolMenu ()
     amenu   <silent> 40.1000 &Tools.-SEP100- :
@@ -2315,7 +2328,7 @@ endfunction    " ----------  end of function Perl_ToolMenu  ----------
 "          NAME:  Perl_RemoveGuiMenus     {{{1
 "   DESCRIPTION:  remove the Perl menu
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_RemoveGuiMenus ()
   if s:Perl_MenuVisible == 'yes'
@@ -2344,7 +2357,7 @@ endfunction    " ----------  end of function Perl_GetRegexSubstitution  --------
 "          NAME:  Perl_InitializePerlInterface     {{{1
 "   DESCRIPTION:  initialize the Perl interface
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! Perl_InitializePerlInterface( )
 	if g:Perl_InterfaceInitialized == 'no'
@@ -2377,7 +2390,7 @@ endfunction    " ----------  end of function Perl_InitializePerlInterface  -----
 "          NAME:  CreateAdditionalMaps     {{{1
 "   DESCRIPTION:  create additional maps
 "    PARAMETERS:  -
-"       RETURNS:  
+"       RETURNS:
 "===============================================================================
 function! s:CreateAdditionalMaps ()
 	"

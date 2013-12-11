@@ -67,7 +67,7 @@ cd ..
 
 rm --force "${plugin}.zip"
 
-zip -r "${plugin}" ${filelist}
+zip -r "${plugin}" ${filelist} -x *.save
 
 popd
 
