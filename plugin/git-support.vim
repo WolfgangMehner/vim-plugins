@@ -500,17 +500,45 @@ endfunction    " ----------  end of function GitS_HelpTopicsComplete  ----------
 let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
-" let s:CmdLineEscChar = ' |"\'
-" if s:MSWIN
-" 	let s:FilenameEscChar = ''
-" else
-" 	let s:FilenameEscChar = ' \%#[]'
-" endif
+if s:MSWIN
+	"
+	"-------------------------------------------------------------------------------
+	" MS Windows
+	"-------------------------------------------------------------------------------
+	"
+	if match(      substitute( expand('<sfile>'), '\\', '/', 'g' ),
+				\   '\V'.substitute( expand('$HOME'),   '\\', '/', 'g' ) ) == 0
+		" user installation assumed
+		let s:installation = 'local'
+	else
+		" system wide installation
+		let s:installation = 'system'
+	endif
+	"
+	let s:plugin_dir = substitute( expand('<sfile>:p:h:h'), '\\', '/', 'g' )
+	"
+else
+	"
+	"-------------------------------------------------------------------------------
+	" Linux/Unix
+	"-------------------------------------------------------------------------------
+	"
+	if match( expand('<sfile>'), '\V'.resolve(expand('$HOME')) ) == 0
+		" user installation assumed
+		let s:installation = 'local'
+	else
+		" system wide installation
+		let s:installation = 'system'
+	endif
+	"
+	let s:plugin_dir = expand('<sfile>:p:h:h')
+	"
+endif
 "
 " settings   {{{2
-"
-let s:Git_Executable     = 'git'    " Git's executable
-let s:Git_GitKExecutable = 'gitk'   " Git's executable
+
+let s:Git_Executable     = 'git'    " Git executable
+let s:Git_GitKExecutable = 'gitk'   " GitK executable
 let s:Git_LoadMenus      = 'yes'    " load the menus?
 let s:Git_RootMenu       = '&Git'   " name of the root menu
 "
@@ -537,34 +565,59 @@ call s:GetGlobalSetting ( 'Git_LoadMenus' )
 call s:GetGlobalSetting ( 'Git_RootMenu' )
 call s:GetGlobalSetting ( 'Git_CustomMenu' )
 "
-call s:ApplyDefaultSetting ( 'Git_DiffExpandEmpty',      'yes' )
+call s:ApplyDefaultSetting ( 'Git_DiffExpandEmpty',      'no' )
 call s:ApplyDefaultSetting ( 'Git_OpenFoldAfterJump',    'yes' )
 call s:ApplyDefaultSetting ( 'Git_StatusStagedOpenDiff', 'cached' )
 "
-let s:Enabled = 1
-let s:DisabledReason = ""
+let s:Enabled         = 1           " Git enabled?
 let s:DisabledMessage = "Git-Support not working:"
-let s:GitVersion = ""
-let s:GitHelpFormat = ""
+let s:DisabledReason  = ""
 "
-" check Git executable   {{{2
+let s:EnabledGitK        = 1        " GitK enabled?
+let s:DisableGitKMessage = "GitK not avaiable:"
+let s:DisableGitKReason  = ""
+"
+let s:GitVersion    = ""            " Git Version
+let s:GitHelpFormat = ""            " 'man' or 'html'
+"
+" check git executable   {{{2
 "
 if s:Git_Executable =~ '^LANG=\w\+\s.'
 	if ! executable ( matchstr ( s:Git_Executable, '^LANG=\w\+\s\+\zs.\+$' ) )
 		let s:Enabled = 0
-		let s:DisabledReason = "Git not executable: ".s:Git_Executable
+		let s:DisabledReason = "git not executable: ".s:Git_Executable
 	endif
 elseif s:Git_Executable =~ '^\(["'']\)\zs.\+\ze\1'
 	if ! executable ( matchstr ( s:Git_Executable, '^\(["'']\)\zs.\+\ze\1' ) )
 		let s:Enabled = 0
-		let s:DisabledReason = "Git not executable: ".s:Git_Executable
+		let s:DisabledReason = "git not executable: ".s:Git_Executable
 	endif
 else
 	if ! executable ( s:Git_Executable )
 		let s:Enabled = 0
-		let s:DisabledReason = "Git not executable: ".s:Git_Executable
+		let s:DisabledReason = "git not executable: ".s:Git_Executable
 	endif
 endif
+"
+" check gitk executable   {{{2
+"
+if s:Git_GitKExecutable =~ '^LANG=\w\+\s.'
+	if ! executable ( matchstr ( s:Git_GitKExecutable, '^LANG=\w\+\s\+\zs.\+$' ) )
+		let s:EnabledGitK = 0
+		let s:DisableGitKReason = "gitk not executable: ".s:Git_GitKExecutable
+	endif
+elseif s:Git_GitKExecutable =~ '^\(["'']\)\zs.\+\ze\1'
+	if ! executable ( matchstr ( s:Git_GitKExecutable, '^\(["'']\)\zs.\+\ze\1' ) )
+		let s:EnabledGitK = 0
+		let s:DisableGitKReason = "gitk not executable: ".s:Git_GitKExecutable
+	endif
+else
+	if ! executable ( s:Git_GitKExecutable )
+		let s:EnabledGitK = 0
+		let s:DisableGitKReason = "gitk not executable: ".s:Git_GitKExecutable
+	endif
+endif
+"
 "
 " check Git version   {{{2
 "
@@ -646,9 +699,15 @@ if s:Enabled
 	command! -nargs=* -complete=file                                 GitRun             :call GitS_Run(<q-args>,'')
 	command! -nargs=* -complete=file                                 GitBuf             :call GitS_Run(<q-args>,'b')
 	command! -nargs=* -complete=file                                 GitK               :call GitS_GitK(<q-args>)
+	command! -nargs=0                                                GitSupportHelp     :call GitS_PluginHelp()
+	command! -nargs=0                                                GitSupportSettings :call GitS_PluginSettings()
 else
 	command  -nargs=*                -bang                           Git                :call GitS_Help('disabled')
+	command! -nargs=*                                                GitRun             :call GitS_Help('disabled')
+	command! -nargs=*                                                GitBuf             :call GitS_Help('disabled')
 	command! -nargs=*                                                GitHelp            :call GitS_Help('disabled')
+	command! -nargs=0                                                GitSupportHelp     :call GitS_PluginHelp()
+	command! -nargs=0                                                GitSupportSettings :call GitS_PluginSettings()
 endif
 "
 " syntax highlighting   {{{2
@@ -2438,13 +2497,13 @@ endfunction    " ----------  end of function s:Status_GetFile  ----------
 " for Git commands, except for "edit" (ckout = checkout):
 "
 "    section / action
-"                  | edit  | diff  log   | add   ckout reset rm
-"  staged    (b/s) |  x    |  x     x    |  -     -     x     -
-"  modified  (b/m) |  x    |  x     x    |  x     x     -     ?
-"  untracked (u)   |  x    |  -     -    |  x     -     -     -
-"  ignored   (i)   |  x    |  -     -    |  x     -     -     -
-"  unmerged  (c)   |  x    |  x     x    |  x     -     -     x
-"  diff      (d)   |  x    |  x     x    |  -     -     x     -
+"                  | edit  | diff  log   | add   ckout reset rm    | del
+"  staged    (b/s) |  x    |  x     x    |  -     -     x     -    |  -
+"  modified  (b/m) |  x    |  x     x    |  x     x     -     ?    |  -
+"  untracked (u)   |  x    |  -     -    |  x     -     -     -    |  x
+"  ignored   (i)   |  x    |  -     -    |  x     -     -     -    |  x
+"  unmerged  (c)   |  x    |  x     x    |  x     -     -     x    |  -
+"  diff      (d)   |  x    |  x     x    |  -     -     x     -    |  -
 "
 "  in section 'staged'   : action 'diff' may behave differently
 "  in section 'modified' : action 'rm' only for status 'deleted'
@@ -2571,6 +2630,16 @@ function! s:Status_FileAction( action )
 			return 1
 		endif
 		"
+	elseif s_code =~ '[ui]' && a:action == 'delete'
+		"
+		" section "untracked" or "ignored", action "delete"
+		"
+		if ! exists( '*delete' )
+			call s:ErrorMsg ( 'Can not delete files from harddisk.' )
+		elseif s:Question( 'Delete file "'.f_name.'" from harddisk?' ) == 1
+			return delete ( f_name ) == 0
+		endif
+		"
 	else
 		"
 		" action not implemented for section
@@ -2595,17 +2664,21 @@ function! GitS_Status( action )
 	"
 	if a:action == 'help'
 		let txt  = s:HelpTxtStd."\n\n"
-		let txt .= "i       : toggle \"show ignored files\"\n"
-		let txt .= "s       : toggle \"short output\"\n"
-		let txt .= "v       : toggle \"verbose output\"\n"
+		let txt .= "toggle ...\n"
+		let txt .= "i       : show ignored files\n"
+		let txt .= "s       : short output\n"
+		let txt .= "v       : verbose output\n"
 		let txt .= "\n"
-		let txt .= "a       : file under cursor: add\n"
-		let txt .= "c       : file under cursor: checkout\n"
-		let txt .= "od      : file under cursor: open diff\n"
-		let txt .= "of      : file under cursor: open file (edit)\n"
-		let txt .= "ol      : file under cursor: open log\n"
-		let txt .= "r       : file under cursor: reset\n"
-		let txt .= "r       : file under cursor: remove (only for unmerged changes)\n\n"
+		let txt .= "file under cursor ...\n"
+		let txt .= "a       : add\n"
+		let txt .= "c       : checkout\n"
+		let txt .= "od      : open diff\n"
+		let txt .= "of      : open file (edit)\n"
+		let txt .= "ol      : open log\n"
+		let txt .= "r       : reset\n"
+		let txt .= "r       : remove (only for unmerged changes)\n"
+		let txt .= "D       : delete from file system (only untracked files)\n"
+		let txt .= "\n"
 		let txt .= "For settings see:\n"
 		let txt .= "  :help g:Git_StatusStagedOpenDiff"
 		echo txt
@@ -2621,7 +2694,7 @@ function! GitS_Status( action )
 		endif
 	elseif a:action =~ '\<\%(short\|verbose\)\>'
 		" noop
-	elseif a:action =~ '\<\%(add\|checkout\|diff\|edit\|log\|reset\)\>'
+	elseif a:action =~ '\<\%(add\|checkout\|diff\|edit\|log\|reset\|delete\)\>'
 		"
  		call s:ChangeCWD ()
 		"
@@ -2665,6 +2738,7 @@ function! GitS_Status( action )
 		exe 'nmap <silent> <buffer> of     :call GitS_Status("edit")<CR>'
 		exe 'nmap <silent> <buffer> ol     :call GitS_Status("log")<CR>'
 		exe 'nmap <silent> <buffer> r      :call GitS_Status("reset")<CR>'
+		exe 'nmap <silent> <buffer> D      :call GitS_Status("delete")<CR>'
 		"
 	endif
 	"
@@ -2783,10 +2857,57 @@ endfunction    " ----------  end of function GitS_TagList  ----------
 "
 function! GitS_GitK( param )
 	"
-	" :TODO:19.11.2013 23:05:WM: checks before execution
+	" :TODO:10.12.2013 20:14:WM: graphics available?
+	if s:EnabledGitK == 0
+		return s:ErrorMsg ( s:DisableGitKMessage, s:DisableGitKReason )
+	endif
+	"
 	silent exe '!'.s:Git_GitKExecutable.' '.a:param.' &'
 	"
 endfunction    " ----------  end of function GitS_GitK  ----------
+"
+"-------------------------------------------------------------------------------
+" GitS_PluginHelp : Plug-in help.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! GitS_PluginHelp(  )
+	try
+		help git-support
+	catch
+		exe 'helptags '.s:plugin_dir.'/doc'
+		help git-support
+	endtry
+endfunction    " ----------  end of function GitS_PluginHelp  ----------
+"
+"-------------------------------------------------------------------------------
+" GitS_PluginSettings : Print the settings on the command line.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! GitS_PluginSettings(  )
+	"
+	if     s:MSWIN | let sys_name = 'Windows'
+	elseif s:UNIX  | let sys_name = 'UNIX'
+	else           | let sys_name = 'unknown' | endif
+	"
+	if s:EnabledGitK | let gitk_status = '<yes>'
+	else             | let gitk_status = '<no>'  | endif
+	"
+	let	txt = " Git-Support settings\n\n"
+				\ .'      plugin installation :  '.s:installation.' on '.sys_name."\n"
+				\ .'           git executable :  '.s:Git_Executable."\n"
+	if s:Enabled
+		let txt .= '                version   :  '.s:GitVersion."\n"
+	else
+		let txt .= "                enabled   :  <no>\n"
+	endif
+	let txt .=
+				\  '          gitk executable :  '.s:Git_GitKExecutable."\n"
+				\ .'                enabled   :  '.gitk_status."\n"
+				\ ."________________________________________________________________________________\n"
+				\ ." Git-Support, Version ".g:GitSupport_Version." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
+	"
+	echo txt
+endfunction    " ----------  end of function GitS_PluginSettings  ----------
 "
 "-------------------------------------------------------------------------------
 " s:InitMenus : Initialize menus.   {{{1
@@ -2877,6 +2998,16 @@ function! s:InitMenus()
 		call s:GenerateCustomMenu ( s:Git_RootMenu.'.custom', s:Git_CustomMenu )
 		"
 	endif
+	"
+	" Help
+	let ahead = 'amenu          '.s:Git_RootMenu.'.help.'
+	let shead = 'amenu <silent> '.s:Git_RootMenu.'.help.'
+	"
+	exe ahead.'Help<TAB>Git :echo "This is a menu header!"<CR>'
+	exe ahead.'-Sep00-      :'
+	"
+	exe shead.'help\ (Git-Support)<TAB>:GitSupportHelp     :call GitS_PluginHelp()<CR>'
+	exe shead.'plug-in\ settings<TAB>:GitSupportSettings   :call GitS_PluginSettings()<CR>'
 	"
 	" Main Menu - open buffers
 	let ahead = 'amenu          '.s:Git_RootMenu.'.'

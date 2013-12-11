@@ -1,6 +1,6 @@
 Project
 - (WM) Remove 'plugin/make.vim'.
-- (WM) Tag 'perlsupport-5.2' is wrong.
+- (WM, DONE) Tag 'perlsupport-5.2' is wrong.
 
 Templates:
 - (WM) Correct escape for menu names.
@@ -38,12 +38,18 @@ Git:
 - (WM) Add current custom menu entries to documentation and/or "git-support/rc/",
   as a starting point for customization.
 - (WM) Give directory as an argument to ':GitStatus'.
+- (WM) For global installation (compare Matlab):
+  Which method is best to obtain 's:plugin_dir'?
 
 LaTeX:
 - (FM) Documentation: Menu 'Beamer' missing.
 - (FM) Documentation: Menu 'Help' missing.
 - (FM) Reference Card: Menu 'Beamer' missing.
 - (FM) Reference Card: Entry 'Help->english' missing.
+
+Matlab:
+- (WM) For global installation (compare Git):
+  Which method is best to obtain 's:plugin_dir'?
 
 Perl:
 - (FM, DONE) Documentation: Change documentation with regard to Make integration.

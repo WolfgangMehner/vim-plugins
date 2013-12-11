@@ -114,6 +114,9 @@ run the commands in every subdirectory of the project.
   |:GitTag| <args>                   (run) git tag <args>
 
   |:GitK| <args>                     (gui) gitk <args>
+
+  |:GitSupportHelp|                  show plug-in help
+  |:GitSupportSettings|              show plug-in settings
  ----------------------------------------------------------------------------
 
 (run) runs the command after asking for confirmation
@@ -550,17 +553,20 @@ staged changes. This can be modified using |g:Git_StatusStagedOpenDiff|.
   q         close the buffer
   u         update the buffer
 
-  i         toggle "show ignored files"
-  s         toggle "short output"
-  v         toggle "verbose output"
+  toggle ...
+  i         show ignored files
+  s         short output
+  v         verbose output
 
-  a         file under cursor: add
-  c         file under cursor: checkout
-  od        file under cursor: open diff
-  of        file under cursor: open file (edit)
-  ol        file under cursor: open log
-  r         file under cursor: reset
-  r         file under cursor: remove (only for unmerged changes)
+  file under cursor ...
+  a         add
+  c         checkout
+  od        open diff
+  of        open file (edit)
+  ol        open log
+  r         reset
+  r         remove (only for unmerged changes)
+  D         delete from file system (only untracked files)
  ----------------------------------------------------------------------------
 
 Settings:
@@ -996,4 +1002,4 @@ C.  CREDITS                                               *gitsupport-credits*
 
 
 ==============================================================================
-vim:tw=78:noet:ts=2:ft=help:norl:
+vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
