@@ -139,9 +139,10 @@ For a system-wide installation please see the help file 'doc/perlsupport.txt'.
 =======================================================================================
 
 ---------------------------------------------------------------------------------------
-  RELEASE NOTES FOR VERSION 5.3
+  RELEASE NOTES FOR VERSION 5.3pre
 ---------------------------------------------------------------------------------------
 - Adjusting end-of-line comments improved.
+- Bugfix: Map and menu entry 'Snippets->edit global templates'.
 
 ---------------------------------------------------------------------------------------
   OLDER RELEASE NOTES : see file 'ChangeLog'

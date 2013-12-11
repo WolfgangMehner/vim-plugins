@@ -71,6 +71,8 @@ keystroke.
  1.7.14  Xterm size                             |csupport-run-xterm|
  1.7.15  Output redirection                     |csupport-run-output|
  1.8    Help                                    |csupport-help|
+ 1.9    Menu 'Doxygen'                          |csupport-doxygen|
+ 1.9.1   Enabling the menu                      |csupport-doxygen-enable|
 
  2.    Usage without GUI                        |csupport-usage-vim|
  3.    Hotkeys                                  |csupport-hotkeys|
@@ -1105,6 +1107,59 @@ If there is no word under the cursor you can type in a name.  An interface to
 the on-line reference manuals must be installed (usually man(1) for
 Linux/Unix, see|csupport-custom-glob-vars|).
 The hotkey is \hm (for "help manual").
+
+------------------------------------------------------------------------------
+1.9  MENU 'Doxygen'                                         *csupport-doxygen*
+------------------------------------------------------------------------------
+
+A menu 'Doxygen' with templates for writing Doxygen comments can optionally be
+included. It contains two kinds of entries. If the name includes a "block",
+the template inserts a whole Doxygen comment block. Other templates insert a
+line extending an existing block.
+
+The special entry 'brief, after member' can be used to append a brief
+description after a member. Similarly to 'Comments->end-of-line comment', it
+will append the comment to several lines when in visual mode. When marking the
+four lines within the enum
+>
+	enum Color
+	{
+		Background,
+		Transparent,
+		Black,
+		White
+	};   // -----  end of enum Color  -----
+<
+and then choosing 'brief, after member', the result will look like this
+>
+	enum Color
+	{
+		Background,                                 /*!< \brief  */
+		Transparent,                                /*!< \brief  */
+		Black,                                      /*!< \brief  */
+		White,                                      /*!< \brief  */
+	};   // -----  end of enum Color  -----
+<
+Now the elements can be documented one by one.
+This feature works like 'Comments->end-of-line comment' in every other aspect.
+The comments can be aligned using 'Comments->adjust end-of-line com.' and
+respect the column set by 'Comments->set end-of-line com. col' (see
+|csupport-comm-aligned|).
+
+
+1.9.1  ENABLING THE MENU                             *csupport-doxygen-enable*
+
+The 'Doxygen' submenu is disabled by default. To enable it, the template
+library has to be modified. In case of a local installation (the default),
+choose:
+	C/C++ -> Snippets -> edit local templates
+and for a global installation:
+	C/C++ -> Snippets -> edit global templates
+Open the main template file 'Templates' and uncomment the line >
+	§IncludeFile( 'doxygen.template' )
+by removing the leading '§' >
+	IncludeFile( 'doxygen.template' )
+After a restart of the editor, the 'Doxygen' menu will appear.
 
 ==============================================================================
 2.  USAGE WITHOUT GUI  (Vim)                              *csupport-usage-vim*

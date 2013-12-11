@@ -175,10 +175,11 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
 - Menus now show the correct mapleader.
 - Bugfix: g:C_LoadMenus now works.
 - Bugfix: Prevent unnecessary rereading of the template library.
-- Added Doxygen templates.
+- Added Doxygen templates and 'Doxygen->brief, after member'.
 - Added help menu entries: help English, help Doxygen
 - Improved "adjust end-of-line comment".
 - Bugfix: Setup of local templates in case of global installation.
+- Bugfix: Map and menu entry 'Snippets->edit global templates'.
 - Several internal improvements.
 
 
