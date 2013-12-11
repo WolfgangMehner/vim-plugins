@@ -652,14 +652,10 @@ endfunction    " ----------  end of function C_Input ----------
 "------------------------------------------------------------------------------
 "  C_AdjustLineEndComm: adjust line-end comments     {{{1
 "------------------------------------------------------------------------------
-"
-" C comment or C++ comment:
-let	s:c_cppcomment= '\(\/\*.\{-}\*\/\|\/\/.*$\)'
-
 function! C_AdjustLineEndComm ( ) range
 	"
 	" comment character (for use in regular expression)
-	let cc = '\%(/\*\|//\)'
+	let cc = '\%(/\*\|//\)'                       " start of C or C++ comment
 	"
 	" patterns to ignore when adjusting line-end comments (maybe incomplete):
 	" - double-quoted strings, includes \n \" \\ ...
