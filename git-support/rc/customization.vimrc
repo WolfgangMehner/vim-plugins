@@ -217,7 +217,7 @@ highlight GitConflict    cterm=bold  ctermfg=White  ctermbg=Red  gui=bold  guifg
 " highlight GitConflict    cterm=bold  ctermfg=White  ctermbg=Red  gui=bold  guifg=White  guibg=Red
 "
 " " custom menu
-" let s:Git_CustomMenu = [
+" let g:Git_CustomMenu = [
 " 			\ [ '&grep, word under cursor',  ':GitGrepTop', ':GitGrepTop <WORD><EXECUTE>' ],
 " 			\ [ '&grep, version x..y',       ':GitGrepTop', ':GitGrepTop -i "Version[^[:digit:]]\+<CURSOR>"' ],
 " 			\ [ '-SEP1-',                    '',            '' ],

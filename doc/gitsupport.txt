@@ -127,8 +127,8 @@ run the commands in every subdirectory of the project.
 When a command opens a new buffer, several maps are defined for this buffer.
 Hitting <SHIFT-F1> always prints a short help with all available maps.
 
-The default argument for GitAdd, GitBlame, GitCheckout, GitCommitFile,
-GitDiff, GitRm, GitRemove and GitReset is the current buffer.
+The default argument for GitAdd, GitBlame, GitCheckout, GitCommitFile, GitRm,
+GitRemove and GitReset is the current buffer.
 
 When called without arguments, the commands GitBranch and GitRemote open a
 buffer, otherwise they run the respective Git command with the given
@@ -339,12 +339,15 @@ Is equivalent to: >
 
 ------------------------------------------------------------------------------
                                                                     *:GitDiff*
-	:GitDiff ~
-	:GitDiff <args> ~
+  :GitDiff ~
+  :GitDiff <args> ~
 
-The first version opens a buffer containing the output of Git's diff for the
-current buffer (see |g:Git_DiffExpandEmpty| for changing this back to Git's
-standard behavior). The second version runs diff for the given arguments.
+Both version run diff for the given arguments. The behavior of the first
+version depends on the setting |g:Git_DiffExpandEmpty|.
+By default, the first version opens the diff showing all unstaged changes. If
+|g:Git_DiffExpandEmpty| is set to 'yes', only the diff of the current file is
+shown. This makes the behavior of :GitDiff more consistent with commands like
+|:GitAdd|.
 
   Map       Meaning
  ----------------------------------------------------------------------------
@@ -359,12 +362,12 @@ standard behavior). The second version runs diff for the given arguments.
 Example:
 
 Show the diff for the current file: >
-	:GitDiff
+  :GitDiff %
 
 Show the diff for a file Vector.cc and its header Vector.h: >
-	:GitDiff Vector.*
+  :GitDiff Vector.*
 Is equivalent to: >
-	git diff Vector.*
+  git diff Vector.*
 
 Settings:
 - |g:Git_DiffExpandEmpty|
@@ -536,7 +539,7 @@ buffers listing the stashes or showing a stash.
 
 ------------------------------------------------------------------------------
                                                                   *:GitStatus*
-	:GitStatus ~
+  :GitStatus ~
 
 Opens a buffer showing the current status. Several different actions can be
 performed for the file under the cursor, see below.
@@ -546,6 +549,9 @@ is to open the "default" diff between the index and the working tree. In the
 section containing the staged files, titled "Changes to be committed", this
 behavior is different. The default behavior is to open the diff displaying the
 staged changes. This can be modified using |g:Git_StatusStagedOpenDiff|.
+
+The map 'D' to remove untracked files is special, in that it does not run a
+Git command.
 
   Map       Meaning
  ----------------------------------------------------------------------------
@@ -773,15 +779,15 @@ especially those with regularly used combinations of flags. All custom menu
 entries appear in the sub menu "Git->custom". They are defined via the global
 variable 'g:Git_CustomMenu':
 >
-	let g:Git_CustomMenu = [
-	 \ [ 'log, grep &commit msg..', ':GitLog', ':GitLog -i --grep="<CURSOR>"' ],
-	 \ [ 'log, grep &diff output',  ':GitLog', ':GitLog -p -S "<CURSOR>"' ],
-	 \ [ 'log, &graph',             ':GitLog', ':GitLog --graph<EXECUTE>' ],
-	 \ [ '-SEP1-', '', '' ],
-	 \ [ '&merge, ff only',   ':GitMerge', ':GitMerge --ff-only <CURSOR>' ],
-	 \ [ '&merge, no commit', ':GitMerge', ':GitMerge --no-commit <CURSOR>' ],
-	 \ [ '&merge, abort',     ':GitMerge', ':GitMerge --abort<EXECUTE>' ],
-	 \ ]
+  let g:Git_CustomMenu = [
+   \ [ 'log, grep &commit msg..', ':GitLog', ':GitLog -i --grep="<CURSOR>"' ],
+   \ [ 'log, grep &diff output',  ':GitLog', ':GitLog -p -S "<CURSOR>"' ],
+   \ [ 'log, &graph',             ':GitLog', ':GitLog --graph<EXECUTE>' ],
+   \ [ '-SEP1-', '', '' ],
+   \ [ '&merge, ff only',   ':GitMerge', ':GitMerge --ff-only <CURSOR>' ],
+   \ [ '&merge, no commit', ':GitMerge', ':GitMerge --no-commit <CURSOR>' ],
+   \ [ '&merge, abort',     ':GitMerge', ':GitMerge --abort<EXECUTE>' ],
+   \ ]
 <
 The variable must contain a list of lists of strings. A |List| is constructed
 using square brackets containing a number of comma-separated entries. Each
@@ -794,12 +800,12 @@ The menu entry is a string, where dots and ampersands have special meanings.
 Dots structure the menu by defining submenus. To put the entries from above
 into a submenu "log", use:
 >
-	let g:Git_CustomMenu = [
-	 \ [ '&log.grep &commit msg..', ':GitLog', ':GitLog -i --grep="<CURSOR>"' ],
-	 \ [ '&log.grep &diff output',  ':GitLog', ':GitLog -p -S "<CURSOR>"' ],
-	 \ [ '&log.-SEP1-',             '',        '' ],
-	 \ [ '&log.&graph',             ':GitLog', ':GitLog --graph<EXECUTE>' ],
-	 ...
+  let g:Git_CustomMenu = [
+   \ [ '&log.grep &commit msg..', ':GitLog', ':GitLog -i --grep="<CURSOR>"' ],
+   \ [ '&log.grep &diff output',  ':GitLog', ':GitLog -p -S "<CURSOR>"' ],
+   \ [ '&log.-SEP1-',             '',        '' ],
+   \ [ '&log.&graph',             ':GitLog', ':GitLog --graph<EXECUTE>' ],
+   ...
 <
 Ampersands set shortcuts for menu entries and submenus. To include a literal
 dot or ampersands use '..' or '&&' respectively. Separators are inserted if
@@ -815,7 +821,20 @@ call before executing it.
 
 Furthermore, <WORD> is replaced with the |word| under the cursor (|<cword>| or
 |<cWORD>| can be used as well). The tag <FILE> is replaced with the name of the
-current file.
+file under the cursor, <BUFFER> with the name of the file loaded in the
+current buffer.
+
+These tags are available:
+
+  Tag             Short Description
+ ----------------------------------------------------------------------------
+  <EXECUTE>       execute the command immediately
+  <CURSOR>        open the command-line with the cursor at this position
+
+  <BUFFER>        the name of the current buffer
+  <FILE>          the file under the cursor (see |<cfile>|)
+  <WORD>          the word under the cursor (see |<cword>|)
+ ----------------------------------------------------------------------------
 
 The file "git-support/rc/additions.vimrc" contains the standard value for
 'g:Git_CustomMenu', as a basis for customization.
@@ -835,7 +854,7 @@ in the .vimrc file.
                                           ('yes' or 'no')
   |g:Git_RootMenu|              '&Git'      name and shortcut of the root menu
   |g:Git_CustomMenu|            [ ... ]     custom menu entries
-  |g:Git_DiffExpandEmpty|       'yes'       whether |:GitDiff| expands an empty
+  |g:Git_DiffExpandEmpty|       'no'        whether |:GitDiff| expands an empty
                                           argument list to the current file
   |g:Git_OpenFoldAfterJump|     'yes'       whether commands which open a file
                                           open the folds under the cursor
@@ -850,14 +869,14 @@ in the .vimrc file.
                                                             *g:Git_Executable*
 The executable is set by g:Git_Executable. You should use the English language
 environment: >
-	let g:Git_Executable = 'LANG=en_US git'
+  let g:Git_Executable = 'LANG=en_US git'
 <
 For Windows, set up the executable similar to this: >
-	let g:Git_Executable = 'C:\Programs\Git\bin\git.exe'
+  let g:Git_Executable = 'C:\Programs\Git\bin\git.exe'
 <
                                                         *g:Git_GitKExecutable*
 Set the gitk executable. You should use the English language environment: >
-	let g:Git_Executable = 'LANG=en_US gitk'
+  let g:Git_Executable = 'LANG=en_US gitk'
 <
 ------------------------------------------------------------------------------
 6.2  MENUS                                           *gitsupport-config-menus*
@@ -865,10 +884,10 @@ Set the gitk executable. You should use the English language environment: >
                                                              *g:Git_LoadMenus*
 The creation of the menus is controlled by g:Git_LoadMenus. The default
 setting: >
-	let g:Git_LoadMenus = 'yes'
+  let g:Git_LoadMenus = 'yes'
 causes the menus to appear right away after starting Vim.
 The automatic creation of the menus is prevented by: >
-	let g:Git_LoadMenus = 'no'
+  let g:Git_LoadMenus = 'no'
 Now the menus can only be loaded by using the tool menu entry 'Tools->Load
 Git Support'.
 
@@ -878,7 +897,7 @@ The name and shortcut of the root menu is set via g:Git_RootMenu. The
 character prefixed by '&' will be the shortcut.
 
 Example: >
-	let g:Git_RootMenu = 'G&it'
+  let g:Git_RootMenu = 'G&it'
 Sets the shortcut to 'i'.
 
 ------------------------------------------------------------------------------
@@ -888,31 +907,34 @@ Sets the shortcut to 'i'.
 You can add hotkeys for your favorite commands by adding maps to your .vimrc.
 
 With these lines, <F10> will open the status buffer: >
-	 noremap <silent> <F10>       :GitStatus<CR>
-	inoremap <silent> <F10>  <C-C>:GitStatus<CR>
+   noremap <silent> <F10>       :GitStatus<CR>
+  inoremap <silent> <F10>  <C-C>:GitStatus<CR>
 <
 ------------------------------------------------------------------------------
 6.4  SETTINGS                                     *gitsupport-config-settings*
 ------------------------------------------------------------------------------
                                                        *g:Git_DiffExpandEmpty*
-The default behavior of ":GitDiff", when called without arguments, is to
-expand the argument list to the file contained in the current buffer, which is
-the same as calling: >
-	:GitDiff %
-This behavior can be changed by setting: >
-	let g:Git_DiffExpandEmpty = 'no'
-Now calling ":GitDiff" without any arguments opens a buffer displaying all
-changes from all files. But even with g:Git_DiffExpandEmpty == 'yes', you can
-still display a diff containing all changes by calling: >
-	:GitDiff --
+The default behavior of ":GitDiff", when called without arguments, is to show
+a diff containing all unstaged changes.
+
+In order to make the behavior more consistent with commands like |:GitAdd|,
+this can be changed by setting: >
+  let g:Git_DiffExpandEmpty = 'yes'
+Now calling ":GitDiff" without any arguments opens a buffer displaying only
+the changes of the file in the current buffer, which is the same as calling: >
+  :GitDiff %
+So the empty argument list is "expanded".
+But even with g:Git_DiffExpandEmpty == 'yes', you can still display a diff
+containing all changes by calling: >
+  :GitDiff --
 This is not detected to be an empty argument list.
 
 The possible settings are listed below:
 
   Value             Meaning                      :GitDiff expands to ...
  ----------------------------------------------------------------------------
-  'yes' (default)   expand empty argument list   git diff -- <file>
-  'no'              Git's standard behavior      git diff
+  'yes'             expand empty argument list   git diff -- <file>
+  'no' (default)    Git's standard behavior      git diff
  ----------------------------------------------------------------------------
 
 The behavior can be changed on the fly by settings the variable to a different
@@ -921,8 +943,8 @@ value on the command line.
 ------------------------------------------------------------------------------
                                                      *g:Git_OpenFoldAfterJump*
 Some maps jump from Git buffers to files. By default they open all the folds
-under the cursor via 'zO'. This behavior can be switched off by settings: >
-	let g:Git_OpenFoldAfterJump = 'no'
+under the cursor via |zv|. This behavior can be switched off by settings: >
+  let g:Git_OpenFoldAfterJump = 'no'
 <
 The possible settings are listed below:
 
@@ -942,7 +964,7 @@ file under the cursor. The normal behavior is to open the "default" diff
 between the index and the working tree. In the section containing the staged
 files, titled "Changes to be committed", this behavior is different and can be
 controlled by g:Git_StatusStagedOpenDiff. Setting >
-	let g:Git_StatusStagedOpenDiff = 'cached'
+  let g:Git_StatusStagedOpenDiff = 'cached'
 means the diff will be opened displaying the staged changes.
 
 The other possible settings are listed below:

@@ -354,16 +354,16 @@ endfunction    " ----------  end of function s:VersionLess  ----------
 " Returns:
 "   -
 "
-" See :help g:Git_CustomMenu for a describtion of the format 'data' uses.
+" See :help g:Git_CustomMenu for a description of the format 'data' uses.
 "-------------------------------------------------------------------------------
 "
 function! s:GenerateCustomMenu ( prefix, data )
 	"
 	for [ entry_l, entry_r, cmd ] in a:data
 		" escape special characters and assemble entry
+		let entry_l = escape ( entry_l, ' |\' )
 		let entry_l = substitute ( entry_l, '\.\.', '\\.', 'g' )
-		let entry_l = escape ( entry_l, ' |' )
-		let entry_r = escape ( entry_r, ' .|' )
+		let entry_r = escape ( entry_r, ' .|\' )
 		"
 		if entry_r == '' | let entry = a:prefix.'.'.entry_l
 		else             | let entry = a:prefix.'.'.entry_l.'<TAB>'.entry_r
@@ -384,8 +384,9 @@ function! s:GenerateCustomMenu ( prefix, data )
 			let cmd = substitute ( cmd, '<EXECUTE>$', '<CR>', '' )
 		endif
 		"
-		let cmd = substitute ( cmd, '<WORD>', '<cword>', 'g' )
-		let cmd = substitute ( cmd, '<FILE>', '%',       'g' )
+		let cmd = substitute ( cmd, '<WORD>',   '<cword>', 'g' )
+		let cmd = substitute ( cmd, '<FILE>',   '<cfile>', 'g' )
+		let cmd = substitute ( cmd, '<BUFFER>', '%',       'g' )
 		"
 		exe 'amenu '.silent.entry.' '.cmd
 	endfor
@@ -699,14 +700,14 @@ if s:Enabled
 	command! -nargs=* -complete=file                                 GitRun             :call GitS_Run(<q-args>,'')
 	command! -nargs=* -complete=file                                 GitBuf             :call GitS_Run(<q-args>,'b')
 	command! -nargs=* -complete=file                                 GitK               :call GitS_GitK(<q-args>)
-	command! -nargs=0                                                GitSupportHelp     :call GitS_PluginHelp()
+	command! -nargs=0                                                GitSupportHelp     :call GitS_PluginHelp("gitsupport")
 	command! -nargs=0                                                GitSupportSettings :call GitS_PluginSettings()
 else
 	command  -nargs=*                -bang                           Git                :call GitS_Help('disabled')
 	command! -nargs=*                                                GitRun             :call GitS_Help('disabled')
 	command! -nargs=*                                                GitBuf             :call GitS_Help('disabled')
 	command! -nargs=*                                                GitHelp            :call GitS_Help('disabled')
-	command! -nargs=0                                                GitSupportHelp     :call GitS_PluginHelp()
+	command! -nargs=0                                                GitSupportHelp     :call GitS_PluginHelp("gitsupport")
 	command! -nargs=0                                                GitSupportSettings :call GitS_PluginSettings()
 endif
 "
@@ -2870,12 +2871,12 @@ endfunction    " ----------  end of function GitS_GitK  ----------
 " GitS_PluginHelp : Plug-in help.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! GitS_PluginHelp(  )
+function! GitS_PluginHelp( topic )
 	try
-		help git-support
+		silent exe 'help '.a:topic
 	catch
 		exe 'helptags '.s:plugin_dir.'/doc'
-		help git-support
+		silent exe 'help '.a:topic
 	endtry
 endfunction    " ----------  end of function GitS_PluginHelp  ----------
 "
@@ -2990,12 +2991,16 @@ function! s:InitMenus()
 	" Custom Menu
 	if ! empty ( s:Git_CustomMenu )
 		"
-		let ahead = 'amenu '.s:Git_RootMenu.'.&custom.'
+		let ahead = 'amenu          '.s:Git_RootMenu.'.&custom.'
+		let ahead = 'amenu <silent> '.s:Git_RootMenu.'.&custom.'
 		"
 		exe ahead.'Custom<TAB>Git :echo "This is a menu header!"<CR>'
 		exe ahead.'-Sep00-        :'
 		"
 		call s:GenerateCustomMenu ( s:Git_RootMenu.'.custom', s:Git_CustomMenu )
+		"
+		exe ahead.'-HelpSep-                                  :'
+		exe ahead.'help\ (custom\ menu)<TAB>:GitSupportHelp   :call GitS_PluginHelp("gitsupport-menus")<CR>'
 		"
 	endif
 	"
@@ -3006,7 +3011,7 @@ function! s:InitMenus()
 	exe ahead.'Help<TAB>Git :echo "This is a menu header!"<CR>'
 	exe ahead.'-Sep00-      :'
 	"
-	exe shead.'help\ (Git-Support)<TAB>:GitSupportHelp     :call GitS_PluginHelp()<CR>'
+	exe shead.'help\ (Git-Support)<TAB>:GitSupportHelp     :call GitS_PluginHelp("gitsupport")<CR>'
 	exe shead.'plug-in\ settings<TAB>:GitSupportSettings   :call GitS_PluginSettings()<CR>'
 	"
 	" Main Menu - open buffers
