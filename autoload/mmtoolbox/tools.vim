@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Toolbox_Version below
 "       Created:  29.12.2012
-"      Revision:  19.03.2013
+"      Revision:  14.12.2013
 "       License:  Copyright (c) 2012, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:Toolbox_Version') && ! exists('g:Toolbox_DevelopmentOverwrite') )
 	finish
 endif
-let g:Toolbox_Version= '1.0pre'     " version number of this script; do not change
+let g:Toolbox_Version= '1.0'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions   {{{1
@@ -49,7 +49,15 @@ let g:Toolbox_Version= '1.0pre'     " version number of this script; do not chan
 "
 "-------------------------------------------------------------------------------
 " s:ErrorMsg : Print an error message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
 "-------------------------------------------------------------------------------
+"
 function! s:ErrorMsg ( ... )
 	echohl WarningMsg
 	for line in a:000
@@ -60,7 +68,16 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 "
 "-------------------------------------------------------------------------------
 " s:GetGlobalSetting : Get a setting from a global variable.   {{{2
+"
+" Parameters:
+"   varname - name of the variable (string)
+" Returns:
+"   -
+"
+" If g:<varname> exists, assign:
+"   s:<varname> = g:<varname>
 "-------------------------------------------------------------------------------
+"
 function! s:GetGlobalSetting ( varname )
 	if exists ( 'g:'.a:varname )
 		exe 'let s:'.a:varname.' = g:'.a:varname
@@ -68,18 +85,28 @@ function! s:GetGlobalSetting ( varname )
 endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 "
 "-------------------------------------------------------------------------------
-" s:GetToolConfig : Get the configuration for from a global variable.   {{{2
+" s:GetToolConfig : Get the configuration from a global variable.   {{{2
+"
+" Parameters:
+"   plugin - the name of the plg-in (string)
+"   name - the name of the tool (string)
+" Returns:
+"   config - 'yes' or 'no' (string)
+"
+" Returns whether the tool should be loaded.
+" If the variable g:<plugin>_UseTool_<name> exists, return its value.
+" Otherwise returns 'no'.
 "-------------------------------------------------------------------------------
-function! s:GetToolConfig ( plugin, tool )
-	let name = 'g:'.a:plugin.'_UseTool_'.a:tool
+function! s:GetToolConfig ( plugin, name )
+	"
+	let name = 'g:'.a:plugin.'_UseTool_'.a:name
 	if exists ( name )
-		exe 'let res = '.name
-	else
-		let res = 'no'
+		return {name}
 	endif
-	return res
+	return 'no'
 endfunction    " ----------  end of function s:GetToolConfig  ----------
 " }}}2
+"-------------------------------------------------------------------------------
 "
 "-------------------------------------------------------------------------------
 " NewToolbox : Create a new toolbox.   {{{1
@@ -149,7 +176,7 @@ function! mmtoolbox#tools#Load ( toolbox, directories )
 			try
 				" 
 				" get tool information
-				exe 'let retlist = mmtoolbox#'.name.'#GetInfo()'
+				let retlist = mmtoolbox#{name}#GetInfo()
 				"
 				" assemble the entry
 				let entry = {
@@ -195,6 +222,36 @@ function! mmtoolbox#tools#Load ( toolbox, directories )
 endfunction    " ----------  end of function mmtoolbox#tools#Load  ----------
 "
 "-------------------------------------------------------------------------------
+" ToolEnabled : Whether a tool is enabled.   {{{1
+"-------------------------------------------------------------------------------
+function! mmtoolbox#tools#ToolEnabled ( toolbox, name )
+	"
+	" check the parameters
+	if type( a:toolbox ) != type( {} )
+		return s:ErrorMsg ( 'Argument "toolbox" must be given as a dict.' )
+	endif
+	"
+	if type( a:name ) != type( '' )
+		return s:ErrorMsg ( 'Argument "name" must be given as a string.' )
+	endif
+	"
+	" has been loaded?
+	if s:GetToolConfig ( a:toolbox.plugin, a:name ) != 'yes'
+		return 0
+	endif
+	"
+	let enabled = 0
+	"
+	try
+		let enabled = mmtoolbox#{a:name}#Property('get','enabled')
+	catch /.*/
+		" fail quietly
+	endtry
+	"
+	return enabled
+endfunction    " ----------  end of function mmtoolbox#tools#ToolEnabled  ----------
+"
+"-------------------------------------------------------------------------------
 " Property : Get/set a property.   {{{1
 "-------------------------------------------------------------------------------
 function! mmtoolbox#tools#Property ( toolbox, property, ... )
@@ -211,10 +268,6 @@ function! mmtoolbox#tools#Property ( toolbox, property, ... )
 	" check the property
 	if a:property == 'mapleader'
 		" ok
-" 	elseif a:property == 'empty-menu'
-" 		if a:0 > 0
-" 			return s:ErrorMsg ( 'Can not set the property: '.a:property )
-" 		endif
 	elseif a:property == 'empty-menu'
 		return a:toolbox.n_menu == 0
 	else
@@ -257,7 +310,7 @@ function! mmtoolbox#tools#GetList ( toolbox )
 endfunction    " ----------  end of function mmtoolbox#tools#GetList  ----------
 "
 "-------------------------------------------------------------------------------
-" Info : Get the list of all tools.   {{{1
+" Info : Echo debug information.   {{{1
 "-------------------------------------------------------------------------------
 function! mmtoolbox#tools#Info ( toolbox )
 	"
@@ -306,7 +359,7 @@ function! mmtoolbox#tools#AddMaps ( toolbox )
 		"
 		try
 			" try to create the maps
-			exe 'call mmtoolbox#'.entry.name.'#AddMaps()'
+			call mmtoolbox#{entry.name}#AddMaps()
 		catch /.*/
 			" could not load the plugin: ?
 			call s:ErrorMsg ( "Could not create maps for the tool \"".name."\" (".v:exception.")",
@@ -352,19 +405,18 @@ function! mmtoolbox#tools#AddMenus ( toolbox, root )
 		"
 		" correctly escape the name
 		" and add a shortcut
-		let menu_item = entry.prettyname
-		let menu_item = escape ( menu_item, ' .|\' )
-		let menu_item = substitute ( menu_item, '\V&', '\&&', 'g' )
-		let menu_scut = substitute ( menu_item, '\w',  '\&&', '' )
-		let menu_root = a:root.'.'.menu_scut
+		let menu_item_r = escape ( entry.prettyname, ' .|\' )
+		let menu_item_l = substitute ( menu_item_r, '\V&', '\&&', 'g' )
+		let menu_scut   = substitute ( menu_item_l, '\w',  '\&&', '' )
+		let menu_root   = a:root.'.'.menu_scut
 		"
 		" create the menu header
-		exe 'amenu '.menu_root.'.'.menu_item.'<TAB>'.menu_item.' :echo "This is a menu header."<CR>'
+		exe 'amenu '.menu_root.'.'.menu_item_l.'<TAB>'.menu_item_r.' :echo "This is a menu header."<CR>'
 		exe 'amenu '.menu_root.'.-SepHead-     :'
 		"
 		try
 			" try to create the menu
-			exe 'call mmtoolbox#'.entry.name.'#AddMenu('.string( menu_root ).',mleader)'
+			call mmtoolbox#{entry.name}#AddMenu( menu_root, mleader )
 		catch /.*/
 			" could not load the plugin: ?
 			call s:ErrorMsg ( "Could not create menus for the tool \"".name."\" (".v:exception.")",

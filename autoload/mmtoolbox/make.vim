@@ -76,7 +76,7 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 "   -
 "
 " If g:<varname> exists, assign:
-"   s:<varname> = g:<varname>.
+"   s:<varname> = g:<varname>
 "-------------------------------------------------------------------------------
 function! s:GetGlobalSetting ( varname )
 	if exists ( 'g:'.a:varname )
@@ -145,9 +145,11 @@ else
 	function! mmtoolbox#make#Disabled ()
 		let txt = "Make tool not working:\n"
 		if ! executable ( s:Make_Executable )
-			let txt .= "make not executable (".s:Make_Executable.")"
+			let txt .= "make not executable (".s:Make_Executable.")\n"
+			let txt .= "see :help toolbox-make-config"
 		else
-			let txt .= "unknown reason"
+			let txt .= "unknown reason\n"
+			let txt .= "see :help toolbox-make"
 		endif
 		echohl Search
 		echo txt

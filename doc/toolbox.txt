@@ -1,13 +1,396 @@
-*toolbox.txt*                   MM Toolbox Support                 Aug 22 2013
+*toolbox.txt*                   MM Toolbox Support                 Dec 14 2013
 
 MM Toolbox Support                                                  *toolbox*
 
-                             Plug-in version 1.0pre
+                             Plug-in version 1.0
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
                   Fritz Mehner  <mehner.fritz at fh-swf.de>
 
-	*Todo		interface
+     --- The Maps & Menus Toolbox Support ---
+
+Toolboxes are selection of tools, which are made available to a plug-in. Tools
+mostly stand on their own. The purpose of the toolbox is to provide an easy
+interface between a plug-in and the tools, switching tool on and off and
+triggering the creation of maps and menus. The plug-in does not need any prior
+knowledge of what tools are available.
+
+The toolbox support is controlled by an API and thus can be integrated into
+another plug-in. A toolbox is essentially an object, several of which can
+exist in parallel. This makes it easy to integrate a toolbox into your
+plug-in.
+
+Here is a list of high profile plug-ins which use the toolbox support:
+- C-Support (www.vim.org/scripts/script.php?script_id=213)
+- Perl-Support (www.vim.org/scripts/script.php?script_id=556)
 
 ==============================================================================
-vim:tw=78:noet:ts=2:ft=help:norl:
+0.  TABLE OF CONTENTS                               *toolbox-support-contents*
+==============================================================================
+
+ 1.    Introduction                          |toolbox-support-intro|
+ 2.    Integration                           |toolbox-support-integration|
+ 3.    Tool Development                      |toolbox-support-tools|
+ 3.1    Minimal Tool API                     |toolbox-support-tools-api|
+ 3.2    Common Tool Functionality            |toolbox-support-tools-common|
+ 4.    API                                   |toolbox-support-api|
+
+ A.    Change Log                            |toolbox-support-change-log|
+
+==============================================================================
+1.  INTRODUCTION                                       *toolbox-support-intro*
+==============================================================================
+
+The manual at hand documents the Maps & Menus Toolbox Support. If your are not
+a plug-In developer, this will not be interesting, tools should come with a
+separate documentation.
+
+The next chapter |toolbox-support-integration| describes how to integrate the
+toolbox support into a plug-in. Then the tool development is addressed in
+|toolbox-support-tools|. The whole API of the toolbox support is documented in
+|toolbox-support-api|.
+
+==============================================================================
+2.  INTEGRATION                                  *toolbox-support-integration*
+==============================================================================
+
+This chapter explains the basic steps for integrating the toolbox into a
+plug-in. A complete description of all the commands can be found in
+|toolbox-support-api|.
+
+------------------------------------------------------------------------------
+
+Firstly, the toolbox needs to be created using |mmtoolbox#tools#NewToolbox()|
+and then loading via |mmtoolbox#tools#Load()|.
+>
+  let s:ToolID     = 'MyPlugin'                          " the toolboxes ID
+  let s:MapLeader  = '\'                                 " configurable mapl.
+  let s:ToolboxDir = [ vim_dir.'/autoload/mmtoolbox/' ]  " list of directories
+
+  let s:Toolbox = mmtoolbox#tools#NewToolbox ( s:ToolID )
+  call mmtoolbox#tools#Property ( s:Toolbox, 'mapleader', s:MapLeader )
+
+  call mmtoolbox#tools#Load ( s:Toolbox, s:ToolboxDir )
+
+  " debugging only:
+  "call mmtoolbox#tools#Info ( s:Toolbox )
+<
+The function |mmtoolbox#tools#Property()| is used for basic configuration.
+During development |mmtoolbox#tools#Info()| helps with some debug output.
+
+Each tool <name> is only loaded if the following condition holds: >
+  g:<plugin-id>_UseTool_<name> == "yes"
+The ID <plugin-id> is the ID set by the call to |mmtoolbox#tools#NewToolbox()|.
+If the above toolbox "MyPlugin" should load a tool called "align", then the
+following variable assignment must be made: >
+  let g:MyPlugin_UseTool_align == "yes"
+<
+------------------------------------------------------------------------------
+
+Menu creation is done using |mmtoolbox#tools#AddMenus()|:
+>
+  if mmtoolbox#tools#Property ( s:Toolbox, 'empty-menu' ) == 0
+    " create menu header
+    " ...
+
+    call mmtoolbox#tools#AddMenus ( s:Toolbox, 'My\ PlugIn.&Tool\ Box' )
+  endif
+<
+------------------------------------------------------------------------------
+>
+For each appropriate buffer, map creation is triggered via
+|mmtoolbox#tools#AddMaps()|:
+>
+  call mmtoolbox#tools#AddMaps ( s:Toolbox )
+<
+==============================================================================
+3.  TOOL DEVELOPMENT                                   *toolbox-support-tools*
+==============================================================================
+
+This chapter shows the basic steps to implementing a tool. The tool has to
+fulfill some minimal requirements to work with the toolbox. Other requirements
+are suggestions to provide a common user experience.
+
+------------------------------------------------------------------------------
+3.1  MINIMAL TOOL API                              *toolbox-support-tools-api*
+------------------------------------------------------------------------------
+
+Tools must implement a minimal API in order to work with the toolbox support.
+Initially, the GetInfo() function is called to obtain some basic information
+about the tool. For map creation, AddMaps(...) is called and for menus
+AddMenu().
+
+  Function Call                                   Further Information
+ ----------------------------------------------------------------------------
+  ret_list = mmtoolbox#<name>#GetInfo()           |toolbox-support-GetInfo()|
+  mmtoolbox#<name>#AddMaps()                      |toolbox-support-AddMaps()|
+  mmtoolbox#<name>#AddMenu( menu_sub, mleader )   |toolbox-support-AddMenu()|
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+                                                   *toolbox-support-GetInfo()*
+  ret_list = mmtoolbox#<name>#GetInfo () ~
+
+No parameters.
+Returns:
+  ret_list - information about the tool, see below (list)
+
+To initialize a tool <name>, the 'GetInfo' function is called: >
+  let ret_list = mmtoolbox#<name>#GetInfo()
+The tool must provide some basic information in the return argument:
+  ret_list = [ <prettyname>, <version>, <flag1>, <flag2>, ... ]
+With the first two entries:
+  prettyname - the name of the tool, can be different from <name> (string),
+               for example the pretty name of cmake is "CMake"
+  version    - the version of the tool (string),
+               for debugging purposes
+Followed by a list of optional flags:
+  "nomenu"   - the tool does not have an own menu
+  "disabled" - the tool is disabled, no maps or menus are created
+
+------------------------------------------------------------------------------
+                                                   *toolbox-support-AddMaps()*
+  mmtoolbox#<name>#AddMaps ( toolbox ) ~
+
+No parameters:
+No returns.
+
+Creates maps for the tool. A tool should only create buffer-local mappings.
+The function will be called for each appropriate buffer. The settings for
+<maplocalleader> are handled before calling 'mmtoolbox#<name>#AddMaps'.
+
+------------------------------------------------------------------------------
+                                                   *toolbox-support-AddMenu()*
+  mmtoolbox#<name>#AddMenu ( menu_sub, mapl ) ~
+
+Parameters:
+  menu_sub - the submenu set up for the toolbox (string)
+  mapl     - the mapleader configured for the toolbox (string)
+No returns.
+
+Creates a menu for the tool. The arguments 'menu_sub' and 'mapl' are provided
+correctly escaped for menu creation, so they can be used for |amenu| commands
+without further preparation:
+>
+  function! mmtoolbox#cmake#AddMenu ( menu_sub, mapl )
+
+    exe 'amenu '.a:menu_sub.'.&run\ make<Tab>'.a:mapl.'rm    :CMake '
+
+    " ...
+  endfunction
+<
+Before calling AddMenu, a menu header is created for the tool's submenu,
+showing the pretty name of the tool.
+
+------------------------------------------------------------------------------
+3.2  COMMON TOOL FUNCTIONALITY                  *toolbox-support-tools-common*
+------------------------------------------------------------------------------
+
+In order to achieve a consistent user experience, it is recommended that tools
+provide a set of common features. It is not strictly necessary to implement
+all of them, but it will help users who already use other tools.
+
+The call: >
+  mmtoolbox#<name>#Property( 'get', 'enabled' )
+should return a non-zero integer if the tool is working correctly. This also
+means that |mmtoolbox#tools#ToolEnabled()| will work correctly with the tool.
+
+A tool might not be enabled because some resources are missing. For example,
+the CMake tool will be disabled, if the "cmake" executable is missing. In this
+case the ex-command like >
+  :ToolnameHelp
+should show the reason while the tool is not working (see |:MakeHelp|).
+Otherwise, :ToolnameHelp should open the documentation of the tool.
+
+Settings which might change during runtime, like the Makefile used for a
+build, should also be set by a call to: >
+  mmtoolbox#<name>#Property( 'set', 'some-setting', 'new-value' )
+This enabled users to change these settings using scripts (see
+|mmtoolbox#make#Property|).
+
+==============================================================================
+4.  API                                                  *toolbox-support-api*
+==============================================================================
+
+This describes the usage of the toolbox support from the view of a plug-in
+using it. For a discussion of all the necessary step see the chapter
+|toolbox-support-integration|.
+
+------------------------------------------------------------------------------
+                                                *mmtoolbox#tools#NewToolbox()*
+
+  toolbox = mmtoolbox#tools#NewToolbox ( plugin ) ~
+
+Parameters:
+  plugin - the "id" of the plug-in (string)
+Returns:
+  toolbox - the new toolbox (dict)
+
+Creates a new toolbox object. The plug-in ID is important for the user's
+configuration of the toolbox.
+
+------------------------------------------------------------------------------
+                                                      *mmtoolbox#tools#Load()*
+  mmtoolbox#tools#Load ( toolbox, directories ) ~
+
+Parameters:
+  toolbox     - the toolbox (dict)
+  directories - list of directories containing the tools (list of string)
+No returns.
+
+Loads the tools in the given directories. A tool <name> is only loaded if the
+following condition holds: >
+  g:<plugin-id>_UseTool_<name> == "yes"
+Here, <plugin-id> is the ID set by |mmtoolbox#tools#NewToolbox()|.
+
+For each tool, the 'GetInfo' function is called: >
+  let ret_list = mmtoolbox#<name>#GetInfo()
+For a description of the interface, see |toolbox-support-GetInfo()|.
+
+------------------------------------------------------------------------------
+                                               *mmtoolbox#tools#ToolEnabled()*
+  enabled = mmtoolbox#tools#ToolEnabled ( toolbox, name ) ~
+
+Parameters:
+  toolbox - the toolbox (dict)
+  name    - the name of the tool (dict)
+Returns:
+  enabled - non-zero if the tool <name> is enabled (integer)
+
+This function can be used to check whether a tool is enabled, regardless of
+whether it exists or is loaded.
+
+------------------------------------------------------------------------------
+                                                  *mmtoolbox#tools#Property()*
+  [ value = ] mmtoolbox#tools#Property ( toolbox, property [, value] ) ~
+
+Parameters:
+  toolbox  - the toolbox (dict)
+  property - the name of the property (string)
+  value    - the new value of the property (optional, type depends on
+             'property')
+Returns:
+  value    - the value of the property, only if called with two arguments
+             (type depends on 'property')
+
+Gets (two arguments) or sets (three arguments) a property.
+
+The following properties exists:
+  mapleader  - the map leader used for menu creation (string)
+  empty-menu - non-zero, if no tool that creates a menu is loaded (integer)
+
+Note: The property 'mapleader' is only used for menu creation, see
+|mmtoolbox#tools#AddMenus()|.
+
+Examples:
+
+Set a mapleader:
+>
+  call mmtoolbox#tools#Property ( My_Toolbox, "mapleader", "#" )
+<
+
+Check whether any tool creates a menu:
+>
+  if mmtoolbox#tools#Property ( My_Toolbox, "empty-menu" ) == 0
+    " ... create a sub menu for the toolbox, then
+    call mmtoolbox#tools#AddMenus ( My_Toolbox, "C/C++.Toolbox." )
+  endif
+<
+------------------------------------------------------------------------------
+                                                   *mmtoolbox#tools#GetList()*
+  list = mmtoolbox#tools#GetList ( toolbox ) ~
+
+Parameters:
+  toolbox - the toolbox (dict)
+Returns:
+  list - information about each tool (list of strings)
+
+Produces a list of strings containing some information about each tool. It can
+be used to create nice debug information. The output looks something like
+this: >
+  [ 'CMake (1.2)',
+      \ 'Doxygen (2.0, disabled)',
+      \ 'Make (1.1)' ]
+<
+------------------------------------------------------------------------------
+                                                      *mmtoolbox#tools#Info()*
+  mmtoolbox#tools#Info ( toolbox ) ~
+
+Parameters:
+  toolbox - the toolbox (dict)
+No returns.
+
+Echoes debug information about the loaded tools.
+
+------------------------------------------------------------------------------
+                                                   *mmtoolbox#tools#AddMaps()*
+  mmtoolbox#tools#AddMaps ( toolbox ) ~
+
+Parameters:
+  toolbox - the toolbox (dict)
+No returns.
+
+Creates maps. For each tool the 'AddMaps' function is called: >
+  call mmtoolbox#<name>#AddMaps()
+A tool should only create buffer-local mappings.
+
+Plug-ins should call mmtoolbox#tools#AddMaps for each appropriate buffer. The
+settings for <maplocalleader> should also be handled by the plug-in, before
+calling 'mmtoolbox#tools#AddMaps'.
+
+See also |toolbox-support-AddMaps()|.
+
+------------------------------------------------------------------------------
+                                                  *mmtoolbox#tools#AddMenus()*
+  mmtoolbox#tools#AddMenus ( toolbox, root ) ~
+
+Parameters:
+  toolbox - the toolbox (dict)
+  root - the root menu used by the toolbox (string)
+No returns.
+
+Creates menus. For each tool the 'AddMenus' function is called: >
+  call mmtoolbox#<name>#AddMenus( menu_sub, mapleader )
+The arguments 'menu_sub' and 'mapleader' are provided correctly escaped for
+menu creation.
+The name of the tool's sub menu 'menu_sub' is different for each tool and
+computed using 'root' and the pretty name: >
+  let menu_sub = root.".".prettyname
+Before calling AddMenus, a menu header is created for each sub menu, showing
+the name of the tool.
+
+The mapleader is supposed to be the local mapleader the plug-in also uses for
+|mmtoolbox#tools#AddMaps()|.
+
+See also |toolbox-support-AddMenu()|.
+
+
+
+  -------------------------------------------------------------------------- ~
+
+  -------------------------------------------------------------------------- ~
+
+  -------------------------------------------------------------------------- ~
+
+
+
+==============================================================================
+A.  CHANGE LOG                                    *toolbox-support-change-log*
+==============================================================================
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.0
+------------------------------------------------------------------------------
+
+- Added: Extended the API with 'mmtoolbox#tools#ToolEnabled'.
+- Added the documentation.
+- Internal changes.
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.0pre
+------------------------------------------------------------------------------
+
+- Initial upload.
+
+==============================================================================
+vim:tw=78:noet:ts=2:ft=help:norl:expandtab:

@@ -47,6 +47,7 @@ the default behavior is restored by calling :MakeFile without arguments.
   |:MakeCmdlineArgs|!             echo memorized cmd. line arguments
   |:MakeFile| [<file>]            choose a makefile
   |:MakeFile|!                    echo the current makefile
+  |:MakeHelp|                     help for the Make tool
  ----------------------------------------------------------------------------
 
 Detailed explanations are given in the next section |toolbox-make-commands|.
@@ -151,4 +152,4 @@ The executable is set by g:Make_Executable: >
   let g:Make_Executable = 'make'
 <
 ==============================================================================
-vim:tw=78:noet:ts=2:ft=help:norl:
+vim:tw=78:noet:ts=2:ft=help:norl:expandtab:

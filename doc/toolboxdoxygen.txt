@@ -55,7 +55,7 @@ will be read the errors from this file.
   |:DoxygenEditConfig|            edit the configuration file
   |:DoxygenViewLog|               view the log file
   |:DoxygenErrors|                |quickfix| list for Doxygen errors
-  |:DoxygenHelp|                  help for the Doxygen plug-in
+  |:DoxygenHelp|                  help for the Doxygen tool
  ----------------------------------------------------------------------------
 
 Detailed explanations are given in the next section |toolbox-doxygen-commands|.
@@ -205,4 +205,4 @@ The executable is set by g:Doxygen_Executable: >
   let g:Doxygen_Executable = 'doxygen'
 <
 ==============================================================================
-vim:tw=78:noet:ts=2:ft=help:norl:
+vim:tw=78:noet:ts=2:ft=help:norl:expandtab:

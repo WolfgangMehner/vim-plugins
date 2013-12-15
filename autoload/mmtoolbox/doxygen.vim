@@ -76,7 +76,7 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 "   -
 "
 " If g:<varname> exists, assign:
-"   s:<varname> = g:<varname>.
+"   s:<varname> = g:<varname>
 "-------------------------------------------------------------------------------
 function! s:GetGlobalSetting ( varname )
 	if exists ( 'g:'.a:varname )
@@ -101,7 +101,7 @@ function! s:ImportantMsg ( ... )
 endfunction    " ----------  end of function s:ImportantMsg  ----------
 "
 "-------------------------------------------------------------------------------
-" s:Question : Ask the user a yes/no question.   {{{1
+" s:Question : Ask the user a yes/no question.   {{{2
 "
 " Parameters:
 "   prompt    - prompt, shown to the user (string)
@@ -246,9 +246,11 @@ else
 	function! mmtoolbox#doxygen#Disabled ()
 		let txt = "Doxygen tool not working:\n"
 		if ! executable ( s:Doxygen_Executable )
-			let txt .= "Doxygen not executable (".s:Doxygen_Executable.")"
+			let txt .= "Doxygen not executable (".s:Doxygen_Executable.")\n"
+			let txt .= "see :help toolbox-doxygen-config"
 		else
-			let txt .= "unknown reason"
+			let txt .= "unknown reason\n"
+			let txt .= "see :help toolbox-doxygen"
 		endif
 		call s:ImportantMsg ( txt )
 		return

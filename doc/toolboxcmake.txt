@@ -55,6 +55,7 @@ below.
   |:CMakeHelpPolicy| [<topic>]    help for policies
   |:CMakeHelpProperty| [<topic>]  help for properties
   |:CMakeHelpVariable| [<topic>]  help for variables
+  |:CMakeHelp|                    help for the CMake tool
  ----------------------------------------------------------------------------
 
 Detailed explanations are given in the next section |toolbox-cmake-commands|.
@@ -151,7 +152,7 @@ To set the directories for a project, use: >
   call mmtoolbox#cmake#Property ( "set",
       \ "project-dir", "$HOME/Projects/MyProject" )
   call mmtoolbox#cmake#Property ( "set",
-      \ "build", "$HOME/Projects/MyProject/build" )
+      \ "build-dir", "$HOME/Projects/MyProject/build" )
 <
 ==============================================================================
 3.  CONFIGURATION                                       *toolbox-cmake-config*
@@ -187,4 +188,4 @@ The make executable is set by g:CMake_MakeTool: >
     we will try to extend the error format.
 
 ==============================================================================
-vim:tw=78:noet:ts=2:ft=help:norl:
+vim:tw=78:noet:ts=2:ft=help:norl:expandtab:

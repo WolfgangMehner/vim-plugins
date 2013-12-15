@@ -76,7 +76,7 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 "   -
 "
 " If g:<varname> exists, assign:
-"   s:<varname> = g:<varname>.
+"   s:<varname> = g:<varname>
 "-------------------------------------------------------------------------------
 function! s:GetGlobalSetting ( varname )
 	if exists ( 'g:'.a:varname )
@@ -101,7 +101,7 @@ function! s:ImportantMsg ( ... )
 endfunction    " ----------  end of function s:ImportantMsg  ----------
 "
 "-------------------------------------------------------------------------------
-" s:Question : Ask the user a question.   {{{1
+" s:Question : Ask the user a question.   {{{2
 "
 " Parameters:
 "   prompt    - prompt, shown to the user (string)
@@ -269,11 +269,14 @@ else
 	function! mmtoolbox#cmake#Disabled ()
 		let txt = "CMake tool not working:\n"
 		if ! executable ( s:CMake_Executable )
-			let txt .= "CMake not executable (".s:CMake_Executable.")"
+			let txt .= "CMake not executable (".s:CMake_Executable.")\n"
+			let txt .= "see :help toolbox-cmake-config"
 		elseif ! executable ( s:CMake_MakeTool )
-			let txt .= "make tool not executable (".s:CMake_MakeTool.")"
+			let txt .= "make tool not executable (".s:CMake_MakeTool.")\n"
+			let txt .= "see :help toolbox-cmake-config"
 		else
-			let txt .= "unknown reason"
+			let txt .= "unknown reason\n"
+			let txt .= "see :help toolbox-cmake"
 		endif
 		call s:ImportantMsg ( txt )
 		return
@@ -434,7 +437,7 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 		let errors = 'DIR : '.s:ProjectDir."\n"
 					\ .system ( s:CMake_Executable.' '.args )
 					\ .'ENDDIR : '.s:ProjectDir
-		cexpr errors
+		silent exe 'cexpr errors'
 		"
 		" restore the old settings
 		exe 'setglobal errorformat='.escape( errorf_saved, s:SettingsEscChar )
@@ -471,7 +474,7 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 			let errors = 'DIR : '.s:ProjectDir."\n"
 						\ .errors
 						\ .'ENDDIR : '.s:ProjectDir
-			cexpr errors
+			silent exe 'cexpr errors'
 			"
 			" restore the old settings
 			exe 'setglobal errorformat='.escape( errorf_saved, s:SettingsEscChar )
@@ -489,7 +492,7 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 						\ .s:ErrorFormat_MakeAdditions
 						\ .escape( errorf_saved, s:SettingsEscChar )
 			"
-			cexpr errors
+			silent exe 'cexpr errors'
 			"
 			" restore the old settings
 			exe 'setglobal errorformat='.escape( errorf_saved, s:SettingsEscChar )
