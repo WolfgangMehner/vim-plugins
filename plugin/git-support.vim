@@ -581,44 +581,50 @@ let s:DisableGitKReason  = ""
 let s:GitVersion    = ""            " Git Version
 let s:GitHelpFormat = ""            " 'man' or 'html'
 "
+" xterm
+if s:UNIX
+	let s:Xterm_Executable   = 'xterm'  " xterm executable
+	call s:GetGlobalSetting ( 'Xterm_Executable' )
+	call s:ApplyDefaultSetting ( 'Xterm_Defaults', '-fa courier -fs 12 -geometry 80x24' )
+	"
+	let s:EnabledXterm        = 1       " xterm enabled?
+	let s:DisableXtermMessage = "xterm not avaiable:"
+	let s:DisableXtermReason  = ""
+endif
+"
 " check git executable   {{{2
 "
-if s:Git_Executable =~ '^LANG=\w\+\s.'
-	if ! executable ( matchstr ( s:Git_Executable, '^LANG=\w\+\s\+\zs.\+$' ) )
-		let s:Enabled = 0
-		let s:DisabledReason = "git not executable: ".s:Git_Executable
+function! s:CheckExecutable ( name, exe )
+	"
+	let enabled = 1
+	let reason = ""
+	"
+	if a:exe =~ '^LANG=\w\+\s.'
+		if ! executable ( matchstr ( a:exe, '^LANG=\w\+\s\+\zs.\+$' ) )
+			let enabled = 0
+			let reason = a:name." not executable: ".a:exe
+		endif
+	elseif a:exe =~ '^\(["'']\)\zs.\+\ze\1'
+		if ! executable ( matchstr ( a:exe, '^\(["'']\)\zs.\+\ze\1' ) )
+			let enabled = 0
+			let reason = a:name." not executable: ".a:exe
+		endif
+	else
+		if ! executable ( a:exe )
+			let enabled = 0
+			let reason = a:name." not executable: ".a:exe
+		endif
 	endif
-elseif s:Git_Executable =~ '^\(["'']\)\zs.\+\ze\1'
-	if ! executable ( matchstr ( s:Git_Executable, '^\(["'']\)\zs.\+\ze\1' ) )
-		let s:Enabled = 0
-		let s:DisabledReason = "git not executable: ".s:Git_Executable
-	endif
-else
-	if ! executable ( s:Git_Executable )
-		let s:Enabled = 0
-		let s:DisabledReason = "git not executable: ".s:Git_Executable
-	endif
+	"
+	return [ enabled, reason ]
+endfunction    " ----------  end of function s:CheckExecutable  ----------
+"
+let [ s:Enabled,     s:DisabledReason    ] = s:CheckExecutable ( 'git',  s:Git_Executable )
+let [ s:EnabledGitK, s:DisableGitKReason ] = s:CheckExecutable ( 'gitk', s:Git_GitKExecutable )
+"
+if s:UNIX
+	let [ s:EnabledXterm, s:DisableXtermReason ] = s:CheckExecutable ( 'xterm', s:Xterm_Executable )
 endif
-"
-" check gitk executable   {{{2
-"
-if s:Git_GitKExecutable =~ '^LANG=\w\+\s.'
-	if ! executable ( matchstr ( s:Git_GitKExecutable, '^LANG=\w\+\s\+\zs.\+$' ) )
-		let s:EnabledGitK = 0
-		let s:DisableGitKReason = "gitk not executable: ".s:Git_GitKExecutable
-	endif
-elseif s:Git_GitKExecutable =~ '^\(["'']\)\zs.\+\ze\1'
-	if ! executable ( matchstr ( s:Git_GitKExecutable, '^\(["'']\)\zs.\+\ze\1' ) )
-		let s:EnabledGitK = 0
-		let s:DisableGitKReason = "gitk not executable: ".s:Git_GitKExecutable
-	endif
-else
-	if ! executable ( s:Git_GitKExecutable )
-		let s:EnabledGitK = 0
-		let s:DisableGitKReason = "gitk not executable: ".s:Git_GitKExecutable
-	endif
-endif
-"
 "
 " check Git version   {{{2
 "
@@ -702,6 +708,10 @@ if s:Enabled
 	command! -nargs=* -complete=file                                 GitK               :call GitS_GitK(<q-args>)
 	command! -nargs=0                                                GitSupportHelp     :call GitS_PluginHelp("gitsupport")
 	command! -nargs=0                                                GitSupportSettings :call GitS_PluginSettings()
+	"
+	if s:UNIX
+		command! -nargs=* -complete=file                                 GitTerm            :call GitS_Xterm(<q-args>)
+	endif
 else
 	command  -nargs=*                -bang                           Git                :call GitS_Help('disabled')
 	command! -nargs=*                                                GitRun             :call GitS_Help('disabled')
@@ -2643,6 +2653,17 @@ function! s:Status_FileAction( action )
 			call s:ErrorMsg ( 'Adding not implemented yet for file status "'.f_status.'".' )
 		endif
 		"
+	elseif s_code =~ '[bm]' && a:action == 'add-patch'
+		"
+		" section "modified", action "add-patch"
+		"
+		if f_status == 'modified' || f_status =~ '^.M$'
+			call GitS_Xterm( 'add -p '.f_name_esc )
+			return 1
+		else
+			call s:ErrorMsg ( 'No "add -p" for file status "'.f_status.'".' )
+		endif
+		"
 	elseif s_code =~ '[bm]' && a:action == 'checkout'
 		"
 		" section "modified", action "checkout"
@@ -2657,6 +2678,17 @@ function! s:Status_FileAction( action )
 			call s:ErrorMsg ( 'Checking out not implemented yet for file status "'.f_status.'".' )
 		endif
 		"
+	elseif s_code =~ '[bm]' && a:action == 'checkout-patch'
+		"
+		" section "modified", action "checkout-patch"
+		"
+		if f_status == 'modified' || f_status =~ '^.M$'
+			call GitS_Xterm( 'checkout -p '.f_name_esc )
+			return 1
+		else
+			call s:ErrorMsg ( 'No "checkout -p" for file status "'.f_status.'".' )
+		endif
+		"
 	elseif s_code =~ '[bsd]' && a:action == 'reset'
 		"
 		" section "staged" or "diff", action "reset"
@@ -2669,6 +2701,17 @@ function! s:Status_FileAction( action )
 			endif
 		else
 			call s:ErrorMsg ( 'Reseting not implemented yet for file status "'.f_status.'".' )
+		endif
+		"
+	elseif s_code =~ '[bs]' && a:action == 'reset-patch'
+		"
+		" section "staged", action "reset-patch"
+		"
+		if f_status == 'modified' || f_status =~ '^M.$'
+			call GitS_Xterm( 'reset -p '.f_name_esc )
+			return 1
+		else
+			call s:ErrorMsg ( 'No "reset -p" for file status "'.f_status.'".' )
 		endif
 		"
 	elseif s_code =~ 'c' && a:action == 'add'
@@ -2728,11 +2771,14 @@ function! GitS_Status( action )
 		let txt .= "\n"
 		let txt .= "file under cursor ...\n"
 		let txt .= "a       : add\n"
+		if s:UNIX | let txt .= "ap      : add --patch\n" | endif
 		let txt .= "c       : checkout\n"
+		if s:UNIX | let txt .= "cp      : checkout --patch\n" | endif
 		let txt .= "od      : open diff\n"
 		let txt .= "of      : open file (edit)\n"
 		let txt .= "ol      : open log\n"
 		let txt .= "r       : reset\n"
+		if s:UNIX | let txt .= "rp      : reset --patch\n" | endif
 		let txt .= "r       : remove (only for unmerged changes)\n"
 		let txt .= "D       : delete from file system (only untracked files)\n"
 		let txt .= "\n"
@@ -2796,6 +2842,12 @@ function! GitS_Status( action )
 		exe 'nmap <silent> <buffer> ol     :call GitS_Status("log")<CR>'
 		exe 'nmap <silent> <buffer> r      :call GitS_Status("reset")<CR>'
 		exe 'nmap <silent> <buffer> D      :call GitS_Status("delete")<CR>'
+		"
+		if s:UNIX
+			exe 'nmap <silent> <buffer> ap     :call GitS_Status("add-patch")<CR>'
+			exe 'nmap <silent> <buffer> cp     :call GitS_Status("checkout-patch")<CR>'
+			exe 'nmap <silent> <buffer> rp     :call GitS_Status("reset-patch")<CR>'
+		endif
 		"
 	endif
 	"
@@ -2924,6 +2976,27 @@ function! GitS_GitK( param )
 endfunction    " ----------  end of function GitS_GitK  ----------
 "
 "-------------------------------------------------------------------------------
+" GitS_Xterm : execute 'xterm git ...'   {{{1
+"-------------------------------------------------------------------------------
+"
+function! GitS_Xterm( param )
+	"
+	" :TODO:10.12.2013 20:14:WM: graphics available?
+	if ! s:UNIX
+		return s:ErrorMsg ( s:DisableXtermMessage, ":GitTerm only available under UNIX" )
+	elseif s:EnabledXterm == 0
+		return s:ErrorMsg ( s:DisableXtermMessage, s:DisableXtermReason )
+	endif
+	"
+	let title = 'git '.matchstr( a:param, '\w\+' )
+	let param = substitute( a:param, "'", "'\\\\''", 'g' )
+	let param = substitute(   param, '[#%]', '\\&', 'g' )
+	"
+	silent exe '!'.s:Xterm_Executable.' '.g:Xterm_Defaults.' -title "'.title.'" -e ''git '.param.' ; echo "" ; read -p "  ** PRESS ENTER **  " dummy '''
+	"
+endfunction    " ----------  end of function GitS_Xterm  ----------
+"
+"-------------------------------------------------------------------------------
 " GitS_PluginHelp : Plug-in help.   {{{1
 "-------------------------------------------------------------------------------
 "
@@ -3010,8 +3083,12 @@ function! s:InitMenus()
 	exe ahead.'&stash<TAB>:GitStash       :GitStash<space>'
 	exe ahead.'&status<TAB>:GitStatus     :GitStatus<space>'
 	exe ahead.'&tag<TAB>:GitTag           :GitTag<space>'
+	"
 	exe ahead.'-Sep01-                    :'
-	exe ahead.'git&k<TAB>:GitK            :GitK<space>'
+	exe ahead.'run\ git&k<TAB>:GitK       :GitK<space>'
+	if s:UNIX
+		exe ahead.'run\ in\ &xterm<TAB>:GitTerm   :GitTerm<space>'
+	endif
 	"
 	" Current File
 	let shead = 'amenu <silent> '.s:Git_RootMenu.'.&file.'

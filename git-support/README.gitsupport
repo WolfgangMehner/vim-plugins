@@ -121,6 +121,14 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 ================================================================================
 
 ----------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 0.9.2pre (development branch)
+----------------------------------------------------------------------
+- Added: Command :GitTerm for running interactive Git commands.
+- Added: New maps for the buffer: status
+- Changed: :GitShow shows different objects in an according way.
+- Improved syntax highlighting.
+
+----------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.1pre
 ----------------------------------------------------------------------
 - Added: New maps for the buffers: blame, diff and status

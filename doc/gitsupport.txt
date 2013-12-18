@@ -35,6 +35,7 @@ a quick overview and a short guide to this documentation.
  6.2    Menus                                     |gitsupport-config-menus|
  6.3    Maps                                      |gitsupport-config-maps|
  6.4    Settings                                  |gitsupport-config-settings|
+ 6.5    Xterm                                     |gitsupport-config-xterm|
 
  A.    Troubleshooting - Known Issues             |gitsupport-troubleshooting|
  B.    Release Notes - Change Log                 |gitsupport-release-notes|
@@ -113,7 +114,8 @@ run the commands in every subdirectory of the project.
   |:GitTag|                          (buf) git tag
   |:GitTag| <args>                   (run) git tag <args>
 
-  |:GitK| <args>                     (gui) gitk <args>
+  |:GitK| <args>                     start gitk with the given arguments
+  |:GitTerm| <args>                  run git in an external terminal
 
   |:GitSupportHelp|                  show plug-in help
   |:GitSupportSettings|              show plug-in settings
@@ -121,7 +123,6 @@ run the commands in every subdirectory of the project.
 
 (run) runs the command after asking for confirmation
 (buf) runs the command and redirects its output in a new buffer
-(gui) starts the application
 (^1)  runs the command within the context of the top-level directory
 
 When a command opens a new buffer, several maps are defined for this buffer.
@@ -568,14 +569,19 @@ Git command.
 
   file under cursor ...
   a         add
+  ap        add --patch (^1)
   c         checkout
+  cp        checkout --patch (^1)
   od        open diff
   of        open file (edit)
   ol        open log
   r         reset
+  rp        reset --patch (^1)
   r         remove (only for unmerged changes)
   D         delete from file system (only untracked files)
  ----------------------------------------------------------------------------
+
+(^1) UNIX only
 
 Settings:
 - |g:Git_StatusStagedOpenDiff|
@@ -600,6 +606,15 @@ The first version opens a buffer listing the tags. The second version executes
 	:GitK <args> ~
 
 Starts gitk with the given arguments.
+
+------------------------------------------------------------------------------
+                                                                    *:GitTerm*
+	:GitTerm <args> ~
+
+Runs git in an external terminal. Useful for interactive commands, such as
+"git add -p ...".
+
++The xterm related functionality is only available under UNIX.
 
 ==============================================================================
 4.  SYNTAX HIGHLIGHTING                                    *gitsupport-syntax*
@@ -866,7 +881,12 @@ in the .vimrc file.
   |g:Git_StatusStagedOpenDiff|  'cached'    how to execute "open diff" from
                                           inside the status buffer in section
                                           "Changes to be committed"
+
+  |g:Xterm_Executable|          'xterm'     the xterm executable (^1)
+  |g:Xterm_Defaults|            '...'       the xterm default settings (^1)
  ----------------------------------------------------------------------------
+
+(^1) UNIX only
 
 ------------------------------------------------------------------------------
 6.1  EXECUTABLE                                 *gitsupport-config-executable*
@@ -983,6 +1003,22 @@ The other possible settings are listed below:
 
 The behavior can be changed on the fly by settings the variable to a different
 value on the command line.
+
+------------------------------------------------------------------------------
+6.5  XTERM                                           *gitsupport-config-xterm*
+------------------------------------------------------------------------------
+
+The xterm related functionality is only available under UNIX.
+
+                                                          *g:Xterm_Executable*
+The xterm executable is set by g:Xterm_Executable, for example: >
+  let g:Xterm_Executable = '/usr/local/bin/xterm'
+<
+                                                            *g:Xterm_Defaults*
+Set additional arguments for xterm. The default is: >
+  let g:Xterm_Defaults = '-fa courier -fs 12 -geometry 80x24'
+<
+See the man-page of xterm for the possible options.
 
 ==============================================================================
 A.  TROUBLESHOOTING - KNOWN ISSUES                *gitsupport-troubleshooting*
