@@ -212,7 +212,11 @@ endif
 "
 let s:ConfigFile = 'Doxyfile' 	 				" doxygen configuration file
 let s:LogFile    = '.doxygen.log'
-let s:ErrorFile  = '.doxygen.log'
+if s:MSWIN
+	let s:ErrorFile  = s:LogFile
+else
+	let s:ErrorFile  = '.doxygen.errors'
+endif
 "
 let s:Doxygen_Executable = 'doxygen'
 "
@@ -413,8 +417,53 @@ function! mmtoolbox#doxygen#Run ( args )
 	"
 	exe	'lchdir '.fnameescape( fnamemodify( s:ConfigFile, ':p:h' ) )
 	"
-	"echomsg ' ... doxygen running ... '
-	silent exe ':!'.s:Doxygen_Executable.' '.cmdlinearg.' &> '.s:LogFile
+	if s:MSWIN
+		"
+		if ! filereadable( s:ConfigFile )
+			call s:ErrorMsg ( 'Doxygen : File not readable: '.s:ConfigFile )
+		else
+			let warn_log_file_configured = matchstr( readfile( s:ConfigFile ), '\s*WARN_LOGFILE\s*=\s*\S' )
+			let warn_log_file_configured = matchstr( warn_log_file_configured, '\s*WARN_LOGFILE\s*=\s*\(["'']\?\)\zs.*\ze\1' )
+			"
+			if warn_log_file_configured != ''
+				" use WARN_LOGFILE from now on?
+				let warn_log_file_configured = fnamemodify( expand( warn_log_file_configured ), ":p" )
+				if s:ErrorFile != warn_log_file_configured
+					if s:Question ( 'use the configured error file from now on? ('.warn_log_file_configured.')' ) == 1
+						call mmtoolbox#doxygen#Property ( 'set', 'error-file', warn_log_file_configured )
+					endif
+				endif
+			endif
+		endif
+		"
+		silent exe ':!'.s:Doxygen_Executable.' '.cmdlinearg.' > '.shellescape( s:LogFile )
+	else
+		" UNIX: uses proper splitting of output streams
+		"
+		let warn_log_file_configured = ''
+		"
+		if ! filereadable( s:ConfigFile )
+			call s:ErrorMsg ( 'Doxygen : File not readable: '.s:ConfigFile )
+		else
+			let warn_log_file_configured = matchstr( readfile( s:ConfigFile ), '\s*WARN_LOGFILE\s*=\s*\S' )
+			let warn_log_file_configured = matchstr( warn_log_file_configured, '\s*WARN_LOGFILE\s*=\s*\(["'']\?\)\zs.*\ze\1' )
+		endif
+		"
+		if warn_log_file_configured != ''
+			" use WARN_LOGFILE from now on?
+			let warn_log_file_configured = fnamemodify( expand( warn_log_file_configured ), ":p" )
+			if s:ErrorFile != warn_log_file_configured
+				if s:Question ( 'use the configured error file from now on? ('.warn_log_file_configured.')' ) == 1
+					call mmtoolbox#doxygen#Property ( 'set', 'error-file', warn_log_file_configured )
+				endif
+			endif
+			" the option WARN_LOGFILE is set, do not write s:ErrorFile here
+			silent exe ':!'.s:Doxygen_Executable.' '.cmdlinearg.' &> '.shellescape( s:LogFile )
+		else
+			" write both the log and the error file
+			silent exe ':!'.s:Doxygen_Executable.' '.cmdlinearg.' 1> '.shellescape( s:LogFile ).' 2> '.shellescape( s:ErrorFile )
+		endif
+	endif
 	"
 	lchdir -
 	"
