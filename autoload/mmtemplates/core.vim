@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:Templates_Version') && ! exists('g:Templates_DevelopmentOverwrite') )
 	finish
 endif
-let g:Templates_Version= '0.9.2'     " version number of this script; do not change
+let g:Templates_Version= '0.9.2-1'     " version number of this script; do not change
 "
 if ! exists ( 'g:Templates_MapInUseWarn' )
 	let g:Templates_MapInUseWarn = 1
@@ -3679,6 +3679,9 @@ function! mmtemplates#core#EditTemplateFiles ( library, file )
 	endif
 	"
 	if type( a:file ) == type( 0 )
+		if get( t_lib.library_files, a:file, '' ) == ''
+			return s:ErrorMsg ( 'No template file with index '.a:file.'.' )
+		endif
 		let file = t_lib.library_files[ a:file ]
 	elseif type( a:file ) == type( '' )
 		"
