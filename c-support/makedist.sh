@@ -35,9 +35,9 @@ filelist="
  ./autoload/mmtoolbox/*.vim
  ./doc/csupport.txt
  ./doc/templatesupport.txt
- ./doc/toolbox.txt
+ ./doc/toolbox*.txt
  ./ftplugin/c.vim
- ./ftplugin/make
+ ./ftplugin/make.vim
  ./plugin/c.vim
  ./syntax/template.vim
 "

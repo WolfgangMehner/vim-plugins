@@ -1,4 +1,4 @@
-*csupport.txt*                  C/C++ Support                 August 11 2013
+*csupport.txt*                  C/C++ Support               December 24 2013
 
 C/C++ Support                                           *c-support* *csupport*
                              Plugin version 6.1
@@ -54,25 +54,22 @@ keystroke.
  1.6.2   Visual mode.                           |csupport-c++-visual-mode|
  1.6.3   Implementation                         |csupport-c++-impl|
  1.7    Menu 'Run'                              |csupport-run|
- 1.7.1   Minimal make functionality             |csupport-run-buffer|
+ 1.7.1   Compile, link, run                     |csupport-run-buffer|
  1.7.2   Command line arguments                 |csupport-run-cmdline-args|
- 1.7.3   Run make                               |csupport-run-make|
- 1.7.4   Choose Makefile                        |csupport-choose-makefile|
- 1.7.5   Run make clean                         |csupport-run-make-clean|
- 1.7.6   Command line arguments for make        |csupport-run-make-args|
- 1.7.7   Executable to run                      |csupport-run-make-run|
- 1.7.8   Run debugger                           |csupport-run-debugger|
- 1.7.9   Splint                                 |csupport-run-splint|
- 1.7.10  Cppcheck                               |csupport-run-cppcheck|
- 1.7.11  CodeCheck                              |csupport-run-codecheck|
- 1.7.12  Indent                                 |csupport-run-indent|
- 1.7.13  Hardcopy                               |csupport-run-hardcopy|
- 1.7.13  Rebuild templates                      |csupport-run-templates|
- 1.7.14  Xterm size                             |csupport-run-xterm|
- 1.7.15  Output redirection                     |csupport-run-output|
- 1.8    Help                                    |csupport-help|
- 1.9    Menu 'Doxygen'                          |csupport-doxygen|
- 1.9.1   Enabling the menu                      |csupport-doxygen-enable|
+ 1.7.3   Executable to run                      |csupport-run-make-run|
+ 1.7.4   Run debugger                           |csupport-run-debugger|
+ 1.7.5   Splint                                 |csupport-run-splint|
+ 1.7.6   Cppcheck                               |csupport-run-cppcheck|
+ 1.7.7   CodeCheck                              |csupport-run-codecheck|
+ 1.7.8   Indent                                 |csupport-run-indent|
+ 1.7.9   Hardcopy                               |csupport-run-hardcopy|
+ 1.7.10  Xterm size                             |csupport-run-xterm|
+ 1.7.11  Output redirection                     |csupport-run-output|
+ 1.8     Tool Box                               |csupport-toolbox|
+ 1.8.1    Make                                  |csupport-toolbox-make|
+ 1.9    Help                                    |csupport-help|
+ 1.10   Menu 'Doxygen'                          |csupport-doxygen|
+ 1.10.1  Enabling the menu                      |csupport-doxygen-enable|
 
  2.    Usage without GUI                        |csupport-usage-vim|
  3.    Hotkeys                                  |csupport-hotkeys|
@@ -806,7 +803,7 @@ scope will be extracted and used for the next method.
 1.7  MENU 'Run'                                                 *csupport-run*
 ------------------------------------------------------------------------------
 
-1.7.1  MINIMAL MAKE FUNCTIONALITY                        *csupport-run-buffer*
+1.7.1  COMPILE, LINK, RUN                                *csupport-run-buffer*
 
 The 'Run' menu provides a minimal make functionality for single file projects
 (e.g. in education) :
@@ -875,51 +872,7 @@ The command line arguments can be followed by pipes and redirections:
 >
   11 22 | sort -rn | head -10 > out
 
-
-1.7.3  RUN make                                            *csupport-run-make*
-
-The item 'make' runs the external make program.  An error window will be
-opened if the compiler or linker reports errors or warnings during the make
-process.  Quickfix commands can now be used to jump to an error location.
-Make looks for a makefile in the current directory (but see below).
-
-When inside a makefile the hotkeys \rm, \rmc, and \rma are working (see
-|csupport-usage-vim|).
-The snippets collection contains a sample makefile which can easily adepted
-for small projcts.
-
-
-1.7.4  Choose Makefile                              *csupport-choose-makefile*
-
-The menu item 'choose makefile' let you specify a makefile in another
-directory than the current one. Now this makefile will be used instead of the
-one in the current directory (if any). Make is started from the directory in
-which the makefile is contained. The working directory for the current buffer
-will not be changed.
-
-
-1.7.5  RUN make clean                                *csupport-run-make-clean*
-
-The item 'make' runs the external make program with the standard target
-'clean'.  If an alternate makefile has been chosen
-(see|csupport-choose-makefile|), this one will be run from the directory in
-which the makefile is contained.
-
-
-1.7.6  COMMAND LINE ARGUMENTS FOR make                *csupport-run-make-args*
-
-The item 'cmd. line args for make' calls an input dialog which asks for command
-line arguments for make. These arguments are forwarded to make when called by
-the item 'make'. The arguments are kept until you change them.  Tab expansion
-can be used for filenames and directory names. The input will also be kept in
-the internal history. The ex command
->
-  :CMakeCmdlineArgs ...
-<
-can also be used to set the command line arguments for make.
-
-
-1.7.7  EXECUTABLE TO RUN                               *csupport-run-make-run*
+1.7.3  EXECUTABLE TO RUN                               *csupport-run-make-run*
 
 The item 'executable to run' asks for the name of the executable built by
 make.  If the name given is nonempty this executable will be run by the menu
@@ -928,7 +881,7 @@ To return to the default behavior (see |csupport-run-buffer|) remove the name
 with the another 'executable to run'.
 
 
-1.7.8  RUN DEBUGGER                                    *csupport-run-debugger*
+1.7.4  RUN DEBUGGER                                    *csupport-run-debugger*
 
 Start a debugger from the menu item Run->'run debugger', with hotkey \rd. One of
 three debuggers can be started. The preference can be set with the variable
@@ -950,7 +903,7 @@ executable will be used for debugging. If no executable was specified yet you
 will be asked.
 
 
-1.7.9  SPLINT                                            *csupport-run-splint*
+1.7.5  SPLINT                                            *csupport-run-splint*
 
 Splint is a tool for statically checking C programs (see http://www.splint.org).
 Of course it has to be installed in order to be used within Vim.  The menu
@@ -968,7 +921,7 @@ When vim is started this plugin will check whether splint is executable. If
 not, the menu item will *NOT' be visible.
 
 
-1.7.10  CPPCHECK                                         *csupport-run-cppcheck*
+1.7.6  CPPCHECK                                         *csupport-run-cppcheck*
 
 Cppcheck (http://sourceforge.net/apps/mediawiki/cppcheck/) is tool for static
 C++ code analysis. Cppcheck only detects the types of bugs that the compilers
@@ -985,7 +938,7 @@ has many options. Predefined groups of checks can be enabled by the menu item
 can also be used to set the severity for cppcheck.  Please see the original
 documentation for more information.
 
-1.7.11  CODECHECK                                      *csupport-run-codecheck*
+1.7.7  CODECHECK                                      *csupport-run-codecheck*
 
 CodeCheck (TM) is a commercial code analyzing tool produced by Abraxas
 Software, Inc.  (www.abraxas-software.com).
@@ -1015,7 +968,7 @@ When vim is started this plugin will check whether CodeCheck is executable. If
 not, the menu item will *NOT' be visible.
 
 
-1.7.12  INDENT                                           *csupport-run-indent*
+1.7.8  INDENT                                           *csupport-run-indent*
 
 The formatter 'indent' can be run over the whole buffer.  Before formatting a
 buffer this buffer will be saved to disk and you will be asked for a
@@ -1025,7 +978,7 @@ Indent has many options. These are kept in the file '.indent.pro' in your home
 directory. See the indent manual for more information.
 
 
-1.7.13  HARDCOPY                                       *csupport-run-hardcopy*
+1.7.9  HARDCOPY                                       *csupport-run-hardcopy*
 
 Generates a PostScript file from the whole buffer or from a marked region.
 On a Windows system a printer dialog is displayed.
@@ -1049,14 +1002,14 @@ or by setting a global variable in the file ~/.vimrc , e.g. :
 See :h printheader and :h strftime()  for more details.
 
 
-1.7.14  XTERM SIZE                                        *csupport-run-xterm*
+1.7.10  XTERM SIZE                                        *csupport-run-xterm*
 
 The size of the xterm used for  running a program (below) can be set by this
 menu item. The default is 80 columns with 24 lines.
 This feature is not available under Windows.
 
 
-1.7.15  OUTPUT REDIRECTION                               *csupport-run-output*
+1.7.11  OUTPUT REDIRECTION                               *csupport-run-output*
 
 Running a program can be done in one of three ways:
 (1) Run the program from the gVim command line.
@@ -1088,7 +1041,28 @@ The default is "-fa courier -fs 12 -geometry 80x24" :
 See 'xterm -help' for more options. Xterms are not available under Windows.
 
 ------------------------------------------------------------------------------
-1.8  'help'                                                    *csupport-help*
+1.8  Menu 'Tool Box'                                        *csupport-toolbox*
+------------------------------------------------------------------------------
+
+Tools which can be used by several plugins are located in the Tool Box.
+Examples are tools for make(1) or doxygen.  The Tool Box has its own
+documentation:|toolbox|.
+To switch the Tool Box off add the following line to the file .vimrc
+>
+  let g:C_UseToolbox     = 'no'
+<
+1.8.1 Make                                            *csupport-toolbox-make*
+
+The tool box for make provides a small set hotkeys, menu items, and ex commands 
+for controlling make. Please see|toolbox-make|.
+To switch the make tool box off add the following line to the file .vimrc
+>
+  let g:C_UseTool_make  = 'no'
+<
+The hotkeys for the make tool are defined in the file ~/.vim/ftplugin/c.vim .
+
+------------------------------------------------------------------------------
+1.9  'help'                                                    *csupport-help*
 ------------------------------------------------------------------------------
 Plugin help
 -----------
@@ -1109,7 +1083,7 @@ Linux/Unix, see|csupport-custom-glob-vars|).
 The hotkey is \hm (for "help manual").
 
 ------------------------------------------------------------------------------
-1.9  MENU 'Doxygen'                                         *csupport-doxygen*
+1.10  MENU 'Doxygen'                                        *csupport-doxygen*
 ------------------------------------------------------------------------------
 
 A menu 'Doxygen' with templates for writing Doxygen comments can optionally be
@@ -1122,23 +1096,23 @@ description after a member. Similarly to 'Comments->end-of-line comment', it
 will append the comment to several lines when in visual mode. When marking the
 four lines within the enum
 >
-	enum Color
-	{
-		Background,
-		Transparent,
-		Black,
-		White
-	};   // -----  end of enum Color  -----
+  enum Color
+  {
+    Background,
+    Transparent,
+    Black,
+    White
+  };   // -----  end of enum Color  -----
 <
 and then choosing 'brief, after member', the result will look like this
 >
-	enum Color
-	{
-		Background,                                 /*!< \brief  */
-		Transparent,                                /*!< \brief  */
-		Black,                                      /*!< \brief  */
-		White,                                      /*!< \brief  */
-	};   // -----  end of enum Color  -----
+  enum Color
+  {
+    Background,                                 /*!< \brief  */
+    Transparent,                                /*!< \brief  */
+    Black,                                      /*!< \brief  */
+    White,                                      /*!< \brief  */
+  };   // -----  end of enum Color  -----
 <
 Now the elements can be documented one by one.
 This feature works like 'Comments->end-of-line comment' in every other aspect.
@@ -1147,18 +1121,18 @@ respect the column set by 'Comments->set end-of-line com. col' (see
 |csupport-comm-aligned|).
 
 
-1.9.1  ENABLING THE MENU                             *csupport-doxygen-enable*
+1.10.1  ENABLING THE MENU                            *csupport-doxygen-enable*
 
 The 'Doxygen' submenu is disabled by default. To enable it, the template
 library has to be modified. In case of a local installation (the default),
 choose:
-	C/C++ -> Snippets -> edit local templates
+  C/C++ -> Snippets -> edit local templates
 and for a global installation:
-	C/C++ -> Snippets -> edit global templates
+  C/C++ -> Snippets -> edit global templates
 Open the main template file 'Templates' and uncomment the line >
-	§IncludeFile( 'doxygen.template' )
+  §IncludeFile( 'doxygen.template' )
 by removing the leading '§' >
-	IncludeFile( 'doxygen.template' )
+  IncludeFile( 'doxygen.template' )
 After a restart of the editor, the 'Doxygen' menu will appear.
 
 ==============================================================================
@@ -1330,11 +1304,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
     \ra       set comand line arguments           (n,i)
     \rd       run debugger                        (n,i)
 
-    \rm       run make                            (n,i)
-    \rmc      run 'make clean'                    (n,i)
-    \rcm      choose makefile                     (n,i)
     \rme      executable to run                   (n,i)
-    \rma      cmd. line arg. for make             (n,i)
 
     \rp       run splint                          (n,i)
     \rpa      cmd. line arg. for splint           (n,i)
@@ -1348,7 +1318,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
     \rx       set xterm size                      (n, only Linux/UNIX & GUI)
     \ro       change output destination           (n,i)
 
-The file perl-hot-keys.pdf contains a reference card for these key mappings.
+The file c-hotkeys.pdf contains a reference card for these key mappings.
 Multi-line inserts and code snippets will be indented after insertion.
 
 The hotkeys are defined in the template files (part of this csupport
@@ -1507,15 +1477,15 @@ To override the default add appropriate assignments to ~/.vimrc .
 The following global variables can be changed on the fly from the Vim command
 line, i.e. without restarting the editor:
 >
-	C_CCompiler
-	C_CFlags
-	C_LFlags
-	C_Libs
-	C_CplusCFlags
-	C_CplusCompiler
-	C_CplusLFlags
-	C_CplusLibs
-	C_Debugger
+  C_CCompiler
+  C_CFlags
+  C_LFlags
+  C_Libs
+  C_CplusCFlags
+  C_CplusCompiler
+  C_CplusLFlags
+  C_CplusLibs
+  C_Debugger
 <
 ------------------------------------------------------------------------------
 4.2  THE ROOT MENU                                      *csupport-custom-root*
@@ -2043,10 +2013,14 @@ directory):
 * Splint and/or CodeCheck menu item not visible.
   - The program is not installed or not found (path not set) or not executable.
 
+* Code incorrectly indented after template insertion. The indentation may be
+  incorrect inside blocks,  if the <CURSOR> tag also appears inside the block.
+  See |template-support-templ-tags| for a detailed explanation.
+
 ==============================================================================
 13.  RELEASE NOTES                                    *csupport-release-notes*
 ==============================================================================
 See file c-support/doc/ChangeLog .
 
 ==============================================================================
-vim:tw=78:noet:ts=2:ft=help:norl:
+vim:tw=78:noet:ts=2:ft=help:norl:expandtab:

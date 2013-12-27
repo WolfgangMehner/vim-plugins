@@ -1,22 +1,26 @@
 %%=====================================================================================
 %%
-%%         File:  c-hotkeys.tex
+%%       Filename:  c-hotkeys.tex
 %%
-%%  Description:  c-support.vim : Key mappings for Vim without GUI.
-%%                
-%%                
-%%       Author:  Dr.-Ing. Fritz Mehner
-%%        Email:  mehner@fh-swf.de
-%%    Copyright:  Copyright (C) 2006-2013  Dr.-Ing. Fritz Mehner (mehner@fh-swf.de)
-%%      Version:  1.0
-%%      Created:  10.11.2006
-%%                
-%%        Notes:  
+%%    Description:  c-support.vim : Key mappings for Vim / gVim without GUI.
+%%
+%%        Version:  1.0
+%%        Created:  10.11.2006
+%%       Revision:  none
+%%
+%%         Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
+%%   Organization:  FH Südwestfalen, Iserlohn, Germany
+%%      Copyright:  Copyright (c) 2006-2013, Dr. Fritz Mehner
+%%
+%%          Notes:  
 %%                
 %%=====================================================================================
-
-\documentclass[oneside,11pt,landscape,DIV17]{scrartcl}
-
+%
+%%======================================================================
+%%  LaTeX settings       [[[1
+%%======================================================================
+\documentclass[oneside,11pt,landscape,DIV16]{scrartcl}
+%
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -24,19 +28,19 @@
 \usepackage{lastpage}
 \usepackage{multicol}
 \usepackage{setspace}
-
+%
 \setlength\parindent{0pt}
-
+%
 \newcommand{\Pluginversion}{6.1}
 \newcommand{\ReleaseDate}{\today}
 \newcommand{\Rep}{{\tiny{[n]}}}
-
+%
 %%----------------------------------------------------------------------
 %%  luximono : Type1-font
 %%  Makes keyword stand out by using semibold letters.
 %%----------------------------------------------------------------------
 \usepackage[scaled]{luximono}
-
+%
 %%----------------------------------------------------------------------
 %%  fancyhdr
 %%----------------------------------------------------------------------
@@ -46,7 +50,7 @@
 \fancyfoot[C]{c-support.vim}
 \fancyfoot[R]{\small \textbf{Page \thepage{} / \pageref{LastPage}}}
 \renewcommand{\headrulewidth}{0.0pt}
-
+%
 %%----------------------------------------------------------------------
 %%  hyperref
 %%----------------------------------------------------------------------
@@ -55,16 +59,16 @@
 \hypersetup{pdfkeywords={Vim, C/C++}}
 \hypersetup{pdfsubject={Vim-plugin,  c-support.vim, hot keys}}
 \hypersetup{pdftitle={Vim-plugin,  c-support.vim, hot keys}}
-
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  START OF DOCUMENT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}%
-
+%
 \begin{multicols}{3}
 %
 %%======================================================================
-%%  title
+%%  title       [[[1
 %%======================================================================
 \begin{center}
 \textbf{\textsc{\small{Vim-Plugin}}}\\
@@ -72,13 +76,13 @@
 \textbf{\textsc{\small{Version \Pluginversion}}}\\
 \textbf{\textsc{\Huge{Hot keys}}}\\ 
 Key mappings for Vim with and without GUI.\\
-Plugin: http://vim.sourceforge.net\\
+{\tiny{http://vim.sourceforge.net/scripts/script.php?script\_id=213}}\\
 \vspace{3.0mm}
 {\normalsize (i)} insert mode, {\normalsize (n)} normal mode, {\normalsize (v)} visual mode\\
 \vspace{5.0mm}
 %
 %%======================================================================
-%%  SIDE 1
+%%  page 1, table, left   part        [[[1
 %%======================================================================
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{10mm}|p{60mm}|}
@@ -101,29 +105,29 @@ Plugin: http://vim.sourceforge.net\\
 \hline \Rep\verb'\cc'  & code $\Rightarrow$ comment \verb'//'    \hfill (n,v,i)\\
 \hline \Rep\verb'\co'  & comment $\Rightarrow$ code              \hfill (n,v,i)\\
 \hline \Rep\verb'\cn'  & toggle non-C comment                    \hfill (n,v,i)\\
-
-\hline \verb'\cfr' & frame comment                           \hfill (n,i)\\
-\hline \verb'\cfu' & function comment                        \hfill (n,i)\\
-\hline \verb'\cme' & method description                      \hfill (n,i)\\
-\hline \verb'\ccl' & class description                       \hfill (n,i)\\
-\hline \verb'\cfdi'& file description (implementation)       \hfill (n,i)\\
-\hline \verb'\cfdh'& file description (header)               \hfill (n,i)\\
-
-\hline \verb'\ccs'& C/C++--file sections\hspace{3mm}\footnotesize{(tab compl.)}    \hfill \normalsize{(n,i)}\\
-\hline \verb'\chs'& H--file sections\hspace{10mm}\footnotesize{(tab compl.)}       \hfill \normalsize{(n,i)}\\
-\hline \verb'\ckc'& keyword comment\hspace{5mm}\footnotesize{(tab compl.)}         \hfill \normalsize{(n,i)}\\
-\hline \verb'\csc'& special comment\hspace{7,5mm}\footnotesize{(tab compl.)}       \hfill \normalsize{(n,i)}\\
-\hline \verb'\cma'& template macros\hspace{7,5mm}\footnotesize{(tab compl.)}       \hfill \normalsize{(n,i)}\\
-
-\hline \verb'\cd' & date                                    \hfill (n,v,i)\\
-\hline \verb'\ct' & date \& time                            \hfill (n,v,i)\\
-\hline \Rep\verb'\cx' & exch. comment style: C $\leftrightarrow$ C++                  \hfill (n,v,i)\\
+%
+\hline \verb'\cfr' & frame comment                               \hfill (n,i)\\
+\hline \verb'\cfu' & function comment                            \hfill (n,i)\\
+\hline \verb'\cme' & method description                          \hfill (n,i)\\
+\hline \verb'\ccl' & class description                           \hfill (n,i)\\
+\hline \verb'\cfdi'& file description (implementation)           \hfill (n,i)\\
+\hline \verb'\cfdh'& file description (header)                   \hfill (n,i)\\
+%
+\hline \verb'\ccs'& C/C++--file sections\hspace{3mm}\footnotesize{(tab compl.)}\hfill \normalsize{(n,i)}\\
+\hline \verb'\chs'& H--file sections\hspace{10mm}\footnotesize{(tab compl.)}   \hfill \normalsize{(n,i)}\\
+\hline \verb'\ckc'& keyword comment\hspace{5mm}\footnotesize{(tab compl.)}     \hfill \normalsize{(n,i)}\\
+\hline \verb'\csc'& special comment\hspace{7,5mm}\footnotesize{(tab compl.)}   \hfill \normalsize{(n,i)}\\
+\hline \verb'\cma'& template macros\hspace{7,5mm}\footnotesize{(tab compl.)}   \hfill \normalsize{(n,i)}\\
+%
+\hline \verb'\cd' & date                                                       \hfill (n,v,i)\\
+\hline \verb'\ct' & date \& time                                               \hfill (n,v,i)\\
+\hline \Rep\verb'\cx' & exch. comment style: C $\leftrightarrow$ C++           \hfill (n,v,i)\\
 \hline 
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
 %%======================================================================
-%%  table, middle part
+%%  page 1, table, middle part        [[[1
 %%======================================================================
 %
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
@@ -171,9 +175,9 @@ Plugin: http://vim.sourceforge.net\\
 \hline
 \end{tabular} \\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
-
+%
 %%======================================================================
-%%  table, right part
+%%  page 1, table, right  part        [[[1
 %%======================================================================
 %
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
@@ -203,38 +207,30 @@ Plugin: http://vim.sourceforge.net\\
 %%----------------------------------------------------------------------
 \hline 
 \multicolumn{2}{|r|}{\textsl{\textbf{I}dioms}}   \\
-\hline \verb'\if'  & function                         \hfill (n,v,i)\\
-\hline \verb'\isf' & static function                  \hfill (n,v,i)\\
-\hline \verb'\im'  & \verb'main()'                    \hfill (n,v,i)\\
-\hline \verb'\ie'  & \verb'enum'   + \verb'typedef'   \hfill (n,v,i)\\
-\hline \verb'\is'  & \verb'struct' + \verb'typedef'   \hfill (n,v,i)\\
-\hline \verb'\iu'  & \verb'union'  + \verb'typedef'   \hfill (n,v,i)\\
-\hline \verb'\ipr' & \verb'printf()'                  \hfill (n,i)\\
-\hline \verb'\isc' & \verb'scanf()'                   \hfill (n,i)\\
-\hline \verb'\ica' & \verb'p=calloc()'                \hfill (n,i)\\
-\hline \verb'\ima' & \verb'p=malloc()'                \hfill (n,i)\\
-\hline \verb'\ire' & \verb'p=realloc()'               \hfill (n,i)\\
-\hline \verb'\isi' & \verb'sizeof()'                  \hfill (n,v,i)\\
-\hline \verb'\ias' & \verb'assert()'                  \hfill (n,v,i)\\
-\hline \verb'\ii'  & open input file                  \hfill (n,v,i)\\
-\hline \verb'\io'  & open output file                 \hfill (n,v,i)\\
-\hline \verb'\ifsc'& fscanf                           \hfill (n,i)\\
-\hline \verb'\ifpr'& fprintf                          \hfill (n,i)\\
-\hline \Rep\verb'\i0'  & \verb'for( x=0; x<n; x+=1 )'     \hfill (n,v,i)\\
-\hline \Rep\verb'\in'  & \verb'for( x=n-1; x>=0; x-=1 )'  \hfill (n,v,i)\\
+\hline \verb'\if'  & function                           \hfill (n,v,i)\\
+\hline \verb'\isf' & static function                    \hfill (n,v,i)\\
+\hline \verb'\im'  & \verb'main()'                      \hfill (n,v,i)\\
+\hline \verb'\ie'  & \verb'enum'   + \verb'typedef'     \hfill (n,v,i)\\
+\hline \verb'\is'  & \verb'struct' + \verb'typedef'     \hfill (n,v,i)\\
+\hline \verb'\iu'  & \verb'union'  + \verb'typedef'     \hfill (n,v,i)\\
+\hline \verb'\ipr' & \verb'printf()'                    \hfill (n,i)\\
+\hline \verb'\isc' & \verb'scanf()'                     \hfill (n,i)\\
+\hline \verb'\ica' & \verb'p=calloc()'                  \hfill (n,i)\\
+\hline \verb'\ima' & \verb'p=malloc()'                  \hfill (n,i)\\
+\hline \verb'\ire' & \verb'p=realloc()'                 \hfill (n,i)\\
+\hline \verb'\isi' & \verb'sizeof()'                    \hfill (n,v,i)\\
+\hline \verb'\ias' & \verb'assert()'                    \hfill (n,v,i)\\
+\hline \verb'\ii'  & open input file                    \hfill (n,v,i)\\
+\hline \verb'\io'  & open output file                   \hfill (n,v,i)\\
+\hline \verb'\ifsc'& fscanf                             \hfill (n,i)\\
+\hline \verb'\ifpr'& fprintf                            \hfill (n,i)\\
+\hline \Rep\verb'\i0'  & \verb'for( x=0; x<n; x+=1 )'   \hfill (n,v,i)\\
+\hline \Rep\verb'\in'  & \verb'for( x=n-1; x>=0; x-=1 )'\hfill (n,v,i)\\
 \hline
 \end{tabular}
 %
-%\begin{minipage}[b]{64mm}%
-%\scriptsize{%
-%\vspace{1mm}
-%$^1$ {system-wide installation only}
-%}%
-%\end{minipage}
-%
-%
 %%======================================================================
-%%  SIDE 2
+%%  page 2, table, left   part        [[[1
 %%======================================================================
 %
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
@@ -246,29 +242,29 @@ Plugin: http://vim.sourceforge.net\\
 \multicolumn{2}{|r|}{\textsl{C\textbf{++}}} \\
 \hline \verb'\+ih'  & \verb$#include$ C++ Std. Lib. header \hfill (n,i)\\
 \hline \verb'\+ich' & \verb$#include$ C   Std. Lib. header \hfill (n,i)\\
-\hline \verb'\+om'  & output manipulators                \hfill (n,i)\\
-\hline \verb'\+fb'  & ios flagbits                       \hfill (n,i)\\
+\hline \verb'\+om'  & output manipulators                  \hfill (n,i)\\
+\hline \verb'\+fb'  & ios flagbits                         \hfill (n,i)\\
 \hline
-\hline \verb'\+c'   & class                              \hfill (n,i)\\
-\hline \verb'\+cn'  & class (using \verb'new')           \hfill (n,i)\\
-\hline \verb'\+tc'  & template class                     \hfill (n,i)\\
-\hline \verb'\+tcn' & template class (using \verb'new')  \hfill (n,i)\\
-\hline \verb'\+ec'  & error class                        \hfill (n,i)\\
-\hline \verb'\+tf'  & template function                  \hfill (n,i)\\
+\hline \verb'\+c'   & class                                \hfill (n,i)\\
+\hline \verb'\+cn'  & class (using \verb'new')             \hfill (n,i)\\
+\hline \verb'\+tc'  & template class                       \hfill (n,i)\\
+\hline \verb'\+tcn' & template class (using \verb'new')    \hfill (n,i)\\
+\hline \verb'\+ec'  & error class                          \hfill (n,i)\\
+\hline \verb'\+tf'  & template function                    \hfill (n,i)\\
 \hline
-\hline \verb'\+tr'  & \verb'try' \dots \verb'catch'      \hfill (n,v,i)\\
-\hline \verb'\+ca'  & \verb'catch'                       \hfill (n,v,i)\\
-\hline \verb'\+caa' & \verb'catch(...)'                  \hfill (n,v,i)\\
+\hline \verb'\+tr'  & \verb'try' \dots \verb'catch'        \hfill (n,v,i)\\
+\hline \verb'\+ca'  & \verb'catch'                         \hfill (n,v,i)\\
+\hline \verb'\+caa' & \verb'catch(...)'                    \hfill (n,v,i)\\
 \hline
-\hline \verb'\+ex'  & \verb'extern "C" { }'              \hfill (n,v,i)\\
-\hline \verb'\+oif' & open input file                    \hfill (n,v,i)\\
-\hline \verb'\+oof' & open output file                   \hfill (n,v,i)\\
-\hline \verb'\+uns' & \verb'using namespace std;'        \hfill (n,v,i)\\
-\hline \verb'\+un'  & \verb'using namespace xxx;'        \hfill (n,v,i)\\
-\hline \verb'\+unb' & \verb'namespace xxx { }'           \hfill (n,v,i)\\
-\hline \verb'\+na'  & namespace alias                    \hfill (n,v,i)\\
-\hline \verb'\+rt'  & RTTI                               \hfill (n,v,i)\\
-
+\hline \verb'\+ex'  & \verb'extern "C" { }'                \hfill (n,v,i)\\
+\hline \verb'\+oif' & open input file                      \hfill (n,v,i)\\
+\hline \verb'\+oof' & open output file                     \hfill (n,v,i)\\
+\hline \verb'\+uns' & \verb'using namespace std;'          \hfill (n,v,i)\\
+\hline \verb'\+un'  & \verb'using namespace xxx;'          \hfill (n,v,i)\\
+\hline \verb'\+unb' & \verb'namespace xxx { }'             \hfill (n,v,i)\\
+\hline \verb'\+na'  & namespace alias                      \hfill (n,v,i)\\
+\hline \verb'\+rt'  & RTTI                                 \hfill (n,v,i)\\
+%
 \hline
 \hline \verb'\+ic'  & class  implementation                   \hfill (n,i)\\
 \hline \verb'\+icn' & class (using \verb'new') implementation \hfill (n,i)\\
@@ -278,10 +274,14 @@ Plugin: http://vim.sourceforge.net\\
 \hline \verb'\+itcn'& template class (using \verb'new') impl. \hfill (n,i)\\
 \hline \verb'\+itm' & template method implementation          \hfill (n,i)\\
 \hline \verb'\+ita' & template accessor implementation        \hfill (n,i)\\
-\hline \verb'\+ioi' & operator >> \hfill (n,i)\\
-\hline \verb'\+ioo' & operator << \hfill (n,i)\\
+\hline \verb'\+ioi' & operator >>                             \hfill (n,i)\\
+\hline \verb'\+ioo' & operator <<                             \hfill (n,i)\\
 \hline 
 \end{tabular}
+%
+%%======================================================================
+%%  page 2, table, middle part        [[[1
+%%======================================================================
 \vspace{100mm}
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{12mm}|p{58mm}|}
@@ -295,10 +295,6 @@ Plugin: http://vim.sourceforge.net\\
 \hline \verb'\rr'  & run                                     \hfill (n,i)\\
 \hline \verb'\ra'  & set comand line arguments               \hfill (n,i)\\
 \hline \verb'\rd'  & start debugger                          \hfill (n,i)\\
-\hline \verb'\rm'  & run \texttt{ make}$^1$                  \hfill (n,i)\\
-\hline \verb'\rmc' & run \texttt{ make clean}$^1$            \hfill (n,i)\\
-\hline \verb'\rcm' & choose a makefile $^1$                  \hfill (n,i)\\
-\hline \verb'\rma' & cmd. line arg. for \texttt{make}$^1$    \hfill (n,i)\\
 \hline \verb'\rme' & executable to run$^1$                   \hfill (n,i)\\
 %
 \hline \verb'\rp'  & run \texttt{splint}$^2$                 \hfill (n,i)\\
@@ -315,24 +311,41 @@ Plugin: http://vim.sourceforge.net\\
 \hline \verb'\rs'  & show plugin settings        \hfill (n,i)\\
 \hline \verb'\rx'  & set xterm size              \hfill (n,i, only Unix \& GUI)\\
 \hline \verb'\ro'  & change output destination   \hfill (n,i)\\
+\hline 
+\end{tabular}
+%
+%%======================================================================
+%%  page 2, table, right  part        [[[1
+%%======================================================================
+%
+\begin{tabular}[]{|p{12mm}|p{58mm}|}
+%%----------------------------------------------------------------------
+%%  Tool Box : Make
+%%----------------------------------------------------------------------
 \hline
-%\end{tabular}
-%\begin{spacing}{1.2}
-%\begin{tabular}[]{|p{12mm}|p{58mm}|}
+\multicolumn{2}{|r|}{\textsl{Tool Box : \textbf{M}ake}} \\
+\hline \verb'\rm'  & run \texttt{ make}$^1$                  \hfill (n,i)\\
+\hline \verb'\rmc' & run \texttt{ make clean}$^1$            \hfill (n,i)\\
+\hline \verb'\rmd' & run \texttt{ make doc}$^1$              \hfill (n,i)\\
+\hline \verb'\rcm' & choose a makefile $^1$                  \hfill (n,i)\\
+\hline \verb'\rma' & cmd. line arg. for \texttt{make}$^1$    \hfill (n,i)\\
+\hline
+%%----------------------------------------------------------------------
+%%  Additional mappings
+%%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textbf{Additional Mappings}$^5$}\\
 \hline
-\hline \textbf{typing}   & \textbf{expansion}\\
-\hline \verb'/*'   		& \verb'/*  */'                          				            \hfill (i)\\
-\hline \verb'/*'   		& \verb'/* '\fbox{\small{(multiline) marked text}}\verb' */' 				\hfill (v)\\
+\hline \textbf{typing}& \textbf{expansion}\\
+\hline \verb'/*'      & \verb'/*  */' \hfill (i)\\
+\hline \verb'/*'      & \verb'/* '\fbox{\small{(multiline) marked text}}\verb' */' \hfill (v)\\
 \hline \verb'/*<CR>'  & \verb'/*'\hfill (i)\newline\verb' * |'\newline\verb' */'\\
-\hline \verb'{<CR>'  	& \verb'{'\hfill (i)\newline\verb'  |'\newline\verb'}' 		\\
-\hline \verb'{<CR>'  	& \verb'{'\hfill (v)\newline\verb'  '\fbox{\small{(multiline) marked text}}\newline\verb'}'\\
+\hline \verb'{<CR>'   & \verb'{'\hfill (i)\newline\verb'  |'\newline\verb'}'    \\
+\hline \verb'{<CR>'   & \verb'{'\hfill (v)\newline\verb'  '\fbox{\small{(multiline) marked text}}\newline\verb'}'\\
 \hline 
 \end{tabular}
-%\end{spacing}
+%
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
-%\vspace{60mm}
 %
 \begin{flushleft}
 \large{\textbf{Ex Commands}}\\[1.0ex]
@@ -345,10 +358,8 @@ Set severity for \texttt{cppcheck} (same as \textbackslash\texttt{rccs})\\[1.0ex
 %
 \vfill
 \begin{minipage}[b]{65mm}%
-%\vspace{10mm}
 %
 \scriptsize{%
-%\vspace{10mm}
 \hrulefill\\
 $^1$ also working for filetype \textbf{make}\\
 $^2$ \textit{www.splint.org}\\
@@ -364,3 +375,4 @@ $^5$ defined in \verb'~/ftplugin/c.vim'
 \end{center}
 \end{multicols}
 \end{document}
+% vim: foldmethod=marker foldmarker=[[[,]]]

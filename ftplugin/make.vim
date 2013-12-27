@@ -21,6 +21,8 @@ let b:did_Make_ftplugin = 1
 inoremap  <buffer>  <silent>  <LocalLeader>rm   <C-C>:Make<CR>
  noremap  <buffer>  <silent>  <LocalLeader>rmc       :Make clean<CR>
 inoremap  <buffer>  <silent>  <LocalLeader>rmc  <C-C>:Make clean<CR>
+ noremap  <buffer>  <silent>  <LocalLeader>rmd       :Make doc<CR>
+inoremap  <buffer>  <silent>  <LocalLeader>rmd  <C-C>:Make doc<CR>
  noremap  <buffer>            <LocalLeader>rma       :MakeCmdlineArgs<space>
 inoremap  <buffer>            <LocalLeader>rma  <C-C>:MakeCmdlineArgs<space>
  noremap  <buffer>            <LocalLeader>rcm       :MakeFile<space>
