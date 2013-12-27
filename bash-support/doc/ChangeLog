@@ -1,4 +1,15 @@
 =======================================================================================
+  RELEASE NOTES FOR VERSION 4.1
+=======================================================================================
+
+- Filetype plugin added.
+- Bugfix: Setup of local templates in case of global installation.
+- Adjusting end-of-line comments improved.
+- Submenu 'Regexp' renamed to 'PatternMatching'. Appropriate hotkeys renamed.
+- Minor bugfixes.
+- Documentation updated.
+
+=======================================================================================
   RELEASE NOTES FOR VERSION 4.0
 =======================================================================================
 

@@ -166,7 +166,7 @@ let s:BASH_bashdb             = 'bashdb'
 let s:BASH_LineEndCommColDefault	= 49
 let s:BASH_Printheader   					= "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
 let s:BASH_TemplateJumpTarget 		= ''
-let s:BASH_Errorformat    				= '%f:\ %s\ %l:\ %m'
+let s:BASH_Errorformat    				= '%f:\ %[%^0-9]%#\ %l:%m'
 let s:BASH_Wrapper               	= s:plugin_dir.'/bash-support/scripts/wrapper.sh'
 let s:BASH_InsertFileHeader				= 'yes'
 let s:BASH_SyntaxCheckOptionsGlob = ''

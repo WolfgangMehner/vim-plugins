@@ -1,4 +1,4 @@
-README for bash-support.vim (Version 4.1) / December 09 2013
+README for bash-support.vim (Version 4.2pre) / December 27 2013
 
   *  INSTALLATION
   *  RELEASE NOTES
@@ -123,15 +123,10 @@ Look at the bashsupport help with
              +-----------------------------------------------+
 
 =======================================================================================
-  RELEASE NOTES FOR VERSION 4.1
+  RELEASE NOTES FOR VERSION 4.2pre
 =======================================================================================
 
-- Filetype plugin added.
-- Bugfix: Setup of local templates in case of global installation.
-- Adjusting end-of-line comments improved.
-- Submenu 'Regexp' renamed to 'PatternMatching'. Appropriate hotkeys renamed.
-- Minor bugfixes.
-- Documentation updated.
+- Bugfix: QuickFix list doesn't work properly (thanks to @PengZheng)
 
   OLDER RELEASE NOTES : see file 'ChangeLog'
 =======================================================================================
