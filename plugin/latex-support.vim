@@ -633,8 +633,8 @@ function! s:InitMenus()
 	exe ahead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntl       :call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,-1)<CR>'
 	exe ihead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntl  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,-1)<CR>'
 	if s:installation == 'system'
-		exe ahead.'edit\ &global\ templates<Tab>'.esc_mapl.'ntg       :call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,1)<CR>'
-		exe ihead.'edit\ &global\ templates<Tab>'.esc_mapl.'ntg  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,1)<CR>'
+		exe ahead.'edit\ &global\ templates<Tab>'.esc_mapl.'ntg       :call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,0)<CR>'
+		exe ihead.'edit\ &global\ templates<Tab>'.esc_mapl.'ntg  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,0)<CR>'
 	endif
 	"
 	exe ahead.'reread\ &templates<Tab>'.esc_mapl.'ntr       :call mmtemplates#core#ReadTemplates(g:Latex_Templates,"reload","all")<CR>'
@@ -808,7 +808,7 @@ function! Latex_CodeSnippet(mode)
     "
     if a:mode == "write" || a:mode == "writemarked"
 			if has("gui_running") && s:Latex_GuiSnippetBrowser == 'gui'
-				let l:snippetfile=browse(0,"write a code snippet",g:Latex_CodeSnippets,"")
+				let l:snippetfile=browse(1,"write a code snippet",g:Latex_CodeSnippets,"")
 			else
 				let	l:snippetfile=input("write snippet ", g:Latex_CodeSnippets, "file" )
 			endif
@@ -903,8 +903,8 @@ function! s:CreateAdditionalMaps ()
 	nnoremap    <buffer>  <silent> <LocalLeader>ntl       :call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,-1)<CR>
 	inoremap    <buffer>  <silent> <LocalLeader>ntl  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,-1)<CR>
 	if s:installation == 'system'
-		nnoremap  <buffer>  <silent> <LocalLeader>ntg       :call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,1)<CR>
-		inoremap  <buffer>  <silent> <LocalLeader>ntg  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,1)<CR>
+		nnoremap  <buffer>  <silent> <LocalLeader>ntg       :call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,0)<CR>
+		inoremap  <buffer>  <silent> <LocalLeader>ntg  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,0)<CR>
 	endif
 	nnoremap    <buffer>  <silent> <LocalLeader>ntr       :call mmtemplates#core#ReadTemplates(g:Latex_Templates,"reload","all")<CR>
 	inoremap    <buffer>  <silent> <LocalLeader>ntr  <C-C>:call mmtemplates#core#ReadTemplates(g:Latex_Templates,"reload","all")<CR>

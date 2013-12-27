@@ -83,6 +83,7 @@ For a system-wide installation please see the help file 'doc/latexsupport.txt'.
 - Beamer templates and snippets added.
 - Template added.
 - Bugfix: Setup of local templates in case of global installation.
+- Bugfix: Map and menu entry 'Snippets->edit global templates'.
 - Minor bugfixes and improvements.
 
 =======================================================================================
