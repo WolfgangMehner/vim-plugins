@@ -1,8 +1,8 @@
-*gitsupport.txt*                  Git Support                      June 7 2013
+*gitsupport.txt*                  Git Support                      Dec 28 2013
 
 Git Support                                          *git-support* *gitsupport*
 
-                            Plug-in version 0.9.1pre
+                            Plug-in version 0.9.1
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -848,8 +848,9 @@ in the .vimrc file.
 
   Variable                    Default     Description and further information
  ----------------------------------------------------------------------------
-  |g:Git_Executable|            'git'       the Git executable
-  |g:Git_GitKExecutable|        'gitk'      the gitk executable
+  |g:Git_Executable|            'git'       the Git executable (^1)
+  |g:Git_GitKExecutable|        'gitk'      the gitk executable (^1)
+  |g:Git_GitKScript|            ''          the gitk script (^1)
   |g:Git_LoadMenus|             'yes'       whether to load the menus
                                           ('yes' or 'no')
   |g:Git_RootMenu|              '&Git'      name and shortcut of the root menu
@@ -863,6 +864,11 @@ in the .vimrc file.
                                           "Changes to be committed"
  ----------------------------------------------------------------------------
 
+(^1) the Windows defaults are as follows:
+  |g:Git_Executable|     - C:\Program Files\Git\bin\git.exe
+  |g:Git_GitKExecutable| - C:\Program Files\Git\bin\tclsh.exe
+  |g:Git_GitKScript|     - C:\Program Files\Git\bin\gitk
+
 ------------------------------------------------------------------------------
 6.1  EXECUTABLE                                 *gitsupport-config-executable*
 ------------------------------------------------------------------------------
@@ -872,11 +878,16 @@ environment: >
   let g:Git_Executable = 'LANG=en_US git'
 <
 For Windows, set up the executable similar to this: >
-  let g:Git_Executable = 'C:\Programs\Git\bin\git.exe'
+  let g:Git_Executable = 'C:\Program Files\Git\bin\git.exe'
 <
-                                                        *g:Git_GitKExecutable*
+                                       *g:Git_GitKExecutable* *g:Git_GitKScript*
 Set the gitk executable. You should use the English language environment: >
   let g:Git_Executable = 'LANG=en_US gitk'
+<
+For Windows, set up gitk similar to this, the interpreter and the gitk script
+have to be given separately: >
+	let g:Git_GitKExecutable = 'C:\Program Files\Git\bin\tclsh.exe'
+	let g:Git_GitKScript     = 'C:\Program Files\Git\bin\gitk'
 <
 ------------------------------------------------------------------------------
 6.2  MENUS                                           *gitsupport-config-menus*

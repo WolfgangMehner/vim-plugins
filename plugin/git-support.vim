@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:GitSupport_Version') && ! exists('g:GitSupport_DevelopmentOverwrite') )
 	finish
 endif
-let g:GitSupport_Version= '0.9.1pre'     " version number of this script; do not change
+let g:GitSupport_Version= '0.9.1'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
@@ -277,7 +277,7 @@ endfunction    " ----------  end of function s:ImportantMsg  ----------
 "-------------------------------------------------------------------------------
 "
 function! s:OpenFile ( filename, ... )
-	if bufwinnr ( a:filename ) == -1
+	if bufwinnr ( '^'.a:filename.'$' ) == -1
 		" open buffer
 		belowright new
 		exe "edit ".fnameescape( a:filename )
@@ -538,8 +538,15 @@ endif
 "
 " settings   {{{2
 
-let s:Git_Executable     = 'git'    " Git executable
-let s:Git_GitKExecutable = 'gitk'   " GitK executable
+if s:MSWIN
+	let s:Git_Executable     = 'C:\Program Files\Git\bin\git.exe'     " Git executable
+	let s:Git_GitKExecutable = 'C:\Program Files\Git\bin\tclsh.exe'   " GitK executable
+	let s:Git_GitKScript     = 'C:\Program Files\Git\bin\gitk'        " GitK script
+else
+	let s:Git_Executable     = 'git'    " Git executable
+	let s:Git_GitKExecutable = 'gitk'   " GitK executable
+	let s:Git_GitKScript     = ''       " GitK script
+endif
 let s:Git_LoadMenus      = 'yes'    " load the menus?
 let s:Git_RootMenu       = '&Git'   " name of the root menu
 "
@@ -562,6 +569,7 @@ let s:Git_CustomMenu = [
 "
 call s:GetGlobalSetting ( 'Git_Executable' )
 call s:GetGlobalSetting ( 'Git_GitKExecutable' )
+call s:GetGlobalSetting ( 'Git_GitKScript' )
 call s:GetGlobalSetting ( 'Git_LoadMenus' )
 call s:GetGlobalSetting ( 'Git_RootMenu' )
 call s:GetGlobalSetting ( 'Git_CustomMenu' )
@@ -578,47 +586,63 @@ let s:EnabledGitK        = 1        " GitK enabled?
 let s:DisableGitKMessage = "GitK not avaiable:"
 let s:DisableGitKReason  = ""
 "
+let s:FoundGitKScript   = 1
+let s:GitKScriptMessage = ""
+"
 let s:GitVersion    = ""            " Git Version
 let s:GitHelpFormat = ""            " 'man' or 'html'
 "
 " check git executable   {{{2
 "
-if s:Git_Executable =~ '^LANG=\w\+\s.'
-	if ! executable ( matchstr ( s:Git_Executable, '^LANG=\w\+\s\+\zs.\+$' ) )
-		let s:Enabled = 0
-		let s:DisabledReason = "git not executable: ".s:Git_Executable
+function! s:CheckExecutable ( name, exe )
+	"
+	let executable = a:exe
+	let enabled = 1
+	let reason  = ""
+	"
+	if executable =~ '^LANG=\w\+\s.'
+		let [ lang, executable ] = matchlist ( executable, '^\(LANG=\w\+\)\s\+\(.\+\)$' )[1:2]
+		if ! executable ( executable )
+			let enabled = 0
+			let reason = a:name." not executable: ".executable
+		endif
+		let executable = lang.' '.shellescape( executable )
+	elseif executable =~ '^\(["'']\)\zs.\+\ze\1'
+		if ! executable ( matchstr ( executable, '^\(["'']\)\zs.\+\ze\1' ) )
+			let enabled = 0
+			let reason = a:name." not executable: ".executable
+		endif
+	else
+		if ! executable ( executable )
+			let enabled = 0
+			let reason = a:name." not executable: ".executable
+		endif
+		let executable = shellescape( executable )
 	endif
-elseif s:Git_Executable =~ '^\(["'']\)\zs.\+\ze\1'
-	if ! executable ( matchstr ( s:Git_Executable, '^\(["'']\)\zs.\+\ze\1' ) )
-		let s:Enabled = 0
-		let s:DisabledReason = "git not executable: ".s:Git_Executable
+	"
+	return [ executable, enabled, reason ]
+endfunction    " ----------  end of function s:CheckExecutable  ----------
+"
+function! s:CheckFile ( shortname, filename, esc )
+	"
+	let filename = a:filename
+	let found    = 1
+	let message  = ""
+	"
+	if ! filereadable ( filename )
+		let found = 0
+		let message = a:shortname." not found: ".filename
 	endif
-else
-	if ! executable ( s:Git_Executable )
-		let s:Enabled = 0
-		let s:DisabledReason = "git not executable: ".s:Git_Executable
-	endif
+	let filename = shellescape( filename )
+	"
+	return [ filename, found, message ]
+endfunction    " ----------  end of function s:CheckFile  ----------
+"
+let [ s:Git_Executable,     s:Enabled,     s:DisabledReason    ] = s:CheckExecutable( 'git',  s:Git_Executable )
+let [ s:Git_GitKExecutable, s:EnabledGitK, s:DisableGitKReason ] = s:CheckExecutable( 'gitk', s:Git_GitKExecutable )
+if ! empty ( s:Git_GitKScript )
+	let [ s:Git_GitKScript, s:FoundGitKScript, s:GitKScriptMessage ] = s:CheckFile( 'gitk script', s:Git_GitKScript, 1 )
 endif
-"
-" check gitk executable   {{{2
-"
-if s:Git_GitKExecutable =~ '^LANG=\w\+\s.'
-	if ! executable ( matchstr ( s:Git_GitKExecutable, '^LANG=\w\+\s\+\zs.\+$' ) )
-		let s:EnabledGitK = 0
-		let s:DisableGitKReason = "gitk not executable: ".s:Git_GitKExecutable
-	endif
-elseif s:Git_GitKExecutable =~ '^\(["'']\)\zs.\+\ze\1'
-	if ! executable ( matchstr ( s:Git_GitKExecutable, '^\(["'']\)\zs.\+\ze\1' ) )
-		let s:EnabledGitK = 0
-		let s:DisableGitKReason = "gitk not executable: ".s:Git_GitKExecutable
-	endif
-else
-	if ! executable ( s:Git_GitKExecutable )
-		let s:EnabledGitK = 0
-		let s:DisableGitKReason = "gitk not executable: ".s:Git_GitKExecutable
-	endif
-endif
-"
 "
 " check Git version   {{{2
 "
@@ -920,7 +944,7 @@ function! s:StandardRun( cmd, param, flags, ... )
 	"
 	let cmd = s:Git_Executable.' '.a:cmd.' '.param
 	"
-	if a:flags =~ 'c' && s:Question ( 'Execute "'.cmd.'"?' ) != 1
+	if a:flags =~ 'c' && s:Question ( 'Execute "git '.a:cmd.' '.param.'"?' ) != 1
 		echo "aborted"
 		return
 	endif
@@ -1090,13 +1114,11 @@ function! GitS_Add( param, flags )
 	else                                  | let param = a:param
 	endif
 	"
-	let cmd = s:Git_Executable.' add '
+	if a:flags =~ 'f' | let param = '-f '.param | endif
 	"
-	if a:flags =~ 'f' | let cmd .= '-f ' | endif
+	let cmd = s:Git_Executable.' add '.param
 	"
-	let cmd .= param
-	"
-	if a:flags =~ 'c' && s:Question ( 'Execute "'.cmd.'"?' ) != 1
+	if a:flags =~ 'c' && s:Question ( 'Execute "git add '.param.'"?' ) != 1
 		echo "aborted"
 		return
 	endif
@@ -1422,15 +1444,15 @@ function! GitS_Commit( mode, param, flags )
 		else
 			"
 			" commit ...
-			let cmd = s:Git_Executable.' commit '.a:param
+			let param = a:param
 			"
 		endif
 		"
 	elseif a:mode == 'file'
 		"
 		" message from file
-		if empty( a:param ) | let cmd = s:Git_Executable.' commit -F '.s:EscapeFile( expand('%') )
-		else                | let cmd = s:Git_Executable.' commit -F '.a:param
+		if empty( a:param ) | let param = '-F '.s:EscapeFile( expand('%') )
+		else                | let param = '-F '.a:param
 		endif
 		"
 	elseif a:mode == 'merge'
@@ -1451,17 +1473,19 @@ function! GitS_Commit( mode, param, flags )
 		endif
 		"
 		" commit
-		let cmd = s:Git_Executable.' commit -F '.s:EscapeFile( file )
+		let param = '-F '.s:EscapeFile( file )
 		"
 	elseif a:mode == 'msg'
 		" message from command line
-		let cmd = s:Git_Executable.' commit -m "'.a:param.'"'
+		let param = '-m "'.a:param.'"'
 	else
 		echoerr 'Unknown mode "'.a:mode.'".'
 		return
 	endif
 	"
-	if a:flags =~ 'c' && s:Question ( 'Execute "'.cmd.'"?' ) != 1
+	let cmd = s:Git_Executable.' commit '.param
+	"
+	if a:flags =~ 'c' && s:Question ( 'Execute "git commit '.param.'"?' ) != 1
 		echo "aborted"
 		return
 	endif
@@ -2861,9 +2885,15 @@ function! GitS_GitK( param )
 	" :TODO:10.12.2013 20:14:WM: graphics available?
 	if s:EnabledGitK == 0
 		return s:ErrorMsg ( s:DisableGitKMessage, s:DisableGitKReason )
+	elseif s:FoundGitKScript == 0
+		return s:ErrorMsg ( s:DisableGitKMessage, s:GitKScriptMessage )
 	endif
 	"
-	silent exe '!'.s:Git_GitKExecutable.' '.a:param.' &'
+	if s:MSWIN
+		silent exe '!'.s:Git_GitKExecutable.' '.s:Git_GitKScript.' '.a:param
+	else
+		silent exe '!'.s:Git_GitKExecutable.' '.s:Git_GitKScript.' '.a:param.' &'
+	endif
 	"
 endfunction    " ----------  end of function GitS_GitK  ----------
 "
@@ -2890,21 +2920,27 @@ function! GitS_PluginSettings(  )
 	elseif s:UNIX  | let sys_name = 'UNIX'
 	else           | let sys_name = 'unknown' | endif
 	"
-	if s:EnabledGitK | let gitk_status = '<yes>'
-	else             | let gitk_status = '<no>'  | endif
+	let gitk_e_status = s:EnabledGitK     ? '<yes>' : '<no>'
+	let gitk_s_status = s:FoundGitKScript ? '<yes>' : '<no>'
 	"
 	let	txt = " Git-Support settings\n\n"
-				\ .'      plugin installation :  '.s:installation.' on '.sys_name."\n"
+				\ .'     plug-in installation :  '.s:installation.' on '.sys_name."\n"
 				\ .'           git executable :  '.s:Git_Executable."\n"
 	if s:Enabled
-		let txt .= '                version   :  '.s:GitVersion."\n"
+		let txt .= '                > version :  '.s:GitVersion."\n"
 	else
-		let txt .= "                enabled   :  <no>\n"
+		let txt .= "                > enabled :  <no>\n"
 	endif
 	let txt .=
 				\  '          gitk executable :  '.s:Git_GitKExecutable."\n"
-				\ .'                enabled   :  '.gitk_status."\n"
-				\ ."________________________________________________________________________________\n"
+				\ .'                > enabled :  '.gitk_e_status."\n"
+	if ! empty ( s:Git_GitKScript )
+		let txt .=
+					\  '              gitk script :  '.s:Git_GitKScript."\n"
+					\ .'                  > found :  '.gitk_s_status."\n"
+	endif
+	let txt .=
+				\  "________________________________________________________________________________\n"
 				\ ." Git-Support, Version ".g:GitSupport_Version." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
 	"
 	echo txt
