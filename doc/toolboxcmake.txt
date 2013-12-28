@@ -1,4 +1,4 @@
-*toolboxcmake.txt*                 CMake Tool                      Nov 10 2013
+*toolboxcmake.txt*                 CMake Tool                      Dec 28 2013
 
 CMake Tool                                                     *toolbox-cmake*
 
@@ -55,7 +55,9 @@ below.
   |:CMakeHelpPolicy| [<topic>]    help for policies
   |:CMakeHelpProperty| [<topic>]  help for properties
   |:CMakeHelpVariable| [<topic>]  help for variables
+
   |:CMakeHelp|                    help for the CMake tool
+  |:CMakeSettings|                shows the plug-in settings
  ----------------------------------------------------------------------------
 
 Detailed explanations are given in the next section |toolbox-cmake-commands|.
@@ -73,6 +75,8 @@ This chapter provides detailed explanations of all the commands.
 Runs cmake with the given arguments. If no arguments are given, calls cmake
 with the directory set by |:CMakeProjectDir|.
 
+If the tool is not working properly, prints the reason.
+
   :CMake [<args>] ~
 
 Runs make with the given arguments. Beforehand, the working directory is set
@@ -88,7 +92,7 @@ Sets the project directory or build location.
   :CMakeProjectDir! ~
   :CMakeBuildLocation! ~
 
-Echoes the current project directory or build location
+Echoes the current project directory or build location.
 
 ------------------------------------------------------------------------------
                                         *:CMakeHelpCommand* *:CMakeHelpModule*
@@ -119,7 +123,12 @@ In each of the help buffers, several maps are defined.
 
 Opens the help for the CMake tool.
 
-If the tool is not working properly, prints the reason.
+------------------------------------------------------------------------------
+                                                              *:CMakeSettings*
+  :CMakeSettings ~
+  :CMakeSettings! ~
+
+Shows the plug-in settings. The second version is verbose.
 
 ------------------------------------------------------------------------------
 2.1  API                                                   *toolbox-cmake-api*

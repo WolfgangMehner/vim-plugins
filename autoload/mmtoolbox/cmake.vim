@@ -186,7 +186,11 @@ endif
 let s:ProjectDir    = '.'
 let s:BuildLocation = '.'
 "
-let s:CMake_Executable = 'cmake'
+if s:MSWIN
+	let s:CMake_Executable = 'C:\Program Files\CMake\bin\cmake.exe'
+else
+	let s:CMake_Executable = 'cmake'
+endif
 let s:CMake_MakeTool   = 'make'
 "
 call s:GetGlobalSetting ( 'CMake_Executable' )
@@ -228,7 +232,7 @@ let s:ErrorFormat_MakeAdditions = escape(
 "
 " policy list {{{2
 "
-let s:Policies_Version = '2.8.7'
+let s:Policies_Version = '2.8.12'
 let s:Policies_List = [
 			\ [ 'CMP0000', 'A minimum required CMake version must be specified.', '2.6.0' ],
 			\ [ 'CMP0001', 'CMAKE_BACKWARDS_COMPATIBILITY should no longer be used.', '2.6.0' ],
@@ -248,6 +252,12 @@ let s:Policies_List = [
 			\ [ 'CMP0015', 'link_directories() treats paths relative to the source dir.', '2.8.1' ],
 			\ [ 'CMP0016', 'target_link_libraries() reports error if only argument is not a target.', '2.8.3' ],
 			\ [ 'CMP0017', 'Prefer files from the CMake module directory when including from there.', '2.8.4' ],
+			\ [ 'CMP0018', 'Ignore CMAKE_SHARED_LIBRARY_<Lang>_FLAGS variable.', '2.8.9' ],
+			\ [ 'CMP0019', 'Do not re-expand variables in include and link information.', '2.8.11' ],
+			\ [ 'CMP0020', 'Automatically link Qt executables to qtmain target on Windows.', '2.8.11' ],
+			\ [ 'CMP0021', 'Fatal error on relative paths in INCLUDE_DIRECTORIES target property.', '2.8.12' ],
+			\ [ 'CMP0022', 'INTERFACE_LINK_LIBRARIES defines the link interface.', '2.8.12' ],
+			\ [ 'CMP0023', 'Plain and keyword target_link_libraries signatures cannot be mixed.', '2.8.12' ],
 			\ [ 'CMP????', 'There might be more policies not mentioned here, since this list is not maintained automatically.', '?.?.?' ],
 			\ ]
 "
@@ -263,6 +273,7 @@ if s:Enabled == 1
 	command!       -nargs=? -complete=file CMakeHelpProperty  :call mmtoolbox#cmake#Help('property',<q-args>)
 	command!       -nargs=? -complete=file CMakeHelpVariable  :call mmtoolbox#cmake#Help('variable',<q-args>)
 	command!       -nargs=0                CMakeHelp          :call mmtoolbox#cmake#HelpPlugin()
+	command! -bang -nargs=0                CMakeSettings      :call mmtoolbox#cmake#Settings('<bang>'=='!')
 else
 	"
 	" Disabled : Print why the script is disabled.   {{{3
@@ -283,14 +294,16 @@ else
 	endfunction    " ----------  end of function mmtoolbox#cmake#Disabled  ----------
 	" }}}3
 	"
-	command! -nargs=* CMakeHelp :call mmtoolbox#cmake#Disabled()
+	command! -bang -nargs=* CMake          :call mmtoolbox#cmake#Disabled()
+	command!       -nargs=0 CMakeHelp      :call mmtoolbox#cmake#HelpPlugin()
+	command! -bang -nargs=0 CMakeSettings  :call mmtoolbox#cmake#Settings('<bang>'=='!')
 	"
 endif
 "
 " }}}2
 "
 "-------------------------------------------------------------------------------
-" Init : Initialize the script.   {{{1
+" GetInfo : Initialize the script.   {{{1
 "-------------------------------------------------------------------------------
 function! mmtoolbox#cmake#GetInfo ()
 	if s:Enabled
@@ -329,7 +342,8 @@ function! mmtoolbox#cmake#AddMenu ( root, esc_mapl )
 	"
 	exe 'amenu '.a:root.'.-SEP03- <Nop>'
 	"
-	exe 'amenu '.a:root.'.&help<Tab>:CMakeHelp  :CMakeHelp<CR>'
+	exe 'amenu '.a:root.'.&help<Tab>:CMakeHelp          :CMakeHelp<CR>'
+	exe 'amenu '.a:root.'.&settings<Tab>:CMakeSettings  :CMakeSettings<CR>'
 	"
 endfunction    " ----------  end of function mmtoolbox#cmake#AddMenu  ----------
 "
@@ -402,6 +416,37 @@ function! mmtoolbox#cmake#HelpPlugin ()
 endfunction    " ----------  end of function mmtoolbox#cmake#HelpPlugin  ----------
 "
 "-------------------------------------------------------------------------------
+" Settings : Plugin settings.   {{{1
+"-------------------------------------------------------------------------------
+function! mmtoolbox#cmake#Settings ( verbose )
+	"
+	if     s:MSWIN | let sys_name = 'Windows'
+	elseif s:UNIX  | let sys_name = 'UNIX'
+	else           | let sys_name = 'unknown' | endif
+	"
+	let cmake_status = executable( s:CMake_Executable ) ? '<yes>' : '<no>'
+	let make_status  = executable( s:CMake_MakeTool   ) ? '<yes>' : '<no>'
+	"
+	let	txt = " CMake-Support settings\n\n"
+				\ .'     plug-in installation :  toolbox on '.sys_name."\n"
+				\ .'         cmake executable :  '.s:CMake_Executable."\n"
+				\ .'                > enabled :  '.cmake_status."\n"
+				\ .'                make tool :  '.s:CMake_MakeTool."\n"
+				\ .'                > enabled :  '.make_status."\n"
+				\ .'            using toolbox :  version '.g:Toolbox_Version." by Wolfgang Mehner\n"
+	if a:verbose
+		let	txt .= "\n"
+					\ .'        project directory :  '.s:ProjectDir."\n"
+					\ .'           build location :  '.s:BuildLocation."\n"
+	endif
+	let txt .=
+				\  "________________________________________________________________________________\n"
+				\ ." CMake-Tool, Version ".g:CMake_Version." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
+	"
+	echo txt
+endfunction    " ----------  end of function mmtoolbox#cmake#Settings  ----------
+"
+"-------------------------------------------------------------------------------
 " Modul setup (abort early?).   {{{1
 "-------------------------------------------------------------------------------
 if s:Enabled == 0
@@ -435,7 +480,7 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 		endif
 		"
 		let errors = 'DIR : '.s:ProjectDir."\n"
-					\ .system ( s:CMake_Executable.' '.args )
+					\ .system ( shellescape( s:CMake_Executable ).' '.args )
 					\ .'ENDDIR : '.s:ProjectDir
 		silent exe 'cexpr errors'
 		"
@@ -456,7 +501,7 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 		" CMake, run by make, in case of failure: "-- Configuring incomplete, errors occurred!"
 		"
 		" run make
-		let errors = system ( s:CMake_MakeTool.' '.a:args )
+		let errors = system ( shellescape( s:CMake_MakeTool ).' '.a:args )
 		"
 		" error was produced by CMake?
 		if v:shell_error != 0
@@ -533,7 +578,7 @@ endfunction    " ----------  end of function s:TextFromSystem  ----------
 "-------------------------------------------------------------------------------
 function! s:PolicyListText ()
 	"
-	let text = "cmake version ".s:Policies_Version
+	let text = "policy list taken from cmake version ".s:Policies_Version
 	"
 	for [ nr, dsc, vrs ] in s:Policies_List
 		let text .= "\n\n".nr."\n\t".dsc." (".vrs.")"
@@ -602,6 +647,9 @@ function! mmtoolbox#cmake#Help ( type, topic )
 		return
 	endif
 	"
+	let esc_exe = shellescape( s:CMake_Executable )
+	let esc_exe = substitute( esc_exe, "'", "''", "g" )
+	"
 	" overview or concrete topic?
 	if a:topic == '' && a:type == 'policy'
 		"
@@ -615,7 +663,7 @@ function! mmtoolbox#cmake#Help ( type, topic )
 	elseif a:topic == ''
 		"
 		" get the list of topics
-		let cmd  = 's:TextFromSystem ( "'.s:CMake_Executable.' '.switch.'-list '.a:topic.'" )'
+		let cmd  = "s:TextFromSystem ( '".esc_exe." ".switch."-list ".a:topic."' )"
 		"
 		let topic    = a:type
 		let category = 'list'
@@ -624,7 +672,7 @@ function! mmtoolbox#cmake#Help ( type, topic )
 	else
 		"
 		" get help for a topic
-		let cmd  = 's:TextFromSystem ( "'.s:CMake_Executable.' '.switch.' '.a:topic.'" )'
+		let cmd  = "s:TextFromSystem ( '".esc_exe." ".switch." ".a:topic."' )"
 		"
 		let topic    = a:topic
 		let category = a:type
@@ -633,7 +681,7 @@ function! mmtoolbox#cmake#Help ( type, topic )
 	endif
 	"
 	" get the help
-	let buf  = 'CMake help : '.topic.' ('.category.')'
+	let buf  = 'CMake help - '.topic.' ('.category.')'
 	"
 	if ! s:OpenManBuffer ( cmd, buf, jump )
 		echo 'CMake : No help for "'.topic.'".'
