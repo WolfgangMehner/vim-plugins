@@ -210,15 +210,15 @@ endif
 "
 " settings   {{{2
 "
-let s:ConfigFile = 'Doxyfile' 	 				" doxygen configuration file
-let s:LogFile    = '.doxygen.log'
-if s:MSWIN
-	let s:ErrorFile  = s:LogFile
-else
-	let s:ErrorFile  = '.doxygen.errors'
-endif
+let s:ConfigFile  = 'Doxyfile' 	 				" doxygen configuration file
+let s:LogFile     = '.doxygen.log'
+let s:WarningFile = '.doxygen.warn'
 "
-let s:Doxygen_Executable = 'doxygen'
+if s:MSWIN
+	let s:Doxygen_Executable = 'C:\Program Files\Doxygen\bin\doxygen.exe'
+else
+	let s:Doxygen_Executable = 'doxygen'
+endif
 "
 call s:GetGlobalSetting ( 'Doxygen_Executable' )
 "
@@ -236,14 +236,15 @@ endif
 "
 if s:Enabled == 1
 	command! -bang -nargs=? -complete=file DoxygenConfigFile     :call mmtoolbox#doxygen#Property('<bang>'=='!'?'echo':'set','config-file',<q-args>)
-	command! -bang -nargs=? -complete=file DoxygenErrorFile      :call mmtoolbox#doxygen#Property('<bang>'=='!'?'echo':'set','error-file',<q-args>)
 	command! -bang -nargs=? -complete=file DoxygenLogFile        :call mmtoolbox#doxygen#Property('<bang>'=='!'?'echo':'set','log-file',<q-args>)
+	command! -bang -nargs=? -complete=file DoxygenWarningFile    :call mmtoolbox#doxygen#Property('<bang>'=='!'?'echo':'set','warning-file',<q-args>)
 	command!       -nargs=* -complete=file Doxygen               :call mmtoolbox#doxygen#Run(<q-args>)
 	command!       -nargs=0 -complete=file DoxygenGenerateConfig :call mmtoolbox#doxygen#GenerateConfig()
 	command!       -nargs=0 -complete=file DoxygenEditConfig     :call mmtoolbox#doxygen#EditConfig()
 	command!       -nargs=0 -complete=file DoxygenViewLog        :call mmtoolbox#doxygen#ViewLog()
-	command!       -nargs=0                DoxygenErrors         :call mmtoolbox#doxygen#Errors()
+	command!       -nargs=0                DoxygenWarnings       :call mmtoolbox#doxygen#Warnings()
 	command!       -nargs=0                DoxygenHelp           :call mmtoolbox#doxygen#Help()
+	command! -bang -nargs=0                DoxygenSettings       :call mmtoolbox#doxygen#Settings('<bang>'=='!')
 else
 	"
 	" Disabled : Print why the script is disabled.   {{{3
@@ -261,14 +262,16 @@ else
 	endfunction    " ----------  end of function mmtoolbox#doxygen#Disabled  ----------
 	" }}}3
 	"
-	command! -nargs=* DoxygenHelp :call mmtoolbox#doxygen#Disabled()
+	command! -bang -nargs=* Doxygen          :call mmtoolbox#doxygen#Disabled()
+	command!       -nargs=0 DoxygenHelp      :call mmtoolbox#doxygen#Help()
+	command! -bang -nargs=0 DoxygenSettings  :call mmtoolbox#doxygen#Settings('<bang>'=='!')
 	"
 endif
 "
 " }}}2
 "
 "-------------------------------------------------------------------------------
-" Init : Initialize the script.   {{{1
+" GetInfo : Initialize the script.   {{{1
 "-------------------------------------------------------------------------------
 function! mmtoolbox#doxygen#GetInfo ()
 	if s:Enabled
@@ -290,8 +293,8 @@ endfunction    " ----------  end of function mmtoolbox#doxygen#AddMaps  --------
 function! mmtoolbox#doxygen#AddMenu ( root, esc_mapl )
 	"
 	exe 'amenu '.a:root.'.&run\ Doxygen<Tab>:Doxygen            :Doxygen<CR>'
-	exe 'amenu '.a:root.'.view\ &errors<Tab>:DoxygenErrors      :DoxygenErrors<CR>'
 	exe 'amenu '.a:root.'.view\ &log<Tab>:DoxygenViewLog        :DoxygenViewLog<CR>'
+	exe 'amenu '.a:root.'.view\ &warnings<Tab>:DoxygenWarnings  :DoxygenWarnings<CR>'
 	"
 	exe 'amenu '.a:root.'.-SEP01- <Nop>'
 	"
@@ -300,13 +303,14 @@ function! mmtoolbox#doxygen#AddMenu ( root, esc_mapl )
 	"
 	exe 'amenu '.a:root.'.-SEP02- <Nop>'
 	"
-	exe 'amenu '.a:root.'.&select\ config\.\ file<Tab>:DoxygenConfigFile  :DoxygenConfigFile '
-	exe 'amenu '.a:root.'.&select\ error\.\ file<Tab>:DoxygenErrorFile    :DoxygenErrorFile '
-	exe 'amenu '.a:root.'.&select\ log\.\ file<Tab>:DoxygenLogFile        :DoxygenLogFile '
+	exe 'amenu '.a:root.'.select\ config\.\ &file<Tab>:DoxygenConfigFile  :DoxygenConfigFile '
+	exe 'amenu '.a:root.'.select\ log\ &file<Tab>:DoxygenLogFile          :DoxygenLogFile '
+	exe 'amenu '.a:root.'.select\ warning\ &file<Tab>:DoxygenWarningFile  :DoxygenWarningFile '
 	"
 	exe 'amenu '.a:root.'.-SEP03- <Nop>'
 	"
-	exe 'amenu '.a:root.'.&help<Tab>:DoxygenHelp  :DoxygenHelp<CR>'
+	exe 'amenu '.a:root.'.&help<Tab>:DoxygenHelp          :DoxygenHelp<CR>'
+	exe 'amenu '.a:root.'.&settings<Tab>:DoxygenSettings  :DoxygenSettings<CR>'
 	"
 endfunction    " ----------  end of function mmtoolbox#doxygen#AddMenu  ----------
 "
@@ -333,10 +337,10 @@ function! mmtoolbox#doxygen#Property ( mode, key, ... )
 		let var = 's:Enabled'
 	elseif a:key == 'config-file'
 		let var = 's:ConfigFile'
-	elseif a:key == 'error-file'
-		let var = 's:ErrorFile'
 	elseif a:key == 'log-file'
 		let var = 's:LogFile'
+	elseif a:key == 'warning-file'
+		let var = 's:WarningFile'
 	else
 		return s:ErrorMsg ( 'Doxygen : Unknown option: '.a:key )
 	endif
@@ -354,19 +358,19 @@ function! mmtoolbox#doxygen#Property ( mode, key, ... )
 		elseif s:Question ( 'set config file to an empty string?' ) == 1
 			let s:ConfigFile = ''
 		endif
-	elseif a:key == 'error-file'
-		" expand replaces the escape sequences from the cmdline
-		if val =~ '\S'
-			let s:ErrorFile = fnamemodify( expand( val ), ":p" )
-		elseif s:Question ( 'set error file to an empty string?' ) == 1
-			let s:ErrorFile = ''
-		endif
 	elseif a:key == 'log-file'
 		" expand replaces the escape sequences from the cmdline
 		if val =~ '\S'
 			let s:LogFile = fnamemodify( expand( val ), ":p" )
 		elseif s:Question ( 'set local file to an empty string?' ) == 1
 			let s:LogFile = ''
+		endif
+	elseif a:key == 'warning-file'
+		" expand replaces the escape sequences from the cmdline
+		if val =~ '\S'
+			let s:WarningFile = fnamemodify( expand( val ), ":p" )
+		elseif s:Question ( 'set warning file to an empty string?' ) == 1
+			let s:WarningFile = ''
 		endif
 	else
 		" action is 'set', but key is non of the above
@@ -386,6 +390,35 @@ function! mmtoolbox#doxygen#Help ()
 		help toolbox-doxygen
 	endtry
 endfunction    " ----------  end of function mmtoolbox#doxygen#Help  ----------
+"
+"-------------------------------------------------------------------------------
+" Settings : Plugin settings.   {{{1
+"-------------------------------------------------------------------------------
+function! mmtoolbox#doxygen#Settings ( verbose )
+	"
+	if     s:MSWIN | let sys_name = 'Windows'
+	elseif s:UNIX  | let sys_name = 'UNIX'
+	else           | let sys_name = 'unknown' | endif
+	"
+	let doxygen_status = executable( s:Doxygen_Executable ) ? '<yes>' : '<no>'
+	"
+	let	txt = " Doxygen-Support settings\n\n"
+				\ .'     plug-in installation :  toolbox on '.sys_name."\n"
+				\ .'       doxygen executable :  '.s:Doxygen_Executable."\n"
+				\ .'                > enabled :  '.doxygen_status."\n"
+				\ .'            using toolbox :  version '.g:Toolbox_Version." by Wolfgang Mehner\n"
+	if a:verbose
+		let	txt .= "\n"
+					\ .'       configuration file :  '.s:ConfigFile."\n"
+					\ .'                 log file :  '.s:LogFile."\n"
+					\ .'            warnings file :  '.s:WarningFile."\n"
+	endif
+	let txt .=
+				\  "________________________________________________________________________________\n"
+				\ ." Doxygen-Tool, Version ".g:Doxygen_Version." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
+	"
+	echo txt
+endfunction    " ----------  end of function mmtoolbox#doxygen#Settings  ----------
 "
 "-------------------------------------------------------------------------------
 " Modul setup (abort early?).   {{{1
@@ -417,58 +450,34 @@ function! mmtoolbox#doxygen#Run ( args )
 	"
 	exe	'lchdir '.fnameescape( fnamemodify( s:ConfigFile, ':p:h' ) )
 	"
-	if s:MSWIN
-		"
-		if ! filereadable( s:ConfigFile )
-			call s:ErrorMsg ( 'Doxygen : File not readable: '.s:ConfigFile )
-		else
-			let warn_log_file_configured = matchstr( readfile( s:ConfigFile ), '\s*WARN_LOGFILE\s*=\s*\S' )
-			let warn_log_file_configured = matchstr( warn_log_file_configured, '\s*WARN_LOGFILE\s*=\s*\(["'']\?\)\zs.*\ze\1' )
-			"
-			if warn_log_file_configured != ''
-				" use WARN_LOGFILE from now on?
-				let warn_log_file_configured = fnamemodify( expand( warn_log_file_configured ), ":p" )
-				if s:ErrorFile != warn_log_file_configured
-					if s:Question ( 'use the configured error file from now on? ('.warn_log_file_configured.')' ) == 1
-						call mmtoolbox#doxygen#Property ( 'set', 'error-file', warn_log_file_configured )
-					endif
-				endif
-			endif
-		endif
-		"
-		silent exe ':!'.s:Doxygen_Executable.' '.cmdlinearg.' > '.shellescape( s:LogFile )
+	let warn_log_file_configured = ''
+	"
+	if ! filereadable( s:ConfigFile )
+		call s:ErrorMsg ( 'Doxygen : File not readable: '.s:ConfigFile )
 	else
-		" UNIX: uses proper splitting of output streams
-		"
-		let warn_log_file_configured = ''
-		"
-		if ! filereadable( s:ConfigFile )
-			call s:ErrorMsg ( 'Doxygen : File not readable: '.s:ConfigFile )
-		else
-			let warn_log_file_configured = matchstr( readfile( s:ConfigFile ), '\s*WARN_LOGFILE\s*=\s*\S' )
-			let warn_log_file_configured = matchstr( warn_log_file_configured, '\s*WARN_LOGFILE\s*=\s*\(["'']\?\)\zs.*\ze\1' )
-		endif
-		"
-		if warn_log_file_configured != ''
-			" use WARN_LOGFILE from now on?
-			let warn_log_file_configured = fnamemodify( expand( warn_log_file_configured ), ":p" )
-			if s:ErrorFile != warn_log_file_configured
-				if s:Question ( 'use the configured error file from now on? ('.warn_log_file_configured.')' ) == 1
-					call mmtoolbox#doxygen#Property ( 'set', 'error-file', warn_log_file_configured )
-				endif
+		let warn_log_file_configured = matchstr( readfile( s:ConfigFile ), '\s*WARN_LOGFILE\s*=\s*\S' )
+		let warn_log_file_configured = matchstr( warn_log_file_configured, '\s*WARN_LOGFILE\s*=\s*\(["'']\?\)\zs.*\S\ze\1\s*$' )
+	endif
+	"
+	if warn_log_file_configured != ''
+		" use WARN_LOGFILE from now on?
+		let warn_log_file_configured = fnamemodify( expand( warn_log_file_configured ), ":p" )
+		if s:WarningFile != warn_log_file_configured
+			if s:Question ( 'use the configured warning file from now on? ('.warn_log_file_configured.')' ) == 1
+				call mmtoolbox#doxygen#Property ( 'set', 'warning-file', warn_log_file_configured )
 			endif
-			" the option WARN_LOGFILE is set, do not write s:ErrorFile here
-			silent exe ':!'.s:Doxygen_Executable.' '.cmdlinearg.' &> '.shellescape( s:LogFile )
-		else
-			" write both the log and the error file
-			silent exe ':!'.s:Doxygen_Executable.' '.cmdlinearg.' 1> '.shellescape( s:LogFile ).' 2> '.shellescape( s:ErrorFile )
 		endif
+		" the option WARN_LOGFILE is set, do not write s:WarningFile here
+		silent exe ':!'.shellescape( s:Doxygen_Executable ).' '.cmdlinearg.' > '.shellescape( s:LogFile )
+	else
+		" write both the log and the warning file
+		silent exe ':!'.shellescape( s:Doxygen_Executable ).' '.cmdlinearg.' 1> '.shellescape( s:LogFile ).' 2> '.shellescape( s:WarningFile )
 	endif
 	"
 	lchdir -
 	"
-	" process the errors
-	call mmtoolbox#doxygen#Errors ()
+	" process the warnings
+	call mmtoolbox#doxygen#Warnings ()
 	"
 endfunction    " ----------  end of function mmtoolbox#doxygen#Run  ----------
 "
@@ -496,7 +505,7 @@ function! mmtoolbox#doxygen#GenerateConfig ()
 	endif
 	"
 	" generate the file and save it name
-	exe ":!".s:Doxygen_Executable.' -g '.shellescape( doxyfile )
+	exe ":!".shellescape( s:Doxygen_Executable ).' -g '.shellescape( doxyfile )
 	if ! v:shell_error
 		call mmtoolbox#doxygen#Property ( 'set', 'config-file', doxyfile )
 	endif
@@ -534,18 +543,18 @@ function! mmtoolbox#doxygen#ViewLog ()
 endfunction    " ----------  end of function mmtoolbox#doxygen#ViewLog  ----------
 "
 "-------------------------------------------------------------------------------
-" Errors : Send error file through QuickFix.   {{{1
+" Warnings : Send the warning file through QuickFix.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#doxygen#Errors ()
+function! mmtoolbox#doxygen#Warnings ()
 	"
 	silent exe 'update'   | " write source file if necessary
 	cclose
 	"
-	" go to the directory of 's:ConfigFile', so that the standard for 's:ErrorFile' works
+	" go to the directory of 's:ConfigFile', so that the standard for " 's:WarningFile' works
 	exe	'lchdir '.fnameescape( fnamemodify( s:ConfigFile, ':p:h' ) )
 	"
 	" any errors?
-	if getfsize( s:ErrorFile ) > 0
+	if getfsize( s:WarningFile ) > 0
 		"
 		" save the current settings
 		let errorf_saved = &l:errorformat
@@ -553,7 +562,7 @@ function! mmtoolbox#doxygen#Errors ()
 		" read the file and process the errors
 		exe 'setlocal errorformat='.s:ErrorFormat
 		"
-		exe 'cfile '.fnameescape( s:ErrorFile )
+		exe 'cfile '.fnameescape( s:WarningFile )
 		"
 		" restore the old settings
 		exe 'setlocal errorformat='.escape( errorf_saved, s:SettingsEscChar )
@@ -565,7 +574,7 @@ function! mmtoolbox#doxygen#Errors ()
 	"
 	lchdir -
 	"
-endfunction    " ----------  end of function mmtoolbox#doxygen#Errors  ----------
+endfunction    " ----------  end of function mmtoolbox#doxygen#Warnings  ----------
 " }}}1
 "-------------------------------------------------------------------------------
 "
