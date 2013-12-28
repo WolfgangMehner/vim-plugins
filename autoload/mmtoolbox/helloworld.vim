@@ -217,7 +217,7 @@ endif
 " }}}2
 "
 "-------------------------------------------------------------------------------
-" Init : Initialize the script.   {{{1
+" GetInfo : Initialize the script.   {{{1
 "-------------------------------------------------------------------------------
 function! mmtoolbox#helloworld#GetInfo ()
 	"

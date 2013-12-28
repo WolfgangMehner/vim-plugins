@@ -43,7 +43,7 @@ endif
 if &cp || ( exists('g:Make_Version') && ! exists('g:Make_DevelopmentOverwrite') )
 	finish
 endif
-let g:Make_Version= '1.0'     " version number of this script; do not change
+let g:Make_Version= '1.0.1'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions   {{{1
@@ -139,6 +139,7 @@ if s:Enabled == 1
 	command! -bang -nargs=? -complete=file MakeFile          :call mmtoolbox#make#Property('<bang>'=='!'?'echo':'set','makefile',<q-args>)
 	command!       -nargs=* -complete=file Make              :call mmtoolbox#make#Run(<q-args>)
 	command!       -nargs=0                MakeHelp          :call mmtoolbox#make#Help()
+	command! -bang -nargs=0                MakeSettings      :call mmtoolbox#make#Settings('<bang>'=='!')
 else
 	"
 	" Disabled : Print why the script is disabled.   {{{3
@@ -158,14 +159,16 @@ else
 	endfunction    " ----------  end of function mmtoolbox#make#Disabled  ----------
 	" }}}3
 	"
-	command! -nargs=* MakeHelp :call mmtoolbox#make#Disabled()
+	command! -bang -nargs=* Make          :call mmtoolbox#make#Disabled()
+	command!       -nargs=0 MakeHelp      :call mmtoolbox#make#Help()
+	command! -bang -nargs=0 MakeSettings  :call mmtoolbox#make#Settings('<bang>'=='!')
 	"
 endif
 "
 " }}}2
 "
 "-------------------------------------------------------------------------------
-" Init : Initialize the script.   {{{1
+" GetInfo : Initialize the script.   {{{1
 "-------------------------------------------------------------------------------
 function! mmtoolbox#make#GetInfo ()
 	if s:Enabled
@@ -197,7 +200,8 @@ function! mmtoolbox#make#AddMenu ( root, esc_mapl )
 	"
 	exe 'amenu '.a:root.'.-Sep02- <Nop>'
 	"
-	exe 'amenu '.a:root.'.&help<Tab>:MakeHelp  :MakeHelp<CR>'
+	exe 'amenu '.a:root.'.&help<Tab>:MakeHelp          :MakeHelp<CR>'
+	exe 'amenu '.a:root.'.&settings<Tab>:MakeSettings  :MakeSettings<CR>'
 	"
 endfunction    " ----------  end of function mmtoolbox#make#AddMenu  ----------
 "
@@ -261,6 +265,35 @@ function! mmtoolbox#make#Help ()
 		help toolbox-make
 	endtry
 endfunction    " ----------  end of function mmtoolbox#make#Help  ----------
+"
+"-------------------------------------------------------------------------------
+" Settings : Plugin settings.   {{{1
+"-------------------------------------------------------------------------------
+function! mmtoolbox#make#Settings ( verbose )
+	"
+	if     s:MSWIN | let sys_name = 'Windows'
+	elseif s:UNIX  | let sys_name = 'UNIX'
+	else           | let sys_name = 'unknown' | endif
+	"
+	let make_status = executable( s:Make_Executable ) ? '<yes>' : '<no>'
+	let make_file   = s:Makefile != '' ? s:Makefile : '(default) local Makefile'
+	"
+	let	txt = " Make-Support settings\n\n"
+				\ .'     plug-in installation :  toolbox on '.sys_name."\n"
+				\ .'          make executable :  '.s:Make_Executable."\n"
+				\ .'                > enabled :  '.make_status."\n"
+				\ .'            using toolbox :  version '.g:Toolbox_Version." by Wolfgang Mehner\n"
+	if a:verbose
+		let	txt .= "\n"
+					\ .'                make file :  '.make_file."\n"
+					\ .'           memorized args :  "'.s:CmdLineArgs."\"\n"
+	endif
+	let txt .=
+				\  "________________________________________________________________________________\n"
+				\ ." Make-Tool, Version ".g:Make_Version." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
+	"
+	echo txt
+endfunction    " ----------  end of function mmtoolbox#make#Settings  ----------
 "
 "-------------------------------------------------------------------------------
 " Modul setup (abort early?).   {{{1

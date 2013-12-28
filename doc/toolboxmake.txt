@@ -1,8 +1,8 @@
-*toolboxmake.txt*                  Make Tool                       Nov 10 2013
+*toolboxmake.txt*                  Make Tool                       Dec 28 2013
 
 Make Tool                                                       *toolbox-make*
 
-                             Plug-in version 1.0
+                            Plug-in version 1.0.1
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -17,6 +17,8 @@ makefile located in a different directory.
  2.    Commands                                   |toolbox-make-commands|
  2.1    API                                       |toolbox-make-api|
  3.    Configuration                              |toolbox-make-config|
+
+ A.    Change Log                                 |toolbox-make-change-log|
 
 ==============================================================================
 1.  INTRODUCTION                                          *toolbox-make-intro*
@@ -43,11 +45,14 @@ the default behavior is restored by calling :MakeFile without arguments.
   Command                       Short Description
  ----------------------------------------------------------------------------
   |:Make| [<args>]                run make with the given arguments
+
   |:MakeCmdlineArgs| [<args>]     memorize cmd. line arguments for make
   |:MakeCmdlineArgs|!             echo memorized cmd. line arguments
   |:MakeFile| [<file>]            choose a makefile
   |:MakeFile|!                    echo the current makefile
+
   |:MakeHelp|                     help for the Make tool
+  |:MakeSettings|                 shows the plug-in settings
  ----------------------------------------------------------------------------
 
 Detailed explanations are given in the next section |toolbox-make-commands|.
@@ -66,6 +71,8 @@ Runs make with the given arguments.  If no arguments are given, uses the ones
 specified with |:MakeCmdlineArgs|, which can be an empty argument list as well.
 
 Uses the local makefile, unless a makefile has been chosen using |:MakeFile|.
+
+If the tool is not working properly, prints the reason.
 
 ------------------------------------------------------------------------------
                                                             *:MakeCmdlineArgs*
@@ -98,7 +105,12 @@ Echoes the current makefile on the command line.
 
 Opens the help for the Make tool.
 
-If the tool is not working properly, prints the reason.
+------------------------------------------------------------------------------
+                                                               *:MakeSettings*
+  :MakeSettings ~
+  :MakeSettings! ~
+
+Shows the plug-in settings. The second version is verbose.
 
 ------------------------------------------------------------------------------
 2.1  API                                                    *toolbox-make-api*
@@ -151,5 +163,22 @@ the .vimrc file.
 The executable is set by g:Make_Executable: >
   let g:Make_Executable = 'make'
 <
+==============================================================================
+A.  CHANGE LOG                                       *toolbox-make-change-log*
+==============================================================================
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.0.1
+------------------------------------------------------------------------------
+
+- Added: Command :MakeSettings to show the configuration.
+- Minor changes.
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.0
+------------------------------------------------------------------------------
+
+- Initial upload.
+
 ==============================================================================
 vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
