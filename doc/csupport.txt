@@ -1,4 +1,4 @@
-*csupport.txt*                  C/C++ Support               December 24 2013
+*csupport.txt*                  C/C++ Support               December 28 2013
 
 C/C++ Support                                           *c-support* *csupport*
                              Plugin version 6.1
@@ -1304,7 +1304,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
     \ra       set comand line arguments           (n,i)
     \rd       run debugger                        (n,i)
 
-    \rme      executable to run                   (n,i)
+    \re       executable to run                   (n,i)
 
     \rp       run splint                          (n,i)
     \rpa      cmd. line arg. for splint           (n,i)
