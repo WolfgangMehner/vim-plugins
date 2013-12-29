@@ -2,7 +2,7 @@
 
 Git Support                                          *git-support* *gitsupport*
 
-                            Plug-in version 0.9.1
+                            Plug-in version 0.9.2pre
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -35,6 +35,7 @@ a quick overview and a short guide to this documentation.
  6.2    Menus                                     |gitsupport-config-menus|
  6.3    Maps                                      |gitsupport-config-maps|
  6.4    Settings                                  |gitsupport-config-settings|
+ 6.5    Xterm                                     |gitsupport-config-xterm|
 
  A.    Troubleshooting - Known Issues             |gitsupport-troubleshooting|
  B.    Release Notes - Change Log                 |gitsupport-release-notes|
@@ -113,7 +114,8 @@ run the commands in every subdirectory of the project.
   |:GitTag|                          (buf) git tag
   |:GitTag| <args>                   (run) git tag <args>
 
-  |:GitK| <args>                     (gui) gitk <args>
+  |:GitK| <args>                     start gitk with the given arguments
+  |:GitTerm| <args>                  run git in an external terminal (^2)
 
   |:GitSupportHelp|                  show plug-in help
   |:GitSupportSettings|              show plug-in settings
@@ -121,8 +123,8 @@ run the commands in every subdirectory of the project.
 
 (run) runs the command after asking for confirmation
 (buf) runs the command and redirects its output in a new buffer
-(gui) starts the application
 (^1)  runs the command within the context of the top-level directory
+(^2)  UNIX only
 
 When a command opens a new buffer, several maps are defined for this buffer.
 Hitting <SHIFT-F1> always prints a short help with all available maps.
@@ -512,7 +514,9 @@ Is equivalent to: >
                                                                     *:GitShow*
 	:GitShow [<args>] ~
 
-Opens a buffer containing the output of "git show ...".
+Opens a buffer containing the output of "git show ...". For commits and
+annotated tags, shows the commit/tag message and the diff. For blobs a
+separate buffer is opened.
 
   Map       Meaning
  ----------------------------------------------------------------------------
@@ -566,14 +570,19 @@ Git command.
 
   file under cursor ...
   a         add
+  ap        add --patch (^1)
   c         checkout
+  cp        checkout --patch (^1)
   od        open diff
   of        open file (edit)
   ol        open log
   r         reset
+  rp        reset --patch (^1)
   r         remove (only for unmerged changes)
   D         delete from file system (only untracked files)
  ----------------------------------------------------------------------------
+
+(^1) UNIX only
 
 Settings:
 - |g:Git_StatusStagedOpenDiff|
@@ -598,6 +607,15 @@ The first version opens a buffer listing the tags. The second version executes
 	:GitK <args> ~
 
 Starts gitk with the given arguments.
+
+------------------------------------------------------------------------------
+                                                                    *:GitTerm*
+	:GitTerm <args> ~
+
+Runs git in an external terminal. Useful for interactive commands, such as
+"git add -p ...".
+
++The xterm related functionality is only available under UNIX.
 
 ==============================================================================
 4.  SYNTAX HIGHLIGHTING                                    *gitsupport-syntax*
@@ -729,7 +747,8 @@ Highlights the path and (optional) line number at the beginning of each line.
 
 The name of each commit and the information about the author, date, ... are
 highlighted. Folds are created for each commit.
-This highlighting is also used for ":GitStash list"
+This highlighting is also used for ":GitStash list", ":GitShow <commit>" and
+":GitShow <tag>".
 
   Category                Short Description
  ----------------------------------------------------------------------------
@@ -740,6 +759,8 @@ This highlighting is also used for ":GitStash list"
                           -> uses GitHighlight1
   GitStashName            the name of a stash (line "stash@{123}: ...")
                           -> no highlighting by default
+  GitTagName              the name of the tag (line "tag <name>")
+                          -> uses GitHighlight2
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -862,12 +883,16 @@ in the .vimrc file.
   |g:Git_StatusStagedOpenDiff|  'cached'    how to execute "open diff" from
                                           inside the status buffer in section
                                           "Changes to be committed"
+
+  |g:Xterm_Executable|          'xterm'     the xterm executable (^2)
+  |g:Xterm_Defaults|            '...'       the xterm default settings (^2)
  ----------------------------------------------------------------------------
 
 (^1) the Windows defaults are as follows:
   |g:Git_Executable|     - C:\Program Files\Git\bin\git.exe
   |g:Git_GitKExecutable| - C:\Program Files\Git\bin\tclsh.exe
   |g:Git_GitKScript|     - C:\Program Files\Git\bin\gitk
+(^2) UNIX only
 
 ------------------------------------------------------------------------------
 6.1  EXECUTABLE                                 *gitsupport-config-executable*
@@ -989,6 +1014,22 @@ The other possible settings are listed below:
 
 The behavior can be changed on the fly by settings the variable to a different
 value on the command line.
+
+------------------------------------------------------------------------------
+6.5  XTERM                                           *gitsupport-config-xterm*
+------------------------------------------------------------------------------
+
+The xterm related functionality is only available under UNIX.
+
+                                                          *g:Xterm_Executable*
+The xterm executable is set by g:Xterm_Executable, for example: >
+  let g:Xterm_Executable = '/usr/local/bin/xterm'
+<
+                                                            *g:Xterm_Defaults*
+Set additional arguments for xterm. The default is: >
+  let g:Xterm_Defaults = '-fa courier -fs 12 -geometry 80x24'
+<
+See the man-page of xterm for the possible options.
 
 ==============================================================================
 A.  TROUBLESHOOTING - KNOWN ISSUES                *gitsupport-troubleshooting*

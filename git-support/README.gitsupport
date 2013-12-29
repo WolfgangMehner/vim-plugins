@@ -1,4 +1,4 @@
-README for git-support.vim (Version 0.9.1) / Dec 28 2013
+README for git-support.vim (Version 0.9.2pre) / Dec 29 2013
 
   *  INSTALLATION
   *  RELEASE NOTES
@@ -120,31 +120,17 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
   RELEASE NOTES
 ================================================================================
 
-----------------------------------------------------------------------
-  RELEASE NOTES FOR VERSION 0.9.1
-----------------------------------------------------------------------
-- Added: New maps for the buffers: blame, diff and status
-- Changed: Commands which open a file will jump to its window, if one exists.
-- Changed: Opening a diff in the status buffer (see g:Git_StatusStagedOpenDiff).
-- Changed: Calling :GitDiff without arguments (see g:Git_DiffExpandEmpty).
-- Added: Command :GitGrep and :GitGrepTop.
-- Added: Command :GitMergeUpstream.
-- Added: Custom menu (see g:Git_CustomMenu).
-- Added: Cmd. line completion for :GitHelp.
-- Added: Command :GitBlame supports ranges.
-- Fixed: Jumping from the status buffer to a file did not work when the working
-  directory changed.
-- Changed: After jumping to a file/buffer, open all folds under the cursor (see
-  g:Git_OpenFoldAfterJump).
-- Changed: Default executables for Windows.
-- Added: Command :GitK.
-- Added: Settings g:Git_GitKExecutable and g:Git_GitKScript.
+--------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 0.9.2pre
+--------------------------------------------------------------------------------
+- Added: Command :GitTerm for running interactive Git commands.
+- Added: New maps for the buffer: status
+- Changed: :GitShow shows different objects in an according way.
 - Improved syntax highlighting.
-- Minor bugfixes and improvements.
 
-----------------------------------------------------------------------
+--------------------------------------------------------------------------------
   RELEASE NOTES FOR OLDER VERSIONS
-----------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -> see file 'git-support/doc/ChangeLog'
 
 
