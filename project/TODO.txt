@@ -1,5 +1,5 @@
 Project
-- (WM) Remove 'plugin/make.vim'.
+- (WM, DONE) Remove 'plugin/make.vim'.
 - (WM, DONE) Tag 'perlsupport-5.2' is wrong.
 
 Templates:
@@ -7,11 +7,11 @@ Templates:
   * At least these special characters must be escaped: <space> . | \ &
   * Expanded menus for lists.
 - (WM) API 'EditTemplateFiles'.
+  * (DONE) Check whether an indexed file actually exists.
   * Configuration of the file browser (+ documentation).
-  * Check whether an indexed file actually exists.
 
 C/C++:
-- (FM) Documentation: Change documentation with regard to Make integration.
+- (FM, DONE) Documentation: Change documentation with regard to Make integration.
   * 'Run' menu entries removed.
   * Maps configured in ftplugin.
   * Reference documentation of toolbox.
@@ -20,23 +20,22 @@ C/C++:
   * Menu entry 'Run->executable to run' is not part of the Make integration
     anymore, since the Make integration moves to the toolbox. It is to be
     documented as configuration for 'Run->run', similar to 'Run->cmdline arg.'.
-    Shortcut changes to '\ce'.
-- (FM) Check documentation: Doxygen templates.
+    Shortcut changes to '\re'.
 - (WM) Doxygen:
   * (DONE) Templates for "overload".
   * (DONE) Append "short, after member" to several lines.
   * Add escaped characters "\" and "|" once the template engine supports this.
 
 Git:
+- (WM, DONE) Add more suggestions for custom menu entries to 's:Git_CustomMenu'.
+- (WM, DONE) Add current custom menu entries to documentation and/or "git-support/rc/",
+  as a starting point for customization.
 - (WM) Current method for jumping to Git buffers does not work for tabs.
   * (DONE) Open the buffer in a new window.
   * Optionally: Jump across tab pages.
 - (WM) How about jumping to windows?
   * (DONE) Open the buffer in a new window.
   * Optionally: Jump across tab pages.
-- (WM) Add more suggestions for custom menu entries to 's:Git_CustomMenu'.
-- (WM) Add current custom menu entries to documentation and/or "git-support/rc/",
-  as a starting point for customization.
 - (WM) Give directory as an argument to ':GitStatus'.
 - (WM) For global installation (compare Matlab):
   Which method is best to obtain 's:plugin_dir'?
@@ -60,11 +59,6 @@ Perl:
   * Document 'g:Perl_UseToolbox' and 'g:Perl_UseTool_make'.
 
 Toolbox:
-- (WM, DONE) Document each tool in a separate file.
-- (WM, DONE) Add property 'enabled' (echo and get only).
-- (WM, DONE) Menu entries for Doxygen tool.
-- (WM, DONE) Confirm when setting some properties (CMakeProjectDir, DoxygenConfigFile, ...)
-  to an empty string.
 
 Snippets:
 - (FM, DONE?) Set first parameter ("save") in "browse()" to '1' for writing snippets
