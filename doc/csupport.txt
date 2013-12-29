@@ -67,6 +67,7 @@ keystroke.
  1.7.11  Output redirection                     |csupport-run-output|
  1.8     Tool Box                               |csupport-toolbox|
  1.8.1    Make                                  |csupport-toolbox-make|
+ 1.8.2    Other Tools                           |csupport-toolbox-others|
  1.9    Help                                    |csupport-help|
  1.10   Menu 'Doxygen'                          |csupport-doxygen|
  1.10.1  Enabling the menu                      |csupport-doxygen-enable|
@@ -1045,7 +1046,7 @@ See 'xterm -help' for more options. Xterms are not available under Windows.
 ------------------------------------------------------------------------------
 
 Tools which can be used by several plugins are located in the Tool Box.
-Examples are tools for make(1) or doxygen.  The Tool Box has its own
+Examples are tools for make(1) or doxygen. The Tool Box has its own
 documentation:|toolbox|.
 To switch the Tool Box off add the following line to the file .vimrc
 >
@@ -1061,9 +1062,22 @@ To switch the make tool box off add the following line to the file .vimrc
 <
 The hotkeys for the make tool are defined in the file ~/.vim/ftplugin/c.vim .
 
+1.8.2 Other Tools                                   *csupport-toolbox-others*
+
+In general, to enable a tool called <name>, add the following line to your
+.vimrc:
+>
+  let g:C_UseTool_<name> = 'yes'
+<
+For example:
+>
+  let g:C_UseTool_cmake   = 'yes'
+  let g:C_UseTool_doxygen = 'yes'
+<
 ------------------------------------------------------------------------------
 1.9  'help'                                                    *csupport-help*
 ------------------------------------------------------------------------------
+
 Plugin help
 -----------
 The root menu item 'help (plugin)' shows this plugin help in a help window.
