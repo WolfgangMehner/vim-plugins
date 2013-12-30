@@ -35,7 +35,7 @@ if exists("g:VimSupportVersion") || &cp
  finish
 endif
 "
-let g:VimSupportVersion= "2.2pre"                  " version number of this script; do not change
+let g:VimSupportVersion= "2.2"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  GetGlobalSetting     {{{1

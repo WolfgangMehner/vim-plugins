@@ -1,7 +1,7 @@
-*vimsupport.txt*                Vim Support                  August 11 2013
+*vimsupport.txt*                Vim Support                December 30 2013
 
 Vim Support                                         *vim-support* *vimsupport*
-                              Plugin version 2.2pre
+                              Plugin version 2.2
                         for Vim version 7.0 and above
                   Fritz Mehner  <mehner.fritz at fh-swf.de>
                 Wolfgang Mehner  <wolfgang-mehner at web.de>
@@ -32,7 +32,7 @@ writing Vim scripts.
  1.8.1    Hardcopy                          |vimsupport-hardcopy|
  1.8.2    Settings                          |vimsupport-settings|
  1.8.3    Edit templates                    |vimsupport-templates-edit|
- 1.9     Main menu 'Help'                   |vimsupport-help|
+ 1.9     Menu 'Help'                        |vimsupport-help|
  2.     Usage without GUI                   |vimsupport-usage-vim|
  3.     Customization and configuration     |vimsupport-customization|
  3.1     Files                              |vimsupport-custom-files|
@@ -374,11 +374,31 @@ or shortcuts have been added or changed these changes will be applied with the
 next start of Vim.
 
 ------------------------------------------------------------------------------
-1.9  MAIN MENU ITEM 'help (Vim funct.)'                      *vimsupport-help*
+1.9  MENU 'Help'                                             *vimsupport-help*
 ------------------------------------------------------------------------------
 
-Looks up Vim help for the word (function name) under the cursor. If there is
-no word under the cursor the functions list will be displayed. 
+This submenu offers convenient access to various documentations.
+
+The entry 'keyword' looks up Vim help for the word (function name, keyword)
+under the cursor. If there is no word under the cursor the functions list
+will be displayed.
+
+The entry 'english' opens an online dictionary for the word under the cursor.
+
+------------------------------------------------------------------------------
+
+Under Windows, the browser for opening the online documentation has to be
+configured. To set the executable, the template library has to be modified.
+Use the menu entry:
+  Vim -> Snippets -> edit templates
+Open the main template file 'Templates' and uncomment the line >
+ §SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
+by removing the leading '§' >
+ SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
+Then set the right executable. Mind the double quotes which escape the name of
+the executable.
+Finally, reread the template library using:
+  Vim -> Snippets -> reread templates
 
 ==============================================================================
 2.  USAGE without GUI  (Vim)                            *vimsupport-usage-vim*
@@ -405,6 +425,8 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
 
   -- Help ----------------------------------------------
 
+     \he     open an English dictionary for the   (n, i)
+             word under the cursor
      \hk     displays help for the function name  (n, i)
              under the cursor (Vim help)
      \hp     displays plugin help                 (n, i)

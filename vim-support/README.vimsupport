@@ -1,4 +1,4 @@
-README for vim-support.vim (Version 2.2pre) / August 11 2013
+README for vim-support.vim (Version 2.2) / December 30 2013
 
   *  INSTALLATION
   *  RELEASE NOTES 
@@ -78,13 +78,14 @@ For a system-wide installation please see the help file 'doc/vimsupport.txt'.
 =======================================================================================
 
 ---------------------------------------------------------------------------------------
-  RELEASE NOTES FOR VERSION 2.2pre
+  RELEASE NOTES FOR VERSION 2.2
 ---------------------------------------------------------------------------------------
 + Map "adjust end-of-line com." now works in visual mode.
 + Map "function description (auto)" now works in visual mode.
 + Automatic function description now considers scopes.
 + Improved "adjust end-of-line comment".
 + Fixed template "Comments.function".
++ Added "Help -> english".
 
 =======================================================================================
   FILES
