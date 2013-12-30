@@ -1,4 +1,4 @@
-README for c.vim (Version 6.1) / December 28 2013
+README for c.vim (Version 6.1.1pre) / December 28 2013
 
   *  DESCRIPTION
   *  INSTALLATION
@@ -70,6 +70,12 @@ value of $HOME with ":echo $HOME" from inside Vim).
     for your .vimrc and .gvimrc.  You may want to use parts of them. The files
     are documented.
 
+(1.6) To enable additional tools, add these lines to your '$HOME/.vimrc'. To
+    enable the CMake and Doxygen tools, use:
+
+       let g:C_UseTool_cmake    = 'yes'
+       let g:C_UseTool_doxygen  = 'yes'
+
 (2)  WINDOWS
 ------------
 
@@ -119,6 +125,12 @@ the value of $HOME with ":echo $HOME" from inside Vim).
     for your _vimrc and _gvimrc. You may want to use parts of them.  The files
     are documented.
 
+(2.6) To enable additional tools, add these lines to your '$HOME/_vimrc'. To
+    enable the CMake and Doxygen tools, use:
+
+       let g:C_UseTool_cmake    = 'yes'
+       let g:C_UseTool_doxygen  = 'yes'
+
 There are a lot of features and options which can be used and influenced:
 
   *  use of template files and tags
@@ -135,7 +147,6 @@ Look at csupport help with
 
 or use the 'help' item in the root menu of this plug-in.
 
-file description header'
              +-----------------------------------------------+
              | +-------------------------------------------+ |
              | |    ** PLEASE READ THE DOCUMENTATION **    | |
@@ -160,27 +171,9 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ================================================================================
-  RELEASE NOTES FOR VERSION 6.1
+  RELEASE NOTES FOR VERSION 6.1.1pre
 ================================================================================
-- Map renamed: \rme -> \re.
-- New global variable g:C_InsertFileHeader (suppress file description comment for new files).
-- Two new ex commands: CCmdlineArgs, CMakeCmdlineArgs.
-- 'Run->cmd. line arg.' : tab expansion (files/directories)for all arguments.
-- Bugfix: template 'file description header' not loading (thanks to Marco Lasczok).
-- Bugfix: unnecessary characters in one template.
-- Prototype picker improved.
-- Toggle non-C-comments.
-- Run debugger.
-- Some global variables now changeable on the fly.
-- Menus now show the correct mapleader.
-- Bugfix: g:C_LoadMenus now works.
-- Bugfix: Prevent unnecessary rereading of the template library.
-- Added Doxygen templates and 'Doxygen->brief, after member'.
-- Added help menu entries: help English, help Doxygen
-- Improved "adjust end-of-line comment".
-- Bugfix: Setup of local templates in case of global installation.
-- Bugfix: Map and menu entry 'Snippets->edit global templates'.
-- Several internal improvements.
+- 
 
   Please see file ./c-support/doc/ChangeLog .
 
@@ -191,6 +184,8 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
 README.csupport                This file.
 
 autoload/mmtemplates/core.vim  The template system.
+
+autoload/mmtoolbox/*           The toolbox (cmake, doxygen, ...).
 
 doc/csupport.txt               The help file for the local on-line help.
 

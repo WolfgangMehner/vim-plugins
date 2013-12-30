@@ -40,7 +40,7 @@ endif
 if exists("g:C_Version") || &cp
  finish
 endif
-let g:C_Version= "6.1"  							" version number of this script; do not change
+let g:C_Version= "6.1.1pre"  							" version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  C_CheckGlobal

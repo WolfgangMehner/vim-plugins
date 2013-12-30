@@ -1,7 +1,7 @@
 *csupport.txt*                  C/C++ Support               December 28 2013
 
 C/C++ Support                                           *c-support* *csupport*
-                             Plugin version 6.1
+                             Plugin version 6.1.1pre
                         for Vim version 7.0 and above
                        Fritz Mehner  <mehner@fh-swf.de>
 
@@ -68,7 +68,7 @@ keystroke.
  1.8     Tool Box                               |csupport-toolbox|
  1.8.1    Make                                  |csupport-toolbox-make|
  1.8.2    Other Tools                           |csupport-toolbox-others|
- 1.9    Help                                    |csupport-help|
+ 1.9    Menu 'Help'                             |csupport-help|
  1.10   Menu 'Doxygen'                          |csupport-doxygen|
  1.10.1  Enabling the menu                      |csupport-doxygen-enable|
 
@@ -1042,7 +1042,7 @@ The default is "-fa courier -fs 12 -geometry 80x24" :
 See 'xterm -help' for more options. Xterms are not available under Windows.
 
 ------------------------------------------------------------------------------
-1.8  Menu 'Tool Box'                                        *csupport-toolbox*
+1.8  MENU 'Tool Box'                                        *csupport-toolbox*
 ------------------------------------------------------------------------------
 
 Tools which can be used by several plugins are located in the Tool Box.
@@ -1075,13 +1075,13 @@ For example:
   let g:C_UseTool_doxygen = 'yes'
 <
 ------------------------------------------------------------------------------
-1.9  'help'                                                    *csupport-help*
+1.9  MENU 'Help'                                               *csupport-help*
 ------------------------------------------------------------------------------
 
 Plugin help
 -----------
-The root menu item 'help (plugin)' shows this plugin help in a help window.
-The help tags must have been generated with
+The menu item 'help (plugin)' shows this plugin help in a help window. The
+help tags must have been generated with
 >
   :helptags ~/.vim/doc
 <
@@ -1089,12 +1089,38 @@ The hotkey is \hp (for "help plugin").
 
 Displaying a manual
 -------------------
-The root menu item 'show manual' shows the manual for the word under the
-cursor. If there is more than one manual a selection list will be presented.
-If there is no word under the cursor you can type in a name.  An interface to
-the on-line reference manuals must be installed (usually man(1) for
-Linux/Unix, see|csupport-custom-glob-vars|).
-The hotkey is \hm (for "help manual").
+The menu item 'show manual' shows the manual for the word under the cursor. If
+there is more than one manual a selection list will be presented. If there is
+no word under the cursor you can type in a name. An interface to the on-line
+reference manuals must be installed (usually man(1) for Linux/Unix, see
+|csupport-custom-glob-vars|). The hotkey is \hm (for "help manual").
+
+English dictionary
+------------------
+The menu item 'english' opens an online dictionary for the word under the
+cursor.
+
+Doxygen reference
+-----------------
+The menu item 'doxygen cmd' opens the online reference for the Doxygen command
+under the cursor.
+
+------------------------------------------------------------------------------
+
+Under Windows, the browser for opening the online documentation has to be
+configured. To set the executable, the template library has to be modified.
+In case of a local installation (the default), choose:
+  C/C++ -> Snippets -> edit local templates
+and for a global installation:
+  C/C++ -> Snippets -> edit global templates
+Open the main template file 'Templates' and uncomment the line >
+ §SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
+by removing the leading '§' >
+ SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
+Then set the right executable. Mind the double quotes which escape the name of
+the executable.
+Finally, reread the template library using:
+  C/C++ -> Snippets -> reread templates
 
 ------------------------------------------------------------------------------
 1.10  MENU 'Doxygen'                                        *csupport-doxygen*
@@ -1173,6 +1199,10 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
 
   -- Help ---------------------------------------------------------------
 
+     \he       open an English dictionary for the    (n,i)
+               word under the cursor
+     \hd       open the reference for the Doxygen    (n,i)
+               command under the cursor
      \hm       show manual for word under the cursor (n,i)
      \hp       show plugin help                      (n,i)
 

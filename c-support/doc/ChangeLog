@@ -1,4 +1,27 @@
 ================================================================================
+  RELEASE NOTES FOR VERSION 6.1
+================================================================================
+- Map renamed: \rme -> \re.
+- New global variable g:C_InsertFileHeader (suppress file description comment for new files).
+- Two new ex commands: CCmdlineArgs, CMakeCmdlineArgs.
+- 'Run->cmd. line arg.' : tab expansion (files/directories)for all arguments.
+- Bugfix: template 'file description header' not loading (thanks to Marco Lasczok).
+- Bugfix: unnecessary characters in one template.
+- Prototype picker improved.
+- Toggle non-C-comments.
+- Run debugger.
+- Some global variables now changeable on the fly.
+- Menus now show the correct mapleader.
+- Bugfix: g:C_LoadMenus now works.
+- Bugfix: Prevent unnecessary rereading of the template library.
+- Added Doxygen templates and 'Doxygen->brief, after member'.
+- Added help menu entries: help English, help Doxygen
+- Improved "adjust end-of-line comment".
+- Bugfix: Setup of local templates in case of global installation.
+- Bugfix: Map and menu entry 'Snippets->edit global templates'.
+- Several internal improvements.
+
+================================================================================
   RELEASE NOTES FOR VERSION 6.0
 ================================================================================
 - New template system (many thanks to Wolfgang Mehner)
