@@ -15,8 +15,6 @@ SetFormat( 'YEAR', '%Y' )
 § unit used in Beamer commands, such as \includegraphics[<width>]{<file>}
 SetMacro( 'BEAMER_UNIT', 'cm' )
 
-SetMacro( 'HELP_BROWSER', 'firefox' )
-
 SetPath( 'graphics_path', './' )
 
 § =============================================================
@@ -43,6 +41,12 @@ IncludeFile( 'wizard.templates' )
 § =============================================================
 §  Help
 § =============================================================
+
+§ browser for help templates (UNIX)
+SetMacro( 'HELP_BROWSER', 'firefox' )
+
+§ browser for help templates (Windows)
+§SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
 
 SetMacro( 'HelpPathEnglish',   'http://en.wiktionary.org/wiki/' )
 
