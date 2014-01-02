@@ -302,6 +302,22 @@ function! s:OpenFile ( filename, ... )
 endfunction    " ----------  end of function s:OpenFile  ----------
 "
 "-------------------------------------------------------------------------------
+" s:UnicodeLen : Open a file or jump to its window.   {{{2
+"
+" Parameters:
+"   str - a string (string)
+" Returns:
+"   len - the length (integer)
+"
+" Returns the correct length in the presence of Unicode characters which take
+" up more than one byte.
+"-------------------------------------------------------------------------------
+"
+function! s:UnicodeLen ( str )
+	return len(split(a:str,'.\zs'))
+endfunction    " ----------  end of function s:UnicodeLen  ----------
+"
+"-------------------------------------------------------------------------------
 " s:VersionLess : Compare two version numbers.   {{{2
 "
 " Parameters:
@@ -732,6 +748,7 @@ if s:Enabled
 	command! -nargs=* -complete=file                                 GitReset           :call GitS_Reset(<q-args>,'e')
 	command! -nargs=* -complete=file                                 GitShow            :call GitS_Show('update',<q-args>)
 	command! -nargs=*                                                GitStash           :call GitS_Stash(<q-args>,'')
+	command! -nargs=*                                                GitSlist           :call GitS_Stash('list '.<q-args>,'')
 	command! -nargs=0                                                GitStatus          :call GitS_Status('update')
 	command! -nargs=*                                                GitTag             :call GitS_Tag(<q-args>,'')
 	command  -nargs=* -complete=file -bang                           Git                :call GitS_Run(<q-args>,'<bang>'=='!'?'b':'')
@@ -739,7 +756,7 @@ if s:Enabled
 	command! -nargs=* -complete=file                                 GitBuf             :call GitS_Run(<q-args>,'b')
 	command! -nargs=* -complete=file                                 GitK               :call GitS_GitK(<q-args>)
 	command! -nargs=0                                                GitSupportHelp     :call GitS_PluginHelp("gitsupport")
-	command! -nargs=0                                                GitSupportSettings :call GitS_PluginSettings()
+	command! -nargs=0                -bang                           GitSupportSettings :call GitS_PluginSettings('<bang>'=='!')
 	"
 	if s:UNIX
 		command! -nargs=* -complete=file                                 GitTerm            :call GitS_Xterm(<q-args>)
@@ -750,7 +767,7 @@ else
 	command! -nargs=*                                                GitBuf             :call GitS_Help('disabled')
 	command! -nargs=*                                                GitHelp            :call GitS_Help('disabled')
 	command! -nargs=0                                                GitSupportHelp     :call GitS_PluginHelp("gitsupport")
-	command! -nargs=0                                                GitSupportSettings :call GitS_PluginSettings()
+	command! -nargs=0                -bang                           GitSupportSettings :call GitS_PluginSettings('<bang>'=='!')
 endif
 "
 " syntax highlighting   {{{2
@@ -2323,13 +2340,47 @@ endfunction    " ----------  end of function GitS_Stash  ----------
 " GitS_StashList : execute 'git stash list ...'   {{{1
 "-------------------------------------------------------------------------------
 "
+"-------------------------------------------------------------------------------
+" s:StashList_GetStash : Get the stash under the cursor.   {{{2
+"
+" Parameters:
+"   -
+" Returns:
+"   <stash-name> - the name of the stash (string)
+"
+" If the name could not be obtained returns an empty string.
+"-------------------------------------------------------------------------------
+"
+function! s:StashList_GetStash()
+	"
+	let line = getline('.')
+	let name = matchstr ( line, '^stash@{\d\+}' )
+	"
+	return name
+	"
+endfunction    " ----------  end of function s:StashList_GetStash  ----------
+" }}}2
+"-------------------------------------------------------------------------------
+"
 function! GitS_StashList( action, ... )
 	"
 	let update_only = 0
 	let param = ''
 	"
 	if a:action == 'help'
-		echo s:HelpTxtStd
+		let txt  = s:HelpTxtStd."\n\n"
+		let txt .= "sh      : show the stash under the cursor\n"
+		let txt .= "sp      : show the stash in patch form\n"
+		let txt .= "\n"
+		let txt .= "sa      : save with a message\n"
+		let txt .= "pu      : create a new stash (push)\n"
+		let txt .= "\n"
+		let txt .= "file under cursor ...\n"
+		let txt .= "ap      : apply\n"
+		let txt .= "po      : pop\n"
+		let txt .= "dr      : drop\n"
+		let txt .= "br      : create and checkout a new branch\n"
+		echo txt
 		return
 	elseif a:action == 'quit'
 		close
@@ -2343,6 +2394,42 @@ function! GitS_StashList( action, ... )
 		else                | let param = a:1
 		endif
 		"
+	elseif -1 != index ( [ 'save', 'save-msg' ], a:action )
+		"
+		if a:action == 'save'
+			call GitS_Stash( '', '' )
+		elseif a:action == 'save-msg'
+			let left = a:1
+			return ':GitStash save ""'.left
+		endif
+		"
+		return
+	elseif -1 != index ( [ 'show', 'show-patch', 'apply', 'drop', 'pop', 'branch' ], a:action )
+		"
+		let s_name = s:StashList_GetStash ()
+		"
+		if s_name == ''
+			return s:ErrorMsg ( 'No stash under the cursor.' )
+		end
+		"
+		if a:action == 'show'
+			call GitS_Stash( 'show '.shellescape(s_name), '' )
+		elseif a:action == 'show-patch'
+			call GitS_Stash( 'show -p '.shellescape(s_name), '' )
+		elseif a:action == 'apply'
+			call GitS_Stash( 'apply '.shellescape(s_name), '' )
+		elseif a:action == 'drop'
+			call GitS_Stash( 'drop '.shellescape(s_name), 'c' )
+		elseif a:action == 'pop'
+			call GitS_Stash( 'pop '.shellescape(s_name), 'c' )
+		elseif a:action == 'branch'
+			let left = a:1
+			let part1 = ':GitStash branch '
+			let part2 = ' '.shellescape(s_name)
+			return part1.part2.repeat( left, s:UnicodeLen(part2) )
+		endif
+		"
+		return
 	else
 		echoerr 'Unknown action "'.a:action.'".'
 		return
@@ -2359,6 +2446,17 @@ function! GitS_StashList( action, ... )
 		exe 'nmap          <buffer> <S-F1> :call GitS_StashList("help")<CR>'
 		exe 'nmap <silent> <buffer> q      :call GitS_StashList("quit")<CR>'
 		exe 'nmap <silent> <buffer> u      :call GitS_StashList("update")<CR>'
+		"
+		exe 'nmap <silent> <buffer> sh     :call GitS_StashList("show")<CR>'
+		exe 'nmap <silent> <buffer> sp     :call GitS_StashList("show-patch")<CR>'
+		"
+ 		exe 'nmap <expr>   <buffer> sa     GitS_StashList("save-msg","<Left>")'
+		exe 'nmap <silent> <buffer> pu     :call GitS_StashList("save")<CR>'
+		"
+		exe 'nmap <silent> <buffer> ap     :call GitS_StashList("apply")<CR>'
+		exe 'nmap <silent> <buffer> dr     :call GitS_StashList("drop")<CR>'
+		exe 'nmap <silent> <buffer> po     :call GitS_StashList("pop")<CR>'
+ 		exe 'nmap <expr>   <buffer> br     GitS_StashList("branch","<Left>")'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -2829,7 +2927,7 @@ function! GitS_Status( action )
 		endif
 	elseif a:action =~ '\<\%(short\|verbose\)\>'
 		" noop
-	elseif a:action =~ '\<\%(add\|checkout\|diff\|edit\|log\|reset\|delete\)\>'
+	elseif -1 != index ( [ 'add', 'checkout', 'diff', 'edit', 'log', 'reset', 'delete' ], a:action )
 		"
  		call s:ChangeCWD ()
 		"
@@ -3006,6 +3104,7 @@ function! GitS_GitK( param )
 	endif
 	"
 	if s:MSWIN
+		" :TODO:02.01.2014 13:00:WM: Windows: try the shell command 'start'
 		silent exe '!'.s:Git_GitKExecutable.' '.s:Git_GitKScript.' '.a:param
 	else
 		silent exe '!'.s:Git_GitKExecutable.' '.s:Git_GitKScript.' '.a:param.' &'
@@ -3051,7 +3150,7 @@ endfunction    " ----------  end of function GitS_PluginHelp  ----------
 " GitS_PluginSettings : Print the settings on the command line.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! GitS_PluginSettings(  )
+function! GitS_PluginSettings( verbose )
 	"
 	if     s:MSWIN | let sys_name = 'Windows'
 	elseif s:UNIX  | let sys_name = 'UNIX'
@@ -3059,6 +3158,7 @@ function! GitS_PluginSettings(  )
 	"
 	let gitk_e_status = s:EnabledGitK     ? '<yes>' : '<no>'
 	let gitk_s_status = s:FoundGitKScript ? '<yes>' : '<no>'
+	let xterm_status  = s:EnabledXterm    ? '<yes>' : '<no>'
 	"
 	let	txt = " Git-Support settings\n\n"
 				\ .'     plug-in installation :  '.s:installation.' on '.sys_name."\n"
@@ -3075,6 +3175,20 @@ function! GitS_PluginSettings(  )
 		let txt .=
 					\  '              gitk script :  '.s:Git_GitKScript."\n"
 					\ .'                  > found :  '.gitk_s_status."\n"
+	endif
+	if s:UNIX
+		let txt .=
+					\  '         xterm executable :  '.s:Xterm_Executable."\n"
+					\ .'                > enabled :  '.gitk_e_status."\n"
+		if a:verbose
+			let txt .= '               xterm args :  "'.g:Xterm_Defaults."\"\n"
+		endif
+	endif
+	if a:verbose
+		let	txt .= "\n"
+					\ .'        diff expand empty :  "'.g:Git_DiffExpandEmpty."\"\n"
+					\ .'     open fold after jump :  "'.g:Git_OpenFoldAfterJump."\"\n"
+					\ .'  status staged open diff :  "'.g:Git_StatusStagedOpenDiff."\"\n"
 	endif
 	let txt .=
 				\  "________________________________________________________________________________\n"

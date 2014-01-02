@@ -527,18 +527,40 @@ separate buffer is opened.
 
 ------------------------------------------------------------------------------
                                                                    *:GitStash*
-	:GitStash [<args>] ~
-	:GitStash list [<args>] ~
-	:GitStash show [<args>] ~
+  :GitStash [<args>] ~
+  :GitStash list [<args>] ~
+  :GitStash show [<args>] ~
 
 The first version executes "git stash ...". The second and third version open
 buffers listing the stashes or showing a stash.
+
+The buffer for ":GitStash list" defines the following maps:
 
   Map       Meaning
  ----------------------------------------------------------------------------
   S-F1      help: show a list of all maps
   q         close the buffer
-  u         update the buffer (list only)
+  u         update the buffer
+
+  sh        show the stash under the cursor
+  sp        show the stash in patch form
+
+  sa        save with a message
+  pu        create a new stash (push)
+
+  stash under the cursor ...
+  ap        apply
+  po        pop
+  dr        drop
+  br        create and checkout a new branch
+ ----------------------------------------------------------------------------
+
+The buffer for ":GitStash show" defines the following maps:
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -616,6 +638,17 @@ Runs git in an external terminal. Useful for interactive commands, such as
 "git add -p ...".
 
 +The xterm related functionality is only available under UNIX.
+
+------------------------------------------------------------------------------
+                                         *:GitSupportHelp* *:GitSupportSettings*
+  :GitSupportHelp ~
+
+Opens the help for Git Support.
+
+  :GitSupportSettings ~
+  :GitSupportSettings! ~
+
+Shows the plug-in settings. The second version is verbose.
 
 ==============================================================================
 4.  SYNTAX HIGHLIGHTING                                    *gitsupport-syntax*
@@ -911,8 +944,8 @@ Set the gitk executable. You should use the English language environment: >
 <
 For Windows, set up gitk similar to this, the interpreter and the gitk script
 have to be given separately: >
-	let g:Git_GitKExecutable = 'C:\Program Files\Git\bin\tclsh.exe'
-	let g:Git_GitKScript     = 'C:\Program Files\Git\bin\gitk'
+  let g:Git_GitKExecutable = 'C:\Program Files\Git\bin\tclsh.exe'
+  let g:Git_GitKScript     = 'C:\Program Files\Git\bin\gitk'
 <
 ------------------------------------------------------------------------------
 6.2  MENUS                                           *gitsupport-config-menus*
