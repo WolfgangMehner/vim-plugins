@@ -1136,6 +1136,7 @@ endfunction    " ----------  end of function Latex_Compile ----------
 "  view PDF
 "------------------------------------------------------------------------------
 function! Latex_View ( format )
+
 	if &filetype != 'tex'
 		echomsg	'The filetype of this buffer is not "tex".'
 		return
@@ -1156,6 +1157,7 @@ function! Latex_View ( format )
 		echomsg 'Viewer '.viewer.' does not exist or its name is not unique.'
 		return
 	endif
+
   let targetformat   = expand("%:r").'.'.fmt
 	if !filereadable( targetformat )
 		if filereadable( expand("%:r").'.dvi' )
@@ -1165,7 +1167,12 @@ function! Latex_View ( format )
 			return
 		endif
 	endif
-  silent exe   '!'.viewer.' '.targetformat.' &'
+
+	if s:MSWIN
+		silent exe '!start '.viewer.' '.targetformat
+	else
+		silent exe '!'.viewer.' '.targetformat.' &'
+	endif
 endfunction    " ----------  end of function Latex_View ----------
 "
 "------------------------------------------------------------------------------
