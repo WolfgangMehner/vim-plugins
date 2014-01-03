@@ -192,10 +192,10 @@ buffers can be closed via <q> and updated via <u>.
 
 ------------------------------------------------------------------------------
                                                         *:Git* *:GitRun* *:GitBuf*
-	:Git <cmd> [<args>] ~
-	:GitRun <cmd> [<args>] ~
-	:Git! <cmd> [<args>] ~
-	:GitBuf <cmd> [<args>] ~
+  :Git <cmd> [<args>] ~
+  :GitRun <cmd> [<args>] ~
+  :Git! <cmd> [<args>] ~
+  :GitBuf <cmd> [<args>] ~
 
 Executes "git <cmd> ...". The last two versions redirect the output into a
 buffer.
@@ -209,8 +209,8 @@ buffer.
 
 ------------------------------------------------------------------------------
                                                                      *:GitAdd*
-	:GitAdd [<args>] ~
-	:GitAdd! [<args>] ~
+  :GitAdd [<args>] ~
+  :GitAdd! [<args>] ~
 
 Executes "git add ...". The second version forces the add. If no arguments are
 given, adds the current buffer.
@@ -218,21 +218,21 @@ given, adds the current buffer.
 Examples:
 
 Add the current buffer: >
-	:GitAdd
+  :GitAdd
 Similarly: >
-	:GitAdd -- %
+  :GitAdd -- %
 Is equivalent to: >
-	git add -- <currentfile>
+  git add -- <currentfile>
 
 Add all the Vim scripts in the current directory: >
-	:GitAdd! *.vim
+  :GitAdd! *.vim
 Is equivalent to: >
-	git add -f *.vim
+  git add -f *.vim
 
 ------------------------------------------------------------------------------
                                                                    *:GitBlame*
-	:[range]GitBlame ~
-	:[range]GitBlame <args> ~
+  :[range]GitBlame ~
+  :[range]GitBlame <args> ~
 
 The first version opens a buffer containing the output of Git's blame for the
 current buffer. The second version runs blame for the given arguments. When a
@@ -252,8 +252,8 @@ range is given, the output is limited to these lines.
 
 ------------------------------------------------------------------------------
                                                                   *:GitBranch*
-	:GitBranch ~
-	:GitBranch <args> ~
+  :GitBranch ~
+  :GitBranch <args> ~
 
 The first version opens a buffer listing all branches, including remote ones.
 The second version executes "git branch ...".
@@ -263,11 +263,19 @@ The second version executes "git branch ...".
   S-F1      help: show a list of all maps
   q         close the buffer
   u         update the buffer
+
+  branch under the cursor ...
+  ch        checkout
+  cr        use as starting point for creating a new branch
+  de        delete
+  me        merge with current branch
+  rn        rename
+  cs        show the commit
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
                                                                 *:GitCheckout*
-	:GitCheckout [<args>] ~
+  :GitCheckout [<args>] ~
 
 Executes "git checkout ...". If no arguments are given, checks out the current
 file.
@@ -275,19 +283,19 @@ file.
 Examples:
 
 Check out the file in the current buffer: >
-	:GitCheckout
+  :GitCheckout
 Is equivalent to: >
-	git checkout -- <currentfile>
+  git checkout -- <currentfile>
 (Might require running ":e" to update the buffer itself.)
 
 Check out the branch "master": >
-	:GitCheckout master
+  :GitCheckout master
 
 ------------------------------------------------------------------------------
                                      *:GitCommit* *:GitCommitFile* *:GitCommitMsg*
-	:GitCommit [<args>] ~
-	:GitCommitFile [<file>] ~
-	:GitCommitMsg <msg> ~
+  :GitCommit [<args>] ~
+  :GitCommitFile [<file>] ~
+  :GitCommitMsg <msg> ~
 
 The first version runs "git commit" with the given arguments. If the arguments
 include the "--dry-run" flag, the output is redirected into a buffer. The
@@ -302,20 +310,20 @@ Note The command :GitCommit currently can not be run without arguments. Supply
                                                              *:GitCommitMerge*
 Commit a merge:
 
-	:GitCommitMerge ~
+  :GitCommitMerge ~
 
 This version commits changes from a merge conflict. It first looks for the
 base (toplevel) directory of the repository (<base>) and checks whether there
 is a file <base>/.git/MERGE_HEAD located there. Then the changes are committed
 via: >
-	git commit -F <base>/.git/MERGE_MSG
+  git commit -F <base>/.git/MERGE_MSG
 The file MERGE_MSG contains the standard message for merges, which looks
 similar to this:
 >
-	Merge remote-tracking branch 'origin/master'
+  Merge remote-tracking branch 'origin/master'
     
-	Conflicts:
-	    somedir/thefile.txt
+  Conflicts:
+      somedir/thefile.txt
 <
 Note I do not know whether this is a "proper" usage of Git. However, it seems
      to work and even the files in the .git/ directory which indicate the
@@ -325,19 +333,19 @@ Note I do not know whether this is a "proper" usage of Git. However, it seems
 Examples:
 
 Make a small commit: >
-	:GitCommitMsg Minor changes.
+  :GitCommitMsg Minor changes.
 Is equivalent to: >
-	git commit -m "Minor changes."
+  git commit -m "Minor changes."
 
 Make a larger commit, take the commit message from a file: >
-	:GitCommitFile commit.txt
+  :GitCommitFile commit.txt
 Is equivalent to: >
-	git commit -F commit.txt
+  git commit -F commit.txt
 
 Amend the previous commit: >
-	:GitCommit --amend -F commit.txt
+  :GitCommit --amend -F commit.txt
 Is equivalent to: >
-	git commit --amend -F commit.txt
+  git commit --amend -F commit.txt
 
 ------------------------------------------------------------------------------
                                                                     *:GitDiff*
@@ -376,14 +384,14 @@ Settings:
 
 ------------------------------------------------------------------------------
                                                                    *:GitFetch*
-	:GitFetch [<args>] ~
+  :GitFetch [<args>] ~
 
 Executes "git fetch ...".
 
 ------------------------------------------------------------------------------
                                                         *:GitGrep* *:GitGrepTop*
-	:GitGrep <args> ~
-	:GitGrepTop <args> ~
+  :GitGrep <args> ~
+  :GitGrepTop <args> ~
 
 The first version opens a buffer containing the output of Git's grep. The
 second version runs grep within the context of the top-level directory of the
@@ -402,7 +410,7 @@ repository.
 
 ------------------------------------------------------------------------------
                                                                     *:GitHelp*
-	:GitHelp [<args>] ~
+  :GitHelp [<args>] ~
 
 Opens a buffer containing the help for one of Git's commands. If no command is
 given, opens the help for Git itself.
@@ -416,14 +424,14 @@ given, opens the help for Git itself.
 Example:
 
 Show the help for the add command: >
-	:GitHelp add
+  :GitHelp add
 Is equivalent to: >
-	git help add
+  git help add
 
 ------------------------------------------------------------------------------
                                                                      *:GitLog*
-	:GitLog ~
-	:GitLog <args> ~
+  :GitLog ~
+  :GitLog <args> ~
 
 The first version opens a buffer containing the log for the current branch.
 The second version runs log for the given arguments.
@@ -437,39 +445,39 @@ The second version runs log for the given arguments.
 
 ------------------------------------------------------------------------------
                                                  *:GitMerge* *:GitMergeUpstream*
-	:GitMerge [<args>] ~
-	:GitMergeUpstream [<args>] ~
+  :GitMerge [<args>] ~
+  :GitMergeUpstream [<args>] ~
 
 The first version executes "git merge ...". The second version automatically
 obtains the name of the upstream branch and merges it into the current branch.
 arguments can still be given: >
-	:GitMergeUpstream --ff-only
+  :GitMergeUpstream --ff-only
 Is equivalent to: >
-	git merge --ff-only <upstream-branch>
+  git merge --ff-only <upstream-branch>
 <
 ------------------------------------------------------------------------------
                                                              *:GitMove* *:GitMv*
-	:GitMove [<args>] ~
-	:GitMv [<args>] ~
+  :GitMove [<args>] ~
+  :GitMv [<args>] ~
 
 Both versions behave the same. Executes "git mv ...".
 
 ------------------------------------------------------------------------------
                                                                     *:GitPull*
-	:GitPull [<args>] ~
+  :GitPull [<args>] ~
 
 Executes "git pull ...".
 
 ------------------------------------------------------------------------------
                                                                     *:GitPush*
-	:GitPush [<args>] ~
+  :GitPush [<args>] ~
 
 Executes "git push ...".
 
 ------------------------------------------------------------------------------
                                                                   *:GitRemote*
-	:GitRemote ~
-	:GitRemote <args> ~
+  :GitRemote ~
+  :GitRemote <args> ~
 
 The first version opens a buffer listing all the remotes together with their
 URLs. The second version executes "git remote ...".
@@ -479,12 +487,18 @@ URLs. The second version executes "git remote ...".
   S-F1      help: show a list of all maps
   q         close the buffer
   u         update the buffer
+
+  remote under the cursor ...
+  rm        remove
+  rn        rename
+  su        set-url
+  sh        show
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
                                                            *:GitRemove* *:GitRm*
-	:GitRemove [<args>] ~
-	:GitRm [<args>] ~
+  :GitRemove [<args>] ~
+  :GitRm [<args>] ~
 
 Both versions behave the same. Executes "git rm ...". If no arguments are
 given, removes the current buffer.
@@ -492,13 +506,13 @@ given, removes the current buffer.
 Example:
 
 Reset the current file: >
-	:GitRemove
+  :GitRemove
 Is equivalent to: >
-	git rm -- <currentfile>
+  git rm -- <currentfile>
 
 ------------------------------------------------------------------------------
                                                                    *:GitReset*
-	:GitReset [<args>] ~
+  :GitReset [<args>] ~
 
 Executes "git reset ...". If no arguments are given, resets the current
 buffer.
@@ -506,13 +520,13 @@ buffer.
 Example:
 
 Reset the current file: >
-	:GitReset
+  :GitReset
 Is equivalent to: >
-	git reset -- <currentfile>
+  git reset -- <currentfile>
 
 ------------------------------------------------------------------------------
                                                                     *:GitShow*
-	:GitShow [<args>] ~
+  :GitShow [<args>] ~
 
 Opens a buffer containing the output of "git show ...". For commits and
 annotated tags, shows the commit/tag message and the diff. For blobs a
@@ -611,8 +625,8 @@ Settings:
 
 ------------------------------------------------------------------------------
                                                                      *:GitTag*
-	:GitTag [-n[<num>]] [--contains <commit>] [-l [<pattern>...]] ~
-	:GitTag <args> ~
+  :GitTag [-n[<num>]] [--contains <commit>] [-l [<pattern>...]] ~
+  :GitTag <args> ~
 
 The first version opens a buffer listing the tags. The second version executes
 "git tag ...".
@@ -622,17 +636,25 @@ The first version opens a buffer listing the tags. The second version executes
   S-F1      help: show a list of all maps
   q         close the buffer
   u         update the buffer (list only)
+
+  tag under cursor ...
+  ch        checkout
+  cr        use as starting point for creating a new branch
+  de        delete
+  me        merge with current branch
+  sh        show the tag
+  cs        show the commit
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
                                                                        *:GitK*
-	:GitK <args> ~
+  :GitK <args> ~
 
 Starts gitk with the given arguments.
 
 ------------------------------------------------------------------------------
                                                                     *:GitTerm*
-	:GitTerm <args> ~
+  :GitTerm <args> ~
 
 Runs git in an external terminal. Useful for interactive commands, such as
 "git add -p ...".
@@ -738,6 +760,8 @@ This highlighting is also used for ":GitStash show"
   GitDiffHeader           the header generated for each file
                             (lines like "diff ...", "index ...", ...)
                           -> uses GitHeading
+  GitWhiteTab             whitespaces before a tab in an inserted line
+                          -> uses GitSevere
   GitTrailingWhite        trailing whitespaces in an inserted line
                           -> uses GitSevere
  ----------------------------------------------------------------------------

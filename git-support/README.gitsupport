@@ -125,7 +125,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 --------------------------------------------------------------------------------
 - Added: Command :GitTerm for running interactive Git commands.
 - Added: Command :GitSlist as a shorthand for ":GitStash list".
-- Added: New maps for the buffers: stash, status
+- Added: New maps for the buffers: branch, remote, stash, status, tag
 - Changed: :GitShow shows different objects in an according way.
 - Improved syntax highlighting.
 

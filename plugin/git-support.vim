@@ -67,6 +67,21 @@ function! s:ApplyDefaultSetting ( varname, value )
 endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
 "
 "-------------------------------------------------------------------------------
+" s:AssembleCmdLine : Assembles a cmd-line with the cursor in the right place.   {{{2
+"
+" Parameters:
+"   part1 - name of the variable (string)
+"   part1 - default value (string)
+"   left  - the code for moving the cursor left (string)
+" Returns:
+"   cmd_line - the command line (string)
+"-------------------------------------------------------------------------------
+"
+function! s:AssembleCmdLine ( part1, part2, left )
+	return a:part1.a:part2.repeat( a:left, s:UnicodeLen( a:part2 ) )
+endfunction    " ----------  end of function s:AssembleCmdLine  ----------
+"
+"-------------------------------------------------------------------------------
 " s:ChangeCWD : Check the buffer and the CWD.   {{{2
 "
 " Parameters:
@@ -284,7 +299,7 @@ function! s:OpenFile ( filename, ... )
 	else
 		" jump to window
 		exe bufwinnr( a:filename ).'wincmd w'
-	end
+	endif
 	"
 	if a:0 >= 1
 		" jump to line
@@ -814,7 +829,7 @@ function! s:Question ( text, ... )
 	else
 		echoerr 'Unknown option : "'.a:1.'"'
 		return
-	end
+	endif
 	"
 	" question
 	echo a:text.' [y/n]: '
@@ -880,7 +895,7 @@ function! s:OpenGitBuffer ( buf_name )
 		setlocal bufhidden=wipe
 		setlocal tabstop=8
 		setlocal foldmethod=syntax
-	end
+	endif
 	"
 	return 1
 endfunction    " ----------  end of function s:OpenGitBuffer  ----------
@@ -967,7 +982,7 @@ function! s:StandardRun( cmd, param, flags, ... )
 		let flag_check = '[^cet]'
 	else
 		let flag_check = '[^'.a:1.']'
-	end
+	endif
 	"
 	if a:flags =~ flag_check
 		return s:ErrorMsg ( 'Unknown flag "'.matchstr( a:flags, flag_check ).'".' )
@@ -1008,8 +1023,8 @@ function! GitS_FoldLog ()
 	let tail = ' ('.( v:foldend - v:foldstart + 1 ).' lines) '
 	"
 	if line =~ '^#\s'
-		" we assume a line in the status comment block (TODO: might be something else),
-		" and try to guess the number of lines
+		" we assume a line in the status comment block and try to guess the number of lines (=files)
+		" :TODO:20.03.2013 19:30:WM: (might be something else)
 		let filesstart = v:foldstart+1
 		let filesend   = v:foldend
 		while filesstart < v:foldend && getline(filesstart) =~ '\_^#\s*\_$\|\_^#\s\+('
@@ -1039,7 +1054,7 @@ function! GitS_FoldLog ()
 			return head.'diff - '.file.tail
 		else
 			return head.line.tail
-		end
+		endif
 	else
 		return head.line.tail
 	endif
@@ -1060,7 +1075,7 @@ function! GitS_FoldGrep ()
 		return file.tail
 	else
 		return head.line.tail
-	end
+	endif
 endfunction    " ----------  end of function GitS_FoldGrep  ----------
 "
 "-------------------------------------------------------------------------------
@@ -1215,10 +1230,10 @@ function! s:Blame_GetFile()
 			let f_name = ''
 		else
 			let f_name = args[-1]
-		end
+		endif
 		"
 		let b:GitSupport_BlameFile = f_name
-	end
+	endif
 	"
 	" LINE:
 	"   [^] commit [ofile] (INFO line)
@@ -1285,7 +1300,7 @@ function! GitS_Blame( action, ... )
 		"
 		if f_name == ''
 			return s:ErrorMsg ( 'No file under the cursor.' )
-		end
+		endif
 		"
 		if a:action == 'edit'
 					\ || ( a:action == 'jump' && f_line == -1 )
@@ -1303,7 +1318,7 @@ function! GitS_Blame( action, ... )
 			return s:ImportantMsg ( 'Line not committed yet.' )
 		elseif commit == ''
 			return s:ErrorMsg ( 'Not commit under the cursor.' )
-		end
+		endif
 		"
 		call GitS_Show( 'update', commit )
 		"
@@ -1365,16 +1380,93 @@ endfunction    " ----------  end of function GitS_Branch  ----------
 " GitS_BranchList : execute 'git branch' (list branches)   {{{1
 "-------------------------------------------------------------------------------
 "
-function! GitS_BranchList( action )
+"-------------------------------------------------------------------------------
+" s:BranchList_GetBranch : Get the branch under the cursor.   {{{2
+"
+" Parameters:
+"   -
+" Returns:
+"   [ <branch-name>, <flag> ] - data (list: string, string)
+"
+" The entries are as follows:
+"   branch name - name of the branch under the cursor (string)
+"   flag        - contains: "r" if remote branch (string)
+"
+" If only the name of the branch could be obtained, returns:
+"   [ <branch-name>, '' ]
+" If no branch could be found:
+"   [ '', '' ]
+"-------------------------------------------------------------------------------
+"
+function! s:BranchList_GetBranch()
+	"
+	let line = getline('.')
+	let mlist = matchlist ( line, '^[[:space:]*]*\(remotes/\)\?\(\S\+\)' )
+	"
+	if empty ( mlist )
+		return [ '', '' ]
+	else
+		let branch = mlist[2]
+		let flag   = empty( mlist[1] ) ? '' : 'r'
+		return [ branch, flag ]
+	endif
+	"
+endfunction    " ----------  end of function s:BranchList_GetBranch  ----------
+" }}}2
+"-------------------------------------------------------------------------------
+"
+function! GitS_BranchList( action, ... )
 	"
 	if a:action == 'help'
-		echo s:HelpTxtStd
+		let txt  = s:HelpTxtStd."\n\n"
+		let txt .= "branch under cursor ...\n"
+		let txt .= "ch      : checkout\n"
+		let txt .= "cr      : use as starting point for creating a new branch\n"
+		let txt .= "de      : delete\n"
+		let txt .= "me      : merge with current branch\n"
+		let txt .= "rn      : rename\n"
+		let txt .= "cs      : show the commit\n"
+		echo txt
 		return
 	elseif a:action == 'quit'
 		close
 		return
 	elseif a:action == 'update'
 		" noop
+	elseif -1 != index ( [ 'checkout', 'create', 'delete', 'merge', 'rename', 'show' ], a:action )
+		"
+		let [ b_name, b_flag ] = s:BranchList_GetBranch ()
+		"
+		if b_name == ''
+			return s:ErrorMsg ( 'No branch under the cursor.' )
+		endif
+		"
+		if a:action == 'checkout'
+			call GitS_Checkout( shellescape(b_name), 'c' )
+		elseif a:action == 'create'
+			"
+			let suggestion = ''
+			if b_flag =~ 'r' && b_name !~ '/HEAD$'
+				let suggestion = matchstr ( b_name, '[^/]\+$' )
+			endif
+			"
+			let left = a:1
+			return s:AssembleCmdLine ( ':GitBranch '.suggestion, ' '.b_name, left )
+		elseif a:action == 'delete'
+			if b_flag =~ 'r'
+				call GitS_Branch( '-rd '.shellescape(b_name), 'c' )
+			else
+				call GitS_Branch( '-d '.shellescape(b_name), 'c' )
+			endif
+		elseif a:action == 'merge'
+			call GitS_Merge( 'direct', shellescape(b_name), 'c' )
+		elseif a:action == 'rename'
+			return ':GitBranch -m '.b_name.' '
+		elseif a:action == 'show'
+			call GitS_Show( 'update', shellescape(b_name), '' )
+		endif
+		"
+		return
 	else
 		echoerr 'Unknown action "'.a:action.'".'
 		return
@@ -1389,6 +1481,13 @@ function! GitS_BranchList( action )
 		exe 'nmap          <buffer> <S-F1> :call GitS_BranchList("help")<CR>'
 		exe 'nmap <silent> <buffer> q      :call GitS_BranchList("quit")<CR>'
 		exe 'nmap <silent> <buffer> u      :call GitS_BranchList("update")<CR>'
+		"
+		exe 'nmap <silent> <buffer> ch     :call GitS_BranchList("checkout")<CR>'
+		exe 'nmap <expr>   <buffer> cr     GitS_BranchList("create","<Left>")'
+		exe 'nmap <silent> <buffer> de     :call GitS_BranchList("delete")<CR>'
+		exe 'nmap <silent> <buffer> me     :call GitS_BranchList("merge")<CR>'
+		exe 'nmap <expr>   <buffer> rn     GitS_BranchList("rename","<Left>")'
+		exe 'nmap <silent> <buffer> cs     :call GitS_BranchList("show")<CR>'
 	endif
 	"
 	let cmd = s:Git_Executable.' branch -avv'
@@ -1867,7 +1966,7 @@ function! GitS_Grep( action, ... )
 		"
 		if f_name == ''
 			return s:ErrorMsg ( 'No file under the cursor.' )
-		end
+		endif
 		"
 		if a:action == 'edit'
 					\ || ( a:action == 'jump' && f_line == -1 )
@@ -2062,8 +2161,6 @@ endfunction    " ----------  end of function GitS_Log  ----------
 "
 function! GitS_Merge( mode, param, flags )
 	"
-	" TODO: git for-each-ref --format='%(upstream:short)' refs/heads/csupport-dev
-	"
 	if a:mode == 'direct'
 		"
 		return s:StandardRun ( 'merge', a:param, a:flags, 'c' )
@@ -2144,16 +2241,78 @@ endfunction    " ----------  end of function GitS_Remote  ----------
 " GitS_RemoteList : execute 'git remote' (list remotes)   {{{1
 "-------------------------------------------------------------------------------
 "
-function! GitS_RemoteList( action )
+"-------------------------------------------------------------------------------
+" s:RemoteList_GetRemote : Get the remote and URL under the cursor.   {{{2
+"
+" Parameters:
+"   -
+" Returns:
+"   [ <remote-name>, <url> ] - data (list: string, string)
+"
+" The entries are as follows:
+"   remote name - name of the remote under the cursor (string)
+"   url         - its URL (string)
+"
+" If only the name of the remote could be obtained, returns:
+"   [ <remote-name>, '' ]
+" If no remote could be found:
+"   [ '', '' ]
+"-------------------------------------------------------------------------------
+"
+function! s:RemoteList_GetRemote()
+	"
+	let line = getline('.')
+	let mlist = matchlist ( line, '^\s*\(\S\+\)\s\+\(.\+\)\s\+(\w\+)$' )
+	"
+	if empty ( mlist )
+		return [ '', '' ]
+	else
+		return mlist[1:2]
+	endif
+	"
+endfunction    " ----------  end of function s:RemoteList_GetRemote  ----------
+" }}}2
+"-------------------------------------------------------------------------------
+"
+function! GitS_RemoteList( action, ... )
 	"
 	if a:action == 'help'
-		echo s:HelpTxtStd
+		let txt  = s:HelpTxtStd."\n\n"
+		let txt .= "remote under cursor ...\n"
+		let txt .= "rm      : remove\n"
+		let txt .= "rn      : rename\n"
+		let txt .= "su      : set-url\n"
+		let txt .= "sh      : show\n"
+		echo txt
 		return
 	elseif a:action == 'quit'
 		close
 		return
 	elseif a:action == 'update'
 		" noop
+	elseif -1 != index ( [ 'remove', 'rename', 'set-url', 'show' ], a:action )
+		"
+		let [ r_name, r_url ] = s:RemoteList_GetRemote ()
+		"
+		if r_name == ''
+			return s:ErrorMsg ( 'No remote under the cursor.' )
+		endif
+		"
+		if a:action == 'remove'
+			call GitS_Remote( 'rm '.shellescape(r_name), 'c' )
+		elseif a:action == 'rename'
+			return ':GitRemote rename '.r_name.' '
+		elseif a:action == 'set-url'
+			if empty ( r_url )
+				return ':GitRemote set-url '.r_name.' '
+			else
+				return ':GitRemote set-url '.r_name.' '.shellescape( r_url )
+			endif
+		elseif a:action == 'show'
+			call GitS_Remote( 'show '.shellescape(r_name), '' )
+		endif
+		"
+		return
 	else
 		echoerr 'Unknown action "'.a:action.'".'
 		return
@@ -2168,6 +2327,11 @@ function! GitS_RemoteList( action )
 		exe 'nmap          <buffer> <S-F1> :call GitS_RemoteList("help")<CR>'
 		exe 'nmap <silent> <buffer> q      :call GitS_RemoteList("quit")<CR>'
 		exe 'nmap <silent> <buffer> u      :call GitS_RemoteList("update")<CR>'
+		"
+		exe 'nmap <silent> <buffer> rm     :call GitS_RemoteList("remove")<CR>'
+		exe 'nmap <expr>   <buffer> rn     GitS_RemoteList("rename","<Left>")'
+		exe 'nmap <expr>   <buffer> su     GitS_RemoteList("set-url","<Left>")'
+		exe 'nmap <silent> <buffer> sh     :call GitS_RemoteList("show")<CR>'
 	endif
 	"
 	let cmd = s:Git_Executable.' remote -v'
@@ -2375,7 +2539,7 @@ function! GitS_StashList( action, ... )
 		let txt .= "sa      : save with a message\n"
 		let txt .= "pu      : create a new stash (push)\n"
 		let txt .= "\n"
-		let txt .= "file under cursor ...\n"
+		let txt .= "stash under cursor ...\n"
 		let txt .= "ap      : apply\n"
 		let txt .= "po      : pop\n"
 		let txt .= "dr      : drop\n"
@@ -2400,7 +2564,7 @@ function! GitS_StashList( action, ... )
 			call GitS_Stash( '', '' )
 		elseif a:action == 'save-msg'
 			let left = a:1
-			return ':GitStash save ""'.left
+			return s:AssembleCmdLine ( ':GitStash save "', '"', left )
 		endif
 		"
 		return
@@ -2410,23 +2574,21 @@ function! GitS_StashList( action, ... )
 		"
 		if s_name == ''
 			return s:ErrorMsg ( 'No stash under the cursor.' )
-		end
+		endif
 		"
 		if a:action == 'show'
 			call GitS_Stash( 'show '.shellescape(s_name), '' )
 		elseif a:action == 'show-patch'
 			call GitS_Stash( 'show -p '.shellescape(s_name), '' )
 		elseif a:action == 'apply'
-			call GitS_Stash( 'apply '.shellescape(s_name), '' )
+			call GitS_Stash( 'apply '.shellescape(s_name), 'c' )
 		elseif a:action == 'drop'
 			call GitS_Stash( 'drop '.shellescape(s_name), 'c' )
 		elseif a:action == 'pop'
 			call GitS_Stash( 'pop '.shellescape(s_name), 'c' )
 		elseif a:action == 'branch'
 			let left = a:1
-			let part1 = ':GitStash branch '
-			let part2 = ' '.shellescape(s_name)
-			return part1.part2.repeat( left, s:UnicodeLen(part2) )
+			return s:AssembleCmdLine ( ':GitStash branch ', ' '.shellescape(s_name), left )
 		endif
 		"
 		return
@@ -2927,7 +3089,7 @@ function! GitS_Status( action )
 		endif
 	elseif a:action =~ '\<\%(short\|verbose\)\>'
 		" noop
-	elseif -1 != index ( [ 'add', 'checkout', 'diff', 'edit', 'log', 'reset', 'delete' ], a:action )
+	elseif -1 != index ( [ 'add', 'add-patch', 'checkout', 'checkout-patch', 'diff', 'edit', 'log', 'reset', 'reset-patch', 'delete' ], a:action )
 		"
  		call s:ChangeCWD ()
 		"
@@ -3038,13 +3200,48 @@ endfunction    " ----------  end of function GitS_Tag  ----------
 " GitS_TagList : execute 'git tag' (list tags)   {{{1
 "-------------------------------------------------------------------------------
 "
+"-------------------------------------------------------------------------------
+" s:TagList_GetTag : Get the tag under the cursor.   {{{2
+"
+" Parameters:
+"   -
+" Returns:
+"   <tag-name> - the name of the tag (string)
+"
+" If the name could not be obtained returns an empty string.
+"-------------------------------------------------------------------------------
+"
+function! s:TagList_GetTag()
+	"
+	let name  = ''
+	let t_pos = line('.')
+	"
+	while t_pos > 0 && empty ( name )
+		let name = matchstr ( getline(t_pos), '^\S\+' )
+		let t_pos -= 1
+	endwhile
+	"
+	return name
+	"
+endfunction    " ----------  end of function s:TagList_GetTag  ----------
+" }}}2
+"-------------------------------------------------------------------------------
+"
 function! GitS_TagList( action, ... )
 	"
 	let update_only = 0
 	let param = ''
 	"
 	if a:action == 'help'
-		echo s:HelpTxtStd
+		let txt  = s:HelpTxtStd."\n\n"
+		let txt .= "tag under cursor ...\n"
+		let txt .= "ch      : checkout\n"
+		let txt .= "cr      : use as starting point for creating a new branch\n"
+		let txt .= "de      : delete\n"
+		let txt .= "me      : merge with current branch\n"
+		let txt .= "sh      : show the tag\n"
+		let txt .= "cs      : show the commit\n"
+		echo txt
 		return
 	elseif a:action == 'quit'
 		close
@@ -3058,6 +3255,30 @@ function! GitS_TagList( action, ... )
 		else                | let param = a:1
 		endif
 		"
+	elseif -1 != index ( [ 'checkout', 'create', 'delete', 'merge', 'show-tag', 'show-commit' ], a:action )
+		"
+		let t_name = s:TagList_GetTag ()
+		"
+		if t_name == ''
+			return s:ErrorMsg ( 'No tag under the cursor.' )
+		endif
+		"
+		if a:action == 'checkout'
+			call GitS_Checkout( shellescape(t_name), 'c' )
+		elseif a:action == 'create'
+			let left = a:1
+			return s:AssembleCmdLine ( ':GitBranch ', ' '.t_name, left )
+		elseif a:action == 'delete'
+			call GitS_Tag( '-d '.shellescape(t_name), 'c' )
+		elseif a:action == 'merge'
+			call GitS_Merge( 'direct', shellescape(t_name), 'c' )
+		elseif a:action == 'show-tag'
+			call GitS_Show( 'update', shellescape(t_name), '' )
+		elseif a:action == 'show-commit'
+			call GitS_Show( 'update', shellescape(t_name).'^{commit}', '' )
+		endif
+		"
+		return
 	else
 		echoerr 'Unknown action "'.a:action.'".'
 		return
@@ -3074,6 +3295,13 @@ function! GitS_TagList( action, ... )
 		exe 'nmap          <buffer> <S-F1> :call GitS_TagList("help")<CR>'
 		exe 'nmap <silent> <buffer> q      :call GitS_TagList("quit")<CR>'
 		exe 'nmap <silent> <buffer> u      :call GitS_TagList("update")<CR>'
+		"
+		exe 'nmap <silent> <buffer> ch     :call GitS_TagList("checkout")<CR>'
+		exe 'nmap <expr>   <buffer> cr     GitS_TagList("create","<Left>")'
+		exe 'nmap <silent> <buffer> de     :call GitS_TagList("delete")<CR>'
+		exe 'nmap <silent> <buffer> me     :call GitS_TagList("merge")<CR>'
+		exe 'nmap <silent> <buffer> sh     :call GitS_TagList("show-tag")<CR>'
+		exe 'nmap <silent> <buffer> cs     :call GitS_TagList("show-commit")<CR>'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -3278,6 +3506,7 @@ function! s:InitMenus()
 	"
 	exe ahead.'&grep,\ use\ top-level\ dir<TAB>:GitGrepTop       :GitGrepTop<space>'
 	exe ahead.'&merge,\ upstream\ branch<TAB>:GitMergeUpstream   :GitMergeUpstream<space>'
+	exe shead.'&stash\ list<TAB>:GitSlist                        :GitSlist<CR>'
 	"
 	" Custom Menu
 	if ! empty ( s:Git_CustomMenu )
@@ -3316,6 +3545,7 @@ function! s:InitMenus()
 	exe ahead.'&help\ \.\.\.<TAB>:GitHelp   :GitHelp<space>'
 	exe shead.'&log<TAB>:GitLog             :GitLog<CR>'
 	exe shead.'&remote<TAB>:GitRemote       :GitRemote<CR>'
+	exe shead.'&stash\ list<TAB>:GitSlist   :GitSlist<CR>'
 	exe shead.'&status<TAB>:GitStatus       :GitStatus<CR>'
 	exe shead.'&tag<TAB>:GitTag             :GitTag<CR>'
 	"
