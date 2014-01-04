@@ -1,4 +1,4 @@
-README for latex-support.vim (Version 1.1pre) / August 11 2013
+README for latex-support.vim (Version 1.1) / January 04 2014
 
   *  INSTALLATION
   *  RELEASE NOTES 
@@ -78,10 +78,11 @@ For a system-wide installation please see the help file 'doc/latexsupport.txt'.
 =======================================================================================
 
 ---------------------------------------------------------------------------------------
-  RELEASE NOTES FOR VERSION 1.1pre
+  RELEASE NOTES FOR VERSION 1.1
 ---------------------------------------------------------------------------------------
 - Beamer templates and snippets added.
 - Template added.
+- Integration of Make moved into the toolbox.
 - Bugfix: Setup of local templates in case of global installation.
 - Bugfix: Map and menu entry 'Snippets->edit global templates'.
 - Bugfix: Starting an external viewer now works under Windows.
@@ -93,11 +94,18 @@ For a system-wide installation please see the help file 'doc/latexsupport.txt'.
 
 README.latexsupport                This file.
 
-doc/latexsupport.txt               The help file for the local online help. 
-                                  
-plugin/latex-support.vim           The LaTeX plugin for Vim/gVim.
+autoload/mmtemplates/core          The template engine.
+autoload/mmtoolbox/*               The toolbox (make, ...).
 
-autoload/mmtemplates/core          The template engine. 
+doc/latexsupport.txt               The help file for the local online help. 
+doc/templatesupport.txt            The help file for the template system.
+doc/toolbox*.txt                   The help files for the toolbox.
+
+ftplugin/make.vim                  Access hotkeys for make(1) in makefiles.
+ftplugin/tex.vim                   Suggestion for a filetype plugin.
+                                   Defines hotkeys for the make tool.
+
+plugin/latex-support.vim           The LaTeX plugin for Vim/gVim.
 
 latex-support/codesnippets/*       Some LaTeX code snippets as a starting point.
 

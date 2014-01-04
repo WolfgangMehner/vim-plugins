@@ -10,7 +10,7 @@
 %%
 %%         Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
 %%   Organization:  FH Südwestfalen, Iserlohn, Germany
-%%      Copyright:  Copyright (c) 2013, Dr. Fritz Mehner
+%%      Copyright:  Copyright (c) 2013-2014, Dr. Fritz Mehner
 %%                
 %%=====================================================================================
 
@@ -29,7 +29,7 @@
 
 \setlength\parindent{0pt}
 
-\newcommand{\Pluginversion}{1.0}
+\newcommand{\Pluginversion}{1.1}
 \newcommand{\ReleaseDate}{\today}
 \newcommand{\Rep}{{\scriptsize{[n]}}}
 \newcommand{\Map}[1] {\textbf{\textasciiacute}\texttt{#1}}
@@ -277,15 +277,20 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline \Map{rpdf} & view PDF                                 \hfill (n, i)\\
 \hline \Map{rps}  & view PS                                  \hfill (n, i)\\
 \hline
-\hline \Map{rm}   & run \texttt{make}                        \hfill (n, i)\\
-\hline \Map{rcm}  & choose makefile                          \hfill (n, i)\\
-\hline \Map{rmc}  & \texttt{make clean}                      \hfill (n, i)\\
-\hline \Map{rma}  & command line arguments for \texttt{make} \hfill (n, i)\\
-\hline
 \hline \Map{rmi}  & run \texttt{makeindex}                   \hfill (n, i)\\
 \hline \Map{rbi}  & run \texttt{bibtex}                      \hfill (n, i)\\
 \hline \Map{rh}   & hardcopy buffer to \small{FILENAME}.ps   \hfill (n, i, v)\\
 \hline \Map{rse}  & show plugin settings                     \hfill (n, i)\\
+\hline
+%%----------------------------------------------------------------------
+%%  tool box
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{Tool Box}} \\[1.0ex]
+\hline \Map{rm}  & run \texttt{make}                        \hfill (n, i)   \\
+\hline \Map{rcm} & choose makefile                          \hfill (n, i)   \\
+\hline \Map{rmc} & \texttt{make clean}                      \hfill (n, i)   \\
+\hline \Map{rma} & command line arguments for \texttt{make} \hfill (n, i)   \\
 \hline
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
@@ -297,8 +302,8 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \begin{flushleft}
 \large{\textbf{Ex Commands}}\\[1.0ex]
 %
-Set \texttt{make} command line arguments (same as \Map{rm})\\[1.0ex]
-\texttt{\ :LatexMakeCmdlineArgs}\\[1.0ex]
+Set \texttt{make} command line arguments (same as \Map{rma})\\[1.0ex]
+\texttt{\ :MakeCmdlineArgs}\\[1.0ex]
 \end{flushleft}
 \end{minipage}}
 %

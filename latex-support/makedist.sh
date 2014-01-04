@@ -22,8 +22,12 @@ MainTemplateFile='./templates/Templates'
 
 filelist="
  ./autoload/mmtemplates/core.vim
+ ./autoload/mmtoolbox/make.vim
+ ./autoload/mmtoolbox/tools.vim
  ./doc/latexsupport.txt
  ./doc/templatesupport.txt
+ ./doc/toolbox.txt
+ ./doc/toolboxmake.txt
  ./latex-support/README.latexsupport
  ./latex-support/codesnippets/*
  ./latex-support/doc/ChangeLog
@@ -32,6 +36,8 @@ filelist="
  ./latex-support/rc/*
  ./latex-support/templates/*
  ./latex-support/wordlists/*
+ ./ftplugin/make.vim
+ ./ftplugin/tex.vim
  ./plugin/latex-support.vim
  ./syntax/template.vim
 "
