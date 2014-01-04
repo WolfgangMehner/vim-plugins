@@ -1,7 +1,7 @@
-*bashsupport.txt*                Bash Support               December 07 2013
+*bashsupport.txt*                Bash Support               January 04 2014
 
 Bash Support                                      *bash-support* *bashsupport*
-                             Plugin version 4.1
+                             Plugin version 4.2
                         for Vim version 7.0 and above
                        Fritz Mehner  <mehner@fh-swf.de>
 
@@ -380,6 +380,12 @@ There are three output destinations (see|bashsupport-output|).  If the output
 destination is VIM runtime errors are caught in an error window allowing
 quickfix commands to be used (see|quickfix|).
 
+The shell used can be set in the file '.vimrc', e.g. :
+>
+  let g:BASH_Executable			= '/bin/zsh'
+<
+The default is the value of $SHELL (Linux/U**X) or 'bash.exe' (Windows).
+
 1.7.2 Script command line arguments                 *bashsupport-cmdline-args*
 -----------------------------------
 
@@ -416,8 +422,14 @@ the buffer with the new name.
 ---------------------------
 
 Save the current buffer to this file and run this file with the -n flag
-(Bash: read commands but do not execute them).
+(Bash: read commands but do not execute them; same for dash, ksh, zsh).
 Errors are listed in an error window; now the quickfix commands can be used.
+
+1.7.4.1 ERROR FORMAT                                 *bashsupport-errorformat*
+--------------------
+The format used to parse runtime errors handle bash, dash, ksh, and zsh
+errors.  This format is appropriate for most locales including 'C' and
+'POSIX'. 
 
 1.7.4.2 SYNTAX CHECK OPTIONS                *bashsupport-syntax-check-options*
 ----------------------------
@@ -434,19 +446,6 @@ options' typing for instance
 <
 after the prompt. The options entered this way are buffer related.  The global
 options set in '.vimrc' and the buffer related options are checked.
-
-1.7.4.1 ERROR FORMAT                                 *bashsupport-errorformat*
---------------------
-The format used to parse runtime errors is '%f:\ %s\ %l:\ %m'.  This format is
-appropriate for most locales including 'C' and 'POSIX'. The '%s' part looks
-for the English word  'line' or its one word translation in another language
-(e.g.  'Zeile' in German). If this does not work parsing fails and no errors
-will be reported.  In this case add a line like
->
- let g:BASH_Errorformat    = '%f:\ xyz\ %l:\ %m'
-<
-to '~/.vimrc' to redefine the error format. Replace '%s' by the translation
-of this word in the current language.
 
 
 1.7.5 START DEBUGGER                                    *bashsupport-debugger*
@@ -634,114 +633,118 @@ appends end-of-line comments to the 4 lines starting with the current line.
 Legend:  (i) insert mode, (n) normal mode, (v) visual mode
          [n] range
 
-     \bps    parameter substitution (list)    (n, i)
-     \bsp    special parameters (list)        (n, i)
-     \ben    environment (list)               (n, i)
-     \bbu    builtin (list)                   (n, i)
-     \bse    set options (list)               (n, i)
-     \bso    shopts (list)                    (n, i)
+  -- Submenus ----------------------------------------------
+
+     \bps    parameter substitution (list)       (n, i)
+     \bsp    special parameters (list)           (n, i)
+     \ben    environment (list)                  (n, i)
+     \bbu    builtin (list)                      (n, i)
+     \bse    set options (list)                  (n, i)
+     \bso    shopts (list)                       (n, i)
    
-  -- Comments -------------------------------------------
+  -- Comments ----------------------------------------------
 
-  [n]\cl     line end comment                 (n, i, v)
-  [n]\cj     adjust end-of-line comments      (n, i, v)
-     \cs     set end-of-line comment column   (n)
-  [n]\cc     code -> comment                  (n, i, v)
-  [n]\cu     uncomment code                   (n, i, v)
-     \cfr    frame comment                    (n, i)
-     \cfu    function description             (n, i)
-     \ch     file header                      (n, i)
-     \cd     date                             (n, i, v)
-     \ct     date & time                      (n, i, v)
-     \css    script sections                  (n, i)
-     \ckc    keyword comments                 (n, i)
-     \cma    plug-in macros                   (n, i)
-     \ce     echo "..."                       (n, i)
-     \cr     remove echo "..."                (n, i)
+  [n]\cl     line end comment                    (n, i, v)
+  [n]\cj     adjust end-of-line comments         (n, i, v)
+     \cs     set end-of-line comment column      (n)
+  [n]\cc     code -> comment                     (n, i, v)
+  [n]\cu     uncomment code                      (n, i, v)
+     \cfr    frame comment                       (n, i)
+     \cfu    function description                (n, i)
+     \ch     file header                         (n, i)
+     \cd     date                                (n, i, v)
+     \ct     date & time                         (n, i, v)
+     \css    script sections                     (n, i)
+     \ckc    keyword comments                    (n, i)
+     \cma    plug-in macros                      (n, i)
+     \ce     echo "..."                          (n, i)
+     \cr     remove echo "..."                   (n, i)
 
-  -- Statements ------------------------------------------
+  -- Statements ---------------------------------------------
 
-     \sc     case in ... esac                 (n, i)
-     \sei    elif then                        (n, i)
-     \sf     for in do done                   (n, i, v)
-     \sfo    for ((...)) do done              (n, i, v)
-     \si     if then fi                       (n, i, v)
-     \sie    if then else fi                  (n, i, v)
-     \ss     select in do done                (n, i, v)
-     \su     until do done                    (n, i, v)
-     \sw     while do done                    (n, i, v)
-     \sfu    function                         (n, i, v)
-     \se     echo -e "..."                    (n, i, v)
-     \sp     printf "..."                     (n, i, v)
-     \sa     array element, ${.[.]}           (n, i, v)
-     \saa    array elements (all), ${.[@]}    (n, i, v)
-     \sas    array elements (string), ${.[*]} (n, i, v)
-     \ssa    subarray, ${.[@]::}              (n, i, v)
-     \san    no. of array elements, ${#.[@]}  (n, i, v)
-     \sai    array indices, ${!.[*]}          (n, i, v)
+     \sc     case in ... esac                    (n, i)
+     \sei    elif then                           (n, i)
+     \sf     for in do done                      (n, i, v)
+     \sfo    for ((...)) do done                 (n, i, v)
+     \si     if then fi                          (n, i, v)
+     \sie    if then else fi                     (n, i, v)
+     \ss     select in do done                   (n, i, v)
+     \su     until do done                       (n, i, v)
+     \sw     while do done                       (n, i, v)
+     \sfu    function                            (n, i, v)
+     \se     echo -e "..."                       (n, i, v)
+     \sp     printf "..."                        (n, i, v)
+     \sa     array element, ${.[.]}              (n, i, v)
+     \saa    array elements (all), ${.[@]}       (n, i, v)
+     \sas    array elements (string), ${.[*]}    (n, i, v)
+     \ssa    subarray, ${.[@]::}                 (n, i, v)
+     \san    no. of array elements, ${#.[@]}     (n, i, v)
+     \sai    array indices, ${!.[*]}             (n, i, v)
 
-  -- Test ------------------------------------------------
+  -- Test ---------------------------------------------------
 
-     \ta     arithmetic tests                 (n, i)
-     \tfp    file permission                  (n, i)
-     \tft    file types                       (n, i)
-     \tfc    file characteristics             (n, i)
-     \ts     string comparison                (n, i)
-     \toe    option is enabled                (n, i)
-     \tvs    variables has been set           (n, i)
-     \tfd    file descriptor is open          (n, i)
-     \tm     string matches regexp            (n, i)
+     \ta     arithmetic tests                    (n, i)
+     \tfp    file permission                     (n, i)
+     \tft    file types                          (n, i)
+     \tfc    file characteristics                (n, i)
+     \ts     string comparison                   (n, i)
+     \toe    option is enabled                   (n, i)
+     \tvs    variables has been set              (n, i)
+     \tfd    file descriptor is open             (n, i)
+     \tm     string matches regexp               (n, i)
 
-  -- I/O-Redirection -------------------------------------
-     \ior    IO-redirections (list)           (n, i)
-     \ioh    here-document                    (n, i)
+  -- I/O-Redirection ----------------------------------------
+     \ior    IO-redirections (list)              (n, i)
+     \ioh    here-document                       (n, i)
 
-  -- Pattern Matching ------------------------------------
+  -- Pattern Matching ---------------------------------------
 
-     \pzo    zero or more, ?( | )            (n, i)
-     \pzm    zero or more, *( | )            (n, i)
-     \pom    one or more, +( | )             (n, i)
-     \peo    exactly one, @( | )             (n, i)
-     \pae    anything except, !( | )         (n, i)
-     \ppc    POSIX classes                   (n, i)
-     \pbr    BASH_REMATCH                    (n, i)
+     \pzo    zero or more, ?( | )                (n, i)
+     \pzm    zero or more, *( | )                (n, i)
+     \pom    one or more, +( | )                 (n, i)
+     \peo    exactly one, @( | )                 (n, i)
+     \pae    anything except, !( | )             (n, i)
+     \ppc    POSIX classes                       (n, i)
+     \pbr    BASH_REMATCH                        (n, i)
 
-  -- Snippets --------------------------------------------
+  -- Snippets -----------------------------------------------
 
-     \nr     read code snippet                (n, i)
-     \nv     view code snippet  (readonly)    (n, i)
-     \nw     write code snippet               (n, v, i)
-     \ne     edit code snippet                (n, i)
+     \nr     read code snippet                   (n, i)
+     \nv     view code snippet  (readonly)       (n, i)
+     \nw     write code snippet                  (n, v, i)
+     \ne     edit code snippet                   (n, i)
 
-     \ntl    edit templates                   (n, i)
-     \ntr    reread the templates             (n, i)
-     \nts    switch template style            (n, i)
+     \ntl    edit templates                      (n, i)
+     \ntr    reread the templates                (n, i)
+     \nts    switch template style               (n, i)
 
-  -- Run -------------------------------------------------
+  -- Run ----------------------------------------------------
 
-  [n]\rr     update file, run script          (n, i)
-     \ra     set script cmd. line arguments   (n, i)
-     \rba    set Bash cmd. line arguments     (n, i)
-     \rc     update file, check syntax        (n, i)
-     \rco    syntax check options             (n, i)
-     \rd     start debugger                   (n, i)
-     \re     make script executable           (n, i)
-     \rh     hardcopy buffer to FILENAME.ps   (n, i)
-     \rs     plug-in settings                 (n, i)
-     \rt     set xterm size                   (n, i)
-     \ro     change output destination        (n, i)
+  [n]\rr     update file, run script             (n, i)
+     \ra     set script cmd. line arguments      (n, i)
+     \rba    set Bash cmd. line arguments        (n, i)
+     \rc     update file, check syntax           (n, i)
+     \rco    syntax check options                (n, i)
+     \rd     start debugger                      (n, i)
+     \re     make script executable/not exec.(*) (in )
+     \rh     hardcopy buffer to FILENAME.ps      (n, i)
+     \rs     plug-in settings                    (n, i)
+     \rt     set xterm size (*)                  (n, i)
+     \ro     change output destination           (n, i)
 
-  -- Bash help -------------------------------------------
+  -- Bash help ----------------------------------------------
 
-     \hb     Displays the Bash manual         (n, i)
-     \hh     Displays help for the builtin    (n, i)
+     \hb     Displays the Bash manual            (n, i)
+     \hh     Displays help for the builtin       (n, i)
              under the cursor (Bash help).
              The tab expansion is active.
-     \hm     displays the manual for the      (n, i)
+     \hm     displays the manual for the         (n, i)
              Bash command under the cursor
              The tab expansion is active.
-     \hbs    Displays the Vim help page for   (n, i)
+     \hbs    Displays the Vim help page for      (n, i)
              this plug-in.
+
+(*) Linux/UNIX only
 
 File 'bash-hotkeys.pdf' contains a reference card for these key mappings.
 Multiline inserts and code snippets will be indented after insertion.
@@ -842,7 +845,7 @@ g:BASH_LineEndCommColDefault   49
 g:BASH_SyntaxCheckOptionsGlob  ''
 g:BASH_Printheader             '%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N'
 g:BASH_InsertFileHeader        'yes'
-g:BASH_BASH                    $SHELL         (Linux/U**X)
+g:BASH_Executable              $SHELL         (Linux/U**X)
                                'bash.exe'     (Windows)
 g:BASH_ManualReader            'man'          (Linux/U**X)
                                'man.exe'      (Windows)
@@ -879,7 +882,7 @@ g:BASH_AlsoBash                ''
            g:BASH_SyntaxCheckOptionsGlob : shopt options used with syntax checking
            g:BASH_Printheader            : hardcopy header format
            g:BASH_InsertFileHeader       : suppress file header comment for new files
-           g:BASH_BASH                   : the shell used
+           g:BASH_Executable             : the shell used
            g:BASH_ManualReader           : the interface to the on-line manuals
            g:BASH_MapLeader              : the map leader for hotkeys 
                                            (see|bashsupport-usage-vim|)
@@ -1228,7 +1231,7 @@ addition. This plug-in assumes that the shell port bash.exe
 want to use can be reached via your path variable.  This shell can be changed
 to xyz-shell.exe by setting the following line into the file _vimrc:
 >
-  let g:BASH_BASH    = 'xyz-shell.exe'
+  let g:BASH_Executable = 'xyz-shell.exe'
 <
 The run-menu and the corresponding hotkeys are restricted. Please see 
 the document 'bash-hotkeys.pdf' for this restrictions.

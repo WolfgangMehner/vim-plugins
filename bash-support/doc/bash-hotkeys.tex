@@ -6,7 +6,7 @@
 %%                
 %%       Author:  Dr.-Ing. Fritz Mehner
 %%        Email:  mehner.fritz@fh-swf.de
-%%    Copyright:  Copyright (C)  2013 Dr.-Ing. Fritz Mehner (mehner.fritz@fh-swf.de)
+%%    Copyright:  Copyright (C) 2013-2014 Dr.-Ing. Fritz Mehner (mehner.fritz@fh-swf.de)
 %%      Version:  see \Pluginversion
 %%      Created:  20.05.2013
 %%                
@@ -28,7 +28,7 @@
 
 \setlength\parindent{0pt}
 
-\newcommand{\Pluginversion}{4.1}
+\newcommand{\Pluginversion}{4.2}
 \newcommand{\ReleaseDate}{\today}
 \newcommand{\Rep}{{\scriptsize{[n]}}}
 
@@ -85,11 +85,11 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 %%======================================================================
 %%  table, left part				[[[1
 %%======================================================================
+%%----------------------------------------------------------------------
+%%  main menu				[[[2
+%%----------------------------------------------------------------------
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{60mm}|}
-%%----------------------------------------------------------------------
-%%  main menu
-%%----------------------------------------------------------------------
 \hline 
 \multicolumn{2}{|r|}{\textsl{\textbf{B}ash}}\\[1.0ex]
 \hline \verb'\bps'   & \textbf{p}arameter \textbf{s}ubstitution (list) \hfill (n, i)\\
@@ -100,7 +100,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline \verb'\bso'   & \textbf{s}h\textbf{o}pts (list)                 \hfill (n, i)\\
 \hline 
 %%----------------------------------------------------------------------
-%%  menu Comments
+%%  menu Comments				[[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{C}omments}}                       \\[1.0ex]
@@ -129,12 +129,11 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 %%======================================================================
 %%  table, middle part				[[[1
 %%======================================================================
-%
+%%----------------------------------------------------------------------
+%%  menu Statements				[[[2
+%%----------------------------------------------------------------------
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{60mm}|}
-%%----------------------------------------------------------------------
-%%  menu Statements
-%%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{S}tatements}}                    \\[1.0ex]
 \hline \verb'\sc'  & \verb'case in ... esac'               \hfill (n, i)\\
@@ -160,7 +159,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline
 %%
 %%----------------------------------------------------------------------
-%%  menu Tests
+%%  menu Tests				[[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{T}ests}}                 \\[1.0ex]
@@ -176,7 +175,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline
 %%
 %%----------------------------------------------------------------------
-%%  menu IO-Redirection
+%%  menu IO-Redirection				[[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{I}O-Redirection}}                 \\[1.0ex]
@@ -190,13 +189,11 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 %%======================================================================
 %%  table, right part				[[[1
 %%======================================================================
-%
+%%----------------------------------------------------------------------
+%%  menu Pattern Matching				[[[2
+%%----------------------------------------------------------------------
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{62mm}|}
-%
-%%----------------------------------------------------------------------
-%%  menu Pattern Matching
-%%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{P}attern Matching}}     \\[1.0ex]
 \hline     \verb'pzo' & zero or one,      \verb' ?( | )'  \hfill (n, i)\\ 
@@ -209,7 +206,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline
 %
 %%----------------------------------------------------------------------
-%%  menu Snippet
+%%  menu Snippet				[[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{S\textbf{n}ippets}}               \\[1.0ex]
@@ -222,24 +219,24 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline \verb'\nts' & choose style              \hfill (n, i)\\
 \hline
 %%----------------------------------------------------------------------
-%%  menu Run
+%%  menu Run				[[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{R}un}} \\[1.0ex]
-\hline \verb'\rr'  & update file, run script           \hfill (n, i, v$^1$)\\
-\hline \verb'\ra'  & set script cmd. line arguments    \hfill (n, i)\\
-\hline \verb'\rba' & set Bash cmd. line arguments      \hfill (n, i)\\
-\hline \verb'\rc'  & update file, check syntax         \hfill (n, i)\\
-\hline \verb'\rco' & syntax check options              \hfill (n, i)\\
-\hline \verb'\rd'  & start debugger$^1$                \hfill (n, i)\\
-\hline \verb'\re'  & make script executable$^1$        \hfill (n, i)\\
-\hline \verb'\rh'  & hardcopy buffer                   \hfill (n, i, v)\\
-\hline \verb'\rs'  & plug-in settings                  \hfill (n, i)\\
-\hline \verb'\rx'  & set xterm size$^1$                \hfill (n, i, GUI only)\\
-\hline \verb'\ro'  & change output destination         \hfill (n, i)\\
+\hline \verb'\rr'  & update file, run script              \hfill (n, i, v$^1$)\\
+\hline \verb'\ra'  & set script cmd. line arguments       \hfill (n, i)\\
+\hline \verb'\rba' & set Bash cmd. line arguments         \hfill (n, i)\\
+\hline \verb'\rc'  & update file, check syntax            \hfill (n, i)\\
+\hline \verb'\rco' & syntax check options                 \hfill (n, i)\\
+\hline \verb'\rd'  & start debugger$^1$                   \hfill (n, i)\\
+\hline \verb'\re'  & make script executable/not exec.$^1$ \hfill (n, i)\\
+\hline \verb'\rh'  & hardcopy buffer                      \hfill (n, i, v)\\
+\hline \verb'\rs'  & plug-in settings                     \hfill (n, i)\\
+\hline \verb'\rx'  & set xterm size$^{1,2}$               \hfill (n, i)\\
+\hline \verb'\ro'  & change output destination            \hfill (n, i)\\
 \hline
 %%----------------------------------------------------------------------
-%%  menu Help
+%%  menu Help				[[[2
 %%----------------------------------------------------------------------
 \hline 
 \multicolumn{2}{|r|}{\textsl{\textbf{H}elp}}\\[1.0ex]
@@ -255,9 +252,10 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 %
 \begin{minipage}[b]{75mm}%
 \scriptsize{%
-\vspace{10mm}
-\hrulefill\\
-$^1$ {Linux/U**x only}
+\vspace{2mm}
+%\hrulefill\\
+$^1$ {Linux/U**x only}\\
+$^2$ {GUI only}
 }%
 \end{minipage}\\
 %
