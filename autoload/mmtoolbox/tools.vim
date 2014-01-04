@@ -11,8 +11,8 @@
 "  Organization:  
 "       Version:  see variable g:Toolbox_Version below
 "       Created:  29.12.2012
-"      Revision:  14.12.2013
-"       License:  Copyright (c) 2012, Wolfgang Mehner
+"      Revision:  04.01.2014
+"       License:  Copyright (c) 2012-2014, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:Toolbox_Version') && ! exists('g:Toolbox_DevelopmentOverwrite') )
 	finish
 endif
-let g:Toolbox_Version= '1.0'     " version number of this script; do not change
+let g:Toolbox_Version= '1.0.1'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions   {{{1
@@ -164,6 +164,11 @@ function! mmtoolbox#tools#Load ( toolbox, directories )
 			"
 			" do not process 'tools.vim' (this script)
 			if name == 'tools'
+				continue
+			endif
+			"
+			" do not load multiple times
+			if has_key ( a:toolbox.tools, name )
 				continue
 			endif
 			"
