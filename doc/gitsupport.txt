@@ -115,7 +115,7 @@ run the commands in every subdirectory of the project.
   |:GitTag| <args>                   (run) git tag <args>
 
   |:GitK| <args>                     start gitk with the given arguments
-  |:GitTerm| <args>                  run git in an external terminal (^2)
+  |:GitBash| <args>                  run git in an external terminal
 
   |:GitSupportHelp|                  show plug-in help
   |:GitSupportSettings|              show plug-in settings
@@ -124,7 +124,6 @@ run the commands in every subdirectory of the project.
 (run) runs the command after asking for confirmation
 (buf) runs the command and redirects its output in a new buffer
 (^1)  runs the command within the context of the top-level directory
-(^2)  UNIX only
 
 When a command opens a new buffer, several maps are defined for this buffer.
 Hitting <SHIFT-F1> always prints a short help with all available maps.
@@ -653,13 +652,13 @@ The first version opens a buffer listing the tags. The second version executes
 Starts gitk with the given arguments.
 
 ------------------------------------------------------------------------------
-                                                                    *:GitTerm*
-  :GitTerm <args> ~
+                                                                    *:GitBash*
+  :GitBash <args> ~
 
 Runs git in an external terminal. Useful for interactive commands, such as
 "git add -p ...".
 
-+The xterm related functionality is only available under UNIX.
+Windows: If called without arguments, starts the git bash in interactive mode.
 
 ------------------------------------------------------------------------------
                                          *:GitSupportHelp* *:GitSupportSettings*
@@ -929,6 +928,7 @@ in the .vimrc file.
   |g:Git_Executable|            'git'       the Git executable (^1)
   |g:Git_GitKExecutable|        'gitk'      the gitk executable (^1)
   |g:Git_GitKScript|            ''          the gitk script (^1)
+  |g:Git_GitBashExecutable|     'xterm'     the git bash executable (^1) (^2)
   |g:Git_LoadMenus|             'yes'       whether to load the menus
                                           ('yes' or 'no')
   |g:Git_RootMenu|              '&Git'      name and shortcut of the root menu
@@ -941,15 +941,18 @@ in the .vimrc file.
                                           inside the status buffer in section
                                           "Changes to be committed"
 
-  |g:Xterm_Executable|          'xterm'     the xterm executable (^2)
-  |g:Xterm_Defaults|            '...'       the xterm default settings (^2)
+  |g:Xterm_Executable|          'xterm'     the xterm executable (^3)
+  |g:Xterm_Defaults|            '...'       the xterm default settings (^3)
  ----------------------------------------------------------------------------
 
 (^1) the Windows defaults are as follows:
-  |g:Git_Executable|     - C:\Program Files\Git\bin\git.exe
-  |g:Git_GitKExecutable| - C:\Program Files\Git\bin\tclsh.exe
-  |g:Git_GitKScript|     - C:\Program Files\Git\bin\gitk
-(^2) UNIX only
+  |g:Git_Executable|        - C:\Program Files\Git\bin\git.exe
+  |g:Git_GitKExecutable|    - C:\Program Files\Git\bin\tclsh.exe
+  |g:Git_GitKScript|        - C:\Program Files\Git\bin\gitk
+  |g:Git_GitBashExecutable| - C:\Program Files\Git\bin\sh.exe
+(^2) under UNIX, the default for g:Git_GitBashExecutable is the value of
+  g:Xterm_Executable, which in turn is "xterm"
+(^3) UNIX only
 
 ------------------------------------------------------------------------------
 6.1  EXECUTABLE                                 *gitsupport-config-executable*
@@ -963,13 +966,19 @@ For Windows, set up the executable similar to this: >
   let g:Git_Executable = 'C:\Program Files\Git\bin\git.exe'
 <
                                        *g:Git_GitKExecutable* *g:Git_GitKScript*
-Set the gitk executable. You should use the English language environment: >
+Sets the gitk executable. You should use the English language environment: >
   let g:Git_Executable = 'LANG=en_US gitk'
 <
 For Windows, set up gitk similar to this, the interpreter and the gitk script
 have to be given separately: >
   let g:Git_GitKExecutable = 'C:\Program Files\Git\bin\tclsh.exe'
   let g:Git_GitKScript     = 'C:\Program Files\Git\bin\gitk'
+<
+                                                     *g:Git_GitBashExecutable*
+Sets the git bash executable. Under UNIX xterm(1) is used.
+
+For Windows, set up the executable similar to this: >
+  let g:Git_GitBashExecutable= 'C:\Program Files\Git\bin\sh.exe'
 <
 ------------------------------------------------------------------------------
 6.2  MENUS                                           *gitsupport-config-menus*
@@ -1076,7 +1085,8 @@ value on the command line.
 6.5  XTERM                                           *gitsupport-config-xterm*
 ------------------------------------------------------------------------------
 
-The xterm related functionality is only available under UNIX.
+The xterm related functionality is only available under UNIX. It is used to
+run interactive commands.
 
                                                           *g:Xterm_Executable*
 The xterm executable is set by g:Xterm_Executable, for example: >
@@ -1086,7 +1096,13 @@ The xterm executable is set by g:Xterm_Executable, for example: >
 Set additional arguments for xterm. The default is: >
   let g:Xterm_Defaults = '-fa courier -fs 12 -geometry 80x24'
 <
+For example, use these arguments for black letters on a white background: >
+  let g:Xterm_Defaults = '-fg black -bg white -fs 12 -geometry 80x24'
+<
 See the man-page of xterm for the possible options.
+
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
 
 ==============================================================================
 A.  TROUBLESHOOTING - KNOWN ISSUES                *gitsupport-troubleshooting*
