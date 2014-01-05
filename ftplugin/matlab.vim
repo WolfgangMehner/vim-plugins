@@ -10,7 +10,7 @@
 "       Version:  1.0
 "       Created:  11.04.2010
 "      Revision:  24.11.2013
-"       License:  Copyright (c) 2012-2013, Wolfgang Mehner
+"       License:  Copyright (c) 2012-2014, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the

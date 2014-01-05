@@ -117,13 +117,13 @@ Besides the templates, there is some other functionality provided in the menu
 2.1.1  End-of-Line Comments                 *matlabsupport-usage-comments-eol*
 
 End-of-line comments can be added using the map \cl or the menu entry
-"Comments.end-of-line comment". They will all start in the same column. The
+"Comments -> end-of-line comment". They will all start in the same column. The
 number of this column is set to a default value at first (see
 |g:Matlab_LineEndCommentColumn|), but can be set for each buffer individually
-using "Comments.set end-of-line col.". This causes the column currently under
-the cursor to be used in the future.
+using "Comments -> set end-of-line col.". This causes the column currently
+under the cursor to be used in the future.
 Existing comments can be adjusted to this column using \cj or the menu entry
-"Comments.adjust end-of-line com.".
+"Comments -> adjust end-of-line com.".
 
 In normal and insert mode, the current line will be changed. In visual mode
 the entire selected range is edited. The maps can also be used with a line
@@ -181,9 +181,9 @@ and the map \ct (toggle) is used, the result will be: >
 
 A skeleton for a comment can be created automatically for a given function.
 This works on the current line or a selected range of lines. After choosing
-the function definition line, use "Comments.function description (auto)". The
-results will be slightly different, depending on whether the function is the
-primary function of the file or another function.
+the function definition line, use "Comments -> function description (auto)".
+The results will be slightly different, depending on whether the function is
+the primary function of the file or another function.
 The appearance (and placement) can be change in the template library.
 
 Example:
@@ -388,9 +388,9 @@ The template system comes with several auxiliary functions.
   choose a style             Snippets.choose style          <LocalLeader>nts
  ----------------------------------------------------------------------------
 
-"Snippets.edit templates" will open a file browser in the directory containing
-your template library. This feature is merely a fast way to jump to the files.
-After the templates have been edited, they need to be read again.
+"Snippets -> edit templates" will open a file browser in the directory
+containing your template library. This feature is merely a fast way to jump to
+the files.  After the templates have been edited, they need to be read again.
 
 See the documentation of the template system for a more in-depth discussion:
 |templatesupport.txt|
@@ -535,8 +535,8 @@ Sets the local template file accordingly.
 4.7  TEMPLATE CUSTOMIZATION               *matlabsupport-config-template-cstm*
 ------------------------------------------------------------------------------
 
-The template library is customized via your local template file. (Use the
-menu entry "Snippets.edit templates" to get there.)
+The template library is customized via your local template file. Use the menu
+entry "Snippets -> edit local templates" to get there.
 
 You should fill in your name and other information here:
 >
@@ -556,13 +556,17 @@ This sets the format for the date to the preferred representation for your
 current locale, the time will be inserted as 10:24 and the year will be
 represented using four digits.
 
+Afterwards, use the menu entry "Snippets -> reread templates" to apply the
+changes.
+
 ------------------------------------------------------------------------------
 4.8  BROWSER                                    *matlabsupport-config-browser*
 ------------------------------------------------------------------------------
 
 Opening the online reference for various items is a feature of the template
 library. The browser has to be configured there, in your local template file
-(see |matlabsupport-config-template-lib|), by setting the macro *|HELP_BROWSER|* .
+(see |matlabsupport-config-template-lib|), by setting the macro *|HELP_BROWSER|*
+(see below).
 
 The help facility will open the reference with a system call like this: >
   |HELP_BROWSER| |URL|
@@ -576,10 +580,20 @@ By adding this line to your local template file: >
 The online reference will be opened like this: >
   firefox -new-tab http://wiki.awesomematlabwiki.de/wiki/sin
 <
-For Windows, you can set up your browser similar to this: >
-  SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
-Note the quotes within the string, they are necessary to escape the spaces
-within the path.
+Under Windows, the browser for opening the online documentation has to be
+configured. To set the executable, the template library has to be modified.
+In case of a local installation (the default), choose:
+  Matlab -> Snippets -> edit local templates
+and for a global installation:
+  Matlab -> Snippets -> edit global templates
+Open the main template file 'Templates' and uncomment the line >
+ §SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
+by removing the leading '§' >
+ SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
+Then set the right executable. Mind the double quotes which escape the name of
+the executable.
+Finally, reread the template library using:
+  Matlab -> Snippets -> reread templates
 
 ==============================================================================
 5.  SYSTEM-WIDE INSTALLATION                       *matlabsupport-system-wide*
@@ -690,4 +704,4 @@ Sameer Sheorey (sameer0s) and Fabrice Guy (Fabrice)
   for demonstrating how to use mlint with Vim.
 
 ==============================================================================
-vim:tw=78:noet:ts=2:ft=help:norl:
+vim:tw=78:noet:ts=2:ft=help:norl:expandtab:

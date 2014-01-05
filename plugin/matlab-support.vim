@@ -12,7 +12,7 @@
 "       Version:  see variable g:Matlab_Version below
 "       Created:  11.04.2010
 "      Revision:  24.11.2013
-"       License:  Copyright (c) 2012-2013, Wolfgang Mehner
+"       License:  Copyright (c) 2012-2014, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -659,7 +659,7 @@ function! Matlab_CheckCode() range
 	endif
 	"
 	" call 'mlint' and process the output (new version)
-	let errors_mlint = system ( s:Matlab_MlintExecutable.' -id '.fullname )
+	let errors_mlint = system ( shellescape( s:Matlab_MlintExecutable ).' -id '.fullname )
 	"
 	if empty( errors_mlint )
 		let errors = ''
@@ -869,9 +869,9 @@ function! s:CreateMaps ()
 	inoremap    <buffer>  <silent> <LocalLeader>ntl    <C-C>:call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,-1)<CR>
 	vnoremap    <buffer>  <silent> <LocalLeader>ntl    <C-C>:call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,-1)<CR>
 	if s:installation == 'system'
-		nnoremap  <buffer>  <silent> <LocalLeader>ntg         :call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,1)<CR>
-		inoremap  <buffer>  <silent> <LocalLeader>ntg    <C-C>:call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,1)<CR>
-		vnoremap  <buffer>  <silent> <LocalLeader>ntg    <C-C>:call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,1)<CR>
+		nnoremap  <buffer>  <silent> <LocalLeader>ntg         :call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,0)<CR>
+		inoremap  <buffer>  <silent> <LocalLeader>ntg    <C-C>:call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,0)<CR>
+		vnoremap  <buffer>  <silent> <LocalLeader>ntg    <C-C>:call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,0)<CR>
 	endif
 	nnoremap    <buffer>  <silent> <LocalLeader>ntr         :call mmtemplates#core#ReadTemplates(g:Matlab_Templates,"reload","all")<CR>
 	inoremap    <buffer>  <silent> <LocalLeader>ntr    <C-C>:call mmtemplates#core#ReadTemplates(g:Matlab_Templates,"reload","all")<CR>
@@ -893,9 +893,9 @@ function! s:CreateMaps ()
 	"-------------------------------------------------------------------------------
 	" settings
 	"-------------------------------------------------------------------------------
-	nnoremap    <buffer>  <silent>  <LocalLeader>rs         :call Matlab_Settings()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>rs    <Esc>:call Matlab_Settings()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>rs    <Esc>:call Matlab_Settings()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>rs         :call Matlab_Settings(0)<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rs    <Esc>:call Matlab_Settings(0)<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>rs    <Esc>:call Matlab_Settings(0)<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" help
@@ -1000,7 +1000,7 @@ function! s:InitMenus()
 	"
 	exe ahead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntl      :call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,-1)<CR>'
 	if s:installation == 'system'
-		exe ahead.'edit\ &global\ templates<Tab>'.esc_mapl.'ntg   :call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,1)<CR>'
+		exe ahead.'edit\ &global\ templates<Tab>'.esc_mapl.'ntg   :call mmtemplates#core#EditTemplateFiles(g:Matlab_Templates,0)<CR>'
 	endif
 	exe ahead.'reread\ &templates<Tab>'.esc_mapl.'ntr           :call mmtemplates#core#ReadTemplates(g:Matlab_Templates,"reload","all")<CR>'
 	"
@@ -1019,7 +1019,7 @@ function! s:InitMenus()
 	exe ahead.'&ignore\ warning<TAB>'.esc_mapl.'ri  :call Matlab_IgnoreWarning()<CR>'
 	exe ahead.'-Sep01-                              :'
 	"
-	exe ahead.'&settings<TAB>'.esc_mapl.'rs  :call Matlab_Settings()<CR>'
+	exe ahead.'&settings<TAB>'.esc_mapl.'rs  :call Matlab_Settings(0)<CR>'
 	"
 	"-------------------------------------------------------------------------------
 	" help
@@ -1092,21 +1092,26 @@ endfunction    " ----------  end of function Matlab_RemoveMenus  ----------
 " Matlab_Settings : Print the settings on the command line.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Matlab_Settings()
+function! Matlab_Settings( verbose )
+	"
+	if     s:MSWIN | let sys_name = 'Windows'
+	elseif s:UNIX  | let sys_name = 'UNIX'
+	else           | let sys_name = 'unknown' | endif
 	"
 	let [ templ_style, msg ] = mmtemplates#core#Resource( g:Matlab_Templates, 'style' )
 	"
-	if executable( s:Matlab_MlintExecutable ) | let mlint_status = 'yes'
-	else                                      | let mlint_status = 'no'  | endif
+	let mlint_status = executable( s:Matlab_MlintExecutable ) ? '<yes>' : '<no>'
 	"
 	let	txt = " Matlab-Support settings\n\n"
 				\ .'                   author :  "'.mmtemplates#core#ExpandText( g:Matlab_Templates, '|AUTHOR|'       )."\"\n"
 				\ .'                authorref :  "'.mmtemplates#core#ExpandText( g:Matlab_Templates, '|AUTHORREF|'    )."\"\n"
-				\ .'             organization :  "'.mmtemplates#core#ExpandText( g:Matlab_Templates, '|ORGANIZATION|' )."\"\n"
 				\ .'                    email :  "'.mmtemplates#core#ExpandText( g:Matlab_Templates, '|EMAIL|'        )."\"\n"
+				\ .'             organization :  "'.mmtemplates#core#ExpandText( g:Matlab_Templates, '|ORGANIZATION|' )."\"\n"
 				\ .'         copyright holder :  "'.mmtemplates#core#ExpandText( g:Matlab_Templates, '|COPYRIGHT|'    )."\"\n"
+				\ .'                  licence :  "'.mmtemplates#core#ExpandText( g:Matlab_Templates, '|LICENSE|'    )."\"\n"
 				\ .'           template style :  "'.templ_style."\"\n"
-				\ .'      plugin installation :  "'.s:installation."\"\n"
+				\ ."\n"
+				\ .'      plugin installation :  '.s:installation.' on '.sys_name."\n"
 	if s:installation == 'system'
 		let txt .= '     global template file :  '.s:Matlab_GlbTemplateFile."\n"
 		if filereadable( s:Matlab_LclTemplateFile )
@@ -1118,12 +1123,13 @@ function! Matlab_Settings()
 		let txt .= '      local template file :  '.s:Matlab_LclTemplateFile."\n"
 	endif
 	let txt .=
-				\  '       mlint path and exe :  '.s:Matlab_MlintExecutable."\n"
-				\ .'         mlint executable :  <'.mlint_status.">\n"
-				\ .'    using template engine :  Version '.g:Templates_Version." by Wolfgang Mehner\n"
-				\ ."\n"
+				\  '       code snippets dir. :  '.s:Matlab_SnippetDir."\n"
+				\ .'       mlint path and exe :  '.s:Matlab_MlintExecutable."\n"
+				\ .'             > executable :  '.mlint_status."\n"
+				\ .'    using template engine :  version '.g:Templates_Version." by Wolfgang Mehner\n"
 				\ ."________________________________________________________________________________\n"
 				\ ." Matlab-Support, Version ".g:Matlab_Version." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
+	"
 	echo txt
 endfunction    " ----------  end of function Matlab_Settings  ----------
 "
