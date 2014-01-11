@@ -1,4 +1,4 @@
-*latexsupport.txt*           LATEX Support                     January 04 2014
+*latexsupport.txt*           LATEX Support                     January 11 2014
 
 LaTeX Support                                     *latex-support* *latexsupport*
 
@@ -558,6 +558,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      ´rps       view PS                         (ni)
      ´rmi       run makeindex                   (ni)
      ´rbi       run bibtex                      (ni)
+     ´rc        run a converter                 (ni)
      ´rse       show plugin settings            (ni)
 
 

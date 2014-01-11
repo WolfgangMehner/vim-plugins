@@ -248,11 +248,11 @@ let s:Latex_TypesetterCall	= {
 			\ }
 
 let s:Latex_ConverterCall	= {
-			\ 'dvi-pdf' 	: s:Latex_DviPdf,
-			\ 'dvi-png'		: s:Latex_DviPng,
-			\ 'dvi-ps'		: s:Latex_DviPs ,
-			\ 'pdf-png'		: s:Latex_PdfPng,
-			\ 'ps-pdf'		: s:Latex_PsPdf ,
+			\ 'dvi-pdf' 	: [ s:Latex_DviPdf , "no" ],
+			\ 'dvi-png'		: [ s:Latex_DviPng , "no" ],
+			\ 'dvi-ps'		: [ s:Latex_DviPs  , "no" ],
+			\ 'pdf-png'		: [ s:Latex_PdfPng , "yes"],
+			\ 'ps-pdf'		: [ s:Latex_PsPdf  , "no" ],
 			\ }
 
 let s:Latex_ViewerCall = {
@@ -695,13 +695,13 @@ function! s:InitMenus()
 	exe ihead.'run\ &bibtex<Tab>'.esc_mapl.'rbi                     <C-C>:call Latex_RunBibtex()<CR>'
 	exe ahead.'-SEP2-                            :'
 
-	exe ahead.'Convert.Convert<Tab>LaTeX                      <Nop>'
-	exe ahead.'Convert.-SEP3-                       :'
-	exe ahead.'Convert.DVI->PDF                     :call Latex_Conversions( "dvi-pdf", "no" )<CR>'
-	exe ahead.'Convert.DVI->PS                      :call Latex_Conversions( "dvi-ps" , "no" )<CR>'
-	exe ahead.'Convert.DVI->PNG                     :call Latex_Conversions( "dvi-png", "no" )<CR>'
-	exe ahead.'Convert.PDF->PNG                     :call Latex_Conversions( "pdf-png", "yes" )<CR>'
-	exe ahead.'Convert.PS->PDF                      :call Latex_Conversions( "ps-pdf" , "no" )<CR>'
+	exe ahead.'Convert<Tab>'.esc_mapl.'rc.Convert<Tab>LaTeX            <Nop>'
+	exe ahead.'Convert<Tab>'.esc_mapl.'.-SEP3-                         :'
+	exe ahead.'Convert<Tab>'.esc_mapl.'rc.DVI->PDF                     :call Latex_Conversions( "dvi-pdf")<CR>'
+	exe ahead.'Convert<Tab>'.esc_mapl.'rc.DVI->PS                      :call Latex_Conversions( "dvi-ps" )<CR>'
+	exe ahead.'Convert<Tab>'.esc_mapl.'rc.DVI->PNG                     :call Latex_Conversions( "dvi-png")<CR>'
+	exe ahead.'Convert<Tab>'.esc_mapl.'rc.PDF->PNG                     :call Latex_Conversions( "pdf-png")<CR>'
+	exe ahead.'Convert<Tab>'.esc_mapl.'rc.PS->PDF                      :call Latex_Conversions( "ps-pdf" )<CR>'
 
 	exe ahead.'-SEP3-                            :'
 	exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh        :call Latex_Hardcopy("n")<CR>'
@@ -730,6 +730,31 @@ function! s:InitMenus()
 	exe ihead.'&help\ (Latex-Support)<Tab>'.esc_mapl.'hp   <C-C>:call Latex_HelpLatexSupport()<CR>'
 
 endfunction    " ----------  end of function s:InitMenus  ----------
+"
+"===  FUNCTION  ================================================================
+"          NAME:  Latex_ConvertInput
+"   DESCRIPTION:  read cppcheck severity from the command line
+"    PARAMETERS:  -
+"       RETURNS:  
+"===============================================================================
+function! Latex_ConvertInput ()
+		let retval = input( "start converter (tab exp.): ", '', 'customlist,Latex_ConverterList' )
+		redraw!
+		call Latex_Conversions( retval )
+	return
+endfunction    " ----------  end of function Latex_ConvertInput  ----------
+
+"===  FUNCTION  ================================================================
+"          NAME:  Latex_ConverterList     {{{1
+"   DESCRIPTION:  cppcheck severity : callback function for completion
+"    PARAMETERS:  ArgLead - 
+"                 CmdLine - 
+"                 CursorPos - 
+"       RETURNS:  
+"===============================================================================
+function!	Latex_ConverterList ( ArgLead, CmdLine, CursorPos )
+	return filter( copy( sort( keys( s:Latex_ConverterCall ) ) ), 'v:val =~ "\\<'.a:ArgLead.'\\w*"' )
+endfunction    " ----------  end of function Latex_ConverterList  ----------
 "
 "===  FUNCTION  ================================================================
 "          NAME:  Latex_JumpForward     {{{1
@@ -949,6 +974,8 @@ function! s:CreateAdditionalMaps ()
 	vnoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call Latex_Hardcopy("v")<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call Latex_Hardcopy("n")<CR>
 	"
+	 noremap  <buffer>  <silent>  <LocalLeader>rc        :call Latex_ConvertInput()<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>rc   <C-C>:call Latex_ConvertInput()<CR>
 	"-------------------------------------------------------------------------------
 	"   tool box
 	"-------------------------------------------------------------------------------
@@ -1168,7 +1195,7 @@ function! Latex_View ( format )
   let targetformat   = expand("%:r").'.'.fmt
 	if !filereadable( targetformat )
 		if filereadable( expand("%:r").'.dvi' )
-			call Latex_Conversions( 'dvi-'.fmt, 'no' )
+			call Latex_Conversions( 'dvi-'.fmt )
 		else
 			echomsg 'File "'.targetformat.'" does not exist or is not readable.'
 			return
@@ -1263,15 +1290,23 @@ endfunction    " ----------  end of function Latex_RunBibtex ----------
 "------------------------------------------------------------------------------
 "  Convert DVI   {{{1
 "------------------------------------------------------------------------------
-function! Latex_Conversions ( format, target )
+function! Latex_Conversions ( format )
 	if &filetype != 'tex'
 		echomsg	'The filetype of this buffer is not "tex".'
 		return
 	endif
+	if a:format == ''
+		return
+	endif
 
-	let	converter	= s:Latex_ConverterCall[a:format]
-	if converter == '' || !executable( split(converter)[0] )
-		echomsg 'Converter '.converter.' does not exist or its name is not unique.'
+	if !has_key( s:Latex_ConverterCall, a:format )
+		echomsg 'Converter "'.a:format.'" does not exist.'
+		return
+	endif
+
+	let	converter	= s:Latex_ConverterCall[a:format][0]
+	if !executable( split(converter)[0] )
+		echomsg 'Converter "'.converter.'" does not exist or its name is not unique.'
 		return
 	endif
 
@@ -1283,10 +1318,11 @@ function! Latex_Conversions ( format, target )
   let source   = expand("%:r").'.'.split( a:format, '-' )[0]
   let logfile  = expand("%:r").'.conversion.log'
 	let target   = ''
-	if a:target == 'yes'
+	if s:Latex_ConverterCall[a:format][1] == 'yes'
 		let target   = expand("%:r").'.'.split( a:format, '-' )[1]
 	endif
-  silent exe '!'.s:Latex_ConverterCall[a:format].' '.source.' '.target.' > '.logfile
+""  silent exe '!'.s:Latex_ConverterCall[a:format][0].' '.source.' '.target.' > '.logfile
+  silent exe '!'.converter.' '.source.' '.target.' > '.logfile
 	if v:shell_error
 		echohl WarningMsg
 		echo 'Conversion '.a:format.' reported errors. Please see file "'.logfile.'" !'

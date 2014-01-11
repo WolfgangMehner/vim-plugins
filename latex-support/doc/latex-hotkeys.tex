@@ -11,13 +11,13 @@
 %%         Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
 %%   Organization:  FH Südwestfalen, Iserlohn, Germany
 %%      Copyright:  Copyright (c) 2013-2014, Dr. Fritz Mehner
-%%                
+%%
 %%=====================================================================================
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Latex settings      [[[1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\documentclass[oneside,10pt,landscape,DIV17]{scrartcl}
+\documentclass[oneside,10pt,landscape,DIV16]{scrartcl}
 
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
@@ -60,7 +60,7 @@
 \hypersetup{pdftitle={Vim-plug-in, latex-support.vim, hot keys}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%  START OF DOCUMENT     [[[1
+%%  START OF DOCUMENT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
@@ -68,13 +68,13 @@
 \begin{center}
 %
 %%======================================================================
-%%  title     [[[2
+%%  title     [[[1
 %%======================================================================
 \textbf{\textsc{\small{Vim-Plug-in}}}\\
 \textbf{\LARGE{latex-support.vim}}\\
 \textbf{\textsc{\small{Version \Pluginversion}}}\\
 \vspace{5mm}%
-\textbf{\textsc{\Huge{Hot keys}}}\\ 
+\textbf{\textsc{\Huge{Hot keys}}}\\
 \vspace{5mm}%
 Key mappings for Vim and gVim.\\
 Plug-in: http://vim.sourceforge.net\\
@@ -84,19 +84,19 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \vspace{4.0mm}
 
 %%======================================================================
-%%  page 1 / table, left part     [[[2
+%%  page 1 / table, left part     [[[1
 %%======================================================================
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{60mm}|}
 %%----------------------------------------------------------------------
 %%  Help
 %%----------------------------------------------------------------------
-\hline 
+\hline
 \multicolumn{2}{|r|}{\textsl{\textbf{H}elp}}\\[1.0ex]
 \hline \Map{he}   & English dictionary              \hfill (n,i)\\
 \hline \Map{ht}   & start \texttt{texdoc}           \hfill (n,i)\\
 \hline \Map{hp}   & help (plug-in)                  \hfill (n,i)\\
-\hline 
+\hline
 %%----------------------------------------------------------------------
 %%  Comments
 %%----------------------------------------------------------------------
@@ -132,7 +132,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
 %%======================================================================
-%%  page 1 / table, middle part     [[[2
+%%  page 1 / table, middle part     [[[1
 %%======================================================================
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{60mm}|}
@@ -176,6 +176,15 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline \Map{tre}  & ref                            \hfill (n, i)\\
 \hline \Map{tur}  & url                            \hfill (n, i, v)\\
 \hline
+%
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%======================================================================
+%%  page 1 / table, right part      [[[1
+%%======================================================================
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{62mm}|}
 %%----------------------------------------------------------------------
 %%  Snippets
 %%----------------------------------------------------------------------
@@ -190,15 +199,6 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline \Map{ntr} & reread templates          \hfill (n, i)   \\
 \hline \Map{nts} & choose style              \hfill (n, i)   \\
 \hline
-%
-\end{tabular}\\
-%%~~~~~ TABULAR :  end  ~~~~~~~~~~
-%
-%%======================================================================
-%%  page 1 / table, right part      [[[2
-%%======================================================================
-%%~~~~~ TABULAR : begin ~~~~~~~~~~
-\begin{tabular}[]{|p{11mm}|p{62mm}|}
 %%----------------------------------------------------------------------
 %%  Math
 %%----------------------------------------------------------------------
@@ -230,6 +230,17 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline  \Map{mve} & vec                       \hfill (n, i, v)\\
 \hline  \Map{mon} & operatorname              \hfill (n, i, v)\\
 \hline
+%
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+\newpage
+%
+%%======================================================================
+%%  page 2 / table, left part     [[[1
+%%======================================================================
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{63mm}|}
 %%----------------------------------------------------------------------
 %%  Wizard
 %%----------------------------------------------------------------------
@@ -255,17 +266,6 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline  \Map{wmp}  & minipage                 \hfill (n, i, v)\\
 \hline  \Map{wbp}  & parbox                   \hfill (n, i, v)\\
 \hline
-%
-\end{tabular}\\
-%%~~~~~ TABULAR :  end  ~~~~~~~~~~
-%
-\newpage
-%
-%%======================================================================
-%%  page 2 / table, left part     [[[2
-%%======================================================================
-%%~~~~~ TABULAR : begin ~~~~~~~~~~
-\begin{tabular}[]{|p{11mm}|p{63mm}|}
 %%----------------------------------------------------------------------
 %%  menu run
 %%----------------------------------------------------------------------
@@ -279,6 +279,7 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline
 \hline \Map{rmi}  & run \texttt{makeindex}                   \hfill (n, i)\\
 \hline \Map{rbi}  & run \texttt{bibtex}                      \hfill (n, i)\\
+\hline \Map{rc}   & run a converter                          \hfill (n, i)\\
 \hline \Map{rh}   & hardcopy buffer to \small{FILENAME}.ps   \hfill (n, i, v)\\
 \hline \Map{rse}  & show plugin settings                     \hfill (n, i)\\
 \hline
@@ -296,16 +297,8 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
 %%======================================================================
-%%  page 2 / table, middle part     [[[2
+%%  page 2 / table, middle part     [[[1
 %%======================================================================
-\fbox{\begin{minipage}[t][30mm][l]{73mm}
-\begin{flushleft}
-\large{\textbf{Ex Commands}}\\[1.0ex]
-%
-Set \texttt{make} command line arguments (same as \Map{rma})\\[1.0ex]
-\texttt{\ :MakeCmdlineArgs}\\[1.0ex]
-\end{flushleft}
-\end{minipage}}
 %
 \end{center}%
 \end{multicols}%
