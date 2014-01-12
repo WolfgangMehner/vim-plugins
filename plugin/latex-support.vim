@@ -948,25 +948,33 @@ function! s:CreateAdditionalMaps ()
 	"
    noremap  <buffer>            <C-F9>                  :call Latex_Compile()<CR><CR>
   inoremap  <buffer>            <C-F9>             <Esc>:call Latex_Compile()<CR><CR>
+  vnoremap  <buffer>            <C-F9>             <Esc>:call Latex_Compile()<CR><CR>
    noremap  <buffer>            <M-F9>                  :call Latex_View('choose')<CR><CR>
   inoremap  <buffer>            <M-F9>             <Esc>:call Latex_View('choose')<CR><CR>
+  vnoremap  <buffer>            <M-F9>             <Esc>:call Latex_View('choose')<CR><CR>
    noremap  <buffer>  <silent>  <LocalLeader>rr         :call Latex_Compile()<CR><CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rr    <C-C>:call Latex_Compile()<CR><CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rr    <C-C>:call Latex_Compile()<CR><CR>
    noremap  <buffer>  <silent>  <LocalLeader>rla        :call Latex_Lacheck()<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rla   <C-C>:call Latex_Lacheck()<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rla   <C-C>:call Latex_Lacheck()<CR>
 
-  inoremap  <buffer>  <silent>  <LocalLeader>rr    <C-C>:call Latex_Compile()<CR><CR>
    noremap  <buffer>  <silent>  <LocalLeader>rdvi       :call Latex_View("dvi")<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rdvi  <C-C>:call Latex_View("dvi")<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rdvi  <C-C>:call Latex_View("dvi")<CR>
    noremap  <buffer>  <silent>  <LocalLeader>rpdf       :call Latex_View("pdf")<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rpdf  <C-C>:call Latex_View("pdf")<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rpdf  <C-C>:call Latex_View("pdf")<CR>
    noremap  <buffer>  <silent>  <LocalLeader>rps        :call Latex_View("ps" )<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rps   <C-C>:call Latex_View("ps" )<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rps   <C-C>:call Latex_View("ps" )<CR>
 	"
    noremap  <buffer>  <silent>  <LocalLeader>rmi        :call Latex_Makeindex()<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call Latex_Makeindex()<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call Latex_Makeindex()<CR>
    noremap  <buffer>  <silent>  <LocalLeader>rbi        :call Latex_RunBibtex()<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call Latex_RunBibtex()<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call Latex_RunBibtex()<CR>
 	"
 	nnoremap  <buffer>  <silent>  <LocalLeader>rse        :call Latex_Settings()<CR>
   "
@@ -976,6 +984,7 @@ function! s:CreateAdditionalMaps ()
 	"
 	 noremap  <buffer>  <silent>  <LocalLeader>rc        :call Latex_ConvertInput()<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>rc   <C-C>:call Latex_ConvertInput()<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>rc   <C-C>:call Latex_ConvertInput()<CR>
 	"-------------------------------------------------------------------------------
 	"   tool box
 	"-------------------------------------------------------------------------------
