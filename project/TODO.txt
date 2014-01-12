@@ -2,6 +2,9 @@ Project
 - (WM, DONE) Remove 'plugin/make.vim'.
 - (WM, DONE) Tag 'perlsupport-5.2' is wrong.
 
+vim.org:
+- (FM, DONE?) Reference github on plug-in pages.
+
 Templates:
 - (WM) Correct escape for menu names.
   * At least these special characters must be escaped: <space> . | \ &
@@ -37,14 +40,18 @@ Git:
   * (DONE) Open the buffer in a new window.
   * Optionally: Jump across tab pages.
 - (WM) Give directory as an argument to ':GitStatus'.
+- (WM) Update buffer after executing a command: :GitBranch, :GitRemote, :GitStash, ...
+- (WM) Buffer "git stash list", maps for: create
+- (WM) Maps for completing Git commands, branches, tags, remotes, ...
+  similar to the cmd-line completion plug-in.
 - (WM) For global installation (compare Matlab):
   Which method is best to obtain 's:plugin_dir'?
 
 LaTeX:
 - (FM) Documentation: Menu 'Beamer' missing.
-- (FM) Documentation: Menu 'Help' missing.
+- (WM, DONE) Documentation: Menu 'Help' missing.
 - (FM) Reference Card: Menu 'Beamer' missing.
-- (FM) Reference Card: Entry 'Help->english' missing.
+- (WM, DONE) Reference Card: Entry 'Help->english' missing.
 
 Matlab:
 - (WM) For global installation (compare Git):
@@ -59,6 +66,10 @@ Perl:
   * Document 'g:Perl_UseToolbox' and 'g:Perl_UseTool_make'.
 
 Toolbox:
+- CMake: Run CMakeSetup.exe (Windows)
+- CMake: Run ccmake (in xterm), cmake-gui (UNIX)
+- Doxygen: Run doxywizard (UNIX, Windows?)
+- Make: Use option 'Make_Executable'.
 
 Snippets:
 - (FM, DONE?) Set first parameter ("save") in "browse()" to '1' for writing snippets

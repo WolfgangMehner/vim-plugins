@@ -27,8 +27,20 @@ If you really want to use the versions from the repository, [consult this](https
 # Documentation
 
 Each plug-in comes with its own readme as well as an extensive documentation utilizing Vim's help facility. For example: <br>
-<code>:help c-support</code> <br>
-<code>:help git-support</code>
+
+> :help c-support
+
+> :help git-support
+
+# Mailing List
+
+You can subscribe to the vim-plugins-list mailing list to post your questions or suggestions for improvement or to report bugs.
+The list will also be used to announce new releases.
+Visit the following page for subscribing to the mailing list:
+
+[http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list](http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list)
+
+The vim-plugins-list list is very low on traffic.
 
 # Contributing
 
