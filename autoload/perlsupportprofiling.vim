@@ -10,7 +10,7 @@
 "       Version:  1.0
 "       Created:  22.02.2009
 "      Revision:  ---
-"       License:  Copyright (c) 2009-2013, Dr. Fritz Mehner
+"       License:  Copyright (c) 2009-2014, Dr. Fritz Mehner
 "===============================================================================
 "
 " Exit quickly when:

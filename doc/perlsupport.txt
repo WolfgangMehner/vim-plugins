@@ -1,4 +1,4 @@
-*perlsupport.txt*                Perl Support               November 05 2013 
+*perlsupport.txt*                Perl Support                January 12 2014 
 Perl Support                                      *perl-support* *perlsupport*
 
                              Plug-in version 5.3pre
@@ -87,6 +87,7 @@ profiler can be done with a keystroke.
  4.5      Tabulator width                 |perlsupport-custom-tab|
  4.6      System-wide installation        |perlsupport-system-wide|
  4.7      Non-standard installation       |perlsupport-non-standard|
+ 4.8      Use Perl6                       |perlsupport-perl6|
  5.      Template files and tags          |perlsupport-templates|
  5.1      Template files                  |perlsupport-templates-files|
  5.2      Macros                          |perlsupport-templates-macros|
@@ -1528,7 +1529,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \rs        update file, check syntax          (in )
      \ra        set command line argument          (in )
      \rw        set Perl command line switches     (in )
-     \re        make script executable (*)         (in )
+     \re        make script executable/not exec.(*)(in )
      \rd        start debugger                     (in )
      \ri        show installed Perl modules        (in )
      \rg        generation Perl module list        (in )
@@ -1730,6 +1731,7 @@ g:Perl_InsertFileHeader        'yes'
 g:Perl_CreateMenusDelayed      'yes'
 g:Perl_PerlTags                'off'
 g:Perl_PerltidyBackup          'off'
+g:Perl_DirectRun               'no'
 
 g:Perl_PerlModuleList          root_dir.'perl-support/modules/perl-modules.list'
 g:Perl_PerlModuleListGenerator root_dir.'perl-support/scripts/pmdesc3.pl'
@@ -1776,6 +1778,7 @@ The variable root_dir will automatically be set to one of the following values:
            g:Perl_PerlTags           : switch use of Perl::Tags on/off ( 'on', 'off' )
            g:Perl_Perltidy           : use perltidy as standard beautifier
            g:Perl_PerltidyBackup     : write a backup file before running perltidy
+           g:Perl_DirectRun          : run script via shebang
 
  3. group: g:Perl_PerlModuleList          : The name of the Perl module list (text file,
                                             see below).
@@ -2006,6 +2009,32 @@ new directory has to be specified in "$HOME/.vimrc":
  let g:Perl_CodeSnippets  = "/home/username/ ... /"
 <
 Please note the trailing slash.
+
+------------------------------------------------------------------------------
+4.8  Use Perl6                                             *perlsupport-perl6*
+------------------------------------------------------------------------------
+
+The use of Perl 6 (or an other interpreter) can be enabled in two way.
+The interpreter which runs ascript from inside Vim can be set globally
+in ~/.vimrc by 
+>
+ let g:Perl_Perl	= '/usr/bin/perl6'
+<
+Drawback for the moment: syntax checking does not work.
+
+Another way is to enable the execution on an (executable) script via shebang
+by adding the following line to ~/.vimrc :
+>
+ let g:Perl_DirectRun  = 'yes'
+<
+Now a Perl6-script will be run via its first line, e.g.
+>
+ #!/usr/bin/env perl6 
+<
+all Perl5- scripts via their first line, e.g.
+>
+ #!/usr/bin/env perl 
+<
 
 ==============================================================================
 5.  TEMPLATE FILES AND TAGS                            *perlsupport-templates*

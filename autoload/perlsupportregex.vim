@@ -10,7 +10,7 @@
 "       Company:  FH Südwestfalen, Iserlohn
 "       Version:  1.0
 "       Created:  16.12.2008 18:16:55
-"       License:  Copyright 2008-2013, Dr. Fritz Mehner
+"       License:  Copyright 2008-2014, Dr. Fritz Mehner
 "===============================================================================
 "
 " Exit quickly when:

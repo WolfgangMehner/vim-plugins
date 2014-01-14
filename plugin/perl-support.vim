@@ -39,7 +39,7 @@
 "
 "        Version:  see variable  g:Perl_PluginVersion  below
 "        Created:  09.07.2001
-"        License:  Copyright (c) 2001-2013, Fritz Mehner
+"        License:  Copyright (c) 2001-2014, Fritz Mehner
 "                  This program is free software; you can redistribute it
 "                  and/or modify it under the terms of the GNU General Public
 "                  License as published by the Free Software Foundation,
@@ -103,6 +103,8 @@ call s:perl_SetGlobalVariable( "Perl_PerlRegexSubstitution",'$~' )
 let s:MSWIN = has("win16") || has("win32")   || has("win64")    || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
+let s:Perl_Perl			          = ''                     " the Perl interpreter used
+let s:Perl_Perl_is_executable = 0                      " the Perl interpreter used
 let g:Perl_Installation				= '*undefined*'
 let g:Perl_PluginDir					= ''
 "
@@ -139,6 +141,7 @@ if  s:MSWIN
 					\	$HOME.'/vimfiles/autoload/mmtoolbox/' ]
 	end
 	"
+	let s:Perl_Perl		  	          = 'C:/Perl/bin/perl.exe'
   let g:Perl_FilenameEscChar 			= ''
 	"
 else
@@ -164,6 +167,7 @@ else
 					\	$HOME.'/.vim/autoload/mmtoolbox/' ]
 	endif
 	"
+	let s:Perl_Perl		  	          = '/usr/bin/perl'
   let g:Perl_FilenameEscChar 			= ' \%#[]'
 	"
   " ==============================================================================
@@ -204,6 +208,7 @@ let s:Perl_Printheader           = "%<%f%h%m%<  %=%{strftime('%x %X')}     Page 
 let s:Perl_GuiSnippetBrowser     = 'gui'										" gui / commandline
 let s:Perl_GuiTemplateBrowser    = 'gui'										" gui / explorer / commandline
 let s:Perl_CreateMenusDelayed    = 'yes'
+let s:Perl_DirectRun             = 'no'
 "
 let s:Perl_InsertFileHeader			   = 'yes'
 let s:Perl_Wrapper                 = g:Perl_PluginDir.'/perl-support/scripts/wrapper.sh'
@@ -220,6 +225,8 @@ call s:perl_SetGlobalVariable ( 'Perl_UseTool_make',    'yes' )
 "
 "  Look for global variables (if any), to override the defaults.
 "
+call s:perl_SetLocalVariable('Perl_Perl                   ')
+call s:perl_SetLocalVariable('Perl_DirectRun              ')
 call s:perl_SetLocalVariable('Perl_InsertFileHeader       ')
 call s:perl_SetLocalVariable('Perl_CreateMenusDelayed     ')
 call s:perl_SetLocalVariable('Perl_Ctrl_j                 ')
@@ -245,6 +252,8 @@ call s:perl_SetLocalVariable('Perl_TemplateOverriddenMsg  ')
 call s:perl_SetLocalVariable('Perl_TimestampFormat        ')
 call s:perl_SetLocalVariable('Perl_UseToolbox             ')
 call s:perl_SetLocalVariable('Perl_XtermDefaults          ')
+"
+let s:Perl_Perl_is_executable	= executable(s:Perl_Perl)
 
 if exists('g:Perl_GlobalTemplateFile') && !empty(g:Perl_GlobalTemplateFile)
 	let s:Perl_GlobalTemplateDir	= fnamemodify( s:Perl_GlobalTemplateFile, ":h" )
@@ -909,11 +918,11 @@ function! Perl_perldoc_generate_module_list()
   echohl Search
   echo " ... generating Perl module list ... "
   if  s:MSWIN
-    silent exe ":!perl \"".s:Perl_PerlModuleListGenerator."\" > \"".s:Perl_PerlModuleList."\""
-    silent exe ":!sort \"".s:Perl_PerlModuleList."\" /O \"".s:Perl_PerlModuleList."\""
+    silent exe ":!".s:Perl_Perl." ".fnameescape(s:Perl_PerlModuleListGenerator)." > ".shellescape(s:Perl_PerlModuleList)
+    silent exe ":!sort ".fnameescape(s:Perl_PerlModuleList)." /O ".fnameescape(s:Perl_PerlModuleList)
   else
 		" direct STDOUT and STDERR to the module list file :
-    silent exe ":!perl ".s:Perl_PerlModuleListGenerator." -s &> ".s:Perl_PerlModuleList
+    silent exe ":!".s:Perl_Perl." ".shellescape(s:Perl_PerlModuleListGenerator)." -s &> ".s:Perl_PerlModuleList
   endif
 	redraw!
   echo " DONE "
@@ -993,6 +1002,11 @@ endfunction   " ---------- end of function  Perl_Settings  ----------
 "       RETURNS:
 "===============================================================================
 function! Perl_SyntaxCheck ()
+ 
+	if !Perl_Check_Interpreter()
+		return
+	endif
+  
   exe ":cclose"
   let l:currentbuffer   = bufname("%")
 	let l:fullname        = expand("%:p")
@@ -1005,15 +1019,14 @@ function! Perl_SyntaxCheck ()
 	"
 	" Errorformat from compiler/perl.vim (VIM distribution).
 	"
-	exe ':set makeprg=perl\ -c'
+	exe ':set makeprg='.s:Perl_Perl.'\ -cW'
 	exe ':set errorformat=
 				\%-G%.%#had\ compilation\ errors.,
 				\%-G%.%#syntax\ OK,
 				\%m\ at\ %f\ line\ %l.,
 				\%+A%.%#\ at\ %f\ line\ %l\\,%.%#,
 				\%+C%.%#'
-	let	l:fullname	= shellescape( l:fullname )
-	silent exe  ':make  '.l:fullname
+	silent exe  ':make  '. shellescape (l:fullname) 
 
 	exe ":botright cwindow"
 	call s:Perl_RestoreGlobalOption('makeprg')
@@ -1087,6 +1100,19 @@ endfunction    " ----------  end of function Perl_PerlCmdLineArguments ---------
 let s:Perl_OutputBufferName   = "Perl-Output"
 let s:Perl_OutputBufferNumber = -1
 "
+"------------------------------------------------------------------------------
+"  Check if perl interpreter is executable       {{{1
+"------------------------------------------------------------------------------
+function! Perl_Check_Interpreter ()
+	if !s:Perl_Perl_is_executable
+		echohl WarningMsg
+		echomsg '(possibly default) Perl interpreter "'.s:Perl_Perl.'" not executable'
+		echohl None
+		return 0
+	endif
+	return 1
+endfunction    " ----------  end of function Perl_Check_Interpreter  ----------
+
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_Run     {{{1
 "   DESCRIPTION:  run the current buffer
@@ -1094,7 +1120,11 @@ let s:Perl_OutputBufferNumber = -1
 "       RETURNS:
 "===============================================================================
 function! Perl_Run ()
-  "
+  
+	if !Perl_Check_Interpreter()
+		return
+	endif
+
   if &filetype != "perl"
     echohl WarningMsg | echo expand("%:p").' seems not to be a Perl file' | echohl None
     return
@@ -1108,32 +1138,30 @@ function! Perl_Run ()
   let l:arguments       = exists("b:Perl_CmdLineArgs") ? " ".b:Perl_CmdLineArgs : ""
   let l:switches        = exists("b:Perl_Switches") ? b:Perl_Switches.' ' : ""
   let l:currentbuffer   = bufname("%")
-  let l:fullname        = expand("%:p")
-  let l:fullname_esc    = fnameescape( expand("%:p") )
+	let l:fullname				= expand("%:p")
   "
   silent exe ":update"
   silent exe ":cclose"
   "
-  "
   "------------------------------------------------------------------------------
   "  run : run from the vim command line
   "------------------------------------------------------------------------------
-  if g:Perl_OutputGvim == "vim"
-    "
-    if  s:MSWIN
-      exe "!perl ".l:switches.'"'.l:fullname.'" '.l:arguments
-    else
-      exe "!perl ".l:switches.l:fullname_esc.l:arguments
-    endif
-    "
-  endif
-  "
-  "------------------------------------------------------------------------------
-  "  run : redirect output to an output buffer
-  "------------------------------------------------------------------------------
-  if g:Perl_OutputGvim == "buffer"
-    let l:currentbuffernr = bufnr("%")
-    if l:currentbuffer ==  bufname("%")
+	if g:Perl_OutputGvim == "vim"
+		"
+		if executable(l:fullname) && s:Perl_DirectRun == 'yes'
+			exe "!".shellescape(l:fullname).l:arguments
+		else
+			exe '!'.s:Perl_Perl.' '.l:switches.shellescape(l:fullname).l:arguments
+		endif
+		"
+	endif
+	"
+	"------------------------------------------------------------------------------
+	"  run : redirect output to an output buffer
+	"------------------------------------------------------------------------------
+	if g:Perl_OutputGvim == "buffer"
+		let l:currentbuffernr = bufnr("%")
+		if l:currentbuffer ==  bufname("%")
       "
       "
       if bufloaded(s:Perl_OutputBufferName) != 0 && bufwinnr(s:Perl_OutputBufferNumber) != -1
@@ -1157,11 +1185,13 @@ function! Perl_Run ()
       "
       setlocal  modifiable
       silent exe ":update"
-      if  s:MSWIN
-        exe ":%!perl ".l:switches.'"'.l:fullname.'" '.l:arguments
-      else
-        exe ":%!perl ".l:switches.l:fullname_esc.l:arguments
-      endif
+		"
+		if executable(l:fullname) && s:Perl_DirectRun == 'yes'
+			exe "%!".shellescape(l:fullname).l:arguments
+		else
+			exe '%!'.s:Perl_Perl.' '.l:switches.shellescape(l:fullname).l:arguments
+		endif
+		"
       setlocal  nomodifiable
       "
 			if winheight(winnr()) >= line("$")
@@ -1174,17 +1204,22 @@ function! Perl_Run ()
   "------------------------------------------------------------------------------
   "  run : run in a detached xterm  (not available for MS Windows)
   "------------------------------------------------------------------------------
-  if g:Perl_OutputGvim == "xterm"
-    "
-    if  s:MSWIN
-      " same as "vim"
-      exe "!perl ".l:switches.'"'.l:fullname.'" '.l:arguments
-    else
-      silent exe '!xterm -title '.l:fullname_esc.' '.s:Perl_XtermDefaults.' -e '.s:Perl_Wrapper.' perl '.l:switches.l:fullname_esc.l:arguments
+	if g:Perl_OutputGvim == "xterm"
+		"
+		if  s:MSWIN
+			" MSWIN : same as "vim"
+			exe '!'.s:Perl_Perl.' '.l:switches.shellescape(l:fullname).l:arguments
+		else
+			" Linux
+			if executable(l:fullname) == 1 && s:Perl_DirectRun == 'yes'
+				silent exe '!xterm -title '.shellescape(l:fullname).' '.s:Perl_XtermDefaults.' -e '.s:Perl_Wrapper.' '.shellescape(l:fullname).l:arguments
+			else
+				silent exe '!xterm -title '.shellescape(l:fullname).' '.s:Perl_XtermDefaults.' -e '.s:Perl_Wrapper.' '.s:Perl_Perl.' '.l:switches.shellescape(l:fullname).l:arguments
+			endif
 			:redraw!
-    endif
-    "
-  endif
+		endif
+		"
+	endif
   "
 endfunction    " ----------  end of function Perl_Run  ----------
 "
@@ -1200,7 +1235,6 @@ function! Perl_Debugger ()
   let l:arguments 	= exists("b:Perl_CmdLineArgs") ? " ".b:Perl_CmdLineArgs : ""
   let l:switches    = exists("b:Perl_Switches") ? b:Perl_Switches.' ' : ""
   let filename      = expand("%:p")
-  let filename_esc  = fnameescape( expand("%:p") )
   "
   if  s:MSWIN
     let l:arguments = substitute( l:arguments, '^\s\+', ' ', '' )
@@ -1212,13 +1246,17 @@ function! Perl_Debugger ()
   " debugger is ' perl -d ... '
   "
   if s:Perl_Debugger == "perl"
+
+		if !Perl_Check_Interpreter()
+			return
+		endif
     if  s:MSWIN
-      exe '!perl -d "'.filename.l:arguments.'"'
+      exe '!'. s:Perl_Perl .' -d '.shellescape( filename.l:arguments )
     else
       if has("gui_running") || &term == "xterm"
-     	 	silent exe "!xterm ".s:Perl_XtermDefaults.' -e perl ' . l:switches . ' -d '.filename_esc.l:arguments.' &'
+     	 	silent exe "!xterm ".s:Perl_XtermDefaults.' -e ' . s:Perl_Perl . l:switches .' -d '.shellescape(filename).l:arguments.' &'
       else
-        silent exe '!clear; perl ' . l:switches . ' -d '.filename_esc.l:arguments
+        silent exe '!clear; ' .s:Perl_Perl. l:switches . ' -d '.shellescape(filename).l:arguments
       endif
     endif
   endif
@@ -1231,7 +1269,7 @@ function! Perl_Debugger ()
       if  s:MSWIN
 				exe '!perl -d:ptkdb "'.filename.l:arguments.'"'
       else
-        silent exe '!perl -d:ptkdb  '.filename_esc.l:arguments.' &'
+        silent exe '!perl -d:ptkdb  '.shellescape(filename).l:arguments.' &'
       endif
     endif
     "
@@ -1244,7 +1282,7 @@ function! Perl_Debugger ()
         echohl None
         return
       else
-        silent exe '!ddd '.filename_esc.l:arguments.' &'
+        silent exe '!ddd '.shellescape(filename).l:arguments.' &'
       endif
     endif
     "
@@ -1279,21 +1317,39 @@ endfunction   " ---------- end of function  Perl_XtermSize  ----------
 "       RETURNS:
 "===============================================================================
 function! Perl_MakeScriptExecutable ()
-  let filename  = fnameescape( expand("%:p") )
-  if executable(filename) == 0                  " not executable
-    silent exe "!chmod u+x ".filename
-    redraw!
-    if v:shell_error
-      echohl WarningMsg
-      echo 'Could not make "'.filename.'" executable !'
-    else
-      echohl Search
-      echo 'Made "'.filename.'" executable.'
-    endif
-    echohl None
+	let filename	= expand("%:p")
+	if executable(filename) == 0
+		"
+		" not executable -> executable
+		"
+		if Perl_Input( '"'.filename.'" NOT executable. Make it executable [y/n] : ', 'y' ) == 'y'
+			silent exe "!chmod u+x ".shellescape(filename)
+			if v:shell_error
+				echohl WarningMsg
+				echo 'Could not make "'.filename.'" executable!'
+			else
+				echohl Search
+				echo 'Made "'.filename.'" executable.'
+			endif
+			echohl None
+		endif
 	else
-		echo '"'.filename.'" is already executable.'
-  endif
+		"
+		" executable -> not executable
+		"
+		if Perl_Input( '"'.filename.'" is executable. Make it NOT executable [y/n] : ', 'y' ) == 'y'
+			" reset all execution bits
+			silent exe "!chmod  -x ".shellescape(filename)
+			if v:shell_error
+				echohl WarningMsg
+				echo 'Could not make "'.filename.'" not executable!'
+			else
+				echohl Search
+				echo 'Made "'.filename.'" not executable.'
+			endif
+			echohl None
+		endif
+	endif
 endfunction   " ---------- end of function  Perl_MakeScriptExecutable  ----------
 "
 "===  FUNCTION  ================================================================
@@ -2204,7 +2260,7 @@ function! s:Perl_InitMenus ()
   "
   " set execution rights for user only ( user may be root ! )
   if !s:MSWIN
-    exe ahead.'make\ script\ &executable<Tab>'.esc_mapl.'re              :call Perl_MakeScriptExecutable()<CR>'
+    exe ahead.'make\ script\ &exe\./not\ exec\.<Tab>'.esc_mapl.'re              :call Perl_MakeScriptExecutable()<CR>'
   endif
   exe ahead.'start\ &debugger<Tab>'.esc_mapl.'rd\ \ <F9>                :call Perl_Debugger()<CR>'
 	"
@@ -2600,7 +2656,7 @@ function! s:CreateAdditionalMaps ()
 	inoremap   <buffer>  <silent>    <F9>        <C-C>:call Perl_Debugger()<CR>
 	"
 	if s:UNIX
-		noremap    <buffer>  <silent>  <LocalLeader>re         :call Perl_MakeScriptExecutable()<CR>
+		 noremap    <buffer>  <silent>  <LocalLeader>re         :call Perl_MakeScriptExecutable()<CR>
 		inoremap    <buffer>  <silent>  <LocalLeader>re    <C-C>:call Perl_MakeScriptExecutable()<CR>
 	endif
 	"
