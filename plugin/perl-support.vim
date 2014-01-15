@@ -2129,8 +2129,6 @@ endfunction    " ----------  end of function Perl_MenuTitle  ----------
 "===============================================================================
 function! s:Perl_InitMenus ()
 	"
-	" TODO: mapleader configurable
-	"
 	if ! has ( 'menu' )
 		return
 	endif

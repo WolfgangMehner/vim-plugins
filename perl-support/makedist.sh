@@ -39,6 +39,7 @@ filelist="
  ./autoload/perlsupportregex.vim
  ./doc/perlsupport.txt
  ./doc/templatesupport.txt
+ ./doc/toolbox.txt
  ./doc/toolboxmake.txt
  ./ftplugin/make.vim
  ./ftplugin/perl.vim

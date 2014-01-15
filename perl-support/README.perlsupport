@@ -160,10 +160,13 @@ README.perlsupport                This file.
 autoload/perlsupportprofiling.vim Profiler support.
 autoload/perlsupportregex.vim     Regex analyser code.
 autoload/mmtemplates/core.vim     The template system.
+autoload/mmtoolbox/*              The toolbox (make, ...).
 
 doc/perlsupport.txt               The help file for perl support.
 doc/templatesupport.txt           The help file for the template system.
+doc/toolbox*.txt                  The help files for the toolbox.
 
+ftplugin/make.vim                 Access hotkeys for make(1) in makefiles.
 ftplugin/perl.vim                 A filetype plugin. Define hotkeys, create a local
                                   dictionary for each Perl file.
 ftplugin/pod.vim                  A filetype plugin. Define hotkeys for filetype 'pod'.
