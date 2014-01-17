@@ -541,8 +541,6 @@ endfunction    " ----------  end of function Awk_RereadTemplates  ----------
 "===============================================================================
 function! s:InitMenus()
 	"
-	" TODO: mapleader configurable
-	"
 	if ! has ( 'menu' )
 		return
 	endif
@@ -612,8 +610,6 @@ function! s:InitMenus()
 		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne       :call Awk_CodeSnippet("edit")<CR>'
 		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call Awk_CodeSnippet("edit")<CR>'
 		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.-SepSnippets-                       :'
-		"
-		" :TODO:05.01.2013 11:06:WM: what to do if Awk_CodeSnippet is empty/directory does not exist?
 		"
 	endif
 	"

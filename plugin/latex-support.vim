@@ -559,8 +559,6 @@ endfunction    " ----------  end of function Latex_RereadTemplates  ----------
 "===============================================================================
 function! s:InitMenus()
 	"
-	" :TODO: mapleader configurable
-	"
 	if ! has ( 'menu' )
 		return
 	endif
@@ -571,7 +569,7 @@ function! s:InitMenus()
 	" get the mapleader (correctly escaped)
 	let [ esc_mapl, err ] = mmtemplates#core#Resource ( g:Latex_Templates, 'escaped_mapleader' )
 	"
-	exe 'amenu '.s:Latex_RootMenu.'.LaTe&X  <Nop>'
+	exe 'amenu '.s:Latex_RootMenu.'.LaTeX   <Nop>'
 	exe 'amenu '.s:Latex_RootMenu.'.-Sep00- <Nop>'
 	"
 	"-------------------------------------------------------------------------------
@@ -584,7 +582,7 @@ function! s:InitMenus()
 	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', '&Wizard'  , 'priority', 700 )
 	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', '&Run'     , 'priority', 800 )
 	if s:Latex_UseToolbox == 'yes' && mmtoolbox#tools#Property ( s:Latex_Toolbox, 'empty-menu' ) == 0
-		call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', '&Tool Box', 'priority', 900 )
+		call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', 'Tool Bo&x', 'priority', 900 )
 	endif
 	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', '&Help'    , 'priority', 1000 )
 	"
@@ -713,7 +711,7 @@ function! s:InitMenus()
 	"-------------------------------------------------------------------------------
 	"
 	if s:Latex_UseToolbox == 'yes' && mmtoolbox#tools#Property ( s:Latex_Toolbox, 'empty-menu' ) == 0
-		call mmtoolbox#tools#AddMenus ( s:Latex_Toolbox, s:Latex_RootMenu.'.&Tool\ Box' )
+		call mmtoolbox#tools#AddMenus ( s:Latex_Toolbox, s:Latex_RootMenu.'.Tool\ Box' )
 	endif
 	"
 	"-------------------------------------------------------------------------------
