@@ -1425,7 +1425,9 @@ function! GitS_BranchList( action )
 		let txt .= "ch      : checkout\n"
 		let txt .= "cr      : use as starting point for creating a new branch\n"
 		let txt .= "de      : delete\n"
+		let txt .= "De / DE : delete (via -D)\n"
 		let txt .= "me      : merge with current branch\n"
+		let txt .= "re      : rebase\n"
 		let txt .= "rn      : rename\n"
 		let txt .= "cs      : show the commit\n"
 		echo txt
@@ -1435,7 +1437,7 @@ function! GitS_BranchList( action )
 		return
 	elseif a:action == 'update'
 		" noop
-	elseif -1 != index ( [ 'checkout', 'create', 'delete', 'merge', 'rename', 'show' ], a:action )
+	elseif -1 != index ( [ 'checkout', 'create', 'delete', 'delete-force', 'merge', 'rebase', 'rename', 'show' ], a:action )
 		"
 		let [ b_name, b_flag ] = s:BranchList_GetBranch ()
 		"
@@ -1459,8 +1461,16 @@ function! GitS_BranchList( action )
 			else
 				call GitS_Branch( '-d '.shellescape(b_name), 'c' )
 			endif
+		elseif a:action == 'delete-force'
+			if b_flag =~ 'r'
+				call GitS_Branch( '-rD '.shellescape(b_name), 'c' )
+			else
+				call GitS_Branch( '-D '.shellescape(b_name), 'c' )
+			endif
 		elseif a:action == 'merge'
 			call GitS_Merge( 'direct', shellescape(b_name), 'c' )
+		elseif a:action == 'rebase'
+			call GitS_Run( 'rebase '.shellescape(b_name), 'c')
 		elseif a:action == 'rename'
 			return ':GitBranch -m '.b_name.' '
 		elseif a:action == 'show'
@@ -1486,7 +1496,10 @@ function! GitS_BranchList( action )
 		exe 'nmap <silent> <buffer> ch     :call GitS_BranchList("checkout")<CR>'
 		exe 'nmap <expr>   <buffer> cr     GitS_BranchList("create")'
 		exe 'nmap <silent> <buffer> de     :call GitS_BranchList("delete")<CR>'
+		exe 'nmap <silent> <buffer> De     :call GitS_BranchList("delete-force")<CR>'
+		exe 'nmap <silent> <buffer> DE     :call GitS_BranchList("delete-force")<CR>'
 		exe 'nmap <silent> <buffer> me     :call GitS_BranchList("merge")<CR>'
+		exe 'nmap <silent> <buffer> re     :call GitS_BranchList("rebase")<CR>'
 		exe 'nmap <expr>   <buffer> rn     GitS_BranchList("rename")'
 		exe 'nmap <silent> <buffer> cs     :call GitS_BranchList("show")<CR>'
 	endif
@@ -1805,6 +1818,13 @@ function! GitS_Diff( action, ... )
 	elseif a:action == 'quit'
 		close
 		return
+	elseif a:action == 'color-words'
+		"
+		" :TODO:18.01.2014 13:46:WM: use own version: git diff --word-diff=porcelain
+		" :TODO:18.01.2014 13:46:WM: uncheck parameters
+		call GitS_GitBash( 'diff --word-diff=color '.a:1 )
+		return
+		"
 	elseif a:action == 'update'
 		"
 		let update_only = a:0 == 0
@@ -2280,6 +2300,9 @@ function! GitS_RemoteList( action )
 	if a:action == 'help'
 		let txt  = s:HelpTxtStd."\n\n"
 		let txt .= "remote under cursor ...\n"
+		let txt .= "fe      : fetch\n"
+		let txt .= "ph      : push\n"
+		let txt .= "pl      : pull\n"
 		let txt .= "rm      : remove\n"
 		let txt .= "rn      : rename\n"
 		let txt .= "su      : set-url\n"
@@ -2291,7 +2314,7 @@ function! GitS_RemoteList( action )
 		return
 	elseif a:action == 'update'
 		" noop
-	elseif -1 != index ( [ 'remove', 'rename', 'set-url', 'show' ], a:action )
+	elseif -1 != index ( [ 'fetch', 'push', 'pull', 'remove', 'rename', 'set-url', 'show' ], a:action )
 		"
 		let [ r_name, r_url ] = s:RemoteList_GetRemote ()
 		"
@@ -2299,7 +2322,13 @@ function! GitS_RemoteList( action )
 			return s:ErrorMsg ( 'No remote under the cursor.' )
 		endif
 		"
-		if a:action == 'remove'
+		if a:action == 'fetch'
+			return ':GitFetch '.r_name.' '
+		elseif a:action == 'push'
+			return ':GitPush '.r_name.' '
+		elseif a:action == 'pull'
+			return ':GitPull '.r_name.' '
+		elseif a:action == 'remove'
 			call GitS_Remote( 'rm '.shellescape(r_name), 'c' )
 		elseif a:action == 'rename'
 			return ':GitRemote rename '.r_name.' '
@@ -2329,6 +2358,9 @@ function! GitS_RemoteList( action )
 		exe 'nmap <silent> <buffer> q      :call GitS_RemoteList("quit")<CR>'
 		exe 'nmap <silent> <buffer> u      :call GitS_RemoteList("update")<CR>'
 		"
+		exe 'nmap <expr>   <buffer> fe     GitS_RemoteList("fetch")'
+		exe 'nmap <expr>   <buffer> ph     GitS_RemoteList("push")'
+		exe 'nmap <expr>   <buffer> pl     GitS_RemoteList("pull")'
 		exe 'nmap <silent> <buffer> rm     :call GitS_RemoteList("remove")<CR>'
 		exe 'nmap <expr>   <buffer> rn     GitS_RemoteList("rename")'
 		exe 'nmap <expr>   <buffer> su     GitS_RemoteList("set-url")'
@@ -2886,22 +2918,28 @@ function! s:Status_FileAction( action )
 		" any section, action "edit"
 		call s:OpenFile( f_name )
 		"
-	elseif s_code == 's' && a:action == 'diff'
+	elseif s_code == 's' && ( a:action == 'diff' || a:action == 'diff-word' )
+		"
+		if a:action == 'diff' | let mode = 'update'
+		else                  | let mode = 'color-words' | endif
 		"
 		" section "staged", action "diff"
 		if g:Git_StatusStagedOpenDiff == 'cached'
-			call GitS_Diff( 'update', '--cached '.f_name_esc )
+			call GitS_Diff( mode, '--cached '.f_name_esc )
 		elseif g:Git_StatusStagedOpenDiff == 'head'
-			call GitS_Diff( 'update', 'HEAD '.f_name_esc )
+			call GitS_Diff( mode, 'HEAD '.f_name_esc )
 		else
-			call GitS_Diff( 'update', f_name_esc )
+			call GitS_Diff( mode, f_name_esc )
 		endif
 		"
-	elseif s_code =~ '[bmcd]' && a:action == 'diff'
+	elseif s_code =~ '[bmcd]' && ( a:action == 'diff' || a:action == 'diff-word' )
+		"
+		if a:action == 'diff' | let mode = 'update'
+		else                  | let mode = 'color-words' | endif
 		"
 		" section "modified", "conflict" or "diff", action "diff"
 		" (this is also called for section "both" in short status output)
-		call GitS_Diff( 'update', f_name_esc )
+		call GitS_Diff( mode, f_name_esc )
 		"
 	elseif s_code =~ '[bsmcd]' && a:action == 'log'
 		"
@@ -2987,7 +3025,7 @@ function! s:Status_FileAction( action )
 		if f_status == 'modified' || f_status == 'new file' || f_status == 'deleted' || f_status =~ '^[MADRC].$'
 			" reset a modified, new or deleted file?
 			if s:Question( 'Reset file "'.f_name.'"?' ) == 1
-				call GitS_Reset( f_name_esc, '' )
+				call GitS_Reset( '-q '.f_name_esc, '' )         " use '-q' to prevent return value '1'
 				return 1
 			endif
 		else
@@ -3061,15 +3099,24 @@ function! GitS_Status( action )
 		let txt .= "v       : verbose output\n"
 		let txt .= "\n"
 		let txt .= "file under cursor ...\n"
-		let txt .= "a       : add\n"
-		if s:EnabledGitBash | let txt .= "ap      : add --patch\n" | endif
-		let txt .= "c       : checkout\n"
-		if s:EnabledGitBash | let txt .= "cp      : checkout --patch\n" | endif
+		if s:EnabledGitBash
+			let txt .= "a / ap  : add / add --patch\n"
+		else
+			let txt .= "a       : add\n"
+		endif
+		if s:EnabledGitBash
+			let txt .= "c / cp  : checkout / checkout --patch\n"
+		else
+			let txt .= "c       : checkout\n"
+		endif
 		let txt .= "od      : open diff\n"
 		let txt .= "of      : open file (edit)\n"
 		let txt .= "ol      : open log\n"
-		let txt .= "r       : reset\n"
-		if s:EnabledGitBash | let txt .= "rp      : reset --patch\n" | endif
+		if s:EnabledGitBash
+			let txt .= "r / rp  : reset / reset --patch\n"
+		else
+			let txt .= "r       : reset\n"
+		endif
 		let txt .= "r       : remove (only for unmerged changes)\n"
 		let txt .= "D       : delete from file system (only untracked files)\n"
 		let txt .= "\n"
@@ -3088,7 +3135,7 @@ function! GitS_Status( action )
 		endif
 	elseif a:action =~ '\<\%(short\|verbose\)\>'
 		" noop
-	elseif -1 != index ( [ 'add', 'add-patch', 'checkout', 'checkout-patch', 'diff', 'edit', 'log', 'reset', 'reset-patch', 'delete' ], a:action )
+	elseif -1 != index ( [ 'add', 'add-patch', 'checkout', 'checkout-patch', 'diff', 'diff-word', 'edit', 'log', 'reset', 'reset-patch', 'delete' ], a:action )
 		"
  		call s:ChangeCWD ()
 		"
@@ -3129,6 +3176,7 @@ function! GitS_Status( action )
 		exe 'nmap <silent> <buffer> a      :call GitS_Status("add")<CR>'
 		exe 'nmap <silent> <buffer> c      :call GitS_Status("checkout")<CR>'
 		exe 'nmap <silent> <buffer> od     :call GitS_Status("diff")<CR>'
+		exe 'nmap <silent> <buffer> ow     :call GitS_Status("diff-word")<CR>'
 		exe 'nmap <silent> <buffer> of     :call GitS_Status("edit")<CR>'
 		exe 'nmap <silent> <buffer> ol     :call GitS_Status("log")<CR>'
 		exe 'nmap <silent> <buffer> r      :call GitS_Status("reset")<CR>'

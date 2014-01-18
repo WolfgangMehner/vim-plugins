@@ -267,7 +267,9 @@ The second version executes "git branch ...".
   ch        checkout
   cr        use as starting point for creating a new branch
   de        delete
+  De / DE   delete (via -D)
   me        merge with current branch
+  re        use as upstream for rebase
   rn        rename
   cs        show the commit
  ----------------------------------------------------------------------------
@@ -488,6 +490,9 @@ URLs. The second version executes "git remote ...".
   u         update the buffer
 
   remote under the cursor ...
+  fe        fetch
+  ph        push
+  pl        pull
   rm        remove
   rn        rename
   su        set-url
@@ -617,7 +622,7 @@ Git command.
   D         delete from file system (only untracked files)
  ----------------------------------------------------------------------------
 
-(^1) UNIX only
+(^1) requires working "git bash"
 
 Settings:
 - |g:Git_StatusStagedOpenDiff|
@@ -975,7 +980,7 @@ have to be given separately: >
   let g:Git_GitKScript     = 'C:\Program Files\Git\bin\gitk'
 <
                                                      *g:Git_GitBashExecutable*
-Sets the git bash executable. Under UNIX xterm(1) is used.
+Sets the git bash executable. Under UNIX "xterm" is used.
 
 For Windows, set up the executable similar to this: >
   let g:Git_GitBashExecutable= 'C:\Program Files\Git\bin\sh.exe'

@@ -40,6 +40,8 @@ Git:
   * (DONE) Open the buffer in a new window.
   * Optionally: Jump across tab pages.
 - (WM) Give directory as an argument to ':GitStatus'.
+- (WM) ':GitStatus' should respect 'status.relativePaths'.
+- (WM) Document map "ow" in status buffer.
 - (WM) Update buffer after executing a command: :GitBranch, :GitRemote, :GitStash, ...
 - (WM) Buffer "git stash list", maps for: create
 - (WM) Maps for completing Git commands, branches, tags, remotes, ...
