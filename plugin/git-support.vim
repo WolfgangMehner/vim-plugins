@@ -230,7 +230,7 @@ function! s:GitCmdLineArgs ( args )
 	if v:shell_error == 0
 		return split ( text, '\n' )
 	else
-		echo "Can not parse the command line arguments:\n\n".text
+		call s:ErrorMsg ( "Can not parse the command line arguments:\n\n".text )
 		return [ '' ]
 	endif
 	"
@@ -1598,6 +1598,14 @@ function! GitS_Commit( mode, param, flags )
 		"
 	elseif a:mode == 'file'
 		"
+		try
+			update
+		catch /E45.*/
+			call s:ErrorMsg ( 'Could not write the file: '.buffer_name( '%' ) )
+		catch /.*/
+			call s:ErrorMsg ( 'Unknown error while writing the file: '.buffer_name( '%' ) )
+		endtry
+		"
 		" message from file
 		if empty( a:param ) | let param = '-F '.s:EscapeFile( expand('%') )
 		else                | let param = '-F '.a:param
@@ -1631,23 +1639,12 @@ function! GitS_Commit( mode, param, flags )
 		return
 	endif
 	"
-	let cmd = s:Git_Executable.' commit '.param
-	"
 	if a:flags =~ 'c' && s:Question ( 'Execute "git commit '.param.'"?' ) != 1
 		echo "aborted"
 		return
 	endif
 	"
-	" :TODO:27.11.2013 15:18:WM: use s:StandardRun
-	let text = system ( cmd )
-	"
-	if v:shell_error == 0 && text =~ '^\s*$'
-		echo "ran successfully"               | " success
-	elseif v:shell_error == 0
-		echo "ran successfully:\n".text       | " success
-	else
-		echo "\"".cmd."\" failed:\n\n".text   | " failure
-	endif
+	call s:StandardRun ( 'commit', param, '' )
 	"
 endfunction    " ----------  end of function GitS_Commit  ----------
 "
@@ -2097,8 +2094,13 @@ function! GitS_Help( action, ... )
 	"
 	let cmd = s:Git_Executable.' help '.helpcmd
 	"
+	if s:UNIX && winwidth( winnr() ) > 0
+		let cmd = 'MANWIDTH='.winwidth( winnr() ).' '.cmd
+	endif
+	"
 	call s:UpdateGitBuffer ( cmd )
 	"
+	" :TODO:19.01.2014 18:26:WM: own toc or via ctags?
 " 	let b:GitSupport_TOC = []
 " 	"
 " 	let cpos = getpos ('.')
@@ -2407,6 +2409,18 @@ endfunction    " ----------  end of function GitS_Reset  ----------
 "-------------------------------------------------------------------------------
 "
 "-------------------------------------------------------------------------------
+" s:Show_RevisionNames : Special names for git show.   {{{2
+"-------------------------------------------------------------------------------
+"
+let s:Show_RevisionNames = {
+			\ ':'   : 'STAGED',
+			\ ':0:' : 'STAGED',
+			\ ':1:' : 'COMMON_ANCESTOR',
+			\ ':2:' : 'TARGET_BRANCH',
+			\ ':3:' : 'SOURCE_BRANCH',
+			\ }
+"
+"-------------------------------------------------------------------------------
 " s:Show_AnalyseObject : Analyse the object given to show.   {{{2
 "
 " Parameters:
@@ -2476,8 +2490,15 @@ function! GitS_Show( action, ... )
 	"
 	" BLOB: treat separately
 	if type == 'blob'
+		"
+		if last_arg =~ '\_^:[0123]:\|\_^:[^/]'
+			let obj_src = s:Show_RevisionNames[ matchstr( last_arg, '\_^:[0123]:\|\_^:' ) ]
+			let last_arg = substitute( last_arg, '\_^:[0123]:\|\_^:', obj_src.'.', '' )
+		endif
+		"
 		let last_arg = substitute ( last_arg, ':', '.', '' )
 		let last_arg = substitute ( last_arg, '/', '.', 'g' )
+		"
 		call s:OpenGitBuffer ( last_arg )
 		call s:UpdateGitBuffer ( s:Git_Executable.' show '.param )
 		filetype detect
@@ -2725,7 +2746,10 @@ endfunction    " ----------  end of function GitS_StashShow  ----------
 " GitS_Status : execute 'git status'   {{{1
 "-------------------------------------------------------------------------------
 "
+"-------------------------------------------------------------------------------
 " s:Status_SectionCodes   {{{2
+"-------------------------------------------------------------------------------
+"
 let s:Status_SectionCodes = {
 			\ 'b': 'staged/modified',
 			\ 's': 'staged',
@@ -2859,7 +2883,10 @@ function! s:Status_GetFile()
 				if base == ''
 					return [ '', '', 'could not obtain the top-level directory' ]
 				endif
-				return[ 'd', 'modified', s:GitRepoBase().'/'.f_name ]
+				" :TODO:17.01.2014 14:42:WM: might be "new file", "deleted"?
+				let f_name   = base.'/'.f_name
+				let f_status = 'modified'
+				let s_code   = 'd'
 			endif
 		endif
 		"
@@ -3025,7 +3052,7 @@ function! s:Status_FileAction( action )
 		if f_status == 'modified' || f_status == 'new file' || f_status == 'deleted' || f_status =~ '^[MADRC].$'
 			" reset a modified, new or deleted file?
 			if s:Question( 'Reset file "'.f_name.'"?' ) == 1
-				call GitS_Reset( '-q '.f_name_esc, '' )         " use '-q' to prevent return value '1'
+				call GitS_Reset( '-q '.f_name_esc, '' )         " use '-q' to prevent return value '1' and suppress output
 				return 1
 			endif
 		else

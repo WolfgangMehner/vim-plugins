@@ -128,7 +128,10 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 - Added: New maps for the buffers: branch, remote, stash, tag
 - Added: New maps for the buffer: status
 - Changed: :GitShow shows different objects in an according way.
+- Changed: :GitCommitFile updates the file before committing.
+- Changed: :GitHelp shows man page text with appropriate width.
 - Improved syntax highlighting.
+- Minor changes.
 
 --------------------------------------------------------------------------------
   RELEASE NOTES FOR OLDER VERSIONS
