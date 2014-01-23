@@ -63,7 +63,7 @@ value of $HOME with ":echo $HOME" from inside Vim).
 (1.4) Make the plugin help accessable by typing the following command on the
     Vim command line:
 
-    :helptags $HOME/.vim/doc/
+      :helptags $HOME/.vim/doc/
 
 (1.5) Consider additional settings in the file '$HOME/.vimrc'.  The files
     customization.vimrc and customization.gvimrc are replacements or extensions
@@ -73,8 +73,12 @@ value of $HOME with ":echo $HOME" from inside Vim).
 (1.6) To enable additional tools, add these lines to your '$HOME/.vimrc'. To
     enable the CMake and Doxygen tools, use:
 
-       let g:C_UseTool_cmake    = 'yes'
-       let g:C_UseTool_doxygen  = 'yes'
+      let g:C_UseTool_cmake    = 'yes'
+      let g:C_UseTool_doxygen  = 'yes'
+
+    For enabling the Doxygen templates, see chapter 1.10.1 of the documentation:
+
+      :help csupport-doxygen-enable
 
 (2)  WINDOWS
 ------------
@@ -118,7 +122,7 @@ the value of $HOME with ":echo $HOME" from inside Vim).
 (2.4) Make the plugin help accessible by typing the following command on the
     Vim command line:
 
-    :helptags $HOME\vimfiles\doc\
+      :helptags $HOME\vimfiles\doc\
 
 (2.5) Consider additional settings in the file '$HOME/_vimrc'.  The files
     customization.vimrc and customization.gvimrc are replacements or extensions
@@ -128,8 +132,12 @@ the value of $HOME with ":echo $HOME" from inside Vim).
 (2.6) To enable additional tools, add these lines to your '$HOME/_vimrc'. To
     enable the CMake and Doxygen tools, use:
 
-       let g:C_UseTool_cmake    = 'yes'
-       let g:C_UseTool_doxygen  = 'yes'
+      let g:C_UseTool_cmake    = 'yes'
+      let g:C_UseTool_doxygen  = 'yes'
+
+    For enabling the Doxygen templates, see chapter 1.10.1 of the documentation:
+
+      :help csupport-doxygen-enable
 
 There are a lot of features and options which can be used and influenced:
 
@@ -173,7 +181,8 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
 ================================================================================
   RELEASE NOTES FOR VERSION 6.1.1pre
 ================================================================================
-- 
+- 'Help->show manual' shows man page text with appropriate width (UNIX only).
+- Extended the documentation.
 
   Please see file ./c-support/doc/ChangeLog .
 
@@ -184,10 +193,11 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
 README.csupport                This file.
 
 autoload/mmtemplates/core.vim  The template system.
-
-autoload/mmtoolbox/*           The toolbox (cmake, doxygen, ...).
+autoload/mmtoolbox/*           The toolbox (cmake, doxygen, make, ...).
 
 doc/csupport.txt               The help file for the local on-line help.
+doc/templatesupport.txt        The help file for the template system.
+doc/toolbox*.txt               The help files for the toolbox.
 
 ftplugin/c.vim                 A file type plug-in. Define hotkeys, creates a
                                local dictionary for each C/C++ file.

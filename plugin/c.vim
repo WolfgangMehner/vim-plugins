@@ -2294,7 +2294,15 @@ function! C_Help( type )
 		endif
 
 		set filetype=man
-		silent exe ":%!".s:C_Man." ".catalog." ".item
+
+		" get the width of the newly opened window
+		" and set the width of man's output accordingly
+		let win_w = winwidth( winnr() )
+		if s:UNIX && win_w > 0
+			silent exe ":%! MANWIDTH=".win_w." ".s:C_Man." ".catalog." ".item
+		else
+			silent exe ":%!".s:C_Man." ".catalog." ".item
+		endif
 
 		if s:MSWIN
 			call s:C_RemoveSpecialCharacters()
