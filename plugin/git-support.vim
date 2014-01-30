@@ -181,19 +181,6 @@ function! s:EscapeCurrent ()
 endfunction    " ----------  end of function s:EscapeCurrent  ----------
 "
 "-------------------------------------------------------------------------------
-" s:EscapeFile : Escape a file for usage on the shell.   {{{2
-"
-" Parameters:
-"   filename - the name of the file (string)
-" Returns:
-"   file_argument - the escaped filename (string)
-"-------------------------------------------------------------------------------
-"
-function! s:EscapeFile ( filename )
-	return shellescape ( a:filename )
-endfunction    " ----------  end of function s:EscapeFile  ----------
-"
-"-------------------------------------------------------------------------------
 " s:GetGlobalSetting : Get a setting from a global variable.   {{{2
 "
 " Parameters:
@@ -225,9 +212,9 @@ endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 "
 function! s:GitCmdLineArgs ( args )
 	"
-	let text = system ( s:Git_Executable.' rev-parse -- '.a:args )
+	let [ sh_err, text ] = s:StandardRun ( 'rev-parse', '-- '.a:args, 't' )
 	"
-	if v:shell_error == 0
+	if sh_err == 0
 		return split ( text, '\n' )
 	else
 		call s:ErrorMsg ( "Can not parse the command line arguments:\n\n".text )
@@ -237,26 +224,104 @@ function! s:GitCmdLineArgs ( args )
 endfunction    " ----------  end of function s:GitCmdLineArgs  ----------
 "
 "-------------------------------------------------------------------------------
-" s:GitRepoBase : Get the base directory of a repository.   {{{2
+" s:GitGetConfig : Get an option.   {{{2
 "
 " Parameters:
-"   -
+"   option - name of the option (string)
+"   source - where to get the option from (string, optional)
 " Returns:
-"   path - the name of the base directory (string)
+"   value - the value of the option (string)
+"
+" The possible sources are:
+"   'local'  - current repository
+"   'global' - global settings
+"   'system' - system settings
 "-------------------------------------------------------------------------------
 "
-function! s:GitRepoBase ()
+function! s:GitGetConfig ( option, ... )
 	"
-	let text = system ( s:Git_Executable.' rev-parse --show-toplevel' )
+	let args = ''
 	"
-	if v:shell_error == 0
-		return resolve ( substitute ( text, '\_s\+$', '', '' ) )   " remove whitespaces and end-of-line at the end of the string
+	if a:0 > 0
+		if a:1 == ''
+			" noop
+		elseif a:1 == 'local'
+			" noop
+		elseif a:1 == 'global'
+			let args = '--global '
+		elseif a:1 == 'system'
+			let args = '--system '
+		else
+			call s:ErrorMsg ( "Unknown option: ".a:1 )
+			return ''
+		endif
+	endif
+	"
+	let args .= '--get '.a:option
+	"
+	let [ sh_err, text ] = s:StandardRun ( 'config', args, 't' )
+	"
+	" from the help:
+	"   the section or key is invalid (ret=1)
+	if sh_err == 1 || text == ''
+		if has_key ( s:Config_DefaultValues, a:option )
+			return s:Config_DefaultValues[ a:option ]
+		else
+			return ''
+		endif
+	elseif sh_err == 0
+		return text
 	else
-		echo "Can not query the base directory:\n\n".text
+		call s:ErrorMsg ( "Can not query the option: ".text )
 		return ''
 	endif
 	"
-endfunction    " ----------  end of function s:GitRepoBase  ----------
+endfunction    " ----------  end of function s:GitGetConfig  ----------
+"
+"-------------------------------------------------------------------------------
+" s:GitRepoDir : Get the base directory of a repository.   {{{2
+"
+" Parameters:
+"   file - get another path than the top-level directory (string, optional)
+" Returns:
+"   path - the name of the base directory (string)
+"
+" The possible options for 'file' are:
+"   'top'        - the top-level directory (default)
+"   'git/<file>' - a file in the git directory <top-level>/.git/<file>,
+"                    respects $GIT_DIR
+"-------------------------------------------------------------------------------
+"
+function! s:GitRepoDir ( ... )
+	"
+	let get_cmd = 'rev-parse'
+	let get_arg = '--show-toplevel'
+	let postfix = ''
+	"
+	let dir = 'top'
+	"
+	if a:0 == 0 || a:1 == '' || a:1 == 'top'
+		let [ sh_err, text ] = s:StandardRun ( 'rev-parse', '--show-toplevel', 't' )
+	elseif a:1 =~ '^git/'
+		let dir = a:1
+		let [ sh_err, text ] = s:StandardRun ( 'rev-parse', '--git-dir', 't' )
+		"
+		if sh_err == 0
+			let text = substitute ( a:1, 'git', escape( text, '\&' ), '' )
+		endif
+	else
+		call s:ErrorMsg ( "Unknown option: ".a:1 )
+		return ''
+	endif
+	"
+	if sh_err == 0
+		return fnamemodify ( text, ':p' )
+	else
+		call s:ErrorMsg ( "Can not query the directory \"".dir."\":\n\n".text )
+		return ''
+	endif
+	"
+endfunction    " ----------  end of function s:GitRepoDir  ----------
 "
 "-------------------------------------------------------------------------------
 " s:ImportantMsg : Print an important message.   {{{2
@@ -314,6 +379,115 @@ function! s:OpenFile ( filename, ... )
 		normal zv
 	endif
 endfunction    " ----------  end of function s:OpenFile  ----------
+"
+"-------------------------------------------------------------------------------
+" s:Question : Ask the user a question.   {{{2
+"
+" Parameters:
+"   prompt    - prompt, shown to the user (string)
+"   highlight - "normal" or "warning" (string, default "normal")
+" Returns:
+"   retval - the user input (integer)
+"
+" The possible values of 'retval' are:
+"    1 - answer was yes ("y")
+"    0 - answer was no ("n")
+"   -1 - user aborted ("ESC" or "CTRL-C")
+"-------------------------------------------------------------------------------
+"
+function! s:Question ( text, ... )
+	"
+	let ret = -2
+	"
+	" highlight prompt
+	if a:0 == 0 || a:1 == 'normal'
+		echohl Search
+	elseif a:1 == 'warning'
+		echohl Error
+	else
+		echoerr 'Unknown option : "'.a:1.'"'
+		return
+	endif
+	"
+	" question
+	echo a:text.' [y/n]: '
+	"
+	" answer: "y", "n", "ESC" or "CTRL-C"
+	while ret == -2
+		let c = nr2char( getchar() )
+		"
+		if c == "y"
+			let ret = 1
+		elseif c == "n"
+			let ret = 0
+		elseif c == "\<ESC>" || c == "\<C-C>"
+			let ret = -1
+		endif
+	endwhile
+	"
+	" reset highlighting
+	echohl None
+	"
+	return ret
+endfunction    " ----------  end of function s:Question  ----------
+"
+"-------------------------------------------------------------------------------
+" s:StandardRun : execute 'git <cmd> ...'   {{{2
+"
+" Parameters:
+"   cmd     - the Git command to run (string), this is not the Git executable!
+"   param   - the parameters (string)
+"   flags   - all set flags (string)
+"   allowed - all allowed flags (string, default: 'cet')
+" Returns:
+"   [ ret, text ] - the status code and text produced by the command (string),
+"                   only if the flag 't' is set
+"
+" Flags are characters. The parameter 'flags' is a concatenation of all set
+" flags, the parameter 'allowed' is a concatenation of all allowed flags.
+"
+" Flags:
+"   c - ask for confirmation
+"   e - expand empty 'param' to current buffer
+"   t - return the text instead of echoing it
+"-------------------------------------------------------------------------------
+"
+function! s:StandardRun( cmd, param, flags, ... )
+	"
+	if a:0 == 0
+		let flag_check = '[^cet]'
+	else
+		let flag_check = '[^'.a:1.']'
+	endif
+	"
+	if a:flags =~ flag_check
+		return s:ErrorMsg ( 'Unknown flag "'.matchstr( a:flags, flag_check ).'".' )
+	endif
+	"
+	if a:flags =~ 'e' && empty( a:param ) | let param = s:EscapeCurrent()
+	else                                  | let param = a:param
+	endif
+	"
+	let cmd = s:Git_Executable.' '.a:cmd.' '.param
+	"
+	if a:flags =~ 'c' && s:Question ( 'Execute "git '.a:cmd.' '.param.'"?' ) != 1
+		echo "aborted"
+		return
+	endif
+	"
+	let text = system ( cmd )
+	"
+	if a:flags =~ 't'
+		return [ v:shell_error, substitute ( text, '\_s*$', '', '' ) ]
+	elseif v:shell_error != 0
+		echo "\"".cmd."\" failed:\n\n".text           | " failure
+	elseif text =~ '^\_s*$'
+		echo "ran successfully"                       | " success
+	else
+		echo "ran successfully:\n".text               | " success
+	endif
+	"
+endfunction    " ----------  end of function s:StandardRun  ----------
 "
 "-------------------------------------------------------------------------------
 " s:UnicodeLen : Open a file or jump to its window.   {{{2
@@ -526,6 +700,14 @@ function! GitS_HelpTopicsComplete ( ArgLead, CmdLine, CursorPos )
 	return filter( copy( s:HelpTopics ), 'v:val =~ "\\V\\<'.escape(a:ArgLead,'\').'\\w\\*"' )
 endfunction    " ----------  end of function GitS_HelpTopicsComplete  ----------
 "
+" configuration defaults   {{{2
+" - only defaults which are relevant for Git-Support are listed here
+"
+let s:Config_DefaultValues = {
+			\ 'help.format'          : 'man',
+			\ 'status.relativePaths' : 'true'
+			\ }
+"
 " platform specifics   {{{2
 "
 let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
@@ -702,7 +884,7 @@ let s:HasStatusIgnore = 0
 let s:HasStatusBranch = 0
 "
 if s:Enabled
-	let s:GitVersion = system( s:Git_Executable.' --version' )
+	let s:GitVersion = s:StandardRun( '', ' --version', 't' )[1]
 	if s:GitVersion =~ 'git version [0-9.]\+'
 		let s:GitVersion = matchstr( s:GitVersion, 'git version \zs[0-9.]\+' )
 		"
@@ -719,12 +901,9 @@ endif
 " check Git help.format   {{{2
 "
 if s:Enabled
-	let s:GitHelpFormat = system( s:Git_Executable.' config --get help.format' )
-	let s:GitHelpFormat = substitute( s:GitHelpFormat,  '\_s',  '',  'g' )
+	let s:GitHelpFormat = s:GitGetConfig( 'help.format' )
 	"
-	if s:GitHelpFormat == ''
-		let s:GitHelpFormat = 'man'
-	elseif s:GitHelpFormat == 'web'
+	if s:GitHelpFormat == 'web'
 		let s:GitHelpFormat = 'html'
 	endif
 endif
@@ -803,57 +982,6 @@ highlight default link GitConflict    DiffText
 "
 " }}}2
 "-------------------------------------------------------------------------------
-"
-"-------------------------------------------------------------------------------
-" s:Question : Ask the user a question.   {{{1
-"
-" Parameters:
-"   prompt    - prompt, shown to the user (string)
-"   highlight - "normal" or "warning" (string, default "normal")
-" Returns:
-"   retval - the user input (integer)
-"
-" The possible values of 'retval' are:
-"    1 - answer was yes ("y")
-"    0 - answer was no ("n")
-"   -1 - user aborted ("ESC" or "CTRL-C")
-"-------------------------------------------------------------------------------
-"
-function! s:Question ( text, ... )
-	"
-	let ret = -2
-	"
-	" highlight prompt
-	if a:0 == 0 || a:1 == 'normal'
-		echohl Search
-	elseif a:1 == 'warning'
-		echohl Error
-	else
-		echoerr 'Unknown option : "'.a:1.'"'
-		return
-	endif
-	"
-	" question
-	echo a:text.' [y/n]: '
-	"
-	" answer: "y", "n", "ESC" or "CTRL-C"
-	while ret == -2
-		let c = nr2char( getchar() )
-		"
-		if c == "y"
-			let ret = 1
-		elseif c == "n"
-			let ret = 0
-		elseif c == "\<ESC>" || c == "\<C-C>"
-			let ret = -1
-		endif
-	endwhile
-	"
-	" reset highlighting
-	echohl None
-	"
-	return ret
-endfunction    " ----------  end of function s:Question  ----------
 "
 "-------------------------------------------------------------------------------
 " s:OpenGitBuffer : Put output in a read-only buffer.   {{{1
@@ -956,64 +1084,6 @@ function! s:UpdateGitBuffer ( command, ... )
 	"
 	return v:shell_error == 0
 endfunction    " ----------  end of function s:UpdateGitBuffer  ----------
-"
-"-------------------------------------------------------------------------------
-" s:StandardRun : execute 'git <cmd> ...'   {{{1
-"
-" Parameters:
-"   cmd     - the Git command to run (string), this is not the Git executable!
-"   param   - the parameters (string)
-"   flags   - all set flags (string)
-"   allowed - all allowed flags (string, default: 'cet')
-" Returns:
-"   [ ret, text ] - the status code and text produced by the command (string),
-"                   only if the flag 't' is set
-"
-" Flags are characters. The parameter 'flags' is a concatenation of all set
-" flags, the parameter 'allowed' is a concatenation of all allowed flags.
-"
-" Flags:
-"   c - ask for confirmation
-"   e - expand empty 'param' to current buffer
-"   t - return the text instead of echoing it
-"-------------------------------------------------------------------------------
-"
-function! s:StandardRun( cmd, param, flags, ... )
-	"
-	if a:0 == 0
-		let flag_check = '[^cet]'
-	else
-		let flag_check = '[^'.a:1.']'
-	endif
-	"
-	if a:flags =~ flag_check
-		return s:ErrorMsg ( 'Unknown flag "'.matchstr( a:flags, flag_check ).'".' )
-	endif
-	"
-	if a:flags =~ 'e' && empty( a:param ) | let param = s:EscapeCurrent()
-	else                                  | let param = a:param
-	endif
-	"
-	let cmd = s:Git_Executable.' '.a:cmd.' '.param
-	"
-	if a:flags =~ 'c' && s:Question ( 'Execute "git '.a:cmd.' '.param.'"?' ) != 1
-		echo "aborted"
-		return
-	endif
-	"
-	let text = system ( cmd )
-	"
-	if a:flags =~ 't'
-		return [ v:shell_error, substitute ( text, '\_s*$', '', '' ) ]
-	elseif v:shell_error != 0
-		echo "\"".cmd."\" failed:\n\n".text           | " failure
-	elseif text =~ '^\_s*$'
-		echo "ran successfully"                       | " success
-	else
-		echo "ran successfully:\n".text               | " success
-	endif
-	"
-endfunction    " ----------  end of function s:StandardRun  ----------
 "
 "-------------------------------------------------------------------------------
 " GitS_FoldLog : fold text for 'git diff/log/show/status'   {{{1
@@ -1565,7 +1635,7 @@ function! GitS_Commit( mode, param, flags )
 						\ 'or by using the special commands :GitCommitFile, :GitCommitMerge or :GitCommitMsg.' )
 " 			"
 " 			" get ./.git/COMMIT_EDITMSG file
-" 			let file = s:GitRepoBase ()
+" 			let file = s:GitRepoDir ()
 " 			"
 " 			" could not get base?
 " 			if file == '' | return | endif
@@ -1607,29 +1677,31 @@ function! GitS_Commit( mode, param, flags )
 		endtry
 		"
 		" message from file
-		if empty( a:param ) | let param = '-F '.s:EscapeFile( expand('%') )
+		if empty( a:param ) | let param = '-F '.shellescape( expand('%') )
 		else                | let param = '-F '.a:param
 		endif
 		"
 	elseif a:mode == 'merge'
 		"
+		" merge conflict?
+		if ! filereadable ( s:GitRepoDir ( 'git/MERGE_HEAD' ) )
+			return s:ErrorMsg (
+						\ 'could not read the file ".git/MERGE_HEAD" /',
+						\ 'there does not seem to be a merge conflict' )
+		endif
+		"
 		" message from ./.git/MERGE_MSG file
-		let file = s:GitRepoBase ()
-		"
-		" could not get top-level?
-		if file == '' | return | endif
-		"
-		let file .= '/.git/MERGE_MSG'
+		let file = s:GitRepoDir ( 'git/MERGE_MSG' )
 		"
 		" not readable?
 		if ! filereadable ( file )
 			return s:ErrorMsg (
 						\ 'could not read the file ".git/MERGE_MSG" /',
-						\ 'there does not seem to be a merge conflict (see :help GitCommitMerge)' )
+						\ 'but found ./git/MERGE_HEAD (see :help GitCommitMerge)' )
 		endif
 		"
 		" commit
-		let param = '-F '.s:EscapeFile( file )
+		let param = '-F '.shellescape( file )
 		"
 	elseif a:mode == 'msg'
 		" message from command line
@@ -1836,7 +1908,7 @@ function! GitS_Diff( action, ... )
 		"
 	elseif a:action =~ '\<\%(\|edit\|jump\)\>'
 		"
-		let base = s:GitRepoBase()
+		let base = s:GitRepoDir()
 		"
 		" could not get top-level?
 		if base == '' | return | endif
@@ -2003,7 +2075,7 @@ function! GitS_Grep( action, ... )
 	"
 	" for action 'top', set the working directory to the top-level directory
 	if a:action == 'top'
-		let base = s:GitRepoBase()
+		let base = s:GitRepoDir()
 		"
 		" could not get top-level?
 		if base == '' | return | endif
@@ -2878,7 +2950,7 @@ function! s:Status_GetFile()
 			if f_name == ''
 				return [ '', '', 'No file under the cursor.' ]
 			else
-				let base = s:GitRepoBase()
+				let base = s:GitRepoDir()
 				" could not get top-level?
 				if base == ''
 					return [ '', '', 'could not obtain the top-level directory' ]
@@ -2938,7 +3010,7 @@ function! s:Status_FileAction( action )
 		return 0
 	endif
 	"
-	let f_name_esc = '-- '.s:EscapeFile( f_name )
+	let f_name_esc = '-- '.shellescape( f_name )
 	"
 	if a:action == 'edit'
 		"
