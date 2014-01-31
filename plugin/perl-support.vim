@@ -106,7 +106,9 @@ let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 let s:Perl_Perl			          = ''                     " the Perl interpreter used
 let s:Perl_Perl_is_executable = 0                      " the Perl interpreter used
 let g:Perl_Installation				= '*undefined*'
-let g:Perl_PluginDir					= ''
+if empty(g:Perl_PluginDir)
+	let g:Perl_PluginDir					= ''
+endif
 "
 let s:Perl_GlobalTemplateFile	= ''
 let s:Perl_GlobalTemplateDir	= ''
@@ -124,14 +126,18 @@ if  s:MSWIN
 				\		substitute( expand("$HOME"),   '\', '/', 'g' ) ) == 0
 		" USER INSTALLATION ASSUMED
 		let g:Perl_Installation				= 'local'
-		let g:Perl_PluginDir 					= substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
+		if empty(g:Perl_PluginDir)
+			let g:Perl_PluginDir					= substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
+		endif
 		let s:Perl_LocalTemplateFile	= g:Perl_PluginDir.'/perl-support/templates/Templates'
 		let s:Perl_LocalTemplateDir		= fnamemodify( s:Perl_LocalTemplateFile, ":p:h" ).'/'
 		let s:Perl_ToolboxDir				 += [ g:Perl_PluginDir.'/autoload/mmtoolbox/' ]
 	else
 		" SYSTEM WIDE INSTALLATION
 		let g:Perl_Installation				= 'system'
-		let g:Perl_PluginDir  				= $VIM.'/vimfiles'
+		if empty(g:Perl_PluginDir)
+			let g:Perl_PluginDir					= $VIM.'/vimfiles'
+		endif
 		let s:Perl_GlobalTemplateDir	= g:Perl_PluginDir.'/perl-support/templates'
 		let s:Perl_GlobalTemplateFile	= s:Perl_GlobalTemplateDir.'/Templates'
 		let s:Perl_LocalTemplateFile	= $HOME.'/vimfiles/perl-support/templates/Templates'
@@ -150,14 +156,18 @@ else
 	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		" USER INSTALLATION ASSUMED
 		let g:Perl_Installation				= 'local'
-		let g:Perl_PluginDir  				= expand("<sfile>:p:h:h")
+		if empty(g:Perl_PluginDir)
+			let g:Perl_PluginDir					= expand("<sfile>:p:h:h")
+		endif
 		let s:Perl_LocalTemplateFile	= g:Perl_PluginDir.'/perl-support/templates/Templates'
 		let s:Perl_LocalTemplateDir		= fnamemodify( s:Perl_LocalTemplateFile, ":p:h" ).'/'
 		let s:Perl_ToolboxDir				 += [ g:Perl_PluginDir.'/autoload/mmtoolbox/' ]
 	else
 		" SYSTEM WIDE INSTALLATION
 		let g:Perl_Installation				= 'system'
-		let g:Perl_PluginDir  				= $VIM.'/vimfiles'
+		if empty(g:Perl_PluginDir)
+			let g:Perl_PluginDir					= $VIM.'/vimfiles'
+		endif
 		let s:Perl_GlobalTemplateDir	= g:Perl_PluginDir.'/perl-support/templates'
 		let s:Perl_GlobalTemplateFile	= s:Perl_GlobalTemplateDir.'/Templates'
 		let s:Perl_LocalTemplateFile	= $HOME.'/.vim/perl-support/templates/Templates'
