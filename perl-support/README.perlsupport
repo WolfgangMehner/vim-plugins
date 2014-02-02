@@ -1,4 +1,4 @@
-README for perl-support.vim (Version 5.3pre) / January 12 2014
+README for perl-support.vim (Version 5.3) / February 02 2014
 
   *  INSTALLATION
   *  RELEASE NOTES
@@ -139,13 +139,14 @@ For a system-wide installation please see the help file 'doc/perlsupport.txt'.
 =======================================================================================
 
 ---------------------------------------------------------------------------------------
-  RELEASE NOTES FOR VERSION 5.3pre
+  RELEASE NOTES FOR VERSION 5.3
 ---------------------------------------------------------------------------------------
 - Adjusting end-of-line comments improved.
 - Bugfix: Map and menu entry 'Snippets->edit global templates'.
 - 'Run -> make script executable' (\re) is now a toggle.
 - Perl interpreter can be set in ~/.vimrc.
 - Script can be run via shebang (new global variable g:Perl_DirectRun)
+- Fixed problem with system-wide installations and plug-in managers (thanks to Yegor).
 
 ---------------------------------------------------------------------------------------
   OLDER RELEASE NOTES : see file 'ChangeLog'

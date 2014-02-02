@@ -57,7 +57,7 @@
 if exists("g:Perl_PluginVersion") || &compatible
   finish
 endif
-let g:Perl_PluginVersion= "5.3pre"
+let g:Perl_PluginVersion= "5.3"
 "
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_SetGlobalVariable     {{{1
@@ -109,9 +109,7 @@ let g:Perl_Installation				= '*undefined*'
 let g:Perl_PluginDir					= ''
 "
 let s:Perl_GlobalTemplateFile	= ''
-let s:Perl_GlobalTemplateDir	= ''
 let s:Perl_LocalTemplateFile	= ''
-let s:Perl_LocalTemplateDir		= ''
 let g:Perl_FilenameEscChar 		= ''
 "
 let s:Perl_ToolboxDir					= []
@@ -119,23 +117,20 @@ let s:Perl_ToolboxDir					= []
 if  s:MSWIN
   " ==========  MS Windows  ======================================================
 	"
+	let g:Perl_PluginDir = substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
+	"
 	" change '\' to '/' to avoid interpretation as escape character
 	if match(	substitute( expand("<sfile>"), '\', '/', 'g' ),
 				\		substitute( expand("$HOME"),   '\', '/', 'g' ) ) == 0
 		" USER INSTALLATION ASSUMED
 		let g:Perl_Installation				= 'local'
-		let g:Perl_PluginDir 					= substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
 		let s:Perl_LocalTemplateFile	= g:Perl_PluginDir.'/perl-support/templates/Templates'
-		let s:Perl_LocalTemplateDir		= fnamemodify( s:Perl_LocalTemplateFile, ":p:h" ).'/'
 		let s:Perl_ToolboxDir				 += [ g:Perl_PluginDir.'/autoload/mmtoolbox/' ]
 	else
 		" SYSTEM WIDE INSTALLATION
 		let g:Perl_Installation				= 'system'
-		let g:Perl_PluginDir  				= $VIM.'/vimfiles'
-		let s:Perl_GlobalTemplateDir	= g:Perl_PluginDir.'/perl-support/templates'
-		let s:Perl_GlobalTemplateFile	= s:Perl_GlobalTemplateDir.'/Templates'
+		let s:Perl_GlobalTemplateFile	= g:Perl_PluginDir.'/perl-support/templates/Templates'
 		let s:Perl_LocalTemplateFile	= $HOME.'/vimfiles/perl-support/templates/Templates'
-		let s:Perl_LocalTemplateDir		= fnamemodify( s:Perl_LocalTemplateFile, ":p:h" ).'/'
 		let s:Perl_ToolboxDir				 += [
 					\	g:Perl_PluginDir.'/autoload/mmtoolbox/',
 					\	$HOME.'/vimfiles/autoload/mmtoolbox/' ]
@@ -147,21 +142,18 @@ if  s:MSWIN
 else
   " ==========  Linux/Unix  ======================================================
 	"
+	let g:Perl_PluginDir = expand("<sfile>:p:h:h")
+	"
 	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		" USER INSTALLATION ASSUMED
 		let g:Perl_Installation				= 'local'
-		let g:Perl_PluginDir  				= expand("<sfile>:p:h:h")
 		let s:Perl_LocalTemplateFile	= g:Perl_PluginDir.'/perl-support/templates/Templates'
-		let s:Perl_LocalTemplateDir		= fnamemodify( s:Perl_LocalTemplateFile, ":p:h" ).'/'
 		let s:Perl_ToolboxDir				 += [ g:Perl_PluginDir.'/autoload/mmtoolbox/' ]
 	else
 		" SYSTEM WIDE INSTALLATION
 		let g:Perl_Installation				= 'system'
-		let g:Perl_PluginDir  				= $VIM.'/vimfiles'
-		let s:Perl_GlobalTemplateDir	= g:Perl_PluginDir.'/perl-support/templates'
-		let s:Perl_GlobalTemplateFile	= s:Perl_GlobalTemplateDir.'/Templates'
+		let s:Perl_GlobalTemplateFile	= g:Perl_PluginDir.'/perl-support/templates/Templates'
 		let s:Perl_LocalTemplateFile	= $HOME.'/.vim/perl-support/templates/Templates'
-		let s:Perl_LocalTemplateDir		= fnamemodify( s:Perl_LocalTemplateFile, ":p:h" ).'/'
 		let s:Perl_ToolboxDir				 += [
 					\	g:Perl_PluginDir.'/autoload/mmtoolbox/',
 					\	$HOME.'/.vim/autoload/mmtoolbox/' ]
@@ -254,11 +246,6 @@ call s:perl_SetLocalVariable('Perl_UseToolbox             ')
 call s:perl_SetLocalVariable('Perl_XtermDefaults          ')
 "
 let s:Perl_Perl_is_executable	= executable(s:Perl_Perl)
-
-if exists('g:Perl_GlobalTemplateFile') && !empty(g:Perl_GlobalTemplateFile)
-	let s:Perl_GlobalTemplateDir	= fnamemodify( s:Perl_GlobalTemplateFile, ":h" )
-endif
-"
 "
 " set default geometry if not specified
 "
@@ -947,12 +934,12 @@ function! Perl_Settings ()
 	let txt = txt.'      plugin installation :  "'.g:Perl_Installation."\"\n"
 	" ----- template files  ------------------------
 	if g:Perl_Installation == 'system'
-		let txt = txt.'global template directory :  "'.s:Perl_GlobalTemplateDir."\"\n"
+		let txt = txt.'     global template file :  "'.s:Perl_GlobalTemplateFile."\"\n"
 		if filereadable( s:Perl_LocalTemplateFile )
-			let txt = txt.' local template directory :  '.s:Perl_LocalTemplateDir."\n"
+			let txt = txt.'      local template file :  '.s:Perl_LocalTemplateFile."\n"
 		endif
 	else
-		let txt = txt.' local template directory :  '.s:Perl_LocalTemplateDir."\n"
+		let txt = txt.'      local template file :  '.s:Perl_LocalTemplateFile."\n"
 	endif
 	" ----- xterm ------------------------
 	if	!s:MSWIN
@@ -2007,20 +1994,22 @@ function! s:Perl_RereadTemplates ( displaymsg )
 		"-------------------------------------------------------------------------------
 		" handle local template files
 		"-------------------------------------------------------------------------------
-		if finddir( s:Perl_LocalTemplateDir ) == ''
+		let templ_dir = fnamemodify( s:Perl_LocalTemplateFile, ":p:h" ).'/'
+		"
+		if finddir( templ_dir ) == ''
 			" try to create a local template directory
 			if exists("*mkdir")
 				try
-					call mkdir( s:Perl_LocalTemplateDir, "p" )
+					call mkdir( templ_dir, "p" )
 				catch /.*/
 				endtry
 			endif
 		endif
 
-		if isdirectory( s:Perl_LocalTemplateDir ) && !filereadable( s:Perl_LocalTemplateFile )
+		if isdirectory( templ_dir ) && !filereadable( s:Perl_LocalTemplateFile )
 			" write a default local template file
 			let template	= [	]
-			let sample_template_file	= fnamemodify( s:Perl_GlobalTemplateDir, ':h' ).'/rc/sample_template_file'
+			let sample_template_file	= g:Perl_PluginDir.'/perl-support/rc/sample_template_file'
 			if filereadable( sample_template_file )
 				for line in readfile( sample_template_file )
 					call add( template, line )
