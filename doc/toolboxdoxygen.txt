@@ -2,7 +2,7 @@
 
 Doxygen Tool                                                 *toolbox-doxygen*
 
-                             Plug-in version 0.9   
+                            Plug-in version 0.9.1
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -19,6 +19,8 @@ related files.
  2.    Commands                                   |toolbox-doxygen-commands|
  2.1    API                                       |toolbox-doxygen-api|
  3.    Configuration                              |toolbox-doxygen-config|
+
+ A.    Change Log                                 |toolbox-doxygen-change-log|
 
 ==============================================================================
 1.  INTRODUCTION                                       *toolbox-doxygen-intro*
@@ -167,7 +169,7 @@ The various filenames can be set via an API. This allows for setting up the
 configuration via a script.
 
 ------------------------------------------------------------------------------
-                                                  *mmtoolbox#doxygen#Property*
+                                                *mmtoolbox#doxygen#Property()*
 The filenames can be set using:
 
   mmtoolbox#doxygen#Property ( mode, key [, value] ) ~
@@ -214,5 +216,24 @@ the .vimrc file.
 The executable is set by g:Doxygen_Executable: >
   let g:Doxygen_Executable = 'doxygen'
 <
+==============================================================================
+A.  CHANGE LOG                                    *toolbox-doxygen-change-log*
+==============================================================================
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 0.9.1
+------------------------------------------------------------------------------
+
+- Change: Commands :Doxygen and :DoxygenWarnings do not jump to the first
+  warning anymore. The old behavior was inappropriate for large projects with
+  lots of warnings.
+- Minor changes.
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 0.9
+------------------------------------------------------------------------------
+
+- Initial upload.
+
 ==============================================================================
 vim:tw=78:noet:ts=2:ft=help:norl:expandtab:

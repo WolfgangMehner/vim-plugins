@@ -120,7 +120,7 @@ The Makefile and command-line arguments can be set via an API. This allows for
 setting up the configuration via a script.
 
 ------------------------------------------------------------------------------
-                                                     *mmtoolbox#make#Property*
+                                                   *mmtoolbox#make#Property()*
 The Makefile and command-line arguments can be set using:
 
   mmtoolbox#make#Property ( mode, key [, value] ) ~

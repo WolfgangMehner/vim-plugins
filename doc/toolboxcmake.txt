@@ -138,7 +138,7 @@ The various directories can be set via an API. This allows for setting up the
 configuration via a script.
 
 ------------------------------------------------------------------------------
-                                                    *mmtoolbox#cmake#Property*
+                                                  *mmtoolbox#cmake#Property()*
 The project and build directory can be set using:
 
   mmtoolbox#cmake#Property ( mode, key [, value] ) ~

@@ -43,7 +43,7 @@ endif
 if &cp || ( exists('g:Doxygen_Version') && ! exists('g:Doxygen_DevelopmentOverwrite') )
 	finish
 endif
-let g:Doxygen_Version= '0.9'     " version number of this script; do not change
+let g:Doxygen_Version= '0.9.1'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
@@ -562,7 +562,7 @@ function! mmtoolbox#doxygen#Warnings ()
 		" read the file and process the errors
 		exe 'setlocal errorformat='.s:ErrorFormat
 		"
-		exe 'cfile '.fnameescape( s:WarningFile )
+		exe 'cgetfile '.fnameescape( s:WarningFile )
 		"
 		" restore the old settings
 		exe 'setlocal errorformat='.escape( errorf_saved, s:SettingsEscChar )

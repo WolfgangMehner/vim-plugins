@@ -206,7 +206,7 @@ Settings which might change during runtime, like the Makefile used for a
 build, should also be set by a call to: >
   mmtoolbox#<name>#Property( 'set', 'some-setting', 'new-value' )
 This enabled users to change these settings using scripts (see
-|mmtoolbox#make#Property|).
+|mmtoolbox#make#Property()|).
 
 ==============================================================================
 4.  API                                                  *toolbox-support-api*
