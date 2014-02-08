@@ -35,7 +35,7 @@ if exists("g:BASH_Version") || &cp
  finish
 endif
 "
-let g:BASH_Version= "4.2"                  " version number of this script; do not change
+let g:BASH_Version= "4.3pre"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  BASH_SetGlobalVariable     {{{1
@@ -76,9 +76,7 @@ let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
 let s:installation						= '*undefined*'
 let s:BASH_GlobalTemplateFile	= ''
-let s:BASH_GlobalTemplateDir	= ''
 let s:BASH_LocalTemplateFile	= ''
-let s:BASH_LocalTemplateDir		= ''
 let s:BASH_FilenameEscChar 		= ''
 let s:BASH_XtermDefaults      = '-fa courier -fs 12 -geometry 80x24'
 
@@ -92,18 +90,15 @@ if	s:MSWIN
 		"
 		" USER INSTALLATION ASSUMED
 		let s:installation						= 'local'
-		let s:plugin_dir  						= substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
-		let s:BASH_LocalTemplateFile	= s:plugin_dir.'/bash-support/templates/Templates'
-		let s:BASH_LocalTemplateDir		= fnamemodify( s:BASH_LocalTemplateFile, ":p:h" ).'/'
+		let s:BASH_PluginDir  				= substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
+		let s:BASH_LocalTemplateFile	= s:BASH_PluginDir.'/bash-support/templates/Templates'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
 		let s:installation						= 'system'
-		let s:plugin_dir						 	= $VIM.'/vimfiles'
-		let s:BASH_GlobalTemplateDir	= s:plugin_dir.'/bash-support/templates'
-		let s:BASH_GlobalTemplateFile	= s:BASH_GlobalTemplateDir.'/Templates'
+		let s:BASH_PluginDir					= $VIM.'/vimfiles'
+		let s:BASH_GlobalTemplateFile	= s:BASH_PluginDir.'/bash-support/templates/Templates'
 		let s:BASH_LocalTemplateFile	= $HOME.'/vimfiles/bash-support/templates/Templates'
-		let s:BASH_LocalTemplateDir		= fnamemodify( s:BASH_LocalTemplateFile, ":p:h" ).'/'
 	endif
 	"
   let s:BASH_FilenameEscChar 		= ''
@@ -119,18 +114,15 @@ else
 		"
 		" USER INSTALLATION ASSUMED
 		let s:installation						= 'local'
-		let s:plugin_dir 							= expand('<sfile>:p:h:h')
-		let s:BASH_LocalTemplateFile	= s:plugin_dir.'/bash-support/templates/Templates'
-		let s:BASH_LocalTemplateDir		= fnamemodify( s:BASH_LocalTemplateFile, ":p:h" ).'/'
+		let s:BASH_PluginDir 					= expand('<sfile>:p:h:h')
+		let s:BASH_LocalTemplateFile	= s:BASH_PluginDir.'/bash-support/templates/Templates'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
 		let s:installation						= 'system'
-		let s:plugin_dir							= $VIM.'/vimfiles'
-		let s:BASH_GlobalTemplateDir	= s:plugin_dir.'/bash-support/templates'
-		let s:BASH_GlobalTemplateFile	= s:BASH_GlobalTemplateDir.'/Templates'
+		let s:BASH_PluginDir					= $VIM.'/vimfiles'
+		let s:BASH_GlobalTemplateFile	= s:BASH_PluginDir.'/bash-support/templates/Templates'
 		let s:BASH_LocalTemplateFile	= $HOME.'/.vim/bash-support/templates/Templates'
-		let s:BASH_LocalTemplateDir		= fnamemodify( s:BASH_LocalTemplateFile, ":p:h" ).'/'
 	endif
 	"
 	let s:BASH_Executable					= $SHELL
@@ -141,14 +133,14 @@ else
 	"
 endif
 "
-let s:BASH_CodeSnippets  				= s:plugin_dir.'/bash-support/codesnippets/'
+let s:BASH_CodeSnippets  				= s:BASH_PluginDir.'/bash-support/codesnippets/'
 call s:BASH_SetGlobalVariable( 'BASH_CodeSnippets', s:BASH_CodeSnippets )
 "
 "
 "  g:BASH_Dictionary_File  must be global
 "
 if !exists("g:BASH_Dictionary_File")
-	let g:BASH_Dictionary_File     = s:plugin_dir.'/bash-support/wordlists/bash-keywords.list'
+	let g:BASH_Dictionary_File     = s:BASH_PluginDir.'/bash-support/wordlists/bash-keywords.list'
 endif
 "
 "----------------------------------------------------------------------
@@ -167,7 +159,7 @@ let s:BASH_LineEndCommColDefault	= 49
 let s:BASH_Printheader   					= "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
 let s:BASH_TemplateJumpTarget 		= ''
 let s:BASH_Errorformat    				= '%f:\ %[%^0-9]%#\ %l:%m,%f:\ %l:%m,%f:%l:%m,%f[%l]:%m'
-let s:BASH_Wrapper               	= s:plugin_dir.'/bash-support/scripts/wrapper.sh'
+let s:BASH_Wrapper               	= s:BASH_PluginDir.'/bash-support/scripts/wrapper.sh'
 let s:BASH_InsertFileHeader				= 'yes'
 let s:BASH_SyntaxCheckOptionsGlob = ''
 "
@@ -516,20 +508,21 @@ function! g:BASH_RereadTemplates ( displaymsg )
 		"-------------------------------------------------------------------------------
 		" handle local template files
 		"-------------------------------------------------------------------------------
-		if finddir( s:BASH_LocalTemplateDir ) == ''
+		let templ_dir = fnamemodify( s:BASH_LocalTemplateFile, ":p:h" ).'/'
+		if finddir( templ_dir ) == ''
 			" try to create a local template directory
 			if exists("*mkdir")
 				try
-					call mkdir( s:BASH_LocalTemplateDir, "p" )
+					call mkdir( templ_dir, "p" )
 				catch /.*/
 				endtry
 			endif
 		endif
 
-		if isdirectory( s:BASH_LocalTemplateDir ) && !filereadable( s:BASH_LocalTemplateFile )
+		if isdirectory( templ_dir ) && !filereadable( s:BASH_LocalTemplateFile )
 			" write a default local template file
 			let template	= [	]
-			let sample_template_file	= fnamemodify( s:BASH_GlobalTemplateDir, ':h' ).'/rc/sample_template_file'
+			let sample_template_file	= s:BASH_PluginDir.'/bash-support/rc/sample_template_file'
 			if filereadable( sample_template_file )
 				for line in readfile( sample_template_file )
 					call add( template, line )
@@ -1020,9 +1013,9 @@ function! s:CreateAdditionalMaps ()
    noremap  <buffer>  <silent>  <LocalLeader>hb         :call BASH_help('bash')<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>hb    <Esc>:call BASH_help('bash')<CR>
    noremap  <buffer>  <silent>  <LocalLeader>hh         :call BASH_help('help')<CR>
-  inoremap  <buffer>  <silent>  <LocalLeader>hh    <Esc>:call BASH_help('man')<CR>
+  inoremap  <buffer>  <silent>  <LocalLeader>hh    <Esc>:call BASH_help('help')<CR>
    noremap  <buffer>  <silent>  <LocalLeader>hm         :call BASH_help('man')<CR>
-  inoremap  <buffer>  <silent>  <LocalLeader>hm    <Esc>:call BASH_help('help')<CR>
+  inoremap  <buffer>  <silent>  <LocalLeader>hm    <Esc>:call BASH_help('man')<CR>
 	 noremap  <buffer>  <silent>  <LocalLeader>hbs        :call BASH_HelpBashSupport()<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>hbs   <C-C>:call BASH_HelpBashSupport()<CR>
 	"
@@ -1052,7 +1045,7 @@ function! BASH_HelpBashSupport ()
 	try
 		:help bashsupport
 	catch
-		exe ':helptags '.s:plugin_dir.'/doc'
+		exe ':helptags '.s:BASH_PluginDir.'/doc'
 		:help bashsupport
 	endtry
 endfunction    " ----------  end of function BASH_HelpBashSupport ----------
@@ -1111,7 +1104,13 @@ function! BASH_help( type )
 	"-------------------------------------------------------------------------------
 	if a:type == 'help'
 		setlocal wrap
-		silent exe ":%!help -m ".item
+		if s:UNIX 
+			silent exe ":%!help -m ".item
+		else
+			silent exe ":%!".s:BASH_Executable." -c 'help -m ".item."'"
+		endif
+		setlocal nomodifiable
+		return
 	endif
 	"
 	"-------------------------------------------------------------------------------
@@ -1163,24 +1162,25 @@ function! BASH_help( type )
 				return
 			endif
 		endif
-
-		silent exe ":%!".s:BASH_ManualReader.' '.catalog.' '.item
-
-		if s:MSWIN
-			call s:bash_RemoveSpecialCharacters()
-		endif
-
 	endif
-	"
+
 	"-------------------------------------------------------------------------------
 	" open the bash manual
 	"-------------------------------------------------------------------------------
 	if a:type == 'bash'
-		silent exe ":%!".s:BASH_ManualReader.' 1 bash'
+		let	catalog	= 1
+		let	item		= 'bash'
+	endif
 
-		if s:MSWIN
-			call s:bash_RemoveSpecialCharacters()
+	let win_w = winwidth( winnr() )
+	if s:UNIX && win_w > 0
+			silent exe ":%! MANWIDTH=".win_w." ".s:BASH_ManualReader." ".catalog." ".item
+		else
+			silent exe ":%!".s:BASH_ManualReader." ".catalog." ".item
 		endif
+
+	if s:MSWIN
+		call s:bash_RemoveSpecialCharacters()
 	endif
 
 	setlocal nomodifiable
@@ -1289,19 +1289,19 @@ function! BASH_Settings ()
   let txt = txt.'                   licence :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|LICENSE|'     )."\"\n"
 	let txt = txt.'              organization :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|ORGANIZATION|')."\"\n"
 	let txt = txt.'                   project :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|PROJECT|'     )."\"\n"
-	let txt = txt.'           Bash executable :  '.s:BASH_Executable."\n"
+	let txt = txt.'           Bash executable :  "'.s:BASH_Executable."\"\n"
 	if exists( "b:BASH_BashCmdLineArgs" )
 		let txt = txt.'  Bash cmd. line arguments :  '.b:BASH_BashCmdLineArgs."\n"
 	endif
 	let txt = txt.'       plugin installation :  "'.s:installation."\"\n"
  	let txt = txt.'    code snippet directory :  "'.s:BASH_CodeSnippets."\"\n"
 	if s:installation == 'system'
-		let txt = txt.' global template directory :  '.s:BASH_GlobalTemplateDir."\n"
+		let txt = txt.'      global template file :  "'.s:BASH_GlobalTemplateFile."\"\n"
 		if filereadable( s:BASH_LocalTemplateFile )
-			let txt = txt.' local template directory :  '.s:BASH_LocalTemplateDir."\n"
+			let txt = txt.'       local template file :  "'.s:BASH_LocalTemplateFile."\"\n"
 		endif
 	else
-		let txt = txt.'  local template directory :  '.s:BASH_LocalTemplateDir."\n"
+		let txt = txt.'       local template file :  "'.s:BASH_LocalTemplateFile."\"\n"
 	endif
 	let txt = txt.'glob. syntax check options :  "'.s:BASH_SyntaxCheckOptionsGlob."\"\n"
 	if exists("b:BASH_SyntaxCheckOptionsLocal")
@@ -1310,8 +1310,8 @@ function! BASH_Settings ()
 	" ----- dictionaries ------------------------
   if !empty(g:BASH_Dictionary_File)
 		let ausgabe= &dictionary
-		let ausgabe= substitute( ausgabe, ",", ",\n                            + ", "g" )
-		let txt = txt."        dictionary file(s) :  ".ausgabe."\n"
+		let ausgabe= substitute( ausgabe, ",", "\",\n                            + \"", "g" )
+		let txt = txt."        dictionary file(s) :  \"".ausgabe."\"\n"
 	endif
 	" ----- Bash commandline arguments ------------------------
 	if exists("b:BASH_BashCmdLineArgs")

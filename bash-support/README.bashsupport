@@ -1,4 +1,4 @@
-README for bash-support.vim (Version 4.2) / January 04 2014
+README for bash-support.vim (Version 4.3pre) / February 03 2014
 
   *  INSTALLATION
   *  RELEASE NOTES
@@ -123,13 +123,11 @@ Look at the bashsupport help with
              +-----------------------------------------------+
 
 =======================================================================================
-  RELEASE NOTES FOR VERSION 4.2
+  RELEASE NOTES FOR VERSION 4.3
 =======================================================================================
-
-- Default shell can be set in ~/.vimrc via g:BASH_Executable.
-- Errors can be parsed for bash, dash, ksh, zsh.
-- Bugfix: QuickFix list doesn't work properly (thanks to @PengZheng)
-- 'Run -> make script executable' (\re) is now a toggle.
+- Bugfix: Setup of local templates in case of global installation.
+- Help: Bash and utility manuals wrapped on window width.
+- Bugfix: \hm and \hh work wrong in insert mode.
 - Minor corrections and improvements.
 
   OLDER RELEASE NOTES : see file 'ChangeLog'

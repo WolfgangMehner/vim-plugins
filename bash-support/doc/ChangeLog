@@ -1,4 +1,14 @@
 =======================================================================================
+  RELEASE NOTES FOR VERSION 4.2
+=======================================================================================
+
+- Default shell can be set in ~/.vimrc via g:BASH_Executable.
+- Errors can be parsed for bash, dash, ksh, zsh.
+- Bugfix: QuickFix list doesn't work properly (thanks to @PengZheng)
+- 'Run -> make script executable' (\re) is now a toggle.
+- Minor corrections and improvements.
+
+=======================================================================================
   RELEASE NOTES FOR VERSION 4.1
 =======================================================================================
 
