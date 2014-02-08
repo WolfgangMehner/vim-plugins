@@ -88,10 +88,9 @@ let s:MSWIN = has("win16") || has("win32")   || has("win64") || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
 let s:installation						= '*undefined*'
+let g:Awk_PluginDir						= ''
 let s:Awk_GlobalTemplateFile	= ''
-let s:Awk_GlobalTemplateDir		= ''
 let s:Awk_LocalTemplateFile		= ''
-let s:Awk_LocalTemplateDir		= ''
 let s:Awk_FilenameEscChar 		= ''
 let s:Awk_XtermDefaults       = '-fa courier -fs 12 -geometry 80x24'
 
@@ -99,24 +98,21 @@ let s:Awk_XtermDefaults       = '-fa courier -fs 12 -geometry 80x24'
 if	s:MSWIN
   " ==========  MS Windows  ======================================================
 	"
+	let s:Awk_PluginDir = substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
+	"
 	" change '\' to '/' to avoid interpretation as escape character
 	if match(	substitute( expand("<sfile>"), '\', '/', 'g' ),
 				\		substitute( expand("$HOME"),   '\', '/', 'g' ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
 		let s:installation					= 'local'
-		let s:plugin_dir  					= substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
-		let s:Awk_LocalTemplateFile	= s:plugin_dir.'/awk-support/templates/Templates'
-		let s:Awk_LocalTemplateDir	= fnamemodify( s:Awk_LocalTemplateFile, ":p:h" ).'/'
+		let s:Awk_LocalTemplateFile	= s:Awk_PluginDir.'/awk-support/templates/Templates'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
 		let s:installation					= 'system'
-		let s:plugin_dir						= $VIM.'/vimfiles'
-		let s:Awk_GlobalTemplateDir	= s:plugin_dir.'/awk-support/templates'
-		let s:Awk_GlobalTemplateFile= s:Awk_GlobalTemplateDir.'/Templates'
+		let s:Awk_GlobalTemplateFile= s:Awk_PluginDir.'/awk-support/templates/Templates'
 		let s:Awk_LocalTemplateFile	= $HOME.'/vimfiles/awk-support/templates/Templates'
-		let s:Awk_LocalTemplateDir	= fnamemodify( s:Awk_LocalTemplateFile, ":p:h" ).'/'
 	endif
 	"
   let s:Awk_FilenameEscChar 		= ''
@@ -128,22 +124,20 @@ if	s:MSWIN
 else
   " ==========  Linux/Unix  ======================================================
 	"
+	let s:Awk_PluginDir = expand("<sfile>:p:h:h")
+	"
 	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
 		let s:installation					= 'local'
-		let s:plugin_dir 						= expand('<sfile>:p:h:h')
-		let s:Awk_LocalTemplateFile	= s:plugin_dir.'/awk-support/templates/Templates'
-		let s:Awk_LocalTemplateDir	= fnamemodify( s:Awk_LocalTemplateFile, ":p:h" ).'/'
+		let s:Awk_LocalTemplateFile	= s:Awk_PluginDir.'/awk-support/templates/Templates'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
 		let s:installation					= 'system'
-		let s:plugin_dir						= $VIM.'/vimfiles'
-		let s:Awk_GlobalTemplateDir	= s:plugin_dir.'/awk-support/templates'
-		let s:Awk_GlobalTemplateFile= s:Awk_GlobalTemplateDir.'/Templates'
+		let s:Awk_PluginDir					= $VIM.'/vimfiles'
+		let s:Awk_GlobalTemplateFile= s:Awk_PluginDir.'/awk-support/templates/Templates'
 		let s:Awk_LocalTemplateFile	= $HOME.'/.vim/awk-support/templates/Templates'
-		let s:Awk_LocalTemplateDir	= fnamemodify( s:Awk_LocalTemplateFile, ":p:h" ).'/'
 	endif
 	"
 	let s:Awk_Awk									= '/usr/bin/awk'
@@ -154,14 +148,14 @@ else
 	"
 endif
 "
-let s:Awk_CodeSnippets  				= s:plugin_dir.'/awk-support/codesnippets/'
+let s:Awk_CodeSnippets  				= s:Awk_PluginDir.'/awk-support/codesnippets/'
 call s:awk_SetGlobalVariable( 'Awk_CodeSnippets', s:Awk_CodeSnippets )
 "
 "
 "  g:Awk_Dictionary_File  must be global
 "
 if !exists("g:Awk_Dictionary_File")
-	let g:Awk_Dictionary_File     = s:plugin_dir.'/awk-support/wordlists/awk-keywords.list'
+	let g:Awk_Dictionary_File     = s:Awk_PluginDir.'/awk-support/wordlists/awk-keywords.list'
 endif
 "
 "----------------------------------------------------------------------
@@ -180,9 +174,10 @@ let s:Awk_StartComment					= '#'
 let s:Awk_Printheader   				= "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
 let s:Awk_TemplateJumpTarget 		= ''
 let s:Awk_Errorformat    				= 'awk:\ %f:%l:\ %m'
-let s:Awk_Wrapper               = s:plugin_dir.'/awk-support/scripts/wrapper.sh'
+let s:Awk_Wrapper               = s:Awk_PluginDir.'/awk-support/scripts/wrapper.sh'
 let s:Awk_InsertFileHeader			= 'yes'
 "
+call s:GetGlobalSetting ( 'Awk_Awk')
 call s:GetGlobalSetting ( 'Awk_InsertFileHeader ')
 call s:GetGlobalSetting ( 'Awk_GuiSnippetBrowser' )
 call s:GetGlobalSetting ( 'Awk_LoadMenus' )
@@ -269,7 +264,7 @@ let	s:AlignRegex	= [
 function! Awk_AdjustLineEndComm ( ) range
 	"
 	" comment character (for use in regular expression)
-	let cc = '#'                       " start of a Perl comment
+	let cc = '#'                       " start of an Awk comment
 	"
 	" patterns to ignore when adjusting line-end comments (maybe incomplete):
  	let align_regex	= join( s:AlignRegex, '\|' )
@@ -484,20 +479,22 @@ function! g:Awk_RereadTemplates ( displaymsg )
 		"-------------------------------------------------------------------------------
 		" handle local template files
 		"-------------------------------------------------------------------------------
-		if finddir( s:Awk_LocalTemplateDir ) == ''
+		let templ_dir = fnamemodify( s:Awk_LocalTemplateFile, ":p:h" ).'/'
+		"
+		if finddir( templ_dir ) == ''
 			" try to create a local template directory
 			if exists("*mkdir")
 				try
-					call mkdir( s:Awk_LocalTemplateDir, "p" )
+					call mkdir( templ_dir, "p" )
 				catch /.*/
 				endtry
 			endif
 		endif
 
-		if isdirectory( s:Awk_LocalTemplateDir ) && !filereadable( s:Awk_LocalTemplateFile )
+		if isdirectory( templ_dir ) && !filereadable( s:Awk_LocalTemplateFile )
 			" write a default local template file
 			let template	= [	]
-			let sample_template_file	= fnamemodify( s:Awk_GlobalTemplateDir, ':h' ).'/rc/sample_template_file'
+			let sample_template_file	= s:Awk_PluginDir.'/awk-support/rc/sample_template_file'
 			if filereadable( sample_template_file )
 				for line in readfile( sample_template_file )
 					call add( template, line )
@@ -980,7 +977,7 @@ function! Awk_HelpAwkSupport ()
 	try
 		:help awksupport
 	catch
-		exe ':helptags '.s:plugin_dir.'/doc'
+		exe ':helptags '.s:Awk_PluginDir.'/doc'
 		:help awksupport
 	endtry
 endfunction    " ----------  end of function Awk_HelpAwkSupport ----------
@@ -1016,8 +1013,13 @@ function! Awk_help( type )
 	"-------------------------------------------------------------------------------
 	" open the AWK manual
 	"-------------------------------------------------------------------------------
+	let win_w = winwidth( winnr() )
 	if a:type == 'awk'
-		silent exe ":%!".s:Awk_ManualReader.' 1 awk'
+		if s:UNIX && win_w > 0
+			silent exe ":%! MANWIDTH=".win_w." ".s:Awk_ManualReader." 1 awk"
+		else
+			silent exe ":%!".s:Awk_ManualReader." 1 awk"
+		endif
 
 		if s:MSWIN
 			call s:awk_RemoveSpecialCharacters()
@@ -1062,25 +1064,25 @@ function! Awk_Settings ()
   let txt = txt.'                  licence :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|LICENSE|'     )."\"\n"
 	let txt = txt.'             organization :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|ORGANIZATION|')."\"\n"
 	let txt = txt.'                  project :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|PROJECT|'     )."\"\n"
-	let txt = txt.'           AWK executable :  '.s:Awk_Awk."\n"
+	let txt = txt.'           AWK executable :  "'.s:Awk_Awk."\"\n"
 	if exists( "b:Awk_AwkCmdLineArgs" )
 		let txt = txt.'  AWK cmd. line arguments :  '.b:Awk_AwkCmdLineArgs."\n"
 	endif
 	let txt = txt.'      plugin installation :  "'.s:installation."\"\n"
  	let txt = txt.'   code snippet directory :  "'.s:Awk_CodeSnippets."\"\n"
 	if s:installation == 'system'
-		let txt = txt.'global template directory :  '.s:Awk_GlobalTemplateDir."\n"
+		let txt = txt.'     global template file :  "'.s:Awk_GlobalTemplateFile."\"\n"
 		if filereadable( s:Awk_LocalTemplateFile )
-			let txt = txt.' local template directory :  '.s:Awk_LocalTemplateDir."\n"
+			let txt = txt.'      local template file :  "'.s:Awk_LocalTemplateFile."\"\n"
 		endif
 	else
-		let txt = txt.' local template directory :  '.s:Awk_LocalTemplateDir."\n"
+		let txt = txt.'      local template file :  "'.s:Awk_LocalTemplateFile."\"\n"
 	endif
 	" ----- dictionaries ------------------------
   if !empty(g:Awk_Dictionary_File)
 		let ausgabe= &dictionary
-		let ausgabe= substitute( ausgabe, ",", ",\n                            + ", "g" )
-		let txt = txt."        dictionary file(s) :  ".ausgabe."\n"
+		let ausgabe= substitute( ausgabe, ",", "\",\n                            +\"", "g" )
+		let txt = txt."       dictionary file(s) :  \"".ausgabe."\"\n"
 	endif
 	let txt = txt."\n"
 	let	txt = txt."__________________________________________________________________________\n"

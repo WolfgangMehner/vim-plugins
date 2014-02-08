@@ -1,4 +1,4 @@
-*awksupport.txt*                Awk Support                  January 03 2014
+*awksupport.txt*                Awk Support                  Februar 08 2014
 
 Awk Support                                         *awk-support* *awksupport*
                               Plugin version 1.2pre
@@ -674,6 +674,7 @@ Several global variables are checked by the plugin to customize it:
 ------------------------------------------------------------------------------
 Global Variable               Default Value
 ------------------------------------------------------------------------------
+g:Awk_Awk                   'awk' (Linux/U**X), 'awk.exe' (Windows)
 g:Awk_LocalTemplateFile     $HOME.'/.vim/awk-support/templates/Templates'
 g:Awk_GlobalTemplateFile    $VIM.'/vimfiles/awk-support/templates/Templates'
 g:Awk_CodeSnippets          $HOME.'/.vim/awk-support/codesnippets' (Linux/U**X)
@@ -682,7 +683,7 @@ g:Awk_LoadMenus             'yes'
 g:Awk_CreateMenusDelayed    'no'
 g:Awk_RootMenu              '&Awk'
 g:Awk_GuiSnippetBrowser     'gui'
-g:C_InsertFileHeader        'yes'
+g:Awk_InsertFileHeader      'yes'
 g:Awk_LineEndCommColDefault 49
 g:Awk_Printheader           '%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N'
                              'vim.exe'     (Windows)
@@ -691,6 +692,7 @@ g:Awk_MapLeader             '\'
 ------------------------------------------------------------------------------
 Global Variable              Description
 ------------------------------------------------------------------------------
+g:Awk_Awk                   set the awk executable
 g:Awk_LocalTemplateFile     sets the local template file (see|awksupport-templates|)
 g:Awk_GlobalTemplateFile    sets the global template file (see|awksupport-templates|)
 g:Awk_CodeSnippets          set the personal code snippet directory
@@ -699,7 +701,7 @@ g:Awk_CreateMenusDelayed    Load menus only with filetype 'awk'
 g:Awk_RootMenu              The name of the root menu item of this plugin
                              (see |awksupport-custom-root|).
 g:Awk_GuiSnippetBrowser     code snippet browser: 'gui', 'commandline'
-g:C_InsertFileHeader        insert file description comment in a new file ('yes', 'no')
+g:Awk_InsertFileHeader      insert file description comment in a new file ('yes', 'no')
 
 g:Awk_LineEndCommColDefault default starting column for line end comments
 g:Awk_Printheader           hardcopy header format
