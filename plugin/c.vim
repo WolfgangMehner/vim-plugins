@@ -88,9 +88,7 @@ let g:C_Installation				= '*undefined*'
 let s:plugin_dir						= ''
 "
 let s:C_GlobalTemplateFile	= ''
-let s:C_GlobalTemplateDir		= ''
 let s:C_LocalTemplateFile		= ''
-let s:C_LocalTemplateDir		= ''
 let s:C_FilenameEscChar 		= ''
 
 let s:C_ToolboxDir					= []
@@ -98,25 +96,22 @@ let s:C_ToolboxDir					= []
 if	s:MSWIN
   " ==========  MS Windows  ======================================================
 	"
+	let s:plugin_dir	= substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
+	"
 	" change '\' to '/' to avoid interpretation as escape character
 	if match(	substitute( expand("<sfile>"), '\', '/', 'g' ), 
 				\		substitute( expand("$HOME"),   '\', '/', 'g' ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
 		let g:C_Installation				= 'local'
-		let s:plugin_dir  					= substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
 		let s:C_LocalTemplateFile		= s:plugin_dir.'/c-support/templates/Templates'
-		let s:C_LocalTemplateDir		= fnamemodify( s:C_LocalTemplateFile, ":p:h" ).'/'
 		let s:C_ToolboxDir				 += [ s:plugin_dir.'/autoload/mmtoolbox/' ]
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
 		let g:C_Installation				= 'system'
-		let s:plugin_dir						= $VIM.'/vimfiles'
-		let s:C_GlobalTemplateDir		= s:plugin_dir.'/c-support/templates'
-		let s:C_GlobalTemplateFile  = s:C_GlobalTemplateDir.'/Templates'
+		let s:C_GlobalTemplateFile  = s:plugin_dir.'/c-support/templates/Templates'
 		let s:C_LocalTemplateFile		= $HOME.'/vimfiles/c-support/templates/Templates'
-		let s:C_LocalTemplateDir		= fnamemodify( s:C_LocalTemplateFile, ":p:h" ).'/'
 		let s:C_ToolboxDir				 += [
 					\	s:plugin_dir.'/autoload/mmtoolbox/',
 					\	$HOME.'/vimfiles/autoload/mmtoolbox/' ]
@@ -127,21 +122,18 @@ if	s:MSWIN
 else
   " ==========  Linux/Unix  ======================================================
 	"
+	let s:plugin_dir	= expand('<sfile>:p:h:h')
+	"
 	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		" USER INSTALLATION ASSUMED
 		let g:C_Installation				= 'local'
-		let s:plugin_dir 						= expand('<sfile>:p:h:h')
 		let s:C_LocalTemplateFile		= s:plugin_dir.'/c-support/templates/Templates'
-		let s:C_LocalTemplateDir		= fnamemodify( s:C_LocalTemplateFile, ":p:h" ).'/'
 		let s:C_ToolboxDir				 += [ s:plugin_dir.'/autoload/mmtoolbox/' ]
 	else
 		" SYSTEM WIDE INSTALLATION
 		let g:C_Installation				= 'system'
-		let s:plugin_dir						= $VIM.'/vimfiles'
-		let s:C_GlobalTemplateDir		= s:plugin_dir.'/c-support/templates'
-		let s:C_GlobalTemplateFile  = s:C_GlobalTemplateDir.'/Templates'
+		let s:C_GlobalTemplateFile  = s:plugin_dir.'/c-support/templates/Templates'
 		let s:C_LocalTemplateFile		= $HOME.'/.vim/c-support/templates/Templates'
-		let s:C_LocalTemplateDir		= fnamemodify( s:C_LocalTemplateFile, ":p:h" ).'/'
 		let s:C_ToolboxDir				 += [
 					\	s:plugin_dir.'/autoload/mmtoolbox/',
 					\	$HOME.'/.vim/autoload/mmtoolbox/' ]
@@ -179,7 +171,6 @@ else
 	let s:C_ObjExtension        = '.o'       " file extension for objects (leading point required)
 	let s:C_Man                 = 'man'      " the manual program
 endif
-let s:C_VimCompilerName				= 'gcc'      " the compiler name used by :compiler
 "
 call s:C_SetGlobalVariable ( 'C_CFlags', '-Wall -g -O0 -c')
 call s:C_SetGlobalVariable ( 'C_LFlags', '-Wall -g -O0'   )
@@ -250,13 +241,8 @@ call s:C_CheckGlobal('C_RootMenu             ')
 call s:C_CheckGlobal('C_SourceCodeExtensions ')
 call s:C_CheckGlobal('C_TypeOfH              ')
 call s:C_CheckGlobal('C_UseToolbox           ')
-call s:C_CheckGlobal('C_VimCompilerName      ')
 call s:C_CheckGlobal('C_XtermDefaults        ')
 
-if exists('g:C_GlobalTemplateFile') && !empty(g:C_GlobalTemplateFile)
-	let s:C_GlobalTemplateDir	= fnamemodify( s:C_GlobalTemplateFile, ":h" )
-endif
-"
 "----- some variables for internal use only -----------------------------------
 "
 let s:stdbuf	= ''
@@ -1430,7 +1416,6 @@ function! C_Compile ()
 		"
 		" COMPILATION
 		"
-		exe ":compiler ".s:C_VimCompilerName
 		let v:statusmsg = ''
 		let	s:LastShellReturnCode	= 0
 		exe		"make ".compilerflags." ".SouEsc." -o ".ObjEsc
@@ -1525,7 +1510,6 @@ function! C_Link ()
 			exe		"setlocal makeprg=".g:C_CplusCompiler
 			let	linkerflags	= g:C_CplusLFlags 
 		endif
-		exe ":compiler ".s:C_VimCompilerName
 		let	s:LastShellReturnCode	= 0
 		let v:statusmsg = ''
 		if &filetype == "c" 
@@ -2097,12 +2081,12 @@ function! C_Settings ()
  	let txt = txt.'           template style :  "'.mmtemplates#core#Resource ( g:C_Templates, "style" )[0]."\"\n"
 	let txt = txt.'      plugin installation :  "'.g:C_Installation."\"\n"
 	if g:C_Installation == 'system'
-		let txt = txt.'global template directory :  '.s:C_GlobalTemplateDir."\n"
+		let txt = txt.'     global template file :  "'.s:C_GlobalTemplateFile."\"\n"
 		if filereadable( s:C_LocalTemplateFile )
-			let txt = txt.' local template directory :  '.s:C_LocalTemplateDir."\n"
+			let txt = txt.'      local template file :  "'.s:C_LocalTemplateFile."\"\n"
 		endif
 	else
-		let txt = txt.' local template directory :  '.s:C_LocalTemplateDir."\n"
+		let txt = txt.'      local template file :  "'.s:C_LocalTemplateFile."\"\n"
 	endif
 	if	!s:MSWIN
 		let txt = txt.'           xterm defaults :  '.s:C_XtermDefaults."\n"
@@ -2403,20 +2387,22 @@ function! s:C_RereadTemplates ( displaymsg )
 		"-------------------------------------------------------------------------------
 		" handle local template files
 		"-------------------------------------------------------------------------------
-		if finddir( s:C_LocalTemplateDir ) == ''
+		let templ_dir = fnamemodify( s:C_LocalTemplateFile, ":p:h" ).'/'
+		"
+		if finddir( templ_dir ) == ''
 			" try to create a local template directory
 			if exists("*mkdir")
 				try 
-					call mkdir( s:C_LocalTemplateDir, "p" )
+					call mkdir( templ_dir, "p" )
 				catch /.*/
 				endtry
 			endif
 		endif
 
-		if isdirectory( s:C_LocalTemplateDir ) && !filereadable( s:C_LocalTemplateFile )
+		if isdirectory( templ_dir ) && !filereadable( s:C_LocalTemplateFile )
 			" write a default local template file
 			let template	= [	]
-			let sample_template_file	= fnamemodify( s:C_GlobalTemplateDir, ':h' ).'/rc/sample_template_file'
+			let sample_template_file	= s:plugin_dir.'/c-support/rc/sample_template_file'
 			if filereadable( sample_template_file )
 				for line in readfile( sample_template_file )
 					call add( template, line )

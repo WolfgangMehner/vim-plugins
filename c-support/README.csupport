@@ -1,4 +1,4 @@
-README for c.vim (Version 6.1.1pre) / December 28 2013
+README for c.vim (Version 6.1.1pre) / February 08 2014
 
   *  DESCRIPTION
   *  INSTALLATION
@@ -181,6 +181,7 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
 ================================================================================
   RELEASE NOTES FOR VERSION 6.1.1pre
 ================================================================================
+- Bugfix: Setup of local templates in case of global installation.
 - 'Help->show manual' shows man page text with appropriate width (UNIX only).
 - Extended the documentation.
 
