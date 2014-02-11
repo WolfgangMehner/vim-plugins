@@ -637,26 +637,20 @@ by the following line in '~/.vimrc' (see |matlabsupport-config-template-lib|):
 
 As *** USER *** :
 
-This plug-in will try to create your private template directory:
->
+This plug-in will try to create your private template directory, taking the
+path from the setting g:Matlab_LclTemplateFile. The default is: >
   ~/.vim/matlab-support/templates
-<
-containing a minimal personal main template file. You should set some macros
-in this file with your personal information in order to obtain personalized
-comments:
+The directory will contain a minimal personal main template file. You should
+set some macros in this file with your personal information in order to obtain
+personalized comments:
 >
   SetMacro( 'AUTHOR',    'Your Name' )
   SetMacro( 'AUTHORREF', 'YN' )
   SetMacro( 'EMAIL',     'your-email@i-use-vim.org' )
   SetMacro( 'COPYRIGHT', 'Copyright (c) |YEAR|, |AUTHOR|' )
 <
-You can also have local templates which override the global ones. To see a
-messages in this case set a global variable in '~/.vimrc' (Windows: '~\_vimrc'):
->
-  let g:Perl_TemplateOverriddenMsg= 'yes'
-<
-The default is 'no'.
-	*Todo		rework this
+You can also have local templates which override the global ones. To edit the
+file, use the menu entry "Matlab -> Snippets -> edit local templates".
 
 ==============================================================================
 A.  TROUBLESHOOTING - KNOWN ISSUES             *matlabsupport-troubleshooting*

@@ -221,6 +221,10 @@ call s:GetGlobalSetting ( 'Matlab_SnippetBrowser' )
 "
 call s:ApplyDefaultSetting ( 'Matlab_MapLeader', '' )
 "
+let s:Matlab_GlbTemplateFile = expand ( s:Matlab_GlbTemplateFile )
+let s:Matlab_LclTemplateFile = expand ( s:Matlab_LclTemplateFile )
+let s:Matlab_SnippetDir      = expand ( s:Matlab_SnippetDir )
+"
 " }}}2
 "-------------------------------------------------------------------------------
 "
@@ -622,7 +626,7 @@ function! Matlab_CodeSnippet ( action )
 			exe 'update! | split | '.a:action.' '.fnameescape( snippetfile )
 		endif
 	else
-		call s:ErrorMsg ( 'UNknown action "'.a:action.'".' )
+		call s:ErrorMsg ( 'Unknown action "'.a:action.'".' )
 	endif
 	"
 	"-------------------------------------------------------------------------------
@@ -658,7 +662,7 @@ function! Matlab_CheckCode() range
 					\ 'Further information: :help matlabsupport-config-mlint' )
 	endif
 	"
-	" call 'mlint' and process the output (new version)
+	" call 'mlint' and process the output
 	let errors_mlint = system ( shellescape( s:Matlab_MlintExecutable ).' -id '.fullname )
 	"
 	if empty( errors_mlint )
@@ -786,14 +790,52 @@ function! s:SetupTemplates()
 	" load template library
 	"-------------------------------------------------------------------------------
 	if s:installation == 'system'
-		call mmtemplates#core#ReadTemplates ( g:Matlab_Templates, 'load', s:Matlab_GlbTemplateFile )
+		"-------------------------------------------------------------------------------
+		" system installation
+		"-------------------------------------------------------------------------------
 		"
-		if filereadable ( s:Matlab_LclTemplateFile )
+		" global templates
+		if filereadable( s:Matlab_GlbTemplateFile )
+			call mmtemplates#core#ReadTemplates ( g:Matlab_Templates, 'load', s:Matlab_GlbTemplateFile )
+		else
+			return s:ErrorMsg ( 'Global template file "'.s:Matlab_GlbTemplateFile.'" not readable.' )
+		endif
+		"
+		let local_dir = fnamemodify ( s:Matlab_LclTemplateFile, ':p:h' )
+		"
+		if ! isdirectory( local_dir ) && exists('*mkdir')
+			try
+				call mkdir ( local_dir, 'p' )
+			catch /.*/
+			endtry
+		endif
+		"
+		if isdirectory( local_dir ) && ! filereadable( s:Matlab_LclTemplateFile )
+			let sample_template_file	= fnamemodify ( s:Matlab_GlbTemplateFile, ':p:h:h' ).'/rc/sample_template_file'
+			if filereadable( sample_template_file )
+				call writefile ( readfile ( sample_template_file ), s:Matlab_LclTemplateFile )
+			endif
+		endif
+		"
+		" local templates
+		if filereadable( s:Matlab_LclTemplateFile )
 			call mmtemplates#core#ReadTemplates ( g:Matlab_Templates, 'load', s:Matlab_LclTemplateFile )
+			if mmtemplates#core#ExpandText ( g:Matlab_Templates, '|AUTHOR|' ) == 'YOUR NAME'
+				call s:ErrorMsg ( 'Please set your personal details in the file "'.s:Matlab_LclTemplateFile.'".' )
+			endif
 		endif
 		"
 	elseif s:installation == 'local'
-		call mmtemplates#core#ReadTemplates ( g:Matlab_Templates, 'load', s:Matlab_LclTemplateFile )
+		"-------------------------------------------------------------------------------
+		" local installation
+		"-------------------------------------------------------------------------------
+		"
+		" local templates
+		if filereadable ( s:Matlab_LclTemplateFile )
+			call mmtemplates#core#ReadTemplates ( g:Matlab_Templates, 'load', s:Matlab_LclTemplateFile )
+		else
+			return s:ErrorMsg ( 'Local template file "'.s:Matlab_LclTemplateFile.'" not readable.' )
+		endif
 	endif
 endfunction    " ----------  end of function s:SetupTemplates  ----------
 "
@@ -1100,6 +1142,8 @@ function! Matlab_Settings( verbose )
 	"
 	let [ templ_style, msg ] = mmtemplates#core#Resource( g:Matlab_Templates, 'style' )
 	"
+	let glb_t_status = filereadable ( s:Matlab_GlbTemplateFile ) ? '' : ' (not readable)'
+	let lcl_t_status = filereadable ( s:Matlab_LclTemplateFile ) ? '' : ' (not readable)'
 	let mlint_status = executable( s:Matlab_MlintExecutable ) ? '<yes>' : '<no>'
 	"
 	let	txt = " Matlab-Support settings\n\n"
@@ -1113,17 +1157,11 @@ function! Matlab_Settings( verbose )
 				\ ."\n"
 				\ .'      plugin installation :  '.s:installation.' on '.sys_name."\n"
 	if s:installation == 'system'
-		let txt .= '     global template file :  '.s:Matlab_GlbTemplateFile."\n"
-		if filereadable( s:Matlab_LclTemplateFile )
-			let txt .= '      local template file :  '.s:Matlab_LclTemplateFile."\n"
-		else
-			let txt .= '      local template file :  <none>'."\n"
-		endif
-	else
-		let txt .= '      local template file :  '.s:Matlab_LclTemplateFile."\n"
+		let txt .= '     global template file :  '.s:Matlab_GlbTemplateFile.glb_t_status."\n"
 	endif
 	let txt .=
-				\  '       code snippets dir. :  '.s:Matlab_SnippetDir."\n"
+				\  '      local template file :  '.s:Matlab_LclTemplateFile.lcl_t_status."\n"
+				\ .'       code snippets dir. :  '.s:Matlab_SnippetDir."\n"
 				\ .'       mlint path and exe :  '.s:Matlab_MlintExecutable."\n"
 				\ .'             > executable :  '.mlint_status."\n"
 				\ .'    using template engine :  version '.g:Templates_Version." by Wolfgang Mehner\n"
