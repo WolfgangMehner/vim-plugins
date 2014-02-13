@@ -130,6 +130,8 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 - Changed: :GitShow shows different objects in an according way.
 - Changed: :GitCommitFile updates the file before committing.
 - Changed: :GitHelp shows man page text with appropriate width.
+- Changed: :GitStatus can be restricted to a path by passing it as an argument.
+- Changed: :GitStatus respects the option 'status.relativePaths'.
 - Improved syntax highlighting.
 - Minor changes.
 

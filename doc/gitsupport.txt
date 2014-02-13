@@ -110,7 +110,7 @@ run the commands in every subdirectory of the project.
   |:GitStash| [<args>]               (run) git stash <args>
   |:GitStash| list [<args>]          (buf) git stash list <args>
   |:GitStash| show [<args>]          (buf) git stash show <args>
-  |:GitStatus|                       (buf) git status
+  |:GitStatus| [<path>]              (buf) git status
   |:GitTag|                          (buf) git tag
   |:GitTag| <args>                   (run) git tag <args>
 
@@ -583,10 +583,19 @@ The buffer for ":GitStash show" defines the following maps:
 
 ------------------------------------------------------------------------------
                                                                   *:GitStatus*
-  :GitStatus ~
+  :GitStatus [<path>] ~
 
 Opens a buffer showing the current status. Several different actions can be
 performed for the file under the cursor, see below.
+
+A path can be given as an argument to restrict the output to changes in that
+folder, for example the current one: >
+  :GitStatus .
+The paths will be printed relative to the given path, not the current working
+directory, as Git would do it. The special argument "/" has the same effect as
+passing the top-level directory of the repository: >
+  :GitStatus /
+In any case, :GitStatus respects the option "status.relativePaths".
 
 The map 'od' opens the diff for the file under the cursor. The normal behavior
 is to open the "default" diff between the index and the working tree. In the

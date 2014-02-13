@@ -33,14 +33,19 @@ Git:
 - (WM, DONE) Add more suggestions for custom menu entries to 's:Git_CustomMenu'.
 - (WM, DONE) Add current custom menu entries to documentation and/or "git-support/rc/",
   as a starting point for customization.
+- (WM, DONE) Give directory as an argument to ':GitStatus'.
+- (WM, DONE) ':GitStatus' should respect 'status.relativePaths'.
 - (WM) Current method for jumping to Git buffers does not work for tabs.
   * (DONE) Open the buffer in a new window.
   * Optionally: Jump across tab pages.
 - (WM) How about jumping to windows?
   * (DONE) Open the buffer in a new window.
   * Optionally: Jump across tab pages.
-- (WM) Give directory as an argument to ':GitStatus'.
-- (WM) ':GitStatus' should respect 'status.relativePaths'.
+- (WM) Problem with 's:OpenFile()':
+  Since the name of the buffer has to match exactly, this does not always work
+  with different working directories.
+- (WM) Do not use "sync fromstart" in syntax highlighting,
+  is extremely slow for diff and log.
 - (WM) Document map "ow" in status buffer.
 - (WM) Update buffer after executing a command: :GitBranch, :GitRemote, :GitStash, ...
 - (WM) Buffer "git stash list", maps for: create

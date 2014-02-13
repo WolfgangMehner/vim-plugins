@@ -317,7 +317,7 @@ function! s:GitRepoDir ( ... )
 	if sh_err == 0
 		return fnamemodify ( text, ':p' )
 	else
-		call s:ErrorMsg ( "Can not query the directory \"".dir."\":\n\n".text )
+		call s:ErrorMsg ( "Can not query the directory \"".dir."\":","",text )
 		return ''
 	endif
 	"
@@ -947,7 +947,7 @@ if s:Enabled
 	command! -nargs=* -complete=file                                 GitShow            :call GitS_Show('update',<q-args>)
 	command! -nargs=*                                                GitStash           :call GitS_Stash(<q-args>,'')
 	command! -nargs=*                                                GitSlist           :call GitS_Stash('list '.<q-args>,'')
-	command! -nargs=0                                                GitStatus          :call GitS_Status('update')
+	command! -nargs=? -complete=file                                 GitStatus          :call GitS_Status('update',<q-args>)
 	command! -nargs=*                                                GitTag             :call GitS_Tag(<q-args>,'')
 	command  -nargs=* -complete=file -bang                           Git                :call GitS_Run(<q-args>,'<bang>'=='!'?'b':'')
 	command! -nargs=* -complete=file                                 GitRun             :call GitS_Run(<q-args>,'')
@@ -3186,9 +3186,10 @@ endfunction    " ----------  end of function s:Status_FileAction  ----------
 " GitS_Status : execute 'git status'
 "-------------------------------------------------------------------------------
 "
-function! GitS_Status( action )
+function! GitS_Status( action, ... )
 	"
 	let update_only = 0
+	let limited_dir = ''
 	"
 	if a:action == 'help'
 		let txt  = s:HelpTxtStd."\n\n"
@@ -3227,7 +3228,14 @@ function! GitS_Status( action )
 		close
 		return
 	elseif a:action == 'update'
-		let update_only = 1
+		let update_only = a:0 == 0
+		"
+		if update_only
+			" run again with old parameters
+		else
+			let limited_dir = a:1
+		endif
+		"
 	elseif a:action == 'ignored'
 		if ! s:HasStatusIgnore
 			return s:ErrorMsg ( '"show ignored files" not available in Git version '.s:GitVersion.'.' )
@@ -3238,13 +3246,9 @@ function! GitS_Status( action )
 		"
  		call s:ChangeCWD ()
 		"
-" 		if getline('.') =~ '^#' || b:GitSupport_ShortOption
-			if s:Status_FileAction ( a:action )
-				call GitS_Status( 'update' )
-			endif
-" 		else
-" 			call s:ErrorMsg ( 'Not in status section.' )
-" 		endif
+		if s:Status_FileAction ( a:action )
+			call GitS_Status( 'update' )
+		endif
 		"
 		return
 	else
@@ -3254,9 +3258,40 @@ function! GitS_Status( action )
 	"
 	let buf = s:CheckCWD ()
 	"
+	" if a directory has been given, set the working directory accordingly
+	if ! update_only
+		let relative_paths = s:GitGetConfig ( 'status.relativePaths' )
+		"
+		" use the top-level directory
+		if relative_paths == 'false' || limited_dir == '/'
+			let base = s:GitRepoDir()
+			"
+			" could not get top-level?
+			if base == '' | return | endif
+			"
+			let buf[1] = base
+		endif
+		"
+		if limited_dir == '/'
+			" we use the top-level directory as the cwd, no further path required
+			let limited_dir = ''
+		elseif relative_paths == 'false' && limited_dir != ''
+			" we need the limited_dir relative to the top-level directory
+			silent exe 'lchdir '.fnameescape( limited_dir )
+			let [ sh_err, limited_dir ] = s:StandardRun ( 'rev-parse', '--show-prefix', 't' )
+			silent exe 'lchdir -'
+		elseif relative_paths != 'false' && limited_dir != ''
+			" we set the cwd and restrict the output to it
+			let buf[1] = fnamemodify( limited_dir, ':p' )
+			let limited_dir = '.'
+		endif
+	endif
+	"
 	if s:OpenGitBuffer ( 'Git - status' )
 		"
 		let b:GitSupport_StatusFlag = 1
+		let b:GitSupport_StatusLimitedDir   = ''
+		let b:GitSupport_StatusRelativePath = s:GitGetConfig ( 'status.relativePaths' )
 		let b:GitSupport_IgnoredOption    = 0
 		let b:GitSupport_ShortOption      = 0
 		let b:GitSupport_VerboseOption    = 0
@@ -3292,7 +3327,13 @@ function! GitS_Status( action )
 	call s:ChangeCWD ( buf )
 	"
 	if a:action == 'update'
-		" noop
+		"
+		if update_only
+			let limited_dir = b:GitSupport_StatusLimitedDir
+		else
+			let b:GitSupport_StatusLimitedDir = limited_dir
+		endif
+		"
 	elseif a:action == 'ignored'
 		let b:GitSupport_IgnoredOption = ( b:GitSupport_IgnoredOption + 1 ) % 2
 	elseif a:action == 'short'
@@ -3310,6 +3351,10 @@ function! GitS_Status( action )
 	endif
 	"
 	let cmd = s:Git_Executable.' status'
+	"
+	if limited_dir != ''
+		let cmd .= ' '.shellescape( limited_dir )
+	endif
 	"
 	if b:GitSupport_IgnoredOption == 1 &&   s:HasStatusIgnore | let cmd .= ' --ignored'        | endif
 	if b:GitSupport_ShortOption   == 1 &&   s:HasStatusBranch | let cmd .= ' --short --branch' | endif
