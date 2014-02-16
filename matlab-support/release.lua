@@ -1,9 +1,9 @@
 --
 --------------------------------------------------------------------------------
---         FILE:  release_matlab.lua
---        USAGE:  ./release_matlab.lua
---  DESCRIPTION:  
---      OPTIONS:  ---
+--         FILE:  release.lua
+--        USAGE:  lua matlab-support/release.lua <mode>
+--  DESCRIPTION:  Run from the project's top-level directory.
+--      OPTIONS:  The mode is either "check", "zip" or "help".
 -- REQUIREMENTS:  ---
 --         BUGS:  ---
 --        NOTES:  ---
@@ -11,7 +11,7 @@
 --      COMPANY:  
 --      VERSION:  1.0
 --      CREATED:  14.09.11
---     REVISION:  24.11.13
+--     REVISION:  16.02.14
 --------------------------------------------------------------------------------
 --
 
@@ -29,6 +29,7 @@ local filelist = {
 	'doc/templatesupport.txt',
 	'ftplugin/matlab.vim',
 	'plugin/matlab-support.vim',
+	'matlab-support/codesnippets/',
 	'matlab-support/doc/',
 	'matlab-support/rc/',
 	'matlab-support/templates/',
