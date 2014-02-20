@@ -2,7 +2,7 @@
 
 CMake Tool                                                     *toolbox-cmake*
 
-                             Plug-in version 0.9   
+                            Plug-in version 0.9.1
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -19,6 +19,8 @@ current working directory. CMake's help can be quickly accessed within Vim.
  2.1    API                                       |toolbox-cmake-api|
  3.    Configuration                              |toolbox-cmake-config|
  4.    Known Issues                               |toolbox-cmake-issues|
+
+ A.    Change Log                                 |toolbox-cmake-change-log|
 
 ==============================================================================
 1.  INTRODUCTION                                         *toolbox-cmake-intro*
@@ -174,6 +176,8 @@ the .vimrc file.
  ----------------------------------------------------------------------------
   |g:CMake_Executable|        'cmake'       the CMake executable
   |g:CMake_MakeTool|          'make'        the make executable
+  |g:CMake_JumpToError|       'cmake'       whether to jump to the first error
+                                            automatically
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -186,15 +190,56 @@ The executable is set by g:CMake_Executable: >
 The make executable is set by g:CMake_MakeTool: >
   let g:CMake_MakeTool = 'make'
 <
+------------------------------------------------------------------------------
+                                                         *g:CMake_JumpToError*
+After running cmake or make, quickfix will automatically jump to the location
+of the first error, depending on the setting g:CMake_JumpToError. With >
+  let g:CMake_JumpToError = 'both'
+quickfix will jump to the first error for both make and cmake. To only jump to
+the first error automatically after running cmake, use >
+  let g:CMake_JumpToError = 'cmake'
+<
+The possible settings are listed below:
+
+  Value           Jump automatically after ...
+ ----------------------------------------------------------------------------
+  'both'          cmake and make
+  'cmake'         cmake
+  'make'          make
+  'none'          none of the above
+ ----------------------------------------------------------------------------
+
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
 ==============================================================================
 4.  KNOWN ISSUES                                        *toolbox-cmake-issues*
 ==============================================================================
 
 * Some of the errors are not recognized by the quickfix mechanism.
   - Unfortunately, CMake's automatically generated Makefiles seem to output
-    some errors, which can not be recognized by Vim's standard error format
+    some errors which can not be recognized by Vim's standard error format
     for C. If you come across any such errors, please send use an example and
     we will try to extend the error format.
+
+==============================================================================
+A.  CHANGE LOG                                      *toolbox-cmake-change-log*
+==============================================================================
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 0.9.1
+------------------------------------------------------------------------------
+
+- Change: The commands :CMake and :CMake! only jump to the first error
+  automatically if the setting g:CMake_JumpToError is set accordingly.
+- Change: Improved jumping in help buffers.
+- Minor changes.
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 0.9
+------------------------------------------------------------------------------
+
+- Initial upload.
 
 ==============================================================================
 vim:tw=78:noet:ts=2:ft=help:norl:expandtab:

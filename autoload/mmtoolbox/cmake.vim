@@ -43,11 +43,30 @@ endif
 if &cp || ( exists('g:CMake_Version') && ! exists('g:CMake_DevelopmentOverwrite') )
 	finish
 endif
-let g:CMake_Version= '0.9'     " version number of this script; do not change
+let g:CMake_Version= '0.9.1'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions   {{{1
 "-------------------------------------------------------------------------------
+"
+"-------------------------------------------------------------------------------
+" s:ApplyDefaultSetting : Write default setting to a global variable.   {{{2
+"
+" Parameters:
+"   varname - name of the variable (string)
+"   value   - default value (string)
+" Returns:
+"   -
+"
+" If g:<varname> does not exists, assign:
+"   g:<varname> = value
+"-------------------------------------------------------------------------------
+"
+function! s:ApplyDefaultSetting ( varname, value )
+	if ! exists ( 'g:'.a:varname )
+		exe 'let g:'.a:varname.' = '.string( a:value )
+	endif
+endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
 "
 "-------------------------------------------------------------------------------
 " s:ErrorMsg : Print an error message.   {{{2
@@ -195,6 +214,7 @@ let s:CMake_MakeTool   = 'make'
 "
 call s:GetGlobalSetting ( 'CMake_Executable' )
 call s:GetGlobalSetting ( 'CMake_MakeTool' )
+call s:ApplyDefaultSetting ( 'CMake_JumpToError', 'cmake' )
 "
 let s:Enabled = 1
 "
@@ -436,6 +456,8 @@ function! mmtoolbox#cmake#Settings ( verbose )
 				\ .'            using toolbox :  version '.g:Toolbox_Version." by Wolfgang Mehner\n"
 	if a:verbose
 		let	txt .= "\n"
+					\ .'            jump to error :  '.g:CMake_JumpToError."\n"
+					\ ."\n"
 					\ .'        project directory :  '.s:ProjectDir."\n"
 					\ .'           build location :  '.s:BuildLocation."\n"
 	endif
@@ -482,7 +504,12 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 		let errors = 'DIR : '.s:ProjectDir."\n"
 					\ .system ( shellescape( s:CMake_Executable ).' '.args )
 					\ .'ENDDIR : '.s:ProjectDir
-		silent exe 'cexpr errors'
+		"
+		if g:CMake_JumpToError == 'cmake' || g:CMake_JumpToError == 'both'
+			silent exe 'cexpr errors'
+		else
+			silent exe 'cgetexpr errors'
+		endif
 		"
 		" restore the old settings
 		exe 'setglobal errorformat='.escape( errorf_saved, s:SettingsEscChar )
@@ -519,7 +546,12 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 			let errors = 'DIR : '.s:ProjectDir."\n"
 						\ .errors
 						\ .'ENDDIR : '.s:ProjectDir
-			silent exe 'cexpr errors'
+			"
+			if g:CMake_JumpToError == 'cmake' || g:CMake_JumpToError == 'both'
+				silent exe 'cexpr errors'
+			else
+				silent exe 'cgetexpr errors'
+			endif
 			"
 			" restore the old settings
 			exe 'setglobal errorformat='.escape( errorf_saved, s:SettingsEscChar )
@@ -537,7 +569,11 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 						\ .s:ErrorFormat_MakeAdditions
 						\ .escape( errorf_saved, s:SettingsEscChar )
 			"
-			silent exe 'cexpr errors'
+			if g:CMake_JumpToError == 'make' || g:CMake_JumpToError == 'both'
+				silent exe 'cexpr errors'
+			else
+				silent exe 'cgetexpr errors'
+			endif
 			"
 			" restore the old settings
 			exe 'setglobal errorformat='.escape( errorf_saved, s:SettingsEscChar )
@@ -672,15 +708,21 @@ function! mmtoolbox#cmake#Help ( type, topic )
 	else
 		"
 		" get help for a topic
-		let cmd  = "s:TextFromSystem ( '".esc_exe." ".switch." ".a:topic."' )"
+		let cmd = "s:TextFromSystem ( '".esc_exe." ".switch." ".escape( a:topic, '<>[] ' )."' )"
 		"
-		let topic    = a:topic
+		if s:MSWIN
+			" :TODO:18.02.2014 15:09:WM: which characters can we use under Windows?
+			let topic = substitute( a:topic, '[<>[\]]', '-', 'g' )
+		else
+			let topic = a:topic
+		endif
 		let category = a:type
 		"
 		let jump = ':call mmtoolbox#cmake#Help("'.a:type.'","")<CR>'
 	endif
 	"
 	" get the help
+	" :TODO:18.02.2014 15:09:WM: can we use brackets under Windows?
 	let buf  = 'CMake help - '.topic.' ('.category.')'
 	"
 	if ! s:OpenManBuffer ( cmd, buf, jump )
@@ -695,8 +737,19 @@ endfunction    " ----------  end of function mmtoolbox#cmake#Help  ----------
 function! mmtoolbox#cmake#HelpJump ( type )
 	"
 	" get help for the word in the line
+	"
+	" the name under the cursor can consist of these characters:
+	"   <letters> <numbers> _ < > [ ] <space>
+	" but never end with a space
+	"
 	let line = getline('.')
-	let line = matchstr(line,'^\w\+\ze\s*$')
+	let line = matchstr( line, '^[[:alnum:]_<>[\] ]*[[:alnum:]_<>[\]]\ze\s*$' )
+	"
+	" for type "policy": maybe the line above matches (can use simpler regex)
+	if empty( line ) && a:type == 'policy' && line('.')-1 > 0
+		let line = getline( line('.')-1 )
+		let line = matchstr( line, '^\w\+\ze\s*$' )
+	endif
 	"
 	if empty( line )
 		echo 'CMake : No '.a:type.' under the cursor.'

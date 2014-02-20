@@ -72,7 +72,12 @@ Perl:
   * Reference toolbox in 'perl-hotkeys.tex'?
   * Document 'g:Perl_UseToolbox' and 'g:Perl_UseTool_make'.
 
+Vim:
+- (FM/WM) 'comment' should not insert a space following the quote.
+
 Toolbox:
+- CMake: Does the help work at all under Windows?
+- CMake: Names of help buffers, can we use brackets, other characters (Windows)?
 - CMake: Run CMakeSetup.exe (Windows)
 - CMake: Run ccmake (in xterm), cmake-gui (UNIX)
 - Doxygen: Run doxywizard (UNIX, Windows?)
