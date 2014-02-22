@@ -2576,17 +2576,17 @@ function! s:CreateAdditionalMaps ()
 	"  Ctrl-F9   run executable
 	" Shift-F9   command line arguments
 	"
-	map  <buffer>  <silent>  <A-F9>       :call C_Compile()<CR>:call C_HlMessage()<CR>
-	imap <buffer>  <silent>  <A-F9>  <C-C>:call C_Compile()<CR>:call C_HlMessage()<CR>
+	noremap  <buffer>  <silent>  <A-F9>       :call C_Compile()<CR>:call C_HlMessage()<CR>
+	inoremap <buffer>  <silent>  <A-F9>  <C-C>:call C_Compile()<CR>:call C_HlMessage()<CR>
 	"
-	map  <buffer>  <silent>    <F9>       :call C_Link()<CR>:call C_HlMessage()<CR>
-	imap <buffer>  <silent>    <F9>  <C-C>:call C_Link()<CR>:call C_HlMessage()<CR>
+	noremap  <buffer>  <silent>    <F9>       :call C_Link()<CR>:call C_HlMessage()<CR>
+	inoremap <buffer>  <silent>    <F9>  <C-C>:call C_Link()<CR>:call C_HlMessage()<CR>
 	"
-	map  <buffer>  <silent>  <C-F9>       :call C_Run()<CR>
-	imap <buffer>  <silent>  <C-F9>  <C-C>:call C_Run()<CR>
+	noremap  <buffer>  <silent>  <C-F9>       :call C_Run()<CR>
+	inoremap <buffer>  <silent>  <C-F9>  <C-C>:call C_Run()<CR>
 	"
-	map  <buffer>            <S-F9>       :CCmdlineArgs<Space>
-	imap <buffer>            <S-F9>  <C-C>:CCmdlineArgs<Space>
+	noremap  <buffer>            <S-F9>       :CCmdlineArgs<Space>
+	inoremap <buffer>            <S-F9>  <C-C>:CCmdlineArgs<Space>
 	"
 
 	" ---------- KEY MAPPINGS : MENU ENTRIES -------------------------------------
@@ -2702,60 +2702,60 @@ function! s:CreateAdditionalMaps ()
 	"
 	" ---------- run menu --------------------------------------------------------
 	"
-	map  <buffer>  <silent>  <LocalLeader>rc         :call C_Compile()<CR>:call C_HlMessage()<CR>
-	imap <buffer>  <silent>  <LocalLeader>rc    <C-C>:call C_Compile()<CR>:call C_HlMessage()<CR>
-	map  <buffer>  <silent>  <LocalLeader>rl         :call C_Link()<CR>:call C_HlMessage()<CR>
-	imap <buffer>  <silent>  <LocalLeader>rl    <C-C>:call C_Link()<CR>:call C_HlMessage()<CR>
-	map  <buffer>  <silent>  <LocalLeader>rr         :call C_Run()<CR>
-	imap <buffer>  <silent>  <LocalLeader>rr    <C-C>:call C_Run()<CR>
-	map  <buffer>  <silent>  <LocalLeader>re         :call C_ExeToRun()<CR>
-	imap <buffer>  <silent>  <LocalLeader>re    <C-C>:call C_ExeToRun()<CR>
-	map  <buffer>            <LocalLeader>ra         :CCmdlineArgs<Space>
-	imap <buffer>            <LocalLeader>ra    <C-C>:CCmdlineArgs<Space>
-	map  <buffer>  <silent>  <LocalLeader>rd         :call C_Debugger()<CR>
-	imap <buffer>  <silent>  <LocalLeader>rd    <C-C>:call C_Debugger()<CR>
-	map  <buffer>  <silent>  <LocalLeader>rp         :call C_SplintCheck()<CR>:call C_HlMessage()<CR>
-	imap <buffer>  <silent>  <LocalLeader>rp    <C-C>:call C_SplintCheck()<CR>:call C_HlMessage()<CR>
-	map  <buffer>  <silent>  <LocalLeader>rpa        :call C_SplintArguments()<CR>
-	imap <buffer>  <silent>  <LocalLeader>rpa   <C-C>:call C_SplintArguments()<CR>
-	map  <buffer>  <silent>  <LocalLeader>rcc        :call C_CppcheckCheck()<CR>:call C_HlMessage()<CR>
-	imap <buffer>  <silent>  <LocalLeader>rcc   <C-C>:call C_CppcheckCheck()<CR>:call C_HlMessage()<CR>
-	map  <buffer>  <silent>  <LocalLeader>rccs       :call C_CppcheckSeverityInput()<CR>
-	imap <buffer>  <silent>  <LocalLeader>rccs  <C-C>:call C_CppcheckSeverityInput()<CR>
+	noremap  <buffer>  <silent>  <LocalLeader>rc         :call C_Compile()<CR>:call C_HlMessage()<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>rc    <C-C>:call C_Compile()<CR>:call C_HlMessage()<CR>
+	noremap  <buffer>  <silent>  <LocalLeader>rl         :call C_Link()<CR>:call C_HlMessage()<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>rl    <C-C>:call C_Link()<CR>:call C_HlMessage()<CR>
+	noremap  <buffer>  <silent>  <LocalLeader>rr         :call C_Run()<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>rr    <C-C>:call C_Run()<CR>
+	noremap  <buffer>  <silent>  <LocalLeader>re         :call C_ExeToRun()<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>re    <C-C>:call C_ExeToRun()<CR>
+	noremap  <buffer>            <LocalLeader>ra         :CCmdlineArgs<Space>
+	inoremap <buffer>            <LocalLeader>ra    <C-C>:CCmdlineArgs<Space>
+	noremap  <buffer>  <silent>  <LocalLeader>rd         :call C_Debugger()<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>rd    <C-C>:call C_Debugger()<CR>
+	noremap  <buffer>  <silent>  <LocalLeader>rp         :call C_SplintCheck()<CR>:call C_HlMessage()<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>rp    <C-C>:call C_SplintCheck()<CR>:call C_HlMessage()<CR>
+	noremap  <buffer>  <silent>  <LocalLeader>rpa        :call C_SplintArguments()<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>rpa   <C-C>:call C_SplintArguments()<CR>
+	noremap  <buffer>  <silent>  <LocalLeader>rcc        :call C_CppcheckCheck()<CR>:call C_HlMessage()<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>rcc   <C-C>:call C_CppcheckCheck()<CR>:call C_HlMessage()<CR>
+	noremap  <buffer>  <silent>  <LocalLeader>rccs       :call C_CppcheckSeverityInput()<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>rccs  <C-C>:call C_CppcheckSeverityInput()<CR>
 
-	map  <buffer>  <silent>  <LocalLeader>ri         :call C_Indent()<CR>
-	imap <buffer>  <silent>  <LocalLeader>ri    <C-C>:call C_Indent()<CR>
-	map  <buffer>  <silent>  <LocalLeader>rh         :call C_Hardcopy()<CR>
-	imap <buffer>  <silent>  <LocalLeader>rh    <C-C>:call C_Hardcopy()<CR>
-	vmap <buffer>  <silent>  <LocalLeader>rh         :call C_Hardcopy()<CR>
-	map  <buffer>  <silent>  <LocalLeader>rs         :call C_Settings()<CR>
-	imap <buffer>  <silent>  <LocalLeader>rs    <C-C>:call C_Settings()<CR>
+	noremap  <buffer>  <silent>  <LocalLeader>ri         :call C_Indent()<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>ri    <C-C>:call C_Indent()<CR>
+	noremap  <buffer>  <silent>  <LocalLeader>rh         :call C_Hardcopy()<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>rh    <C-C>:call C_Hardcopy()<CR>
+	vnoremap <buffer>  <silent>  <LocalLeader>rh         :call C_Hardcopy()<CR>
+	noremap  <buffer>  <silent>  <LocalLeader>rs         :call C_Settings()<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>rs    <C-C>:call C_Settings()<CR>
 	"
 	if has("unix")
-		map  <buffer>  <silent>  <LocalLeader>rx       :call C_XtermSize()<CR>
-		imap <buffer>  <silent>  <LocalLeader>rx  <C-C>:call C_XtermSize()<CR>
+		noremap  <buffer>  <silent>  <LocalLeader>rx       :call C_XtermSize()<CR>
+		inoremap <buffer>  <silent>  <LocalLeader>rx  <C-C>:call C_XtermSize()<CR>
 	endif
-	map  <buffer>  <silent>  <LocalLeader>ro         :call C_Toggle_Gvim_Xterm()<CR>
-	imap <buffer>  <silent>  <LocalLeader>ro    <C-C>:call C_Toggle_Gvim_Xterm()<CR>
+	noremap  <buffer>  <silent>  <LocalLeader>ro         :call C_Toggle_Gvim_Xterm()<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>ro    <C-C>:call C_Toggle_Gvim_Xterm()<CR>
 	"
 	" Abraxas CodeCheck (R)
 	"
 	if s:C_CodeCheckIsExecutable==1
-		map  <buffer>  <silent>  <LocalLeader>rk       :call C_CodeCheck()<CR>:call C_HlMessage()<CR>
-		imap <buffer>  <silent>  <LocalLeader>rk  <C-C>:call C_CodeCheck()<CR>:call C_HlMessage()<CR>
-		map  <buffer>  <silent>  <LocalLeader>rka      :call C_CodeCheckArguments()<CR>
-		imap <buffer>  <silent>  <LocalLeader>rka <C-C>:call C_CodeCheckArguments()<CR>
+		noremap  <buffer>  <silent>  <LocalLeader>rk       :call C_CodeCheck()<CR>:call C_HlMessage()<CR>
+		inoremap <buffer>  <silent>  <LocalLeader>rk  <C-C>:call C_CodeCheck()<CR>:call C_HlMessage()<CR>
+		noremap  <buffer>  <silent>  <LocalLeader>rka      :call C_CodeCheckArguments()<CR>
+		inoremap <buffer>  <silent>  <LocalLeader>rka <C-C>:call C_CodeCheckArguments()<CR>
 	endif
 	" ---------- plugin help -----------------------------------------------------
 	"
-	map  <buffer>  <silent>  <LocalLeader>hp         :call C_HelpCsupport()<CR>
-	imap <buffer>  <silent>  <LocalLeader>hp    <C-C>:call C_HelpCsupport()<CR>
-	map  <buffer>  <silent>  <LocalLeader>hm         :call C_Help("m")<CR>
-	imap <buffer>  <silent>  <LocalLeader>hm    <C-C>:call C_Help("m")<CR>
+	noremap  <buffer>  <silent>  <LocalLeader>hp         :call C_HelpCsupport()<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>hp    <C-C>:call C_HelpCsupport()<CR>
+	noremap  <buffer>  <silent>  <LocalLeader>hm         :call C_Help("m")<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>hm    <C-C>:call C_Help("m")<CR>
 	"
 	if !exists("g:C_Ctrl_j") || ( exists("g:C_Ctrl_j") && g:C_Ctrl_j != 'off' )
-		nmap  <buffer>  <silent>  <C-j>   i<C-R>=C_JumpCtrlJ()<CR>
-		imap  <buffer>  <silent>  <C-j>    <C-R>=C_JumpCtrlJ()<CR>
+		nnoremap  <buffer>  <silent>  <C-j>   i<C-R>=C_JumpCtrlJ()<CR>
+		inoremap  <buffer>  <silent>  <C-j>    <C-R>=C_JumpCtrlJ()<CR>
 	endif
 	"
 	" ---------- tool box --------------------------------------------------------

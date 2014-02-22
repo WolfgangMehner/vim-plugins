@@ -182,6 +182,7 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
   RELEASE NOTES FOR VERSION 6.1.1pre
 ================================================================================
 - Bugfix: Setup of local templates in case of global installation.
+- Bugfix: Use "noremap" consistently.
 - 'Help->show manual' shows man page text with appropriate width (UNIX only).
 - Extended the documentation.
 
