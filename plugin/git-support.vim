@@ -356,13 +356,16 @@ endfunction    " ----------  end of function s:ImportantMsg  ----------
 "-------------------------------------------------------------------------------
 "
 function! s:OpenFile ( filename, ... )
-	if bufwinnr ( '^'.a:filename.'$' ) == -1
+	"
+	let filename = resolve ( fnamemodify ( a:filename, ':p' ) )
+	"
+	if bufwinnr ( '^'.filename.'$' ) == -1
 		" open buffer
 		belowright new
-		exe "edit ".fnameescape( a:filename )
+		exe "edit ".fnameescape( filename )
 	else
 		" jump to window
-		exe bufwinnr( a:filename ).'wincmd w'
+		exe bufwinnr( '^'.filename.'$' ).'wincmd w'
 	endif
 	"
 	if a:0 >= 1
@@ -786,7 +789,9 @@ call s:GetGlobalSetting ( 'Git_LoadMenus' )
 call s:GetGlobalSetting ( 'Git_RootMenu' )
 call s:GetGlobalSetting ( 'Git_CustomMenu' )
 "
+call s:ApplyDefaultSetting ( 'Git_CheckoutExpandEmpty',  'no' )
 call s:ApplyDefaultSetting ( 'Git_DiffExpandEmpty',      'no' )
+call s:ApplyDefaultSetting ( 'Git_ResetExpandEmpty',     'no' )
 call s:ApplyDefaultSetting ( 'Git_OpenFoldAfterJump',    'yes' )
 call s:ApplyDefaultSetting ( 'Git_StatusStagedOpenDiff', 'cached' )
 "
@@ -923,7 +928,7 @@ if s:Enabled
 	command! -nargs=* -complete=file -bang                           GitAdd             :call GitS_Add(<q-args>,'<bang>'=='!'?'ef':'e')
 	command! -nargs=* -complete=file -range=0                        GitBlame           :call GitS_Blame('update',<q-args>,<line1>,<line2>)
 	command! -nargs=* -complete=file                                 GitBranch          :call GitS_Branch(<q-args>,'')
-	command! -nargs=* -complete=file                                 GitCheckout        :call GitS_Checkout(<q-args>,'ce')
+	command! -nargs=* -complete=file                                 GitCheckout        :call GitS_Checkout(<q-args>,'c')
 	command! -nargs=* -complete=file                                 GitCommit          :call GitS_Commit('direct',<q-args>,'')
 	command! -nargs=? -complete=file                                 GitCommitFile      :call GitS_Commit('file',<q-args>,'')
 	command! -nargs=0                                                GitCommitMerge     :call GitS_Commit('merge','','')
@@ -943,7 +948,7 @@ if s:Enabled
 	command! -nargs=* -complete=file                                 GitRemote          :call GitS_Remote(<q-args>,'')
 	command! -nargs=* -complete=file                                 GitRemove          :call GitS_Remove(<q-args>,'e')
 	command! -nargs=* -complete=file                                 GitRm              :call GitS_Remove(<q-args>,'e')
-	command! -nargs=* -complete=file                                 GitReset           :call GitS_Reset(<q-args>,'e')
+	command! -nargs=* -complete=file                                 GitReset           :call GitS_Reset(<q-args>,'')
 	command! -nargs=* -complete=file                                 GitShow            :call GitS_Show('update',<q-args>)
 	command! -nargs=*                                                GitStash           :call GitS_Stash(<q-args>,'')
 	command! -nargs=*                                                GitSlist           :call GitS_Stash('list '.<q-args>,'')
@@ -1592,7 +1597,7 @@ function! GitS_Checkout( param, flags )
 		return s:ErrorMsg ( 'Unknown flag "'.matchstr( a:flags, '[^ce]' ).'".' )
 	endif
 	"
-	if empty( a:param )
+	if g:Git_CheckoutExpandEmpty == 'yes' && empty( a:param )
 		"
 		" checkout on the current file potentially destroys unstaged changed,
 		" ask question with different highlighting
@@ -1601,8 +1606,10 @@ function! GitS_Checkout( param, flags )
 			return
 		endif
 		"
-		" remove confirmation from flags
-		let flags = substitute ( a:flags, 'c', '', 'g' )
+		" remove confirmation from flags and add expanding of the current file
+		let flags  = substitute ( a:flags, 'c', '', 'g' )
+		let flags .= 'e'
+		"
 	else
 		let flags = a:flags
 	endif
@@ -2472,7 +2479,13 @@ endfunction    " ----------  end of function GitS_Remove  ----------
 "
 function! GitS_Reset( param, flags )
 	"
-	return s:StandardRun ( 'reset', a:param, a:flags )
+	if g:Git_ResetExpandEmpty == 'yes'
+		let flags = a:flags.'e'
+	else
+		let flags = a:flags
+	endif
+	"
+	return s:StandardRun ( 'reset', a:param, flags )
 	"
 endfunction    " ----------  end of function GitS_Reset  ----------
 "
@@ -3612,7 +3625,7 @@ function! GitS_PluginSettings( verbose )
 	endif
 	if a:verbose
 		let	txt .= "\n"
-					\ .'        diff expand empty :  "'.g:Git_DiffExpandEmpty."\"\n"
+					\ .'             expand empty :  checkout: "'.g:Git_CheckoutExpandEmpty.'" ; diff: "'.g:Git_DiffExpandEmpty.'" ; reset: "'.g:Git_ResetExpandEmpty."\"\n"
 					\ .'     open fold after jump :  "'.g:Git_OpenFoldAfterJump."\"\n"
 					\ .'  status staged open diff :  "'.g:Git_StatusStagedOpenDiff."\"\n"
 	endif

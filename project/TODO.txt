@@ -1,6 +1,7 @@
 Project
 - (WM, DONE) Remove 'plugin/make.vim'.
 - (WM, DONE) Tag 'perlsupport-5.2' is wrong.
+- (FM,WM) Use noremap consistently.
 
 vim.org:
 - (FM, DONE?) Reference github on plug-in pages.
@@ -12,6 +13,12 @@ Templates:
 - (WM) API 'EditTemplateFiles'.
   * (DONE) Check whether an indexed file actually exists.
   * Configuration of the file browser (+ documentation).
+
+Awk:
+- (FM) 'code->comment' should not insert a space following the hash?
+
+Bash:
+- (FM) 'code->comment' should not insert a space following the hash?
 
 C/C++:
 - (FM, DONE) Documentation: Change documentation with regard to Make integration.
@@ -41,9 +48,11 @@ Git:
 - (WM) How about jumping to windows?
   * (DONE) Open the buffer in a new window.
   * Optionally: Jump across tab pages.
-- (WM) Problem with 's:OpenFile()':
+- (WM, DONE?) Problem with 's:OpenFile()':
   Since the name of the buffer has to match exactly, this does not always work
   with different working directories.
+- (WM, DONE?) For global installation (compare Matlab):
+  Which method is best to obtain 's:plugin_dir'?
 - (WM) Do not use "sync fromstart" in syntax highlighting,
   is extremely slow for diff and log.
 - (WM) Document map "ow" in status buffer.
@@ -51,8 +60,6 @@ Git:
 - (WM) Buffer "git stash list", maps for: create
 - (WM) Maps for completing Git commands, branches, tags, remotes, ...
   similar to the cmd-line completion plug-in.
-- (WM) For global installation (compare Matlab):
-  Which method is best to obtain 's:plugin_dir'?
 
 LaTeX:
 - (FM) Documentation: Menu 'Beamer' missing.
@@ -61,7 +68,7 @@ LaTeX:
 - (WM, DONE) Reference Card: Entry 'Help->english' missing.
 
 Matlab:
-- (WM) For global installation (compare Git):
+- (WM, DONE?) For global installation (compare Git):
   Which method is best to obtain 's:plugin_dir'?
 
 Perl:
@@ -73,7 +80,7 @@ Perl:
   * Document 'g:Perl_UseToolbox' and 'g:Perl_UseTool_make'.
 
 Vim:
-- (FM/WM) 'comment' should not insert a space following the quote.
+- (FM/WM) 'code->comment' should not insert a space following the quote.
 
 Toolbox:
 - CMake: Does the help work at all under Windows?

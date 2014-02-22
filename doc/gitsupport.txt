@@ -669,9 +669,10 @@ Starts gitk with the given arguments.
                                                                     *:GitBash*
   :GitBash <args> ~
 
-Runs git in an external terminal. Useful for interactive commands, such as
-"git add -p ...".
-
+Runs git in an external terminal. Useful for interactive commands, for
+example: >
+  :GitBash add --patch %
+<
 Windows: If called without arguments, starts the git bash in interactive mode.
 
 ------------------------------------------------------------------------------
@@ -947,8 +948,12 @@ in the .vimrc file.
                                           ('yes' or 'no')
   |g:Git_RootMenu|              '&Git'      name and shortcut of the root menu
   |g:Git_CustomMenu|            [ ... ]     custom menu entries
-  |g:Git_DiffExpandEmpty|       'no'        whether |:GitDiff| expands an empty
-                                          argument list to the current file
+
+      expansion of empty argument lists to the current file:
+  |g:Git_CheckoutExpandEmpty|   'no'        for |:GitCheckout|
+  |g:Git_DiffExpandEmpty|       'no'        for |:GitDiff|
+  |g:Git_ResetExpandEmpty|      'no'        for |:GitReset|
+
   |g:Git_OpenFoldAfterJump|     'yes'       whether commands which open a file
                                           open the folds under the cursor
   |g:Git_StatusStagedOpenDiff|  'cached'    how to execute "open diff" from
@@ -1029,8 +1034,9 @@ With these lines, <F10> will open the status buffer: >
 ------------------------------------------------------------------------------
 6.4  SETTINGS                                     *gitsupport-config-settings*
 ------------------------------------------------------------------------------
-                                                       *g:Git_DiffExpandEmpty*
-The default behavior of ":GitDiff", when called without arguments, is to show
+                             *g:Git_CheckoutExpandEmpty* *g:Git_DiffExpandEmpty*
+                                                      *g:Git_ResetExpandEmpty*
+The default behavior of |:GitDiff|, when called without arguments, is to show
 a diff containing all unstaged changes.
 
 In order to make the behavior more consistent with commands like |:GitAdd|,
@@ -1045,6 +1051,12 @@ containing all changes by calling: >
   :GitDiff --
 This is not detected to be an empty argument list.
 
+Similarly, the behavior of |:GitCheckout| and |:GitReset| can be changed to
+operate on the file in the current buffer when called without arguments, by
+setting: >
+  let g:Git_CheckoutExpandEmpty = 'yes'
+  let g:Git_ResetExpandEmpty    = 'yes'
+<
 The possible settings are listed below:
 
   Value             Meaning                      :GitDiff expands to ...
