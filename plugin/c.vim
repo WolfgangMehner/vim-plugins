@@ -798,7 +798,7 @@ function! C_EndOfLineComment ( ... ) range
 			if linelength < b:C_LineEndCommentColumn
 				let diff	= b:C_LineEndCommentColumn -1 -linelength
 			endif
-			exe "normal	".diff."A "
+			exe "normal!	".diff."A "
 			call mmtemplates#core#InsertTemplate(g:C_Templates, template)
 		endif
 	endfor
@@ -947,7 +947,7 @@ function! C_PPIf0 (mode)
 	"
 	" search for the maximum option number (if any)
 	"
-	normal gg
+	normal! gg
 	while actual_line < search( s:C_If0_Txt."\\d\\+" )
 		let actual_line	= line(".")
 	 	let actual_opt  = matchstr( getline(actual_line), s:C_If0_Txt."\\d\\+" )
@@ -963,7 +963,7 @@ function! C_PPIf0 (mode)
 		let zz=    "\n#if  0     ".s:C_Com1." ----- #if 0 : ".s:C_If0_Txt.s:C_If0_Counter." ----- ".s:C_Com2."\n"
 		let zz= zz."\n#endif     ".s:C_Com1." ----- #if 0 : ".s:C_If0_Txt.s:C_If0_Counter." ----- ".s:C_Com2."\n\n"
 		put =zz
-		normal 4k
+		normal! 4k
 	endif
 
 	if a:mode=='v'
@@ -975,7 +975,7 @@ function! C_PPIf0 (mode)
 		exe ":".pos1."put! =zz"
 		"
 		if  &foldenable && foldclosed(".")
-			normal zv
+			normal! zv
 		endif
 	endif
 
@@ -988,7 +988,7 @@ function! C_PPIf0Remove ()
 	"
 	" cursor on fold: open fold first
 	if  &foldenable && foldclosed(".")
-		normal zv
+		normal! zv
 	endif
 	"
 	let frstline	= searchpair( '^\s*#if\s\+0', '', '^\s*#endif\>.\+\<If0Label_', 'bn' )
@@ -1326,7 +1326,7 @@ function! C_ProtoInsert ()
 			put =protytype
 		endfor
 		let	lines	= s:C_PrototypeCounter	- 1
-		silent exe "normal =".lines."-"
+		silent exe "normal! =".lines."-"
 		call C_ProtoClear()
 	else
 		echo "currently no prototypes available"
@@ -2313,7 +2313,7 @@ function! s:C_RemoveSpecialCharacters ( )
 		silent exe ':%s/'.patternbold.'//g'
 	endif
 	setlocal nomodifiable
-	silent normal gg
+	silent normal! gg
 endfunction		" ---------- end of function  s:C_RemoveSpecialCharacters   ----------
 "
 "------------------------------------------------------------------------------
@@ -2471,7 +2471,7 @@ function! C_OpenFold ( mode )
 		" last line of the previously closed fold
 		let	foldstart	= foldclosed(".")
 		let	foldend		= foldclosedend(".")
-		normal zv
+		normal! zv
 		if a:mode == 'below'
 			exe ":".foldend
 		endif
@@ -2503,7 +2503,7 @@ function! C_JumpCtrlJ ()
 		if match( getline(".")[col(".") - 1], "[\]})\"'`]"  ) != 0
 			call search( "[\]})\"'`]", '', line(".") )
 		endif
-		normal l
+		normal! l
 	endif
 	return ''
 endfunction    " ----------  end of function C_JumpCtrlJ  ----------
