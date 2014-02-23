@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Templates_Version below
 "       Created:  30.08.2011
-"      Revision:  11.02.2013
+"      Revision:  23.02.2014
 "       License:  Copyright (c) 2012-2013, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:Templates_Version') && ! exists('g:Templates_DevelopmentOverwrite') )
 	finish
 endif
-let g:Templates_Version= '0.9.2-1'     " version number of this script; do not change
+let g:Templates_Version= '0.9.2-2'     " version number of this script; do not change
 "
 if ! exists ( 'g:Templates_MapInUseWarn' )
 	let g:Templates_MapInUseWarn = 1
@@ -409,7 +409,7 @@ function! s:OpenFold ( mode )
 	" jump to the last line of the previously closed fold
 	let foldstart = foldclosed(".")
 	let foldend		= foldclosedend(".")
-	normal zv
+	normal! zv
 	if a:mode == 'below'
 		exe ":".foldend
 	elseif a:mode == 'start'
@@ -2495,7 +2495,7 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 			"           puts the selected area into the buffer @"
 			let pos1 = line("'<")
 			let pos2 = line("'>") + len(split( text, '\n' )) - 1
-			normal gvy
+			normal! gvy
 			let repl = escape ( part[0].@".part[1], '\&~' )
 			" substitute the selected area (using the '< and '> marks)
 			exe ':s/\%''<.*\%''>./'.repl.'/'
@@ -2516,7 +2516,7 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 	" proper indenting
 	if indentation
 		silent exe ":".pos1
-		silent exe "normal ".( pos2-pos1+1 )."=="
+		silent exe "normal! ".( pos2-pos1+1 )."=="
 	endif
 	"
 	return [ pos1, pos2 ]
@@ -2545,9 +2545,9 @@ function! s:PositionCursor ( placement, flag_mode, pos1, pos2 )
 			"if a:flag_mode == 'v' && getline('.') =~ '^\s*\%(<CURSOR>\|{CURSOR}\)\s*$'
 				" the line contains nothing but the tag: remove and join without
 				" changing the second line
-				normal J
+				normal! J
 				"call setline( mtch, '' )
-				"normal gJ
+				"normal! gJ
 			else
 				" the line contains other characters: remove the tag and start appending
 				"call setline( mtch, substitute( line, '<CURSOR>\|{CURSOR}', '', '' ) )
@@ -2758,7 +2758,7 @@ function! mmtemplates#core#InsertTemplate ( library, t_name, ... ) range
 		" restore the state: folding and formatter program
 		if &foldenable
 			exe "set foldmethod=".foldmethod_save
-			normal zv
+			normal! zv
 		endif
 		let &equalprg = equalprg_save
 		"

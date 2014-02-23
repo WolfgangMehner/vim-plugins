@@ -1,8 +1,8 @@
-*templatesupport.txt*         MM Template Support                  Nov 10 2013
+*templatesupport.txt*         MM Template Support                  Feb 23 2014
 
 MM Template Support                                        *template-support*
 
-                           Plug-in version 0.9.2-1
+                           Plug-in version 0.9.2-2
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -2266,6 +2266,13 @@ PATCH 0.9.2-1:
 - Released with slight changes in the core functionality.
 - Change: More checks when rereading templates.
 - Extended the documentation.
+
+------------------------------------------------------------------------------
+
+PATCH 0.9.2-2:
+- Released with slight changes in the core functionality.
+- Change: Better compatibility with custom mappings
+  (use "normal!" and "noremap" consistently).
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.1
