@@ -394,7 +394,7 @@ function! BASH_EndOfLineComment ( ) range
 			if linelength < b:BASH_LineEndCommentColumn
 				let diff	= b:BASH_LineEndCommentColumn -1 -linelength
 			endif
-			exe "normal	".diff."A "
+			exe "normal!	".diff."A "
 			call mmtemplates#core#InsertTemplate(g:BASH_Templates, 'Comments.end-of-line comment')
 		endif
 	endfor
@@ -442,7 +442,7 @@ function! BASH_echo_comment ()
 	let	line	= escape( getline("."), '"' )
 	let	line	= substitute( line, '^\s*', '', '' )
 	call setline( line("."), 'echo "'.line.'"' )
-	silent exe "normal =="
+	silent exe "normal! =="
 	return
 endfunction    " ----------  end of function BASH_echo_comment  ----------
 "
@@ -457,7 +457,7 @@ function! BASH_remove_echo ()
 	let	line	= substitute( line, '^\s*echo\s\+"', '', '' )
 	let	line	= substitute( line, '"$', '', '' )
 	call setline( line("."), line )
-	silent exe "normal =="
+	silent exe "normal! =="
 	return
 endfunction    " ----------  end of function BASH_remove_echo  ----------
 "
@@ -751,7 +751,7 @@ function! BASH_JumpForward ()
 	else
 		" try to jump behind parenthesis or strings
 		call search( "[\]})\"'`]", 'W' )
-		normal l
+		normal! l
 	endif
 	return ''
 endfunction    " ----------  end of function BASH_JumpForward  ----------
@@ -781,7 +781,7 @@ function! BASH_CodeSnippet(mode)
         "
         let linesread= line("$")-linesread-1
         if linesread>=0 && match( l:snippetfile, '\.\(ni\|noindent\)$' ) < 0
-          silent exe "normal =".linesread."+"
+          silent exe "normal! =".linesread."+"
         endif
       endif
     endif
@@ -979,29 +979,29 @@ function! s:CreateAdditionalMaps ()
 	nnoremap    <buffer>  <silent>  <LocalLeader>rh        :call BASH_Hardcopy("n")<CR>
 	vnoremap    <buffer>  <silent>  <LocalLeader>rh   <C-C>:call BASH_Hardcopy("v")<CR>
   "
-   map  <buffer>  <silent>  <C-F9>        :call BASH_Run("n")<CR>
-  imap  <buffer>  <silent>  <C-F9>   <C-C>:call BASH_Run("n")<CR>
-  vmap  <buffer>  <silent>  <C-F9>   <C-C>:call BASH_Run("v")<CR>
+   noremap  <buffer>  <silent>  <C-F9>        :call BASH_Run("n")<CR>
+  inoremap  <buffer>  <silent>  <C-F9>   <C-C>:call BASH_Run("n")<CR>
+  vnoremap  <buffer>  <silent>  <C-F9>   <C-C>:call BASH_Run("v")<CR>
 		"
-   map  <buffer>  <silent>  <A-F9>        :call BASH_SyntaxCheck()<CR>
-  imap  <buffer>  <silent>  <A-F9>   <C-C>:call BASH_SyntaxCheck()<CR>
+   noremap  <buffer>  <silent>  <A-F9>        :call BASH_SyntaxCheck()<CR>
+  inoremap  <buffer>  <silent>  <A-F9>   <C-C>:call BASH_SyntaxCheck()<CR>
   "
-  map   <buffer>            <S-F9>        :BashScriptArguments<Space>
-  imap  <buffer>            <S-F9>   <C-C>:BashScriptArguments<Space>
+  noremap   <buffer>            <S-F9>        :BashScriptArguments<Space>
+  inoremap  <buffer>            <S-F9>   <C-C>:BashScriptArguments<Space>
 
 	if s:MSWIN
- 		 map  <buffer>  <silent>  <LocalLeader>ro           :call BASH_Toggle_Gvim_Xterm_MS()<CR>
-		imap  <buffer>  <silent>  <LocalLeader>ro      <Esc>:call BASH_Toggle_Gvim_Xterm_MS()<CR>
+ 		 noremap  <buffer>  <silent>  <LocalLeader>ro           :call BASH_Toggle_Gvim_Xterm_MS()<CR>
+		inoremap  <buffer>  <silent>  <LocalLeader>ro      <Esc>:call BASH_Toggle_Gvim_Xterm_MS()<CR>
 	else
-		 map  <buffer>  <silent>  <LocalLeader>ro           :call BASH_Toggle_Gvim_Xterm()<CR>
-		imap  <buffer>  <silent>  <LocalLeader>ro      <Esc>:call BASH_Toggle_Gvim_Xterm()<CR>
-		 map  <buffer>  <silent>  <LocalLeader>rd           :call BASH_Debugger()<CR>
-		imap  <buffer>  <silent>  <LocalLeader>rd      <Esc>:call BASH_Debugger()<CR>
-     map  <buffer>  <silent>    <F9>                    :call BASH_Debugger()<CR>
-    imap  <buffer>  <silent>    <F9>               <C-C>:call BASH_Debugger()<CR>
+		 noremap  <buffer>  <silent>  <LocalLeader>ro           :call BASH_Toggle_Gvim_Xterm()<CR>
+		inoremap  <buffer>  <silent>  <LocalLeader>ro      <Esc>:call BASH_Toggle_Gvim_Xterm()<CR>
+		 noremap  <buffer>  <silent>  <LocalLeader>rd           :call BASH_Debugger()<CR>
+		inoremap  <buffer>  <silent>  <LocalLeader>rd      <Esc>:call BASH_Debugger()<CR>
+     noremap  <buffer>  <silent>    <F9>                    :call BASH_Debugger()<CR>
+    inoremap  <buffer>  <silent>    <F9>               <C-C>:call BASH_Debugger()<CR>
 		if has("gui_running")
-			 map  <buffer>  <silent>  <LocalLeader>rx         :call BASH_XtermSize()<CR>
-			imap  <buffer>  <silent>  <LocalLeader>rx    <Esc>:call BASH_XtermSize()<CR>
+			 noremap  <buffer>  <silent>  <LocalLeader>rx         :call BASH_XtermSize()<CR>
+			inoremap  <buffer>  <silent>  <LocalLeader>rx    <Esc>:call BASH_XtermSize()<CR>
 		endif
 	endif
 	"
@@ -1019,8 +1019,8 @@ function! s:CreateAdditionalMaps ()
 	 noremap  <buffer>  <silent>  <LocalLeader>hbs        :call BASH_HelpBashSupport()<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>hbs   <C-C>:call BASH_HelpBashSupport()<CR>
 	"
-	nmap    <buffer>  <silent>  <C-j>    i<C-R>=BASH_JumpForward()<CR>
-	imap    <buffer>  <silent>  <C-j>     <C-R>=BASH_JumpForward()<CR>
+	nnoremap    <buffer>  <silent>  <C-j>    i<C-R>=BASH_JumpForward()<CR>
+	inoremap    <buffer>  <silent>  <C-j>     <C-R>=BASH_JumpForward()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" settings - reset local leader
@@ -1203,7 +1203,7 @@ function! s:bash_RemoveSpecialCharacters ( )
 		silent exe ':%s/'.patternbold.'//g'
 	endif
 	setlocal nomodifiable
-	silent normal gg
+	silent normal! gg
 endfunction		" ---------- end of function  s:bash_RemoveSpecialCharacters   ----------
 "
 "------------------------------------------------------------------------------
