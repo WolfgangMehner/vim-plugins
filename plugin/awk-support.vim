@@ -394,7 +394,7 @@ function! Awk_EndOfLineComment ( ) range
 			if linelength < b:Awk_LineEndCommentColumn
 				let diff	= b:Awk_LineEndCommentColumn -1 -linelength
 			endif
-			exe "normal	".diff."A "
+			exe "normal!	".diff."A "
 			call mmtemplates#core#InsertTemplate(g:Awk_Templates, 'Comments.end-of-line comment')
 		endif
 	endfor
@@ -705,7 +705,7 @@ function! Awk_JumpForward ()
 	else
 		" try to jump behind parenthesis or strings
 		call search( "[\]})\"'`]", 'W' )
-		normal l
+		normal! l
 	endif
 	return ''
 endfunction    " ----------  end of function Awk_JumpForward  ----------
@@ -735,7 +735,7 @@ function! Awk_CodeSnippet(mode)
         "
         let linesread= line("$")-linesread-1
         if linesread>=0 && match( l:snippetfile, '\.\(ni\|noindent\)$' ) < 0
-          silent exe "normal =".linesread."+"
+          silent exe "normal! =".linesread."+"
         endif
       endif
     endif
@@ -927,21 +927,21 @@ function! s:CreateAdditionalMaps ()
 	nnoremap    <buffer>  <silent>  <LocalLeader>rh        :call Awk_Hardcopy("n")<CR>
 	vnoremap    <buffer>  <silent>  <LocalLeader>rh   <C-C>:call Awk_Hardcopy("v")<CR>
   "
-   map  <buffer>  <silent>  <C-F9>        :call Awk_Run("n")<CR>
-  imap  <buffer>  <silent>  <C-F9>   <C-C>:call Awk_Run("n")<CR>
+   noremap  <buffer>  <silent>  <C-F9>        :call Awk_Run("n")<CR>
+  inoremap  <buffer>  <silent>  <C-F9>   <C-C>:call Awk_Run("n")<CR>
 		"
-   map  <buffer>  <silent>  <A-F9>        :call Awk_SyntaxCheck("syntax")<CR>
-  imap  <buffer>  <silent>  <A-F9>   <C-C>:call Awk_SyntaxCheck("syntax")<CR>
+   noremap  <buffer>  <silent>  <A-F9>        :call Awk_SyntaxCheck("syntax")<CR>
+  inoremap  <buffer>  <silent>  <A-F9>   <C-C>:call Awk_SyntaxCheck("syntax")<CR>
   "
-  map   <buffer>            <S-F9>        :AwkScriptArguments<Space>
-  imap  <buffer>            <S-F9>   <C-C>:AwkScriptArguments<Space>
+  noremap   <buffer>            <S-F9>        :AwkScriptArguments<Space>
+  inoremap  <buffer>            <S-F9>   <C-C>:AwkScriptArguments<Space>
 
 	if s:MSWIN
- 		 map  <buffer>  <silent>  <LocalLeader>ro           :call Awk_Toggle_Gvim_Xterm_MS()<CR>
-		imap  <buffer>  <silent>  <LocalLeader>ro      <Esc>:call Awk_Toggle_Gvim_Xterm_MS()<CR>
+ 		 noremap  <buffer>  <silent>  <LocalLeader>ro           :call Awk_Toggle_Gvim_Xterm_MS()<CR>
+		inoremap  <buffer>  <silent>  <LocalLeader>ro      <Esc>:call Awk_Toggle_Gvim_Xterm_MS()<CR>
 	else
-		 map  <buffer>  <silent>  <LocalLeader>ro           :call Awk_Toggle_Gvim_Xterm()<CR>
-		imap  <buffer>  <silent>  <LocalLeader>ro      <Esc>:call Awk_Toggle_Gvim_Xterm()<CR>
+		 noremap  <buffer>  <silent>  <LocalLeader>ro           :call Awk_Toggle_Gvim_Xterm()<CR>
+		inoremap  <buffer>  <silent>  <LocalLeader>ro      <Esc>:call Awk_Toggle_Gvim_Xterm()<CR>
 	endif
 	"
 	"-------------------------------------------------------------------------------
@@ -954,8 +954,8 @@ function! s:CreateAdditionalMaps ()
 	 noremap  <buffer>  <silent>  <LocalLeader>hp         :call Awk_HelpAwkSupport()<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>hp    <C-C>:call Awk_HelpAwkSupport()<CR>
 	"
-	nmap    <buffer>  <silent>  <C-j>    i<C-R>=Awk_JumpForward()<CR>
-	imap    <buffer>  <silent>  <C-j>     <C-R>=Awk_JumpForward()<CR>
+	nnoremap    <buffer>  <silent>  <C-j>    i<C-R>=Awk_JumpForward()<CR>
+	inoremap    <buffer>  <silent>  <C-j>     <C-R>=Awk_JumpForward()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" settings - reset local leader
@@ -1045,7 +1045,7 @@ function! s:awk_RemoveSpecialCharacters ( )
 		silent exe ':%s/'.patternbold.'//g'
 	endif
 	setlocal nomodifiable
-	silent normal gg
+	silent normal! gg
 endfunction		" ---------- end of function  s:awk_RemoveSpecialCharacters   ----------
 "
 "===  FUNCTION  ================================================================

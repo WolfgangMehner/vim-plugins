@@ -363,7 +363,7 @@ function! Perl_EndOfLineComment ( ) range
 			if linelength < b:Perl_LineEndCommentColumn
 				let diff	= b:Perl_LineEndCommentColumn -1 -linelength
 			endif
-			exe "normal	".diff."A "
+			exe "normal!	".diff."A "
 			call mmtemplates#core#InsertTemplate(g:Perl_Templates, 'Comments.end-of-line-comment')
 		endif
 	endfor
@@ -503,7 +503,7 @@ function! Perl_CommentBlock (mode)
   "
   " search for the maximum option number (if any)
   "
-  normal gg
+  normal! gg
   while actual_line < search( s:Perl_CmtLabel."\\d\\+" )
     let actual_line = line(".")
     let actual_opt  = matchstr( getline(actual_line), s:Perl_CmtLabel."\\d\\+" )
@@ -636,7 +636,7 @@ function! Perl_CodeSnippet(mode)
         "
         let linesread= line("$")-linesread-1
         if linesread>=0 && match( l:snippetfile, '\.\(ni\|noindent\)$' ) < 0
-          silent exe "normal =".linesread."+"
+          silent exe "normal! =".linesread."+"
         endif
       endif
     endif
@@ -714,7 +714,7 @@ let s:Perl_PerldocTry              = "module"
 function! Perl_perldoc()
 
   if( expand("%:p") == s:Perl_PerlModuleList )
-    normal 0
+    normal! 0
     let item=expand("<cWORD>")        			" WORD under the cursor
   else
 		let cuc		= getline(".")[col(".") - 1]	" character under the cursor
@@ -814,13 +814,13 @@ function! Perl_perldoc()
       let zz=   "No documentation found for perl module, perl function or perl FAQ keyword\n"
       let zz=zz."  '".item."'  "
       silent put! =zz
-      normal  2jdd$
+      normal!  2jdd$
       let s:Perl_PerldocTry         = 'module'
       let s:Perl_PerldocSearchWord  = ""
     endif
     if s:UNIX
       " remove windows line ends
-      silent! exe ":%s/\r$// | normal gg"
+      silent! exe ":%s/\r$// | normal! gg"
     endif
     setlocal nomodifiable
     redraw!
@@ -831,8 +831,8 @@ function! Perl_perldoc()
 	" ---------- Add ':' to the keyword characters -------------------------------
 	"            Tokens like 'File::Find' are recognized as one keyword
 	setlocal iskeyword+=:
- 		map    <buffer>  <silent>  <S-F1>             :call Perl_perldoc()<CR>
- 		imap   <buffer>  <silent>  <S-F1>        <C-C>:call Perl_perldoc()<CR>
+ 		 noremap   <buffer>  <silent>  <S-F1>             :call Perl_perldoc()<CR>
+ 		inoremap   <buffer>  <silent>  <S-F1>        <C-C>:call Perl_perldoc()<CR>
   endif
 endfunction   " ---------- end of function  Perl_perldoc  ----------
 "
@@ -852,7 +852,7 @@ function! s:perl_RemoveSpecialCharacters ( )
 		silent exe ':%s/'.patternbold.'//g'
 	endif
 	setlocal nomodifiable
-	silent normal gg
+	silent normal! gg
 endfunction		" ---------- end of function  s:perl_RemoveSpecialCharacters   ----------
 "
 "===  FUNCTION  ================================================================
@@ -877,10 +877,10 @@ function! Perl_perldoc_show_module_list()
     setlocal nomodifiable
     setlocal filetype=perl
     setlocal syntax=none
- 		map    <buffer>  <silent>  <S-F1>             :call Perl_perldoc()<CR>
- 		imap   <buffer>  <silent>  <S-F1>        <C-C>:call Perl_perldoc()<CR>
+ 		 noremap   <buffer>  <silent>  <S-F1>             :call Perl_perldoc()<CR>
+ 		inoremap   <buffer>  <silent>  <S-F1>        <C-C>:call Perl_perldoc()<CR>
   endif
-  normal gg
+  normal! gg
   redraw!
   if has("gui_running")
     echohl Search | echomsg 'use S-F1 to show a manual' | echohl None
@@ -1458,7 +1458,7 @@ function! Perl_OpenFold ( mode )
 		" last line of the previously closed fold
 		let	foldstart	= foldclosed(".")
 		let	foldend		= foldclosedend(".")
-		normal zv
+		normal! zv
 		if a:mode == 'below'
 			exe ":".foldend
 		endif
@@ -1496,7 +1496,7 @@ function! Perl_JumpCtrlJ ()
 		if match( getline(".")[col(".") - 1], "[\]})\"'`]"  ) != 0
 			call search( "[\]})\"'`]", '', line(".") )
 		endif
-		normal l
+		normal! l
 	endif
 	return ''
 endfunction    " ----------  end of function Perl_JumpCtrlJ  ----------
@@ -2502,25 +2502,25 @@ function! s:CreateAdditionalMaps ()
 	"
 	if has("gui_running")
 		"
-		map    <buffer>  <silent>  <A-F9>             :call Perl_SyntaxCheck()<CR>
-		imap   <buffer>  <silent>  <A-F9>        <C-C>:call Perl_SyntaxCheck()<CR>
+		noremap    <buffer>  <silent>  <A-F9>             :call Perl_SyntaxCheck()<CR>
+		inoremap   <buffer>  <silent>  <A-F9>        <C-C>:call Perl_SyntaxCheck()<CR>
 		"
-		map    <buffer>  <silent>  <C-F9>             :call Perl_Run()<CR>
-		imap   <buffer>  <silent>  <C-F9>        <C-C>:call Perl_Run()<CR>
+		noremap    <buffer>  <silent>  <C-F9>             :call Perl_Run()<CR>
+		inoremap   <buffer>  <silent>  <C-F9>        <C-C>:call Perl_Run()<CR>
 		"
-		map    <buffer>            <S-F9>             :PerlScriptArguments<Space>
-		imap   <buffer>            <S-F9>        <C-C>:PerlScriptArguments<Space>
+		noremap    <buffer>            <S-F9>             :PerlScriptArguments<Space>
+		inoremap   <buffer>            <S-F9>        <C-C>:PerlScriptArguments<Space>
 		"
- 		map    <buffer>  <silent>  <S-F1>             :call Perl_perldoc()<CR>
- 		imap   <buffer>  <silent>  <S-F1>        <C-C>:call Perl_perldoc()<CR>
+ 		noremap    <buffer>  <silent>  <S-F1>             :call Perl_perldoc()<CR>
+ 		inoremap   <buffer>  <silent>  <S-F1>        <C-C>:call Perl_perldoc()<CR>
 	endif
 	"
 	" ---------- plugin help -----------------------------------------------------
 	"
-	map    <buffer>  <silent>  <LocalLeader>h          :call Perl_perldoc()<CR>
-	imap   <buffer>  <silent>  <LocalLeader>h     <C-C>:call Perl_perldoc()<CR>
-	map    <buffer>  <silent>  <LocalLeader>hp         :call Perl_HelpPerlsupport()<CR>
-	imap   <buffer>  <silent>  <LocalLeader>hp    <C-C>:call Perl_HelpPerlsupport()<CR>
+	noremap    <buffer>  <silent>  <LocalLeader>h          :call Perl_perldoc()<CR>
+	inoremap   <buffer>  <silent>  <LocalLeader>h     <C-C>:call Perl_perldoc()<CR>
+	noremap    <buffer>  <silent>  <LocalLeader>hp         :call Perl_HelpPerlsupport()<CR>
+	inoremap   <buffer>  <silent>  <LocalLeader>hp    <C-C>:call Perl_HelpPerlsupport()<CR>
 	"
 	" ----------------------------------------------------------------------------
 	" Comments
@@ -2647,44 +2647,44 @@ function! s:CreateAdditionalMaps ()
 		inoremap    <buffer>  <silent>  <LocalLeader>re    <C-C>:call Perl_MakeScriptExecutable()<CR>
 	endif
 	"
-	map    <buffer>  <silent>  <LocalLeader>ri         :call Perl_perldoc_show_module_list()<CR>
-	map    <buffer>  <silent>  <LocalLeader>rg         :call Perl_perldoc_generate_module_list()<CR>
+	noremap    <buffer>  <silent>  <LocalLeader>ri         :call Perl_perldoc_show_module_list()<CR>
+	noremap    <buffer>  <silent>  <LocalLeader>rg         :call Perl_perldoc_generate_module_list()<CR>
 	"
-	map    <buffer>  <silent>  <LocalLeader>ry         :call Perl_Perltidy("n")<CR>
-	vmap    <buffer>  <silent>  <LocalLeader>ry    <C-C>:call Perl_Perltidy("v")<CR>
+	noremap    <buffer>  <silent>  <LocalLeader>ry         :call Perl_Perltidy("n")<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>ry    <C-C>:call Perl_Perltidy("v")<CR>
 	"
-	map    <buffer>  <silent>  <LocalLeader>rpc        :call Perl_Perlcritic()<CR>
-	map    <buffer>  <silent>  <LocalLeader>rt         :call Perl_SaveWithTimestamp()<CR>
-	map    <buffer>  <silent>  <LocalLeader>rh         :call Perl_Hardcopy("n")<CR>
-	vmap    <buffer>  <silent>  <LocalLeader>rh    <C-C>:call Perl_Hardcopy("v")<CR>
+	noremap    <buffer>  <silent>  <LocalLeader>rpc        :call Perl_Perlcritic()<CR>
+	noremap    <buffer>  <silent>  <LocalLeader>rt         :call Perl_SaveWithTimestamp()<CR>
+	noremap    <buffer>  <silent>  <LocalLeader>rh         :call Perl_Hardcopy("n")<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>rh    <C-C>:call Perl_Hardcopy("v")<CR>
 	"
-	map    <buffer>  <silent>  <LocalLeader>rk    :call Perl_Settings()<CR>
+	noremap    <buffer>  <silent>  <LocalLeader>rk    :call Perl_Settings()<CR>
 	"
-	imap    <buffer>  <silent>  <LocalLeader>ri    <C-C>:call Perl_perldoc_show_module_list()<CR>
-	imap    <buffer>  <silent>  <LocalLeader>rg    <C-C>:call Perl_perldoc_generate_module_list()<CR>
-	imap    <buffer>  <silent>  <LocalLeader>ry    <C-C>:call Perl_Perltidy("n")<CR>
-	imap    <buffer>  <silent>  <LocalLeader>rpc   <C-C>:call Perl_Perlcritic()<CR>
-	imap    <buffer>  <silent>  <LocalLeader>rt    <C-C>:call Perl_SaveWithTimestamp()<CR>
-	imap    <buffer>  <silent>  <LocalLeader>rh    <C-C>:call Perl_Hardcopy("n")<CR>
-	imap    <buffer>  <silent>  <LocalLeader>rk    <C-C>:call Perl_Settings()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>ri    <C-C>:call Perl_perldoc_show_module_list()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rg    <C-C>:call Perl_perldoc_generate_module_list()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>ry    <C-C>:call Perl_Perltidy("n")<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rpc   <C-C>:call Perl_Perlcritic()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rt    <C-C>:call Perl_SaveWithTimestamp()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rh    <C-C>:call Perl_Hardcopy("n")<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rk    <C-C>:call Perl_Settings()<CR>
 	"
 	if has("gui_running") && s:UNIX
-		map    <buffer>  <silent>  <LocalLeader>rx        :call Perl_XtermSize()<CR>
-		imap    <buffer>  <silent>  <LocalLeader>rx   <C-C>:call Perl_XtermSize()<CR>
+		noremap    <buffer>  <silent>  <LocalLeader>rx        :call Perl_XtermSize()<CR>
+		inoremap    <buffer>  <silent>  <LocalLeader>rx   <C-C>:call Perl_XtermSize()<CR>
 	endif
 	"
-	map    <buffer>  <silent>  <LocalLeader>ro         :call Perl_Toggle_Gvim_Xterm()<CR>
-	imap    <buffer>  <silent>  <LocalLeader>ro    <C-C>:call Perl_Toggle_Gvim_Xterm()<CR>
+	noremap    <buffer>  <silent>  <LocalLeader>ro         :call Perl_Toggle_Gvim_Xterm()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>ro    <C-C>:call Perl_Toggle_Gvim_Xterm()<CR>
 	"
-	map 		<buffer>  <silent>  <LocalLeader>rpcs       :call Perl_PerlcriticSeverityInput()<CR>
-	map 		<buffer>  <silent>  <LocalLeader>rpcv       :call Perl_PerlcriticVerbosityInput()<CR>
-	map 		<buffer>  <silent>  <LocalLeader>rpco       :call Perl_PerlcriticOptionsInput()<CR>
+	noremap 		<buffer>  <silent>  <LocalLeader>rpcs       :call Perl_PerlcriticSeverityInput()<CR>
+	noremap 		<buffer>  <silent>  <LocalLeader>rpcv       :call Perl_PerlcriticVerbosityInput()<CR>
+	noremap 		<buffer>  <silent>  <LocalLeader>rpco       :call Perl_PerlcriticOptionsInput()<CR>
 	"
 	" ----------------------------------------------------------------------------
 	"
 	if !exists("g:Perl_Ctrl_j") || ( exists("g:Perl_Ctrl_j") && g:Perl_Ctrl_j != 'off' )
-		nmap    <buffer>  <silent>  <C-j>    i<C-R>=Perl_JumpCtrlJ()<CR>
-		imap    <buffer>  <silent>  <C-j>     <C-R>=Perl_JumpCtrlJ()<CR>
+		nnoremap    <buffer>  <silent>  <C-j>    i<C-R>=Perl_JumpCtrlJ()<CR>
+		inoremap    <buffer>  <silent>  <C-j>     <C-R>=Perl_JumpCtrlJ()<CR>
 	endif
 	"
 	"-------------------------------------------------------------------------------

@@ -128,21 +128,21 @@ endif " has("autocmd")
 "    F8   -  display next error   
 "-------------------------------------------------------------------------------
 "
-map   <silent> <F2>        :write<CR>
-map   <silent> <F3>        :Explore<CR>
-nmap  <silent> <F4>        :exe ":ptag ".expand("<cword>")<CR>
-map   <silent> <F5>        :copen<CR>
-map   <silent> <F6>        :cclose<CR>
-map   <silent> <F7>        :cp<CR>
-map   <silent> <F8>        :cn<CR>
+noremap   <silent> <F2>        :write<CR>
+noremap   <silent> <F3>        :Explore<CR>
+nnoremap  <silent> <F4>        :exe ":ptag ".expand("<cword>")<CR>
+noremap   <silent> <F5>        :copen<CR>
+noremap   <silent> <F6>        :cclose<CR>
+noremap   <silent> <F7>        :cp<CR>
+noremap   <silent> <F8>        :cn<CR>
 "
-imap  <silent> <F2>   <Esc>:write<CR>
-imap  <silent> <F3>   <Esc>:Explore<CR>
-imap  <silent> <F4>   <Esc>:exe ":ptag ".expand("<cword>")<CR>
-imap  <silent> <F5>   <Esc>:copen<CR>
-imap  <silent> <F6>   <Esc>:cclose<CR>
-imap  <silent> <F7>   <Esc>:cp<CR>
-imap  <silent> <F8>   <Esc>:cn<CR>
+inoremap  <silent> <F2>   <Esc>:write<CR>
+inoremap  <silent> <F3>   <Esc>:Explore<CR>
+inoremap  <silent> <F4>   <Esc>:exe ":ptag ".expand("<cword>")<CR>
+inoremap  <silent> <F5>   <Esc>:copen<CR>
+inoremap  <silent> <F6>   <Esc>:cclose<CR>
+inoremap  <silent> <F7>   <Esc>:cp<CR>
+inoremap  <silent> <F8>   <Esc>:cn<CR>
 "
 "-------------------------------------------------------------------------------
 " Fast switching between buffers
@@ -150,20 +150,20 @@ imap  <silent> <F8>   <Esc>:cn<CR>
 " Choose :bprevious or :bnext
 "-------------------------------------------------------------------------------
 "
- map  <silent> <s-tab>  <Esc>:if &modifiable && !&readonly && 
+ noremap  <silent> <s-tab>  <Esc>:if &modifiable && !&readonly && 
      \                  &modified <CR> :write<CR> :endif<CR>:bprevious<CR>
-imap  <silent> <s-tab>  <Esc>:if &modifiable && !&readonly && 
+inoremap  <silent> <s-tab>  <Esc>:if &modifiable && !&readonly && 
      \                  &modified <CR> :write<CR> :endif<CR>:bprevious<CR>
 "
 "-------------------------------------------------------------------------------
 " Leave the editor with Ctrl-q : Write all changed buffers and exit Vim
 "-------------------------------------------------------------------------------
-nmap  <C-q>    :wqa<CR>
+nnoremap  <C-q>    :wqa<CR>
 "
 "-------------------------------------------------------------------------------
 " comma always followed by a space
 "-------------------------------------------------------------------------------
-inoremap  ,  ,<Space>
+inorenoremap  ,  ,<Space>
 "
 "-------------------------------------------------------------------------------
 " autocomplete parenthesis, brackets and braces

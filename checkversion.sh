@@ -53,6 +53,11 @@ case $1 in
 		egrep -Rin "$regex" c-support plugin/c.vim  doc/csupport.txt
 		;;
 
+	latex)
+		echo -e "-- check latex --"
+		egrep -Rin "$regex" latex-support plugin/latex.vim  doc/latexsupport.txt
+		;;
+
 	perl)
 		echo -e "-- check perl --"
 		egrep -Rin "$regex" perl-support plugin/perl-support.vim  doc/perlsupport.txt 
