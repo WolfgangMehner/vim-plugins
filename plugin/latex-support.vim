@@ -370,19 +370,19 @@ function! Latex_AdjustLineEndComm ( ) range
 				let	diff	= b:Latex_LineEndCommentColumn-vpos2
 				call setpos('.', [ 0, ln, vpos2, 0 ] )
 				let	@"	= ' '
-				exe 'normal	'.diff.'P'
+				exe 'normal!	'.diff.'P'
 			end
 
 			" remove some spaces
 			if vpos1 < b:Latex_LineEndCommentColumn && vpos2 > b:Latex_LineEndCommentColumn
 				let	diff	= vpos2 - b:Latex_LineEndCommentColumn
 				call setpos('.', [ 0, ln, b:Latex_LineEndCommentColumn, 0 ] )
-				exe 'normal	'.diff.'x'
+				exe 'normal!	'.diff.'x'
 			end
 
 		end
 		let linenumber=linenumber+1
-		normal j
+		normal! j
 	endwhile
 	" restore tab expansion settings and cursor position
 	let &expandtab	= save_expandtab
@@ -430,7 +430,7 @@ function! Latex_EndOfLineComment ( ) range
 			if linelength < b:Latex_LineEndCommentColumn
 				let diff	= b:Latex_LineEndCommentColumn -1 -linelength
 			endif
-			exe "normal	".diff."A "
+			exe "normal!	".diff."A "
 			call mmtemplates#core#InsertTemplate(g:Latex_Templates, 'Comments.end-of-line comment')
 		endif
 	endfor
@@ -768,7 +768,7 @@ function! Latex_JumpForward ()
 	else
 		" try to jump behind parenthesis or strings
 		call search( "[\]})\"'`]", 'W' )
-		normal l
+		normal! l
 	endif
 	return ''
 endfunction    " ----------  end of function Latex_JumpForward  ----------
@@ -798,7 +798,7 @@ function! Latex_CodeSnippet(mode)
         "
         let linesread= line("$")-linesread-1
         if linesread>=0 && match( l:snippetfile, '\.\(ni\|noindent\)$' ) < 0
-          silent exe "normal =".linesread."+"
+          silent exe "normal! =".linesread."+"
         endif
       endif
     endif
@@ -999,8 +999,8 @@ function! s:CreateAdditionalMaps ()
 	 noremap  <buffer>  <silent>  <LocalLeader>ht         :call Latex_texdoc()<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>ht    <C-C>:call Latex_texdoc()<CR>
 	"
-	nmap    <buffer>  <silent>  <C-j>    i<C-R>=Latex_JumpForward()<CR>
-	imap    <buffer>  <silent>  <C-j>     <C-R>=Latex_JumpForward()<CR>
+	nnoremap    <buffer>  <silent>  <C-j>    i<C-R>=Latex_JumpForward()<CR>
+	inoremap    <buffer>  <silent>  <C-j>     <C-R>=Latex_JumpForward()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" settings - reset local leader
@@ -1446,7 +1446,7 @@ function! Latex_Tabbing()
 	let zz	= s:repeat_string( row, Rows, zz )
 	let zz	.= "\\end{tabbing}\n\%\%----- TABBING :  end  ----------\n"
 	put =zz
-	silent exe "normal ".Rows."k"
+	silent exe "normal! ".Rows."k"
 endfunction    " ----------  end of function Latex_Tabbing  ----------
 "
 "------------------------------------------------------------------------------
@@ -1498,7 +1498,7 @@ function! Latex_Tabular()
 	let zz	.= "\\end{tabular}\\\\\n"
 	let zz	.= "\%\%----- TABULAR :  end  ----------\n"
 	put =zz
-	silent exe "normal ".Rows."k"
+	silent exe "normal! ".Rows."k"
 endfunction    " ----------  end of function Latex_Tabular  ----------
 "
 "------------------------------------------------------------------------------

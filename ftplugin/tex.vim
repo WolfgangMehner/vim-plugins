@@ -36,3 +36,6 @@ inoremap  <buffer>            <LocalLeader>rma  <C-C>:MakeCmdlineArgs<space>
  noremap  <buffer>            <LocalLeader>rcm       :MakeFile<space>
 inoremap  <buffer>            <LocalLeader>rcm  <C-C>:MakeFile<space>
 "
+if exists("g:Latex_MapLeader") && g:Latex_MapLeader != ''
+  unlet maplocalleader
+endif
