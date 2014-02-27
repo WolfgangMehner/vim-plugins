@@ -379,7 +379,7 @@ function! s:OpenFile ( filename, ... )
 	endif
 	"
 	if foldlevel('.') && g:Git_OpenFoldAfterJump == 'yes'
-		normal zv
+		normal! zv
 	endif
 endfunction    " ----------  end of function s:OpenFile  ----------
 "
@@ -595,7 +595,7 @@ function! s:GenerateCustomMenu ( prefix, data )
 		let cmd = substitute ( cmd, '<FILE>',   '<cfile>', 'g' )
 		let cmd = substitute ( cmd, '<BUFFER>', '%',       'g' )
 		"
-		exe 'amenu '.silent.entry.' '.cmd
+		exe 'anoremenu '.silent.entry.' '.cmd
 	endfor
 	"
 endfunction    " ----------  end of function s:GenerateCustomMenu  ----------
@@ -1078,8 +1078,8 @@ function! s:UpdateGitBuffer ( command, ... )
 	endif
 	"
 	" delete the first line (empty) and go to position
-	normal zR
-	normal ggdd
+	normal! zR
+	normal! ggdd
 	silent exe ':'.pos
 	"
 	" read-only again
@@ -1203,9 +1203,9 @@ function! GitS_RunBuf( action, ... )
 		"
 		let b:GitSupport_RunBufFlag = 1
 		"
-		exe 'nmap          <buffer> <S-F1> :call GitS_RunBuf("help")<CR>'
-		exe 'nmap <silent> <buffer> q      :call GitS_RunBuf("quit")<CR>'
-		exe 'nmap <silent> <buffer> u      :call GitS_RunBuf("update","!'.subcmd.'")<CR>'
+		exe 'nnoremap          <buffer> <S-F1> :call GitS_RunBuf("help")<CR>'
+		exe 'nnoremap <silent> <buffer> q      :call GitS_RunBuf("quit")<CR>'
+		exe 'nnoremap <silent> <buffer> u      :call GitS_RunBuf("update","!'.subcmd.'")<CR>'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -1413,14 +1413,14 @@ function! GitS_Blame( action, ... )
 		"
 " 		setlocal filetype=gitsdiff
 		"
-		exe 'nmap          <buffer> <S-F1> :call GitS_Blame("help")<CR>'
-		exe 'nmap <silent> <buffer> q      :call GitS_Blame("quit")<CR>'
-		exe 'nmap <silent> <buffer> u      :call GitS_Blame("update")<CR>'
+		exe 'nnoremap          <buffer> <S-F1> :call GitS_Blame("help")<CR>'
+		exe 'nnoremap <silent> <buffer> q      :call GitS_Blame("quit")<CR>'
+		exe 'nnoremap <silent> <buffer> u      :call GitS_Blame("update")<CR>'
 		"
-		exe 'nmap <silent> <buffer> of      :call GitS_Blame("edit")<CR>'
-		exe 'nmap <silent> <buffer> oj      :call GitS_Blame("jump")<CR>'
+		exe 'nnoremap <silent> <buffer> of      :call GitS_Blame("edit")<CR>'
+		exe 'nnoremap <silent> <buffer> oj      :call GitS_Blame("jump")<CR>'
 		"
-		exe 'nmap <silent> <buffer> cs      :call GitS_Blame("show")<CR>'
+		exe 'nnoremap <silent> <buffer> cs      :call GitS_Blame("show")<CR>'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -1564,19 +1564,19 @@ function! GitS_BranchList( action )
 		"
 		setlocal filetype=gitsbranch
 		"
-		exe 'nmap          <buffer> <S-F1> :call GitS_BranchList("help")<CR>'
-		exe 'nmap <silent> <buffer> q      :call GitS_BranchList("quit")<CR>'
-		exe 'nmap <silent> <buffer> u      :call GitS_BranchList("update")<CR>'
+		exe 'nnoremap          <buffer> <S-F1> :call GitS_BranchList("help")<CR>'
+		exe 'nnoremap <silent> <buffer> q      :call GitS_BranchList("quit")<CR>'
+		exe 'nnoremap <silent> <buffer> u      :call GitS_BranchList("update")<CR>'
 		"
-		exe 'nmap <silent> <buffer> ch     :call GitS_BranchList("checkout")<CR>'
-		exe 'nmap <expr>   <buffer> cr     GitS_BranchList("create")'
-		exe 'nmap <silent> <buffer> de     :call GitS_BranchList("delete")<CR>'
-		exe 'nmap <silent> <buffer> De     :call GitS_BranchList("delete-force")<CR>'
-		exe 'nmap <silent> <buffer> DE     :call GitS_BranchList("delete-force")<CR>'
-		exe 'nmap <silent> <buffer> me     :call GitS_BranchList("merge")<CR>'
-		exe 'nmap <silent> <buffer> re     :call GitS_BranchList("rebase")<CR>'
-		exe 'nmap <expr>   <buffer> rn     GitS_BranchList("rename")'
-		exe 'nmap <silent> <buffer> cs     :call GitS_BranchList("show")<CR>'
+		exe 'nnoremap <silent> <buffer> ch     :call GitS_BranchList("checkout")<CR>'
+		exe 'nnoremap <expr>   <buffer> cr     GitS_BranchList("create")'
+		exe 'nnoremap <silent> <buffer> de     :call GitS_BranchList("delete")<CR>'
+		exe 'nnoremap <silent> <buffer> De     :call GitS_BranchList("delete-force")<CR>'
+		exe 'nnoremap <silent> <buffer> DE     :call GitS_BranchList("delete-force")<CR>'
+		exe 'nnoremap <silent> <buffer> me     :call GitS_BranchList("merge")<CR>'
+		exe 'nnoremap <silent> <buffer> re     :call GitS_BranchList("rebase")<CR>'
+		exe 'nnoremap <expr>   <buffer> rn     GitS_BranchList("rename")'
+		exe 'nnoremap <silent> <buffer> cs     :call GitS_BranchList("show")<CR>'
 	endif
 	"
 	let cmd = s:Git_Executable.' branch -avv'
@@ -1765,9 +1765,9 @@ function! GitS_CommitDryRun( action, ... )
 		setlocal filetype=gitsstatus
 		setlocal foldtext=GitS_FoldLog()
 		"
-		exe 'nmap          <buffer> <S-F1> :call GitS_CommitDryRun("help")<CR>'
-		exe 'nmap <silent> <buffer> q      :call GitS_CommitDryRun("quit")<CR>'
-		exe 'nmap <silent> <buffer> u      :call GitS_CommitDryRun("update")<CR>'
+		exe 'nnoremap          <buffer> <S-F1> :call GitS_CommitDryRun("help")<CR>'
+		exe 'nnoremap <silent> <buffer> q      :call GitS_CommitDryRun("quit")<CR>'
+		exe 'nnoremap <silent> <buffer> u      :call GitS_CommitDryRun("update")<CR>'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -1954,12 +1954,12 @@ function! GitS_Diff( action, ... )
 		setlocal filetype=gitsdiff
 		setlocal foldtext=GitS_FoldLog()
 		"
-		exe 'nmap          <buffer> <S-F1> :call GitS_Diff("help")<CR>'
-		exe 'nmap <silent> <buffer> q      :call GitS_Diff("quit")<CR>'
-		exe 'nmap <silent> <buffer> u      :call GitS_Diff("update")<CR>'
+		exe 'nnoremap          <buffer> <S-F1> :call GitS_Diff("help")<CR>'
+		exe 'nnoremap <silent> <buffer> q      :call GitS_Diff("quit")<CR>'
+		exe 'nnoremap <silent> <buffer> u      :call GitS_Diff("update")<CR>'
 
-		exe 'nmap <silent> <buffer> of     :call GitS_Diff("edit")<CR>'
-		exe 'nmap <silent> <buffer> oj     :call GitS_Diff("jump")<CR>'
+		exe 'nnoremap <silent> <buffer> of     :call GitS_Diff("edit")<CR>'
+		exe 'nnoremap <silent> <buffer> oj     :call GitS_Diff("jump")<CR>'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -2097,13 +2097,13 @@ function! GitS_Grep( action, ... )
 		setlocal filetype=gitsgrep
 		setlocal foldtext=GitS_FoldGrep()
 		"
-		exe 'nmap          <buffer> <S-F1> :call GitS_Grep("help")<CR>'
-		exe 'nmap <silent> <buffer> q      :call GitS_Grep("quit")<CR>'
-		exe 'nmap <silent> <buffer> u      :call GitS_Grep("update")<CR>'
+		exe 'nnoremap          <buffer> <S-F1> :call GitS_Grep("help")<CR>'
+		exe 'nnoremap <silent> <buffer> q      :call GitS_Grep("quit")<CR>'
+		exe 'nnoremap <silent> <buffer> u      :call GitS_Grep("update")<CR>'
 		"
-		exe 'nmap <silent> <buffer> of      :call GitS_Grep("edit")<CR>'
-		exe 'nmap <silent> <buffer> oj      :call GitS_Grep("jump")<CR>'
-		exe 'nmap <silent> <buffer> <Enter> :call GitS_Grep("jump")<CR>'
+		exe 'nnoremap <silent> <buffer> of      :call GitS_Grep("edit")<CR>'
+		exe 'nnoremap <silent> <buffer> oj      :call GitS_Grep("jump")<CR>'
+		exe 'nnoremap <silent> <buffer> <Enter> :call GitS_Grep("jump")<CR>'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -2165,10 +2165,10 @@ function! GitS_Help( action, ... )
 		"
 		setlocal filetype=man
 		"
-		exe 'nmap          <buffer> <S-F1> :call GitS_Help("help")<CR>'
-		exe 'nmap <silent> <buffer> q      :call GitS_Help("quit")<CR>'
+		exe 'nnoremap          <buffer> <S-F1> :call GitS_Help("help")<CR>'
+		exe 'nnoremap <silent> <buffer> q      :call GitS_Help("quit")<CR>'
 		"
-		"exe 'nmap <silent> <buffer> c      :call GitS_Help("toc")<CR>'
+		"exe 'nnoremap <silent> <buffer> c      :call GitS_Help("toc")<CR>'
 	endif
 	"
 	let cmd = s:Git_Executable.' help '.helpcmd
@@ -2236,9 +2236,9 @@ function! GitS_Log( action, ... )
 		setlocal filetype=gitslog
 		setlocal foldtext=GitS_FoldLog()
 		"
-		exe 'nmap          <buffer> <S-F1> :call GitS_Log("help")<CR>'
-		exe 'nmap <silent> <buffer> q      :call GitS_Log("quit")<CR>'
-		exe 'nmap <silent> <buffer> u      :call GitS_Log("update")<CR>'
+		exe 'nnoremap          <buffer> <S-F1> :call GitS_Log("help")<CR>'
+		exe 'nnoremap <silent> <buffer> q      :call GitS_Log("quit")<CR>'
+		exe 'nnoremap <silent> <buffer> u      :call GitS_Log("update")<CR>'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -2435,17 +2435,17 @@ function! GitS_RemoteList( action )
 		"
 		"setlocal filetype=
 		"
-		exe 'nmap          <buffer> <S-F1> :call GitS_RemoteList("help")<CR>'
-		exe 'nmap <silent> <buffer> q      :call GitS_RemoteList("quit")<CR>'
-		exe 'nmap <silent> <buffer> u      :call GitS_RemoteList("update")<CR>'
+		exe 'nnoremap          <buffer> <S-F1> :call GitS_RemoteList("help")<CR>'
+		exe 'nnoremap <silent> <buffer> q      :call GitS_RemoteList("quit")<CR>'
+		exe 'nnoremap <silent> <buffer> u      :call GitS_RemoteList("update")<CR>'
 		"
-		exe 'nmap <expr>   <buffer> fe     GitS_RemoteList("fetch")'
-		exe 'nmap <expr>   <buffer> ph     GitS_RemoteList("push")'
-		exe 'nmap <expr>   <buffer> pl     GitS_RemoteList("pull")'
-		exe 'nmap <silent> <buffer> rm     :call GitS_RemoteList("remove")<CR>'
-		exe 'nmap <expr>   <buffer> rn     GitS_RemoteList("rename")'
-		exe 'nmap <expr>   <buffer> su     GitS_RemoteList("set-url")'
-		exe 'nmap <silent> <buffer> sh     :call GitS_RemoteList("show")<CR>'
+		exe 'nnoremap <expr>   <buffer> fe     GitS_RemoteList("fetch")'
+		exe 'nnoremap <expr>   <buffer> ph     GitS_RemoteList("push")'
+		exe 'nnoremap <expr>   <buffer> pl     GitS_RemoteList("pull")'
+		exe 'nnoremap <silent> <buffer> rm     :call GitS_RemoteList("remove")<CR>'
+		exe 'nnoremap <expr>   <buffer> rn     GitS_RemoteList("rename")'
+		exe 'nnoremap <expr>   <buffer> su     GitS_RemoteList("set-url")'
+		exe 'nnoremap <silent> <buffer> sh     :call GitS_RemoteList("show")<CR>'
 	endif
 	"
 	let cmd = s:Git_Executable.' remote -v'
@@ -2599,9 +2599,9 @@ function! GitS_Show( action, ... )
 		setlocal filetype=gitslog
 		setlocal foldtext=GitS_FoldLog()
 		"
-		exe 'nmap          <buffer> <S-F1> :call GitS_Show("help")<CR>'
-		exe 'nmap <silent> <buffer> q      :call GitS_Show("quit")<CR>'
-		exe 'nmap <silent> <buffer> u      :call GitS_Show("update")<CR>'
+		exe 'nnoremap          <buffer> <S-F1> :call GitS_Show("help")<CR>'
+		exe 'nnoremap <silent> <buffer> q      :call GitS_Show("quit")<CR>'
+		exe 'nnoremap <silent> <buffer> u      :call GitS_Show("update")<CR>'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -2742,20 +2742,20 @@ function! GitS_StashList( action, ... )
 		"
 		setlocal filetype=gitslog
 		"
-		exe 'nmap          <buffer> <S-F1> :call GitS_StashList("help")<CR>'
-		exe 'nmap <silent> <buffer> q      :call GitS_StashList("quit")<CR>'
-		exe 'nmap <silent> <buffer> u      :call GitS_StashList("update")<CR>'
+		exe 'nnoremap          <buffer> <S-F1> :call GitS_StashList("help")<CR>'
+		exe 'nnoremap <silent> <buffer> q      :call GitS_StashList("quit")<CR>'
+		exe 'nnoremap <silent> <buffer> u      :call GitS_StashList("update")<CR>'
 		"
-		exe 'nmap <silent> <buffer> sh     :call GitS_StashList("show")<CR>'
-		exe 'nmap <silent> <buffer> sp     :call GitS_StashList("show-patch")<CR>'
+		exe 'nnoremap <silent> <buffer> sh     :call GitS_StashList("show")<CR>'
+		exe 'nnoremap <silent> <buffer> sp     :call GitS_StashList("show-patch")<CR>'
 		"
- 		exe 'nmap <expr>   <buffer> sa     GitS_StashList("save-msg")'
-		exe 'nmap <silent> <buffer> pu     :call GitS_StashList("save")<CR>'
+		exe 'nnoremap <expr>   <buffer> sa     GitS_StashList("save-msg")'
+		exe 'nnoremap <silent> <buffer> pu     :call GitS_StashList("save")<CR>'
 		"
-		exe 'nmap <silent> <buffer> ap     :call GitS_StashList("apply")<CR>'
-		exe 'nmap <silent> <buffer> dr     :call GitS_StashList("drop")<CR>'
-		exe 'nmap <silent> <buffer> po     :call GitS_StashList("pop")<CR>'
- 		exe 'nmap <expr>   <buffer> br     GitS_StashList("branch")'
+		exe 'nnoremap <silent> <buffer> ap     :call GitS_StashList("apply")<CR>'
+		exe 'nnoremap <silent> <buffer> dr     :call GitS_StashList("drop")<CR>'
+		exe 'nnoremap <silent> <buffer> po     :call GitS_StashList("pop")<CR>'
+		exe 'nnoremap <expr>   <buffer> br     GitS_StashList("branch")'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -2809,8 +2809,8 @@ function! GitS_StashShow( action, ... )
 		"
 		setlocal filetype=gitsdiff
 		"
-		exe 'nmap          <buffer> <S-F1> :call GitS_StashShow("help")<CR>'
-		exe 'nmap <silent> <buffer> q      :call GitS_StashShow("quit")<CR>'
+		exe 'nnoremap          <buffer> <S-F1> :call GitS_StashShow("help")<CR>'
+		exe 'nnoremap <silent> <buffer> q      :call GitS_StashShow("quit")<CR>'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -3312,27 +3312,27 @@ function! GitS_Status( action, ... )
 		setlocal filetype=gitsstatus
 		setlocal foldtext=GitS_FoldLog()
 		"
-		exe 'nmap          <buffer> <S-F1> :call GitS_Status("help")<CR>'
-		exe 'nmap <silent> <buffer> q      :call GitS_Status("quit")<CR>'
-		exe 'nmap <silent> <buffer> u      :call GitS_Status("update")<CR>'
+		exe 'nnoremap          <buffer> <S-F1> :call GitS_Status("help")<CR>'
+		exe 'nnoremap <silent> <buffer> q      :call GitS_Status("quit")<CR>'
+		exe 'nnoremap <silent> <buffer> u      :call GitS_Status("update")<CR>'
 		"
-		exe 'nmap <silent> <buffer> i      :call GitS_Status("ignored")<CR>'
-		exe 'nmap <silent> <buffer> s      :call GitS_Status("short")<CR>'
-		exe 'nmap <silent> <buffer> v      :call GitS_Status("verbose")<CR>'
+		exe 'nnoremap <silent> <buffer> i      :call GitS_Status("ignored")<CR>'
+		exe 'nnoremap <silent> <buffer> s      :call GitS_Status("short")<CR>'
+		exe 'nnoremap <silent> <buffer> v      :call GitS_Status("verbose")<CR>'
 		"
-		exe 'nmap <silent> <buffer> a      :call GitS_Status("add")<CR>'
-		exe 'nmap <silent> <buffer> c      :call GitS_Status("checkout")<CR>'
-		exe 'nmap <silent> <buffer> od     :call GitS_Status("diff")<CR>'
-		exe 'nmap <silent> <buffer> ow     :call GitS_Status("diff-word")<CR>'
-		exe 'nmap <silent> <buffer> of     :call GitS_Status("edit")<CR>'
-		exe 'nmap <silent> <buffer> ol     :call GitS_Status("log")<CR>'
-		exe 'nmap <silent> <buffer> r      :call GitS_Status("reset")<CR>'
-		exe 'nmap <silent> <buffer> D      :call GitS_Status("delete")<CR>'
+		exe 'nnoremap <silent> <buffer> a      :call GitS_Status("add")<CR>'
+		exe 'nnoremap <silent> <buffer> c      :call GitS_Status("checkout")<CR>'
+		exe 'nnoremap <silent> <buffer> od     :call GitS_Status("diff")<CR>'
+		exe 'nnoremap <silent> <buffer> ow     :call GitS_Status("diff-word")<CR>'
+		exe 'nnoremap <silent> <buffer> of     :call GitS_Status("edit")<CR>'
+		exe 'nnoremap <silent> <buffer> ol     :call GitS_Status("log")<CR>'
+		exe 'nnoremap <silent> <buffer> r      :call GitS_Status("reset")<CR>'
+		exe 'nnoremap <silent> <buffer> D      :call GitS_Status("delete")<CR>'
 		"
 		if s:EnabledGitBash
-			exe 'nmap <silent> <buffer> ap     :call GitS_Status("add-patch")<CR>'
-			exe 'nmap <silent> <buffer> cp     :call GitS_Status("checkout-patch")<CR>'
-			exe 'nmap <silent> <buffer> rp     :call GitS_Status("reset-patch")<CR>'
+			exe 'nnoremap <silent> <buffer> ap     :call GitS_Status("add-patch")<CR>'
+			exe 'nnoremap <silent> <buffer> cp     :call GitS_Status("checkout-patch")<CR>'
+			exe 'nnoremap <silent> <buffer> rp     :call GitS_Status("reset-patch")<CR>'
 		endif
 		"
 	endif
@@ -3495,16 +3495,16 @@ function! GitS_TagList( action, ... )
 		"
 " 		setlocal filetype=gitslog
 		"
-		exe 'nmap          <buffer> <S-F1> :call GitS_TagList("help")<CR>'
-		exe 'nmap <silent> <buffer> q      :call GitS_TagList("quit")<CR>'
-		exe 'nmap <silent> <buffer> u      :call GitS_TagList("update")<CR>'
+		exe 'nnoremap          <buffer> <S-F1> :call GitS_TagList("help")<CR>'
+		exe 'nnoremap <silent> <buffer> q      :call GitS_TagList("quit")<CR>'
+		exe 'nnoremap <silent> <buffer> u      :call GitS_TagList("update")<CR>'
 		"
-		exe 'nmap <silent> <buffer> ch     :call GitS_TagList("checkout")<CR>'
-		exe 'nmap <expr>   <buffer> cr     GitS_TagList("create")'
-		exe 'nmap <silent> <buffer> de     :call GitS_TagList("delete")<CR>'
-		exe 'nmap <silent> <buffer> me     :call GitS_TagList("merge")<CR>'
-		exe 'nmap <silent> <buffer> sh     :call GitS_TagList("show-tag")<CR>'
-		exe 'nmap <silent> <buffer> cs     :call GitS_TagList("show-commit")<CR>'
+		exe 'nnoremap <silent> <buffer> ch     :call GitS_TagList("checkout")<CR>'
+		exe 'nnoremap <expr>   <buffer> cr     GitS_TagList("create")'
+		exe 'nnoremap <silent> <buffer> de     :call GitS_TagList("delete")<CR>'
+		exe 'nnoremap <silent> <buffer> me     :call GitS_TagList("merge")<CR>'
+		exe 'nnoremap <silent> <buffer> sh     :call GitS_TagList("show-tag")<CR>'
+		exe 'nnoremap <silent> <buffer> cs     :call GitS_TagList("show-commit")<CR>'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -3646,14 +3646,14 @@ function! s:InitMenus()
 		return
 	endif
 	"
-	let ahead = 'amenu '.s:Git_RootMenu.'.'
+	let ahead = 'anoremenu '.s:Git_RootMenu.'.'
 	"
 	exe ahead.'Git       :echo "This is a menu header!"<CR>'
 	exe ahead.'-Sep00-   :'
 	"
 	" Commands
-	let ahead = 'amenu '.s:Git_RootMenu.'.&git\ \.\.\..'
-	let vhead = 'vmenu '.s:Git_RootMenu.'.&git\ \.\.\..'
+	let ahead = 'anoremenu '.s:Git_RootMenu.'.&git\ \.\.\..'
+	let vhead = 'vnoremenu '.s:Git_RootMenu.'.&git\ \.\.\..'
 	"
 	exe ahead.'Commands<TAB>Git :echo "This is a menu header!"<CR>'
 	exe ahead.'-Sep00-          :'
@@ -3686,8 +3686,8 @@ function! s:InitMenus()
 	exe ahead.'run\ git\ &bash<TAB>:GitBash :GitBash<space>'
 	"
 	" Current File
-	let shead = 'amenu <silent> '.s:Git_RootMenu.'.&file.'
-	let vhead = 'vmenu <silent> '.s:Git_RootMenu.'.&file.'
+	let shead = 'anoremenu <silent> '.s:Git_RootMenu.'.&file.'
+	let vhead = 'vnoremenu <silent> '.s:Git_RootMenu.'.&file.'
 	"
 	exe shead.'Current\ File<TAB>Git :echo "This is a menu header!"<CR>'
 	exe shead.'-Sep00-               :'
@@ -3702,8 +3702,8 @@ function! s:InitMenus()
 	exe shead.'&reset<TAB>:GitReset       :GitReset -- %<CR>'
 	"
 	" Specials
-	let ahead = 'amenu          '.s:Git_RootMenu.'.s&pecials.'
-	let shead = 'amenu <silent> '.s:Git_RootMenu.'.s&pecials.'
+	let ahead = 'anoremenu          '.s:Git_RootMenu.'.s&pecials.'
+	let shead = 'anoremenu <silent> '.s:Git_RootMenu.'.s&pecials.'
 	"
 	exe ahead.'Specials<TAB>Git :echo "This is a menu header!"<CR>'
 	exe ahead.'-Sep00-          :'
@@ -3720,8 +3720,8 @@ function! s:InitMenus()
 	" Custom Menu
 	if ! empty ( s:Git_CustomMenu )
 		"
-		let ahead = 'amenu          '.s:Git_RootMenu.'.&custom.'
-		let ahead = 'amenu <silent> '.s:Git_RootMenu.'.&custom.'
+		let ahead = 'anoremenu          '.s:Git_RootMenu.'.&custom.'
+		let ahead = 'anoremenu <silent> '.s:Git_RootMenu.'.&custom.'
 		"
 		exe ahead.'Custom<TAB>Git :echo "This is a menu header!"<CR>'
 		exe ahead.'-Sep00-        :'
@@ -3734,8 +3734,8 @@ function! s:InitMenus()
 	endif
 	"
 	" Help
-	let ahead = 'amenu          '.s:Git_RootMenu.'.help.'
-	let shead = 'amenu <silent> '.s:Git_RootMenu.'.help.'
+	let ahead = 'anoremenu          '.s:Git_RootMenu.'.help.'
+	let shead = 'anoremenu <silent> '.s:Git_RootMenu.'.help.'
 	"
 	exe ahead.'Help<TAB>Git :echo "This is a menu header!"<CR>'
 	exe ahead.'-Sep00-      :'
@@ -3744,8 +3744,8 @@ function! s:InitMenus()
 	exe shead.'plug-in\ settings<TAB>:GitSupportSettings   :call GitS_PluginSettings(0)<CR>'
 	"
 	" Main Menu - open buffers
-	let ahead = 'amenu          '.s:Git_RootMenu.'.'
-	let shead = 'amenu <silent> '.s:Git_RootMenu.'.'
+	let ahead = 'anoremenu          '.s:Git_RootMenu.'.'
+	let shead = 'anoremenu <silent> '.s:Git_RootMenu.'.'
 	"
 	exe ahead.'-Sep01-                      :'
 	"
@@ -3771,14 +3771,14 @@ function! s:ToolMenu( action )
 	endif
 	"
 	if a:action == 'setup'
-		amenu   <silent> 40.1000 &Tools.-SEP100- :
-		amenu   <silent> 40.1080 &Tools.Load\ Git\ Support   :call Git_AddMenus()<CR>
+		anoremenu   <silent> 40.1000 &Tools.-SEP100- :
+		anoremenu   <silent> 40.1080 &Tools.Load\ Git\ Support   :call Git_AddMenus()<CR>
 	elseif a:action == 'loading'
 		aunmenu <silent> &Tools.Load\ Git\ Support
-		amenu   <silent> 40.1080 &Tools.Unload\ Git\ Support :call Git_RemoveMenus()<CR>
+		anoremenu   <silent> 40.1080 &Tools.Unload\ Git\ Support :call Git_RemoveMenus()<CR>
 	elseif a:action == 'unloading'
 		aunmenu <silent> &Tools.Unload\ Git\ Support
-		amenu   <silent> 40.1080 &Tools.Load\ Git\ Support   :call Git_AddMenus()<CR>
+		anoremenu   <silent> 40.1080 &Tools.Load\ Git\ Support   :call Git_AddMenus()<CR>
 	endif
 	"
 endfunction    " ----------  end of function s:ToolMenu  ----------
