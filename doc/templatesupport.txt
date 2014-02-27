@@ -1,4 +1,4 @@
-*templatesupport.txt*         MM Template Support                  Feb 23 2014
+*templatesupport.txt*         MM Template Support                  Feb 27 2014
 
 MM Template Support                                        *template-support*
 
@@ -2272,7 +2272,7 @@ PATCH 0.9.2-1:
 PATCH 0.9.2-2:
 - Released with slight changes in the core functionality.
 - Change: Better compatibility with custom mappings
-  (use "normal!" and "noremap" consistently).
+  (use "normal!", "noremap" and "noremenu" consistently).
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.1

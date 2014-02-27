@@ -3034,11 +3034,11 @@ function! s:CreateSubmenu ( t_lib, root_menu, global_name, menu, priority )
 			let assemble .= '.'
 			"
 			if -1 != stridx ( clean, '<TAB>' )
-				exe 'amenu '.priority_str.a:root_menu.escape( assemble.clean, ' ' ).' :echo "This is a menu header."<CR>'
+				exe 'anoremenu '.priority_str.a:root_menu.escape( assemble.clean, ' ' ).' :echo "This is a menu header."<CR>'
 			else
-				exe 'amenu '.priority_str.a:root_menu.escape( assemble.clean, ' ' ).'<TAB>'.escape( a:global_name, ' .' ).' :echo "This is a menu header."<CR>'
+				exe 'anoremenu '.priority_str.a:root_menu.escape( assemble.clean, ' ' ).'<TAB>'.escape( a:global_name, ' .' ).' :echo "This is a menu header."<CR>'
 			endif
-			exe 'amenu '.a:root_menu.escape( assemble,       ' ' ).'-TSep00- <Nop>'
+			exe 'anoremenu '.a:root_menu.escape( assemble,       ' ' ).'-TSep00- <Nop>'
 		endif
 		let submenu .= clean.'.'
 	endfor
@@ -3080,7 +3080,7 @@ function! s:CreateTemplateMenus ( t_lib, root_menu, global_name, t_lib_name )
 			let sep_nr = a:t_lib.menu_existing[ m_key ] + 1
 			let a:t_lib.menu_existing[ m_key ] = sep_nr
 			"
-			exe 'amenu '.a:root_menu.escape( t_menu, ' ' ).'-TSep'.sep_nr.'- :'
+			exe 'anoremenu '.a:root_menu.escape( t_menu, ' ' ).'-TSep'.sep_nr.'- :'
 			"
 			continue
 		endif
@@ -3104,26 +3104,26 @@ function! s:CreateTemplateMenus ( t_lib, root_menu, global_name, t_lib_name )
 		"
 		if entry == 1
 			" <Esc><Esc> prevents problems in insert mode
-			exe 'amenu <silent> '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'")<CR>'
-			exe 'imenu <silent> '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","i")<CR>'
+			exe 'anoremenu <silent> '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'")<CR>'
+			exe 'inoremenu <silent> '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","i")<CR>'
 			if visual == 1
-				exe 'vmenu <silent> '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","v")<CR>'
+				exe 'vnoremenu <silent> '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","v")<CR>'
 			endif
 		elseif entry == 2
 			call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, t_menu.t_last.map_entry, s:StandardPriority )
 			"
 			for item in s:GetPickList ( t_name )
 				let item_entry = compl_entry.'.'.substitute ( substitute ( escape ( item, ' .' ), '&', '\&\&', 'g' ), '\w', '\&&', '' )
-				exe 'amenu <silent> '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","pick",'.string(item).')<CR>'
-				exe 'imenu <silent> '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","i","pick",'.string(item).')<CR>'
+				exe 'anoremenu <silent> '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","pick",'.string(item).')<CR>'
+				exe 'inoremenu <silent> '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","i","pick",'.string(item).')<CR>'
 				if visual == 1
-					exe 'vmenu <silent> '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","v","pick",'.string(item).')<CR>'
+					exe 'vnoremenu <silent> '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","v","pick",'.string(item).')<CR>'
 				endif
 			endfor
 			"
-"			exe 'amenu '.a:root_menu.compl_entry.'.-\ choose\ -'.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'")<CR>'
+"			exe 'anoremenu '.a:root_menu.compl_entry.'.-\ choose\ -'.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'")<CR>'
 "			if visual == 1
-"				exe 'vmenu '.a:root_menu.compl_entry.'.-\ choose\ -'.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","v")<CR>'
+"				exe 'vnoremenu '.a:root_menu.compl_entry.'.-\ choose\ -'.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","v")<CR>'
 "			endif
 		endif
 		"
@@ -3155,9 +3155,9 @@ function! s:CreateSpecialsMenus ( t_lib, root_menu, global_name, t_lib_name, spe
 		" create edit and reread templates
 		let entry_edit = s:InsertShortcut ( '.edit\ templates',   sc_edit, 1 ).'<TAB>'.map_edit
 		let entry_read = s:InsertShortcut ( '.reread\ templates', sc_read, 1 ).'<TAB>'.map_read
-		exe 'amenu <silent> '.a:root_menu.specials_menu.entry_edit
+		exe 'anoremenu <silent> '.a:root_menu.specials_menu.entry_edit
 					\ .' :call mmtemplates#core#EditTemplateFiles('.a:t_lib_name.',-1)<CR>'
-		exe 'amenu <silent> '.a:root_menu.specials_menu.entry_read
+		exe 'anoremenu <silent> '.a:root_menu.specials_menu.entry_read
 					\ .' :call mmtemplates#core#ReadTemplates('.a:t_lib_name.',"reload","all")<CR>'
 	endif
 	"
@@ -3168,7 +3168,7 @@ function! s:CreateSpecialsMenus ( t_lib, root_menu, global_name, t_lib_name, spe
 	call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, specials_menu.entry_styles, s:StandardPriority )
 	"
 	for s in a:t_lib.styles
-		exe 'amenu <silent> '.a:root_menu.specials_menu.'.choose\ style.&'.s
+		exe 'anoremenu <silent> '.a:root_menu.specials_menu.'.choose\ style.&'.s
 					\ .' :call mmtemplates#core#ChooseStyle('.a:t_lib_name.','.string(s).')<CR>'
 	endfor
 	"
