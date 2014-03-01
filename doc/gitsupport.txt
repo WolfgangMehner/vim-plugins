@@ -1,4 +1,4 @@
-*gitsupport.txt*                  Git Support                      Dec 28 2013
+*gitsupport.txt*                  Git Support                      Mar 01 2014
 
 Git Support                                          *git-support* *gitsupport*
 
@@ -1167,7 +1167,7 @@ A.  TROUBLESHOOTING - KNOWN ISSUES                *gitsupport-troubleshooting*
 B.  RELEASE NOTES - CHANGE LOG                      *gitsupport-release-notes*
 ==============================================================================
 
-See files 'git-support/README.gitsupport' and 'git-support/doc/ChangeLog'.
+See files 'git-support/README.md' and 'git-support/doc/ChangeLog'.
 
 ==============================================================================
 C.  CREDITS                                               *gitsupport-credits*
