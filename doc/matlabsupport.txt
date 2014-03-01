@@ -1,8 +1,8 @@
-*matlabsupport.txt*             Matlab Support                    July 18 2012
+*matlabsupport.txt*             Matlab Support                     Mar 01 2014
 
 Matlab Support                                 *matlab-support* *matlabsupport*
 
-                             Plug-in version 0.9
+                            Plug-in version 0.8rc1
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -661,12 +661,12 @@ A.  TROUBLESHOOTING - KNOWN ISSUES             *matlabsupport-troubleshooting*
     This behavior can be changed:
       :help matlabsupport-config-menus
   - Was the archive extracted into the right directory?
-    See the section INSTALLATION in README.matlabsupport.
+    See the section INSTALLATION in matlab-support/README.md.
   - Loading of plug-in files must be enabled. If not use
       :filetype plugin on
     This is the minimal content of the file '$HOME/.vimrc'. Create one if
     there is none, or better use customization.vimrc.
-    See the section FILES in README.matlabsupport.
+    See the section FILES in matlab-support/README.md.
 
 * How can I see what was loaded?
   - Use ':scriptnames' from the Vim command line.
@@ -681,8 +681,7 @@ A.  TROUBLESHOOTING - KNOWN ISSUES             *matlabsupport-troubleshooting*
 B.  RELEASE NOTES - CHANGE LOG                   *matlabsupport-release-notes*
 ==============================================================================
 
-See files 'matlab-support/README.matlabsupport' and
-'matlab-support/doc/ChangeLog'.
+See files 'matlab-support/README.md' and 'matlab-support/doc/ChangeLog'.
 
 ==============================================================================
 C.  CREDITS                                            *matlabsupport-credits*
