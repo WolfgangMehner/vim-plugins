@@ -27,6 +27,13 @@ The MathWorks, Inc and MATLAB are registered trademarks of The MathWorks, Inc.
   INSTALLATION
 ================================================================================
 
+A system-wide installation for all users can also be done. This will have
+further effects on how the plug-in works. For a step-by-step instruction, as
+well as an explanation of the other consequences, please see the help file
+'doc/matlabsupport.txt' or look up the documentation via:
+
+      :help matlabsupport-system-wide
+
   (1) LINUX
 ----------------------------------------------------------------------
 
@@ -149,11 +156,6 @@ Look at the Matlab-Support help with:
 Any problems? See the TROUBLESHOOTING section at the end of the help file
 'doc/matlabsupport.txt'.
 
-For a system-wide installation please see the help file 'doc/matlabsupport.txt'
-or look up the documentation via:
-
-      :help matlabsupport-system-wide
-
 
 --------------------------------------------------------------------------------
 
@@ -224,7 +226,7 @@ ___The settings are explained in the files themselves.___
 
     matlab-support/rc/sample_template_file
                         Sample template file for personalization, when using a
-                        global installation.
+                        system-wide installation.
 
 
 --------------------------------------------------------------------------------

@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:Matlab_Version') && ! exists('g:Matlab_DevelopmentOverwrite') )
 	finish
 endif
-let g:Matlab_Version= '0.9'     " version number of this script; do not change
+let g:Matlab_Version= '0.8rc1'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
@@ -250,7 +250,7 @@ function! Matlab_EndOfLineComment () range
 			if linelength < b:Matlab_LineEndCommentColumn
 				let diff = b:Matlab_LineEndCommentColumn - 1 - linelength
 			endif
-			exe 'normal '.diff.'A '
+			exe 'normal! '.diff.'A '
 			call mmtemplates#core#InsertTemplate (g:Matlab_Templates, 'Comments.end-of-line comment')
 		endif
 	endfor
@@ -373,7 +373,7 @@ endfunction    " ----------  end of function Matlab_SetEndOfLineCommPos  -------
 "
 function! Matlab_CodeComment() range
 	"
-	" add '% ' at the beginning of the lines
+	" add '%' at the beginning of the lines
 	silent exe ":".a:firstline.",".a:lastline."s/^/%/"
 	"
 endfunction    " ----------  end of function Matlab_CodeComment  ----------
@@ -571,7 +571,7 @@ function! Matlab_CodeSnippet ( action )
 			" :TODO:03.12.2013 14:29:WM: indent here?
 			" indent lines
 			if linesread >= 0 && match( snippetfile, '\.\(ni\|noindent\)$' ) < 0
-				silent exe 'normal ='.linesread.'+'
+				silent exe 'normal! ='.linesread.'+'
 			endif
 		endif
 		"
@@ -980,8 +980,8 @@ function! s:InitMenus()
 	" get the mapleader (correctly escaped)
 	let [ esc_mapl, err ] = mmtemplates#core#Resource ( g:Matlab_Templates, 'escaped_mapleader' )
 	"
-	exe 'amenu '.s:Matlab_RootMenu.'.Matlab  <Nop>'
-	exe 'amenu '.s:Matlab_RootMenu.'.-Sep00- <Nop>'
+	exe 'anoremenu '.s:Matlab_RootMenu.'.Matlab  <Nop>'
+	exe 'anoremenu '.s:Matlab_RootMenu.'.-Sep00- <Nop>'
 	"
 	"-------------------------------------------------------------------------------
 	" menu headers
@@ -997,8 +997,8 @@ function! s:InitMenus()
 	" comments
 	"-------------------------------------------------------------------------------
 	"
-	let ahead = 'amenu <silent> '.s:Matlab_RootMenu.'.Comments.'
-	let vhead = 'vmenu <silent> '.s:Matlab_RootMenu.'.Comments.'
+	let ahead = 'anoremenu <silent> '.s:Matlab_RootMenu.'.Comments.'
+	let vhead = 'vnoremenu <silent> '.s:Matlab_RootMenu.'.Comments.'
 	"
 	exe ahead.'end-of-&line\ comment<TAB>'.esc_mapl.'cl            :call Matlab_EndOfLineComment()<CR>'
 	exe vhead.'end-of-&line\ comment<TAB>'.esc_mapl.'cl            :call Matlab_EndOfLineComment()<CR>'
@@ -1030,8 +1030,8 @@ function! s:InitMenus()
 	" snippets
 	"-------------------------------------------------------------------------------
 	"
-	let ahead = 'amenu <silent> '.s:Matlab_RootMenu.'.Snippets.'
-	let vhead = 'vmenu <silent> '.s:Matlab_RootMenu.'.Snippets.'
+	let ahead = 'anoremenu <silent> '.s:Matlab_RootMenu.'.Snippets.'
+	let vhead = 'vnoremenu <silent> '.s:Matlab_RootMenu.'.Snippets.'
 	"
 	exe ahead.'&insert\ code\ snippet<Tab>'.esc_mapl.'ni       :call Matlab_CodeSnippet("insert")<CR>'
 	exe ahead.'&create\ code\ snippet<Tab>'.esc_mapl.'nc       :call Matlab_CodeSnippet("create")<CR>'
@@ -1054,8 +1054,8 @@ function! s:InitMenus()
 	" run
 	"-------------------------------------------------------------------------------
 	"
-	let ahead = 'amenu <silent> '.s:Matlab_RootMenu.'.Run.'
-	let vhead = 'vmenu <silent> '.s:Matlab_RootMenu.'.Run.'
+	let ahead = 'anoremenu <silent> '.s:Matlab_RootMenu.'.Run.'
+	let vhead = 'vnoremenu <silent> '.s:Matlab_RootMenu.'.Run.'
 	"
 	exe ahead.'&check\ code<TAB>'.esc_mapl.'rc      :call Matlab_CheckCode()<CR>'
 	exe ahead.'&ignore\ warning<TAB>'.esc_mapl.'ri  :call Matlab_IgnoreWarning()<CR>'
@@ -1067,8 +1067,8 @@ function! s:InitMenus()
 	" help
 	"-------------------------------------------------------------------------------
 	"
-	let ahead = 'amenu <silent> '.s:Matlab_RootMenu.'.Help.'
-	let vhead = 'vmenu <silent> '.s:Matlab_RootMenu.'.Help.'
+	let ahead = 'anoremenu <silent> '.s:Matlab_RootMenu.'.Help.'
+	let vhead = 'vnoremenu <silent> '.s:Matlab_RootMenu.'.Help.'
 	"
 	exe ahead.'-Sep01-                                     :'
 	exe ahead.'&help\ (Matlab-Support)<TAB>'.esc_mapl.'hs  :call Matlab_HelpPlugin()<CR>'
@@ -1086,14 +1086,14 @@ function! s:ToolMenu( action )
 	endif
 	"
 	if a:action == 'setup'
-		amenu   <silent> 40.1000 &Tools.-SEP100- :
-		amenu   <silent> 40.1140 &Tools.Load\ Matlab\ Support   :call Matlab_AddMenus()<CR>
+		anoremenu <silent> 40.1000 &Tools.-SEP100- :
+		anoremenu <silent> 40.1140 &Tools.Load\ Matlab\ Support   :call Matlab_AddMenus()<CR>
 	elseif a:action == 'loading'
-		aunmenu <silent> &Tools.Load\ Matlab\ Support
-		amenu   <silent> 40.1140 &Tools.Unload\ Matlab\ Support :call Matlab_RemoveMenus()<CR>
+		aunmenu   <silent> &Tools.Load\ Matlab\ Support
+		anoremenu <silent> 40.1140 &Tools.Unload\ Matlab\ Support :call Matlab_RemoveMenus()<CR>
 	elseif a:action == 'unloading'
-		aunmenu <silent> &Tools.Unload\ Matlab\ Support
-		amenu   <silent> 40.1140 &Tools.Load\ Matlab\ Support   :call Matlab_AddMenus()<CR>
+		aunmenu   <silent> &Tools.Unload\ Matlab\ Support
+		anoremenu <silent> 40.1140 &Tools.Load\ Matlab\ Support   :call Matlab_AddMenus()<CR>
 	endif
 	"
 endfunction    " ----------  end of function s:ToolMenu  ----------
@@ -1136,6 +1136,8 @@ endfunction    " ----------  end of function Matlab_RemoveMenus  ----------
 "
 function! Matlab_Settings( verbose )
 	"
+	" :TODO:18.02.2014 14:14:WM: what to do if the template library is not loaded?
+	"
 	if     s:MSWIN | let sys_name = 'Windows'
 	elseif s:UNIX  | let sys_name = 'UNIX'
 	else           | let sys_name = 'unknown' | endif
@@ -1156,6 +1158,8 @@ function! Matlab_Settings( verbose )
 				\ .'           template style :  "'.templ_style."\"\n"
 				\ ."\n"
 				\ .'      plugin installation :  '.s:installation.' on '.sys_name."\n"
+				\ .'    using template engine :  version '.g:Templates_Version." by Wolfgang Mehner\n"
+				\ ."\n"
 	if s:installation == 'system'
 		let txt .= '     global template file :  '.s:Matlab_GlbTemplateFile.glb_t_status."\n"
 	endif
@@ -1164,11 +1168,20 @@ function! Matlab_Settings( verbose )
 				\ .'       code snippets dir. :  '.s:Matlab_SnippetDir."\n"
 				\ .'       mlint path and exe :  '.s:Matlab_MlintExecutable."\n"
 				\ .'             > executable :  '.mlint_status."\n"
-				\ .'    using template engine :  version '.g:Templates_Version." by Wolfgang Mehner\n"
-				\ ."________________________________________________________________________________\n"
+	if a:verbose >= 1
+		let	txt .= "\n"
+					\ .'                mapleader :  "'.g:Matlab_MapLeader."\"\n"
+	endif
+	let txt .=
+				\  "________________________________________________________________________________\n"
 				\ ." Matlab-Support, Version ".g:Matlab_Version." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
 	"
-	echo txt
+	if a:verbose == 2
+		split MatlabSupport_Settings.txt
+		put = txt
+	else
+		echo txt
+	endif
 endfunction    " ----------  end of function Matlab_Settings  ----------
 "
 "-------------------------------------------------------------------------------

@@ -215,7 +215,13 @@ and fill in the information (see Sec. |matlabsupport-templates-jump-tags|).
 2.2  SNIPPETS                                   *matlabsupport-usage-snippets*
 ------------------------------------------------------------------------------
 
-	*Todo		snippets
+Useful code snippets can be kept in a central place. This way, they can
+quickly be inserted into the code, using "Snippets -> insert code snippet".
+New snippets can be created from existing lines of code be selecting them in
+visual mode and saving them using "Snippets -> create code snippet".
+
+Code snippets are kept in a directory which can be changed using the setting
+|g:Matlab_SnippetDir|.
 
   Feature                    Menu Entry                     Map
  ----------------------------------------------------------------------------
@@ -312,8 +318,10 @@ The following URL will be opened in your browser: >
 3.  TEMPLATES                                        *matlabsupport-templates*
 ==============================================================================
 
-Most of the menu entries include templates into to current text. Most
-templates come with their own map.
+Most of the menu entries insert templates into the current text. Most
+templates come with their own map, for fast and convenient access. All maps
+start with a mapleader, which can be set to a different value for use within
+Matlab Support (see |g:Matlab_MapLeader|).
 
   Feature                    Menu Entry                     Map
  ----------------------------------------------------------------------------
@@ -328,7 +336,22 @@ the documentation of the template system for a more in-depth discussion:
 3.1  INTRODUCTION                       *matlabsupport-templates-introduction*
 ------------------------------------------------------------------------------
 
-	*Todo		short introduction
+This plug-in makes heavy use of an extendible template library. A template
+library can assist in speeding up the writing of code, while at the same time
+ensuring a consistent style. The templates are written in an easy to use
+markup language, which enables the user to customize templates without much
+hassle.
+
+Templates are short pieces of text which can be included into source code or
+text of any other kind. But they are not just plain text, they can be extended
+with macros and tags to provide further convenience. Macros can be
+automatically replaced with the date or the filename, or they can be replaced
+with input from the user, for example the name of a new function.
+
+While inserting a template, the user will often be ask to enter some
+replacement text on the command line, for example the name of a function. The
+replacement text will then be used in the template while it is inserted.
+Hitting <ESC> or entering an empty text will abort template insertion.
 
 ------------------------------------------------------------------------------
 3.2  JUMP TAGS                             *matlabsupport-templates-jump-tags*
@@ -395,7 +418,7 @@ the files.  After the templates have been edited, they need to be read again.
 See the documentation of the template system for a more in-depth discussion:
 |templatesupport.txt|
 
-Note *1: global installation only
+Note *1: system-wide installation only
 
 ==============================================================================
 4.  CONFIGURATION                                *matlabsupport-configuration*
@@ -475,9 +498,36 @@ Example: >
 ------------------------------------------------------------------------------
 4.4  SNIPPETS                                  *matlabsupport-config-snippets*
 ------------------------------------------------------------------------------
-                                                     *g:Matlab_SnippetDir*
+                                                         *g:Matlab_SnippetDir*
+The variable g:Matlab_SnippetDir sets the location of the code snippet
+directory. The default value depends on the type of installation and the
+operation system.
+
+(Path separators are always written as slashes '/', even for Windows.)
+
+
+For a local installation, the default will be (UNIX/Linux): >
+  s:Matlab_SnippetDir = '$HOME/.vim/matlab-support/codesnippets/'
+or (Windows): >
+  s:Matlab_SnippetDir = '$HOME/vimfiles/matlab-support/codesnippets'
+<
+
+For a sytem-wide installation, the default will be: >
+  s:Matlab_SnippetDir = '$VIM/vimfiles/matlab-support/codesnippets'
+<
+
+Example:
+
+To set a different code snippet directory, add this line to your vimrc: >
+  let g:Matlab_LclTemplateFile = '$HOME/myvim/matlab/codesnippets/'
+<
                                                      *g:Matlab_SnippetBrowser*
-	*Todo		snippets
+Code snippets can either be selected in a file browser, by setting: >
+  let g:Matlab_SnippetBrowser = 'gui'
+or on the command line by setting: >
+  let g:Matlab_SnippetBrowser = 'cmd-line'
+<
+	*Todo		check paths for Windows
 
 ------------------------------------------------------------------------------
 4.5  MLINT                                        *matlabsupport-config-mlint*
@@ -495,9 +545,10 @@ This is where mlint can be found on the authors system.
 ------------------------------------------------------------------------------
                                                     *g:Matlab_LclTemplateFile*
                                                     *g:Matlab_GlbTemplateFile*
-g:Matlab_LclTemplateFile and g:Matlab_GlbTemplateFile set the locations and
-names of the local and global template files, respectively.  The default for
-the local and global template files depend on the type of the installation.
+The variables g:Matlab_LclTemplateFile and g:Matlab_GlbTemplateFile set the
+locations and names of the local and global template files, respectively.
+The default for the local and global template files depend on the type of the
+installation.
 
 (Path separators are always written as slashes '/', even for Windows.)
 
@@ -512,7 +563,7 @@ The default for the local template file is: >
 There is no global template file.
 
 
-Global installation:
+System-wide installation:
 
 The default for the global template file is: >
   g:Matlab_GlbTemplateFile
@@ -525,11 +576,12 @@ or (Windows): >
     = '$HOME/vimfiles/matlab-support/templates/Templates'
 <
 
-Example: >
-  let g:Matlab_LclTemplateFile = '$HOME/myvim/matlab/templates/my.templates'
-Sets the local template file accordingly.
+Example:
 
-	*Todo		examples for windows
+To set a different local template file, add this line to your vimrc: >
+  let g:Matlab_LclTemplateFile = '$HOME/myvim/matlab/templates/my.templates'
+<
+	*Todo		check paths for Windows
 
 ------------------------------------------------------------------------------
 4.7  TEMPLATE CUSTOMIZATION               *matlabsupport-config-template-cstm*
@@ -584,7 +636,7 @@ Under Windows, the browser for opening the online documentation has to be
 configured. To set the executable, the template library has to be modified.
 In case of a local installation (the default), choose:
   Matlab -> Snippets -> edit local templates
-and for a global installation:
+and for a system-wide installation:
   Matlab -> Snippets -> edit global templates
 Open the main template file 'Templates' and uncomment the line >
  §SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
@@ -599,8 +651,15 @@ Finally, reread the template library using:
 5.  SYSTEM-WIDE INSTALLATION                       *matlabsupport-system-wide*
 ==============================================================================
 
-A system-wide installation (one installation for all users) is done as
-follows.
+A system-wide installation (one installation for all users) of the plug-in can
+be done. This will mean however, that as a user you can not edit the template
+library, for example to set your own name. So in case of a system-wide
+installation, every user can have an own set of templates (called local
+templates), which are localed in each users' home directory.
+Note: As you might have guessed, this behavior is much more inspired by Linux
+than Windows.
+
+A system-wide installation is done as follows.
 
 ------------------------------------------------------------------------------
 

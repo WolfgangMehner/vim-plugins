@@ -1,7 +1,9 @@
 Project
 - (WM, DONE) Remove 'plugin/make.vim'.
 - (WM, DONE) Tag 'perlsupport-5.2' is wrong.
-- (FM,WM) Use noremap consistently.
+- (FM,WM) Use normal!, noremap and noremenu consistently.
+- (FM,WM) Is the difference between local and global/system installation
+  documented somewhere?
 
 vim.org:
 - (FM, DONE?) Reference github on plug-in pages.
