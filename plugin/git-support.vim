@@ -1504,6 +1504,7 @@ function! GitS_BranchList( action )
 		let txt .= "me      : merge with current branch\n"
 		let txt .= "re      : rebase\n"
 		let txt .= "rn      : rename\n"
+		let txt .= "su      : set as upstream from current branch\n"
 		let txt .= "cs      : show the commit\n"
 		echo txt
 		return
@@ -1512,7 +1513,7 @@ function! GitS_BranchList( action )
 		return
 	elseif a:action == 'update'
 		" noop
-	elseif -1 != index ( [ 'checkout', 'create', 'delete', 'delete-force', 'merge', 'rebase', 'rename', 'show' ], a:action )
+	elseif -1 != index ( [ 'checkout', 'create', 'delete', 'delete-force', 'merge', 'rebase', 'rename', 'set-upstream', 'show' ], a:action )
 		"
 		let [ b_name, b_flag ] = s:BranchList_GetBranch ()
 		"
@@ -1548,6 +1549,12 @@ function! GitS_BranchList( action )
 			call GitS_Run( 'rebase '.shellescape(b_name), 'c')
 		elseif a:action == 'rename'
 			return ':GitBranch -m '.b_name.' '
+		elseif a:action == 'set-upstream'
+			" get short name of current HEAD
+			let b_current = s:StandardRun ( 'symbolic-ref', '-q HEAD', 't' )[1]
+			let b_current = s:StandardRun ( 'for-each-ref', " --format='%(refname:short)' ".shellescape( b_current ), 't' )[1]
+			"
+			return s:AssembleCmdLine ( ':GitBranch --set-upstream '.b_current, ' '.b_name )
 		elseif a:action == 'show'
 			call GitS_Show( 'update', shellescape(b_name), '' )
 		endif
@@ -1576,6 +1583,7 @@ function! GitS_BranchList( action )
 		exe 'nnoremap <silent> <buffer> me     :call GitS_BranchList("merge")<CR>'
 		exe 'nnoremap <silent> <buffer> re     :call GitS_BranchList("rebase")<CR>'
 		exe 'nnoremap <expr>   <buffer> rn     GitS_BranchList("rename")'
+		exe 'nnoremap <expr>   <buffer> su     GitS_BranchList("set-upstream")'
 		exe 'nnoremap <silent> <buffer> cs     :call GitS_BranchList("show")<CR>'
 	endif
 	"
@@ -3119,6 +3127,20 @@ function! s:Status_FileAction( action )
 			call s:ErrorMsg ( 'Checking out not implemented yet for file status "'.f_status.'".' )
 		endif
 		"
+	elseif s_code =~ '[bsm]' && a:action == 'checkout-head'
+		"
+		" section "staged", "modified" or "both", action "checkout-head"
+		"
+		if f_status == 'modified' || f_status == 'deleted' || f_status =~ '^[MAD].$' || f_status =~ '^.[MD]$'
+			" check out a modified or deleted file?
+			if s:Question( 'Checkout file "'.f_name.'" and change both the index and working tree copy?', 'warning' ) == 1
+				call GitS_Checkout( 'HEAD '.f_name_esc, '' )
+				return 1
+			endif
+		else
+			call s:ErrorMsg ( 'Checking out not implemented yet for file status "'.f_status.'".' )
+		endif
+		"
 	elseif s_code =~ '[bm]' && a:action == 'checkout-patch'
 		"
 		" section "modified", action "checkout-patch"
@@ -3222,6 +3244,7 @@ function! GitS_Status( action, ... )
 		else
 			let txt .= "c       : checkout\n"
 		endif
+		let txt .= "ch      : checkout HEAD\n"
 		let txt .= "od      : open diff\n"
 		let txt .= "of      : open file (edit)\n"
 		let txt .= "ol      : open log\n"
@@ -3255,7 +3278,7 @@ function! GitS_Status( action, ... )
 		endif
 	elseif a:action =~ '\<\%(short\|verbose\)\>'
 		" noop
-	elseif -1 != index ( [ 'add', 'add-patch', 'checkout', 'checkout-patch', 'diff', 'diff-word', 'edit', 'log', 'reset', 'reset-patch', 'delete' ], a:action )
+	elseif -1 != index ( [ 'add', 'add-patch', 'checkout', 'checkout-head', 'checkout-patch', 'diff', 'diff-word', 'edit', 'log', 'reset', 'reset-patch', 'delete' ], a:action )
 		"
  		call s:ChangeCWD ()
 		"
@@ -3322,6 +3345,7 @@ function! GitS_Status( action, ... )
 		"
 		exe 'nnoremap <silent> <buffer> a      :call GitS_Status("add")<CR>'
 		exe 'nnoremap <silent> <buffer> c      :call GitS_Status("checkout")<CR>'
+		exe 'nnoremap <silent> <buffer> ch     :call GitS_Status("checkout-head")<CR>'
 		exe 'nnoremap <silent> <buffer> od     :call GitS_Status("diff")<CR>'
 		exe 'nnoremap <silent> <buffer> ow     :call GitS_Status("diff-word")<CR>'
 		exe 'nnoremap <silent> <buffer> of     :call GitS_Status("edit")<CR>'
@@ -3620,10 +3644,10 @@ function! GitS_PluginSettings( verbose )
 	let txt .=
 				\  '      git bash executable :  '.s:Git_GitBashExecutable."\n"
 				\ .'                > enabled :  '.gitbash_status."\n"
-	if s:UNIX && a:verbose
+	if s:UNIX && a:verbose >= 1
 		let txt .= '               xterm args :  "'.g:Xterm_Defaults."\"\n"
 	endif
-	if a:verbose
+	if a:verbose >= 1
 		let	txt .= "\n"
 					\ .'             expand empty :  checkout: "'.g:Git_CheckoutExpandEmpty.'" ; diff: "'.g:Git_DiffExpandEmpty.'" ; reset: "'.g:Git_ResetExpandEmpty."\"\n"
 					\ .'     open fold after jump :  "'.g:Git_OpenFoldAfterJump."\"\n"
@@ -3633,7 +3657,12 @@ function! GitS_PluginSettings( verbose )
 				\  "________________________________________________________________________________\n"
 				\ ." Git-Support, Version ".g:GitSupport_Version." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
 	"
-	echo txt
+	if a:verbose == 2
+		split GitSupport_Settings.txt
+		put = txt
+	else
+		echo txt
+	endif
 endfunction    " ----------  end of function GitS_PluginSettings  ----------
 "
 "-------------------------------------------------------------------------------
@@ -3771,14 +3800,14 @@ function! s:ToolMenu( action )
 	endif
 	"
 	if a:action == 'setup'
-		anoremenu   <silent> 40.1000 &Tools.-SEP100- :
-		anoremenu   <silent> 40.1080 &Tools.Load\ Git\ Support   :call Git_AddMenus()<CR>
+		anoremenu <silent> 40.1000 &Tools.-SEP100- :
+		anoremenu <silent> 40.1080 &Tools.Load\ Git\ Support   :call Git_AddMenus()<CR>
 	elseif a:action == 'loading'
-		aunmenu <silent> &Tools.Load\ Git\ Support
-		anoremenu   <silent> 40.1080 &Tools.Unload\ Git\ Support :call Git_RemoveMenus()<CR>
+		aunmenu   <silent> &Tools.Load\ Git\ Support
+		anoremenu <silent> 40.1080 &Tools.Unload\ Git\ Support :call Git_RemoveMenus()<CR>
 	elseif a:action == 'unloading'
-		aunmenu <silent> &Tools.Unload\ Git\ Support
-		anoremenu   <silent> 40.1080 &Tools.Load\ Git\ Support   :call Git_AddMenus()<CR>
+		aunmenu   <silent> &Tools.Unload\ Git\ Support
+		anoremenu <silent> 40.1080 &Tools.Load\ Git\ Support   :call Git_AddMenus()<CR>
 	endif
 	"
 endfunction    " ----------  end of function s:ToolMenu  ----------

@@ -271,6 +271,7 @@ The second version executes "git branch ...".
   me        merge with current branch
   re        use as upstream for rebase
   rn        rename
+  su        set as upstream from current branch
   cs        show the commit
  ----------------------------------------------------------------------------
 
@@ -622,6 +623,7 @@ Git command.
   ap        add --patch (^1)
   c         checkout
   cp        checkout --patch (^1)
+  ch        checkout HEAD (set index and working tree to HEAD)
   od        open diff
   of        open file (edit)
   ol        open log
