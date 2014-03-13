@@ -36,16 +36,16 @@
 == ENDTEMPLATE ==
 
 §-------------------------------------------------------------------------
-== Preprocessor.include-global == map:pg, shortcut:g, insert ==
+== Preprocessor.include-global == map:pg, shortcut:g ==
 #include <<CURSOR>>
 §-------------------------------------------------------------------------
-== Preprocessor.include-local == map:pl, shortcut:l, insert ==
+== Preprocessor.include-local == map:pl, shortcut:l ==
 #include "<CURSOR>"
 §-------------------------------------------------------------------------
-== Preprocessor.define == map:pd, shortcut:d, insert ==
+== Preprocessor.define == map:pd, shortcut:d ==
 #define	<CURSOR>			/*  */
 §-------------------------------------------------------------------------
-== Preprocessor.undefine == map:pu, shortcut:u, insert ==
+== Preprocessor.undefine == map:pu, shortcut:u ==
 #undef	<CURSOR>			/*  */
 §-------------------------------------------------------------------------
 == Preprocessor.if-endif == map:pif, shortcut:i ==
