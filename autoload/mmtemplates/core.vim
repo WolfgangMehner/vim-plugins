@@ -2533,8 +2533,8 @@ function! s:PositionCursor ( placement, flag_mode, pos1, pos2 )
 	" :TODO:12.08.2013 11:03:WM: changeable syntax?
 	" :TODO:12.08.2013 12:00:WM: change behavior?
 	"
-	exe ":".a:pos1
-	let mtch = search( '<CURSOR>\|{CURSOR}', 'c', a:pos2 )
+	call setpos ( '.', [ bufnr('%'), a:pos1, 1, 0 ] )
+	let mtch = search( '\m<CURSOR>\|{CURSOR}', 'c', a:pos2 )
 	if mtch != 0
 		" tag found (and cursor moved, we are now at the position of the match)
 		let line = getline(mtch)
@@ -3735,7 +3735,7 @@ endfunction    " ----------  end of function mmtemplates#core#EditTemplateFiles 
 "
 function! mmtemplates#core#JumpToTag ( regex )
 	"
-	let match	= search( a:regex, 'c' )
+	let match	= search( '\m'.a:regex, 'c' )
 	if match > 0
 		" remove the target
 		call setline( match, substitute( getline('.'), a:regex, '', '' ) )
@@ -3743,6 +3743,46 @@ function! mmtemplates#core#JumpToTag ( regex )
 	"
 	return ''
 endfunction    " ----------  end of function mmtemplates#core#JumpToTag  ----------
+"
+"----------------------------------------------------------------------
+" mmtemplates#core#SetMapleader : Set the local mapleader.   {{{1
+"----------------------------------------------------------------------
+"
+" list of lists: [ "<localleader>", "<globalleader>" ]
+let s:mapleader_stack = []
+"
+function! mmtemplates#core#SetMapleader ( localleader )
+	"
+	if empty ( a:localleader )
+		call add ( s:mapleader_stack, [] )
+	else
+		if exists ( 'g:maplocalleader' )
+			call add ( s:mapleader_stack, [ a:localleader, g:maplocalleader ] )
+		else
+			call add ( s:mapleader_stack, [ a:localleader ] )
+		endif
+		let g:maplocalleader = a:localleader
+	endif
+	"
+endfunction    " ----------  end of function mmtemplates#core#SetMapleader  ----------
+"
+"----------------------------------------------------------------------
+" mmtemplates#core#ResetMapleader : Reset the local mapleader.   {{{1
+"----------------------------------------------------------------------
+"
+function! mmtemplates#core#ResetMapleader ()
+	"
+	let ll_save = remove ( s:mapleader_stack, -1 )
+	"
+	if ! empty ( ll_save )
+		if len ( ll_save ) > 1
+			let g:maplocalleader = ll_save[1]
+		else
+			unlet g:maplocalleader
+		endif
+	endif
+	"
+endfunction    " ----------  end of function mmtemplates#core#ResetMapleader  ----------
 "
 " }}}1
 "

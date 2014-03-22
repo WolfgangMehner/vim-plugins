@@ -1,4 +1,4 @@
-*templatesupport.txt*         MM Template Support                  Feb 27 2014
+*templatesupport.txt*         MM Template Support                  Mar 22 2014
 
 MM Template Support                                        *template-support*
 
@@ -1691,6 +1691,25 @@ Get the current style: >
 This section describes various functions, provided for convenience.
 
 ------------------------------------------------------------------------------
+                                             *mmtemplates#core#SetMapleader()*
+                                           *mmtemplates#core#ResetMapleader()*
+Set and reset |maplocalleader|:
+
+  mmtemplates#core#SetMapleader ( localleader ) ~
+  mmtemplates#core#ResetMapleader () ~
+
+Parameters:
+  localleader - The new value for |maplocalleader|. (string)
+No returns.
+
+A call to mmtemplates#core#SetMapleader sets maplocalleader to the given
+value. A subsequent call to mmtemplates#core#ResetMapleader restores the
+previous setting, which can also mean that maplocalleader is undefined again.
+Calls to SetMapleader and ResetMapleader can be nested.
+If the argument 'localleader' is an empty string, maplocalleader remains
+unchanged.
+
+------------------------------------------------------------------------------
                                                *mmtemplates#core#EscapeMenu()*
 Escape a string to be used as a menu entry:
 
@@ -2273,6 +2292,10 @@ PATCH 0.9.2-2:
 - Released with slight changes in the core functionality.
 - Change: Better compatibility with custom mappings
   (use "normal!", "noremap" and "noremenu" consistently).
+- Change: During template insertion, find <CURSOR> tag independent of the
+  settings 'magic' and 'startofline'.
+- Added: API functions "mmtemplates#core#SetMapleader" and
+  "mmtemplates#core#ResetMapleader".
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.1
