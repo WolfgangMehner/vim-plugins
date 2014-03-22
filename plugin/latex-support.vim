@@ -35,7 +35,7 @@ if exists("g:LatexSupportVersion") || &cp
  finish
 endif
 "
-let g:LatexSupportVersion= "1.1"                  " version number of this script; do not change
+let g:LatexSupportVersion= "1.2pre"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  latex_SetGlobalVariable     {{{1
@@ -456,6 +456,29 @@ function! Latex_CommentToggle () range
 	endif
 
 endfunction    " ----------  end of function Latex_CommentToggle ----------
+"
+"------------------------------------------------------------------------------
+"  === Templates API ===   {{{1
+"------------------------------------------------------------------------------
+"
+"------------------------------------------------------------------------------
+"  Latex_SetMapLeader   {{{2
+"------------------------------------------------------------------------------
+function! Latex_SetMapLeader ()
+	if exists ( 'g:Latex_MapLeader' )
+		call mmtemplates#core#SetMapleader ( g:Latex_MapLeader )
+	endif
+endfunction    " ----------  end of function Latex_SetMapLeader  ----------
+"
+"------------------------------------------------------------------------------
+"  Latex_ResetMapLeader   {{{2
+"------------------------------------------------------------------------------
+function! Latex_ResetMapLeader ()
+	if exists ( 'g:Latex_MapLeader' )
+		call mmtemplates#core#ResetMapleader ()
+	endif
+endfunction    " ----------  end of function Latex_ResetMapLeader  ----------
+" }}}2
 "
 "===  FUNCTION  ================================================================
 "          NAME:  Latex_RereadTemplates     {{{1

@@ -1,4 +1,4 @@
-README for latex-support.vim (Version 1.1) / January 11 2014
+README for latex-support.vim (Version 1.2pre) / March 22 2014
 
   *  INSTALLATION
   *  RELEASE NOTES 
@@ -78,16 +78,13 @@ For a system-wide installation please see the help file 'doc/latexsupport.txt'.
 =======================================================================================
 
 ---------------------------------------------------------------------------------------
-  RELEASE NOTES FOR VERSION 1.1
+  RELEASE NOTES FOR VERSION 1.2pre
 ---------------------------------------------------------------------------------------
-- Beamer templates and snippets added.
-- Template added.
-- Integration of Make moved into the toolbox.
-- New map \rc to start a converter.
-- Bugfix: Setup of local templates in case of global installation.
-- Bugfix: Map and menu entry 'Snippets->edit global templates'.
-- Bugfix: Starting an external viewer now works under Windows.
-- Minor bugfixes and improvements.
+- Added 'Latex_SetMapLeader' and 'Latex_ResetMapLeader'.
+- Bugfix: Resetting maplocalleader in filetype plug-in after setting it to the value of
+  g:Latex_MapLeader.
+- Bugfix: Better compatibility with custom mappings
+  (use "normal!" and "noremap" consistently).
 
 =======================================================================================
   FILES

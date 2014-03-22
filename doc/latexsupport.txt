@@ -1,8 +1,8 @@
-*latexsupport.txt*           LATEX Support                     January 11 2014
+*latexsupport.txt*           LATEX Support                       March 22 2014
 
 LaTeX Support                                     *latex-support* *latexsupport*
 
-                              Plugin version 1.1
+                              Plugin version 1.2pre
                         for Vim version 7.0 and above
                     Fritz Mehner  <mehner.fritz@fh-swf.de>
                    Wolfgang Mehner <wolfgang-mehner@web.de>
@@ -691,85 +691,96 @@ The variable root_dir will automatically be set to one of the following values:
 ------------------------------------------------------------------------------
   DESCRIPTION
 ------------------------------------------------------------------------------
- g:Latex_Latex
+ *g:Latex_Latex*
 The command line used to call the LaTeX typesetter.
 
- g:Latex_Tex
+ *g:Latex_Tex*
 The command line used to call the TeX typesetter.
 
- g:Latex_Pdflatex
+ *g:Latex_Pdflatex*
 The command line used to call the pdfLaTeX typesetter.
 
- g:Latex_Pdftex
+ *g:Latex_Pdftex*
 The command line used to call the pdfTeXtypesetter.
 
- g:Latex_Bibtex
+ *g:Latex_Bibtex*
 The command line used to call bibtex.
 
- g:Latex_DviViewer
+ *g:Latex_DviViewer*
 The command line used to call a DVi viewer.
 
- g:Latex_PsViewer
+ *g:Latex_PsViewer*
 The command line used to call a PS viewer.
 
- g:Latex_PdfViewer
+ *g:Latex_PdfViewer*
 The command line used to call a PDF viewer.
 
- g:Latex_DviPdf
+ *g:Latex_DviPdf*
 The command line used to call a DVI to PDF converter.
 
- g:Latex_DviPng
+ *g:Latex_DviPng*
 The command line used to call a DVI to Png converter.
 
- g:Latex_DviPs
+ *g:Latex_DviPs*
 The command line used to call a DVI to PS converter.
 
- g:Latex_PdfPng
+ *g:Latex_PdfPng*
 The command line used to call a PDF to Png converter.
 
- g:Latex_PsPdf
+ *g:Latex_PsPdf*
 The command line used to call a PS to PDF converter.
 
- g:Latex_CodeSnippets
+ *g:Latex_CodeSnippets*
 The name of the (non-standard) code snippet directory (see below).
 
- g:Latex_CreateMenusDelayed
+ *g:Latex_CreateMenusDelayed*
 Delaying the initialization until the first TeX/LaTeX file is opened.
 
- g:Latex_Dictionary_File
+ *g:Latex_Dictionary_File*
 Path and filename of the LaTeX word list used for dictionary completion.
 
- g:Latex_GlobalTemplateFile
+ *g:Latex_GlobalTemplateFile*
 Sets the global template file, path+name  (see|latexsupport-templates|).
 
- g:Latex_GuiSnippetBrowser
+ *g:Latex_GuiSnippetBrowser*
 Code snippet browser: 'gui', 'commandline'.
 
- g:Latex_InsertFileProlog
+ *g:Latex_InsertFileProlog*
 Insert file description comment in a new file ('yes', 'no').
 
- g:Latex_LineEndCommColDefault
+ *g:Latex_LineEndCommColDefault*
 Default starting column for line-end comments.
 
- g:Latex_LoadMenus
+ *g:Latex_LoadMenus*
 Load menus and mappings ("yes", "no") at startup.
 
- g:Latex_LocalTemplateFile
+ *g:Latex_LocalTemplateFile*
 Sets the local template file, path+name  (see|latexsupport-templates|).
 
- g:Latex_MapLeader
+ *g:Latex_MapLeader*
 Map leader for hotkeys (|latexsupport-mappings|).
 
- g:Latex_Printheader
+The mapleader can also be used in the ftplugin, by calling the functions
+*Latex_SetMapLeader()* and *Latex_ResetMapLeader()* . The maps created between
+the two calls will use |g:Latex_MapLeader| as the |<LocalLeader>|:
+>
+  call Latex_SetMapLeader ()
+
+  map  <buffer>  <LocalLeader>eg  :echo "Example Map :)"<CR>
+
+  call Latex_ResetMapLeader ()
+<
+
+ *g:Latex_Printheader*
 Hardcopy header format.
 
- g:Latex_RootMenu
-The name of the pug-in root menu.
+ *g:Latex_RootMenu*
+The name of the plug-in root menu.
 
- g:Latex_TexFlavor
+ *g:Latex_TexFlavor*
 The filetype when starting with an empty file ('latex', 'plaintex') 
 
- g:Latex_Typesetter             'latex'
+ *g:Latex_Typesetter*
 The typesetter used by the run command ('rr', Ctrl-F9, or menu item):
 'pdflatex', 'pdftex', 'latex', or 'tex'.
 

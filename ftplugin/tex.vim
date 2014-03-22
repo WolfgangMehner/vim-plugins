@@ -19,13 +19,11 @@ let b:did_LATEX_ftplugin = 1
 "setlocal iskeyword+=_
 "setlocal iskeyword+=:
 "
-" ---------- Do we have a mapleader other than '\' ? ------------
+" ---------- Set "maplocalleader" as configured using "g:Latex_MapLeader" ----
 "
-if exists("g:Latex_MapLeader") && g:Latex_MapLeader != ''
-  let maplocalleader = g:Latex_MapLeader
-endif
+call Latex_SetMapLeader ()
 "
-" ---------- Maps for the Make tool -----------------------------
+" ---------- Maps for the Make tool ------------------------------------------
 "
  noremap  <buffer>  <silent>  <LocalLeader>rm        :Make<CR>
 inoremap  <buffer>  <silent>  <LocalLeader>rm   <C-C>:Make<CR>
@@ -36,6 +34,7 @@ inoremap  <buffer>            <LocalLeader>rma  <C-C>:MakeCmdlineArgs<space>
  noremap  <buffer>            <LocalLeader>rcm       :MakeFile<space>
 inoremap  <buffer>            <LocalLeader>rcm  <C-C>:MakeFile<space>
 "
-if exists("g:Latex_MapLeader") && g:Latex_MapLeader != ''
-  unlet maplocalleader
-endif
+" ---------- Reset "maplocalleader" ------------------------------------------
+"
+call Latex_ResetMapLeader ()
+"

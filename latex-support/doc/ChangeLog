@@ -1,5 +1,17 @@
 ---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.1
+---------------------------------------------------------------------------------------
+- Beamer templates and snippets added.
+- Template added.
+- Integration of Make moved into the toolbox.
+- New map \rc to start a converter.
+- Bugfix: Setup of local templates in case of global installation.
+- Bugfix: Map and menu entry 'Snippets->edit global templates'.
+- Bugfix: Starting an external viewer now works under Windows.
+- Minor bugfixes and improvements.
+
+---------------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 1.0
 ---------------------------------------------------------------------------------------
-+ Initial public release.
+- Initial public release.
 
