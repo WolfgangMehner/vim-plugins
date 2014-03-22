@@ -40,7 +40,7 @@ endif
 if exists("g:C_Version") || &cp
  finish
 endif
-let g:C_Version= "6.1.1pre"  							" version number of this script; do not change
+let g:C_Version= "6.1.1"								" version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  C_CheckGlobal
@@ -2338,6 +2338,29 @@ function! s:CheckAndRereadTemplates ()
 		call s:C_RereadTemplates('no')        
 	endif
 endfunction    " ----------  end of function s:CheckAndRereadTemplates  ----------
+"
+"------------------------------------------------------------------------------
+"  === Templates API ===   {{{1
+"------------------------------------------------------------------------------
+"
+"------------------------------------------------------------------------------
+"  C_SetMapLeader   {{{2
+"------------------------------------------------------------------------------
+function! C_SetMapLeader ()
+	if exists ( 'g:C_MapLeader' )
+		call mmtemplates#core#SetMapleader ( g:C_MapLeader )
+	endif
+endfunction    " ----------  end of function C_SetMapLeader  ----------
+"
+"------------------------------------------------------------------------------
+"  C_ResetMapLeader   {{{2
+"------------------------------------------------------------------------------
+function! C_ResetMapLeader ()
+	if exists ( 'g:C_MapLeader' )
+		call mmtemplates#core#ResetMapleader ()
+	endif
+endfunction    " ----------  end of function C_ResetMapLeader  ----------
+" }}}2
 "
 "===  FUNCTION  ================================================================
 "          NAME:  C_RereadTemplates     {{{1

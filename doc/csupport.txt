@@ -1,7 +1,7 @@
-*csupport.txt*                  C/C++ Support               December 28 2013
+*csupport.txt*                  C/C++ Support                  March 22 2014
 
 C/C++ Support                                           *c-support* *csupport*
-                             Plugin version 6.1.1pre
+                             Plugin version 6.1.1
                         for Vim version 7.0 and above
                        Fritz Mehner  <mehner@fh-swf.de>
 
@@ -1378,6 +1378,17 @@ file .vimrc
 The map leader is now a comma. The 'line end comment' command is now defined
 as ',cl'. This setting will be used as a so called local leader and influences
 only files with filetype 'c' and 'cpp'.
+
+The configured mapleader can also be used in the ftplugin, by calling the
+functions *C_SetMapLeader()* and *C_ResetMapLeader()* . The maps created
+between the two calls will use |g:C_MapLeader| as the |<LocalLeader>|:
+>
+  call C_SetMapLeader ()
+
+  map  <buffer>  <LocalLeader>eg  :echo "Example Map :)"<CR>
+
+  call C_ResetMapLeader ()
+<
 
 ==============================================================================
 3.  HOTKEYS                                                 *csupport-hotkeys*

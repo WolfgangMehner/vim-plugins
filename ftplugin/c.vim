@@ -36,11 +36,9 @@ inoremap  <buffer>  {<CR>    {<CR>}<Esc>O
 vnoremap  <buffer>  {<CR>   S{<CR>}<Esc>Pk=iB
 "
 "-------------------------------------------------------------------------------
-" do we have a mapleader other than '\' ?
+" set "maplocalleader" as configured using "g:Latex_MapLeader"
 "-------------------------------------------------------------------------------
-if exists("g:C_MapLeader") && g:C_MapLeader != ''
-  let maplocalleader = g:C_MapLeader
-endif
+call C_SetMapLeader ()
 "
 "-------------------------------------------------------------------------------
 " additional mapping : Make tool
@@ -53,4 +51,9 @@ inoremap  <buffer>  <silent>  <LocalLeader>rmc  <C-C>:Make clean<CR>
 inoremap  <buffer>            <LocalLeader>rma  <C-C>:MakeCmdlineArgs<space>
  noremap  <buffer>            <LocalLeader>rcm       :MakeFile<space>
 inoremap  <buffer>            <LocalLeader>rcm  <C-C>:MakeFile<space>
+"
+"-------------------------------------------------------------------------------
+" reset "maplocalleader"
+"-------------------------------------------------------------------------------
+call C_ResetMapLeader ()
 "
