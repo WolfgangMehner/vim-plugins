@@ -1,4 +1,4 @@
-*perlsupport.txt*                Perl Support               February 02 2014
+*perlsupport.txt*                Perl Support                  March 22 2014
 Perl Support                                      *perl-support* *perlsupport*
 
                              Plug-in version 5.3
@@ -1606,6 +1606,17 @@ file .vimrc
 The map leader is now a comma. The 'line end comment' command is now defined
 as ',cl'. This setting will be used as a so called local leader and influences
 only files with filetype 'perl'.
+
+The configured mapleader can also be used in the ftplugin, by calling the
+functions *Perl_SetMapLeader()* and *Perl_ResetMapLeader()* . The maps created
+between the two calls will use |g:Perl_MapLeader| as the |<LocalLeader>|:
+>
+  call Perl_SetMapLeader ()
+
+  map  <buffer>  <LocalLeader>eg  :echo "Example Map :)"<CR>
+
+  call Perl_ResetMapLeader ()
+<
 
 Resolving conflicts
 -------------------

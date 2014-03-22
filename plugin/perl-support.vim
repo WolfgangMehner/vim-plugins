@@ -1949,7 +1949,30 @@ function! Perl_CreateGuiMenus ()
     let s:Perl_MenuVisible = 'yes'
   endif
 endfunction    " ----------  end of function Perl_CreateGuiMenus  ----------
-
+"
+"------------------------------------------------------------------------------
+"  === Templates API ===   {{{1
+"------------------------------------------------------------------------------
+"
+"------------------------------------------------------------------------------
+"  Perl_SetMapLeader   {{{2
+"------------------------------------------------------------------------------
+function! Perl_SetMapLeader ()
+	if exists ( 'g:Perl_MapLeader' )
+		call mmtemplates#core#SetMapleader ( g:Perl_MapLeader )
+	endif
+endfunction    " ----------  end of function Perl_SetMapLeader  ----------
+"
+"------------------------------------------------------------------------------
+"  Perl_ResetMapLeader   {{{2
+"------------------------------------------------------------------------------
+function! Perl_ResetMapLeader ()
+	if exists ( 'g:Perl_MapLeader' )
+		call mmtemplates#core#ResetMapleader ()
+	endif
+endfunction    " ----------  end of function Perl_ResetMapLeader  ----------
+" }}}2
+"
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_RereadTemplates     {{{1
 "   DESCRIPTION:  rebuild commands and the menu from the (changed) template file

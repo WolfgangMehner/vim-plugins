@@ -1,4 +1,4 @@
-README for perl-support.vim (Version 5.3) / February 02 2014
+README for perl-support.vim (Version 5.3) / March 22 2014
 
   *  INSTALLATION
   *  RELEASE NOTES
@@ -147,6 +147,11 @@ For a system-wide installation please see the help file 'doc/perlsupport.txt'.
 - Perl interpreter can be set in ~/.vimrc.
 - Script can be run via shebang (new global variable g:Perl_DirectRun)
 - Fixed problem with system-wide installations and plug-in managers (thanks to Yegor).
+- Added 'Perl_SetMapLeader' and 'Perl_ResetMapLeader'.
+- Bugfix: Resetting maplocalleader in filetype plug-in after setting it to the value of
+  g:Perl_MapLeader.
+- Bugfix: Better compatibility with custom mappings
+  (use "normal!" and "noremap" consistently).
 
 ---------------------------------------------------------------------------------------
   OLDER RELEASE NOTES : see file 'ChangeLog'
