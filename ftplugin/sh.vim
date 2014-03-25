@@ -3,7 +3,6 @@
 "   Language :  bash
 "     Plugin :  bash-support.vim
 " Maintainer :  Fritz Mehner <mehner@fh-swf.de>
-"               - suggested revision by Wolfgang Mehner, 29.07.2013
 "
 " -----------------------------------------------------------------
 "
@@ -27,4 +26,18 @@ let b:is_bash = 1
 "-------------------------------------------------------------------------------
 nnoremap    <buffer>   ''   ciW''<Esc>P
 nnoremap    <buffer>   ""   ciW""<Esc>P
+"
+"-------------------------------------------------------------------------------
+" set "maplocalleader" as configured using "g:BASH_MapLeader"
+"-------------------------------------------------------------------------------
+call Bash_SetMapLeader ()
+"
+" maps defined here will use "g:BASH_MapLeader" as <LocalLeader>
+" example:
+"map  <buffer>  <LocalLeader>eg  :echo "Example Map :)"<CR>
+"
+"-------------------------------------------------------------------------------
+" reset "maplocalleader"
+"-------------------------------------------------------------------------------
+call Bash_ResetMapLeader ()
 "

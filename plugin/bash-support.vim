@@ -35,7 +35,7 @@ if exists("g:BASH_Version") || &cp
  finish
 endif
 "
-let g:BASH_Version= "4.3pre"                  " version number of this script; do not change
+let g:BASH_Version= "4.2.1"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  BASH_SetGlobalVariable     {{{1
@@ -460,6 +460,29 @@ function! BASH_remove_echo ()
 	silent exe "normal! =="
 	return
 endfunction    " ----------  end of function BASH_remove_echo  ----------
+"
+"------------------------------------------------------------------------------
+"  === Templates API ===   {{{1
+"------------------------------------------------------------------------------
+"
+"------------------------------------------------------------------------------
+"  Bash_SetMapLeader   {{{2
+"------------------------------------------------------------------------------
+function! Bash_SetMapLeader ()
+	if exists ( 'g:BASH_MapLeader' )
+		call mmtemplates#core#SetMapleader ( g:BASH_MapLeader )
+	endif
+endfunction    " ----------  end of function Bash_SetMapLeader  ----------
+"
+"------------------------------------------------------------------------------
+"  Bash_ResetMapLeader   {{{2
+"------------------------------------------------------------------------------
+function! Bash_ResetMapLeader ()
+	if exists ( 'g:BASH_MapLeader' )
+		call mmtemplates#core#ResetMapleader ()
+	endif
+endfunction    " ----------  end of function Bash_ResetMapLeader  ----------
+" }}}2
 "
 "===  FUNCTION  ================================================================
 "          NAME:  BASH_RereadTemplates     {{{1

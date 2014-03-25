@@ -1,7 +1,7 @@
-*bashsupport.txt*                Bash Support               January 04 2014
+*bashsupport.txt*                Bash Support                 March 25 2014
 
 Bash Support                                      *bash-support* *bashsupport*
-                             Plugin version 4.2
+                             Plugin version 4.2.1
                         for Vim version 7.0 and above
                        Fritz Mehner  <mehner@fh-swf.de>
 
@@ -760,6 +760,16 @@ The map leader is now a comma. The 'line end comment' command is now defined
 as ',cl'. This setting will be used as a so called local leader and influences
 only files with filetype 'sh'.
 
+The configured mapleader can also be used in the ftplugin, by calling the
+functions *Bash_SetMapLeader()* and *Bash_ResetMapLeader()* . The maps created
+between the two calls will use |g:BASH_MapLeader| as the |<LocalLeader>|:
+>
+  call Bash_SetMapLeader ()
+
+  map  <buffer>  <LocalLeader>eg  :echo "Example Map :)"<CR>
+
+  call Bash_ResetMapLeader ()
+<
 
 ==============================================================================
 3.  HOT KEYS                                             *bashsupport-hotkeys*
