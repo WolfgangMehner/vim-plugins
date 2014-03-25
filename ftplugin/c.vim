@@ -36,7 +36,7 @@ inoremap  <buffer>  {<CR>    {<CR>}<Esc>O
 vnoremap  <buffer>  {<CR>   S{<CR>}<Esc>Pk=iB
 "
 "-------------------------------------------------------------------------------
-" set "maplocalleader" as configured using "g:Latex_MapLeader"
+" set "maplocalleader" as configured using "g:C_MapLeader"
 "-------------------------------------------------------------------------------
 call C_SetMapLeader ()
 "

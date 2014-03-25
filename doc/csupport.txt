@@ -841,6 +841,11 @@ function.
 The behavior of the compiler / linker is determined by the options assigned to
 the variables described in |csupport-custom-glob-vars| (4.group).
 
+Note: The source is first compiled using the settings g:C_CFlags and then
+  linked using g:C_LFlags. Every time one setting is changed, the other has to
+  be changed accordingly. The flags in g:C_CFlags have to cause compilation
+  only. The same holds for g:C_CplusCFlags and g:C_CplusLFlags.
+
 RUN
 'run' runs the executable with the same name  as the current buffer. If the
 buffer is not saved, or no executable is available or the executable is older
@@ -872,6 +877,7 @@ will now belong to the buffer with the new name.
 The command line arguments can be followed by pipes and redirections:
 >
   11 22 | sort -rn | head -10 > out
+<
 
 1.7.3  EXECUTABLE TO RUN                               *csupport-run-make-run*
 
@@ -1542,6 +1548,10 @@ line, i.e. without restarting the editor:
   C_CplusLibs
   C_Debugger
 <
+If you change g:C_CFlags or g:C_LFlags, you have change to change the other
+accordingly. The same holds for g:C_CplusCFlags and g:C_CplusLFlags (see also
+|csupport-run-buffer|).
+
 ------------------------------------------------------------------------------
 4.2  THE ROOT MENU                                      *csupport-custom-root*
 ------------------------------------------------------------------------------
@@ -1563,8 +1573,15 @@ this is done by the following line in '.vimrc'
 4.3  SYSTEM-WIDE INSTALLATION                           *csupport-system-wide*
 ------------------------------------------------------------------------------
 
-A system-wide installation (one installation for all users) is done as
-follows.
+A system-wide installation (one installation for all users) of the plug-in can
+be done. This will mean however, that a user can not edit the template
+library, for example to set his own name. So in case of a system-wide
+installation, every user can have an own set of templates (called local
+templates), which are localed in each users' home directory.
+Note: As you might have guessed, this behavior is much more inspired by Linux
+than Windows.
+
+A system-wide installation is done as follows.
 
 As *** SUPERUSER *** :
 
@@ -2064,6 +2081,11 @@ directory):
       let g:C_CreateMenusDelayed = 'yes'
     The only downside is that you won't see the C/C++-menu before you start
     working on a C-file, or use the menu entry "Tools->Load C Support".
+
+* After changing g:C_LFlags / g:C_CplusLFlags my source can not be linked or
+  run.
+  - The settings g:C_CFlags / g:C_CplusCFlags have to be changed accordingly
+    (see |csupport-run-buffer|)
 
 * Splint and/or CodeCheck menu item not visible.
   - The program is not installed or not found (path not set) or not executable.
