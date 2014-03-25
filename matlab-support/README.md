@@ -1,4 +1,4 @@
-README for matlab-support.vim (Version 0.8rc1) / Mar 01 2014
+README for matlab-support.vim (Version 0.8rc2) / Mar 25 2014
 ================================================================================
 
   *  INSTALLATION

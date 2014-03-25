@@ -110,6 +110,12 @@ elseif args[1] == 'cp-repo' then
 		end
 
 		if success then
+			cmd = 'echo "\\ntaken from revision $(git rev-parse HEAD) of WolfgangMehner/vim-plugins" >> '..args[2]..'/project/commit.txt'
+
+			success, res_reason, res_status = os.execute ( cmd )
+		end
+
+		if success then
 			print ( '\n=== successful ===\n' )
 		else
 			print ( '\n=== failed: '..res_reason..' '..res_status..' ===\n' )

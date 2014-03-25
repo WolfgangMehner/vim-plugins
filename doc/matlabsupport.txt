@@ -1,8 +1,8 @@
-*matlabsupport.txt*             Matlab Support                     Mar 01 2014
+*matlabsupport.txt*             Matlab Support                     Mar 25 2014
 
 Matlab Support                                 *matlab-support* *matlabsupport*
 
-                            Plug-in version 0.8rc1
+                            Plug-in version 0.8rc2
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -484,6 +484,18 @@ Example: >
   let g:Matlab_MapLeader = '#'
 Sets the mapleader to '#'.
 
+                                                       *Matlab_SetMapLeader()*
+                                                     *Matlab_ResetMapLeader()*
+The configured mapleader can also be used in the ftplugin, by calling the
+functions Matlab_SetMapLeader() and Matlab_ResetMapLeader(). The maps created
+between the two calls will use |g:Matlab_MapLeader| as the |<LocalLeader>|:
+>
+  call Matlab_SetMapLeader ()
+
+  map  <buffer>  <LocalLeader>eg  :echo "Example Map :)"<CR>
+
+  call Matlab_ResetMapLeader ()
+<
 ------------------------------------------------------------------------------
 4.3  COMMENTS                                  *matlabsupport-config-comments*
 ------------------------------------------------------------------------------
@@ -507,19 +519,19 @@ operation system.
 
 
 For a local installation, the default will be (UNIX/Linux): >
-  s:Matlab_SnippetDir = '$HOME/.vim/matlab-support/codesnippets/'
+  s:Matlab_SnippetDir = $HOME.'/.vim/matlab-support/codesnippets/'
 or (Windows): >
-  s:Matlab_SnippetDir = '$HOME/vimfiles/matlab-support/codesnippets'
+  s:Matlab_SnippetDir = $HOME.'/vimfiles/matlab-support/codesnippets'
 <
 
 For a sytem-wide installation, the default will be: >
-  s:Matlab_SnippetDir = '$VIM/vimfiles/matlab-support/codesnippets'
+  s:Matlab_SnippetDir = $VIM.'/vimfiles/matlab-support/codesnippets'
 <
 
 Example:
 
 To set a different code snippet directory, add this line to your vimrc: >
-  let g:Matlab_LclTemplateFile = '$HOME/myvim/matlab/codesnippets/'
+  let g:Matlab_SnippetDir = $HOME.'/myvim/matlab/codesnippets/'
 <
                                                      *g:Matlab_SnippetBrowser*
 Code snippets can either be selected in a file browser, by setting: >
@@ -527,8 +539,6 @@ Code snippets can either be selected in a file browser, by setting: >
 or on the command line by setting: >
   let g:Matlab_SnippetBrowser = 'cmd-line'
 <
-	*Todo		check paths for Windows
-
 ------------------------------------------------------------------------------
 4.5  MLINT                                        *matlabsupport-config-mlint*
 ------------------------------------------------------------------------------
@@ -567,22 +577,20 @@ System-wide installation:
 
 The default for the global template file is: >
   g:Matlab_GlbTemplateFile
-    = '$VIM/vimfiles/matlab-support/templates/Templates'
+    = $VIM.'/vimfiles/matlab-support/templates/Templates'
 The default for the local template file is (UNIX/Linux): >
   s:Matlab_LclTemplateDir
-    = '$HOME/.vim/matlab-support/templates/Templates'
+    = $HOME.'/.vim/matlab-support/templates/Templates'
 or (Windows): >
   s:Matlab_LclTemplateDir
-    = '$HOME/vimfiles/matlab-support/templates/Templates'
+    = $HOME.'/vimfiles/matlab-support/templates/Templates'
 <
 
 Example:
 
 To set a different local template file, add this line to your vimrc: >
-  let g:Matlab_LclTemplateFile = '$HOME/myvim/matlab/templates/my.templates'
+  let g:Matlab_LclTemplateFile = $HOME.'/myvim/matlab/templates/my.templates'
 <
-	*Todo		check paths for Windows
-
 ------------------------------------------------------------------------------
 4.7  TEMPLATE CUSTOMIZATION               *matlabsupport-config-template-cstm*
 ------------------------------------------------------------------------------
@@ -652,8 +660,8 @@ Finally, reread the template library using:
 ==============================================================================
 
 A system-wide installation (one installation for all users) of the plug-in can
-be done. This will mean however, that as a user you can not edit the template
-library, for example to set your own name. So in case of a system-wide
+be done. This will mean however, that a user can not edit the template
+library, for example to set his own name. So in case of a system-wide
 installation, every user can have an own set of templates (called local
 templates), which are localed in each users' home directory.
 Note: As you might have guessed, this behavior is much more inspired by Linux

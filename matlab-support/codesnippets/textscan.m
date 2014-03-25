@@ -1,6 +1,7 @@
 filename = 'TODO';
 
 fid = fopen ( filename, 'r' );
+
 if fid ~= -1
     C = textscan ( fid, '%f %f %f', 'commentstyle', '#', 'delimiter', '', 'collectoutput', false );
 

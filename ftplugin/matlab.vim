@@ -36,9 +36,16 @@ setlocal shiftwidth=4
 setlocal expandtab
 "
 "-------------------------------------------------------------------------------
-" do we have a mapleader other than '\' ?
+" set "maplocalleader" as configured using "g:Matlab_MapLeader"
 "-------------------------------------------------------------------------------
-if exists("g:Matlab_MapLeader") && g:Matlab_MapLeader != ''
-  let maplocalleader = g:Matlab_MapLeader
-endif
+call Matlab_SetMapLeader ()
+"
+" maps defined here will use "g:Matlab_MapLeader" as <LocalLeader>
+" example:
+"map  <buffer>  <LocalLeader>eg  :echo "Example Map :)"<CR>
+"
+"-------------------------------------------------------------------------------
+" reset "maplocalleader"
+"-------------------------------------------------------------------------------
+call Matlab_ResetMapLeader ()
 "
