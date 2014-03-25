@@ -752,16 +752,7 @@ else
 endif
 "
 " settings   {{{2
-
-if s:MSWIN
-	let s:Git_Executable     = 'C:\Program Files\Git\bin\git.exe'     " Git executable
-	let s:Git_GitKExecutable = 'C:\Program Files\Git\bin\tclsh.exe'   " GitK executable
-	let s:Git_GitKScript     = 'C:\Program Files\Git\bin\gitk'        " GitK script
-else
-	let s:Git_Executable     = 'git'    " Git executable
-	let s:Git_GitKExecutable = 'gitk'   " GitK executable
-	let s:Git_GitKScript     = ''       " GitK script
-endif
+"
 let s:Git_LoadMenus      = 'yes'    " load the menus?
 let s:Git_RootMenu       = '&Git'   " name of the root menu
 "
@@ -781,6 +772,28 @@ let s:Git_CustomMenu = [
 			\ [ '&merge, no commit',         ':GitMerge',   ':GitMerge --no-commit <CURSOR>' ],
 			\ [ '&merge, abort',             ':GitMerge',   ':GitMerge --abort<EXECUTE>' ],
 			\ ]
+"
+if s:MSWIN
+	let s:Git_BinPath = 'C:\Program Files\Git\bin\'
+else
+	let s:Git_BinPath = ''
+endif
+"
+call s:GetGlobalSetting ( 'Git_BinPath' )
+"
+if s:MSWIN
+	let s:Git_BinPath = substitute ( s:Git_BinPath, '[^\\/]$', '&\\', '' )
+	"
+	let s:Git_Executable     = s:Git_BinPath.'git.exe'     " Git executable
+	let s:Git_GitKExecutable = s:Git_BinPath.'tclsh.exe'   " GitK executable
+	let s:Git_GitKScript     = s:Git_BinPath.'gitk'        " GitK script
+else
+	let s:Git_BinPath = substitute ( s:Git_BinPath, '[^\\/]$', '&/', '' )
+	"
+	let s:Git_Executable     = s:Git_BinPath.'git'         " Git executable
+	let s:Git_GitKExecutable = s:Git_BinPath.'gitk'        " GitK executable
+	let s:Git_GitKScript     = ''                          " GitK script (do not specify separate script by default)
+endif
 "
 call s:GetGlobalSetting ( 'Git_Executable' )
 call s:GetGlobalSetting ( 'Git_GitKExecutable' )
@@ -815,7 +828,7 @@ let s:GitHelpFormat = ""            " 'man' or 'html'
 "
 " git bash
 if s:MSWIN
-	let s:Git_GitBashExecutable = 'C:\Program Files\Git\bin\sh.exe'
+	let s:Git_GitBashExecutable = s:Git_BinPath.'sh.exe'
 	call s:GetGlobalSetting ( 'Git_GitBashExecutable' )
 else
 	if exists ( 'g:Xterm_Executable' )
@@ -3583,17 +3596,17 @@ function! GitS_GitBash( param )
 	"
 	if s:MSWIN && param =~ '^\s*$'
 		" no parameters: start interactive mode in background
-		silent exe '!start '.g:Git_GitKExecutable.' --login -i'
+		silent exe '!start '.s:Git_GitBashExecutable.' --login -i'
 	elseif s:MSWIN
 		" otherwise: block editor and execute command
-		silent exe '!'.g:Git_GitKExecutable.' --login -c '.shellescape ( 'git '.param )
+		silent exe '!'.s:Git_GitBashExecutable.' --login -c '.shellescape ( 'git '.param )
 	else
 		let param = substitute( param, '[#%]', '\\&', 'g' )
 		"
 		" UNIX: block editor and execute command, wait for confirmation afterwards
 		silent exe '!'.s:Git_GitBashExecutable.' '.g:Xterm_Defaults
 					\ .' -title '.shellescape( title )
-					\ .' -e '.shellescape( 'git '.param.' ; echo "" ; read -p "  ** PRESS ENTER **  " dummy ' )
+					\ .' -e '.shellescape( s:Git_Executable.' '.param.' ; echo "" ; read -p "  ** PRESS ENTER **  " dummy ' )
 	endif
 	"
 endfunction    " ----------  end of function GitS_GitBash  ----------

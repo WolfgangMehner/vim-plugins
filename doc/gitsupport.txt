@@ -1,4 +1,4 @@
-*gitsupport.txt*                  Git Support                      Mar 01 2014
+*gitsupport.txt*                  Git Support                      Mar 25 2014
 
 Git Support                                          *git-support* *gitsupport*
 
@@ -942,6 +942,7 @@ in the .vimrc file.
 
   Variable                    Default     Description and further information
  ----------------------------------------------------------------------------
+  |g:Git_BinPath|               ''          the path to the Git binaries (^1)
   |g:Git_Executable|            'git'       the Git executable (^1)
   |g:Git_GitKExecutable|        'gitk'      the gitk executable (^1)
   |g:Git_GitKScript|            ''          the gitk script (^1)
@@ -966,11 +967,18 @@ in the .vimrc file.
   |g:Xterm_Defaults|            '...'       the xterm default settings (^3)
  ----------------------------------------------------------------------------
 
-(^1) the Windows defaults are as follows:
-  |g:Git_Executable|        - C:\Program Files\Git\bin\git.exe
-  |g:Git_GitKExecutable|    - C:\Program Files\Git\bin\tclsh.exe
-  |g:Git_GitKScript|        - C:\Program Files\Git\bin\gitk
-  |g:Git_GitBashExecutable| - C:\Program Files\Git\bin\sh.exe
+(^1)
+  The Unix defaults are as follows:
+  |g:Git_BinPath|           - -empty-
+  |g:Git_Executable|        - g:Git_BinPath + git
+  |g:Git_GitKExecutable|    - g:Git_BinPath + gitk
+  |g:Git_GitKScript|        - -empty-
+  the Windows defaults are as follows:
+  |g:Git_BinPath|           - C:\Program Files\Git\bin\
+  |g:Git_Executable|        - g:Git_BinPath + git.exe
+  |g:Git_GitKExecutable|    - g:Git_BinPath + tclsh.exe
+  |g:Git_GitKScript|        - g:Git_BinPath + gitk
+  |g:Git_GitBashExecutable| - g:Git_BinPath + sh.exe
 (^2) under UNIX, the default for g:Git_GitBashExecutable is the value of
   g:Xterm_Executable, which in turn is "xterm"
 (^3) UNIX only
@@ -978,6 +986,20 @@ in the .vimrc file.
 ------------------------------------------------------------------------------
 6.1  EXECUTABLE                                 *gitsupport-config-executable*
 ------------------------------------------------------------------------------
+                                                               *g:Git_BinPath*
+The path to the executables is set by g:Git_BinPath: >
+  let g:Git_Executable = '/usr/local/bin/'
+Since git and gitk will be on the path, this will not be necessary on most
+UNIX systems.
+
+For Windows, set up the binary path similar to this: >
+  let g:Git_Executable = 'C:\Program Files\Git\bin\'
+<
+The defaults for |g:Git_Executable|, |g:Git_GitKExecutable|, |g:Git_GitKScript|
+and |g:Git_GitBashExecutable| are derived from g:Git_BinPath. However, the
+setting g:Git_BinPath is only used to derive the defaults. If one of the
+executables is set explicitly, it has to be set with the whole path.
+
                                                             *g:Git_Executable*
 The executable is set by g:Git_Executable. You should use the English language
 environment: >
