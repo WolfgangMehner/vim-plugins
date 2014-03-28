@@ -100,24 +100,35 @@ else
 	" }}}3
 	"-------------------------------------------------------------------------------
 	"
-	" collect all available version
-	let g:Templates_Version = 'searching'
-	let g:Templates_VersionSearch = []
-	"
-	runtime! autoload/mmtemplates/core.vim
-	"
-	" select the newest one
-	call sort ( g:Templates_VersionSearch, 's:VersionComp' )
-	"
-	let g:Templates_VersionUse = g:Templates_VersionSearch[ 0 ]
-	"
-	" run all scripts again, the newest one will be used
-	runtime! autoload/mmtemplates/core.vim
-	"
-	unlet g:Templates_VersionSearch
-	unlet g:Templates_VersionUse
-	"
-	finish
+	try
+		"
+		" collect all available version
+		let g:Templates_Version = 'searching'
+		let g:Templates_VersionSearch = []
+		"
+		runtime! autoload/mmtemplates/core.vim
+		"
+		" select the newest one
+		call sort ( g:Templates_VersionSearch, 's:VersionComp' )
+		"
+		let g:Templates_VersionUse = g:Templates_VersionSearch[ 0 ]
+		"
+		" run all scripts again, the newest one will be used
+		runtime! autoload/mmtemplates/core.vim
+		"
+		unlet g:Templates_VersionSearch
+		unlet g:Templates_VersionUse
+		"
+		finish
+		"
+	catch /.*/
+		"
+		" an error occurred, skip ahead
+		echohl WarningMsg
+		echomsg 'Search for the newest version number failed.'
+		echomsg 'Using this version ('.s:Templates_Version.').'
+		echohl None
+	endtry
 	"
 endif
 " }}}2
