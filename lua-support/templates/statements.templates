@@ -1,0 +1,49 @@
+§ =============================================================
+§  Statements
+§ =============================================================
+
+§ -------------------------------------------------------------
+§  Loops
+§ -------------------------------------------------------------
+
+== Statements.for, range == below, map:sfr, sc:f ==
+for <CURSOR> = {+A+}, {+B+} do
+	<SPLIT>{-LOOP_BODY-}
+end
+== Statements.for, in == below, map:sfi, sc:f ==
+for <CURSOR> in {+ITERATOR+} do
+	<SPLIT>{-LOOP_BODY-}
+end
+== Statements.while == below, map:sw, sc:w ==
+while <CURSOR> do
+	<SPLIT>{-LOOP_BODY-}
+end
+== Statements.repeat == below, map:sr, sc:r ==
+repeat
+	<SPLIT>{-LOOP_BODY-}
+until <CURSOR>
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  If-Then-Else
+§ -------------------------------------------------------------
+
+== SEP: Statements.sep_if ==
+
+== Statements.if, end == below, map:sif, sc:i ==
+if <CURSOR> then
+	<SPLIT>{-IF_PART-}
+end
+== Statements.if, else == below, map:sie, sc:i ==
+if <CURSOR> then
+	<SPLIT>{-IF_PART-}
+else
+	{+ELSE_PART+}
+end
+== Statements.elseif == below, map:sei, sc:e ==
+elseif <CURSOR> then
+	{+ELSE_PART+}
+== Statements.else == below, map:sel, sc:e ==
+else
+	<CURSOR>
+== ENDTEMPLATE ==

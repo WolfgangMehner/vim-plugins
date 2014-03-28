@@ -1,0 +1,19 @@
+§ =============================================================
+§  Files
+§ =============================================================
+
+
+== Files.module == start, map:fm, sc:m ==
+|Insert('Comments.file description')|
+
+local module_name = ...
+
+local |BASENAME| = {}
+
+return |BASENAME|
+== Files.script == start, map:fs, sc:s ==
+|Insert('Comments.file description')|
+
+local args = { ... }
+
+== ENDTEMPLATE ==

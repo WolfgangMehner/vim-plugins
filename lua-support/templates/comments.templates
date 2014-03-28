@@ -1,0 +1,96 @@
+§ =============================================================
+§  Comments
+§ =============================================================
+
+== Comments.frame comment, small == below, map:cfs, sc:s ==
+------------------------------------------------------------------------
+--  <CONTENT><CURSOR>
+------------------------------------------------------------------------
+== Comments.frame comment, big == below, map:cfb, sc:b ==
+--
+--------------------------------------------------------------------------------
+--  <CONTENT><CURSOR>
+--------------------------------------------------------------------------------
+--
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Description
+§ -------------------------------------------------------------
+
+== Comments.file description == start, map:cfi, sc:i ==
+|SurroundWith( 'Comments.frame comment, big' )|
+        File:  |FILENAME|
+       Usage:  ./|FILENAME| 
+ Description:  <CURSOR>
+     Options:  ---
+Requirements:  ---
+        Bugs:  ---
+       Notes:  ---
+      Author:  |AUTHOR| (|AUTHORREF|), <|EMAIL|>
+Organization:  |ORGANIZATION|
+     Version:  1.0
+     Created:  |DATE|
+    Revision:  ---
+== Comments.function description == below, map:cfu, sc:u ==
+|SurroundWith( 'Comments.frame comment, small' )|
+       Name:  |?FUNCTION_NAME|
+    Purpose:  <CURSOR>
+Description:  {+DESCRIPTION+}
+ Parameters:  TODO
+    Returns:  {+RETRUNS+}
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+
+== Comments.date == append, map:cd, sc:d ==
+|DATE|
+== Comments.date+time == append, map:ct, sc:t ==
+|DATE| |TIME|
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Keywords and Macros
+§ -------------------------------------------------------------
+
+== LIST: comments_keywords == hash ==
+	'bug'         : ':BUG:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'todo'        : ':TODO:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'tricky'      : ':TRICKY:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'warning'     : ':WARNING:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'workaround'  : ':WORKAROUND:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'new keyword' : ':<CURSOR>:|DATE| |TIME|:|AUTHORREF|: {+COMMENT+}',
+== LIST: comments_macros == hash ==
+	'author'       : '|AUTHOR|',
+	'authorRef'    : '|AUTHORREF|',
+	'organization' : '|ORGANIZATION|',
+	'copyright'    : '|COPYRIGHT|',
+	'email'        : '|EMAIL|',
+
+	'path'       : '|PATH|',
+	'filename'   : '|FILENAME|',
+	'basename'   : '|BASENAME|',
+	'basename:u' : '|BASENAME:u|',
+	'suffix'     : '|SUFFIX|',
+
+	'date' : '|DATE|',
+	'time' : '|TIME|',
+	'year' : '|YEAR|',
+== ENDLIST ==
+
+§ -------------------------------------------------------------
+
+== Comments.keyword comments == expandmenu, append, map:ck, sc:k ==
+|PickList( 'keyword comment', 'comments_keywords' )|
+ -- |PICK|
+== Comments.macros == expandmenu, insert, map:cm, sc:m ==
+|PickList( 'macro', 'comments_macros' )|
+|PICK|
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Interpreter
+§ -------------------------------------------------------------
+== Comments.interpreter == start ==
+#!|LUA_EXECUTABLE|
+== ENDTEMPLATE ==
