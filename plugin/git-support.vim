@@ -3634,29 +3634,23 @@ function! GitS_PluginSettings( verbose )
 	elseif s:UNIX  | let sys_name = 'UNIX'
 	else           | let sys_name = 'unknown' | endif
 	"
-	let gitk_e_status  = s:EnabledGitK     ? '<yes>' : '<no>'
-	let gitk_s_status  = s:FoundGitKScript ? '<yes>' : '<no>'
-	let gitbash_status = s:EnabledGitBash  ? '<yes>' : '<no>'
+	if s:Enabled | let git_e_status = ' (version '.s:GitVersion.')'
+	else         | let git_e_status = ' (not executable)'
+	endif
+	let gitk_e_status  = s:EnabledGitK     ? '' : ' (not executable)'
+	let gitk_s_status  = s:FoundGitKScript ? '' : ' (not found)'
+	let gitbash_status = s:EnabledGitBash  ? '' : ' (not executable)'
 	"
 	let	txt = " Git-Support settings\n\n"
 				\ .'     plug-in installation :  '.s:installation.' on '.sys_name."\n"
-				\ .'           git executable :  '.s:Git_Executable."\n"
-	if s:Enabled
-		let txt .= '                > version :  '.s:GitVersion."\n"
-	else
-		let txt .= "                > enabled :  <no>\n"
-	endif
-	let txt .=
-				\  '          gitk executable :  '.s:Git_GitKExecutable."\n"
-				\ .'                > enabled :  '.gitk_e_status."\n"
+				\ .'           git executable :  '.s:Git_Executable.git_e_status."\n"
+				\ .'          gitk executable :  '.s:Git_GitKExecutable.gitk_e_status."\n"
 	if ! empty ( s:Git_GitKScript )
 		let txt .=
-					\  '              gitk script :  '.s:Git_GitKScript."\n"
-					\ .'                  > found :  '.gitk_s_status."\n"
+					\  '              gitk script :  '.s:Git_GitKScript.gitk_s_status."\n"
 	endif
 	let txt .=
-				\  '      git bash executable :  '.s:Git_GitBashExecutable."\n"
-				\ .'                > enabled :  '.gitbash_status."\n"
+				\  '      git bash executable :  '.s:Git_GitBashExecutable.gitbash_status."\n"
 	if s:UNIX && a:verbose >= 1
 		let txt .= '               xterm args :  "'.g:Xterm_Defaults."\"\n"
 	endif
