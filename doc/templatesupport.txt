@@ -1,8 +1,8 @@
-*templatesupport.txt*         MM Template Support                  Mar 22 2014
+*templatesupport.txt*         MM Template Support                  Mar 28 2014
 
 MM Template Support                                        *template-support*
 
-                           Plug-in version 0.9.2-2
+                            Plug-in version 0.9.3
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -2259,6 +2259,23 @@ Note: Bare lists are not the default.
 ==============================================================================
 D.  CHANGE LOG                                   *template-support-change-log*
 ==============================================================================
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 0.9.3
+------------------------------------------------------------------------------
+
+- Change: In case several version of autoload/mmtemplates/core.vim are
+  available on 'runtimepath', pick out the newest one to load.
+
+Includes the patches 0.9.2-1 to 0.9.2-2:
+- Change: More checks when rereading templates.
+- Change: Better compatibility with custom mappings
+  (use "normal!", "noremap" and "noremenu" consistently).
+- Change: During template insertion, find <CURSOR> tag independent of the
+  settings 'magic' and 'startofline'.
+- Added: API functions "mmtemplates#core#SetMapleader" and
+  "mmtemplates#core#ResetMapleader".
+- Extended the documentation.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.2

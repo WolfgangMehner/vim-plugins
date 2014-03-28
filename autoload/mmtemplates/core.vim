@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Templates_Version below
 "       Created:  30.08.2011
-"      Revision:  23.02.2014
+"      Revision:  28.03.2014
 "       License:  Copyright (c) 2012-2013, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -38,14 +38,92 @@ endif
 "
 " prevent duplicate loading
 " need compatible
-if &cp || ( exists('g:Templates_Version') && ! exists('g:Templates_DevelopmentOverwrite') )
+if &cp || ( exists('g:Templates_Version') && g:Templates_Version != 'searching' && ! exists('g:Templates_DevelopmentOverwrite') )
 	finish
 endif
-let g:Templates_Version= '0.9.2-2'     " version number of this script; do not change
 "
-if ! exists ( 'g:Templates_MapInUseWarn' )
-	let g:Templates_MapInUseWarn = 1
+let s:Templates_Version = '0.9.3'     " version number of this script; do not change
+"
+"----------------------------------------------------------------------
+"  --- Find Newest Version ---   {{{2
+"----------------------------------------------------------------------
+"
+if exists('g:Templates_DevelopmentOverwrite')
+	" skip ahead
+elseif exists('g:Templates_VersionUse')
+	"
+	" not the newest one: abort
+	if s:Templates_Version != g:Templates_VersionUse
+		finish
+	endif
+	"
+	" otherwise: skip ahead
+	"
+elseif exists('g:Templates_VersionSearch')
+	"
+	" add own version number to the list
+	call add ( g:Templates_VersionSearch, s:Templates_Version )
+	"
+	finish
+	"
+else
+	"
+	"-------------------------------------------------------------------------------
+	" s:VersionComp : Compare two version numbers.   {{{3
+	"
+	" Parameters:
+	"   op1 - first version number (string)
+	"   op2 - second version number (string)
+	" Returns:
+	"   result - -1, 0 or 1, to the specifications of sort() (integer)
+	"-------------------------------------------------------------------------------
+	function! s:VersionComp ( op1, op2 )
+		"
+		let l1 = split ( a:op1, '[.-]' )
+		let l2 = split ( a:op2, '[.-]' )
+		"
+		for i in range( 0, max( [ len( l1 ), len( l2 ) ] ) - 1 )
+			" until now, all fields where equal
+			if len ( l2 ) <= i
+				return -1                               " op1 has more fields -> sorts first
+			elseif len( l1 ) <= i
+				return 1                                " op2 has more fields -> sorts first
+			elseif str2nr ( l1[i] ) > str2nr ( l2[i] )
+				return -1                               " op1 is larger here -> sorts first
+			elseif str2nr ( l2[i] ) > str2nr ( l1[i] )
+				return 1                                " op2 is larger here -> sorts first
+			endif
+		endfor
+		"
+		return 0                                    " same amount of fields, all equal
+	endfunction    " ----------  end of function s:VersionComp  ----------
+	" }}}3
+	"-------------------------------------------------------------------------------
+	"
+	" collect all available version
+	let g:Templates_Version = 'searching'
+	let g:Templates_VersionSearch = []
+	"
+	runtime! autoload/mmtemplates/core.vim
+	"
+	" select the newest one
+	call sort ( g:Templates_VersionSearch, 's:VersionComp' )
+	"
+	let g:Templates_VersionUse = g:Templates_VersionSearch[ 0 ]
+	"
+	" run all scripts again, the newest one will be used
+	runtime! autoload/mmtemplates/core.vim
+	"
+	unlet g:Templates_VersionSearch
+	unlet g:Templates_VersionUse
+	"
+	finish
+	"
 endif
+" }}}2
+"-------------------------------------------------------------------------------
+"
+let g:Templates_Version = s:Templates_Version     " version number of this script; do not change
 "
 "----------------------------------------------------------------------
 "  === Modul Setup ===   {{{1
@@ -53,6 +131,10 @@ endif
 "
 let s:DebugGlobalOverwrite = 0
 let s:DebugLevel           = s:DebugGlobalOverwrite
+"
+if ! exists ( 'g:Templates_MapInUseWarn' )
+	let g:Templates_MapInUseWarn = 1
+endif
 "
 let s:StateStackStyleTop    = -2
 let s:StateStackFile        = -1
