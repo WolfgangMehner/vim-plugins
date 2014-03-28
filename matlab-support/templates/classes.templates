@@ -13,10 +13,12 @@ MenuShortcut( 'Classes.Method',     'm' )
 properties ( GetAccess=public, SetAccess=public )
     <SPLIT>
 end
+
 == Classes.Properties.dependent == below, sc:d ==
 properties ( GetAccess=public, SetAccess=public, Dependent )
     <SPLIT>
 end
+
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
@@ -27,10 +29,12 @@ end
 function out = |?FUNCTION_NAME| ( obj, varargin )
     <SPLIT>
 end
+
 == Classes.Method.change object == below, sc:c ==
 function obj = |?FUNCTION_NAME| ( obj, varargin )
     <SPLIT>
 end
+
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
@@ -60,6 +64,7 @@ classdef |BASENAME|
     end
     
 end
+
 == ENDTEMPLATE ==
 
 §--------------------------------------------------------------

@@ -164,7 +164,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 
   RELEASE NOTES FOR VERSION 0.8
 ----------------------------------------------------------------------
-- Initial upload.
+- Initial release.
 
   RELEASE NOTES FOR OLDER VERSIONS
 ----------------------------------------------------------------------
@@ -176,7 +176,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
   FILES
 ================================================================================
 
-    README.matlabsupport
+    README.md
                         This file.
 
     autoload/mmtemplates/*

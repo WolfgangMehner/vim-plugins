@@ -392,7 +392,7 @@ function! Matlab_CommentCode( toggle ) range
 		if getline( i ) =~ '^%'
 			silent exe i."s/^%//"
 		elseif a:toggle
-			silent exe i."s/^/% /"
+			silent exe i."s/^/%/"
 		endif
 	endfor
 	"
@@ -672,12 +672,12 @@ function! Matlab_CheckCode() range
 	"
 	let errorf_saved = &g:errorformat
 	"
-	exe 'set errorformat='
-				\ .'%-PFILE\ %f,%-QFILEEND,'
-				\ .'L\ %l\ (C\ %c):\ %m,L\ %l\ (C\ %c-%*\\d):\ %m'
+	let &g:errorformat =
+				\  '%-PFILE %f,%-QFILEEND,'
+				\ .'L %l (C %c): %m,L %l (C %c-%*\d): %m'
 	silent exe 'cexpr errors'
 	"
-	exe 'set errorformat='.escape( errorf_saved, s:CmdLineEscChar )
+	let &g:errorformat = errorf_saved
 	"
 	if empty ( errors_mlint )
 		call s:ImportantMsg ( 'No warnings.' )
@@ -1164,7 +1164,7 @@ function! Matlab_Settings( verbose )
 	"
 	let glb_t_status = filereadable ( s:Matlab_GlbTemplateFile ) ? '' : ' (not readable)'
 	let lcl_t_status = filereadable ( s:Matlab_LclTemplateFile ) ? '' : ' (not readable)'
-	let mlint_status = executable( s:Matlab_MlintExecutable ) ? '<yes>' : '<no>'
+	let mlint_status = executable( s:Matlab_MlintExecutable ) ? '' : ' (not executable)'
 	"
 	let	txt = " Matlab-Support settings\n\n"
 	if exists ( 'g:Matlab_Templates' )
@@ -1194,11 +1194,11 @@ function! Matlab_Settings( verbose )
 	let txt .=
 				\  '      local template file :  '.s:Matlab_LclTemplateFile.lcl_t_status."\n"
 				\ .'       code snippets dir. :  '.s:Matlab_SnippetDir."\n"
-				\ .'       mlint path and exe :  '.s:Matlab_MlintExecutable."\n"
-				\ .'             > executable :  '.mlint_status."\n"
+				\ .'       mlint path and exe :  '.s:Matlab_MlintExecutable.mlint_status."\n"
 	if a:verbose >= 1
 		let	txt .= "\n"
 					\ .'                mapleader :  "'.g:Matlab_MapLeader."\"\n"
+					\ .'               load menus :  "'.s:Matlab_LoadMenus."\"\n"
 	endif
 	let txt .=
 				\  "________________________________________________________________________________\n"
