@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 2.2
+---------------------------------------------------------------------------------------
++ Map "adjust end-of-line com." now works in visual mode.
++ Map "function description (auto)" now works in visual mode.
++ Automatic function description now considers scopes.
++ Improved "adjust end-of-line comment".
++ Fixed template "Comments.function".
++ Added "Help -> english".
+
+---------------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 2.1
 ---------------------------------------------------------------------------------------
 + Menus generated in correct order.

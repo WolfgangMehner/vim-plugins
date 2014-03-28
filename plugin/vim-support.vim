@@ -35,7 +35,7 @@ if exists("g:VimSupportVersion") || &cp
  finish
 endif
 "
-let g:VimSupportVersion= "2.2"                  " version number of this script; do not change
+let g:VimSupportVersion= "2.2.1pre"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  GetGlobalSetting     {{{1
@@ -352,7 +352,7 @@ function! Vim_EndOfLineComment ( ) range
 		exe 'normal!	A'.s:VimStartComment.' '
 		startinsert!
 		if line > a:firstline
-			normal k
+			normal! k
 		endif
 	endfor
 endfunction		" ---------- end of function  Vim_EndOfLineComment  ----------
@@ -384,24 +384,24 @@ function! Vim_MultiLineEndComments ( )
 		exe ":".linenumber
 		if getline(linenumber) !~ '^\s*$'
 			let diff	= maxlength - virtcol("$")
-			exe 'normal	'.diff.'A '
+			exe 'normal!	'.diff.'A '
 			exe 'normal!	A'.s:VimStartComment.' '
 		endif
 	endfor
 	"
 	" ----- back to the begin of the marked block -----
 	stopinsert
-	normal '<$
+	normal! '<$
 	if match( getline("."), '\/\/\s*$' ) < 0
 		if search( '\/\*', 'bcW', line(".") ) > 1
-			normal l
+			normal! l
 		endif
 		let save_cursor = getpos(".")
 		if getline(".")[save_cursor[2]+1] == ' '
-			normal l
+			normal! l
 		endif
 	else
-		normal $
+		normal! $
 	endif
 endfunction		" ---------- end of function  Vim_MultiLineEndComments  ----------
 "
@@ -664,8 +664,8 @@ function! s:InitMenus()
 	" get the mapleader (correctly escaped)
 	let [ esc_mapl, err ] = mmtemplates#core#Resource ( g:Vim_Templates, 'escaped_mapleader' )
 	"
-	exe 'amenu '.s:Vim_RootMenu.'.Vim  <Nop>'
-	exe 'amenu '.s:Vim_RootMenu.'.-Sep00- <Nop>'
+	exe 'anoremenu '.s:Vim_RootMenu.'.Vim  <Nop>'
+	exe 'anoremenu '.s:Vim_RootMenu.'.-Sep00- <Nop>'
 	"
 	" Comments
 	"
@@ -715,14 +715,14 @@ function! s:InitMenus()
 	"
 	if !empty(s:Vim_CodeSnippets)
 		"
-		exe "amenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>'.esc_mapl.'nr       :call Vim_CodeSnippet("r")<CR>'
-		exe "imenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>'.esc_mapl.'nr  <C-C>:call Vim_CodeSnippet("r")<CR>'
-		exe "amenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw      :call Vim_CodeSnippet("w")<CR>'
-		exe "vmenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Vim_CodeSnippet("wv")<CR>'
-		exe "imenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Vim_CodeSnippet("w")<CR>'
-		exe "amenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne       :call Vim_CodeSnippet("e")<CR>'
-		exe "imenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call Vim_CodeSnippet("e")<CR>'
-		exe "amenu  <silent> ".s:Vim_RootMenu.'.S&nippets.-SepSnippets-                       :'
+		exe "anoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>'.esc_mapl.'nr       :call Vim_CodeSnippet("r")<CR>'
+		exe "inoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>'.esc_mapl.'nr  <C-C>:call Vim_CodeSnippet("r")<CR>'
+		exe "anoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw      :call Vim_CodeSnippet("w")<CR>'
+		exe "vnoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Vim_CodeSnippet("wv")<CR>'
+		exe "inoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Vim_CodeSnippet("w")<CR>'
+		exe "anoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne       :call Vim_CodeSnippet("e")<CR>'
+		exe "inoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call Vim_CodeSnippet("e")<CR>'
+		exe "anoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.-SepSnippets-                       :'
 		"
 	endif
 	"
@@ -732,8 +732,8 @@ function! s:InitMenus()
 	" run
 	"-------------------------------------------------------------------------------
 	" 
-	let ahead = 'amenu <silent> '.s:Vim_RootMenu.'.Run.'
-	let vhead = 'vmenu <silent> '.s:Vim_RootMenu.'.Run.'
+	let ahead = 'anoremenu <silent> '.s:Vim_RootMenu.'.Run.'
+	let vhead = 'vnoremenu <silent> '.s:Vim_RootMenu.'.Run.'
 	"
 	if	s:MSWIN
 		exe ahead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call Vim_Hardcopy("n")<CR>'
@@ -749,8 +749,8 @@ function! s:InitMenus()
  	" help
  	"-------------------------------------------------------------------------------
  	"
-	let ahead = 'amenu <silent> '.s:Vim_RootMenu.'.Help.'
-	let ihead = 'imenu <silent> '.s:Vim_RootMenu.'.Help.'
+	let ahead = 'anoremenu <silent> '.s:Vim_RootMenu.'.Help.'
+	let ihead = 'inoremenu <silent> '.s:Vim_RootMenu.'.Help.'
 	"
   exe ahead.'&keyword\ help<Tab>'.esc_mapl.'hk\ \ <S-F1>    :call Vim_Help()<CR>'
 	exe ahead.'-SEP1- :'
@@ -772,7 +772,7 @@ function! Vim_JumpForward ()
 	else
 		" try to jump behind parenthesis or strings 
 		call search( "[\]})\"'`]", 'W' )
-		normal l
+		normal! l
 	endif
 	return ''
 endfunction    " ----------  end of function Vim_JumpForward  ----------
@@ -968,8 +968,8 @@ function! s:CreateAdditionalMaps ()
 		inoremap    <buffer>  <silent>  <S-F1>        <C-C>:call Vim_Help()<CR>
 	endif
 	"
-	nmap    <buffer>  <silent>  <C-j>    i<C-R>=Vim_JumpForward()<CR>
-	imap    <buffer>  <silent>  <C-j>     <C-R>=Vim_JumpForward()<CR>
+	nnoremap    <buffer>  <silent>  <C-j>    i<C-R>=Vim_JumpForward()<CR>
+	inoremap    <buffer>  <silent>  <C-j>     <C-R>=Vim_JumpForward()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" settings - reset local leader
@@ -1014,8 +1014,8 @@ endfunction    " ----------  end of function Vim_Settings ----------
 function! Vim_CreateGuiMenus ()
 	if s:Vim_MenuVisible == 'no'
 		aunmenu <silent> &Tools.Load\ Vim\ Support
-		amenu   <silent> 40.1000 &Tools.-SEP100- :
-		amenu   <silent> 40.1170 &Tools.Unload\ Vim\ Support :call Vim_RemoveGuiMenus()<CR>
+		anoremenu   <silent> 40.1000 &Tools.-SEP100- :
+		anoremenu   <silent> 40.1170 &Tools.Unload\ Vim\ Support :call Vim_RemoveGuiMenus()<CR>
 		"
 		call g:Vim_RereadTemplates('no')
 		call s:InitMenus () 
@@ -1028,8 +1028,8 @@ endfunction    " ----------  end of function Vim_CreateGuiMenus  ----------
 "  Vim_ToolMenu     {{{1
 "------------------------------------------------------------------------------
 function! Vim_ToolMenu ()
-	amenu   <silent> 40.1000 &Tools.-SEP100- :
-	amenu   <silent> 40.1170 &Tools.Load\ Vim\ Support :call Vim_CreateGuiMenus()<CR>
+	anoremenu   <silent> 40.1000 &Tools.-SEP100- :
+	anoremenu   <silent> 40.1170 &Tools.Load\ Vim\ Support :call Vim_CreateGuiMenus()<CR>
 endfunction    " ----------  end of function Vim_ToolMenu  ----------
 
 "------------------------------------------------------------------------------
