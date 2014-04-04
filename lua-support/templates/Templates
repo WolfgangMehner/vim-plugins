@@ -14,6 +14,8 @@ SetFormat( 'DATE', '%x' )
 SetFormat( 'TIME', '%H:%M' )
 SetFormat( 'YEAR', '%Y' )
 
+SetStyle( 'Lua_51' )
+
 § browser for help templates (UNIX)
 SetMacro( 'HELP_BROWSER', 'firefox' )
 
@@ -27,11 +29,13 @@ SetMacro( 'HELP_BROWSER', 'firefox' )
 MenuShortcut( 'Comments',   'c' )
 MenuShortcut( 'Statements', 's' )
 MenuShortcut( 'Idioms',     'i' )
+MenuShortcut( 'Regex',      'x' )
 MenuShortcut( 'Help',       'h' )
 
 IncludeFile( 'comments.templates' )
 IncludeFile( 'statements.templates' )
 IncludeFile( 'idioms.templates' )
+IncludeFile( 'regex.templates' )
 
 § =============================================================
 §  Help

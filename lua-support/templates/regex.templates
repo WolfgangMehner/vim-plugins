@@ -1,0 +1,71 @@
+§ =============================================================
+§  Regex
+§ =============================================================
+
+§ -------------------------------------------------------------
+§  Resources
+§ -------------------------------------------------------------
+
+== LIST: regex_character_classes_5_1 == hash ==
+	'letters'                        : '%a',
+	'control char.'                  : '%c',
+	'digits'                         : '%d',
+	'printable char. (except space)' : '',
+	'lowercase char.'                : '%l',
+	'punctuation char.'              : '%p',
+	'space char.'                    : '%s',
+	'uppercase char.'                : '%u',
+	'alphanumeric char.'             : '%w',
+	'hexadecimal digits'             : '%x',
+	'embedded zero'                  : '%z',
+== LIST: regex_character_classes_5_2 == hash ==
+	'letters'                        : '%a',
+	'control char.'                  : '%c',
+	'digits'                         : '%d',
+	'printable char. (except space)' : '%g',
+	'lowercase char.'                : '%l',
+	'punctuation char.'              : '%p',
+	'space char.'                    : '%s',
+	'uppercase char.'                : '%u',
+	'alphanumeric char.'             : '%w',
+	'hexadecimal digits'             : '%x',
+	'embedded zero'                  : '\0',
+== ENDLIST ==
+
+§ -------------------------------------------------------------
+§  Templates
+§ -------------------------------------------------------------
+
+== Regex.capture == insert, map:xca, sc:c ==
+(<SPLIT><CURSOR>)
+== Regex.collection == insert, map:xco, sc:c ==
+[<SPLIT><CURSOR>]
+== Regex.balanced brackets == insert, sc:b ==
+<CURSOR>%b{+LEFT+}{+RIGHT+}
+== ENDTEMPLATE ==
+
+§ :TODO:29.03.2014 19:53:WM: name "brackets", "braces", ...?
+
+== USE STYLES : default, Lua_51 ==
+
+§ frontier patterns are only available since Lua 5.2
+== Regex.frontier pattern, zero-width == insert, sc:f ==
+<CURSOR>
+== Regex.character classes == expandmenu, insert, map:xcl, sc:l ==
+|PickList( 'character class', 'regex_character_classes_5_1' )|
+|PICK|<CURSOR>
+== ENDTEMPLATE ==
+
+== ENDSTYLES ==
+
+== USE STYLES : Lua_52 ==
+
+== Regex.frontier pattern, zero-width == insert, sc:f ==
+%f[<SPLIT><CURSOR>]
+== Regex.character classes == expandmenu, insert, map:xcl, sc:l ==
+|PickList( 'character class', 'regex_character_classes_5_2' )|
+|PICK|<CURSOR>
+== ENDTEMPLATE ==
+
+== ENDSTYLES ==
+

@@ -2,7 +2,9 @@
 §  Comments
 § =============================================================
 
-== Comments.frame comment, small == below, map:cfs, sc:s ==
+== Comments.end-of-line comment == append, nomenu ==
+-- <CURSOR>
+== Comments.frame comment == below, map:cfr, sc:r ==
 ------------------------------------------------------------------------
 --  <CONTENT><CURSOR>
 ------------------------------------------------------------------------
@@ -19,34 +21,33 @@
 § -------------------------------------------------------------
 
 == Comments.file description == start, map:cfi, sc:i ==
-|SurroundWith( 'Comments.frame comment, big' )|
-        File:  |FILENAME|
-       Usage:  ./|FILENAME| 
- Description:  <CURSOR>
-     Options:  ---
-Requirements:  ---
-        Bugs:  ---
-       Notes:  ---
-      Author:  |AUTHOR| (|AUTHORREF|), <|EMAIL|>
-Organization:  |ORGANIZATION|
-     Version:  1.0
-     Created:  |DATE|
-    Revision:  ---
+--
+--------------------------------------------------------------------------------
+--         File:  |FILENAME|
+--
+--        Usage:  ./|FILENAME|
+--
+--  Description:  <CURSOR>
+--
+--      Options:  ---
+-- Requirements:  ---
+--         Bugs:  ---
+--        Notes:  ---
+--       Author:  |AUTHOR| (|AUTHORREF|), <|EMAIL|>
+-- Organization:  |ORGANIZATION|
+--      Version:  1.0
+--      Created:  |DATE|
+--     Revision:  ---
+-------------------------------------------------------------------------------
+--
 == Comments.function description == below, map:cfu, sc:u ==
-|SurroundWith( 'Comments.frame comment, small' )|
-       Name:  |?FUNCTION_NAME|
-    Purpose:  <CURSOR>
-Description:  {+DESCRIPTION+}
- Parameters:  TODO
-    Returns:  {+RETRUNS+}
-== ENDTEMPLATE ==
-
-§ -------------------------------------------------------------
-
-== Comments.date == append, map:cd, sc:d ==
-|DATE|
-== Comments.date+time == append, map:ct, sc:t ==
-|DATE| |TIME|
+------------------------------------------------------------------------
+--         Name:  |?FUNCTION_NAME|
+--      Purpose:  <CURSOR>
+--  Description:  {+DESCRIPTION+}
+--   Parameters:  TODO
+--      Returns:  {+RETRUNS+}
+------------------------------------------------------------------------
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
@@ -80,17 +81,25 @@ Description:  {+DESCRIPTION+}
 
 § -------------------------------------------------------------
 
+== SEP: Comments.sep1 ==
+
 == Comments.keyword comments == expandmenu, append, map:ck, sc:k ==
 |PickList( 'keyword comment', 'comments_keywords' )|
  -- |PICK|
 == Comments.macros == expandmenu, insert, map:cm, sc:m ==
 |PickList( 'macro', 'comments_macros' )|
-|PICK|
+|PICK|<CURSOR>
+== Comments.date == append, map:cd, sc:d ==
+|DATE|<CURSOR>
+== Comments.date+time == append, sc:t ==
+|DATE| |TIME|<CURSOR>
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
 §  Interpreter
 § -------------------------------------------------------------
+
 == Comments.interpreter == start ==
-#!|LUA_EXECUTABLE|
+#!|LUA_EXECUTABLE|<CURSOR>
 == ENDTEMPLATE ==
+

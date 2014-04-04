@@ -6,149 +6,8 @@
 §  Resources
 § -------------------------------------------------------------
 
-== LIST: idioms_functions == bare ==
-assert
-collectgarbage
-dofile
-error
-getfenv
-getmetatable
-ipairs
-load
-loadfile
-loadstring
-module
-next
-pairs
-pcall
-print
-rawequal
-rawget
-rawset
-require
-select
-setfenv
-setmetatable
-tonumber
-tostring
-type
-unpack
-xpcall
-coroutine.create
-coroutine.resume
-coroutine.running
-coroutine.status
-coroutine.wrap
-coroutine.yield
-debug.debug
-debug.getfenv
-debug.gethook
-debug.getinfo
-debug.getlocal
-debug.getmetatable
-debug.getregistry
-debug.getupvalue
-debug.setfenv
-debug.sethook
-debug.setlocal
-debug.setmetatable
-debug.setupvalue
-debug.traceback
-file:close
-file:flush
-file:lines
-file:read
-file:seek
-file:setvbuf
-file:write
-io.close
-io.flush
-io.input
-io.lines
-io.open
-io.output
-io.popen
-io.read
-io.stderr
-io.stdin
-io.stdout
-io.tmpfile
-io.type
-io.write
-math.abs
-math.acos
-math.asin
-math.atan
-math.atan2
-math.ceil
-math.cos
-math.cosh
-math.deg
-math.exp
-math.floor
-math.fmod
-math.frexp
-math.huge
-math.ldexp
-math.log
-math.log10
-math.max
-math.min
-math.modf
-math.pi
-math.pow
-math.rad
-math.random
-math.randomseed
-math.sin
-math.sinh
-math.sqrt
-math.tan
-math.tanh
-os.clock
-os.date
-os.difftime
-os.execute
-os.exit
-os.getenv
-os.remove
-os.rename
-os.setlocale
-os.time
-os.tmpname
-package.cpath
-package.loaded
-package.loaders
-package.loadlib
-package.path
-package.preload
-package.seeall
-string.byte
-string.char
-string.dump
-string.find
-string.format
-string.gmatch
-string.gsub
-string.len
-string.lower
-string.match
-string.rep
-string.reverse
-string.sub
-string.upper
-table.concat
-table.insert
-table.maxn
-table.remove
-table.sort
-== ENDLIST ==
-
-== LIST: idioms_func_param == hash ==
- 'string.gmatch': '<+s+>, <+pattern+>',
- 'string.gsub':   '<+s+>, <+pattern+>, <+repl+><+n_opt+>',
- 'string.match':  '<+s+>, <+pattern+><+init_opt+>',
-== ENDLIST ==
+IncludeFile( 'library_5_1.templates' )
+IncludeFile( 'library_5_2.templates' )
 
 § -------------------------------------------------------------
 §  Function Definition
@@ -177,26 +36,44 @@ error ( 'bad argument #<CURSOR> to \'|?FUNCTION_NAME|\' ({+TYPE+} expected, got 
 
 == SEP: Idioms.sep_std_lib ==
 
-== Idioms.standard function == insert, map:isf, sc:s ==
-|PickList( 'lua function', 'idioms_functions' )|
-|PICK| ( <CURSOR> )
-== Idioms.standard function, complete == insert, map:isc, sc:c ==
-|PickList( 'lua function', 'idioms_func_param' )|
+§ use "default" style as well,
+§ so this template is used as a fall-back for other styles
+== USE STYLES : default, Lua_51 ==
+
+== Idioms.library functions == insert, map:il, sc:l ==
+|PickList( 'lua function', 'idioms_func_5_1' )|
 <CURSOR>|KEY| ( |VALUE| )
+== Idioms.library variables == expandmenu, insert, map:iv, sc:v ==
+|PickList( 'lua variable', 'idioms_var_5_1' )|
+|PICK|<CURSOR>
 == ENDTEMPLATE ==
+
+== ENDSTYLES ==
+
+== USE STYLES : Lua_52 ==
+
+== Idioms.library functions == insert, map:il, sc:l ==
+|PickList( 'lua function', 'idioms_func_5_2' )|
+<CURSOR>|KEY| ( |VALUE| )
+== Idioms.library variables == expandmenu, insert, map:iv, sc:v ==
+|PickList( 'lua variable', 'idioms_var_5_2' )|
+|PICK|<CURSOR>
+== ENDTEMPLATE ==
+
+== ENDSTYLES ==
 
 § -------------------------------------------------------------
 §  Iterators
 § -------------------------------------------------------------
 
 == LIST: idioms_iterators == hash ==
-	'ipairs'        : 'idx, val in ipairs ( <+TABLE+> )',
-	'pairs'         : 'key, val in pairs ( <+TABLE+> )',
-	'file:lines'    : 'line in <+FILE+>:lines()',
-	'io.lines'      : 'line in io.lines ( <+FILENAME+> )',
-	'string.gmatch' : ' in string.gmatch ( <+STRING+>, <+PATTERN+> )',
-	'range'         : 'idx = <+FIRST+>, <+LAST+>',
-	'range+step'    : 'idx = <+FIRST+>, <+LAST+>, <+STEP+>',
+	'ipairs'        : 'idx, val in ipairs ( {+TABLE+} )',
+	'pairs'         : 'key, val in pairs ( {+TABLE+} )',
+	'file:lines'    : 'line in {+FILE+}:lines()',
+	'io.lines'      : 'line in io.lines ( {+FILENAME+} )',
+	'string.gmatch' : ' in string.gmatch ( {+STRING+}, {+PATTERN+} )',
+	'range'         : 'idx = {+FIRST+}, {+LAST+}',
+	'range+step'    : 'idx = {+FIRST+}, {+LAST+}, {+STEP+}',
 == ENDLIST ==
 
 == Idioms.iterators == expandmenu, map:ii, sc:i ==
@@ -213,11 +90,11 @@ end
 == SEP: Idioms.sep_file ==
 
 == Idioms.open file == below, map:iof ==
-local	|?FILE_HANDLE| = assert ( io.open ( <CURSOR>, '<+MODE+>' ) )
+local	|?FILE_HANDLE| = assert ( io.open ( <CURSOR>, '{+MODE+}' ) )
 
 assert ( io.close ( |FILE_HANDLE| ) )
 == Idioms.open pipe == below, map:iop ==
-local	|?FILE_HANDLE| = assert ( io.popen ( <CURSOR>, '<+MODE+>' ) )
+local	|?FILE_HANDLE| = assert ( io.popen ( <CURSOR>, '{+MODE+}' ) )
 
 assert ( io.close ( |FILE_HANDLE| ) )
 == ENDTEMPLATE ==

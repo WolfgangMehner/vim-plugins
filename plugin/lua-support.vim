@@ -649,6 +649,8 @@ endfunction    " ----------  end of function Lua_CodeSnippet  ----------
 "
 function! Lua_Run ( args )
 	"
+	silent exe 'update'   | " write source file if necessary
+	"
 	let output = system ( shellescape( s:Lua_Executable ).' '.shellescape( bufname('%') ).' '.a:args )
 	"
 	echo output
