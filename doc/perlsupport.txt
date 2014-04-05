@@ -1,7 +1,7 @@
-*perlsupport.txt*                Perl Support                  March 22 2014
+*perlsupport.txt*                Perl Support                  April 05 2014
 Perl Support                                      *perl-support* *perlsupport*
 
-                             Plug-in version 5.3
+                            Plug-in version 5.3.1
                         for Vim version 7.0 and above
                        Fritz Mehner  <mehner@fh-swf.de>
 
@@ -2025,7 +2025,7 @@ Please note the trailing slash.
 4.8  Use Perl6                                             *perlsupport-perl6*
 ------------------------------------------------------------------------------
 
-The use of Perl 6 (or an other interpreter) can be enabled in two way.
+The use of Perl 6 (or another interpreter) can be enabled in two way.
 The interpreter which runs ascript from inside Vim can be set globally
 in ~/.vimrc by 
 >
@@ -2042,7 +2042,7 @@ Now a Perl6-script will be run via its first line, e.g.
 >
  #!/usr/bin/env perl6 
 <
-all Perl5- scripts via their first line, e.g.
+all Perl5-scripts via their first line, e.g.
 >
  #!/usr/bin/env perl 
 <
