@@ -1,4 +1,19 @@
 ---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 5.3
+---------------------------------------------------------------------------------------
+- Adjusting end-of-line comments improved.
+- Bugfix: Map and menu entry 'Snippets->edit global templates'.
+- 'Run -> make script executable' (\re) is now a toggle.
+- Perl interpreter can be set in ~/.vimrc.
+- Script can be run via shebang (new global variable g:Perl_DirectRun)
+- Fixed problem with system-wide installations and plug-in managers (thanks to Yegor).
+- Added 'Perl_SetMapLeader' and 'Perl_ResetMapLeader'.
+- Bugfix: Resetting maplocalleader in filetype plug-in after setting it to the value of
+  g:Perl_MapLeader.
+- Bugfix: Better compatibility with custom mappings
+  (use "normal!" and "noremap" consistently).
+
+---------------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 5.2
 ---------------------------------------------------------------------------------------
 - New global variable g:Perl_InsertFileHeader (suppress file description comment for new files).
