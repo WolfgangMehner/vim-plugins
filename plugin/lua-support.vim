@@ -195,13 +195,11 @@ endif
 "
 let s:CmdLineEscChar = ' |"\'
 "
-let s:Lua_LoadMenus       = 'auto'             " load the menus?
-let s:Lua_RootMenu        = '&Lua'             " name of the root menu
+let s:Lua_LoadMenus             = 'auto'       " load the menus?
+let s:Lua_RootMenu              = '&Lua'       " name of the root menu
 "
-let s:Lua_MapLeader       = ''                 " default: do not overwrite 'maplocalleader'
-"
-let s:Lua_Executable      = 'lua'              " default: lua on system path
-let s:Lua_CompilerExec    = 'luac'             " default: luac on system path
+let s:Lua_Executable            = 'lua'        " default: lua on system path
+let s:Lua_CompilerExec          = 'luac'       " default: luac on system path
 "
 let s:Lua_LineEndCommColDefault = 49
 let s:Lua_SnippetDir            = s:plugin_dir.'/lua-support/codesnippets/'
@@ -221,8 +219,9 @@ call s:GetGlobalSetting ( 'Lua_LineEndCommColDefault' )
 call s:GetGlobalSetting ( 'Lua_SnippetDir' )
 call s:GetGlobalSetting ( 'Lua_SnippetBrowser' )
 "
-call s:ApplyDefaultSetting ( 'Lua_CompiledExtension', 'luac' )
-call s:ApplyDefaultSetting ( 'Lua_MapLeader', '' )
+call s:ApplyDefaultSetting ( 'Lua_CompiledExtension', 'luac' )         " default: 'luac'
+call s:ApplyDefaultSetting ( 'Lua_InsertFileHeader', 'yes' )           " default: do insert a file header
+call s:ApplyDefaultSetting ( 'Lua_MapLeader', '' )                     " default: do not overwrite 'maplocalleader'
 "
 let s:Lua_GlbTemplateFile = expand ( s:Lua_GlbTemplateFile )
 let s:Lua_LclTemplateFile = expand ( s:Lua_LclTemplateFile )
@@ -408,11 +407,10 @@ endfunction    " ----------  end of function Lua_CommentCode  ----------
 " Parameters:
 "   fun_line - the function definition (string)
 " Returns:
-"   [ <fun_name>, <returns>, <params> ] - data (list: string, list, list)
+"   [ <fun_name>, <params> ] - data (list: string, list)
 "
 " The entries are as follows:
 "   file name - name of the function (string)
-"   returns   - the name of the return arguments (list of strings)
 "   params    - the names of the parameters (list of strings)
 "
 " In case of an error, an empty list is returned.
@@ -422,62 +420,67 @@ function! s:GetFunctionParameters( fun_line )
 	" 1st expression: the syntax category
 	" 2nd expression: as before, but with brackets to catch the match
 	"
-	let identifier   = '[a-zA-Z][a-zA-Z0-9_]*'
+	let funcname     = '[a-zA-Z0-9_.:[:space:]]\+'
+	let funcname_c   = '\('.funcname.'\)'
+	let identifier   = '[a-zA-Z_][a-zA-Z0-9_]*'
 	let identifier_c = '\('.identifier.'\)'
-	let in_bracket   = '[^)\]]*'
-	let in_bracket_c = '\('.in_bracket.'\)'
-	let spaces       = '\s*'
-	let spaces_c     = '\('.spaces.'\)'
-	let tail_c       = '\(.*\)$'
 	"
-	let mlist = matchlist ( a:fun_line, '^'.spaces_c.'function\s*'.tail_c )
+	let name = ''
+	let params = ''
+	let param_list = []
 	"
-	" no function?
+	" [ "local" ] "function" <func-name> "(" <param-list> ")"
+	" captures: "local", <func-name>, <param-list>
+	let mlist = matchlist ( a:fun_line, '^\s*\(local\s\+\)\?function\s*'.funcname_c.'(\([^)]*\))' )
+	"
+	if ! empty( mlist )
+		"
+		if mlist[1] =~ '^local' && mlist[2] =~ '[.:]'
+			call s:ImportantMsg ( 'Illegal name for a local function.' )
+			return []
+		endif
+		"
+		let name   = substitute( mlist[2], '\s\+$', '', '' )
+		let params = mlist[3]
+		"
+	endif
+	"
+	" [ "local" ] <func-name> "=" "function" "(" <param-list> ")"
+	" captures: <func-name>, <param-list>
 	if empty( mlist )
-		return []
+		"
+		let mlist = matchlist ( a:fun_line, '^\([^=]\+\)\s*=\s*function\s*(\([^)]*\))' )
+		"
+		if ! empty( mlist )
+			"
+			let name   = substitute( mlist[1], '^\%(\s*local\)\?\s\+\|\s\+$', '', 'g' )
+			let params = mlist[2]
+			"
+		endif
+		"
 	endif
 	"
-	" found a function!
-	let tail   = mlist[2]
-	let fun_name   = ''
-	let return_str = ''
-	let param_str  = ''
-	"
-	" no return
-	let mlist = matchlist( tail, '^'.identifier_c.'\s*(\s*'.in_bracket_c.')' )
+	" parse parameter list
 	if ! empty( mlist )
-		let fun_name   = mlist[1]
-		let return_str = ''
-		let param_str  = mlist[2]
-	endif
-	"
-	" single return
-	let mlist = matchlist( tail, '^'.identifier_c.'\s*=\s*'.identifier_c.'\s*(\s*'.in_bracket_c.')' )
-	if ! empty( mlist )
-		let fun_name   = mlist[2]
-		let return_str = mlist[1]
-		let param_str  = mlist[3]
-	endif
-	"
-	" multiple returns
-	let mlist = matchlist( tail, '^\[\s*'.in_bracket_c.'\]\s*=\s*'.identifier_c.'\s*(\s*'.in_bracket_c.')' )
-	if ! empty( mlist )
-		let fun_name   = mlist[2]
-		let return_str = mlist[1]
-		let param_str  = mlist[3]
-	endif
-	"
-	let param_str  = substitute ( param_str, '\s*$', '', '' )
-	let param_list = split ( param_str, '\s*,\s*' )
-	"
-	let return_str  = substitute ( return_str, '\s*$', '', '' )
-	let return_list = split ( return_str, '\s*,\s*' )
-	"
-	if empty ( fun_name )
-		return []
+		"
+		while params !~ '^\s*$'
+			let mlist_p = matchlist ( params, '^\s*\('.identifier.'\|\.\.\.\)\s*,\?\(.*\)$' )
+			"
+			if empty( mlist_p )
+				call s:ImportantMsg ( 'Could not parse the parameter list.' )
+				return []
+			endif
+			"
+			call add ( param_list, mlist_p[1] )
+			let params = mlist_p[2]
+			"
+		endwhile
+		"
 	else
-		return [ fun_name, return_list, param_list ]
+		return []
 	endif
+	"
+	return [ name, param_list ]
 	"
 endfunction    " ----------  end of function s:GetFunctionParameters  ----------
 "
@@ -489,7 +492,7 @@ function! Lua_FunctionComment() range
 	"
 	let	linestring = getline(a:firstline)
 	for i in range(a:firstline+1,a:lastline)
-		let	linestring = linestring.' '.getline(i)
+		let	linestring .= ' '.getline(i)
 	endfor
 	"
 	let res_list = s:GetFunctionParameters( linestring )
@@ -499,19 +502,33 @@ function! Lua_FunctionComment() range
 	endif
 	"
 	" get all the parts
-	let [ fun_name, return_list, param_list ] = res_list
-	let base_name = mmtemplates#core#ExpandText ( g:Lua_Templates, '|BASENAME|' )
+	let [ fun_name, param_list ] = res_list
 	"
-	" description of the file or another function?
-	if fun_name == base_name
-		call mmtemplates#core#InsertTemplate ( g:Lua_Templates, 'Comments.file description',
-					\ '|PARAMETERS|', param_list, '|RETURNS|', return_list )
+	if fun_name != ''
+		call mmtemplates#core#InsertTemplate ( g:Lua_Templates, 'Comments.function description',
+					\ '|FUNCTION_NAME|', fun_name, '|PARAMETERS|', param_list, 'placement', 'above' )
 	else
 		call mmtemplates#core#InsertTemplate ( g:Lua_Templates, 'Comments.function description',
-					\ '|FUNCTION_NAME|', fun_name, '|PARAMETERS|', param_list, '|RETURNS|', return_list )
+					\ '|PARAMETERS|', param_list, 'placement', 'above' )
 	endif
 	"
 endfunction    " ----------  end of function Lua_FunctionComment  ----------
+"
+"-------------------------------------------------------------------------------
+" Lua_EscSpecChar : Automatically comment a function.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Lua_EscSpecChar()
+	"
+	let col  = getpos('.')[2]
+	let char = getline('.')[col-1]
+	"
+	if char =~ '\V\[$^()%.[\]*+-?]'
+		return '%'
+	endif
+	"
+	return ''
+endfunction    " ----------  end of function Lua_EscSpecChar  ----------
 "
 "-------------------------------------------------------------------------------
 " Lua_CodeSnippet : Code snippets.   {{{1
@@ -817,6 +834,22 @@ function! s:SetupTemplates()
 endfunction    " ----------  end of function s:SetupTemplates  ----------
 "
 "-------------------------------------------------------------------------------
+" s:InsertFileHeader : Insert a header for a new file.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! s:InsertFileHeader ()
+	"
+	if ! exists ( 'g:Lua_Templates' )
+		return
+	endif
+	"
+	if g:Lua_InsertFileHeader == 'yes'
+		call mmtemplates#core#InsertTemplate ( g:Lua_Templates, 'Comments.file description' )
+	endif
+	"
+endfunction    " ----------  end of function s:InsertFileHeader  ----------
+"
+"-------------------------------------------------------------------------------
 " Lua_HelpPlugin : Plug-in help.   {{{1
 "-------------------------------------------------------------------------------
 "
@@ -872,6 +905,12 @@ function! s:CreateMaps ()
 	"
 	 noremap    <buffer>  <silent>  <LocalLeader>ca         :call Lua_FunctionComment()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>ca    <Esc>:call Lua_FunctionComment()<CR>
+	"
+	"-------------------------------------------------------------------------------
+	" regex
+	"-------------------------------------------------------------------------------
+	nnoremap    <buffer>  <silent>  <LocalLeader>xe     i<C-R>=Lua_EscSpecChar()<CR><ESC><Right>
+	inoremap    <buffer>  <silent>  <LocalLeader>xe      <C-R>=Lua_EscSpecChar()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" snippets
@@ -1013,6 +1052,18 @@ function! s:InitMenus()
 	"-------------------------------------------------------------------------------
 	"
 	call mmtemplates#core#CreateMenus ( 'g:Lua_Templates', s:Lua_RootMenu, 'do_templates' )
+	"
+	"-------------------------------------------------------------------------------
+	" regex
+	"-------------------------------------------------------------------------------
+	"
+	let ahead = 'anoremenu <silent> '.s:Lua_RootMenu.'.Regex.'
+	let nhead = 'nnoremenu <silent> '.s:Lua_RootMenu.'.Regex.'
+	let ihead = 'inoremenu <silent> '.s:Lua_RootMenu.'.Regex.'
+	"
+	exe ahead.'-Sep01-                                  :'
+	exe nhead.'&esc\.\ spec\.\ char\.<Tab>'.esc_mapl.'xe  i<C-R>=Lua_EscSpecChar()<CR><ESC><Right>'
+	exe ihead.'&esc\.\ spec\.\ char\.<Tab>'.esc_mapl.'xe   <C-R>=Lua_EscSpecChar()<CR>'
 	"
 	"-------------------------------------------------------------------------------
 	" snippets
@@ -1168,6 +1219,7 @@ function! Lua_Settings( verbose )
 		let	txt .= "\n"
 					\ .'                mapleader :  "'.g:Lua_MapLeader."\"\n"
 					\ .'               load menus :  "'.s:Lua_LoadMenus."\"\n"
+					\ .'       insert file header :  "'.g:Lua_InsertFileHeader."\"\n"
 					\ ."\n"
 					\ .'       compiled extension :  "'.g:Lua_CompiledExtension."\"\n"
 	endif
@@ -1206,6 +1258,7 @@ if has( 'autocmd' )
 				\	if &filetype == 'lua' |
 				\		call s:CreateMaps() |
 				\	endif
+	autocmd BufNewFile  *.lua  call s:InsertFileHeader()
 endif
 " }}}1
 "-------------------------------------------------------------------------------

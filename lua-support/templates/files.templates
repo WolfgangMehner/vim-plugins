@@ -2,18 +2,37 @@
 §  Files
 § =============================================================
 
+== USE STYLES : default, Lua_51 ==
 
-== Files.module == start, map:fm, sc:m ==
-|Insert('Comments.file description')|
+== Files.module == below, map:fm, sc:m ==
+local module_name = ...
 
+module ( module_name, package.seeall )
+
+<CURSOR>
+== Files.script == below, map:fs, sc:s ==
+local args = { ... }
+
+<CURSOR>
+== ENDTEMPLATE ==
+
+== ENDSTYLES ==
+
+== USE STYLES : Lua_52, Lua_53 ==
+
+== Files.module == below, map:fm, sc:m ==
 local module_name = ...
 
 local |BASENAME| = {}
 
-return |BASENAME|
-== Files.script == start, map:fs, sc:s ==
-|Insert('Comments.file description')|
+<CURSOR>
 
+return |BASENAME|
+== Files.script == below, map:fs, sc:s ==
 local args = { ... }
 
+<CURSOR>
 == ENDTEMPLATE ==
+
+== ENDSTYLES ==
+

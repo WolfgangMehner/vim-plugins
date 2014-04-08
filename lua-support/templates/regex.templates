@@ -58,7 +58,7 @@
 
 == ENDSTYLES ==
 
-== USE STYLES : Lua_52 ==
+== USE STYLES : Lua_52, Lua_53 ==
 
 == Regex.frontier pattern, zero-width == insert, sc:f ==
 %f[<SPLIT><CURSOR>]

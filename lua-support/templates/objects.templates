@@ -2,19 +2,26 @@
 §  Objects
 § =============================================================
 
-
 == Objects.class metatable == below, map:omt, sc:m ==
 local |?CLASSNAME|_mt = {
-	type = '|CLASSNAME|',
+	type = '|CLASSNAME|',<CURSOR>
 }
+
 |CLASSNAME|_mt.__index     = |CLASSNAME|_mt   -- get indices from the table
 |CLASSNAME|_mt.__metatable = |CLASSNAME|_mt   -- protect the metatable
+
 == Objects.method, constructor == below, map:oc, sc:c ==
-|SurroundWith( 'Idioms.function definition', 'use_split', '|FUNCTION_NAME|', 'create_|CLASSNAME|', '|PARAMETER_LIST|', '' )|
-local obj = {} 
-setmetatable ( obj, |?CLASSNAME|_mt )
-return obj
+function create_|?CLASSNAME| ( <CURSOR> )
+	local obj = {}
+	<SPLIT>{-FUNCTION_BODY-}
+	setmetatable ( obj, |CLASSNAME|_mt )
+	return obj
+end  -----  end of function create_|CLASSNAME|  -----
+
 == Objects.method, is object == below, map:ois, sc:i ==
-|SurroundWith( 'Idioms.function definition', 'use_split', '|FUNCTION_NAME|', 'is_|CLASSNAME|', '|PARAMETER_LIST|', 'obj' )|
-return getmetatable ( obj ) == |?CLASSNAME|_mt
+function is_|?CLASSNAME| ( obj<CURSOR> )
+	return getmetatable ( obj ) == |CLASSNAME|_mt
+end  -----  end of function is_|CLASSNAME|  -----
+
 == ENDTEMPLATE ==
+

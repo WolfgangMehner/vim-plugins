@@ -18,6 +18,14 @@
 
 § -------------------------------------------------------------
 §  Description
+§
+§  Usage:
+§   'Comments.file description' is used for automated header
+§   insertion. The name should not be changed.
+§   'Comments.function description' is used for the automated
+§   function description. The macro names 'FUNCTION_NAME' and
+§   'PARAMETERS' are used as well. The names should remain
+§   unchanged.
 § -------------------------------------------------------------
 
 == Comments.file description == start, map:cfi, sc:i ==
@@ -45,8 +53,10 @@
 --         Name:  |?FUNCTION_NAME|
 --      Purpose:  <CURSOR>
 --  Description:  {+DESCRIPTION+}
---   Parameters:  TODO
---      Returns:  {+RETRUNS+}
+--   Parameters:  -|PARAMETERS:EMPTY|
+--   Parameters:  |PARAMETERS:FIRST| - {+DESCRIPTION+} ({+TYPE+})
+--                |PARAMETERS:ENTRY| - {+DESCRIPTION+} ({+TYPE+})
+--      Returns:  {+RETURNS+}
 ------------------------------------------------------------------------
 == ENDTEMPLATE ==
 

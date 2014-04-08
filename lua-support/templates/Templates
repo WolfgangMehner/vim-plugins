@@ -29,12 +29,14 @@ SetMacro( 'HELP_BROWSER', 'firefox' )
 MenuShortcut( 'Comments',   'c' )
 MenuShortcut( 'Statements', 's' )
 MenuShortcut( 'Idioms',     'i' )
+MenuShortcut( 'Files',      'f' )
 MenuShortcut( 'Regex',      'x' )
 MenuShortcut( 'Help',       'h' )
 
 IncludeFile( 'comments.templates' )
 IncludeFile( 'statements.templates' )
 IncludeFile( 'idioms.templates' )
+IncludeFile( 'files.templates' )
 IncludeFile( 'regex.templates' )
 
 § =============================================================

@@ -8,6 +8,7 @@
 
 IncludeFile( 'library_5_1.templates' )
 IncludeFile( 'library_5_2.templates' )
+§IncludeFile( 'library_5_3.templates' )
 
 § -------------------------------------------------------------
 §  Function Definition
@@ -61,6 +62,18 @@ error ( 'bad argument #<CURSOR> to \'|?FUNCTION_NAME|\' ({+TYPE+} expected, got 
 == ENDTEMPLATE ==
 
 == ENDSTYLES ==
+
+§== USE STYLES : Lua_53 ==
+§
+§== Idioms.library functions == insert, map:il, sc:l ==
+§|PickList( 'lua function', 'idioms_func_5_3' )|
+§<CURSOR>|KEY| ( |VALUE| )
+§== Idioms.library variables == expandmenu, insert, map:iv, sc:v ==
+§|PickList( 'lua variable', 'idioms_var_5_3' )|
+§|PICK|<CURSOR>
+§== ENDTEMPLATE ==
+§
+§== ENDSTYLES ==
 
 § -------------------------------------------------------------
 §  Iterators
