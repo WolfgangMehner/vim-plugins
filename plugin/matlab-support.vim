@@ -488,7 +488,7 @@ function! Matlab_FunctionComment() range
 	" TODO: remove '...' operator
 	let	linestring = getline(a:firstline)
 	for i in range(a:firstline+1,a:lastline)
-		let	linestring = linestring.' '.getline(i)
+		let	linestring .= ' '.getline(i)
 	endfor
 	"
 	let res_list = s:GetFunctionParameters( linestring )

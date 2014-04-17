@@ -56,7 +56,7 @@ The MathWorks, Inc and MATLAB are registered trademarks of The MathWorks, Inc.
 
 After the first Matlab file (*.m) has been opened, the menu "Matlab" appears
 in the menu bar. It holds entries for all the templates (such as
-Statements.for or Idioms.function), as well as some other functionality.
+"Statements->for" or "Idioms->function"), as well as some other functionality.
 The letters on the right name maps, which can also be used to access all the
 capabilities.
 The menus are also created if a GUI is not running. They can be used via >
@@ -154,7 +154,7 @@ Now each field of the struct can be documented.
 Lines of code can be changed into comments and vice versa with just a few
 keystrokes.  In normal and insert mode, the comment, uncomment and toggle
 functions will change the current line. In visual mode the entire selected
-range is influenced.
+range is affected.
 The maps can also be used together with a count, such as: >
   4\cc
 to change the current line and the three lines below it into comments.
@@ -188,7 +188,7 @@ The appearance (and placement) can be change in the template library.
 
 Example:
 
-Consider the line:
+Consider the function definition:
 >
   function n = norm ( vector, p )
 
@@ -513,7 +513,7 @@ Example: >
                                                          *g:Matlab_SnippetDir*
 The variable g:Matlab_SnippetDir sets the location of the code snippet
 directory. The default value depends on the type of installation and the
-operation system.
+operating system.
 
 (Path separators are always written as slashes '/', even for Windows.)
 
@@ -565,8 +565,8 @@ installation.
 
 Local installation:
 
-If the plug-in matlab.vim can be found here: >
-  <VIMDIR>/plugin/matlab.vim
+If the plug-in matlab-support.vim can be found here: >
+  <VIMDIR>/plugin/matlab-support.vim
 The default for the local template file is: >
   g:Matlab_LclTemplateFile
     = '<VIMDIR>/matlab-support/templates/Templates'

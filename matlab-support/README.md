@@ -11,7 +11,7 @@ README for matlab-support.vim (Version 0.8rc2) / Mar 25 2014
 MATLAB-IDE for Vim/gVim. It is written to considerably speed up writing code in
 a consistent style. This is done by inserting complete statements, idioms and
 comments. These code fragments are provided in an extendible template library.
-This plug-in also supports the use of the MATLAB code checker "mlint" and
+This plug-in also supports the use of the MATLAB code checker "mlint", and
 provides quick access to the online documentation of the Matlab functions.
 Please read the documentation.
 This plug-in can be used with Vim version 7.x .

@@ -1,17 +1,27 @@
 § =============================================================
 §  Comments
-§
-§  Usage:
-§   'Comments.file description' and 'Comments.function description'
-§   are used for the automated function description. Their names
-§   should remain unchanged. The macro names 'FUNCTION_NAME',
-§   'PARAMETERS' and 'RETURNS' are fixed as well.
 § =============================================================
 
 MenuShortcut( 'Comments.Lists', 'l' )
 
 == Comments.end-of-line comment == append, nomenu ==
 % <CURSOR>
+== Comments.frame comment == below, map:cfr, sc:r ==
+%-----------------------------------------------------------------------
+% <CURSOR>
+%-----------------------------------------------------------------------
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Description
+§
+§  Usage:
+§   'Comments.file description' and 'Comments.function description'
+§   are used for the automated function description. Their names
+§   should remain unchanged. The macro names 'FUNCTION_NAME',
+§   'PARAMETERS' and 'RETURNS' are fixed as well.
+§ -------------------------------------------------------------
+
 == Comments.file description == start, map:cfi, sc:f ==
 %|BASENAME:u| <CURSOR>.
 %   {+DETAILS+}
@@ -76,6 +86,8 @@ MenuShortcut( 'Comments.Lists', 'l' )
 
 § -------------------------------------------------------------
 
+== SEP: Comments.sep1 ==
+
 == Comments.keyword comment == expandmenu, append, map:cke, sc:k ==
 |PickList( 'keyword', 'comments_keywords' )|
  % |PICK|
@@ -86,9 +98,9 @@ MenuShortcut( 'Comments.Lists', 'l' )
 |PickList( 'macro', 'comments_macros' )|
 |PICK|<CURSOR>
 == Comments.date == insert, map:cd, sc:d ==
-|DATE|
-== Comments.date time == insert ==
-|DATE| |TIME|
+|DATE|<CURSOR>
+== Comments.date time == insert, sc:t ==
+|DATE| |TIME|<CURSOR>
 == ENDTEMPLATE ==
 
 §--------------------------------------------------------------
