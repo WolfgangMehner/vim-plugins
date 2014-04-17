@@ -198,15 +198,32 @@ let s:CmdLineEscChar = ' |"\'
 let s:Lua_LoadMenus             = 'auto'       " load the menus?
 let s:Lua_RootMenu              = '&Lua'       " name of the root menu
 "
-let s:Lua_Executable            = 'lua'        " default: lua on system path
-let s:Lua_CompilerExec          = 'luac'       " default: luac on system path
-"
 let s:Lua_LineEndCommColDefault = 49
 let s:Lua_SnippetDir            = s:plugin_dir.'/lua-support/codesnippets/'
 let s:Lua_SnippetBrowser        = 'gui'
 "
 if ! exists ( 's:MenuVisible' )
 	let s:MenuVisible = 0                        " menus are not visible at the moment
+endif
+"
+if s:MSWIN
+	let s:Lua_BinPath = ''
+else
+	let s:Lua_BinPath = ''
+endif
+"
+call s:GetGlobalSetting ( 'Lua_BinPath' )
+"
+if s:MSWIN
+	let s:Lua_BinPath = substitute ( s:Lua_BinPath, '[^\\/]$', '&\\', '' )
+	"
+	let s:Lua_Executable   = s:Lua_BinPath.'lua'       " lua executable
+	let s:Lua_CompilerExec = s:Lua_BinPath.'luac'      " luac executable
+else
+	let s:Lua_BinPath = substitute ( s:Lua_BinPath, '[^\\/]$', '&/', '' )
+	"
+	let s:Lua_Executable   = s:Lua_BinPath.'lua'       " lua executable
+	let s:Lua_CompilerExec = s:Lua_BinPath.'luac'      " luac executable
 endif
 "
 call s:GetGlobalSetting ( 'Lua_GlbTemplateFile' )
@@ -523,7 +540,7 @@ function! Lua_EscSpecChar()
 	let col  = getpos('.')[2]
 	let char = getline('.')[col-1]
 	"
-	if char =~ '\V\[$^()%.[\]*+-?]'
+	if char =~ '\V\[$^()%.[\]*+\-?]'
 		return '%'
 	endif
 	"

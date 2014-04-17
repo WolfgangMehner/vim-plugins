@@ -16,6 +16,9 @@ SetFormat( 'YEAR', '%Y' )
 
 SetStyle( 'Lua_51' )
 
+§ used by the "Comments.shebang" template:
+SetMacro( 'LUA_INTERPRETER', '/usr/bin/env lua' )
+
 § browser for help templates (UNIX)
 SetMacro( 'HELP_BROWSER', 'firefox' )
 
@@ -50,7 +53,7 @@ SetMacro( 'HelpPathLua',     'http://www.lua.org/manual/5.2/' )
 |Word( '' )|
 |Substitute( '\W', '', 'g' )|
 |System( '|HELP_BROWSER| |HelpPathEnglish||PICK:l|' )|
-== HELP: Help.standard function == map:hl, sc:l ==
+== HELP: Help.Lua function == map:hl, sc:l ==
 |Pattern( '\<\%(\w\+[.:]\)\?\w\+\>' )|
 |System( '|HELP_BROWSER| |HelpPathLua|manual.html#pdf-|PICK|' )|
 |Default( '|HELP_BROWSER| |HelpPathLua|contents.html#index' )|

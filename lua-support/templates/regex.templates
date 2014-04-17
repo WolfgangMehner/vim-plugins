@@ -18,6 +18,7 @@
 	'alphanumeric char.'             : '%w',
 	'hexadecimal digits'             : '%x',
 	'embedded zero'                  : '%z',
+	'identifier char.'               : '[%w_]',
 == LIST: regex_character_classes_5_2 == hash ==
 	'letters'                        : '%a',
 	'control char.'                  : '%c',
@@ -30,6 +31,7 @@
 	'alphanumeric char.'             : '%w',
 	'hexadecimal digits'             : '%x',
 	'embedded zero'                  : '\0',
+	'identifier char.'               : '[%w_]',
 == ENDLIST ==
 
 § -------------------------------------------------------------

@@ -93,10 +93,10 @@
 
 == SEP: Comments.sep1 ==
 
-== Comments.keyword comments == expandmenu, append, map:ck, sc:k ==
+== Comments.keyword comments == expandmenu, append, map:cke, sc:k ==
 |PickList( 'keyword comment', 'comments_keywords' )|
  -- |PICK|
-== Comments.macros == expandmenu, insert, map:cm, sc:m ==
+== Comments.macros == expandmenu, insert, map:cma, sc:m ==
 |PickList( 'macro', 'comments_macros' )|
 |PICK|<CURSOR>
 == Comments.date == append, map:cd, sc:d ==
@@ -109,7 +109,7 @@
 §  Interpreter
 § -------------------------------------------------------------
 
-== Comments.interpreter == start ==
-#!|LUA_EXECUTABLE|<CURSOR>
+== Comments.shebang == start ==
+#!|LUA_INTERPRETER|<CURSOR>
 == ENDTEMPLATE ==
 

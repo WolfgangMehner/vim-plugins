@@ -102,11 +102,11 @@ end
 
 == SEP: Idioms.sep_file ==
 
-== Idioms.open file == below, map:iof ==
+== Idioms.open file == below, map:iof, sc:o ==
 local	|?FILE_HANDLE| = assert ( io.open ( <CURSOR>, '{+MODE+}' ) )
 
 assert ( io.close ( |FILE_HANDLE| ) )
-== Idioms.open pipe == below, map:iop ==
+== Idioms.open pipe == below, map:iop, sc:o ==
 local	|?FILE_HANDLE| = assert ( io.popen ( <CURSOR>, '{+MODE+}' ) )
 
 assert ( io.close ( |FILE_HANDLE| ) )
