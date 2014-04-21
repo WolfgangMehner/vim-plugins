@@ -1,7 +1,7 @@
-*awksupport.txt*                Awk Support                  Februar 08 2014
+*awksupport.txt*                Awk Support                    April 21 2014
 
 Awk Support                                         *awk-support* *awksupport*
-                              Plugin version 1.2pre
+                              Plugin version 1.2
                         for Vim version 7.0 and above
                   Fritz Mehner  <mehner.fritz at fh-swf.de>
                 Wolfgang Mehner  <wolfgang-mehner at web.de>

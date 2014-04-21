@@ -1,4 +1,4 @@
-README for awk-support.vim (Version 1.2pre) / February 08 2014
+README for awk-support.vim (Version 1.2) / April 21 2014
 
   *  INSTALLATION
   *  RELEASE NOTES 
@@ -78,7 +78,7 @@ For a system-wide installation please see the help file 'doc/awksupport.txt'.
 =======================================================================================
 
 ---------------------------------------------------------------------------------------
-  RELEASE NOTES FOR VERSION 1.2pre
+  RELEASE NOTES FOR VERSION 1.2
 ---------------------------------------------------------------------------------------
 - Bugfix: Setup of local templates in case of global installation.
 - 'Run -> make script executable' (\re) is now a toggle.

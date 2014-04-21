@@ -36,7 +36,7 @@ if exists("g:AwkSupportVersion") || &cp
  finish
 endif
 "
-let g:AwkSupportVersion= "1.2pre"                  " version number of this script; do not change
+let g:AwkSupportVersion= "1.2"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  awk_SetGlobalVariable     {{{1
