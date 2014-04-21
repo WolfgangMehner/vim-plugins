@@ -1,4 +1,4 @@
-== POD.pod, cut == insert, map:ppc, sc:p ==
+== POD.pod, cut == map:ppc, sc:p ==
 
 =pod
 
@@ -6,7 +6,7 @@
 
 =cut
 
-== POD.for, cut == insert, map:pfc, sc:f ==
+== POD.for, cut == map:pfc, sc:f ==
 
 =for  <CURSOR>
 
@@ -14,43 +14,43 @@
 
 =cut
 
-== POD.begin html, end == insert, map:pbh, sc:h ==
+== POD.begin html, end == map:pbh, sc:h ==
 
 =begin  html
 
 <SPLIT><CURSOR>
 
-=end    html  #  back to Perl
+=end    html
 
-== POD.begin man, end == insert, map:pbm, sc:m ==
+== POD.begin man, end == map:pbm, sc:m ==
 
 =begin  man 
 
 <SPLIT><CURSOR>
 
-=end    man   #  back to Perl
+=end    man
 
-== POD.begin text, end == insert, map:pbt, sc:t ==
+== POD.begin text, end == map:pbt, sc:t ==
 
 =begin  text
 
 <SPLIT><CURSOR>
 
-=end    text  #  back to Perl
+=end    text
 
-== POD.head1 == insert, map:ph1, sc:1 ==
+== POD.head1 == map:ph1, sc:1 ==
 
 =head1 <CURSOR>
 
-== POD.head2 == insert, map:ph2, sc:2 ==
+== POD.head2 == map:ph2, sc:2 ==
 
 =head2 <CURSOR>
 
-== POD.head3 == insert, map:ph3, sc:3 ==
+== POD.head3 == map:ph3, sc:3 ==
 
 =head3 <CURSOR>
 
-== POD.over, back == insert, map:pob, sc:o ==
+== POD.over, back == map:pob, sc:o ==
 
 =over 2
 
@@ -64,7 +64,7 @@
 
 =back
 
-== POD.item == insert, map:pi, sc:i ==
+== POD.item == map:pi, sc:i ==
 
 =item *
 
