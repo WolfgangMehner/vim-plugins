@@ -212,6 +212,10 @@ let s:TypeNames[ type({})  ] = 'd'  " dict
 "  === Syntax: Regular Expressions ===   {{{1
 "----------------------------------------------------------------------
 "
+"----------------------------------------------------------------------
+"  s:RegexSettings : The essential tokens of the grammar.   {{{2
+"----------------------------------------------------------------------
+"
 let s:RegexSettings = {
 			\ 'MacroName'      : '[a-zA-Z_][a-zA-Z0-9_]*',
 			\ 'MacroList'      : '\%([a-zA-Z_]\|[a-zA-Z_][a-zA-Z0-9_ \t,]*[a-zA-Z0-9_]\)',
@@ -340,10 +344,38 @@ function! s:UpdateTemplateRegex ( regex, settings )
 	"
 endfunction    " ----------  end of function s:UpdateTemplateRegex  ----------
 " }}}2
+"----------------------------------------------------------------------
 "
 "----------------------------------------------------------------------
 "  === Script: Auxiliary Functions ===   {{{1
 "----------------------------------------------------------------------
+"
+"----------------------------------------------------------------------
+"  s:VersionCode : Get the numeric code for a version.   {{{2
+"
+"  The numeric code is 1e6 * major + 1e3 * minor + release.
+"
+"  Examples:
+"  - s:VersionCode ( '1.0' )   -> 1000000
+"  - s:VersionCode ( '1.2' )   -> 1002000
+"  - s:VersionCode ( '1.3.2' ) -> 1003002
+"----------------------------------------------------------------------
+"
+function! s:VersionCode ( version )
+	"
+	if -1 == match ( a:version, '^\%(\d\+\.\d\+\.\d\+\|\d\+\.\d\+\)$' )
+		return -1
+	endif
+	"
+	let mlist = matchlist ( a:version, '\(\d\+\)\.\(\d\+\)\%(\.\(\d\+\)\)\?' )
+	"
+	if empty( mlist )
+		return -1
+	endif
+	"
+	return 1000000 * str2nr( mlist[1] ) + 1000 * str2nr( mlist[2] ) + 1 * str2nr( mlist[3] )
+	"
+endfunction    " ----------  end of function s:VersionCode  ----------
 "
 "----------------------------------------------------------------------
 "  s:ParameterTypes : Get the types of the arguments.   {{{2
@@ -535,6 +567,8 @@ function! s:OpenFold ( mode )
 		exe ":".foldstart
 	endif
 endfunction    " ----------  end of function s:OpenFold  ----------
+" }}}2
+"----------------------------------------------------------------------
 "
 "----------------------------------------------------------------------
 "  mmtemplates#core#NewLibrary : Create a new template library.   {{{1
@@ -566,6 +600,9 @@ function! mmtemplates#core#NewLibrary ( ... )
 	"
 	" library
 	let library   = {
+				\ 'interface_str'  : '0.9',
+				\ 'interface'      : ( s:VersionCode('0.9') ),
+				\
 				\ 'macros'         : {},
 				\ 'properties'     : {},
 				\ 'resources'      : {},
@@ -959,6 +996,11 @@ endfunction    " ----------  end of function s:RevertStyles  ----------
 "
 function! s:UseFiletypes ( filetypes )
 	"
+	if s:library.interface < 1000000
+		call s:ErrorMsg ( 'The expression "USE FILETYPES: ..." is only available for libraries using versions >= 1.0.' )
+		return
+	endif
+	"
 	" 'use_filetypes' empty? -> we may have new filetypes
 	" otherwise              -> must be a subset, so no new filetypes
 	if empty ( s:t_runtime.use_filetypes )
@@ -988,6 +1030,11 @@ endfunction    " ----------  end of function s:UseFiletypes  ----------
 "
 function! s:RevertFiletypes ( times )
 	"
+	if s:library.interface < 1000000
+		call s:ErrorMsg ( 'The expression "USE FILETYPES: ..." is only available for libraries using versions >= 1.0.' )
+		return
+	endif
+	"
 	" get the current top, and check whether any more filetypes can be removed
 	let state_lim = s:t_runtime.state_stack[-1].filetype_stack_top
 	let state_top = len( s:t_runtime.filetypes_stack )
@@ -1004,9 +1051,12 @@ function! s:RevertFiletypes ( times )
 	if state_top > a:times
 		let s:t_runtime.use_filetypes = s:t_runtime.filetypes_stack[ -1 ]
 		let s:t_runtime.use_ft_string = string( s:t_runtime.use_filetypes )
-	else
+	elseif s:library.interface >= 1000000
 		let s:t_runtime.use_filetypes = []
 		let s:t_runtime.use_ft_string = "['default']"
+	else
+		let s:t_runtime.use_filetypes = []
+		let s:t_runtime.use_ft_string = "[]"
 	endif
 	"
 endfunction    " ----------  end of function s:RevertFiletypes  ----------
@@ -1020,6 +1070,8 @@ endfunction    " ----------  end of function s:RevertFiletypes  ----------
 "----------------------------------------------------------------------
 "
 let s:FileReadNameSpace = {
+			\ 'InterfaceVersion' : 's',
+			\
 			\ 'IncludeFile'  : 'ss\?',
 			\ 'SetFormat'    : 'ss',
 			\ 'SetMacro'     : 'ss',
@@ -1031,6 +1083,45 @@ let s:FileReadNameSpace = {
 			\ }
 " 			\ 'SetMap'       : 'ss',
 " 			\ 'SetShortcut'  : 'ss',
+"
+"----------------------------------------------------------------------
+"  s:InterfaceVersion : Set the library version (template function).   {{{2
+"----------------------------------------------------------------------
+"
+function! s:InterfaceVersion ( version_str )
+	"
+	" :TODO:22.04.2014 08:20:WM: check whether templates, lists, were already
+	" defined, check whether style, or filetype sections were already used, ...
+	"
+	let version_id = s:VersionCode ( a:version_str )
+	"
+	" check for valid version number
+	if version_id == -1
+		call s:ErrorMsg ( 'Illigal version name: '.a:version_str )
+		return
+	elseif s:library.interface != 9000 && s:library.interface != version_id
+		call s:ErrorMsg ( 'Trying to set library version '.a:version_str.', but already set '.s:library.interface_str.' before.' )
+		return
+	endif
+	"
+	if s:library.interface == version_id
+		return
+	endif
+	"
+	let s:library.interface_str = a:version_str
+	let s:library.interface     = version_id
+	"
+	" version 1.0 setup
+	if s:library.interface >= 1000000
+		let s:t_runtime.use_ft_string = "['default']"
+	endif
+	"
+	" version 1.1 setup
+	if s:library.interface >= 1001000
+		" ...
+	endif
+	"
+endfunction    " ----------  end of function s:InterfaceVersion  ----------
 "
 "----------------------------------------------------------------------
 "  s:SetFormat : Set the format of |DATE|, ... (template function).   {{{2
@@ -1488,13 +1579,14 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 	" ==================================================
 	"
 	" library and runtime information
+	" setup for interface version 0.9, libraries call InterfaceVersion() anyway
 	let s:library   = t_lib
 	let s:t_runtime = {
 				\ 'state_stack'     : [],
 				\ 'use_styles'      : [],
 				\ 'styles_stack'    : [],
 				\ 'use_filetypes'   : [],
-				\ 'use_ft_string'   : [],
+				\ 'use_ft_string'   : '[]',
 				\ 'filetypes_stack' : [],
 				\ 'files_visited'   : {},
 				\
@@ -1606,16 +1698,12 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 		"
 		" runtime information:
 		" - set up the state stack: length of styles_stack + current path
-		" - reset the current styles
 		let s:t_runtime.state_stack = [ {
 					\ 'current_path'       : s:GetNormalizedPath( f ),
 					\ 'style_stack_top'    : 0,
 					\ 'filetype_stack_top' : 0,
 					\ } ]
-		let s:t_runtime.use_styles      = []
 		let s:t_runtime.styles_stack    = []
-		let s:t_runtime.use_filetypes   = []
-		let s:t_runtime.use_ft_string   = "['default']"
 		let s:t_runtime.filetypes_stack = []
 		"
 		" read the top-level file
@@ -3084,7 +3172,7 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		exe 'let [ filetypes, visual, mp ] = ['.t_lib.templates[ t_name.'!!menu' ].'][0:2]'
 		"
 		" wrong filetype?
-		if -1 == index ( filetypes, opt_ft )
+		if t_lib.interface >= 1000000 && -1 == index ( filetypes, opt_ft )
 			continue
 		endif
 		"
@@ -3099,7 +3187,8 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 			" map already existing?
 			if ! empty ( maparg( leader.mp, mode ) )
 				if echo_warning
-					call s:ErrorMsg ( 'Mapping already in use: "'.leader.mp.'", mode "'.mode.'"' )
+					let mapinfo = maparg( leader.mp, mode )
+					call s:ErrorMsg ( 'Mapping already in use: "'.leader.mp.'", mode "'.mode.'", command:', '  '.mapinfo )
 				endif
 				continue
 			endif
@@ -3125,9 +3214,15 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 	" jump map
 	if do_jump_map
 		let jump_key = '<C-j>'   " TODO: configurable
-		if ! empty ( maparg( jump_key ) )
+		if ! empty ( maparg( jump_key, 'n' ) )
 			if echo_warning
-				call s:ErrorMsg ( 'Mapping already in use: "'.jump_key.'"' )
+				let mapinfo = maparg( jump_key, 'n' )
+				call s:ErrorMsg ( 'Mapping already in use: "'.jump_key.'", mode "n", command:', '  '.mapinfo )
+			endif
+		elseif ! empty ( maparg( jump_key, 'i' ) )
+			if echo_warning
+				let mapinfo = maparg( jump_key, 'i' )
+				call s:ErrorMsg ( 'Mapping already in use: "'.jump_key.'", mode "i", command:', '  '.mapinfo )
 			endif
 		else
 			let jump_regex = string ( escape ( t_lib.regex_template.JumpTagBoth, '|' ) )
@@ -3147,9 +3242,15 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 					\ }
 		"
 		for [ mp, action ] in items ( special_maps )
-			if ! empty ( maparg( leader.mp ) )
+			if ! empty ( maparg( leader.mp, 'n' ) )
 				if echo_warning
-					call s:ErrorMsg ( 'Mapping already in use: "'.leader.mp.'"' )
+					let mapinfo = maparg( leader.mp, 'n' )
+					call s:ErrorMsg ( 'Mapping already in use: "'.leader.mp.'", mode "n", command:', '  '.mapinfo )
+				endif
+			elseif ! empty ( maparg( leader.mp, 'i' ) )
+				if echo_warning
+					let mapinfo = maparg( leader.mp, 'i' )
+					call s:ErrorMsg ( 'Mapping already in use: "'.leader.mp.'", mode "i", command:', '  '.mapinfo )
 				endif
 			else
 				let cmd .= ' noremap '.options.' '.leader.mp.'      '.action.sep

@@ -43,6 +43,7 @@ Here is a list of high profile plug-ins which use the template support:
  2.    Basic Usage                           |template-support-basics|
  3.    Template Library                      |template-support-library|
  3.1    Personalization                      |template-support-lib-person|
+ 3.2    Interface Version                    |template-support-lib-interf|
  4.    Templates                             |template-support-templates|
  4.1    Macros                               |template-support-templ-macro|
  4.1.1   Predefined Macros                   |template-support-templ-predef|
@@ -77,6 +78,7 @@ Here is a list of high profile plug-ins which use the template support:
  C.1    Templates                            |template-support-opt-templ|
  C.2    List                                 |template-support-opt-list|
  D.    Change Log                            |template-support-change-log|
+ D.1    Interface Versions                   |template-support-change-interf|
 
 ==============================================================================
 1.  INTRODUCTION                                      *template-support-intro*
@@ -310,6 +312,29 @@ have no effect and produce a warning: >
 <
 During template insertion, the macros *|DATE|* , *|TIME|* and *|YEAR|* will be
 replaced with the current date and time.
+
+------------------------------------------------------------------------------
+3.2  INTERFACE VERSION                           *template-support-lib-interf*
+------------------------------------------------------------------------------
+
+Further extension of the template engine might introduce minor
+incompatibilities with previous versions. While this will generally be
+avoided, not all features can be added (and bugs fixes) in a way that is
+backwards compatible.
+
+To avoid breaking existing template libraries, by default, all libraries will
+use the interface introduced prior to version "1.0". Newer versions can be
+unlocked by calling InterfaceVersion() (|template-support-InterfaceVersion()|)
+from within the template library: >
+	InterfaceVersion ( "1.0" )
+This will enable advanced feature for this library. Other libraries loaded
+with the same core can use other versions.
+When this call is inserted into a library, it has to be checked for constructs
+which can not be used anymore. However, existing libraries must not be changed
+once a new version comes along.
+
+See |template-support-change-interf| for a change log limited to changed in
+the interface.
 
 ==============================================================================
 4.  TEMPLATES                                     *template-support-templates*
@@ -1390,7 +1415,7 @@ Optional parameters:
 	"do_jump_map"     - Create a map for |mmtemplates#core#JumpToTag()|.
 	"do_special_maps" - Create maps for the special operations.
 	"filetype", ftype - Create maps for the filetype ftype.
-	                    (string, default: "default")
+	                    (interface 1.0+, string, default: "default")
 No returns.
 
 If 'localleader' is an empty string, the standard mapleader is used.
@@ -1838,7 +1863,7 @@ StyleBlock2 (sequence):
 	StatementList
 	<start> == ENDSTYLES ==
 
-
+                                               ** Interface Version 1.0+ **
 FiletypeBlock (sequence):
 	<start> == USE FILETYPES : MacroNameList ==
 	StatementList
@@ -1954,6 +1979,37 @@ command. The path is always understood to be relative, except when the
 optional second argument "abs" is given.
 
 ------------------------------------------------------------------------------
+                                         *template-support-InterfaceVersion()*
+Use the interface version 'version':
+
+	InterfaceVersion ( version ) ~
+
+Template libraries use the interface version "0.9" by default. To enable newer
+features, this function must be called from inside a template library. The
+called must be made before defining any templates, lists, or any other
+features are used.
+This call might cause minor problems with an existing library, the library
+must be changed accordingly, see |template-support-lib-interf|.
+
+Example: >
+	InterfaceVersion ( "1.0" )
+Use interface version "1.0".
+
+------------------------------------------------------------------------------
+                                             *template-support-MenuShortcut()*
+Set the shortcut for the submenu 'menu' to 'shortcut':
+
+	MenuShortcut ( menu, shortcut ) ~
+
+The shortcut is set for the menu named by the last component of 'menu', which
+can consist of several parts, separated by points. Trailing points are
+ignored.
+
+Example: >
+	MenuShortcut ( "Comments.Frames.", "r" )
+Sets the shortcut for the submenu "Frames", not "Comments".
+
+------------------------------------------------------------------------------
                                                 *template-support-SetFormat()*
 Set the format of 'item' to 'format':
 
@@ -2006,20 +2062,6 @@ Set the active style to 'name':
 	SetStyle ( name ) ~
 
 This style will be used after the library has been loaded.
-
-------------------------------------------------------------------------------
-                                             *template-support-MenuShortcut()*
-Set the shortcut for the submenu 'menu' to 'shortcut':
-
-	MenuShortcut ( menu, shortcut ) ~
-
-The shortcut is set for the menu named by the last component of 'menu', which
-can consist of several parts, separated by points. Trailing points are
-ignored.
-
-Example: >
-	MenuShortcut ( "Comments.Frames.", "r" )
-Sets the shortcut for the submenu "Frames", not "Comments".
 
 ------------------------------------------------------------------------------
 B.2  TEMPLATES                                *template-support-cmd-templates*
@@ -2272,6 +2314,13 @@ D.  CHANGE LOG                                   *template-support-change-log*
   RELEASE NOTES FOR VERSION 1.0alpha
 ------------------------------------------------------------------------------
 
+  **  Added a system for introducing changes to the template library.     **
+  **  By default, all template libraries will be limited to the features  **
+  **  introduced prior to 1.0 .                                           **
+  **  Calling InterfaceVersion() will enable newer features.              **
+
+- Added: 'InterfaceVersion' to enable newer features in the template library.
+  (This feature is considered to be part of the old interface.)
 - Added: Templates can be associated with a filetype, and its maps only
   created for that filetype.
 
@@ -2378,6 +2427,30 @@ PATCH 0.9.1-3:
 ------------------------------------------------------------------------------
 
 - Initial upload.
+
+------------------------------------------------------------------------------
+D.1  INTERFACE VERSIONS                       *template-support-change-interf*
+------------------------------------------------------------------------------
+
+This section lists the changes to the template interface. By default, the
+interface "0.9" is used. Newer features can be enabled using the function
+InterfaceVersion (|template-support-InterfaceVersion()|).
+See also |template-support-lib-interf|.
+
+------------------------------------------------------------------------------
+  INTERFACE VERSION 1.0
+------------------------------------------------------------------------------
+
+- Added: Templates can be associated with a filetype, and its maps only
+  created for that filetype, using: >
+  == USE FILETYPES : ... ==
+
+------------------------------------------------------------------------------
+  INTERFACE VERSION 0.9
+------------------------------------------------------------------------------
+
+- Initial version of the interface with all changes introduced prior to
+  version "1.0".
 
 ==============================================================================
 vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
