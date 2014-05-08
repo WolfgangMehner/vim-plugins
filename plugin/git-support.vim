@@ -1082,18 +1082,20 @@ function! s:UpdateGitBuffer ( command, ... )
 		setlocal syntax=OFF
 	endif
 	"
-	" insert the output of the command
-	silent exe 'r! '.a:command
+	" insert the output of the command (before the first line)
+	silent exe '0r! '.a:command
+	"
+	" delete the last line (empty) and go to position
+	normal! Gdd
+	silent exe ':'.pos
 	"
 	" restart syntax highlighting
 	if &syntax != ''
 		setlocal syntax=ON
 	endif
 	"
-	" delete the first line (empty) and go to position
+	" open all folds (closed by the syntax highlighting)
 	normal! zR
-	normal! ggdd
-	silent exe ':'.pos
 	"
 	" read-only again
 	setlocal ro
@@ -2893,6 +2895,10 @@ let s:Status_SectionCodes = {
 "
 function! s:Status_GetFile()
 	"
+	let f_name   = ''
+	let f_status = ''
+	let s_code   = ''
+	"
 	if b:GitSupport_ShortOption
 		"
 		" short output
@@ -2919,14 +2925,14 @@ function! s:Status_GetFile()
 		"
 		let [ f_status, f_name ] = matchlist( line, '^\(..\)\s\(.*\)' )[1:2]
 		"
-	else
+	elseif s:VersionLess ( s:GitVersion, '1.8.5' )
 		"
-		" regular output
+		" long output (prior to 1.8.5)
 		"
-		let c_line = getline('.')
-		let c_pos  = line('.')
-		let h_pos  = c_pos
-		let s_head = ''
+		let c_line = getline('.')                   " line under the cursor
+		let c_pos  = line('.')                      " line number
+		let h_pos  = c_pos                          " header line number
+		let s_head = ''                             " header line
 		"
 		if c_line =~ '^#'
 			"
@@ -2980,6 +2986,89 @@ function! s:Status_GetFile()
 		elseif b:GitSupport_VerboseOption == 1
 			"
 	 		let [ f_name, f_line, f_col ] = s:Diff_GetFile ()
+			"
+			if f_name == ''
+				return [ '', '', 'No file under the cursor.' ]
+			else
+				let base = s:GitRepoDir()
+				" could not get top-level?
+				if base == ''
+					return [ '', '', 'could not obtain the top-level directory' ]
+				endif
+				" :TODO:17.01.2014 14:42:WM: might be "new file", "deleted"?
+				let f_name   = base.'/'.f_name
+				let f_status = 'modified'
+				let s_code   = 'd'
+			endif
+		endif
+		"
+	else
+		"
+		" long output (1.8.5 and after)
+		"
+		" :TODO:08.05.2014 09:55:WM: with a few modifications, we can use this for output prior to 1.8.5 as well
+		"
+		let c_line = getline('.')                   " line under the cursor
+		let c_pos  = line('.')                      " line number
+		let h_line = ''                             " header line
+		let h_pos  = c_pos                          " header line number
+		"
+		" find header (including "diff" and "@@")
+		while h_pos > 0
+			"
+			let h_line = matchstr( getline(h_pos), '^\(\u[[:alnum:][:space:]]*:\_$\|diff\|@@\)' )
+			"
+			if ! empty( h_line )
+				break
+			endif
+			"
+			let h_pos -= 1
+		endwhile
+		"
+		let h_line = substitute ( h_line, ':$', '', '' )
+		"
+		if h_line !~ '^diff' && h_line !~ '^@@'
+			"
+			" which header?
+			if h_line == ''
+				return [ '', '', 'Not in any section.' ]
+			elseif h_line == 'Changes to be committed'
+				let s_code = 's'
+			elseif h_line == 'Changed but not updated' || h_line == 'Changes not staged for commit'
+				let s_code = 'm'
+			elseif h_line == 'Untracked files'
+				let s_code = 'u'
+			elseif h_line == 'Ignored files'
+				let s_code = 'i'
+			elseif h_line == 'Unmerged paths'
+				let s_code = 'c'
+			else
+				return [ '', '', 'Unknown section "'.h_line.'", aborting.' ]
+			endif
+			"
+			" get the filename
+			if s_code =~ '[smc]'
+				let mlist = matchlist( c_line, '^\t\([[:alnum:][:space:]]\+\):\s\+\(\S.*\)$' )
+			else
+				let mlist = matchlist( c_line, '^\t\(\)\(\S.*\)$' )
+			endif
+			"
+			" check the filename
+			if empty( mlist )
+				return [ '', '', 'No file under the cursor.' ]
+			endif
+			"
+			let [ f_status, f_name ] = mlist[1:2]
+			"
+			if s_code == 'c'
+				let f_status = 'conflict'
+			endif
+			"
+		elseif b:GitSupport_VerboseOption == 1
+			"
+			" diff output
+			"
+			let [ f_name, f_line, f_col ] = s:Diff_GetFile ()
 			"
 			if f_name == ''
 				return [ '', '', 'No file under the cursor.' ]

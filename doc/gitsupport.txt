@@ -988,12 +988,12 @@ in the .vimrc file.
 ------------------------------------------------------------------------------
                                                                *g:Git_BinPath*
 The path to the executables is set by g:Git_BinPath: >
-  let g:Git_Executable = '/usr/local/bin/'
+  let g:Git_BinPath = '/usr/local/bin/'
 Since git and gitk will be on the path, this will not be necessary on most
 UNIX systems.
 
 For Windows, set up the binary path similar to this: >
-  let g:Git_Executable = 'C:\Program Files\Git\bin\'
+  let g:Git_BinPath = 'C:\Program Files\Git\bin\'
 <
 The defaults for |g:Git_Executable|, |g:Git_GitKExecutable|, |g:Git_GitKScript|
 and |g:Git_GitBashExecutable| are derived from g:Git_BinPath. However, the

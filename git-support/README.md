@@ -136,6 +136,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 - Changed: :GitHelp shows man page text with appropriate width.
 - Changed: :GitStatus can be restricted to a path by passing it as an argument.
 - Changed: :GitStatus respects the option 'status.relativePaths'.
+- Changed: :GitStatus can work with changes introduced by Git version 1.8.5.
 - Changed: Calling :GitCheckout and :GitReset without arguments
   (see g:Git_CheckoutExpandEmpty and g:Git_ResetExpandEmpty).
 - Fixed: Jumping to files was still not working correctly.

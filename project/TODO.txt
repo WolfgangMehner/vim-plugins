@@ -55,9 +55,12 @@ Git:
   with different working directories.
 - (WM, DONE?) For global installation (compare Matlab):
   Which method is best to obtain 's:plugin_dir'?
+- (WM) New status buffer output (version > 1.8.5):
+  Update syntax highlighting, folding function, file actions
 - (WM) Do not use "sync fromstart" in syntax highlighting,
   is extremely slow for diff and log.
 - (WM) Document map "ow" in status buffer.
+- (WM) Change map "r" for unmerged changes in status buffer to "reset".
 - (WM) Update buffer after executing a command: :GitBranch, :GitRemote, :GitStash, ...
 - (WM) Buffer "git stash list", maps for: create
 - (WM) Maps for completing Git commands, branches, tags, remotes, ...
