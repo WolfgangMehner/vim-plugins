@@ -901,6 +901,10 @@ let [ s:Git_GitBashExecutable, s:EnabledGitBash, s:DisableGitBashReason ] = s:Ch
 let s:HasStatusIgnore = 0
 let s:HasStatusBranch = 0
 "
+" changed in 1.8.5:
+" - output of "git status" without leading "#" char.
+let s:HasStatus185Format = 0
+"
 if s:Enabled
 	let s:GitVersion = s:StandardRun( '', ' --version', 't' )[1]
 	if s:GitVersion =~ 'git version [0-9.]\+'
@@ -909,6 +913,10 @@ if s:Enabled
 		if ! s:VersionLess ( s:GitVersion, '1.7.2' )
 			let s:HasStatusIgnore = 1
 			let s:HasStatusBranch = 1
+		endif
+		"
+		if ! s:VersionLess ( s:GitVersion, '1.8.5' )
+			let s:HasStatus185Format = 1
 		endif
 		"
 	else
@@ -1114,18 +1122,10 @@ function! GitS_FoldLog ()
 	let head = '+-'.v:folddashes.' '
 	let tail = ' ('.( v:foldend - v:foldstart + 1 ).' lines) '
 	"
-	if line =~ '^#\s'
-		" we assume a line in the status comment block and try to guess the number of lines (=files)
-		" :TODO:20.03.2013 19:30:WM: (might be something else)
-		let filesstart = v:foldstart+1
-		let filesend   = v:foldend
-		while filesstart < v:foldend && getline(filesstart) =~ '\_^#\s*\_$\|\_^#\s\+('
-			let filesstart += 1
-		endwhile
-		while filesend > v:foldstart && getline(filesend) =~ '^#\s*$'
-			let filesend -= 1
-		endwhile
-		return line.' '.( filesend - filesstart + 1 ).' files '
+	if line =~ '^tag'
+		" search for the first line which starts with a space,
+		" this is the first line of the commit message
+		return head.'tag - '.substitute( line, '^tag\s\+', '', '' ).tail
 	elseif line =~ '^commit'
 		" search for the first line which starts with a space,
 		" this is the first line of the commit message
@@ -1147,6 +1147,22 @@ function! GitS_FoldLog ()
 		else
 			return head.line.tail
 		endif
+	elseif ! s:HasStatus185Format && line =~ '^#\s\a.*:$'
+				\ || s:HasStatus185Format && line =~ '^\a.*:$'
+		" we assume a line in the status comment block and try to guess the number of lines (=files)
+		" :TODO:20.03.2013 19:30:WM: (might be something else)
+		"
+		let prefix = s:HasStatus185Format ? '' : '#'
+		"
+		let filesstart = v:foldstart+1
+		let filesend   = v:foldend
+		while filesstart < v:foldend && getline(filesstart) =~ '\_^'.prefix.'\s*\_$\|\_^'.prefix.'\s\+('
+			let filesstart += 1
+		endwhile
+		while filesend > v:foldstart && getline(filesend) =~ '^'.prefix.'\s*$'
+			let filesend -= 1
+		endwhile
+		return line.' '.( filesend - filesstart + 1 ).' files '
 	else
 		return head.line.tail
 	endif
@@ -2925,7 +2941,7 @@ function! s:Status_GetFile()
 		"
 		let [ f_status, f_name ] = matchlist( line, '^\(..\)\s\(.*\)' )[1:2]
 		"
-	elseif s:VersionLess ( s:GitVersion, '1.8.5' )
+	elseif ! s:HasStatus185Format
 		"
 		" long output (prior to 1.8.5)
 		"
