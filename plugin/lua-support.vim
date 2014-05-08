@@ -283,7 +283,7 @@ endfunction    " ----------  end of function Lua_EndOfLineComment  ----------
 function! Lua_AdjustEndOfLineComm () range
 	"
 	" comment character (for use in regular expression)
-	let cc = '%'
+	let cc = '--'
 	"
 	" patterns to ignore when adjusting line-end comments (maybe incomplete):
 	" - single-quoted strings, includes \n \' \\ ...

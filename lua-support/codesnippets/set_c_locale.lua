@@ -1,0 +1,1 @@
+os.setlocale ( 'C' )
