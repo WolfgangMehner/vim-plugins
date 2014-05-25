@@ -1,4 +1,4 @@
-README for lua-support.vim (Version 0.8rc1) / Apr 07 2014
+README for lua-support.vim (Version 0.8) / May 25 2014
 ================================================================================
 
   *  INSTALLATION

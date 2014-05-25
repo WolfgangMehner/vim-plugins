@@ -1,8 +1,8 @@
-*luasupport.txt*                 Lua Support                       Apr 14 2014
+*luasupport.txt*                 Lua Support                       May 25 2014
 
 Lua Support                                          *lua-support* *luasupport*
 
-                            Plug-in version 0.8rc1
+                            Plug-in version 0.8
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -39,6 +39,7 @@ Lua is: Copyright 1994–2014 Lua.org, PUC-Rio.
  3.4    Auxiliary Functions             |luasupport-templates-aux|
  4.    Configuration                    |luasupport-configuration|
  4.1    Executables                     |luasupport-config-executable|
+ 4.1.1   Output Redirection             |luasupport-config-output|
  4.2    Menus                           |luasupport-config-menus|
  4.3    Maps                            |luasupport-config-maps|
  4.4    Comments                        |luasupport-config-comments|
@@ -265,7 +266,25 @@ The file in the current buffer can be run or compiled with a keystroke.
   run the code               Run.run                        <LocalLeader>rr
   compile the code           Run.compile                    <LocalLeader>rc
   check the code             Run.check code                 <LocalLeader>rk
+
+  output method for "run"    Run.output method              <LocalLeader>ro
  ----------------------------------------------------------------------------
+
+The functionality is also available through commands. These commands can also
+be used to set maps in the ftplugin.
+
+  Command                    Explanation
+ ----------------------------------------------------------------------------
+  |:Lua| <args>                run the script with arguments
+  |:LuaCompile|                compile the script
+  |:LuaCheck|                  run the code checker
+ ----------------------------------------------------------------------------
+
+The output from running the script can be made accessible in several ways. The
+menu entry "Run -> output method" is used to select the method. Some methods
+can be used interactively and support input via the command line, while other
+methods are non-interactive but support quickfix (see
+|luasupport-config-output|).
 
 The extension for compiled chunks can be changed using the global variable
 |g:Lua_CompiledExtension|, the default is "luac".
@@ -441,6 +460,7 @@ set in the .vimrc file.
  ----------------------------------------------------------------------------
   |g:Lua_BinPath|             ''            the path to the Lua binaries (^1)
   |g:Lua_Executable|          'lua'         the lua executable (^1)
+  |g:Lua_OutputMethod|        'vim-io'      the method for running Lua
   |g:Lua_CompilerExec|        'luac'        the luac executable (^1)
   |g:Lua_CompiledExtension|   'luac'        extension used for compile chunks
   |g:Lua_LoadMenus|           'auto'        when to load the menus ('startup',
@@ -454,6 +474,9 @@ set in the .vimrc file.
   |g:Lua_SnippetBrowser|      'gui'         browser to select code snippets
   |g:Lua_LclTemplateFile|     (see below)   the local top-level template file
   |g:Lua_GlbTemplateFile|     (see below)   the global top-level template file
+
+  |g:Xterm_Executable|        'xterm'       the xterm executable (^2)
+  |g:Xterm_Defaults|          '...'         the xterm default settings (^2)
  ----------------------------------------------------------------------------
 
 Further customization is carried out in the template library:
@@ -469,6 +492,7 @@ Further customization is carried out in the template library:
   |g:Lua_BinPath|           - -empty-
   |g:Lua_Executable|        - g:Lua_BinPath + lua
   |g:Lua_CompilerExec|      - g:Lua_BinPath + luac
+(^2) UNIX only
 
 ------------------------------------------------------------------------------
 4.1  EXECUTABLES                                *luasupport-config-executable*
@@ -502,6 +526,54 @@ The extension for compiled Lua chunks can be changed by setting the variable
 g:Lua_CompiledExtension, for example in the .vimrc: >
   let g:Lua_CompiledExtension = 'lc'
 <
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
+------------------------------------------------------------------------------
+
+4.1.1  Output Redirection                           *luasupport-config-output*
+
+                                                          *g:Lua_OutputMethod*
+The initial method for output redirection can be set via g:Lua_OutputMethod: >
+  let g:Lua_OutputMethod = 'buffer'
+Afterwards, it can be changed on the fly using the menu entries or the map
+"\ro" (see |luasupport-usage-run|)
+
+Use the mode 'vim-io' for scripts with little input and output. The mode
+'xterm' runs the command in a separate xterm, which also supports input, but
+does not block the editor. The output is available until the window is closed.
+The modes 'vim-qf' and 'buffer' do not support interactive input, but provide
+quickfix support.  With 'buffer' the output is redirected into a buffer, and
+thus available for detailed analysis afterwards.
+
+The possible settings are listed below:
+
+  Value               Meaning
+ ----------------------------------------------------------------------------
+  'vim-io' (default)  run on the Vim command-line (supports input operations)
+  'vim-qf'            print output on the Vim cmd.-line (supports quickfix)
+  'buffer'            redirect the output into a buffer (supports quickfix)
+  'xterm'             run in a separate xterm (supports input operations)
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+
+The xterm related functionality is only available under UNIX. It is used to
+run interactive commands.
+
+                                                          *g:Xterm_Executable*
+The xterm executable is set by g:Xterm_Executable, for example: >
+  let g:Xterm_Executable = '/usr/local/bin/xterm'
+<
+                                                            *g:Xterm_Defaults*
+Set additional arguments for xterm. The default is: >
+  let g:Xterm_Defaults = '-fa courier -fs 12 -geometry 80x24'
+<
+For example, use these arguments for black letters on a white background: >
+  let g:Xterm_Defaults = '-fg black -bg white -fs 12 -geometry 80x24'
+<
+See the man-page of xterm for the possible options.
+
 The behavior can be changed on the fly by settings the variable to a different
 value on the command line.
 

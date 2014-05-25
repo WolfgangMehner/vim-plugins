@@ -2,7 +2,7 @@
 §  Objects
 § =============================================================
 
-== Objects.class metatable == below, map:omt, sc:m ==
+== Objects.class metatable == below, map:ot, sc:t ==
 local |?CLASSNAME|_mt = {
 	type = '|CLASSNAME|',<CURSOR>
 }
@@ -10,18 +10,25 @@ local |?CLASSNAME|_mt = {
 |CLASSNAME|_mt.__index     = |CLASSNAME|_mt   -- get indices from the table
 |CLASSNAME|_mt.__metatable = |CLASSNAME|_mt   -- protect the metatable
 
-== Objects.method, constructor == below, map:oc, sc:c ==
+== Objects.class, constructor == below, map:oc, sc:c ==
 function create_|?CLASSNAME| ( <CURSOR> )
+
 	local obj = {}
+
 	<SPLIT>{-FUNCTION_BODY-}
-	setmetatable ( obj, |CLASSNAME|_mt )
-	return obj
+
+	return setmetatable ( obj, |CLASSNAME|_mt )
 end  -----  end of function create_|CLASSNAME|  -----
 
-== Objects.method, is object == below, map:ois, sc:i ==
+== Objects.class, is object == below, map:ois, sc:i ==
 function is_|?CLASSNAME| ( obj<CURSOR> )
 	return getmetatable ( obj ) == |CLASSNAME|_mt
 end  -----  end of function is_|CLASSNAME|  -----
+
+== Objects.method == below, map:om, sc:m ==
+function |?CLASSNAME|_mt:|?METHOD| ( <CURSOR>|PARAMETER_LIST| )
+	<SPLIT>{-FUNCTION_BODY-}
+end  -----  end of function |CLASSNAME|_mt:|METHOD|  -----
 
 == ENDTEMPLATE ==
 

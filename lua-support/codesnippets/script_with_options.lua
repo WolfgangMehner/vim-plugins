@@ -4,9 +4,9 @@ local args = { ... }
 local script_name    = 'TODO'
 local script_version = '1.0'
 
-local help_text = script_name..[[
- [options]
+local help_text_short = script_name..' [options]'
 
+local help_text = help_text_short..'\n\n'..[[
 Options:
 	--str <opt>       set a string
 
