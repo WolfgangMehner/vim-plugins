@@ -76,6 +76,7 @@ The features of the plug-in are:
     |luasupport-usage-help|
 - Run or compile the code. |luasupport-usage-run|
 - Invoke the syntax checker "luac -p". |luasupport-usage-run|
+- Set the interpreter/compiler executable on-the-fly. |luasupport-usage-run|
 - Manage code snippets. |luasupport-usage-snippets|
 - An extendible template library. |luasupport-templates|
 
@@ -268,16 +269,22 @@ The file in the current buffer can be run or compiled with a keystroke.
   check the code             Run.check code                 <LocalLeader>rk
 
   output method for "run"    Run.output method              <LocalLeader>ro
+  change the interpreter     Run.set executable             <LocalLeader>rse
+  change the compiler        Run.set compiler exec.         <LocalLeader>rsc
  ----------------------------------------------------------------------------
 
 The functionality is also available through commands. These commands can also
 be used to set maps in the ftplugin.
 
-  Command                    Explanation
+  Command                       Explanation
  ----------------------------------------------------------------------------
-  |:Lua| <args>                run the script with arguments
-  |:LuaCompile|                compile the script
-  |:LuaCheck|                  run the code checker
+  *:Lua* <args>                   run the script with arguments
+  *:LuaCompile*                   compile the script
+  *:LuaCheck*                     run the code checker
+
+  *:LuaOutputMethod* [<method>]   set (or print) the output method
+  *:LuaExecutable* [<exec>]       set (or print) the interpreter
+  *:LuaCompilerExec* [<exec>]     set (or print) the compiler
  ----------------------------------------------------------------------------
 
 The output from running the script can be made accessible in several ways. The
@@ -286,6 +293,10 @@ can be used interactively and support input via the command line, while other
 methods are non-interactive but support quickfix (see
 |luasupport-config-output|).
 
+The interpreter and compiler executables can be changed on-the-fly, using the
+maps, menu entries or ex-commands: >
+  :LuaExecutable lua5.1
+<
 The extension for compiled chunks can be changed using the global variable
 |g:Lua_CompiledExtension|, the default is "luac".
 
@@ -476,7 +487,7 @@ set in the .vimrc file.
   |g:Lua_GlbTemplateFile|     (see below)   the global top-level template file
 
   |g:Xterm_Executable|        'xterm'       the xterm executable (^2)
-  |g:Xterm_Defaults|          '...'         the xterm default settings (^2)
+  |g:Xterm_Options|           '...'         the xterm default settings (^2)
  ----------------------------------------------------------------------------
 
 Further customization is carried out in the template library:
@@ -515,12 +526,16 @@ the whole path.
 The executable is set by g:Lua_Executable. For Windows, set up the executable
 similar to this: >
   let g:Lua_Executable = 'C:\Program Files\Lua\bin\lua.exe'
-<
+While Vim is running, the interpreter can be changed on the fly using the menu
+entries or the map "\rse" (see |luasupport-usage-run|).
+
                                                           *g:Lua_CompilerExec*
 The compiler is set by g:Lua_CompilerExec. For Windows, set up the executable
 similar to this: >
   let g:Lua_CompilerExec = 'C:\Program Files\Lua\bin\luac.exe'
-<
+While Vim is running, the compiler can be changed on the fly using the menu
+entries or the map "\rsc" (see |luasupport-usage-run|).
+
                                                      *g:Lua_CompiledExtension*
 The extension for compiled Lua chunks can be changed by setting the variable
 g:Lua_CompiledExtension, for example in the .vimrc: >
@@ -537,7 +552,7 @@ value on the command line.
 The initial method for output redirection can be set via g:Lua_OutputMethod: >
   let g:Lua_OutputMethod = 'buffer'
 Afterwards, it can be changed on the fly using the menu entries or the map
-"\ro" (see |luasupport-usage-run|)
+"\ro" (see |luasupport-usage-run|).
 
 Use the mode 'vim-io' for scripts with little input and output. The mode
 'xterm' runs the command in a separate xterm, which also supports input, but
@@ -565,12 +580,12 @@ run interactive commands.
 The xterm executable is set by g:Xterm_Executable, for example: >
   let g:Xterm_Executable = '/usr/local/bin/xterm'
 <
-                                                            *g:Xterm_Defaults*
-Set additional arguments for xterm. The default is: >
-  let g:Xterm_Defaults = '-fa courier -fs 12 -geometry 80x24'
+                                                             *g:Xterm_Options*
+Set additional options for xterm. The default is: >
+  let g:Xterm_Options = '-fa courier -fs 12 -geometry 80x24'
 <
 For example, use these arguments for black letters on a white background: >
-  let g:Xterm_Defaults = '-fg black -bg white -fs 12 -geometry 80x24'
+  let g:Xterm_Options = '-fg black -bg white -fs 12 -geometry 80x24'
 <
 See the man-page of xterm for the possible options.
 
