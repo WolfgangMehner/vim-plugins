@@ -794,7 +794,7 @@ function! Lua_Run ( args )
 		"
 		" method : "buffer"
 		"
-		if bufwinnr ( '^Lua Output$' ) == -1
+		if bufwinnr ( 'Lua Output$' ) == -1
 			" open buffer
 			above new
 			file Lua\ Output

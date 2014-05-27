@@ -37,6 +37,7 @@ local filelist = {
 }
 
 local filelist_repo = {
+	'lua-support/lua-doc/',
 	'lua-support/release.lua',
 }
 
