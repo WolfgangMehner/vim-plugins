@@ -588,10 +588,10 @@ function! Lua_FunctionComment() range
 endfunction    " ----------  end of function Lua_FunctionComment  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_EscSpecChar : Automatically comment a function.   {{{1
+" Lua_EscMagicChar : Automatically escape magic characters.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_EscSpecChar()
+function! Lua_EscMagicChar()
 	"
 	let col  = getpos('.')[2]
 	let char = getline('.')[col-1]
@@ -601,7 +601,7 @@ function! Lua_EscSpecChar()
 	endif
 	"
 	return ''
-endfunction    " ----------  end of function Lua_EscSpecChar  ----------
+endfunction    " ----------  end of function Lua_EscMagicChar  ----------
 "
 "-------------------------------------------------------------------------------
 " Lua_CodeSnippet : Code snippets.   {{{1
@@ -1162,8 +1162,8 @@ function! s:CreateMaps ()
 	"-------------------------------------------------------------------------------
 	" regex
 	"-------------------------------------------------------------------------------
-	nnoremap    <buffer>  <silent>  <LocalLeader>xe     i<C-R>=Lua_EscSpecChar()<CR><ESC><Right>
-	inoremap    <buffer>  <silent>  <LocalLeader>xe      <C-R>=Lua_EscSpecChar()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>xe     i<C-R>=Lua_EscMagicChar()<CR><ESC><Right>
+	inoremap    <buffer>  <silent>  <LocalLeader>xe      <C-R>=Lua_EscMagicChar()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" snippets
@@ -1328,8 +1328,8 @@ function! s:InitMenus()
 	let ihead = 'inoremenu <silent> '.s:Lua_RootMenu.'.Regex.'
 	"
 	exe ahead.'-Sep01-                                  :'
-	exe nhead.'&esc\.\ spec\.\ char\.<Tab>'.esc_mapl.'xe  i<C-R>=Lua_EscSpecChar()<CR><ESC><Right>'
-	exe ihead.'&esc\.\ spec\.\ char\.<Tab>'.esc_mapl.'xe   <C-R>=Lua_EscSpecChar()<CR>'
+	exe nhead.'&esc\.\ magic\ char\.<Tab>'.esc_mapl.'xe  i<C-R>=Lua_EscMagicChar()<CR><ESC><Right>'
+	exe ihead.'&esc\.\ magic\ char\.<Tab>'.esc_mapl.'xe   <C-R>=Lua_EscMagicChar()<CR>'
 	"
 	"-------------------------------------------------------------------------------
 	" snippets

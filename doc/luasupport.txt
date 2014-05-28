@@ -225,14 +225,14 @@ patterns, including all character classes. Most of the menu entries are
 defined in the template library.  The entries "Regex -> character classes
 -> printable char." and "Regex -> frontier pattern" insert no text for
 Lua 5.1, since these features were introduced in Lua 5.2.
-The menu entry "Regex -> esc. spec. char." is not part of the template
+The menu entry "Regex -> esc. magic char." is not part of the template
 library. It can be used to escape the character under (in normal mode) or
 behind (in insert mode) the cursor. If it is one of the magic characters, a
 "%" will be inserted.
 
   Feature                    Menu Entry                     Map
  ----------------------------------------------------------------------------
-  escape special char.       Regex.esc. spec. char.         <LocalLeader>xe
+  escape magic character     Regex.esc. magic char.         <LocalLeader>xe
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
