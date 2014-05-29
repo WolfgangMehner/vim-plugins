@@ -336,7 +336,7 @@ documentation of Lua functions or an English dictionary.
 
   Feature                    Menu Entry                     Map
  ----------------------------------------------------------------------------
-  open English dictionary    Help.english                   <LocalLeader>he
+  open English dictionary    Help.English                   <LocalLeader>he
   open reference for a       Help.Lua function              <LocalLeader>hl
     library function
   open plug-in help          Help.help (Lua support)        <LocalLeader>hs
@@ -486,8 +486,8 @@ set in the .vimrc file.
   |g:Lua_LclTemplateFile|     (see below)   the local top-level template file
   |g:Lua_GlbTemplateFile|     (see below)   the global top-level template file
 
-  |g:Xterm_Executable|        'xterm'       the xterm executable (^2)
-  |g:Xterm_Options|           '...'         the xterm default settings (^2)
+  g:Xterm_Executable        'xterm'       the xterm executable (^2)
+  g:Xterm_Options           '...'         the xterm default settings (^2)
  ----------------------------------------------------------------------------
 
 Further customization is carried out in the template library:
@@ -576,11 +576,11 @@ The possible settings are listed below:
 The xterm related functionality is only available under UNIX. It is used to
 run interactive commands.
 
-                                                          *g:Xterm_Executable*
+                                                          g:Xterm_Executable
 The xterm executable is set by g:Xterm_Executable, for example: >
   let g:Xterm_Executable = '/usr/local/bin/xterm'
 <
-                                                             *g:Xterm_Options*
+                                                             g:Xterm_Options
 Set additional options for xterm. The default is: >
   let g:Xterm_Options = '-fa courier -fs 12 -geometry 80x24'
 <
