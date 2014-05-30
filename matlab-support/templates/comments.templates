@@ -27,11 +27,11 @@ MenuShortcut( 'Comments.Lists', 'l' )
 %   {+DETAILS+}
 %
 %   Parameters: -|PARAMETERS:EMPTY|
-%   Parameters: |PARAMETERS:FIRST| - {+DESCRIPTION+}. ({+TYPE+})
-%               |PARAMETERS:ENTRY| - {+DESCRIPTION+}. ({+TYPE+})
+%   Parameters: |PARAMETERS:FIRST| - {+DESCRIPTION+} ({+TYPE+})
+%               |PARAMETERS:ENTRY| - {+DESCRIPTION+} ({+TYPE+})
 %   Returns:    -|RETURNS:EMPTY|
-%   Returns:    |RETURNS:FIRST| - {+DESCRIPTION+}. ({+TYPE+})
-%               |RETURNS:ENTRY| - {+DESCRIPTION+}. ({+TYPE+})
+%   Returns:    |RETURNS:FIRST| - {+DESCRIPTION+} ({+TYPE+})
+%               |RETURNS:ENTRY| - {+DESCRIPTION+} ({+TYPE+})
 %
 %   See also: TODO
 
@@ -40,13 +40,13 @@ MenuShortcut( 'Comments.Lists', 'l' )
 %   {+DETAILS+}
 %
 %   Parameters: -|PARAMETERS:EMPTY|
-%   Parameters: |PARAMETERS:FIRST| - {+DESCRIPTION+}. ({+TYPE+})
-%               |PARAMETERS:ENTRY| - {+DESCRIPTION+}. ({+TYPE+})
+%   Parameters: |PARAMETERS:FIRST| - {+DESCRIPTION+} ({+TYPE+})
+%               |PARAMETERS:ENTRY| - {+DESCRIPTION+} ({+TYPE+})
 %   Returns:    -|RETURNS:EMPTY|
-%   Returns:    |RETURNS:FIRST| - {+DESCRIPTION+}. ({+TYPE+})
-%               |RETURNS:ENTRY| - {+DESCRIPTION+}. ({+TYPE+})
+%   Returns:    |RETURNS:FIRST| - {+DESCRIPTION+} ({+TYPE+})
+%               |RETURNS:ENTRY| - {+DESCRIPTION+} ({+TYPE+})
 == Comments.parameter description == below, map:cpa, sc:p ==
-%               <CURSOR> - {+DESCRIPTION+}. ({+TYPE+})
+%               <CURSOR> - {+DESCRIPTION+} ({+TYPE+})
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------

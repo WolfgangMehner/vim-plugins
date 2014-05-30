@@ -42,7 +42,7 @@ IncludeFile( 'classes.templates' )
 SetMacro( 'HelpPathEnglish',   'http://en.wiktionary.org/wiki/' )
 SetMacro( 'HelpPathMathWorks', 'http://www.mathworks.de/help/techdoc/' )
 
-== HELP: Help.english == map:he, sc:e ==
+== HELP: Help.English == map:he, sc:e ==
 |Word( '' )|
 |Substitute( '\W', '', 'g' )|
 |System( '|HELP_BROWSER| |HelpPathEnglish||PICK:l|' )|

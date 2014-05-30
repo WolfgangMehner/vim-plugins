@@ -296,7 +296,7 @@ documentation of Matlab functions or an English dictionary.
 
   Feature                    Menu Entry                     Map
  ----------------------------------------------------------------------------
-  open English dictionary    Help.english                   <LocalLeader>he
+  open English dictionary    Help.English                   <LocalLeader>he
   open reference for a       Help.Matlab function           <LocalLeader>hf
     function
   open plug-in help          Help.help (Matlab support)     <LocalLeader>hs
