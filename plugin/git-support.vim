@@ -837,7 +837,7 @@ else
 		let s:Git_GitBashExecutable = 'xterm'
 	endif
 	call s:GetGlobalSetting ( 'Git_GitBashExecutable' )
-	call s:ApplyDefaultSetting ( 'Xterm_Defaults', '-fa courier -fs 12 -geometry 80x24' )
+	call s:ApplyDefaultSetting ( 'Xterm_Options', '-fa courier -fs 12 -geometry 80x24' )
 endif
 "
 " check git executable   {{{2
@@ -3709,7 +3709,7 @@ function! GitS_GitBash( param )
 		let param = substitute( param, '[#%]', '\\&', 'g' )
 		"
 		" UNIX: block editor and execute command, wait for confirmation afterwards
-		silent exe '!'.s:Git_GitBashExecutable.' '.g:Xterm_Defaults
+		silent exe '!'.s:Git_GitBashExecutable.' '.g:Xterm_Options
 					\ .' -title '.shellescape( title )
 					\ .' -e '.shellescape( s:Git_Executable.' '.param.' ; echo "" ; read -p "  ** PRESS ENTER **  " dummy ' )
 	endif
@@ -3757,7 +3757,7 @@ function! GitS_PluginSettings( verbose )
 	let txt .=
 				\  '      git bash executable :  '.s:Git_GitBashExecutable.gitbash_status."\n"
 	if s:UNIX && a:verbose >= 1
-		let txt .= '               xterm args :  "'.g:Xterm_Defaults."\"\n"
+		let txt .= '            xterm options :  "'.g:Xterm_Options."\"\n"
 	endif
 	if a:verbose >= 1
 		let	txt .= "\n"

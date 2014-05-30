@@ -963,8 +963,8 @@ in the .vimrc file.
                                           inside the status buffer in section
                                           "Changes to be committed"
 
-  |g:Xterm_Executable|          'xterm'     the xterm executable (^3)
-  |g:Xterm_Defaults|            '...'       the xterm default settings (^3)
+  g:Xterm_Executable          'xterm'     the xterm executable (^3)
+  g:Xterm_Options             '...'       the xterm default settings (^3)
  ----------------------------------------------------------------------------
 
 (^1)
@@ -1138,16 +1138,16 @@ value on the command line.
 The xterm related functionality is only available under UNIX. It is used to
 run interactive commands.
 
-                                                          *g:Xterm_Executable*
+                                                          g:Xterm_Executable
 The xterm executable is set by g:Xterm_Executable, for example: >
   let g:Xterm_Executable = '/usr/local/bin/xterm'
 <
-                                                            *g:Xterm_Defaults*
-Set additional arguments for xterm. The default is: >
-  let g:Xterm_Defaults = '-fa courier -fs 12 -geometry 80x24'
+                                                             g:Xterm_Options
+Set additional options for xterm. The default is: >
+  let g:Xterm_Options = '-fa courier -fs 12 -geometry 80x24'
 <
 For example, use these arguments for black letters on a white background: >
-  let g:Xterm_Defaults = '-fg black -bg white -fs 12 -geometry 80x24'
+  let g:Xterm_Options = '-fg black -bg white -fs 12 -geometry 80x24'
 <
 See the man-page of xterm for the possible options.
 
