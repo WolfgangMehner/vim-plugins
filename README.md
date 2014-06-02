@@ -15,6 +15,7 @@ Wolfgang Mehner ([github](https://github.com/WolfgangMehner)) ([Vim.org](http://
 
 * Template-Support: Template engine used by the other plug-ins
 * [Git-Support](http://www.vim.org/scripts/script.php?script_id=4497): Manage Git repositories from within Vim
+* [Lua-Support](http://www.vim.org/scripts/script.php?script_id=4950): Lua IDE for Vim
 * Matlab-Support: Matlab IDE for Vim (to be published)
 
 # Installation

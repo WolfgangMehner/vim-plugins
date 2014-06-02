@@ -33,8 +33,8 @@ let b:did_Template_ftplugin = 1
 "----------------------------------------------------------------------
 function! b:CodeComment() range
   "
-  " add '$' at the beginning of the lines
-  silent exe ':'.a:firstline.','.a:lastline.'s/^/$/'
+  " add '§' at the beginning of the lines
+  silent exe ':'.a:firstline.','.a:lastline.'s/^/§/'
   "
 endfunction    " ----------  end of function b:CodeComment  ----------
 "
@@ -43,8 +43,8 @@ endfunction    " ----------  end of function b:CodeComment  ----------
 "----------------------------------------------------------------------
 function! b:CommentCode() range
   "
-  " remove '$' from the beginning of the line
-  silent exe ':'.a:firstline.','.a:lastline.'s/^\$//'
+  " remove '§' from the beginning of the line
+  silent exe ':'.a:firstline.','.a:lastline.'s/^\§//'
   "
 endfunction    " ----------  end of function b:CommentCode  ----------
 " }}}1
@@ -53,4 +53,9 @@ endfunction    " ----------  end of function b:CommentCode  ----------
 inoremap    <buffer>  <silent>  <LocalLeader>cc    <Esc>:call b:CodeComment()<CR>
  noremap    <buffer>  <silent>  <LocalLeader>cu         :call b:CommentCode()<CR>
 inoremap    <buffer>  <silent>  <LocalLeader>cu    <Esc>:call b:CommentCode()<CR>
+"
+inoremap  {+  {++}<Left><Left>
+inoremap  {-  {--}<Left><Left>
+vnoremap  {+  s{++}<Left><Esc>P<Right>%
+vnoremap  {-  s{--}<Left><Esc>P<Right>%
 "

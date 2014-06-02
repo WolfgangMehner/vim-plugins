@@ -15,7 +15,7 @@ functions.
 See the chapter |luasupport-introduction| for a quick overview and a short
 guide to this documentation.
 
-Lua is: Copyright 1994–2014 Lua.org, PUC-Rio.
+Lua is: Copyright 1994-2014 Lua.org, PUC-Rio.
 
 ==============================================================================
 0.  TABLE OF CONTENTS                            *luasupport-support-contents*

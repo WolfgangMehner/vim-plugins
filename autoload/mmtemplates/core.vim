@@ -409,7 +409,7 @@ function! s:GetNormalizedPath ( filename )
 	return fnamemodify( a:filename, ':p:h' )
 endfunction    " ----------  end of function s:GetNormalizedPath  ----------
 "
-""----------------------------------------------------------------------
+"----------------------------------------------------------------------
 "  s:UserInput : Input after a highlighted prompt.   {{{2
 "  
 "  3. argument : optional completion
