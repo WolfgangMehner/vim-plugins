@@ -245,7 +245,7 @@ let s:RegexSettings = {
 "  s:UpdateFileReadRegex : Update the regular expressions.   {{{2
 "----------------------------------------------------------------------
 "
-function! s:UpdateFileReadRegex ( regex, settings )
+function! s:UpdateFileReadRegex ( regex, settings, interface )
 	"
 	let quote = '\(["'']\?\)'
 	"
@@ -311,7 +311,7 @@ endfunction    " ----------  end of function s:UpdateFileReadRegex  ----------
 "  s:UpdateTemplateRegex : Update the regular expressions.   {{{2
 "----------------------------------------------------------------------
 "
-function! s:UpdateTemplateRegex ( regex, settings )
+function! s:UpdateTemplateRegex ( regex, settings, interface )
 	"
 	let quote = '["'']'
 	"
@@ -339,8 +339,15 @@ function! s:UpdateTemplateRegex ( regex, settings )
 	let a:regex.TextBlockFunctions = '^\%(C\|Comment\|Insert\|InsertLine\)$'
 	"
 	" Jump Tags
-	let a:regex.JumpTagBoth     = '<-\w*->\|{-\w*-}\|<+\w*+>\|{+\w*+}'
-	let a:regex.JumpTagType2    = '<-\w*->\|{-\w*-}'
+	let a:regex.JumpTagAll   = '<-\w*->\|{-\w*-}\|<+\w*+>\|{+\w*+}'
+	let a:regex.JumpTagType2 = '<-\w*->\|{-\w*-}'
+	"
+	if a:interface >= 1000000
+		let a:regex.JumpTagAll   = '<-\w*->\|{-\w*-}\|\[-\w*-]\|<+\w*+>\|{+\w*+}\|\[+\w*+]'
+		let a:regex.JumpTagType2 = '<-\w*->\|{-\w*-}\|\[-\w*-]'
+		let a:regex.JumpTagOpt   = '\[-\w*-]\|\[+\w*+]'
+		let a:regex.JTListSep    = ','
+	endif
 	"
 endfunction    " ----------  end of function s:UpdateTemplateRegex  ----------
 " }}}2
@@ -627,8 +634,8 @@ function! mmtemplates#core#NewLibrary ( ... )
 	call extend ( library.macros,     s:StandardMacros,     'keep' )
 	call extend ( library.properties, s:StandardProperties, 'keep' )
 	"
-	call s:UpdateFileReadRegex ( library.regex_file,     library.regex_settings )
-	call s:UpdateTemplateRegex ( library.regex_template, library.regex_settings )
+	call s:UpdateFileReadRegex ( library.regex_file,     library.regex_settings, library.interface )
+	call s:UpdateTemplateRegex ( library.regex_template, library.regex_settings, library.interface )
 	"
 	" ==================================================
 	"  wrap up
@@ -1119,6 +1126,11 @@ function! s:InterfaceVersion ( version_str )
 	" version 1.1 setup
 	if s:library.interface >= 1001000
 		" ...
+	endif
+	"
+	" version 1.0+ syntax
+	if s:library.interface >= 1000000
+		call s:UpdateTemplateRegex ( s:library.regex_template, s:library.regex_settings, s:library.interface )
 	endif
 	"
 endfunction    " ----------  end of function s:InterfaceVersion  ----------
@@ -3003,7 +3015,7 @@ function! mmtemplates#core#InsertTemplate ( library, t_name, ... ) range
 			call s:PositionCursor ( placement, flag_mode, pos1, pos2 )
 			"
 			" highlight jump targets
-			call s:HighlightJumpTargets ( regex.JumpTagBoth )
+			call s:HighlightJumpTargets ( regex.JumpTagAll )
 		endif
 		"
 	catch /Template:UserInputAborted/
@@ -3105,6 +3117,7 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 	let sep     = "\n"
 	"
 	let do_jump_map     = 0
+	let do_del_opt_map  = 0
 	let do_special_maps = 0
 	"
 	let cmd     = ''
@@ -3120,6 +3133,9 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		"
 		if a:[i] == 'do_jump_map'
 			let do_jump_map = 1
+			let i += 1
+		elseif a:[i] == 'do_del_opt_map'
+			let do_del_opt_map = 1
 			let i += 1
 		elseif a:[i] == 'do_special_maps'
 			let do_special_maps = 1
@@ -3213,6 +3229,7 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 	"
 	" jump map
 	if do_jump_map
+		"
 		let jump_key = '<C-j>'   " TODO: configurable
 		if ! empty ( maparg( jump_key, 'n' ) )
 			if echo_warning
@@ -3225,9 +3242,30 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 				call s:ErrorMsg ( 'Mapping already in use: "'.jump_key.'", mode "i", command:', '  '.mapinfo )
 			endif
 		else
-			let jump_regex = string ( escape ( t_lib.regex_template.JumpTagBoth, '|' ) )
+			let jump_regex = string ( escape ( t_lib.regex_template.JumpTagAll, '|' ) )
 			let cmd .= 'nnoremap '.options.' '.jump_key.' i<C-R>=mmtemplates#core#JumpToTag('.jump_regex.')<CR>'.sep
 			let cmd .= 'inoremap '.options.' '.jump_key.'  <C-R>=mmtemplates#core#JumpToTag('.jump_regex.')<CR>'.sep
+		endif
+	endif
+	"
+	if do_del_opt_map && t_lib.interface >= 1000000
+		"
+		let jump_key = '<C-d>'   " TODO: configurable
+		if ! empty ( maparg( jump_key, 'n' ) )
+			if echo_warning
+				let mapinfo = maparg( jump_key, 'n' )
+				call s:ErrorMsg ( 'Mapping already in use: "'.jump_key.'", mode "n", command:', '  '.mapinfo )
+			endif
+		elseif ! empty ( maparg( jump_key, 'i' ) )
+			if echo_warning
+				let mapinfo = maparg( jump_key, 'i' )
+				call s:ErrorMsg ( 'Mapping already in use: "'.jump_key.'", mode "i", command:', '  '.mapinfo )
+			endif
+		else
+			let del_regex  = string ( escape ( t_lib.regex_template.JumpTagOpt, '|' ) )
+			let del_sep    = string ( escape ( t_lib.regex_template.JTListSep, '|' ) )
+			let cmd .= 'nnoremap '.options.' '.jump_key.'      :call mmtemplates#core#DeleteOptTag('.del_regex.','.del_sep.',"n")<CR>'.sep
+			let cmd .= 'inoremap '.options.' '.jump_key.' <Esc>:call mmtemplates#core#DeleteOptTag('.del_regex.','.del_sep.',"i")<CR>gi'.sep
 		endif
 	endif
 	"
@@ -3760,7 +3798,7 @@ function! mmtemplates#core#Resource ( library, mode, ... )
 	elseif a:mode == 'escaped_mapleader'
 		return [ mmtemplates#core#EscapeMenu( t_lib.properties[ 'Templates::Mapleader' ], 'right' ), '' ]
 	elseif a:mode == 'jumptag'
-		return [ t_lib.regex_template.JumpTagBoth, '' ]
+		return [ t_lib.regex_template.JumpTagAll, '' ]
 	elseif a:mode == 'style'
 		return [ t_lib.current_style, '' ]
 	else
@@ -3892,7 +3930,7 @@ function! mmtemplates#core#ChangeSyntax ( library, category, ... )
 			let t_lib.regex_settings.CommentHint  = a:2[0]
 		endif
 		"
-		call s:UpdateFileReadRegex ( t_lib.regex_file, t_lib.regex_settings )
+		call s:UpdateFileReadRegex ( t_lib.regex_file, t_lib.regex_settings, t_lib.interface )
 		"
 	else
 		return s:ErrorMsg ( 'Unknown category: '.a:category )
@@ -4059,11 +4097,48 @@ function! mmtemplates#core#JumpToTag ( regex )
 	let match	= search( '\m'.a:regex, 'c' )
 	if match > 0
 		" remove the target
-		call setline( match, substitute( getline('.'), a:regex, '', '' ) )
+		call setline( '.', substitute( getline('.'), a:regex, '', '' ) )
 	endif
 	"
 	return ''
 endfunction    " ----------  end of function mmtemplates#core#JumpToTag  ----------
+"
+"----------------------------------------------------------------------
+" mmtemplates#core#DeleteOptTag : Delete the next optional tag.   {{{1
+"----------------------------------------------------------------------
+"
+function! mmtemplates#core#DeleteOptTag ( jmp_regex, sep_regex, mode )
+	"
+	let col = getpos('.')[2]-1
+	echo col
+	"
+	" separator after the target
+	let match_line = search( '\m\%('.a:jmp_regex.'\)\s*\V\%('.a:sep_regex.'\)\m\s*', 'cn', line('.') )
+	if match_line > 0
+		call setline( '.', substitute( getline('.'), '\%>'.col.'c\%('.a:jmp_regex.'\)\s*\V\%('.a:sep_regex.'\)\m\s*', '', '' ) )
+	else
+		" separator before the target
+		let match_line = search( '\m\s*\V\%('.a:sep_regex.'\)\m\s*\zs\%('.a:jmp_regex.'\)', 'cn', line('.') )
+		if match_line > 0
+			call setline( '.', substitute( getline('.'), '\s*\V\%('.a:sep_regex.'\)\m\s*\%>'.col.'c\%('.a:jmp_regex.'\)', '', '' ) )
+		else
+			" no separator
+			let match_line = search( '\m\%('.a:jmp_regex.'\)', 'cn', line('.') )
+			if match_line > 0
+				call setline( '.', substitute( getline('.'), '\%>'.col.'c\%('.a:jmp_regex.'\)', '', '' ) )
+			endif
+		endif
+	endif
+	"
+	if match_line > 0
+		" noop
+	elseif a:mode == 'n'
+		" normal ctrl-d operation
+		" :TODO:08.06.2014 17:27:WM: jump map configurable
+		silent exe "normal! \<c-d>"
+	endif
+	"
+endfunction    " ----------  end of function mmtemplates#core#DeleteOptTag  ----------
 "
 "----------------------------------------------------------------------
 " mmtemplates#core#SetMapleader : Set the local mapleader.   {{{1

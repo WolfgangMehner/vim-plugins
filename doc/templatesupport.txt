@@ -331,7 +331,7 @@ This will enable advanced feature for this library. Other libraries loaded
 with the same core can use other versions.
 When this call is inserted into a library, it has to be checked for constructs
 which can not be used anymore. However, existing libraries must not be changed
-once a new version comes along.
+immediately once a new version comes along.
 
 See |template-support-change-interf| for a change log limited to changed in
 the interface.
@@ -521,11 +521,14 @@ next position where editing is required:
 	}
 	== ENDTEMPLATE ==
 <
-The standard map for jumping is <ctrl+j>, also it may vary with each plug-in
+The standard map for jumping is <ctrl+j>, but it may vary with each plug-in
 using the template support.
 Jump tags have one of the following formats:
-	<+NAME+>     <-NAME->
-	{+NAME+}     {-NAME-}
+  <+NAME+>     <-NAME->
+  {+NAME+}     {-NAME-}
+And with interface version 1.0+ (see |template-support-lib-interf|) "optional"
+jump tags have been introduced:
+  [+NAME+]     [-NAME-]
 The text will be indented automatically with the jump tags still appearing in
 it, so for every language the appropriate version has to be chosen. The name
 consists of arbitrary word characters (letters, digits and underscores) and
@@ -542,6 +545,18 @@ inserted code:
 		<+ELSE_PART+>
 	}
 	== ENDTEMPLATE ==
+<
+                                               ** Interface Version 1.0+ **
+The "optional" jumps tags [+NAME+] and [-NAME-] can be used in templates for
+argument lists:
+>
+  == Idiom.open file == insert ==
+  fid = openfile ( <+FILENAME+>, [+MODE+] )
+  == ENDTEMPLATE ==
+<
+The user can either jump to both tags and write down the arguments or only
+jump to FILENAME and then use the map <ctrl+d> to delete the optional jump tag
+MODE, together with the separator "," and whitespaces.
 
 ------------------------------------------------------------------------------
 4.3  PLACEMENT                                  *template-support-templ-place*
@@ -1397,6 +1412,24 @@ This function is best used in maps such as this:
 This maps can be created automatically using |mmtemplates#core#CreateMaps()|.
 
 ------------------------------------------------------------------------------
+                                             *mmtemplates#core#DeleteOptTag()*
+Deleting an "optional" jump tag is performed by:
+
+	e = mmtemplates#core#DeleteOptTag ( jmp_regex, sep_regex, mode ) ~
+
+Parameters:
+	jmp_regex - The regex of the optional jump tag. (string)
+	sep_regex - The regex of the separator. (string)
+	mode      - "i" for insert mode, "n" for normal. (string)
+
+Deletes the next occurrence of an optional jump tag [+NAME+] or [-NAME-] and
+its accompanying separator. If the function is called in normal mode ('mode'
+is "n") and nothing can be deleted on the current line, the normal behavior of
+<ctrl-d> is invoked.
+
+This maps can be created automatically using |mmtemplates#core#CreateMaps()|.
+
+------------------------------------------------------------------------------
 9.2  CREATING MENUS AND MAPS                       *template-support-api-maps*
 ------------------------------------------------------------------------------
 
@@ -1413,6 +1446,8 @@ Parameters:
 	localleader - The local mapleader. (string)
 Optional parameters:
 	"do_jump_map"     - Create a map for |mmtemplates#core#JumpToTag()|.
+	"do_del_opt_map"  - Create a map for |mmtemplates#core#DeleteOptTag()|.
+	                    (interface 1.0+)
 	"do_special_maps" - Create maps for the special operations.
 	"filetype", ftype - Create maps for the filetype ftype.
 	                    (interface 1.0+, string, default: "default")
@@ -2323,6 +2358,8 @@ D.  CHANGE LOG                                   *template-support-change-log*
   (This feature is considered to be part of the old interface.)
 - Added: Templates can be associated with a filetype, and its maps only
   created for that filetype.
+- Added: New jump tags [+NAME+] and [-NAME-] for optional parameters.
+- Added: New map <ctrl-d> to delete optional jump tags [+NAME+] and [-NAME-].
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.3
@@ -2444,6 +2481,10 @@ See also |template-support-lib-interf|.
 - Added: Templates can be associated with a filetype, and its maps only
   created for that filetype, using: >
   == USE FILETYPES : ... ==
+- Added: New jump tags [+NAME+] and [-NAME-] for optional parameters. Can be
+  used as targets for jumps.
+- Added: New map <ctrl-d> to delete optional jump tags [+NAME+] and [-NAME-]
+  together with their separator ",".
 
 ------------------------------------------------------------------------------
   INTERFACE VERSION 0.9
