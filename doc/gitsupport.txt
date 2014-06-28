@@ -1,4 +1,4 @@
-*gitsupport.txt*                  Git Support                      Mar 25 2014
+*gitsupport.txt*                  Git Support                     June 28 2014
 
 Git Support                                          *git-support* *gitsupport*
 
@@ -22,6 +22,7 @@ a quick overview and a short guide to this documentation.
  2.1    Menu                                      |gitsupport-overview-menu|
  2.2    Workflow                                  |gitsupport-overview-work|
  3.    Commands                                   |gitsupport-commands|
+ 3.1    Command-Line Completion                   |gitsupport-cmds-cmd-line|
  4.    Syntax Highlighting                        |gitsupport-syntax|
  4.1    Branch                                    |gitsupport-syn-branch|
  4.2    Commit                                    |gitsupport-syn-commit|
@@ -688,11 +689,25 @@ Opens the help for Git Support.
 
 Shows the plug-in settings. The second version is verbose.
 
+------------------------------------------------------------------------------
+3.1  COMMAND-LINE COMPLETION                        *gitsupport-cmds-cmd-line*
+------------------------------------------------------------------------------
+                                                      *GitS_CmdLineComplete()*
+The user can configure maps to complete the names of branches, remotes, tags
+and Git-commands on the command-line. The command-line is set up to complete
+filenames using "tab". Other elements are completed using the function
+GitS_CmdLineComplete(<mode>), which must be used in maps like this:
+>
+  cnoremap <silent> <c-b>  <C-\>eGitS_CmdLineComplete('branch')<CR>
+  cnoremap <silent> <c-s>  <C-\>eGitS_CmdLineComplete('command')<CR>
+  cnoremap <silent> <c-r>  <C-\>eGitS_CmdLineComplete('remote')<CR>
+  cnoremap <silent> <c-t>  <C-\>eGitS_CmdLineComplete('tag')<CR>
+<
 ==============================================================================
 4.  SYNTAX HIGHLIGHTING                                    *gitsupport-syntax*
 ==============================================================================
 
-Git support comes with syntax highlighting for various kinds of Git output.
+Git Support comes with syntax highlighting for various kinds of Git output.
 The appearance can be changed by the user, by adding custom settings to the
 file .vimrc.
 

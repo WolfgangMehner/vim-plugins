@@ -1,4 +1,4 @@
-README for git-support.vim (Version 0.9.2pre) / Mar 25 2014
+README for git-support.vim (Version 0.9.2pre) / June 28 2014
 ================================================================================
 
   *  INSTALLATION
@@ -131,6 +131,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 - Added: New maps for the buffers: branch, remote, stash, tag
 - Added: New maps for the buffer: status
 - Added: New setting g:Git_BinPath, to set the path to the executables.
+- Added: Command-line completion for subcommands, branches, remotes, tags.
 - Changed: :GitShow shows different objects in an according way.
 - Changed: :GitCommitFile updates the file before committing.
 - Changed: :GitHelp shows man page text with appropriate width.

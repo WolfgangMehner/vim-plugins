@@ -64,6 +64,8 @@ Git:
   with different working directories.
 - (WM, DONE?) For global installation (compare Matlab):
   Which method is best to obtain 's:plugin_dir'?
+- (WM, DONE?) Maps for completing Git commands, branches, tags, remotes, ...
+  similar to the cmd-line completion plug-in.
 - (WM) New status buffer output (version > 1.8.5):
   Update syntax highlighting, folding function, file actions
 - (WM) Do not use "sync fromstart" in syntax highlighting,
@@ -72,8 +74,7 @@ Git:
 - (WM) Change map "r" for unmerged changes in status buffer to "reset".
 - (WM) Update buffer after executing a command: :GitBranch, :GitRemote, :GitStash, ...
 - (WM) Buffer "git stash list", maps for: create
-- (WM) Maps for completing Git commands, branches, tags, remotes, ...
-  similar to the cmd-line completion plug-in.
+- (WM) Feed output of "git apply" into quickfix.
 
 LaTeX:
 - (FM) Documentation: Menu 'Beamer' missing.

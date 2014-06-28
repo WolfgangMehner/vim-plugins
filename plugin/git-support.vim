@@ -1090,11 +1090,11 @@ function! s:UpdateGitBuffer ( command, ... )
 		setlocal syntax=OFF
 	endif
 	"
-	" insert the output of the command (before the first line)
-	silent exe '0r! '.a:command
+	" insert the output of the command
+	silent exe 'r! '.a:command
 	"
-	" delete the last line (empty) and go to position
-	normal! Gdd
+	" delete the first line (empty) and go to position
+	normal! ggdd
 	silent exe ':'.pos
 	"
 	" restart syntax highlighting
@@ -3776,6 +3776,110 @@ function! GitS_PluginSettings( verbose )
 		echo txt
 	endif
 endfunction    " ----------  end of function GitS_PluginSettings  ----------
+"
+"-------------------------------------------------------------------------------
+" GitS_CmdLineComplete : Command line completion.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! GitS_CmdLineComplete ( mode, ... )
+	"
+	let forward = 1
+	"
+	if a:0 >= 1 && a:1 == 1
+		let forward = 0
+	endif
+	"
+	let cmdline = getcmdline()
+	let cmdpos  = getcmdpos() - 1
+	"
+	let cmdline_tail = strpart ( cmdline, cmdpos )
+	let cmdline_head = strpart ( cmdline, 0, cmdpos )
+	"
+	let idx = match ( cmdline_head, '[^[:blank:]:]*$' )
+	let cmdline_pre = strpart ( cmdline_head, 0, idx )
+	"
+	" not a word, skip completion
+	if idx < 0
+		return cmdline_head.cmdline_tail
+	endif
+	"
+	" s:vars initial if first time or changed cmdline
+	if ! exists('b:GitSupport_NewCmdLine') || cmdline_head != b:GitSupport_NewCmdLine || a:mode != b:GitSupport_CurrentMode
+		"
+		let b:GitSupport_NewCmdLine  = ''
+		let b:GitSupport_CurrentMode = a:mode
+		"
+		let b:GitSupport_WordPrefix = strpart ( cmdline_head, idx )
+		let b:GitSupport_WordMatch  = escape ( b:GitSupport_WordPrefix, '\' )
+		let b:GitSupport_WordList   = [ b:GitSupport_WordPrefix ]
+		let b:GitSupport_WordIndex  = 0
+		"
+		if a:mode == 'branch'
+			let [ suc, txt ] = s:StandardRun ( 'branch', '-a', 't' )
+			"
+			for part in split( txt, "\n" ) + [ 'HEAD', 'ORIG_HEAD', 'FETCH_HEAD', 'MERGE_HEAD' ]
+				" remove leading whitespaces, "*" (current branch), and "remotes/"
+				" remove trailing "-> ..." (as in "origin/HEAD -> origin/master")
+				let branch = matchstr( part, '^[ *]*\%(remotes\/\)\?\zs.\{-}\ze\%(\s*->.*\)\?$' )
+				if -1 != match( branch, '\V\^'.b:GitSupport_WordMatch )
+					call add ( b:GitSupport_WordList, branch )
+				endif
+			endfor
+		elseif a:mode == 'command'
+			let suc = 0                               " initialized variable 'suc' needed below
+			"
+			for part in s:GitCommands
+				if -1 != match( part, '\V\^'.b:GitSupport_WordMatch )
+					call add ( b:GitSupport_WordList, part )
+				endif
+			endfor
+		elseif a:mode == 'remote'
+			let [ suc, txt ] = s:StandardRun ( 'remote', '', 't' )
+			"
+			for part in split( txt, "\n" )
+				if -1 != match( part, '\V\^'.b:GitSupport_WordMatch )
+					call add ( b:GitSupport_WordList, part )
+				endif
+			endfor
+		elseif a:mode == 'tag'
+			let [ suc, txt ] = s:StandardRun ( 'tag', '', 't' )
+			"
+			for part in split( txt, "\n" )
+				if -1 != match( part, '\V\^'.b:GitSupport_WordMatch )
+					call add ( b:GitSupport_WordList, part )
+				endif
+			endfor
+		else
+			return cmdline_head.cmdline_tail
+		endif
+		"
+		if suc != 0
+			return cmdline_head.cmdline_tail
+		endif
+		"
+	endif
+	"
+	if forward
+		let b:GitSupport_WordIndex = ( b:GitSupport_WordIndex + 1 ) % len( b:GitSupport_WordList )
+	else
+		let b:GitSupport_WordIndex = ( b:GitSupport_WordIndex - 1 + len( b:GitSupport_WordList ) ) % len( b:GitSupport_WordList )
+	endif
+	"
+	let word = b:GitSupport_WordList[ b:GitSupport_WordIndex ]
+	"
+	" new cmdline
+	let b:GitSupport_NewCmdLine = cmdline_pre.word
+	"
+	" overcome map silent
+	" (silent map together with this trick seems to look prettier)
+	call feedkeys(" \<bs>")
+	"
+	" set new cmdline cursor postion
+	call setcmdpos ( len(b:GitSupport_NewCmdLine)+1 )
+	"
+	return b:GitSupport_NewCmdLine.cmdline_tail
+	"
+endfunction    " ----------  end of function GitS_CmdLineComplete  ----------
 "
 "-------------------------------------------------------------------------------
 " s:InitMenus : Initialize menus.   {{{1
