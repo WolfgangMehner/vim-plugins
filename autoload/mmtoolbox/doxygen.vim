@@ -13,8 +13,8 @@
 "  Organization:  
 "       Version:  see variable g:Doxygen_Version below
 "       Created:  10.06.2012
-"      Revision:  ---
-"       License:  Copyright (c) 2012, Wolfgang Mehner
+"      Revision:  30.06.2014
+"       License:  Copyright (c) 2012-2014, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -43,7 +43,7 @@ endif
 if &cp || ( exists('g:Doxygen_Version') && ! exists('g:Doxygen_DevelopmentOverwrite') )
 	finish
 endif
-let g:Doxygen_Version= '0.9.1'     " version number of this script; do not change
+let g:Doxygen_Version= '0.9.2'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
@@ -188,8 +188,6 @@ endfunction    " ----------  end of function s:UserInput  ----------
 let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
-let s:SettingsEscChar = ' |"\'
-"
 if s:MSWIN
 	"
 	"-------------------------------------------------------------------------------
@@ -222,7 +220,7 @@ endif
 "
 call s:GetGlobalSetting ( 'Doxygen_Executable' )
 "
-let s:ErrorFormat = escape( '%f:%l: %m', s:SettingsEscChar )
+let s:ErrorFormat = '%f:%l: %m'
 "
 let s:Enabled = 1
 "
@@ -560,12 +558,12 @@ function! mmtoolbox#doxygen#Warnings ()
 		let errorf_saved = &l:errorformat
 		"
 		" read the file and process the errors
-		exe 'setlocal errorformat='.s:ErrorFormat
+		let &l:errorformat = s:ErrorFormat
 		"
 		exe 'cgetfile '.fnameescape( s:WarningFile )
 		"
 		" restore the old settings
-		exe 'setlocal errorformat='.escape( errorf_saved, s:SettingsEscChar )
+		let &l:errorformat = errorf_saved
 		"
 		botright cwindow
 	else

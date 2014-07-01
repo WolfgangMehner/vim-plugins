@@ -1,8 +1,8 @@
-*toolboxcmake.txt*                 CMake Tool                      Dec 28 2013
+*toolboxcmake.txt*                 CMake Tool                     June 30 2014
 
 CMake Tool                                                     *toolbox-cmake*
 
-                            Plug-in version 0.9.1
+                            Plug-in version 0.9.2
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -225,6 +225,14 @@ value on the command line.
 ==============================================================================
 A.  CHANGE LOG                                      *toolbox-cmake-change-log*
 ==============================================================================
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 0.9.2
+------------------------------------------------------------------------------
+
+- Change: Echo a different message if the build succeeded, but warnings are
+  present.
+- Minor changes.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.1

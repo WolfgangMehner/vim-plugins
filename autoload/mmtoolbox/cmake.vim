@@ -13,8 +13,8 @@
 "  Organization:  
 "       Version:  see variable g:CMake_Version below
 "       Created:  28.12.2011
-"      Revision:  ---
-"       License:  Copyright (c) 2012, Wolfgang Mehner
+"      Revision:  30.06.2014
+"       License:  Copyright (c) 2012-2014, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -43,7 +43,7 @@ endif
 if &cp || ( exists('g:CMake_Version') && ! exists('g:CMake_DevelopmentOverwrite') )
 	finish
 endif
-let g:CMake_Version= '0.9.1'     " version number of this script; do not change
+let g:CMake_Version= '0.9.2'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions   {{{1
@@ -180,8 +180,6 @@ endfunction    " ----------  end of function s:Question  ----------
 let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
-let s:SettingsEscChar = ' |"\'
-"
 if s:MSWIN
 	"
 	"-------------------------------------------------------------------------------
@@ -227,7 +225,7 @@ endif
 " error formats {{{2
 "
 " error format for CMake
-let s:ErrorFormat_CMake = escape(
+let s:ErrorFormat_CMake =
 			\  '%-DDIR : %f,%-XENDDIR : %f,'
 			\ .'%-G,'
 			\ .'%+G-- %.%#,'
@@ -242,13 +240,11 @@ let s:ErrorFormat_CMake = escape(
 			\ .'%C%>    %f:%l (if),'
 			\ .'%C%>,'
 			\ .'%Z  %m,'
-			\ , s:SettingsEscChar )
 "
 " error format for make, additional errors
-let s:ErrorFormat_MakeAdditions = escape(
+let s:ErrorFormat_MakeAdditions =
 			\  '%-GIn file included from %f:%l:%.%#,'
 			\ .'%-G%\s%\+from %f:%l:%.%#,'
-			\ , s:SettingsEscChar )
 "
 " policy list {{{2
 "
@@ -495,7 +491,7 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 		let errorf_saved = &g:errorformat
 		"
 		" run CMake and process the errors
-		exe	'setglobal errorformat='.s:ErrorFormat_CMake
+		let &g:errorformat = s:ErrorFormat_CMake
 		"
 		if a:args == '' | let args = shellescape ( s:ProjectDir )
 		else            | let args = a:args
@@ -512,7 +508,7 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 		endif
 		"
 		" restore the old settings
-		exe 'setglobal errorformat='.escape( errorf_saved, s:SettingsEscChar )
+		let &g:errorformat = errorf_saved
 		"
 		let g:CMakeDebugStr .= 'success: '.( v:shell_error == 0 ).', '   " debug
 		"
@@ -541,7 +537,7 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 			let errorf_saved = &g:errorformat
 			"
 			" process the errors
-			exe	'setglobal errorformat='.s:ErrorFormat_CMake
+			let &g:errorformat = s:ErrorFormat_CMake
 			"
 			let errors = 'DIR : '.s:ProjectDir."\n"
 						\ .errors
@@ -554,7 +550,7 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 			endif
 			"
 			" restore the old settings
-			exe 'setglobal errorformat='.escape( errorf_saved, s:SettingsEscChar )
+			let &g:errorformat = errorf_saved
 			"
 		else
 			" no error or error was produced by make, gcc, ...
@@ -565,9 +561,9 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 			let errorf_saved = &g:errorformat
 			"
 			" process the errors
-			exe	'setglobal errorformat='
-						\ .s:ErrorFormat_MakeAdditions
-						\ .escape( errorf_saved, s:SettingsEscChar )
+			let &g:errorformat =
+						\  s:ErrorFormat_MakeAdditions
+						\ .errorf_saved
 			"
 			if g:CMake_JumpToError == 'make' || g:CMake_JumpToError == 'both'
 				silent exe 'cexpr errors'
@@ -576,15 +572,30 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 			endif
 			"
 			" restore the old settings
-			exe 'setglobal errorformat='.escape( errorf_saved, s:SettingsEscChar )
+			let &g:errorformat = errorf_saved
 			"
 		endif
 		"
 		let g:CMakeDebugStr .= 'success: '.( v:shell_error == 0 ).', '   " debug
 		"
 		" errors occurred?
-		if v:shell_error == 0 | echo 'CMake : make finished successfully.'
-		else                  | botright cwindow
+		if v:shell_error != 0
+			botright cwindow
+		else
+			let warnings = 0
+			"
+			for entry in getqflist ()
+				if entry.valid
+					let warnings = 1
+					break
+				endif
+			endfor
+			"
+			if warnings
+				echo 'CMake : make finished successfully, but warnings present'
+			else
+				echo 'CMake : make finished successfully.'
+			endif
 		endif
 		"
 	endif
