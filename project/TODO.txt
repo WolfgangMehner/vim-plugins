@@ -71,7 +71,6 @@ Git:
 - (WM) Do not use "sync fromstart" in syntax highlighting,
   is extremely slow for diff and log.
 - (WM) Document map "ow" in status buffer.
-- (WM) Change map "r" for unmerged changes in status buffer to "reset".
 - (WM) Update buffer after executing a command: :GitBranch, :GitRemote, :GitStash, ...
 - (WM) Buffer "git stash list", maps for: create
 - (WM) Feed output of "git apply" into quickfix.

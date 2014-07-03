@@ -630,7 +630,6 @@ Git command.
   ol        open log
   r         reset
   rp        reset --patch (^1)
-  r         remove (only for unmerged changes)
   D         delete from file system (only untracked files)
  ----------------------------------------------------------------------------
 

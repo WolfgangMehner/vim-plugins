@@ -3130,7 +3130,7 @@ endfunction    " ----------  end of function s:Status_GetFile  ----------
 "  modified  (b/m) |  x    |  x     x    |  x     x     -     ?    |  -
 "  untracked (u)   |  x    |  -     -    |  x     -     -     -    |  x
 "  ignored   (i)   |  x    |  -     -    |  x     -     -     -    |  x
-"  unmerged  (c)   |  x    |  x     x    |  x     -     -     x    |  -
+"  unmerged  (c)   |  x    |  x     x    |  x     -     x     -    |  -
 "  diff      (d)   |  x    |  x     x    |  -     -     x     -    |  -
 "
 "  in section 'staged'   : action 'diff' may behave differently
@@ -3305,9 +3305,9 @@ function! s:Status_FileAction( action )
 		"
 	elseif s_code =~ 'c' && a:action == 'reset'
 		"
-		" section "unmerged", action "reset" -> "remove"
-		if s:Question( 'Remove unmerged file "'.f_name.'"?' ) == 1
-			call GitS_Remove( f_name_esc, '' )
+		" section "unmerged", action "reset"
+		if s:Question( 'Reset unmerged file "'.f_name.'"?' ) == 1
+			call GitS_Reset( f_name_esc, '' )
 			return 1
 		endif
 		"
@@ -3371,7 +3371,6 @@ function! GitS_Status( action, ... )
 		else
 			let txt .= "r       : reset\n"
 		endif
-		let txt .= "r       : remove (only for unmerged changes)\n"
 		let txt .= "D       : delete from file system (only untracked files)\n"
 		let txt .= "\n"
 		let txt .= "For settings see:\n"
