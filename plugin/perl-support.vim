@@ -29,7 +29,7 @@
 "                  Devel::SmallProf     (profiler)
 "                  Devel::ptkdb         (debugger frontend)
 "                  Perl::Critic         (stylechecker)
-"                  Perl::Tags           (generate Ctags style tags)
+"                  Perl::Tags::Naive    (generate Ctags style tags)
 "                  Perl::Tidy           (beautifier)
 "                  YAPE::Regex::Explain (regular expression analyzer)
 "                  ddd                  (debugger frontend)
@@ -2076,7 +2076,7 @@ silent call Perl_GetPerlcriticVerbosity(s:Perl_PerlcriticVerbosity)
 
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_do_tags     {{{1
-"   DESCRIPTION:  tag a new file with Perl::Tags
+"   DESCRIPTION:  tag a new file with Perl::Tags::Naive
 "    PARAMETERS:  filename -
 "                 tagfile - name of the tag file
 "       RETURNS:
@@ -2741,9 +2741,9 @@ function! s:CreateAdditionalMaps ()
 
 			use if defined $ENV{PERL_LOCAL_INSTALLATION}, lib => $ENV{PERL_LOCAL_INSTALLATION};
 
-			eval { require Perl::Tags };
+ 			eval { require Perl::Tags::Naive };
 			if ( $@ ) {
-				# Perl::Tags not loadable
+				# Perl::Tags::Naive not loadable
 				VIM::DoCommand("let g:Perl_PerlTags = 'off'" );
 				}
 			else {
