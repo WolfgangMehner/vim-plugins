@@ -2,7 +2,7 @@
 §  User Macros
 § ==========================================================
 
-SetMacro( 'AUTHOR',      'Dr. Fritz mehner' )
+SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
 SetMacro( 'AUTHORREF',   'fgm' )
 SetMacro( 'COMPANY',     '' )
 SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )

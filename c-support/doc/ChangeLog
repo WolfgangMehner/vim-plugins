@@ -1,4 +1,16 @@
 ================================================================================
+  RELEASE NOTES FOR VERSION 6.1.1
+================================================================================
+- Added 'C_SetMapLeader' and 'C_ResetMapLeader'.
+- Bugfix: Resetting maplocalleader in filetype plug-in after setting it to the
+  value of g:C_MapLeader.
+- Bugfix: Setup of local templates in case of global installation.
+- Bugfix: Better compatibility with custom mappings
+  (use "normal!" and "noremap" consistently).
+- 'Help->show manual' shows man page text with appropriate width (UNIX only).
+- Extended the documentation.
+
+================================================================================
   RELEASE NOTES FOR VERSION 6.1
 ================================================================================
 - Map renamed: \rme -> \re.

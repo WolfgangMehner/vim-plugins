@@ -1,7 +1,7 @@
-*csupport.txt*                  C/C++ Support                  March 22 2014
+*csupport.txt*                  C/C++ Support                   July 06 2014
 
 C/C++ Support                                           *c-support* *csupport*
-                             Plugin version 6.1.1
+                             Plugin version 6.1.2pre
                         for Vim version 7.0 and above
                        Fritz Mehner  <mehner@fh-swf.de>
 
@@ -1277,6 +1277,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
   -- Preprocessor -------------------------------------------------------
 
      \pih      include standard library header     (n,i)
+     \piph     include POSIX header                (n,i)
      \pg       #include <>  (global)               (n,i)
      \pl       #include ""  (local)                (n,i)
      \pd       #define                             (n,i)

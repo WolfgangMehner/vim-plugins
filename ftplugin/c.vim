@@ -2,9 +2,9 @@
 "
 " Vim filetype plugin file
 "
-"   Language :  C / C++
+"   Language :  C
 "     Plugin :  c.vim 
-" Maintainer :  Fritz Mehner <mehner@fh-swf.de>
+" Maintainer :  Fritz Mehner <mehner.fritz@fh-swf.de>
 "
 " ------------------------------------------------------------------------------
 "
