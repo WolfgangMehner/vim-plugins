@@ -176,6 +176,22 @@ function! s:UserInput ( prompt, text, ... )
 	let retval = substitute( retval, '\s\+$', '', '' )   " remove trailing whitespaces
 	return retval
 endfunction    " ----------  end of function s:UserInput  ----------
+"
+"-------------------------------------------------------------------------------
+" s:WarningMsg : Print a warning/error message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:WarningMsg ( ... )
+	echohl WarningMsg
+	echo join ( a:000, "\n" )
+	echohl None
+endfunction    " ----------  end of function s:WarningMsg  ----------
 " }}}2
 "-------------------------------------------------------------------------------
 "
@@ -345,10 +361,10 @@ function! mmtoolbox#doxygen#Property ( mode, key, ... )
 	"
 	" perform the action
 	if a:mode == 'echo'
-		exe 'echo '.var
+		echo {var}
 		return
 	elseif a:mode == 'get'
-		exe 'return '.var
+		return {var}
 	elseif a:key == 'config-file'
 		" expand replaces the escape sequences from the cmdline
 		if val =~ '\S'
@@ -567,7 +583,8 @@ function! mmtoolbox#doxygen#Warnings ()
 		"
 		botright cwindow
 	else
-		echo "Doxygen : no warnings/errors"
+		redraw                                      " redraw after cclose, before echoing
+		call s:ImportantMsg ( "Doxygen : no warnings/errors" )
 	endif
 	"
 	lchdir -

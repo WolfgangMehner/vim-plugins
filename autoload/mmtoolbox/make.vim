@@ -14,7 +14,7 @@
 "       Version:  see variable g:Make_Version below
 "       Created:  06.05.2013
 "      Revision:  10.11.2013
-"       License:  Copyright (c) 2013, Fritz Mehner
+"       License:  Copyright (c) 2013-2014, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -43,7 +43,7 @@ endif
 if &cp || ( exists('g:Make_Version') && ! exists('g:Make_DevelopmentOverwrite') )
 	finish
 endif
-let g:Make_Version= '1.0.1'     " version number of this script; do not change
+let g:Make_Version= '1.0.2'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions   {{{1
@@ -236,10 +236,10 @@ function! mmtoolbox#make#Property ( mode, key, ... )
 	"
 	" perform the action
 	if a:mode == 'echo'
-		exe 'echo '.var
+		echo {var}
 		return
 	elseif a:mode == 'get'
-		exe 'return '.var
+		return {var}
 	elseif a:key == 'cmdline-args'
 		let s:CmdLineArgs = val
 	elseif a:key == 'makefile'

@@ -285,10 +285,10 @@ function! mmtoolbox#helloworld#Property ( mode, key, ... )
 	"
 	" perform the action
 	if a:mode == 'echo'
-		exe 'echo '.var
+		echo {var}
 		return
 	elseif a:mode == 'get'
-		exe 'return '.var
+		return {var}
 	else
 		" action is 'set', but key is non of the above
 		return s:ErrorMsg ( 'HelloWorld : Option is read-only, can not set: '.a:key )

@@ -168,6 +168,22 @@ function! s:Question ( prompt, ... )
 	"
 	return ret
 endfunction    " ----------  end of function s:Question  ----------
+"
+"-------------------------------------------------------------------------------
+" s:WarningMsg : Print a warning/error message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:WarningMsg ( ... )
+	echohl WarningMsg
+	echo join ( a:000, "\n" )
+	echohl None
+endfunction    " ----------  end of function s:WarningMsg  ----------
 " }}}2
 "-------------------------------------------------------------------------------
 "
@@ -394,10 +410,10 @@ function! mmtoolbox#cmake#Property ( mode, key, ... )
 	"
 	" perform the action
 	if a:mode == 'echo'
-		exe 'echo '.var
+		echo {var}
 		return
 	elseif a:mode == 'get'
-		exe 'return '.var
+		return {var}
 	elseif a:key == 'project-dir'
 		" expand replaces the escape sequences from the cmdline
 		if val =~ '\S'
@@ -513,8 +529,11 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 		let g:CMakeDebugStr .= 'success: '.( v:shell_error == 0 ).', '   " debug
 		"
 		" errors occurred?
-		if v:shell_error == 0 | echo 'CMake : CMake finished successfully.'
-		else                  | botright cwindow
+		if v:shell_error != 0
+			botright cwindow
+		else
+			redraw                                    " redraw after cclose, before echoing
+			call s:ImportantMsg ( 'CMake : CMake finished successfully.' )
 		endif
 		"
 	else
@@ -582,6 +601,8 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 		if v:shell_error != 0
 			botright cwindow
 		else
+			redraw                                    " redraw after cclose, before echoing
+			"
 			let warnings = 0
 			"
 			for entry in getqflist ()
@@ -592,9 +613,9 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 			endfor
 			"
 			if warnings
-				echo 'CMake : make finished successfully, but warnings present'
+				call s:ImportantMsg ( 'CMake : make finished successfully, but warnings present' )
 			else
-				echo 'CMake : make finished successfully.'
+				call s:ImportantMsg ( 'CMake : make finished successfully.' )
 			endif
 		endif
 		"
@@ -734,10 +755,11 @@ function! mmtoolbox#cmake#Help ( type, topic )
 	"
 	" get the help
 	" :TODO:18.02.2014 15:09:WM: can we use brackets under Windows?
+	" :TODO:18.02.2014 15:09:WM: does the help work at all under Windows?
 	let buf  = 'CMake help - '.topic.' ('.category.')'
 	"
 	if ! s:OpenManBuffer ( cmd, buf, jump )
-		echo 'CMake : No help for "'.topic.'".'
+		call s:WarningMsg ( 'CMake : No help for "'.topic.'".' )
 	endif
   "
 endfunction    " ----------  end of function mmtoolbox#cmake#Help  ----------
@@ -763,7 +785,7 @@ function! mmtoolbox#cmake#HelpJump ( type )
 	endif
 	"
 	if empty( line )
-		echo 'CMake : No '.a:type.' under the cursor.'
+		call s:WarningMsg ( 'CMake : No '.a:type.' under the cursor.' )
 		return
 	endif
 	"
