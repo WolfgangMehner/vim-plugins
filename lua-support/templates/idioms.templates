@@ -32,6 +32,18 @@ error ( 'bad argument #<CURSOR> to \'|?FUNCTION_NAME|\' ({+TYPE+} expected, got 
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
+§  Tables
+§ -------------------------------------------------------------
+
+== SEP: Idioms.sep_tables ==
+
+== Idioms.table constructor == below, map:it, sc:t ==
+<CURSOR> = {
+	<SPLIT>{-INIT-}
+}
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
 §  Function Calls
 § -------------------------------------------------------------
 
@@ -106,7 +118,14 @@ end
 local	|?FILE_HANDLE| = assert ( io.open ( <CURSOR>, '{+MODE+}' ) )
 
 assert ( io.close ( |FILE_HANDLE| ) )
-== Idioms.open pipe == below, map:iop, sc:o ==
+== Idioms.open tmp-file == below, map:iot ==
+local |?TMPFILE_NAME| = assert ( os.tmpname (), 'could not open a temporary file' )
+local	|?FILE_HANDLE| = assert ( io.open ( <CURSOR>|TMPFILE_NAME|, '{+MODE+}' ) )
+
+assert ( io.close ( |FILE_HANDLE| ) )
+
+assert ( os.remove ( |TMPFILE_NAME| ) )
+== Idioms.open pipe == below, map:iop ==
 local	|?FILE_HANDLE| = assert ( io.popen ( <CURSOR>, '{+MODE+}' ) )
 
 assert ( io.close ( |FILE_HANDLE| ) )

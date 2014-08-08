@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:Lua_Version') && ! exists('g:Lua_DevelopmentOverwrite') )
 	finish
 endif
-let g:Lua_Version= '0.8'     " version number of this script; do not change
+let g:Lua_Version= '0.9pre'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
@@ -904,8 +904,10 @@ function! Lua_Compile( mode ) range
 	"
 	" any errors?
 	if a:mode == 'compile' && empty ( v:statusmsg )
+		redraw                                      " redraw after cclose, before echoing
 		call s:ImportantMsg ( 'Compiled successfully.' )
 	elseif a:mode == 'check' && empty ( v:statusmsg )
+		redraw                                      " redraw after cclose, before echoing
 		call s:ImportantMsg ( 'No warnings.' )
 	else
 		botright cwindow

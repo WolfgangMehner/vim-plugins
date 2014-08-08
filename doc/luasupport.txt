@@ -1,8 +1,8 @@
-*luasupport.txt*                 Lua Support                       May 25 2014
+*luasupport.txt*                 Lua Support                       Aug 07 2014
 
 Lua Support                                          *lua-support* *luasupport*
 
-                            Plug-in version 0.8
+                            Plug-in version 0.9pre
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 

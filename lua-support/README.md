@@ -1,4 +1,4 @@
-README for lua-support.vim (Version 0.8) / May 25 2014
+README for lua-support.vim (Version 0.9pre) / Aug 07 2014
 ================================================================================
 
   *  INSTALLATION
@@ -160,9 +160,10 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
   RELEASE NOTES
 ================================================================================
 
-  RELEASE NOTES FOR VERSION 0.8
+  RELEASE NOTES FOR VERSION 0.9pre
 ----------------------------------------------------------------------
-- Initial release.
+- New templates.
+- Minor improvements.
 
   RELEASE NOTES FOR OLDER VERSIONS
 ----------------------------------------------------------------------
