@@ -493,7 +493,7 @@ function! s:StandardRun( cmd, param, flags, ... )
 endfunction    " ----------  end of function s:StandardRun  ----------
 "
 "-------------------------------------------------------------------------------
-" s:UnicodeLen : Open a file or jump to its window.   {{{2
+" s:UnicodeLen : Number of characters in a Unicode string.   {{{2
 "
 " Parameters:
 "   str - a string (string)
@@ -1075,9 +1075,11 @@ function! s:UpdateGitBuffer ( command, ... )
 	"
 	if a:0 == 1 && a:1
 		" return to old position
-		let pos = line('.')
+		let pos_window = line('.') - winline() + 1
+		let pos_cursor = line('.')
 	else
-		let pos = 1
+		let pos_window = 1
+		let pos_cursor = 1
 	endif
 	"
 	" delete the previous contents
@@ -1095,7 +1097,8 @@ function! s:UpdateGitBuffer ( command, ... )
 	"
 	" delete the first line (empty) and go to position
 	normal! ggdd
-	silent exe ':'.pos
+	silent exe 'normal! '.pos_window.'zt'
+	silent exe ':'.pos_cursor
 	"
 	" restart syntax highlighting
 	if &syntax != ''
@@ -1910,6 +1913,56 @@ function! s:Diff_GetFile( ... )
 	return [ f_name, f_line, f_col ]
 	"
 endfunction    " ----------  end of function s:Diff_GetFile  ----------
+"
+" :TODO:11.08.2014 19:09:WM: docu   {{{2
+"
+function! s:Diff_ChunkHandler ( action )
+	"
+	let l_pos = line('.')
+	"
+	let d_pos = search ( '\m\_^diff ', 'bcnW' )
+	let c_pos = search ( '\m\_^@@ ', 'bcnW' )
+	let c_end = search ( '\m\_^@@ \|\_^diff ', 'nW' )
+	"
+	if d_pos == 0 || c_pos == 0
+		return 0
+	elseif c_end == 0
+		let c_end = line('$')+1
+	endif
+	"
+	let chunk = join ( getline ( c_pos, c_end-1 ), "\n" )."\n"
+	"
+	let head = getline(d_pos)
+	"
+	while 1
+		let d_pos += 1
+		let line = getline ( d_pos )
+		"
+		if line =~ '\m\_^\%(diff\|@@\) '
+			break
+		endif
+		"
+		let head .= "\n".line
+	endwhile
+	"
+	if a:action == 'add-chunk'
+		let text = system ( s:Git_Executable.' apply --cached -- -', head."\n".chunk )
+	elseif a:action == 'checkout-chunk'
+		let text = system ( s:Git_Executable.' apply -R -- -', head."\n".chunk )
+	elseif a:action == 'reset-chunk'
+		let text = system ( s:Git_Executable.' apply --cached -R -- -', head."\n".chunk )
+	endif
+	"
+	if v:shell_error != 0
+		echo "applying the chunk failed:\n\n".text              | " failure
+	elseif text =~ '^\_s*$'
+		echo "chunk applied successfully"                       | " success
+	else
+		echo "chunk applied successfully:\n".text               | " success
+	endif
+	"
+	return 1
+endfunction    " ----------  end of function s:Diff_ChunkHandler  ----------
 " }}}2
 "-------------------------------------------------------------------------------
 "
@@ -1926,6 +1979,9 @@ function! GitS_Diff( action, ... )
 		let txt  = s:HelpTxtStd."\n\n"
 		let txt .= "of      : file under cursor: open file (edit)\n"
 		let txt .= "oj      : file under cursor: open and jump to the position under the cursor\n\n"
+"		let txt .= "ac      : chunk under cursor: add to index (add chunk)\n"
+"		let txt .= "cc      : chunk under cursor: undo change (checkout chunk)\n"
+"		let txt .= "rc      : chunk under cursor: remove from index (reset chunk)\n\n"
 		let txt .= "For settings see:\n"
 		let txt .= "  :help g:Git_DiffExpandEmpty"
 		echo txt
@@ -1979,6 +2035,13 @@ function! GitS_Diff( action, ... )
 		endif
 		"
 		return
+	elseif a:action =~ '\<\%(\|add\|checkout\|reset\)-chunk\>'
+		"
+		if s:Diff_ChunkHandler ( a:action )
+			call GitS_Diff ( 'update' )
+		endif
+		"
+		return
 	else
 		echoerr 'Unknown action "'.a:action.'".'
 		return
@@ -1996,9 +2059,13 @@ function! GitS_Diff( action, ... )
 		exe 'nnoremap          <buffer> <S-F1> :call GitS_Diff("help")<CR>'
 		exe 'nnoremap <silent> <buffer> q      :call GitS_Diff("quit")<CR>'
 		exe 'nnoremap <silent> <buffer> u      :call GitS_Diff("update")<CR>'
-
+		"
 		exe 'nnoremap <silent> <buffer> of     :call GitS_Diff("edit")<CR>'
 		exe 'nnoremap <silent> <buffer> oj     :call GitS_Diff("jump")<CR>'
+		"
+		exe 'nnoremap <silent> <buffer> ac     :call GitS_Diff("add-chunk")<CR>'
+		exe 'nnoremap <silent> <buffer> cc     :call GitS_Diff("checkout-chunk")<CR>'
+		exe 'nnoremap <silent> <buffer> rc     :call GitS_Diff("reset-chunk")<CR>'
 	endif
 	"
 	call s:ChangeCWD ( buf )
