@@ -74,6 +74,22 @@
 §
 § =============================================================
 
+== LIST: bibliography_style_list == list, bare ==
+	abbrv
+	alpha
+	plain
+	unsrt
+== ENDLIST ==
+
+== BibTeX.bibliographystyle == insert ==
+|PickList( 'style', 'bibliography_style_list' )|
+\bibliographystyle{|PICK|<CURSOR>}
+== BibTeX.bibliography == insert ==
+\bibliography{<CURSOR><SPLIT>}
+== ENDTEMPLATE ==
+
+== SEP: BibTeX.sep1 ==
+
 == BibTeX.article == below, noindent ==
 @article{<CURSOR>,
   author        = {},

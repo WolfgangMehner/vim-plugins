@@ -35,7 +35,7 @@ if exists("g:LatexSupportVersion") || &cp
  finish
 endif
 "
-let g:LatexSupportVersion= "1.2pre"                  " version number of this script; do not change
+let g:LatexSupportVersion= "1.1.1"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  latex_SetGlobalVariable     {{{1
@@ -76,9 +76,7 @@ let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
 let s:installation							= '*undefined*'
 let s:Latex_GlobalTemplateFile	= ''
-let s:Latex_GlobalTemplateDir		= ''
 let s:Latex_LocalTemplateFile		= ''
-let s:Latex_LocalTemplateDir		= ''
 let s:Latex_FilenameEscChar 		= ''
 
 let s:Latex_Typesetter	= 'pdflatex'
@@ -107,25 +105,22 @@ if	s:MSWIN
 	let s:Latex_PdfPng      = ''
 	let s:Latex_PsPdf       = 'ps2pdf.exe'
 	"
+	let s:plugin_dir = substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
+	"
 	" change '\' to '/' to avoid interpretation as escape character
 	if match(	substitute( expand("<sfile>"), '\', '/', 'g' ),
 				\		substitute( expand("$HOME"),   '\', '/', 'g' ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
 		let s:installation					= 'local'
-		let s:plugin_dir  					= substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
 		let s:Latex_LocalTemplateFile	= s:plugin_dir.'/latex-support/templates/Templates'
-		let s:Latex_LocalTemplateDir	= fnamemodify( s:Latex_LocalTemplateFile, ":p:h" ).'/'
 		let s:Latex_ToolboxDir			 += [ s:plugin_dir.'/autoload/mmtoolbox/' ]
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
 		let s:installation					= 'system'
-		let s:plugin_dir						= $VIM.'/vimfiles'
-		let s:Latex_GlobalTemplateDir	= s:plugin_dir.'/latex-support/templates'
-		let s:Latex_GlobalTemplateFile= s:Latex_GlobalTemplateDir.'/Templates'
+		let s:Latex_GlobalTemplateFile= s:plugin_dir.'/latex-support/templates/Templates'
 		let s:Latex_LocalTemplateFile	= $HOME.'/vimfiles/latex-support/templates/Templates'
-		let s:Latex_LocalTemplateDir	= fnamemodify( s:Latex_LocalTemplateFile, ":p:h" ).'/'
 		let s:Latex_ToolboxDir			 += [
 					\	s:plugin_dir.'/autoload/mmtoolbox/',
 					\	$HOME.'/vimfiles/autoload/mmtoolbox/' ]
@@ -155,23 +150,20 @@ else
 	let s:Latex_PdfPng      = 'convert'
 	let s:Latex_PsPdf       = 'ps2pdf'
 	"
+	let s:plugin_dir = expand('<sfile>:p:h:h')
+	"
 	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
 		let s:installation					= 'local'
-		let s:plugin_dir 						= expand('<sfile>:p:h:h')
 		let s:Latex_LocalTemplateFile	= s:plugin_dir.'/latex-support/templates/Templates'
-		let s:Latex_LocalTemplateDir	= fnamemodify( s:Latex_LocalTemplateFile, ":p:h" ).'/'
 		let s:Latex_ToolboxDir			 += [ s:plugin_dir.'/autoload/mmtoolbox/' ]
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
 		let s:installation					= 'system'
-		let s:plugin_dir						= $VIM.'/vimfiles'
-		let s:Latex_GlobalTemplateDir	= s:plugin_dir.'/latex-support/templates'
-		let s:Latex_GlobalTemplateFile= s:Latex_GlobalTemplateDir.'/Templates'
+		let s:Latex_GlobalTemplateFile= s:plugin_dir.'/latex-support/templates/Templates'
 		let s:Latex_LocalTemplateFile	= $HOME.'/.vim/latex-support/templates/Templates'
-		let s:Latex_LocalTemplateDir	= fnamemodify( s:Latex_LocalTemplateFile, ":p:h" ).'/'
 		let s:Latex_ToolboxDir			 += [
 					\	s:plugin_dir.'/autoload/mmtoolbox/',
 					\	$HOME.'/.vim/autoload/mmtoolbox/' ]
@@ -525,20 +517,22 @@ function! g:Latex_RereadTemplates ( displaymsg )
 		"-------------------------------------------------------------------------------
 		" handle local template files
 		"-------------------------------------------------------------------------------
-		if finddir( s:Latex_LocalTemplateDir ) == ''
+		let templ_dir = fnamemodify( s:Latex_GlobalTemplateFile, ":p:h" ).'/'
+		"
+		if finddir( templ_dir ) == ''
 			" try to create a local template directory
 			if exists("*mkdir")
 				try
-					call mkdir( s:Latex_LocalTemplateDir, "p" )
+					call mkdir( templ_dir, "p" )
 				catch /.*/
 				endtry
 			endif
 		endif
 
-		if isdirectory( s:Latex_LocalTemplateDir ) && !filereadable( s:Latex_LocalTemplateFile )
+		if isdirectory( templ_dir ) && !filereadable( s:Latex_LocalTemplateFile )
 			" write a default local template file
 			let template	= [	]
-			let sample_template_file	= fnamemodify( s:Latex_GlobalTemplateDir, ':h' ).'/rc/sample_template_file'
+			let sample_template_file	= s:plugin_dir.'/latex-support/rc/sample_template_file'
 			if filereadable( sample_template_file )
 				for line in readfile( sample_template_file )
 					call add( template, line )
@@ -1068,14 +1062,15 @@ function! Latex_Settings ()
 	let txt = txt.'                  project :  "'.mmtemplates#core#ExpandText( g:Latex_Templates, '|PROJECT|'     )."\"\n"
 	let txt = txt.'               typesetter :  "'.s:Latex_TypesetterCall[s:Latex_Typesetter]."\"\n"
 	let txt = txt.'      plugin installation :  "'.s:installation."\"\n"
+	let txt = txt.'    using template engine :  version '.g:Templates_Version." by Wolfgang Mehner\n"
  	let txt = txt.'   code snippet directory :  "'.s:Latex_CodeSnippets."\"\n"
 	if s:installation == 'system'
-		let txt = txt.'global template directory :  "'.s:Latex_GlobalTemplateDir."\"\n"
+		let txt = txt.'     global template file :  "'.s:Latex_GlobalTemplateFile."\"\n"
 		if filereadable( s:Latex_LocalTemplateFile )
-			let txt = txt.' local template directory :  "'.s:Latex_LocalTemplateDir."\"\n"
+			let txt = txt.'      local template file :  "'.s:Latex_LocalTemplateFile."\"\n"
 		endif
 	else
-		let txt = txt.' local template directory :  "'.s:Latex_LocalTemplateDir."\"\n"
+		let txt = txt.'      local template file :  "'.s:Latex_LocalTemplateFile."\"\n"
 	endif
 	" ----- dictionaries ------------------------
   if !empty(g:Latex_Dictionary_File)
