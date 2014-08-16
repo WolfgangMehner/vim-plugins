@@ -1,7 +1,7 @@
-*vimsupport.txt*                Vim Support                   March 25 2014
+*vimsupport.txt*                Vim Support                     Aug 15 2014
 
 Vim Support                                         *vim-support* *vimsupport*
-                              Plugin version 2.2.1pre
+                              Plugin version 2.3
                         for Vim version 7.0 and above
                   Fritz Mehner  <mehner.fritz at fh-swf.de>
                 Wolfgang Mehner  <wolfgang-mehner at web.de>
@@ -131,9 +131,9 @@ A marked block
 
 will be changed into (and vice versa)
 
- "  let x = 33                                     " this is x
- "  let y = 44                                     " and y
- "  let z = 55                                     " and now z
+ "let x = 33                                     " this is x
+ "let y = 44                                     " and y
+ "let z = 55                                     " and now z
 
 1.1.4 FRAME COMMENTS, FILE HEADER, ...             *vimsupport-comm-templates*
 --------------------------------------

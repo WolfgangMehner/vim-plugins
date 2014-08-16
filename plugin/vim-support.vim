@@ -35,7 +35,7 @@ if exists("g:VimSupportVersion") || &cp
  finish
 endif
 "
-let g:VimSupportVersion= "2.2.1pre"                  " version number of this script; do not change
+let g:VimSupportVersion= "2.3"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  GetGlobalSetting     {{{1
@@ -68,13 +68,13 @@ let s:MSWIN =   has("win16") || has("win32") || has("win64") || has("win95")
 "
 let s:installation						= '*undefined*'
 let s:Vim_GlobalTemplateFile	= ''
-let s:Vim_GlobalTemplateDir		= ''
 let s:Vim_LocalTemplateFile		= ''
-let s:Vim_LocalTemplateDir		= ''
 let s:Vim_FilenameEscChar 		= ''
 
 if	s:MSWIN
   " ==========  MS Windows  ======================================================
+	"
+	let s:plugin_dir = substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
 	"
 	" change '\' to '/' to avoid interpretation as escape character
 	if match(	substitute( expand("<sfile>"), '\', '/', 'g' ), 
@@ -82,18 +82,13 @@ if	s:MSWIN
 		"
 		" USER INSTALLATION ASSUMED
 		let s:installation					= 'local'
-		let s:plugin_dir  					= substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
 		let s:Vim_LocalTemplateFile	= s:plugin_dir.'/vim-support/templates/Templates'
-		let s:Vim_LocalTemplateDir	= fnamemodify( s:Vim_LocalTemplateFile, ":p:h" ).'/'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
 		let s:installation					= 'system'
-		let s:plugin_dir						= $VIM.'/vimfiles'
-		let s:Vim_GlobalTemplateDir	= s:plugin_dir.'/vim-support/templates'
-		let s:Vim_GlobalTemplateFile= s:Vim_GlobalTemplateDir.'/Templates'
+		let s:Vim_GlobalTemplateFile= s:plugin_dir.'/vim-support/templates/Templates'
 		let s:Vim_LocalTemplateFile	= $HOME.'/vimfiles/vim-support/templates/Templates'
-		let s:Vim_LocalTemplateDir	= fnamemodify( s:Vim_LocalTemplateFile, ":p:h" ).'/'
 	endif
 	"
   let s:Vim_FilenameEscChar 		= ''
@@ -102,22 +97,19 @@ if	s:MSWIN
 else
   " ==========  Linux/Unix  ======================================================
 	"
+	let s:plugin_dir = expand('<sfile>:p:h:h')
+	"
 	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
 		let s:installation					= 'local'
-		let s:plugin_dir 						= expand('<sfile>:p:h:h')
 		let s:Vim_LocalTemplateFile	= s:plugin_dir.'/vim-support/templates/Templates'
-		let s:Vim_LocalTemplateDir	= fnamemodify( s:Vim_LocalTemplateFile, ":p:h" ).'/'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
 		let s:installation					= 'system'
-		let s:plugin_dir						= $VIM.'/vimfiles'
-		let s:Vim_GlobalTemplateDir	= s:plugin_dir.'/vim-support/templates'
-		let s:Vim_GlobalTemplateFile= s:Vim_GlobalTemplateDir.'/Templates'
+		let s:Vim_GlobalTemplateFile= s:plugin_dir.'/vim-support/templates/Templates'
 		let s:Vim_LocalTemplateFile	= $HOME.'/.vim/vim-support/templates/Templates'
-		let s:Vim_LocalTemplateDir	= fnamemodify( s:Vim_LocalTemplateFile, ":p:h" ).'/'
 	endif
 	"
   let s:Vim_FilenameEscChar 		= ' \%#[]'
@@ -414,7 +406,7 @@ endfunction		" ---------- end of function  Vim_MultiLineEndComments  ----------
 function! Vim_CodeComment() range
 	" add '" ' at the beginning of the lines
 	for line in range( a:firstline, a:lastline )
-		exe line.'s/^/" /'
+		exe line.'s/^/"/'
 	endfor
 endfunction    " ----------  end of function Vim_CodeComment  ----------
 "
@@ -426,12 +418,17 @@ endfunction    " ----------  end of function Vim_CodeComment  ----------
 "===============================================================================
 function! Vim_CommentCode( toggle ) range
 	for i in range( a:firstline, a:lastline )
-		if getline( i ) =~ '^" '
+		" :TRICKY:15.08.2014 17:17:WM:
+		" Older version prior to 2.3 inserted a space after the quote when turning
+		" a line into a comment. In order to deal with old code commented with this
+		" feature, we use a special rule to delete "hidden" spaces before tabs.
+		" Every other space which was inserted after a quote will be visible.
+		if getline( i ) =~ '^" \t'
 			silent exe i.'s/^" //'
 		elseif getline( i ) =~ '^"'
 			silent exe i.'s/^"//'
 		elseif a:toggle
-			silent exe i.'s/^/" /'
+			silent exe i.'s/^/"/'
 		endif
 	endfor
 	"
@@ -597,20 +594,22 @@ function! g:Vim_RereadTemplates ( displaymsg )
 		"-------------------------------------------------------------------------------
 		" handle local template files
 		"-------------------------------------------------------------------------------
-		if finddir( s:Vim_LocalTemplateDir ) == ''
+		let templ_dir = fnamemodify( s:Vim_LocalTemplateFile, ":p:h" ).'/'
+		"
+		if finddir( templ_dir ) == ''
 			" try to create a local template directory
 			if exists("*mkdir")
 				try 
-					call mkdir( s:Vim_LocalTemplateDir, "p" )
+					call mkdir( templ_dir, "p" )
 				catch /.*/
 				endtry
 			endif
 		endif
 
-		if isdirectory( s:Vim_LocalTemplateDir ) && !filereadable( s:Vim_LocalTemplateFile )
+		if isdirectory( templ_dir ) && !filereadable( s:Vim_LocalTemplateFile )
 			" write a default local template file
 			let template	= [	]
-			let sample_template_file	= fnamemodify( s:Vim_GlobalTemplateDir, ':h' ).'/rc/sample_template_file'
+			let sample_template_file	= s:plugin_dir.'/vim-support/rc/sample_template_file'
 			if filereadable( sample_template_file )
 				for line in readfile( sample_template_file )
 					call add( template, line )
@@ -993,14 +992,15 @@ endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 function! Vim_Settings ()
 	let	txt =     " Vim-Support settings\n\n"
 	let txt = txt.'      plugin installation :  "'.s:installation."\"\n"
+	let txt = txt.'    using template engine :  version '.g:Templates_Version." by Wolfgang Mehner\n"
  	let txt = txt.'   code snippet directory :  "'.s:Vim_CodeSnippets."\"\n"
 	if s:installation == 'system'
-		let txt = txt.'global template directory :  '.s:Vim_GlobalTemplateDir."\n"
+		let txt = txt.'     global template file :  '.s:Vim_GlobalTemplateFile."\n"
 		if filereadable( s:Vim_LocalTemplateFile )
-			let txt = txt.' local template directory :  '.s:Vim_LocalTemplateDir."\n"
+			let txt = txt.'      local template file :  '.s:Vim_LocalTemplateFile."\n"
 		endif
 	else
-		let txt = txt.' local template directory :  '.s:Vim_LocalTemplateDir."\n"
+		let txt = txt.'      local template file :  '.s:Vim_LocalTemplateFile."\n"
 	endif
 	let txt = txt."\n"
 	let	txt = txt."__________________________________________________________________________\n"
