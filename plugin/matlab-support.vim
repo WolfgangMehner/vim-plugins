@@ -144,23 +144,20 @@ if s:MSWIN
 	" MS Windows
 	"-------------------------------------------------------------------------------
 	"
+	let s:plugin_dir = substitute( expand('<sfile>:p:h:h'), '\\', '/', 'g' )
+	"
 	if match(      substitute( expand('<sfile>'), '\\', '/', 'g' ),
 				\   '\V'.substitute( expand('$HOME'),   '\\', '/', 'g' ) ) == 0
 		"
 		" user installation assumed
 		let s:installation           = 'local'
-		let s:plugin_dir             = substitute( expand('<sfile>:p:h:h'), '\\', '/', 'g' )
-		let s:Matlab_LclTemplateDir  = s:plugin_dir.'/matlab-support/templates'
-		let s:Matlab_LclTemplateFile = s:Matlab_LclTemplateDir.'/Templates'
+		let s:Matlab_LclTemplateFile = s:plugin_dir.'/matlab-support/templates/Templates'
 	else
 		"
 		" system wide installation
 		let s:installation           = 'system'
-		let s:plugin_dir             = $VIM.'/vimfiles'
-		let s:Matlab_GlbTemplateDir  = s:plugin_dir.'/matlab-support/templates'
-		let s:Matlab_LclTemplateDir  = $HOME.'/vimfiles/matlab-support/templates'
-		let s:Matlab_GlbTemplateFile = s:Matlab_GlbTemplateDir.'/Templates'
-		let s:Matlab_LclTemplateFile = s:Matlab_LclTemplateDir.'/Templates'
+		let s:Matlab_GlbTemplateFile = s:plugin_dir.'/matlab-support/templates/Templates'
+		let s:Matlab_LclTemplateFile = $HOME.'/vimfiles/matlab-support/templates/Templates'
 	endif
 	"
 else
@@ -169,22 +166,19 @@ else
 	" Linux/Unix
 	"-------------------------------------------------------------------------------
 	"
+	let s:plugin_dir = expand('<sfile>:p:h:h')
+	"
 	if match( expand('<sfile>'), '\V'.resolve(expand('$HOME')) ) == 0
 		"
 		" user installation assumed
 		let s:installation           = 'local'
-		let s:plugin_dir             = expand('<sfile>:p:h:h')
-		let s:Matlab_LclTemplateDir  = s:plugin_dir.'/matlab-support/templates'
-		let s:Matlab_LclTemplateFile = s:Matlab_LclTemplateDir.'/Templates'
+		let s:Matlab_LclTemplateFile = s:plugin_dir.'/matlab-support/templates/Templates'
 	else
 		"
 		" system wide installation
 		let s:installation           = 'system'
-		let s:plugin_dir             = $VIM.'/vimfiles'
-		let s:Matlab_GlbTemplateDir  = s:plugin_dir.'/matlab-support/templates'
-		let s:Matlab_LclTemplateDir  = $HOME.'/.vim/matlab-support/templates'
-		let s:Matlab_GlbTemplateFile = s:Matlab_GlbTemplateDir.'/Templates'
-		let s:Matlab_LclTemplateFile = s:Matlab_LclTemplateDir.'/Templates'
+		let s:Matlab_GlbTemplateFile = s:plugin_dir.'/matlab-support/templates/Templates'
+		let s:Matlab_LclTemplateFile = $HOME.'/.vim/matlab-support/templates/Templates'
 	endif
 	"
 endif
@@ -680,6 +674,7 @@ function! Matlab_CheckCode() range
 	let &g:errorformat = errorf_saved
 	"
 	if empty ( errors_mlint )
+		redraw                                      " redraw after cclose, before echoing
 		call s:ImportantMsg ( 'No warnings.' )
 	else
 		botright cwindow
@@ -833,7 +828,7 @@ function! s:SetupTemplates()
 		endif
 		"
 		if isdirectory( local_dir ) && ! filereadable( s:Matlab_LclTemplateFile )
-			let sample_template_file	= fnamemodify ( s:Matlab_GlbTemplateFile, ':p:h:h' ).'/rc/sample_template_file'
+			let sample_template_file = s:plugin_dir.'/matlab-support/rc/sample_template_file'
 			if filereadable( sample_template_file )
 				call writefile ( readfile ( sample_template_file ), s:Matlab_LclTemplateFile )
 			endif

@@ -579,10 +579,10 @@ The default for the global template file is: >
   g:Matlab_GlbTemplateFile
     = $VIM.'/vimfiles/matlab-support/templates/Templates'
 The default for the local template file is (UNIX/Linux): >
-  s:Matlab_LclTemplateDir
+  s:Matlab_LclTemplateFile
     = $HOME.'/.vim/matlab-support/templates/Templates'
 or (Windows): >
-  s:Matlab_LclTemplateDir
+  s:Matlab_LclTemplateFile
     = $HOME.'/vimfiles/matlab-support/templates/Templates'
 <
 
