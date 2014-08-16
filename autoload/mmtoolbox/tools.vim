@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Toolbox_Version below
 "       Created:  29.12.2012
-"      Revision:  04.01.2014
+"      Revision:  15.08.2014
 "       License:  Copyright (c) 2012-2014, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -38,10 +38,103 @@ endif
 "
 " prevent duplicate loading
 " need compatible
-if &cp || ( exists('g:Toolbox_Version') && ! exists('g:Toolbox_DevelopmentOverwrite') )
+if &cp || ( exists('g:Toolbox_Version') && g:Toolbox_Version != 'searching' && ! exists('g:Toolbox_DevelopmentOverwrite') )
 	finish
 endif
-let g:Toolbox_Version= '1.0.1'     " version number of this script; do not change
+"
+let s:Toolbox_Version= '1.1'     " version number of this script; do not change
+"
+"----------------------------------------------------------------------
+"  --- Find Newest Version ---   {{{2
+"----------------------------------------------------------------------
+"
+if exists('g:Toolbox_DevelopmentOverwrite')
+	" skip ahead
+elseif exists('g:Toolbox_VersionUse')
+	"
+	" not the newest one: abort
+	if s:Toolbox_Version != g:Toolbox_VersionUse
+		finish
+	endif
+	"
+	" otherwise: skip ahead
+	"
+elseif exists('g:Toolbox_VersionSearch')
+	"
+	" add own version number to the list
+	call add ( g:Toolbox_VersionSearch, s:Toolbox_Version )
+	"
+	finish
+	"
+else
+	"
+	"-------------------------------------------------------------------------------
+	" s:VersionComp : Compare two version numbers.   {{{3
+	"
+	" Parameters:
+	"   op1 - first version number (string)
+	"   op2 - second version number (string)
+	" Returns:
+	"   result - -1, 0 or 1, to the specifications of sort() (integer)
+	"-------------------------------------------------------------------------------
+	function! s:VersionComp ( op1, op2 )
+		"
+		let l1 = split ( a:op1, '[.-]' )
+		let l2 = split ( a:op2, '[.-]' )
+		"
+		for i in range( 0, max( [ len( l1 ), len( l2 ) ] ) - 1 )
+			" until now, all fields where equal
+			if len ( l2 ) <= i
+				return -1                               " op1 has more fields -> sorts first
+			elseif len( l1 ) <= i
+				return 1                                " op2 has more fields -> sorts first
+			elseif str2nr ( l1[i] ) > str2nr ( l2[i] )
+				return -1                               " op1 is larger here -> sorts first
+			elseif str2nr ( l2[i] ) > str2nr ( l1[i] )
+				return 1                                " op2 is larger here -> sorts first
+			endif
+		endfor
+		"
+		return 0                                    " same amount of fields, all equal
+	endfunction    " ----------  end of function s:VersionComp  ----------
+	" }}}3
+	"-------------------------------------------------------------------------------
+	"
+	try
+		"
+		" collect all available version
+		let g:Toolbox_Version = 'searching'
+		let g:Toolbox_VersionSearch = []
+		"
+		runtime! autoload/mmtoolbox/tools.vim
+		"
+		" select the newest one
+		call sort ( g:Toolbox_VersionSearch, 's:VersionComp' )
+		"
+		let g:Toolbox_VersionUse = g:Toolbox_VersionSearch[ 0 ]
+		"
+		" run all scripts again, the newest one will be used
+		runtime! autoload/mmtoolbox/tools.vim
+		"
+		unlet g:Toolbox_VersionSearch
+		unlet g:Toolbox_VersionUse
+		"
+		finish
+		"
+	catch /.*/
+		"
+		" an error occurred, skip ahead
+		echohl WarningMsg
+		echomsg 'Search for the newest version number failed.'
+		echomsg 'Using this version ('.s:Toolbox_Version.').'
+		echohl None
+	endtry
+	"
+endif
+" }}}2
+"-------------------------------------------------------------------------------
+"
+let g:Toolbox_Version = s:Toolbox_Version     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions   {{{1
@@ -309,6 +402,8 @@ function! mmtoolbox#tools#GetList ( toolbox )
 			call add ( toollist, entry.prettyname." (".entry.version.", disabled)" )
 		endif
 	endfor
+	"
+	call add ( toollist, '(toolbox version '.g:Toolbox_Version.')' )
 	"
 	return toollist
 	"

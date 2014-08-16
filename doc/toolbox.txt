@@ -1,8 +1,8 @@
-*toolbox.txt*                   MM Toolbox Support                 Jan 04 2014
+*toolbox.txt*                   MM Toolbox Support                 Aug 15 2014
 
 MM Toolbox Support                                                  *toolbox*
 
-                            Plug-in version 1.0.1
+                             Plug-in version 1.1
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
                   Fritz Mehner  <mehner.fritz at fh-swf.de>
@@ -377,6 +377,14 @@ See also |toolbox-support-AddMenu()|.
 ==============================================================================
 A.  CHANGE LOG                                    *toolbox-support-change-log*
 ==============================================================================
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.1
+------------------------------------------------------------------------------
+
+- Change: In case several version of autoload/mmtoolbox/tools.vim are
+  available on 'runtimepath', pick out the newest one to load.
+- Minor changes.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 1.0.1
