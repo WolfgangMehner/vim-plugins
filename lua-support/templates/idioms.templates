@@ -21,6 +21,44 @@ end  -----  end of function |FUNCTION_NAME|  -----
 
 == ENDTEMPLATE ==
 
+§ use "default" style as well,
+§ so this template is used as a fall-back for other styles
+== USE STYLES : default, Lua_51 ==
+
+== Idioms.metamethod == expandmenu, below, map:im, sc:m ==
+|PickList( 'metamethod ', 'idioms_metamethod_5_1' )|
+function <CURSOR>|?TABLE_NAME|.__|KEY| ( |VALUE| )
+	<SPLIT>{-FUNCTION_BODY-}
+end  -----  end of function |TABLE_NAME|.__|KEY|  -----
+
+== ENDTEMPLATE ==
+
+== ENDSTYLES ==
+
+== USE STYLES : Lua_52 ==
+
+== Idioms.metamethod == expandmenu, below, map:im, sc:m ==
+|PickList( 'metamethod ', 'idioms_metamethod_5_2' )|
+function <CURSOR>|?TABLE_NAME|.__|KEY| ( |VALUE| )
+	<SPLIT>{-FUNCTION_BODY-}
+end  -----  end of function |TABLE_NAME|.__|KEY|  -----
+
+== ENDTEMPLATE ==
+
+== ENDSTYLES ==
+
+§== USE STYLES : Lua_53 ==
+§
+§== Idioms.metamethod == expandmenu, below, map:im, sc:m ==
+§|PickList( 'metamethod ', 'idioms_metamethod_5_3' )|
+§function <CURSOR>|?TABLE_NAME|.__|KEY| ( |VALUE| )
+§	<SPLIT>{-FUNCTION_BODY-}
+§end  -----  end of function |TABLE_NAME|.__|KEY|  -----
+§
+§== ENDTEMPLATE ==
+§
+§== ENDSTYLES ==
+
 § -------------------------------------------------------------
 §  Error Handling
 § -------------------------------------------------------------

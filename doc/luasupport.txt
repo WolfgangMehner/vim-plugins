@@ -723,10 +723,10 @@ The default for the global template file is: >
   g:Lua_GlbTemplateFile
     = $VIM.'/vimfiles/lua-support/templates/Templates'
 The default for the local template file is (UNIX/Linux): >
-  s:Lua_LclTemplateDir
+  s:Lua_LclTemplateFile
     = $HOME.'/.vim/lua-support/templates/Templates'
 or (Windows): >
-  s:Lua_LclTemplateDir
+  s:Lua_LclTemplateFile
     = $HOME.'/vimfiles/lua-support/templates/Templates'
 <
 

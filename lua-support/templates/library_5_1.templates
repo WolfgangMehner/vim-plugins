@@ -135,3 +135,27 @@
 	'stdin'                 : 'io.stdin',
 	'stdout'                : 'io.stdout',
 == ENDLIST ==
+
+§ we also include the new metamethods supported by Lua 5.2,
+§ so we can generate the correct menus
+== LIST: idioms_metamethod_5_1 == hash ==
+	'add'      : 'op1, op2',
+	'sub'      : 'op1, op2',
+	'mul'      : 'op1, op2',
+	'div'      : 'op1, op2',
+	'mod'      : 'op1, op2',
+	'pow'      : 'op1, op2',
+	'unm'      : 'op',
+	'concat'   : 'op1, op2',
+	'len'      : 'op',
+	'eq'       : 'op1, op2',
+	'lt'       : 'op1, op2',
+	'le'       : 'op1, op2',
+	'index'    : 'object, key',
+	'newindex' : 'object, key, value',
+	'call'     : 'func, ...',
+	'tostring' : 'value',
+	'gc'       : 'udata',
+	'ipairs'   : 'WARNING___NOT_AVAILABLE_IN_LUA_5_1',
+	'pairs'    : 'WARNING___NOT_AVAILABLE_IN_LUA_5_1',
+== ENDLIST ==

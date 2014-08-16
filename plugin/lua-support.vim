@@ -193,23 +193,20 @@ if s:MSWIN
 	" MS Windows
 	"-------------------------------------------------------------------------------
 	"
+	let s:plugin_dir = substitute( expand('<sfile>:p:h:h'), '\\', '/', 'g' )
+	"
 	if match(      substitute( expand('<sfile>'), '\\', '/', 'g' ),
 				\   '\V'.substitute( expand('$HOME'),   '\\', '/', 'g' ) ) == 0
 		"
 		" user installation assumed
 		let s:installation        = 'local'
-		let s:plugin_dir          = substitute( expand('<sfile>:p:h:h'), '\\', '/', 'g' )
-		let s:Lua_LclTemplateDir  = s:plugin_dir.'/lua-support/templates'
-		let s:Lua_LclTemplateFile = s:Lua_LclTemplateDir.'/Templates'
+		let s:Lua_LclTemplateFile = s:plugin_dir.'/lua-support/templates/Templates'
 	else
 		"
 		" system wide installation
 		let s:installation        = 'system'
-		let s:plugin_dir          = $VIM.'/vimfiles'
-		let s:Lua_GlbTemplateDir  = s:plugin_dir.'/lua-support/templates'
-		let s:Lua_LclTemplateDir  = $HOME.'/vimfiles/lua-support/templates'
-		let s:Lua_GlbTemplateFile = s:Lua_GlbTemplateDir.'/Templates'
-		let s:Lua_LclTemplateFile = s:Lua_LclTemplateDir.'/Templates'
+		let s:Lua_GlbTemplateFile = s:plugin_dir.'/lua-support/templates/Templates'
+		let s:Lua_LclTemplateFile = $HOME.'/vimfiles/lua-support/templates/Templates'
 	endif
 	"
 else
@@ -218,22 +215,19 @@ else
 	" Linux/Unix
 	"-------------------------------------------------------------------------------
 	"
+	let s:plugin_dir = expand('<sfile>:p:h:h')
+	"
 	if match( expand('<sfile>'), '\V'.resolve(expand('$HOME')) ) == 0
 		"
 		" user installation assumed
 		let s:installation        = 'local'
-		let s:plugin_dir          = expand('<sfile>:p:h:h')
-		let s:Lua_LclTemplateDir  = s:plugin_dir.'/lua-support/templates'
-		let s:Lua_LclTemplateFile = s:Lua_LclTemplateDir.'/Templates'
+		let s:Lua_LclTemplateFile = s:plugin_dir.'/lua-support/templates/Templates'
 	else
 		"
 		" system wide installation
 		let s:installation        = 'system'
-		let s:plugin_dir          = $VIM.'/vimfiles'
-		let s:Lua_GlbTemplateDir  = s:plugin_dir.'/lua-support/templates'
-		let s:Lua_LclTemplateDir  = $HOME.'/.vim/lua-support/templates'
-		let s:Lua_GlbTemplateFile = s:Lua_GlbTemplateDir.'/Templates'
-		let s:Lua_LclTemplateFile = s:Lua_LclTemplateDir.'/Templates'
+		let s:Lua_GlbTemplateFile = s:plugin_dir.'/lua-support/templates/Templates'
+		let s:Lua_LclTemplateFile = $HOME.'/.vim/lua-support/templates/Templates'
 	endif
 	"
 endif
@@ -988,7 +982,7 @@ function! s:SetupTemplates()
 		endif
 		"
 		if isdirectory( local_dir ) && ! filereadable( s:Lua_LclTemplateFile )
-			let sample_template_file	= fnamemodify ( s:Lua_GlbTemplateFile, ':p:h:h' ).'/rc/sample_template_file'
+			let sample_template_file = s:plugin_dir.'/lua-support/rc/sample_template_file'
 			if filereadable( sample_template_file )
 				call writefile ( readfile ( sample_template_file ), s:Lua_LclTemplateFile )
 			endif
