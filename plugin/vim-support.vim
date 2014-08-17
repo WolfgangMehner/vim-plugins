@@ -553,7 +553,7 @@ endfunction    " ----------  end of function Vim_HelpVimSupport ----------
 "    PARAMETERS:  -
 "       RETURNS:  
 "===============================================================================
-function! g:Vim_RereadTemplates ( displaymsg )
+function! Vim_RereadTemplates ( displaymsg )
 	"
 	"
 	"-------------------------------------------------------------------------------
@@ -1017,7 +1017,7 @@ function! Vim_CreateGuiMenus ()
 		anoremenu   <silent> 40.1000 &Tools.-SEP100- :
 		anoremenu   <silent> 40.1170 &Tools.Unload\ Vim\ Support :call Vim_RemoveGuiMenus()<CR>
 		"
-		call g:Vim_RereadTemplates('no')
+		call Vim_RereadTemplates('no')
 		call s:InitMenus () 
 		"
 		let s:Vim_MenuVisible = 'yes'
@@ -1061,8 +1061,8 @@ if has( 'autocmd' )
   autocmd FileType *
         \ if &filetype == 'vim' || ( &filetype == 'help' && &modifiable == 1 && s:Vim_CreateMapsForHelp == 'yes' ) |
         \   if ! exists( 'g:Vim_Templates' ) |
-        \     if s:Vim_LoadMenus == 'yes' | call Vim_CreateGuiMenus ()        |
-        \     else                        | call g:Vim_RereadTemplates ('no') |
+        \     if s:Vim_LoadMenus == 'yes' | call Vim_CreateGuiMenus ()      |
+        \     else                        | call Vim_RereadTemplates ('no') |
         \     endif |
         \   endif |
         \   call s:CreateAdditionalMaps() |

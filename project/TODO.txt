@@ -1,10 +1,8 @@
 Project
-- (WM, DONE) Remove 'plugin/make.vim'.
-- (WM, DONE) Tag 'perlsupport-5.2' is wrong.
-- (FM,WM) Use normal!, noremap and noremenu consistently.
+- (FM,WM, DONE?) Use normal!, noremap and noremenu consistently.
 - (FM,WM) Is the difference between local and global/system installation
   documented somewhere?
-- (WM) Improve 'adjust end-of-line comment' to change the line if the comment
+- (WM, DONE?) Improve 'adjust end-of-line comment' to change the line if the comment
   itself contains ignored sections?
 
 vim.org:
@@ -27,9 +25,11 @@ Templates:
 
 Awk:
 - (FM) 'code->comment' should not insert a space following the hash?
+- (FM) Rename function 'g:Awk_RereadTemplates'.
 
 Bash:
 - (FM) 'code->comment' should not insert a space following the hash?
+- (FM) Rename function 'g:BASH_RereadTemplates'.
 
 C/C++:
 - (FM, DONE) Documentation: Change documentation with regard to Make integration.
@@ -62,8 +62,6 @@ Git:
 - (WM, DONE?) Problem with 's:OpenFile()':
   Since the name of the buffer has to match exactly, this does not always work
   with different working directories.
-- (WM, DONE?) For global installation (compare Matlab):
-  Which method is best to obtain 's:plugin_dir'?
 - (WM, DONE?) Maps for completing Git commands, branches, tags, remotes, ...
   similar to the cmd-line completion plug-in.
 - (WM) New status buffer output (version > 1.8.5):
@@ -82,10 +80,6 @@ LaTeX:
 - (FM) Reference Card: Menu 'Beamer' missing.
 - (WM, DONE) Reference Card: Entry 'Help->english' missing.
 
-Matlab:
-- (WM, DONE?) For global installation (compare Git):
-  Which method is best to obtain 's:plugin_dir'?
-
 Perl:
 - (FM, DONE) Documentation: Change documentation with regard to Make integration.
   * 'Run' menu entries removed.
@@ -95,7 +89,7 @@ Perl:
   * Document 'g:Perl_UseToolbox' and 'g:Perl_UseTool_make'.
 
 Vim:
-- (FM/WM) 'code->comment' should not insert a space following the quote.
+- (WM, DONE) 'code->comment' should not insert a space following the quote.
 
 Toolbox:
 - CMake: Does the help work at all under Windows?

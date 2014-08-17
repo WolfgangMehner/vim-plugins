@@ -85,6 +85,7 @@ For a system-wide installation please see the help file 'doc/vimsupport.txt'.
 + Bugfix: Better compatibility with custom mappings
   (use "normal!", "noremap" and "noremenu" consistently).
 + Bugfix: Setup of local templates in case of global installation.
++ Bugfix: Renamed function which were named "g:*".
 + Always load the newest version of the template engine available on 'runtimepath'.
 
 =======================================================================================

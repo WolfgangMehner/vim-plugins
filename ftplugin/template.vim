@@ -28,33 +28,33 @@ if exists("b:did_Template_ftplugin")
 endif
 let b:did_Template_ftplugin = 1
 "
-if ! exists ( '*g:Templates_CodeComment' )
+if ! exists ( '*Templates_CodeComment' )
 	"----------------------------------------------------------------------
-	" g:Templates_CommentCode : Comment -> Code   {{{1
+	" Templates_CommentCode : Comment -> Code   {{{1
 	"----------------------------------------------------------------------
-	function! g:Templates_CodeComment() range
+	function! Templates_CodeComment() range
 		"
 		" add '§' at the beginning of the lines
 		silent exe ':'.a:firstline.','.a:lastline.'s/^/§/'
 		"
-	endfunction    " ----------  end of function g:Templates_CodeComment  ----------
+	endfunction    " ----------  end of function Templates_CodeComment  ----------
 	"
 	"----------------------------------------------------------------------
-	" g:Templates_CommentCode : Comment -> Code   {{{1
+	" Templates_CommentCode : Comment -> Code   {{{1
 	"----------------------------------------------------------------------
-	function! g:Templates_CommentCode() range
+	function! Templates_CommentCode() range
 		"
 		" remove '§' from the beginning of the line
 		silent exe ':'.a:firstline.','.a:lastline.'s/^\§//'
 		"
-	endfunction    " ----------  end of function g:Templates_CommentCode  ----------
+	endfunction    " ----------  end of function Templates_CommentCode  ----------
 	" }}}1
 endif
 "
- noremap    <buffer>  <silent>  <LocalLeader>cc         :call g:Templates_CodeComment()<CR>
-inoremap    <buffer>  <silent>  <LocalLeader>cc    <Esc>:call g:Templates_CodeComment()<CR>
- noremap    <buffer>  <silent>  <LocalLeader>cu         :call g:Templates_CommentCode()<CR>
-inoremap    <buffer>  <silent>  <LocalLeader>cu    <Esc>:call g:Templates_CommentCode()<CR>
+ noremap    <buffer>  <silent>  <LocalLeader>cc         :call Templates_CodeComment()<CR>
+inoremap    <buffer>  <silent>  <LocalLeader>cc    <Esc>:call Templates_CodeComment()<CR>
+ noremap    <buffer>  <silent>  <LocalLeader>cu         :call Templates_CommentCode()<CR>
+inoremap    <buffer>  <silent>  <LocalLeader>cu    <Esc>:call Templates_CommentCode()<CR>
 "
 inoremap  {+  {++}<Left><Left>
 inoremap  {-  {--}<Left><Left>

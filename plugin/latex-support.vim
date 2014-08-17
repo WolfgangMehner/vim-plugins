@@ -479,7 +479,7 @@ endfunction    " ----------  end of function Latex_ResetMapLeader  ----------
 "    PARAMETERS:  -
 "       RETURNS:
 "===============================================================================
-function! g:Latex_RereadTemplates ( displaymsg )
+function! Latex_RereadTemplates ( displaymsg )
 	"
 	"-------------------------------------------------------------------------------
 	" SETUP TEMPLATE LIBRARY
@@ -1104,7 +1104,7 @@ function! Latex_CreateGuiMenus ()
 		amenu   <silent> 40.1000 &Tools.-SEP100- :
 		amenu   <silent> 40.1110 &Tools.Unload\ Latex\ Support :call Latex_RemoveGuiMenus()<CR>
 		"
-		call g:Latex_RereadTemplates('no')
+		call Latex_RereadTemplates('no')
 		call s:InitMenus ()
 		"
 		let s:Latex_MenuVisible = 'yes'
@@ -1575,8 +1575,8 @@ if has( 'autocmd' )
         \ endif |
         \ if &filetype == 'tex' |
         \   if ! exists( 'g:Latex_Templates' ) |
-        \     if s:Latex_LoadMenus == 'yes' | call Latex_CreateGuiMenus ()        |
-        \     else                          | call g:Latex_RereadTemplates ('no') |
+        \     if s:Latex_LoadMenus == 'yes' | call Latex_CreateGuiMenus ()      |
+        \     else                          | call Latex_RereadTemplates ('no') |
         \     endif |
         \   endif |
         \   call s:CreateAdditionalMaps () |
