@@ -1,8 +1,8 @@
-*gitsupport.txt*                  Git Support                     June 28 2014
+*gitsupport.txt*                  Git Support                      Aug 21 2014
 
 Git Support                                          *git-support* *gitsupport*
 
-                            Plug-in version 0.9.2pre
+                            Plug-in version 0.9.2
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -111,6 +111,7 @@ run the commands in every subdirectory of the project.
   |:GitStash| [<args>]               (run) git stash <args>
   |:GitStash| list [<args>]          (buf) git stash list <args>
   |:GitStash| show [<args>]          (buf) git stash show <args>
+  |:GitSlist|                        (buf) git stash list
   |:GitStatus| [<path>]              (buf) git status
   |:GitTag|                          (buf) git tag
   |:GitTag| <args>                   (run) git tag <args>
@@ -135,6 +136,12 @@ GitRemove and GitReset is the current buffer.
 When called without arguments, the commands GitBranch and GitRemote open a
 buffer, otherwise they run the respective Git command with the given
 arguments.
+
+Names of Git objects can be completed while on the Vim command-line, similar
+to the way words can be completed in buffers using CTRL-P (see |i_CTRL-P|).
+The names of branches, commands, remotes and tags can be completed that way.
+This feature has to be enabled by hand, see |gitsupport-cmds-cmd-line| for
+details.
 
 ------------------------------------------------------------------------------
 2.1  MENU                                           *gitsupport-overview-menu*
@@ -280,19 +287,19 @@ The second version executes "git branch ...".
                                                                 *:GitCheckout*
   :GitCheckout [<args>] ~
 
-Executes "git checkout ...". If no arguments are given, checks out the current
-file.
+Executes "git checkout ...".
 
 Examples:
 
 Check out the file in the current buffer: >
-  :GitCheckout
-Is equivalent to: >
-  git checkout -- <currentfile>
+  :GitCheckout -- %
 (Might require running ":e" to update the buffer itself.)
 
 Check out the branch "master": >
   :GitCheckout master
+
+Settings:
+- |g:Git_CheckoutExpandEmpty|
 
 ------------------------------------------------------------------------------
                                      *:GitCommit* *:GitCommitFile* *:GitCommitMsg*
@@ -520,15 +527,15 @@ Is equivalent to: >
                                                                    *:GitReset*
   :GitReset [<args>] ~
 
-Executes "git reset ...". If no arguments are given, resets the current
-buffer.
+Executes "git reset ...".
 
 Example:
 
 Reset the current file: >
-  :GitReset
-Is equivalent to: >
-  git reset -- <currentfile>
+  :GitReset -- %
+
+Settings:
+- |g:Git_ResetExpandEmpty|
 
 ------------------------------------------------------------------------------
                                                                     *:GitShow*
@@ -546,13 +553,15 @@ separate buffer is opened.
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
-                                                                   *:GitStash*
+                                                         *:GitStash* *:GitSlist*
   :GitStash [<args>] ~
   :GitStash list [<args>] ~
   :GitStash show [<args>] ~
+  :GitSlist ~
 
 The first version executes "git stash ...". The second and third version open
-buffers listing the stashes or showing a stash.
+buffers listing the stashes or showing a stash. The command ":GitSlist" is a
+shorthand for ":GitStash list"
 
 The buffer for ":GitStash list" defines the following maps:
 
@@ -691,17 +700,21 @@ Shows the plug-in settings. The second version is verbose.
 ------------------------------------------------------------------------------
 3.1  COMMAND-LINE COMPLETION                        *gitsupport-cmds-cmd-line*
 ------------------------------------------------------------------------------
-                                                      *GitS_CmdLineComplete()*
+                            *g:Git_MapCompleteBranch* *g:Git_MapCompleteCommand*
+                            *g:Git_MapCompleteRemote* *g:Git_MapCompleteTag*
 The user can configure maps to complete the names of branches, remotes, tags
 and Git-commands on the command-line. The command-line is set up to complete
-filenames using "tab". Other elements are completed using the function
-GitS_CmdLineComplete(<mode>), which must be used in maps like this:
+filenames using "tab". Other elements are completed using special keys, which
+may be configured like this:
 >
-  cnoremap <silent> <c-b>  <C-\>eGitS_CmdLineComplete('branch')<CR>
-  cnoremap <silent> <c-s>  <C-\>eGitS_CmdLineComplete('command')<CR>
-  cnoremap <silent> <c-r>  <C-\>eGitS_CmdLineComplete('remote')<CR>
-  cnoremap <silent> <c-t>  <C-\>eGitS_CmdLineComplete('tag')<CR>
+  let g:Git_MapCompleteBranch  = '<c-b>'        " complete branches, CTRL-B
+  let g:Git_MapCompleteCommand = '<c-s>'        " complete commands, CTRL-S
+  let g:Git_MapCompleteRemote  = '<c-r>'        " complete remotes, CTRL-R
+  let g:Git_MapCompleteTag     = '<c-t>'        " complete tags, CTRL-T
 <
+These maps are not set up by default. Only if one of these variables is set,
+then the corresponding map is created.
+
 ==============================================================================
 4.  SYNTAX HIGHLIGHTING                                    *gitsupport-syntax*
 ==============================================================================

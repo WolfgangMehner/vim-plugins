@@ -68,8 +68,8 @@ Git:
   Update syntax highlighting, folding function, file actions
 - (WM) Do not use "sync fromstart" in syntax highlighting,
   is extremely slow for diff and log.
-- (WM) Document map "ow" in status buffer.
-- (WM) Document map "ac", "cc", and "rc" in diff buffer.
+- (WM) Document map "ow" in status buffer, mention in the README.
+- (WM) Document map "ac", "cc", and "rc" in diff buffer, mention in the README.
 - (WM) Update buffer after executing a command: :GitBranch, :GitRemote, :GitStash, ...
 - (WM) Buffer "git stash list", maps for: create
 - (WM) Feed output of "git apply" into quickfix.

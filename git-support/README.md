@@ -1,4 +1,4 @@
-README for git-support.vim (Version 0.9.2pre) / June 28 2014
+README for git-support.vim (Version 0.9.2) / August 21 2014
 ================================================================================
 
   *  INSTALLATION
@@ -124,7 +124,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
   RELEASE NOTES
 ================================================================================
 
-  RELEASE NOTES FOR VERSION 0.9.2pre
+  RELEASE NOTES FOR VERSION 0.9.2
 --------------------------------------------------------------------------------
 - Added: Command :GitBash for running interactive Git commands.
 - Added: Command :GitSlist as a shorthand for ":GitStash list".

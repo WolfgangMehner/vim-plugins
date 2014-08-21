@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:GitSupport_Version') && ! exists('g:GitSupport_DevelopmentOverwrite') )
 	finish
 endif
-let g:GitSupport_Version= '0.9.2pre'     " version number of this script; do not change
+let g:GitSupport_Version= '0.9.2'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
@@ -1854,6 +1854,8 @@ endfunction    " ----------  end of function GitS_CommitDryRun  ----------
 "
 function! s:Diff_GetFile( ... )
 	"
+	" :TODO:17.08.2014 15:01:WM: recognized renamed files
+	"
 	let f_name = ''
 	let f_line = -1
 	let f_col  = -1
@@ -1914,24 +1916,36 @@ function! s:Diff_GetFile( ... )
 	"
 endfunction    " ----------  end of function s:Diff_GetFile  ----------
 "
-" :TODO:11.08.2014 19:09:WM: docu   {{{2
+"-------------------------------------------------------------------------------
+" s:Diff_ChunkHandler : Add/checkout/reset a chunk.   {{{2
 "
-function! s:Diff_ChunkHandler ( action )
+" Parameters:
+"   action - "add-chunk", "checkout-chunk", "reset-chunk" (string)
+" Returns:
+"   success - true, if the command was run successfully (integer)
+"-------------------------------------------------------------------------------
+"
+function! s:Diff_ChunkHandler ( action, ... )
 	"
-	let l_pos = line('.')
+	let l_pos = line('.')                               " the current position
 	"
-	let d_pos = search ( '\m\_^diff ', 'bcnW' )
-	let c_pos = search ( '\m\_^@@ ', 'bcnW' )
-	let c_end = search ( '\m\_^@@ \|\_^diff ', 'nW' )
+	" the positions in the buffer
+	let d_pos = search ( '\m\_^diff ', 'bcnW' )         " the position of the diff header
+	let c_pos = search ( '\m\_^@@ ', 'bcnW' )           " the start of the chunk
+	let c_end = search ( '\m\_^@@ \|\_^diff ', 'nW' )   " ... the end
 	"
 	if d_pos == 0 || c_pos == 0
 		return 0
 	elseif c_end == 0
+		" found the other two positions
+		" -> the end of the chunk must be the end of the file
 		let c_end = line('$')+1
 	endif
 	"
+	" get the chunk
 	let chunk = join ( getline ( c_pos, c_end-1 ), "\n" )."\n"
 	"
+	" get the diff header
 	let head = getline(d_pos)
 	"
 	while 1
@@ -1945,6 +1959,14 @@ function! s:Diff_ChunkHandler ( action )
 		let head .= "\n".line
 	endwhile
 	"
+	" apply the patch, depending on the action
+	let base = s:GitRepoDir()
+	"
+	" could not get top-level?
+	if base == '' | return | endif
+	"
+	silent exe 'lchdir '.fnameescape( base )
+	"
 	if a:action == 'add-chunk'
 		let text = system ( s:Git_Executable.' apply --cached -- -', head."\n".chunk )
 	elseif a:action == 'checkout-chunk'
@@ -1952,6 +1974,8 @@ function! s:Diff_ChunkHandler ( action )
 	elseif a:action == 'reset-chunk'
 		let text = system ( s:Git_Executable.' apply --cached -R -- -', head."\n".chunk )
 	endif
+	"
+	silent exe 'lchdir -'
 	"
 	if v:shell_error != 0
 		echo "applying the chunk failed:\n\n".text              | " failure
@@ -1961,7 +1985,7 @@ function! s:Diff_ChunkHandler ( action )
 		echo "chunk applied successfully:\n".text               | " success
 	endif
 	"
-	return 1
+	return v:shell_error == 0
 endfunction    " ----------  end of function s:Diff_ChunkHandler  ----------
 " }}}2
 "-------------------------------------------------------------------------------
@@ -4123,6 +4147,28 @@ function! Git_RemoveMenus()
 		let s:MenuVisible = 0
 	endif
 endfunction    " ----------  end of function Git_RemoveMenus  ----------
+"
+"-------------------------------------------------------------------------------
+" Setup maps.   {{{1
+"-------------------------------------------------------------------------------
+"
+let s:maps = [
+			\ [ 'complete branch',  'g:Git_MapCompleteBranch',  '<C-\>eGitS_CmdLineComplete("branch")<CR>'  ],
+			\ [ 'complete command', 'g:Git_MapCompleteCommand', '<C-\>eGitS_CmdLineComplete("command")<CR>' ],
+			\ [ 'complete remote',  'g:Git_MapCompleteRemote',  '<C-\>eGitS_CmdLineComplete("remote")<CR>'  ],
+			\ [ 'complete tag',     'g:Git_MapCompleteTag',     '<C-\>eGitS_CmdLineComplete("tag")<CR>'     ],
+			\ ]
+"
+for [ name, map_var, cmd ] in s:maps
+	if exists ( map_var )
+		try
+			silent exe 'cnoremap <silent> '.{map_var}.' '.cmd
+		catch /.*/
+			call s:ErrorMsg ( 'Error while creating the map "'.name.'", with lhs "'.{map_var}.'":', v:exception )
+		finally
+		endtry
+	endif
+endfor
 "
 "-------------------------------------------------------------------------------
 " Setup menus.   {{{1

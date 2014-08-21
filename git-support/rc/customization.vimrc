@@ -195,10 +195,10 @@ xnoremap  `  s``<Esc>P<Right>
 "" cmd-line completion
 "" (use ctrl+s for commands, since we do not want to remap ctrl+c,
 "" "s" stands for Git 's'ubcommands)
-"cnoremap <silent> <c-b>  <C-\>eGitS_CmdLineComplete('branch')<CR>
-"cnoremap <silent> <c-s>  <C-\>eGitS_CmdLineComplete('command')<CR>
-"cnoremap <silent> <c-r>  <C-\>eGitS_CmdLineComplete('remote')<CR>
-"cnoremap <silent> <c-t>  <C-\>eGitS_CmdLineComplete('tag')<CR>
+"let g:Git_MapCompleteBranch  = '<c-b>'
+"let g:Git_MapCompleteCommand = '<c-s>'
+"let g:Git_MapCompleteRemote  = '<c-r>'
+"let g:Git_MapCompleteTag     = '<c-t>'
 "
 " syntax highlighting (bright background)
 "
