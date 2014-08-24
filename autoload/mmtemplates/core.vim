@@ -12,7 +12,7 @@
 "       Version:  see variable g:Templates_Version below
 "       Created:  30.08.2011
 "      Revision:  24.08.2014
-"       License:  Copyright (c) 2012-2013, Wolfgang Mehner
+"       License:  Copyright (c) 2012-2014, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -191,8 +191,13 @@ endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 let s:Templates_MapInUseWarn = 'yes'
 let s:Templates_TemplateBrowser = 'explore'
 "
+let s:Templates_PersonalizationFile = 'templates/personal.template*'
+let s:Templates_UsePersonalizationFile = 'yes'
+"
 call s:GetGlobalSetting ( 'Templates_MapInUseWarn', 'bin' )
 call s:GetGlobalSetting ( 'Templates_TemplateBrowser' )
+call s:GetGlobalSetting ( 'Templates_PersonalizationFile' )
+call s:GetGlobalSetting ( 'Templates_UsePersonalizationFile' )
 "
 " internally used variables
 let s:DebugGlobalOverwrite = 0
@@ -238,6 +243,8 @@ let s:StandardProperties = {
 			\ 'Templates::ChooseStyle::Shortcut'     : 's',
 			\
 			\ 'Templates::Mapleader' : '\',
+			\
+			\ 'Templates::UsePersonalizationFile' : s:Templates_UsePersonalizationFile,
 			\ }
 "
 "----------------------------------------------------------------------
@@ -1672,6 +1679,16 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 			let mode = 'reload'
 			let file = a:[i+1]
 			let i += 2
+		elseif a:[i] == 'personalization'
+			let mode = 'load'
+			let file = mmtemplates#core#FindPersonalizationFile ( s:library )
+			let symbolic_name = 'personal'
+			"
+			if empty ( file )
+				return
+			endif
+			"
+			let i += 1
 		elseif a:[i] == 'map' && i+1 <= a:0
 			let reload_map = a:[i+1]
 			let i += 2
@@ -4236,6 +4253,41 @@ function! mmtemplates#core#EditTemplateFiles ( library, file )
 	endif
 	"
 endfunction    " ----------  end of function mmtemplates#core#EditTemplateFiles  ----------
+"
+"-------------------------------------------------------------------------------
+" mmtemplates#core#FindPersonalizationFile : Find the personalization file.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! mmtemplates#core#FindPersonalizationFile ( library )
+	"
+	" ==================================================
+	"  parameters
+	" ==================================================
+	"
+	if type( a:library ) == type( '' )
+		exe 'let t_lib = '.a:library
+	elseif type( a:library ) == type( {} )
+		let t_lib = a:library
+	else
+		return s:ErrorMsg ( 'Argument "library" must be given as a dict or string.' )
+	endif
+	"
+	" ==================================================
+	"  do the job
+	" ==================================================
+	"
+	if t_lib.properties[ 'Templates::UsePersonalizationFile' ] == 'no'
+		return ''
+	endif
+	"
+	let files = split ( globpath ( &rtp, s:Templates_PersonalizationFile, 1 ), "\<NL>" )
+	"
+	if empty ( files )
+		return ''
+	endif
+	"
+	return files[0]
+endfunction    " ----------  end of function mmtemplates#core#FindPersonalizationFile  ----------
 "
 "----------------------------------------------------------------------
 " mmtemplates#core#JumpToTag : Jump to the next tag.   {{{1

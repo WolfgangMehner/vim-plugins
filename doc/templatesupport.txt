@@ -1200,6 +1200,12 @@ session. The variables can be set in the .vimrc file.
   |g:Templates_MapInUseWarn|    'yes'       whether to print a warning when
                                           maps would overwrite existing maps
   |g:Templates_TemplateBrowser| 'explore'   how to browse template files
+
+  |g:Templates_PersonalizationFile|
+                              'templates/personal.template*'
+                                          name of the personalization file
+  |g:Templates_UsePersonalizationFile|
+                              'yes'       whether to use the personal. file
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -1227,6 +1233,25 @@ next lower one is used:
   'edit'                open the top-level template file via :edit
  ----------------------------------------------------------------------------
 
+------------------------------------------------------------------------------
+                                             *g:Templates_PersonalizationFile*
+                                          *g:Templates_UsePersonalizationFile*
+The name and directory (relative to |runtimepath|) of the personalization
+file: >
+  let g:Templates_PersonalizationFile = 'templates/personal.template*'
+The file "templates/personal.template" or "templates/personal.templates" will
+be loaded by every template library that uses this feature. Since it is loaded
+by every library, it should not contain anything that is specific to a
+language. It can however be used to set the users name, and the date and time
+format.
+
+The usage of this feature can be disabled entirely by adding this setting to
+the ".vimrc": >
+  let g:Templates_UsePersonalizationFile = 'no'
+It can also be disabled for individual libraries by setting the property
+"Templates::UsePersonalizationFile" inside the library: >
+  SetProperty ( "Templates::UsePersonalizationFile", "no" )
+<
 ==============================================================================
 
 
@@ -1290,6 +1315,7 @@ Parameters:
   library - The template library. (string or dict)
 Optional parameters:
   "load", file        - Load templates from 'file'. (string)
+  "personalization"   - Load the template personalization file.
   "reload", what      - Reload templates according to 'what', see below.
                         (string or integer)
   "name", name        - Associated symbolic name of the file. (string)
@@ -1312,11 +1338,19 @@ maps and menu entries for editing the templates
 The menu entry will read "edit <name> templates" and have the associated
 shortcut. The map will be created by prefixing the given characters with the
 mapleader. The call >
-  mmtemplates#core#ReadTemplates ( library, "load", "personal.templates",
-    \ "name", "personal", "map", "ntp" )
-will cause the creation of a menu entry "edit personal templates" and a map
-"\ntp", depending on the mapleader. The default shortcut is the first letter
+  mmtemplates#core#ReadTemplates ( library, "load", "additional.templates",
+    \ "name", "additional", "map", "nta" )
+will cause the creation of a menu entry "edit additional templates" and a map
+"\nta", depending on the mapleader. The default shortcut is the first letter
 of the name. If no map is associated, none is created.
+
+To load the template personalization file into the library, call: >
+  mmtemplates#core#ReadTemplates ( library, "personalization",
+    \ "name", "personal", "map", "ntp" )
+It will only be added if it is available and should be used, i.e. if calling
+|mmtemplates#core#FindPersonalizationFile()| returns a non-empty string. The
+personalization file can also be associated with a symbolic name, shortcut,
+and map.
 
 The entire library can be reloaded by calling: >
   mmtemplates#core#ReadTemplates ( library, "reload", "all" )
@@ -1878,6 +1912,25 @@ be escaped separately, otherwise the entry 'frame comment' in the menu
   "Comments.frame comment"
 would turn into the entry: >
   "Comments\.frame\ comment"
+
+------------------------------------------------------------------------------
+                                  *mmtemplates#core#FindPersonalizationFile()*
+Search for the template personalization file:
+
+  str = mmtemplates#core#FindPersonalizationFile ( str ) ~
+
+Parameters:
+	library - The template library. (string or dict)
+Returns:
+  file - The template personalization file. (string)
+
+Searches |runtimepath| for the template personalization file and returns it.
+Respects the setting |g:Templates_PersonalizationFile|. An empty string is
+returned if:
+- the file can not be found
+- |g:Templates_UsePersonalizationFile| is set to "no"
+- the property "Templates::UsePersonalizationFile" is set to "no" for the
+  library
 
 ==============================================================================
 2. BACKWARDS COMPATIBILITY                        *template-support-backwards*
@@ -2447,11 +2500,19 @@ D.  CHANGE LOG                                   *template-support-change-log*
   created for that filetype.
 - Added: New jump tags [+NAME+] and [-NAME-] for optional parameters.
 - Added: New map <ctrl-d> to delete optional jump tags [+NAME+] and [-NAME-].
-- Added: User setting "g:Templates_TemplateBrowser" to configure the browser
+- Added: User setting |g:Templates_TemplateBrowser| to configure the browser
   used for editing templates.
+- Added: User settings |g:Templates_PersonalizationFile| and
+  |g:Templates_UsePersonalizationFile| to configure the personalization file.
+
+API:
 - Changed: Template files can be associated with a symbolic name and a map,
   which are used for the creation of the "edit templates" menu entries and
   maps.
+- Added: Extended the API with functionality for adding a personalization file
+  which can be used by all libraries.
+- Added: Function |mmtemplates#core#FindPersonalizationFile()|.
+- Changed: New options for the function |mmtemplates#core#ReadTemplates()|.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.3
