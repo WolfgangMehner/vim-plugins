@@ -1,4 +1,4 @@
-*templatesupport.txt*         MM Template Support                  Mar 28 2014
+*templatesupport.txt*         MM Template Support                  Aug 24 2014
 
 MM Template Support                                        *template-support*
 
@@ -1220,31 +1220,46 @@ Create a new library and store it in the variable 'g:My_C_Templates': >
                                             *mmtemplates#core#ReadTemplates()*
 Templates are loaded using the function:
 
-	mmtemplates#core#ReadTemplates ( library, ... ) ~
+  mmtemplates#core#ReadTemplates ( library, ... ) ~
 
 Parameters:
-	library - The template library. (string or dict)
+  library - The template library. (string or dict)
 Optional parameters:
-	"load", file        - Load templates from 'file'. (string)
-	"reload", what      - Reload templates according to 'what', see below.
-	                      (string or integer)
-	"overwrite_warning" - Print a warning each time a template is overwritten.
-	"debug", level      - View debug information with the given level of detail.
-	                      (integer, default: show no debug information)
+  "load", file        - Load templates from 'file'. (string)
+  "reload", what      - Reload templates according to 'what', see below.
+                        (string or integer)
+  "name", name        - Associated symbolic name of the file. (string)
+  "shortcut", sc      - Associated shortcut for editing the file. (string)
+  "map", map          - Associated map for editing the file. (string)
+  "overwrite_warning" - Print a warning each time a template is overwritten.
+  "debug", level      - View debug information with the given level of detail.
+                        (integer, default: show no debug information)
 No returns.
 
 The library can either be given directly, or as the name of the global
 variable containing the library.
 
 When loading a new file, it must be given with a path and filename. >
-	mmtemplates#core#ReadTemplates ( library, "load", "path/file.templates" )
-<
+  mmtemplates#core#ReadTemplates ( library, "load", "path/file.templates" )
+The template file can be associated with a symbolic name. Furthermore a map
+and a shortcut can be set. This information will be used to create the special
+maps and menu entries for editing the templates
+(see |mmtemplates#core#CreateMaps| and |mmtemplates#core#CreateMenus|).
+The menu entry will read "edit <name> templates" and have the associated
+shortcut. The map will be created by prefixing the given characters with the
+mapleader. The call >
+  mmtemplates#core#ReadTemplates ( library, "load", "personal.templates",
+    \ "name", "personal", "map", "ntp" )
+will cause the creation of a menu entry "edit personal templates" and a map
+"\ntp", depending on the mapleader. The default shortcut is the first letter
+of the name. If no map is associated, none is created.
+
 The entire library can be reloaded by calling: >
-	mmtemplates#core#ReadTemplates ( library, "reload", "all" )
+  mmtemplates#core#ReadTemplates ( library, "reload", "all" )
 A file can be reloaded, but only if it has been loaded before: >
-	mmtemplates#core#ReadTemplates ( library, "reload", "path/file.templates" )
+  mmtemplates#core#ReadTemplates ( library, "reload", "path/file.templates" )
 The i'th file which has been loaded can be reloaded via: >
-	mmtemplates#core#ReadTemplates ( library, "reload", i )
+  mmtemplates#core#ReadTemplates ( library, "reload", i )
 <
 With the switch "overwrite_warning", a warning is displayed whenever a
 template is encountered which already has been set for the current style.
@@ -1253,9 +1268,9 @@ template is encountered which already has been set for the current style.
 Example 1:
 
 Load a file: >
-	call mmtemplates#core#ReadTemplates ( g:My_C_Templates,
-		\ "load", "$HOME/.vim/c-support/templates/lib.templates",
-		\ "debug", 1, "overwrite_warning" )
+  call mmtemplates#core#ReadTemplates ( g:My_C_Templates,
+    \ "load", "$HOME/.vim/c-support/templates/lib.templates",
+    \ "debug", 1, "overwrite_warning" )
 Load the templates in the given file and print very little debug information.
 Print a warning whenever a template is overwritten.
 
@@ -1263,27 +1278,27 @@ Print a warning whenever a template is overwritten.
 Example 2.1:
 
 Load several files: >
-	call mmtemplates#core#ReadTemplates ( g:My_C_Templates,
-		\ "load", "/usr/share/vim/.../global.templates" )
+  call mmtemplates#core#ReadTemplates ( g:My_C_Templates,
+    \ "load", "/usr/share/vim/.../global.templates" )
 
-	call mmtemplates#core#ReadTemplates ( g:My_C_Templates,
-		\ "load", "$HOME/.vim/.../local.templates" )
+  call mmtemplates#core#ReadTemplates ( g:My_C_Templates,
+    \ "load", "$HOME/.vim/.../local.templates" )
 Loads the templates in the two files.
 
 
 Example 2.2:
 
 Reload specific templates: >
-	call mmtemplates#core#ReadTemplates ( g:My_C_Templates, "reload", -1 )
+  call mmtemplates#core#ReadTemplates ( g:My_C_Templates, "reload", -1 )
 Reload the last template which has been loaded.
-(".../local.templates" from above)
+(would be ".../local.templates" in the above example)
 
 
 Example 2.3:
 
 Reload templates by name: >
-	call mmtemplates#core#ReadTemplates ( g:My_C_Templates,
-		\ "reload", "$HOME/.vim/.../local.templates" )
+  call mmtemplates#core#ReadTemplates ( g:My_C_Templates,
+    \ "reload", "$HOME/.vim/.../local.templates" )
 <
 ------------------------------------------------------------------------------
                                            *mmtemplates#core#InsertTemplate()*
@@ -1458,9 +1473,11 @@ Otherwise >
 	let maplocalleader = localleader
 is executed before the maps are created. (see |mapleader|)
 
-The maps for the jump and the special operations (choose a template/style,
-reread/edit the library) are not created unless the corresponding options are
-given.
+The maps for the jump and the special operations (edit/reread the library,
+choose a style) are not created unless the corresponding options are given.
+The maps for editing templates can be customized for each file by passing
+additional information while loading a file using
+|mmtemplates#core#ReadTemplates()|.
 
 This function creates maps which are local to the buffer, so it must be called
 in the appropriate filetype-plugin, or by an autocommand.
@@ -1508,9 +1525,11 @@ No returns.
 
 "do_all", "do_templates", "do_specials" and "do_styles" starts the automatic
 creation of menu entries. Sub-menus are created automatically as needed.
-The special operations are: choose a template/style, reread/edit the library.
-The corresponding menu entries are put in the sub-menus given by the option
-"specials_menu".
+The special operations are: edit/reread the library, choose a style. The
+corresponding menu entries are put in the sub-menus given by the option
+"specials_menu". The menu entries for editing templates can be customized for
+each file by passing additional information while loading a file using
+|mmtemplates#core#ReadTemplates()|.
 
 Each sub-menu looks like this, starting with a header:
 >
@@ -2360,6 +2379,9 @@ D.  CHANGE LOG                                   *template-support-change-log*
   created for that filetype.
 - Added: New jump tags [+NAME+] and [-NAME-] for optional parameters.
 - Added: New map <ctrl-d> to delete optional jump tags [+NAME+] and [-NAME-].
+- Changed: Template files can be associated with a symbolic name and a map,
+  which are used for the creation of the "edit templates" menu entries and
+  maps.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.3

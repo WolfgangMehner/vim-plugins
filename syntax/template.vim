@@ -36,7 +36,12 @@ syn match Statement "^==\s*ENDIF\s*=="
 syn match Statement "^==\s*USE\s\+STYLES\s*:[a-zA-Z0-9_, ]\+=="
 syn match Statement "^==\s*ENDSTYLES\s*=="
 
+syn match Statement "^==\s*USE\s\+FILETYPES\s*:[a-zA-Z0-9_, ]\+=="
+syn match Statement "^==\s*ENDFILETYPES\s*=="
+
 " functions: command mode
+syn match Function  "InterfaceVersion\ze\s*("
+
 syn match Function  "IncludeFile\ze\s*("
 syn match Function  "SetFormat\ze\s*("
 syn match Function  "SetMacro\ze\s*("

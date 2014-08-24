@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Templates_Version below
 "       Created:  30.08.2011
-"      Revision:  28.03.2014
+"      Revision:  24.08.2014
 "       License:  Copyright (c) 2012-2013, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -1607,6 +1607,9 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 	"
 	let mode = ''
 	let file = ''
+	let reload_map    = ''
+	let reload_sc     = ''
+	let symbolic_name = ''
 	"
 	" ==================================================
 	"  options
@@ -1622,6 +1625,15 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 		elseif a:[i] == 'reload' && i+1 <= a:0
 			let mode = 'reload'
 			let file = a:[i+1]
+			let i += 2
+		elseif a:[i] == 'map' && i+1 <= a:0
+			let reload_map = a:[i+1]
+			let i += 2
+		elseif a:[i] == 'shortcut' && i+1 <= a:0
+			let reload_sc = a:[i+1]
+			let i += 2
+		elseif a:[i] == 'name' && i+1 <= a:0
+			let symbolic_name = a:[i+1]
 			let i += 2
 		elseif a:[i] == 'overwrite_warning'
 			let s:t_runtime.overwrite_warning = 1
@@ -1651,20 +1663,31 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 		endif
 		"
 		" expand ~, $HOME, ... and normalize
-		let file = expand ( file )
-		call add ( templatefiles, s:ConcatNormalizedFilename ( file ) )
+		let file = s:ConcatNormalizedFilename ( expand ( file ) )
+		call add ( templatefiles, file )
 		"
 		" add to library
-		call add ( t_lib.library_files, s:ConcatNormalizedFilename ( file ) )
+		let fileinfo = {
+					\ 'filename'   : file,
+					\ 'reload_map' : reload_map,
+					\ 'reload_sc'  : reload_sc,
+					\ 'sym_name'   : symbolic_name,
+					\ }
+		call add ( t_lib.library_files, fileinfo )
 		"
 	elseif mode == 'reload'
 		"
 		if type( file ) == type( 0 )
-			call add ( templatefiles, t_lib.library_files[ file ] )
+			if empty( get( t_lib.library_files, file, [] ) )
+				return s:ErrorMsg ( 'No template file with index '.file.'.' )
+			endif
+			call add ( templatefiles, t_lib.library_files[ file ].filename )
 		elseif type( file ) == type( '' )
 			" load all or a specific file
 			if file == 'all'
-				call extend ( templatefiles, t_lib.library_files )
+				for fileinfo in t_lib.library_files
+					call add ( templatefiles, fileinfo.filename )
+				endfor
 			else
 				"
 				" check and add the file
@@ -1673,8 +1696,17 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 				"
 				if ! filereadable ( file )
 					return s:ErrorMsg ( 'The file "'.file.'" does not exist.' )
-				elseif index ( t_lib.library_files, file ) == -1
-					return s:ErrorMsg ( 'The file "'.file.'" is not part of the template library.' )
+				else
+					let found_file = 0
+					for fileinfo in t_lib.library_files
+						if fileinfo.filename == file
+							let found_file = 1
+							break
+						endif
+					endfor
+					if found_file == 0
+						return s:ErrorMsg ( 'The file "'.file.'" is not part of the template library.' )
+					endif
 				endif
 				"
 				call add ( templatefiles, file )
@@ -3273,13 +3305,27 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 	" TODO: configuration of maps
 	" TODO: edit template
 	if do_special_maps
-		let special_maps = {
-					\ t_lib.properties[ 'Templates::EditTemplates::Map'   ] : ':call mmtemplates#core#EditTemplateFiles('.a:library.',-1)<CR>',
-					\ t_lib.properties[ 'Templates::RereadTemplates::Map' ] : ':call mmtemplates#core#ReadTemplates('.a:library.',"reload","all")<CR>',
-					\ t_lib.properties[ 'Templates::ChooseStyle::Map'     ] : ':call mmtemplates#core#ChooseStyle('.a:library.',"!pick")<CR>',
-					\ }
+		let special_maps = []
 		"
-		for [ mp, action ] in items ( special_maps )
+		for idx in range( 0, len ( t_lib.library_files ) - 1 )
+			let fileinfo = t_lib.library_files[idx]
+			if ! empty ( fileinfo.reload_map )
+				call add ( special_maps, [
+							\ fileinfo.reload_map,
+							\ ':call mmtemplates#core#EditTemplateFiles('.a:library.','.idx.')<CR>' ] )
+			endif
+		endfor
+		"
+		" no template library with a map?
+		" -> add standard map for last file
+		if empty ( special_maps )
+			call add ( special_maps, [ t_lib.properties[ 'Templates::EditTemplates::Map'   ], ':call mmtemplates#core#EditTemplateFiles('.a:library.',-1)<CR>' ] )
+		endif
+		"
+		call add ( special_maps, [ t_lib.properties[ 'Templates::RereadTemplates::Map' ], ':call mmtemplates#core#ReadTemplates('.a:library.',"reload","all")<CR>' ] )
+		call add ( special_maps, [ t_lib.properties[ 'Templates::ChooseStyle::Map'     ], ':call mmtemplates#core#ChooseStyle('.a:library.',"!pick")<CR>' ] )
+		"
+		for [ mp, action ] in special_maps
 			if ! empty ( maparg( leader.mp, 'n' ) )
 				if echo_warning
 					let mapinfo = maparg( leader.mp, 'n' )
@@ -3350,14 +3396,14 @@ endfunction    " ----------  end of function s:InsertShortcut  ----------
 " The menu 'menu' can contain '&' and a trailing '.'. Both are ignored.
 "----------------------------------------------------------------------
 "
-function! s:CreateSubmenu ( t_lib, root_menu, global_name, menu, priority )
+function! s:CreateSubmenu ( t_lib, menu, priority )
 	"
 	" split point:
 	" a point, preceded by an even number of backslashes
 	" in turn, the backslashes must be preceded by a different character, or the
 	" beginning of the string
-	let level    = len( split( a:root_menu, '\%(\_^\|[^\\]\)\%(\\\\\)*\zs\.' ) )
-	let parts    =      split( a:menu,      '\%(\_^\|[^\\]\)\%(\\\\\)*\zs\.' )
+	let level    = len( split( s:t_runtime.root_menu, '\%(\_^\|[^\\]\)\%(\\\\\)*\zs\.' ) )
+	let parts    =      split( a:menu,                '\%(\_^\|[^\\]\)\%(\\\\\)*\zs\.' )
 	let n_parts  = len( parts )
 	let level   += n_parts
 	"
@@ -3393,11 +3439,11 @@ function! s:CreateSubmenu ( t_lib, root_menu, global_name, menu, priority )
 			let assemble .= '.'
 			"
 			if -1 != stridx ( clean, '<TAB>' )
-				exe 'anoremenu '.priority_str.a:root_menu.escape( assemble.clean, ' ' ).' :echo "This is a menu header."<CR>'
+				exe 'anoremenu '.priority_str.s:t_runtime.root_menu.escape( assemble.clean, ' ' ).' :echo "This is a menu header."<CR>'
 			else
-				exe 'anoremenu '.priority_str.a:root_menu.escape( assemble.clean, ' ' ).'<TAB>'.escape( a:global_name, ' .' ).' :echo "This is a menu header."<CR>'
+				exe 'anoremenu '.priority_str.s:t_runtime.root_menu.escape( assemble.clean, ' ' ).'<TAB>'.escape( s:t_runtime.global_name, ' .' ).' :echo "This is a menu header."<CR>'
 			endif
-			exe 'anoremenu '.a:root_menu.escape( assemble,       ' ' ).'-TSep00- <Nop>'
+			exe 'anoremenu '.s:t_runtime.root_menu.escape( assemble,       ' ' ).'-TSep00- <Nop>'
 		endif
 		let submenu .= clean.'.'
 	endfor
@@ -3408,7 +3454,7 @@ endfunction    " ----------  end of function s:CreateSubmenu  ----------
 " s:CreateTemplateMenus : Create menus for the templates.   {{{2
 "----------------------------------------------------------------------
 "
-function! s:CreateTemplateMenus ( t_lib, root_menu, global_name, t_lib_name )
+function! s:CreateTemplateMenus ( t_lib )
 	"
 	let map_ldr = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::Mapleader' ], 'right' )
 	"
@@ -3427,7 +3473,7 @@ function! s:CreateTemplateMenus ( t_lib, root_menu, global_name, t_lib_name )
 		"
 		" menu does not exist?
 		if ! empty ( t_menu ) && ! has_key ( a:t_lib.menu_existing, t_menu[ 0 : -2 ] )
-			call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, t_menu[ 0 : -2 ], s:StandardPriority )
+			call s:CreateSubmenu ( a:t_lib, t_menu[ 0 : -2 ], s:StandardPriority )
 		endif
 		"
 		if entry == 11
@@ -3439,7 +3485,7 @@ function! s:CreateTemplateMenus ( t_lib, root_menu, global_name, t_lib_name )
 			let sep_nr = a:t_lib.menu_existing[ m_key ] + 1
 			let a:t_lib.menu_existing[ m_key ] = sep_nr
 			"
-			exe 'anoremenu '.a:root_menu.escape( t_menu, ' ' ).'-TSep'.sep_nr.'- :'
+			exe 'anoremenu '.s:t_runtime.root_menu.escape( t_menu, ' ' ).'-TSep'.sep_nr.'- :'
 			"
 			continue
 		endif
@@ -3463,27 +3509,22 @@ function! s:CreateTemplateMenus ( t_lib, root_menu, global_name, t_lib_name )
 		"
 		if entry == 1
 			" <Esc><Esc> prevents problems in insert mode
-			exe 'anoremenu <silent> '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'")<CR>'
-			exe 'inoremenu <silent> '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","i")<CR>'
+			exe 'anoremenu <silent> '.s:t_runtime.root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'")<CR>'
+			exe 'inoremenu <silent> '.s:t_runtime.root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","i")<CR>'
 			if visual == 1
-				exe 'vnoremenu <silent> '.a:root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","v")<CR>'
+				exe 'vnoremenu <silent> '.s:t_runtime.root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","v")<CR>'
 			endif
 		elseif entry == 2
-			call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, t_menu.t_last.map_entry, s:StandardPriority )
+			call s:CreateSubmenu ( a:t_lib, t_menu.t_last.map_entry, s:StandardPriority )
 			"
 			for item in s:GetPickList ( t_name )
 				let item_entry = compl_entry.'.'.substitute ( substitute ( escape ( item, ' .' ), '&', '\&\&', 'g' ), '\w', '\&&', '' )
-				exe 'anoremenu <silent> '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","pick",'.string(item).')<CR>'
-				exe 'inoremenu <silent> '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","i","pick",'.string(item).')<CR>'
+				exe 'anoremenu <silent> '.s:t_runtime.root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","pick",'.string(item).')<CR>'
+				exe 'inoremenu <silent> '.s:t_runtime.root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","i","pick",'.string(item).')<CR>'
 				if visual == 1
-					exe 'vnoremenu <silent> '.a:root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","v","pick",'.string(item).')<CR>'
+					exe 'vnoremenu <silent> '.s:t_runtime.root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","v","pick",'.string(item).')<CR>'
 				endif
 			endfor
-			"
-"			exe 'anoremenu '.a:root_menu.compl_entry.'.-\ choose\ -'.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'")<CR>'
-"			if visual == 1
-"				exe 'vnoremenu '.a:root_menu.compl_entry.'.-\ choose\ -'.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.a:t_lib_name.',"'.t_name.'","v")<CR>'
-"			endif
 		endif
 		"
 	endfor
@@ -3494,41 +3535,77 @@ endfunction    " ----------  end of function s:CreateTemplateMenus  ----------
 " s:CreateSpecialsMenus : Create menus for a template library.   {{{2
 "----------------------------------------------------------------------
 "
-function! s:CreateSpecialsMenus ( t_lib, root_menu, global_name, t_lib_name, specials_menu, styles_only )
+function! s:CreateSpecialsMenus ( t_lib, styles_only )
 	"
-	" remove trailing point
-	let specials_menu = substitute( a:specials_menu, '\.$', '', '' )
-	"
-	let map_ldr   = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::Mapleader' ], 'right' )
-	let map_edit  = map_ldr.mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::EditTemplates::Map' ], 'right' )
-	let map_read  = map_ldr.mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::RereadTemplates::Map' ], 'right' )
-	let map_style = map_ldr.mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::ChooseStyle::Map' ], 'right' )
-	let sc_edit   = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::EditTemplates::Shortcut' ], 'right' )
-	let sc_read   = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::RereadTemplates::Shortcut' ], 'right' )
-	let sc_style  = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::ChooseStyle::Shortcut' ], 'right' )
+	" sanitize
+	let specials_menu = substitute( s:t_runtime.spec_menu, '\.$', '', '' )
+	let map_ldr       = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::Mapleader' ], 'right' )
 	"
 	" create the specials menu
-	call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, specials_menu, s:StandardPriority )
+	call s:CreateSubmenu ( a:t_lib, specials_menu, s:StandardPriority )
 	"
+	" ==================================================
+	"  create a menu for all the styles
+	" ==================================================
 	if ! a:styles_only
+		let entries = []
+		"
+		" add entries for template files
+		for idx in range( 0, len ( s:library.library_files ) - 1 )
+			let fileinfo = s:library.library_files[idx]
+			if ! empty ( fileinfo.sym_name )
+				call add ( entries, [
+							\ mmtemplates#core#EscapeMenu ( 'edit '.fileinfo.sym_name.' templates', 'entry' ),
+							\ fileinfo.reload_sc,
+							\ fileinfo.reload_map,
+							\ ':call mmtemplates#core#EditTemplateFiles('.s:t_runtime.lib_name.','.idx.')<CR>' ] )
+				"
+				" empty shortcut -> use first letter of 'sym_name'
+				if empty ( fileinfo.reload_sc )
+					let entries[-1][1] = matchstr ( fileinfo.sym_name, '\w' )
+				endif
+			endif
+		endfor
+		"
+		" no template library with a symbolic name?
+		" -> add standard entry for last file
+		if empty ( entries )
+			let sc_edit  = a:t_lib.properties[ 'Templates::EditTemplates::Shortcut' ]
+			let map_edit = a:t_lib.properties[ 'Templates::EditTemplates::Map' ]
+			call add ( entries, [ 'edit\ templates', sc_edit, map_edit, ':call mmtemplates#core#EditTemplateFiles('.s:t_runtime.lib_name.',-1)<CR>' ] )
+		endif
+		"
+		" add entry for reloading the whole library
+		let sc_read  = a:t_lib.properties[ 'Templates::RereadTemplates::Shortcut' ]
+		let map_read = a:t_lib.properties[ 'Templates::RereadTemplates::Map' ]
+		call add ( entries, [ 'reread\ templates', sc_read, map_read, ':call mmtemplates#core#ReadTemplates('.s:t_runtime.lib_name.',"reload","all")<CR>' ] )
+		"
 		" create edit and reread templates
-		let entry_edit = s:InsertShortcut ( '.edit\ templates',   sc_edit, 1 ).'<TAB>'.map_edit
-		let entry_read = s:InsertShortcut ( '.reread\ templates', sc_read, 1 ).'<TAB>'.map_read
-		exe 'anoremenu <silent> '.a:root_menu.specials_menu.entry_edit
-					\ .' :call mmtemplates#core#EditTemplateFiles('.a:t_lib_name.',-1)<CR>'
-		exe 'anoremenu <silent> '.a:root_menu.specials_menu.entry_read
-					\ .' :call mmtemplates#core#ReadTemplates('.a:t_lib_name.',"reload","all")<CR>'
+		for [ e_name, e_sc, e_map, cmd ] in entries
+			let entry_compl = s:InsertShortcut ( '.'.e_name, e_sc, 1 )
+			if ! empty ( e_map )
+				let entry_compl .= '<TAB>'.map_ldr.mmtemplates#core#EscapeMenu( e_map, 'right' )
+			endif
+			exe 'anoremenu <silent> '.s:t_runtime.root_menu.specials_menu.entry_compl.' '.cmd
+		endfor
 	endif
 	"
-	" create a menu for all the styles
+	" ==================================================
+	"  create a menu for all the styles
+	" ==================================================
+	let sc_style  = a:t_lib.properties[ 'Templates::ChooseStyle::Shortcut' ]
+	let map_style = map_ldr.mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::ChooseStyle::Map' ], 'right' )
+	"
+	" create the submenu
 	if sc_style == 's' | let entry_styles = '.choose &style<TAB>'.map_style
 	else               | let entry_styles = s:InsertShortcut ( '.choose style', sc_style, 0 ).'<TAB>'.map_style
 	endif
-	call s:CreateSubmenu ( a:t_lib, a:root_menu, a:global_name, specials_menu.entry_styles, s:StandardPriority )
+	call s:CreateSubmenu ( a:t_lib, specials_menu.entry_styles, s:StandardPriority )
 	"
+	" add entries for all styles
 	for s in a:t_lib.styles
-		exe 'anoremenu <silent> '.a:root_menu.specials_menu.'.choose\ style.&'.s
-					\ .' :call mmtemplates#core#ChooseStyle('.a:t_lib_name.','.string(s).')<CR>'
+		exe 'anoremenu <silent> '.s:t_runtime.root_menu.specials_menu.'.choose\ style.&'.s
+					\ .' :call mmtemplates#core#ChooseStyle('.s:t_runtime.lib_name.','.string(s).')<CR>'
 	endfor
 	"
 endfunction    " ----------  end of function s:CreateSpecialsMenus  ----------
@@ -3550,7 +3627,6 @@ function! mmtemplates#core#CreateMenus ( library, root_menu, ... )
 	"
 	if type( a:library ) == type( '' )
 		exe 'let t_lib = '.a:library
-		let s:library = t_lib
 	else
 		call s:ErrorMsg ( 'Argument "library" must be given as a string.' )
 		return
@@ -3565,10 +3641,18 @@ function! mmtemplates#core#CreateMenus ( library, root_menu, ... )
 	"  setup
 	" ==================================================
 	"
+	let s:library = t_lib
+	let s:t_runtime = {
+				\ 'lib_name'    : a:library,
+				\ 'global_name' : '',
+				\ 'root_menu'   : '',
+				\ 'spec_menu'   : '&Run',
+				\ }
+	"
 	" options
-	let root_menu     = substitute( a:root_menu, '&',   '', 'g' )
-	let global_name   = substitute(   root_menu, '\.$', '', ''  )
-	let root_menu     = global_name.'.'
+	let s:t_runtime.root_menu   = substitute(         a:root_menu, '&',   '', 'g' )
+	let s:t_runtime.global_name = substitute( s:t_runtime.root_menu, '\.$', '', ''  )
+	let s:t_runtime.root_menu   = s:t_runtime.global_name.'.'
 	let specials_menu = '&Run'
 	let priority      = s:StandardPriority
 	let existing      = []
@@ -3598,7 +3682,7 @@ function! mmtemplates#core#CreateMenus ( library, root_menu, ... )
 			else                               | call extend ( submenus, a:[i+1] ) | endif
 			let i += 2
 		elseif a:[i] == 'specials_menu' && i+1 <= a:0
-			let specials_menu = a:[i+1]
+			let s:t_runtime.spec_menu = a:[i+1]
 			let i += 2
 		elseif a:[i] == 'priority' && i+1 <= a:0
 			let priority = a:[i+1]
@@ -3646,28 +3730,29 @@ function! mmtemplates#core#CreateMenus ( library, root_menu, ... )
 	"
 	" sub-menus
 	for name in submenus
-		call s:CreateSubmenu ( t_lib, root_menu, global_name, name, priority )
+		call s:CreateSubmenu ( t_lib, name, priority )
 	endfor
 	"
 	" templates
 	if do_templates
-		call s:CreateTemplateMenus ( t_lib, root_menu, global_name, a:library )
+		call s:CreateTemplateMenus ( t_lib )
 	endif
 	"
 	" specials
 	if do_specials == 1
 		" all specials
-		call s:CreateSpecialsMenus ( t_lib, root_menu, global_name, a:library, specials_menu, 0 )
+		call s:CreateSpecialsMenus ( t_lib, 0 )
 	elseif do_specials == 2
 		" styles only
-		call s:CreateSpecialsMenus ( t_lib, root_menu, global_name, a:library, specials_menu, 1 )
+		call s:CreateSpecialsMenus ( t_lib, 1 )
 	endif
 	"
 	" ==================================================
 	"  wrap up
 	" ==================================================
 	"
-	unlet s:library                               " remove script variable
+	unlet s:library                               " remove script variables
+	unlet s:t_runtime                             " ...
 	"
 endfunction    " ----------  end of function mmtemplates#core#CreateMenus  ----------
 "
@@ -4038,10 +4123,10 @@ function! mmtemplates#core#EditTemplateFiles ( library, file )
 	endif
 	"
 	if type( a:file ) == type( 0 )
-		if get( t_lib.library_files, a:file, '' ) == ''
+		if empty( get( t_lib.library_files, a:file, [] ) )
 			return s:ErrorMsg ( 'No template file with index '.a:file.'.' )
 		endif
-		let file = t_lib.library_files[ a:file ]
+		let file = t_lib.library_files[ a:file ].filename
 	elseif type( a:file ) == type( '' )
 		"
 		let file = expand ( a:file )
@@ -4049,8 +4134,17 @@ function! mmtemplates#core#EditTemplateFiles ( library, file )
 		"
 		if ! filereadable ( file )
 			return s:ErrorMsg ( 'The file "'.file.'" does not exist.' )
-		elseif index ( t_lib.library_files, file ) == -1
-			return s:ErrorMsg ( 'The file "'.file.'" is not part of the template library.' )
+		else
+			let found_file = 0
+			for fileinfo in t_lib.library_files
+				if fileinfo.filename == file
+					let found_file = 1
+					break
+				endif
+			endfor
+			if found_file == 0
+				return s:ErrorMsg ( 'The file "'.file.'" is not part of the template library.' )
+			endif
 		endif
 		"
 	else
@@ -4179,8 +4273,8 @@ function! mmtemplates#core#ResetMapleader ()
 	endif
 	"
 endfunction    " ----------  end of function mmtemplates#core#ResetMapleader  ----------
-"
 " }}}1
+"-------------------------------------------------------------------------------
 "
 " =====================================================================================
 "  vim: foldmethod=marker
