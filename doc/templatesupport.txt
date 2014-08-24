@@ -39,6 +39,8 @@ Here is a list of high profile plug-ins which use the template support:
 0.  TABLE OF CONTENTS                              *template-support-contents*
 ==============================================================================
 
+   --- Part I - User Documentation ---
+
  1.    Introduction                          |template-support-intro|
  2.    Basic Usage                           |template-support-basics|
  3.    Template Library                      |template-support-library|
@@ -59,13 +61,18 @@ Here is a list of high profile plug-ins which use the template support:
  6.2    File Pickers                         |template-support-adv-files|
  7.    Menus                                 |template-support-menus|
  8.    Help Templates                        |template-support-help-templ|
+ 9.    Configuration                         |template-support-config|
 
- 9.    API                                   |template-support-api|
- 9.1    Basic Usage                          |template-support-api-basic|
- 9.2    Creating Maps and Menus              |template-support-api-maps|
- 9.3    Access                               |template-support-api-access|
- 9.4    Miscellany                           |template-support-api-misc|
- 10.   Backwards Compatibility               |template-support-backwards|
+   --- Part II - API Documentation ---
+
+ 1.    API                                   |template-support-api|
+ 1.1    Basic Usage                          |template-support-api-basic|
+ 1.2    Creating Maps and Menus              |template-support-api-maps|
+ 1.3    Access                               |template-support-api-access|
+ 1.4    Miscellany                           |template-support-api-misc|
+ 2.    Backwards Compatibility               |template-support-backwards|
+
+   --- Part III - Appendices ---
 
  A.    Syntax                                |template-support-syntax|
  A.1    Command Section                      |template-support-syntax-cmd|
@@ -79,6 +86,20 @@ Here is a list of high profile plug-ins which use the template support:
  C.2    List                                 |template-support-opt-list|
  D.    Change Log                            |template-support-change-log|
  D.1    Interface Versions                   |template-support-change-interf|
+
+==============================================================================
+
+
+
+  -------------------------------------------------------------------------- ~
+  -------------------------------------------------------------------------- ~
+
+   --------- PART I --- USER DOCUMENTATION --------- ~
+
+  -------------------------------------------------------------------------- ~
+  -------------------------------------------------------------------------- ~
+
+
 
 ==============================================================================
 1.  INTRODUCTION                                      *template-support-intro*
@@ -1167,18 +1188,61 @@ is made instead, which will show a table of all Doxygen commands: >
 <
 Note: The examples still worked in November, 2013.
 
+==============================================================================
+9.  CONFIGURATION                                    *template-support-config*
+==============================================================================
+
+Some behavior can be defined globally for all template libraries in a Vim
+session. The variables can be set in the .vimrc file.
+
+  Variable                    Default     Description and further information
+ ----------------------------------------------------------------------------
+  |g:Templates_MapInUseWarn|    'yes'       whether to print a warning when
+                                          maps would overwrite existing maps
+  |g:Templates_TemplateBrowser| 'explore'   how to browse template files
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+                                                    *g:Templates_MapInUseWarn*
+Whenever a map configured in a template library would overwrite a map which is
+already set for a buffer, a warning is printed. This warning is printed once
+per session and filetype.
+If this is not desired, the warnings can be switched of entirely by adding
+this setting to the ".vimrc": >
+  let g:Templates_MapInUseWarn = 'no'
+<
+------------------------------------------------------------------------------
+                                                 *g:Templates_TemplateBrowser*
+When using a map or menu entry for editing templates, the template file can be
+chosen by different means, which are configured in the ".vimrc" file: >
+  let g:Templates_TemplateBrowser = 'browse'
+<
+The possible settings are listed below. If one method is not available, the
+next lower one is used:
+
+  Value                 Meaning
+ ----------------------------------------------------------------------------
+  'browse'              select using a GUI file browser (gvim only)
+  'explore' (default)   select using Vim's :Explore command
+  'edit'                open the top-level template file via :edit
+ ----------------------------------------------------------------------------
+
+==============================================================================
+
 
 
   -------------------------------------------------------------------------- ~
-
   -------------------------------------------------------------------------- ~
 
+   --------- PART II --- API DOCUMENTATION --------- ~
+
+  -------------------------------------------------------------------------- ~
   -------------------------------------------------------------------------- ~
 
 
 
 ==============================================================================
-9.  API                                                 *template-support-api*
+1.  API                                                 *template-support-api*
 ==============================================================================
 
 This chapter is only relevant if you want to use the template system with your
@@ -1193,7 +1257,7 @@ Each template library is stored in a dictionary (|Dictionary|).
 	structure may change. The API provides access to the stored information.
 
 ------------------------------------------------------------------------------
-9.1  BASIC USAGE                                  *template-support-api-basic*
+1.1  BASIC USAGE                                  *template-support-api-basic*
 ------------------------------------------------------------------------------
 
 These functions provide the basic functionality to load template libraries and
@@ -1445,7 +1509,7 @@ is "n") and nothing can be deleted on the current line, the normal behavior of
 This maps can be created automatically using |mmtemplates#core#CreateMaps()|.
 
 ------------------------------------------------------------------------------
-9.2  CREATING MENUS AND MAPS                       *template-support-api-maps*
+1.2  CREATING MENUS AND MAPS                       *template-support-api-maps*
 ------------------------------------------------------------------------------
 
 The automated generation of maps and menus is carried out by these functions.
@@ -1617,7 +1681,7 @@ Technical Details:
 		amenu, imenu and vmenu (where appropriate)
 
 ------------------------------------------------------------------------------
-9.3  ACCESS                                      *template-support-api-access*
+1.3  ACCESS                                      *template-support-api-access*
 ------------------------------------------------------------------------------
 
 The following functions are used to query and change the resources of a
@@ -1766,7 +1830,7 @@ Get the current style: >
 		\ g:My_C_Templates, "style" )
 <
 ------------------------------------------------------------------------------
-9.4  MISCELLANY                                    *template-support-api-misc*
+1.4  MISCELLANY                                    *template-support-api-misc*
 ------------------------------------------------------------------------------
 
 This section describes various functions, provided for convenience.
@@ -1816,7 +1880,7 @@ would turn into the entry: >
   "Comments\.frame\ comment"
 
 ==============================================================================
-10. BACKWARDS COMPATIBILITY                       *template-support-backwards*
+2. BACKWARDS COMPATIBILITY                        *template-support-backwards*
 ==============================================================================
 
 The following behavior is not compatible with the old template systems of
@@ -1838,12 +1902,16 @@ perl-support:
 		== templatename == [ position, indentation == ]
 <	Both 'position' and 'indentation' are optional, of course.
 
+==============================================================================
+
 
 
   -------------------------------------------------------------------------- ~
-
   -------------------------------------------------------------------------- ~
 
+   --------- PART III --- APPENDICES --------- ~
+
+  -------------------------------------------------------------------------- ~
   -------------------------------------------------------------------------- ~
 
 
@@ -2379,6 +2447,8 @@ D.  CHANGE LOG                                   *template-support-change-log*
   created for that filetype.
 - Added: New jump tags [+NAME+] and [-NAME-] for optional parameters.
 - Added: New map <ctrl-d> to delete optional jump tags [+NAME+] and [-NAME-].
+- Added: User setting "g:Templates_TemplateBrowser" to configure the browser
+  used for editing templates.
 - Changed: Template files can be associated with a symbolic name and a map,
   which are used for the creation of the "edit templates" menu entries and
   maps.

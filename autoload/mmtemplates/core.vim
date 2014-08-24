@@ -140,17 +140,63 @@ let g:Templates_Version = s:Templates_Version     " version number of this scrip
 "  === Modul Setup ===   {{{1
 "----------------------------------------------------------------------
 "
+"-------------------------------------------------------------------------------
+" s:ApplyDefaultSetting : Write default setting to a global variable.   {{{2
+"
+" Parameters:
+"   varname - name of the variable (string)
+"   value   - default value (string)
+" Returns:
+"   -
+"
+" If g:<varname> does not exists, assign:
+"   g:<varname> = value
+"-------------------------------------------------------------------------------
+"
+function! s:ApplyDefaultSetting ( varname, value )
+	if ! exists ( 'g:'.a:varname )
+		let { 'g:'.a:varname } = a:value
+	endif
+endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
+"
+"-------------------------------------------------------------------------------
+" s:GetGlobalSetting : Get a setting from a global variable.   {{{2
+"
+" Parameters:
+"   varname - name of the variable (string)
+"   mode    - 'bin' (string, optional)
+" Returns:
+"   -
+"
+" If g:<varname> exists, assign:
+"   s:<varname> = g:<varname>
+" If the flag 'bin' is given as the second argument, translate an integer
+" value of the global variable into a "yes" or "no" settings:
+"   g:<varname> == 0  ->  s:<varname> = "no"
+"   otherwise         ->  s:<varname> = "yes"
+"-------------------------------------------------------------------------------
+"
+function! s:GetGlobalSetting ( varname, ... )
+	if a:0 > 0 && a:1 == 'bin' && exists ( 'g:'.a:varname ) && type ( 0 ) == type ( { 'g:'.a:varname } )
+		let { 's:'.a:varname } = { 'g:'.a:varname } == 0 ? 'no' : 'yes'
+	elseif exists ( 'g:'.a:varname )
+		let { 's:'.a:varname } = { 'g:'.a:varname }
+	endif
+endfunction    " ----------  end of function s:GetGlobalSetting  ----------
+"
+" }}}2
+"-------------------------------------------------------------------------------
+"
+" user configurable settings
+let s:Templates_MapInUseWarn = 'yes'
+let s:Templates_TemplateBrowser = 'explore'
+"
+call s:GetGlobalSetting ( 'Templates_MapInUseWarn', 'bin' )
+call s:GetGlobalSetting ( 'Templates_TemplateBrowser' )
+"
+" internally used variables
 let s:DebugGlobalOverwrite = 0
 let s:DebugLevel           = s:DebugGlobalOverwrite
-"
-if ! exists ( 'g:Templates_MapInUseWarn' )
-	let g:Templates_MapInUseWarn = 1
-endif
-"
-let s:StateStackStyleTop    = -2
-let s:StateStackFile        = -1
-"
-let s:StateStackLength      = 2
 "
 let s:Flagactions = {
 			\ ':i' : '',
@@ -3211,7 +3257,7 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		let echo_warning = 0
 	else
 		let g:CheckedFiletypes[ &filetype ] = 1
-		let echo_warning = g:Templates_MapInUseWarn != 0
+		let echo_warning = s:Templates_MapInUseWarn == 'yes'
 	endif
 	"
 	" go through all the templates
@@ -4155,29 +4201,38 @@ function! mmtemplates#core#EditTemplateFiles ( library, file )
 	"  do the job
 	" ==================================================
 	"
+	if ! filereadable ( file )
+		return s:ErrorMsg ( 'The template file "'.dir.'" does not exist.' )
+	endif
+	"
 	" get the directory
 	let dir = fnamemodify ( file, ':h' )
 	"
 	" TODO: method configurable
-	let method = 'explore'
-	let	templatefile = ''
+	let method = s:Templates_TemplateBrowser
 	"
-	if ! filereadable ( file )
-		return s:ErrorMsg ( 'The directory "'.dir.'" does not exist.' )
-	elseif method == 'explore'
-		" open a file explorer
-		if ! exists ( 'g:loaded_netrwPlugin' ) | return s:ErrorMsg ( 'The plugin "netrw" is not available.' ) | endif
-		exe 'update! | split | Explore '.dir
-	elseif method == 'browse'
-		" open a file browser
-		if ! has ( 'browse' ) | return s:ErrorMsg ( 'The command "browse" is not available.' ) | endif
-		let	templatefile = browse ( 0, 'edit a template file', dir, '' )
-		" returns an empty string if "Cancel" is pressed
+	if method == 'browse' && ! has ( 'browse' )
+		let method = 'explore'
 	endif
 	"
-	" open a buffer and start editing
-	if ! empty ( templatefile )
-		exe 'update! | split | edit '.templatefile
+	if method == 'explore' && ! exists ( 'g:loaded_netrwPlugin' )
+		let method = 'edit'
+	endif
+	"
+	if method == 'browse'
+		" open a file browser, returns an empty string if "Cancel" is pressed
+		let	templatefile = browse ( 0, 'edit a template file', dir, '' )
+		"
+		" open a buffer and start editing
+		if ! empty ( templatefile )
+			exe 'update! | split | edit '.fnameescape( templatefile )
+		endif
+	elseif method == 'explore'
+		" open a file explorer
+		exe 'update! | split | Explore '.fnameescape( dir )
+	elseif method == 'edit'
+		" edit the top-level template file
+		exe 'update! | split '.fnameescape( file )
 	endif
 	"
 endfunction    " ----------  end of function mmtemplates#core#EditTemplateFiles  ----------
