@@ -187,6 +187,35 @@ endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 " }}}2
 "-------------------------------------------------------------------------------
 "
+" platform specifics
+let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
+let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
+"
+if s:MSWIN
+	"
+	"-------------------------------------------------------------------------------
+	" MS Windows
+	"-------------------------------------------------------------------------------
+	"
+	let s:plugin_dir = substitute( expand('<sfile>:p:h:h'), '\\', '/', 'g' )
+	"
+	" :TODO:27.08.2014 20:37:WM: check windows default browser
+	let s:Templates_InternetBrowserExec  = 'C:\Program Files\Mozilla Firefox\firefox.exe'
+	let s:Templates_InternetBrowserFlags = ''
+	"
+else
+	"
+	"-------------------------------------------------------------------------------
+	" Linux/Unix
+	"-------------------------------------------------------------------------------
+	"
+	let s:plugin_dir = expand('<sfile>:p:h:h')
+	"
+	let s:Templates_InternetBrowserExec  = 'firefox'
+	let s:Templates_InternetBrowserFlags = ''
+	"
+endif
+"
 " user configurable settings
 let s:Templates_MapInUseWarn = 'yes'
 let s:Templates_TemplateBrowser = 'explore'
@@ -198,6 +227,8 @@ call s:GetGlobalSetting ( 'Templates_MapInUseWarn', 'bin' )
 call s:GetGlobalSetting ( 'Templates_TemplateBrowser' )
 call s:GetGlobalSetting ( 'Templates_PersonalizationFile' )
 call s:GetGlobalSetting ( 'Templates_UsePersonalizationFile' )
+call s:GetGlobalSetting ( 'Templates_InternetBrowserExec' )
+call s:GetGlobalSetting ( 'Templates_InternetBrowserFlags' )
 "
 " internally used variables
 let s:DebugGlobalOverwrite = 0
@@ -680,6 +711,11 @@ function! mmtemplates#core#NewLibrary ( ... )
 				\ 'regex_file'     : {},
 				\ 'regex_template' : {},
 				\
+				\ 'namespace_file'      : s:FileReadNameSpace_0_9,
+				\ 'namespace_templ_std' : s:NamespaceStdTempl_0_9,
+				\ 'namespace_templ_ins' : s:NamespaceStdTemplInsert_0_9,
+				\ 'namespace_templ_hlp' : s:NamespaceHelp_0_9,
+				\
 				\ 'library_files'  : [],
 				\ }
 	" entries used by maps: 'map_commands!<filetype>'
@@ -1129,7 +1165,7 @@ endfunction    " ----------  end of function s:RevertFiletypes  ----------
 "  s:FileReadNameSpace : The set of functions a template file can call.   {{{2
 "----------------------------------------------------------------------
 "
-let s:FileReadNameSpace = {
+let s:FileReadNameSpace_0_9 = {
 			\ 'InterfaceVersion' : 's',
 			\
 			\ 'IncludeFile'  : 'ss\?',
@@ -1174,6 +1210,8 @@ function! s:InterfaceVersion ( version_str )
 	" version 1.0 setup
 	if s:library.interface >= 1000000
 		let s:t_runtime.use_ft_string = "['default']"
+		"
+		let s:library.namespace_templ_hlp = s:NamespaceHelp_1_0
 	endif
 	"
 	" version 1.1 setup
@@ -1432,7 +1470,7 @@ function! s:IncludeFile ( templatefile, ... )
 					"
 					try
 						" check the call
-						call s:FunctionCheck ( name, param, s:FileReadNameSpace )
+						call s:FunctionCheck ( name, param, s:library.namespace_file )
 						" try to call
 						exe 'call s:'.name.' ( '.param.' ) '
 					catch /Template:Check:.*/
@@ -1923,36 +1961,58 @@ function! s:ReplaceMacros ( text, m_local )
 endfunction    " ----------  end of function s:ReplaceMacros  ----------
 "
 "----------------------------------------------------------------------
-" s:CheckHelp : Check a template (help).   {{{2
+" s:NamespaceHelp : Namespace of help templates.   {{{2
 "----------------------------------------------------------------------
 "
-let s:NamespaceHelp = {
+let s:NamespaceHelp_0_9 = {
 			\ 'Word'       : 's',
 			\ 'Pattern'    : 's',   'Default'    : 's',
 			\ 'Substitute' : 'sss', 'LiteralSub' : 'sss',
 			\ 'System'     : 's',   'Vim'        : 's',
 			\ }
 "
+let s:NamespaceHelp_1_0 = copy ( s:NamespaceHelp_0_9 )
+"
+let s:NamespaceHelp_1_0.Browser = 'ss\?'
+let s:NamespaceHelp_1_0.System  = 'ss\?'
+let s:NamespaceHelp_1_0.Vim     = 'ss\?'
+"
+"----------------------------------------------------------------------
+" s:CheckHelp : Check a template (help).   {{{2
+"
+" Perform the following actions:
+" - none (none are required as of now)
+"----------------------------------------------------------------------
+"
 function! s:CheckHelp ( cmds, text, calls )
 	return [ a:cmds, a:text ]
 endfunction    " ----------  end of function s:CheckHelp  ----------
 "
-" "----------------------------------------------------------------------
-" s:CheckStdTempl : Check a template (standard).   {{{2
+"----------------------------------------------------------------------
+" s:NamespaceStdTempl : Namespace of standard templates.   {{{2
 "----------------------------------------------------------------------
 "
-let s:NamespaceStdTempl = {
+" command-block in front of the template
+let s:NamespaceStdTempl_0_9 = {
 			\ 'DefaultMacro' : 's[sl]',
 			\ 'PickFile'     : 'ss',
 			\ 'PickList'     : 's[sld]',
 			\ 'Prompt'       : 'ss',
 			\ 'SurroundWith' : 's[sl]*',
 			\ }
-let s:NamespaceStdTemplInsert = {
+"
+" commands appearing in the text itself
+let s:NamespaceStdTemplInsert_0_9 = {
 			\ 'Comment'    : 's\?',
 			\ 'Insert'     : 's[sl]*',
 			\ 'InsertLine' : 's[sl]*',
 			\ }
+"
+"----------------------------------------------------------------------
+" s:CheckStdTempl : Check a template (standard).   {{{2
+"
+" Perform the following actions:
+"----------------------------------------------------------------------
 "
 function! s:CheckStdTempl ( cmds, text, calls )
 	"
@@ -2051,7 +2111,7 @@ function! s:CheckStdTempl ( cmds, text, calls )
 		let [ f_name, f_param ] = mlist[ 1 : 2 ]
 		"
 		" check the call
-		call s:FunctionCheck ( 'Comment', f_param, s:NamespaceStdTemplInsert )
+		call s:FunctionCheck ( 'Comment', f_param, s:library.namespace_templ_ins )
 		"
 		exe 'let flist = ['.f_param.']'
 		"
@@ -2072,7 +2132,10 @@ endfunction    " ----------  end of function s:CheckStdTempl  ----------
 "----------------------------------------------------------------------
 " s:CheckTemplate : Check a template.   {{{2
 "
-" Get the command and text block.
+" Perform the following actions:
+" - get the command and text block
+" - check the calls in the command block
+" - perform further checks depending on the type
 "----------------------------------------------------------------------
 "
 function! s:CheckTemplate ( template, type )
@@ -2085,14 +2148,9 @@ function! s:CheckTemplate ( template, type )
 	"
 	" the known functions
 	if a:type == 't'
-		let namespace = s:NamespaceStdTempl
-"		" TODO: remove this code:
-" 	elseif a:type == 'pick-file'
-" 		let namespace = s:NamespacePickFile
-" 	elseif a:type == 'pick-list'
-" 		let namespace = s:NamespacePickList
+		let namespace = s:library.namespace_templ_std
 	elseif a:type == 'help'
-		let namespace = s:NamespaceHelp
+		let namespace = s:library.namespace_templ_hlp
 	endif
 	"
 	" go trough the lines
@@ -2124,11 +2182,6 @@ function! s:CheckTemplate ( template, type )
 	" checks depending on the type
 	if a:type == 't'
 		return s:CheckStdTempl( cmds, text, calls )
-"		" TODO: remove this code:
-" 	elseif a:type == 'pick-file'
-" 		return s:CheckPickFile( cmds, text, calls )
-" 	elseif a:type == 'pick-list'
-" 		return s:CheckPickList( cmds, text, calls )
 	elseif a:type == 'help'
 		return s:CheckHelp( cmds, text, calls )
 	endif
@@ -2330,9 +2383,16 @@ function! s:PrepareHelp ( cmds, text )
 		elseif f_name == 'Substitute'
 			exe 'let [ p, r, f ] = ['.f_param.']'
 			let pick = substitute ( pick, p, r, f )
-		elseif f_name == 'System' || f_name == 'Vim'
+		elseif f_name == 'Browser' || f_name == 'System' || f_name == 'Vim'
+			"
+			let f_param_list = eval ( '[ '.f_param.' ]' )
+			"
 			let method = f_name
-			exe 'let call = '.f_param
+			let call = f_param_list[0]
+			"
+			if len ( f_param_list ) == 2
+				let default = f_param_list[1]
+			endif
 		endif
 		"
 	endfor
@@ -2355,12 +2415,29 @@ function! s:PrepareHelp ( cmds, text )
 		let call = s:ReplaceMacros ( default, m_local )
 	endif
 	"
-	if method == 'System'
-		call s:DebugMsg ( 3, 'call system ( '.string ( call ).' )' )
-		exe 'call system ( '.string ( call ).' )'
+	if method == 'Browser'
+		call s:DebugMsg ( 3, '!'.shellescape( s:Templates_InternetBrowserExec ).' '.s:Templates_InternetBrowserFlags.' '.call )
+		let call = escape ( call, '%#' )
+		if ! executable ( s:Templates_InternetBrowserExec )
+			call s:ErrorMsg ( 'The internet browser is not executable ('.s:Templates_InternetBrowserExec.')',
+						\ 'for the cofiguration, see:',
+						\ '  :help g:Templates_InternetBrowserExec' )
+		elseif s:MSWIN
+			silent exe '!start '.shellescape( s:Templates_InternetBrowserExec ).' '.s:Templates_InternetBrowserFlags.' '.shellescape( call )
+		else
+			silent exe '!'.shellescape( s:Templates_InternetBrowserExec ).' '.s:Templates_InternetBrowserFlags.' '.shellescape( call ).' &'
+		endif
+	elseif method == 'System'
+		call s:DebugMsg ( 3, '!'.call )
+		let call = escape ( call, '%#' )
+		if s:MSWIN
+			silent exe '!start '.call
+		else
+			silent exe '!'.call.' &'
+		endif
 	elseif method == 'Vim'
-		call s:DebugMsg ( 3, call )
-		exe call
+		call s:DebugMsg ( 3, ':'.call )
+		silent exe call
 	endif
 	"
 	return ''
@@ -2592,7 +2669,7 @@ function! s:PrepareStdTempl ( cmds, text )
 		let [ f_name, f_param ] = mlist[ 1 : 2 ]
 		"
 		" check the call
-		call s:FunctionCheck ( f_name, f_param, s:NamespaceStdTemplInsert )
+		call s:FunctionCheck ( f_name, f_param, s:library.namespace_templ_ins )
 		"
 		if f_name == 'InsertLine'
 			" get the replacement
@@ -4225,7 +4302,6 @@ function! mmtemplates#core#EditTemplateFiles ( library, file )
 	" get the directory
 	let dir = fnamemodify ( file, ':h' )
 	"
-	" TODO: method configurable
 	let method = s:Templates_TemplateBrowser
 	"
 	if method == 'browse' && ! has ( 'browse' )
@@ -4237,8 +4313,27 @@ function! mmtemplates#core#EditTemplateFiles ( library, file )
 	endif
 	"
 	if method == 'browse'
+		if s:MSWIN
+			" overwrite 'b:browsefilter', only applicable under Windows
+			if exists ( 'b:browsefilter' )
+				let bf_backup = b:browsefilter
+			endif
+			"
+			let b:browsefilter = "Template Files (*.templates, ...)\tTemplates;*.template;*.templates\n"
+						\ . "All Files (*.*)\t*.*\n"
+		endif
+		"
 		" open a file browser, returns an empty string if "Cancel" is pressed
 		let	templatefile = browse ( 0, 'edit a template file', dir, '' )
+		"
+		if s:MSWIN
+			" reset 'b:browsefilter'
+			if exists ( 'bf_backup' )
+				let b:browsefilter = bf_backup
+			else
+				unlet b:browsefilter
+			endif
+		endif
 		"
 		" open a buffer and start editing
 		if ! empty ( templatefile )
@@ -4247,7 +4342,7 @@ function! mmtemplates#core#EditTemplateFiles ( library, file )
 	elseif method == 'explore'
 		" open a file explorer
 		exe 'update! | split | Explore '.fnameescape( dir )
-	elseif method == 'edit'
+	else     " method == 'edit'
 		" edit the top-level template file
 		exe 'update! | split '.fnameescape( file )
 	endif

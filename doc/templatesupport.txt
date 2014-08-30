@@ -1110,20 +1110,20 @@ will create a menu entry and can have shortcuts and maps.
 The syntax of help templates is very close to that of regular templates,
 except that their name is prefixed by "HELP:"
 >
-	SetMacro( 'HELP_BROWSER', 'firefox' )
 	SetMacro( 'HelpPathEnglish', 'http://en.wiktionary.org/wiki/' )
 
 	== HELP: Help.english == map:he, sc:e ==
 	|Word( '' )|
 	|Substitute( '\W', '', 'g' )|
-	|System( '|HELP_BROWSER| |HelpPathEnglish||PICK:l|' )|
+	|Browser( '|HelpPathEnglish||PICK:l|' )|
 	== ENDTEMPLATE ==
 <
 The help template "Help.english" picks up the word under the cursor, removes
 every non-word character from that string and then calls >
 	firefox http://en.wiktionary.org/wiki/...
 This will open a new tab containing the article about the word under the
-cursor, which is very helpful while writing documentation.
+cursor, which is very helpful while writing documentation. The browser can be
+configured by setting |g:Templates_InternetBrowserExec|.
 
 A help template always performs three steps:
 1. Pick up text under the cursor.
@@ -1155,18 +1155,21 @@ Substitute replaces the contents of "acc" using Vim's |substitute()| function:
 If the flag is an empty string, the first occurrence of <pattern> is replaced
 with <sub>. If flag equals "g", all occurrences are replaced. The function
 LiteralSub(<string>,<sub>,<flag>) works similarly, except that the first
-argument is not interpreted as a regular expression.
+argument is not interpreted as a regular expression. To replace all points
+with the text "-point-", use: >
+	|LiteralSub( '.', '-point-', 'g' )|
+This would have to be written differently with regular expressions.
 
 3. Calling Help
 
-After picking up and changing the text, a call is made using System(<call>) or
-Vim(<call>). The argument is a string and it can contain macros which are
-replaced before the call. The macro *|PICK|* is replaced with "acc", the
-picked and changed text. The call is however only made if "acc" is not the
-empty string.
-If either an empty string has been picked up in step 1, or the string is empty
-after step 2, the call is made using the command given in Default(<call>). If
-no default call is given, no action is performed for an empty string.
+After picking up and changing the text, a call is made using Browser(<call>),
+System(<call>) or Vim(<call>). The argument is a string and it can contain
+macros, which are replaced before the call. The macro *|PICK|* is replaced with
+"acc", the picked and changed text.
+All three commands can have an optional second argument. If either nothing
+could be picked up in step 1, or the string is empty after step 2, the call is
+made using the command given as the second argument. If no such argument is
+given, no action is performed for an empty string.
 
 The following help template shows help for Doxygen commands:
 >
@@ -1175,18 +1178,17 @@ The following help template shows help for Doxygen commands:
 	== HELP: Help.doxygen cmd == map:hd, sc:d ==
 	|Pattern( '[\\@]\w\+' )|
 	|Substitute( '[\\@]', '', '' )|
-	|System( '|HELP_BROWSER| |HelpPathDoxygen|#cmd|PICK|' )|
-	|Default( '|HELP_BROWSER| |HelpPathDoxygen|' )|
+	|Browser( '|HelpPathDoxygen|#cmd|PICK|', '|HelpPathDoxygen|' )|
 	== ENDTEMPLATE ==
 <
 First, a Doxygen command is picked up under the cursor, then the leading "\"
-or "@" is removed. Then a system call such as: >
+or "@" is removed. Then the browser is called, similar to: >
 	firefox http://www.stack.nl/~dimitri/doxygen/commands.html#cmdparam
-is made. If there was no Doxygen command under the cursor, the following call
-is made instead, which will show a table of all Doxygen commands: >
+If there was no Doxygen command under the cursor, the following call is made
+instead, which will show a table of all Doxygen commands: >
 	firefox http://www.stack.nl/~dimitri/doxygen/commands.html
 <
-Note: The examples still worked in November, 2013.
+Note: The URL still worked as of November, 2013.
 
 ==============================================================================
 9.  CONFIGURATION                                    *template-support-config*
@@ -1206,7 +1208,19 @@ session. The variables can be set in the .vimrc file.
                                           name of the personalization file
   |g:Templates_UsePersonalizationFile|
                               'yes'       whether to use the personal. file
+
+  |g:Templates_InternetBrowserExec|
+                              'firefox'   the browser for help templates (^1)
+  |g:Templates_InternetBrowserFlags|
+                              ''          additional flags for the browser
  ----------------------------------------------------------------------------
+
+(^1)
+  The Unix defaults are as follows:
+  |g:Templates_InternetBrowserExec|    - firefox
+  the Windows defaults are as follows:
+  |g:Templates_InternetBrowserExec|    - C:\Program Files\Mozilla Firefox\
+                                       firefox.exe
 
 ------------------------------------------------------------------------------
                                                     *g:Templates_MapInUseWarn*
@@ -1251,6 +1265,17 @@ the ".vimrc": >
 It can also be disabled for individual libraries by setting the property
 "Templates::UsePersonalizationFile" inside the library: >
   SetProperty ( "Templates::UsePersonalizationFile", "no" )
+<
+------------------------------------------------------------------------------
+                                             *g:Templates_InternetBrowserExec*
+                                            *g:Templates_InternetBrowserFlags*
+Some help templates (see |template-support-help-templ|) require the executable
+of an internet browser, to open websites with documentation. It is set in the
+.vimrc file: >
+  let g:Templates_InternetBrowserExec = 'firefox'
+<
+Additional flags can be set via: >
+  let g:Templates_InternetBrowserFlags = '--new-window'
 <
 ==============================================================================
 
@@ -2504,6 +2529,11 @@ D.  CHANGE LOG                                   *template-support-change-log*
   used for editing templates.
 - Added: User settings |g:Templates_PersonalizationFile| and
   |g:Templates_UsePersonalizationFile| to configure the personalization file.
+- Added: Help templates can call a browser using |Browser( <url> )|:
+- Added: User settings |g:Templates_InternetBrowserExec| and
+  |g:Templates_InternetBrowserFlags| to configure the browser used by help
+  templates.
+- Extended the documentation.
 
 API:
 - Changed: Template files can be associated with a symbolic name and a map,
@@ -2513,6 +2543,9 @@ API:
   which can be used by all libraries.
 - Added: Function |mmtemplates#core#FindPersonalizationFile()|.
 - Changed: New options for the function |mmtemplates#core#ReadTemplates()|.
+
+Internal Changes:
+- Major internal changes and code cleanup.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.3
@@ -2638,6 +2671,7 @@ See also |template-support-lib-interf|.
   used as targets for jumps.
 - Added: New map <ctrl-d> to delete optional jump tags [+NAME+] and [-NAME-]
   together with their separator ",".
+- Added: Help templates can call a browser using |Browser( <url> )|:
 
 ------------------------------------------------------------------------------
   INTERFACE VERSION 0.9
