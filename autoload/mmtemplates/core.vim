@@ -889,6 +889,10 @@ function! s:AddTemplate ( type, name, settings, lines )
 		let entry     = 1
 		let sc        = ''
 		"
+		let expand_list  = ''
+		let expand_left  = ''
+		let expand_right = ''
+		"
 		" --------------------------------------------------
 		"  settings
 		" --------------------------------------------------
@@ -918,6 +922,27 @@ function! s:AddTemplate ( type, name, settings, lines )
 				let entry = 0
 			elseif s == 'expandmenu'
 				let entry = 2
+			elseif s =~ '^expandmenu\s*:'
+				let entry = 2
+				if s:library.interface < 1000000
+					call s:ErrorMsg ( 'The option "expandmenu:..." with an explicitly named list is only available for libraries using versions >= 1.0.' )
+				else
+					let expand_list = matchstr ( s, '^expandmenu\s*:\s*\zs'.s:library.regex_file.MacroName )
+				endif
+			elseif s =~ '^expandleft\s*:'
+				if s:library.interface < 1000000
+					call s:ErrorMsg ( 'The option "expandleft:..." is only available for libraries using versions >= 1.0.' )
+				else
+					let expand_left = matchstr ( s, '^expandleft\s*:\s*\zs'.s:library.regex_file.MacroName )
+					let expand_left = '|'.toupper( expand_left ).'|'
+				endif
+			elseif s =~ '^expandright\s*:'
+				if s:library.interface < 1000000
+					call s:ErrorMsg ( 'The option "expandright:..." is only available for libraries using versions >= 1.0.' )
+				else
+					let expand_right = matchstr ( s, '^expandright\s*:\s*\zs'.s:library.regex_file.MacroName )
+					let expand_right = '|'.toupper( expand_right ).'|'
+				endif
 			elseif s =~ '^sc\s*:' || s =~ '^shortcut\s*:'
 				let sc = matchstr ( s, '^\w\+\s*:\s*\zs'.s:library.regex_file.Mapping )
 
@@ -937,6 +962,10 @@ function! s:AddTemplate ( type, name, settings, lines )
 		" --------------------------------------------------
 		let s:library.templates[ name.'!!type' ] = type.','.placement.','.indentation
 		let s:library.templates[ name.'!!menu' ] = s:t_runtime.use_ft_string.",".visual.",".string(mp).",".entry.",'',".string(sc)
+		"
+		if entry == 2
+			let s:library.templates[ name.'!!expand' ] = string(expand_list).",".string(expand_left).",".string(expand_right)
+		endif
 		"
 		call add ( s:library.menu_order, name )
 		"
@@ -2262,15 +2291,19 @@ endfunction    " ----------  end of function s:GetTemplate  ----------
 " s:GetPickList : Get the list used in a template.   {{{2
 "----------------------------------------------------------------------
 "
-function! s:GetPickList ( name )
+function! s:GetPickList ( name, ... )
 	"
 	let regex = s:library.regex_template
 	"
 	" get the template
 	let [ cmds, text, type, placement, indentation ] = s:GetTemplate ( a:name, '!any' )
 	"
-	if type == 't'
+	if type != 't'
+		call s:ErrorMsg ( 'Template "'.a:name.'" can not have a list to pick.' )
+		return []
+	endif
 		"
+	if a:0 == 0 || a:1 == '' || a:1 == '?'
 		for line in split( cmds, "\n" )
 			" the line will match and it will be a valid function
 			let [ f_name, f_param ] = matchlist ( line, regex.FunctionChecked )[ 1 : 2 ]
@@ -2283,7 +2316,7 @@ function! s:GetPickList ( name )
 				"
 				if type ( listarg ) == type ( '' )
 					if ! has_key ( s:library.resources, 'list!'.listarg )
-						call s:ErrorMsg ( 'List "'.listarg.'" does not exist.' )
+						call s:ErrorMsg ( 'In template "'.a:name.'":', 'List "'.listarg.'" does not exist.' )
 						return []
 					endif
 					let list = s:library.resources[ 'list!'.listarg ]
@@ -2294,37 +2327,21 @@ function! s:GetPickList ( name )
 			endif
 		endfor
 		"
-"		" TODO: remove this code:
-" 	elseif type == 'pick-list'
-" 		"
-" 		for line in split( cmds, "\n" )
-" 			" the line will match and it will be a valid function
-" 			let [ f_name, f_param ] = matchlist ( line, regex.FunctionChecked )[ 1 : 2 ]
-" 			"
-" 			if f_name == 'List'
-" 				exe 'let list = '.f_param
-" 			elseif f_name == 'GetList'
-" 				"
-" 				let listname = matchstr ( f_param, regex.RemoveQuote )
-" 				if ! has_key ( s:library.resources, 'list!'.listname )
-" 					call s:ErrorMsg ( 'List "'.listname.'" does not exist.' )
-" 					return []
-" 				endif
-" 				let list = s:library.resources[ 'list!'.listname ]
-" 				"
-" 			endif
-" 		endfor
-" 		"
 	else
+		let listname = a:1
+		if ! has_key ( s:library.resources, 'list!'.listname )
+			call s:ErrorMsg ( 'In template "'.a:name.'":', 'List "'.listname.'" does not exist.' )
+			return []
+		endif
+		let list = s:library.resources[ 'list!'.listname ]
+	endif
+	"
+	if ! exists ( 'list' )
 		call s:ErrorMsg ( 'Template "'.a:name.'" is not a list picker.' )
 		return []
 	endif
 	"
-	if type ( list ) == type ( [] )
-		return list
-	else
-		return sort ( keys ( list ) )
-	endif
+	return list
 	"
 endfunction    " ----------  end of function s:GetPickList  ----------
 "
@@ -3536,7 +3553,7 @@ endfunction    " ----------  end of function s:InsertShortcut  ----------
 " The menu 'menu' can contain '&' and a trailing '.'. Both are ignored.
 "----------------------------------------------------------------------
 "
-function! s:CreateSubmenu ( t_lib, menu, priority )
+function! s:CreateSubmenu ( menu, priority )
 	"
 	" split point:
 	" a point, preceded by an even number of backslashes
@@ -3560,13 +3577,13 @@ function! s:CreateSubmenu ( t_lib, menu, priority )
 		endif
 		"
 		let clean = substitute( part, '&', '', 'g' )
-		if ! has_key ( a:t_lib.menu_existing, submenu.clean )
+		if ! has_key ( s:library.menu_existing, submenu.clean )
 			" a new menu!
-			let a:t_lib.menu_existing[ submenu.clean ] = 0
+			let s:library.menu_existing[ submenu.clean ] = 0
 			"
 			" shortcut and menu entry
-			if has_key ( a:t_lib.menu_shortcuts, submenu.clean )
-				let shortcut = a:t_lib.menu_shortcuts[ submenu.clean ]
+			if has_key ( s:library.menu_shortcuts, submenu.clean )
+				let shortcut = s:library.menu_shortcuts[ submenu.clean ]
 				if stridx ( tolower( clean ), tolower( shortcut ) ) == -1
 					let assemble = submenu.clean.' (&'.shortcut.')'
 				else
@@ -3591,17 +3608,112 @@ function! s:CreateSubmenu ( t_lib, menu, priority )
 endfunction    " ----------  end of function s:CreateSubmenu  ----------
 "
 "----------------------------------------------------------------------
+" s:CreateListMenus : Create the expanded list menu.   {{{2
+"----------------------------------------------------------------------
+"
+function! s:CreateListMenus ( t_name, submenu, visual )
+	"
+	let t_name = a:t_name
+	let plain  = 1
+	"
+	exe 'let [ expand_list, expand_left, expand_right ] = ['.s:library.templates[ t_name.'!!expand' ].']'
+	"
+	if expand_left != ''
+		let plain = 0
+	elseif expand_right != ''
+		let plain = 0
+		let expand_left = '|KEY|'                   " default for left-hand side
+	endif
+	"
+	let list_compl = s:GetPickList ( t_name, expand_list )
+	"
+	if type ( list_compl ) == type ( [] )
+		let list_keys = list_compl
+		let is_list   = 1
+	else
+		let list_keys = sort ( keys ( list_compl ) )
+		let is_list   = 0
+	endif
+	"
+	if plain
+		"
+		for item in list_keys
+			if s:library.interface < 1000000
+				" old incomplete escaping
+				let item_entry = substitute ( substitute ( escape ( item, ' .' ), '&', '\&\&', 'g' ), '\w', '\&&', '' )
+			else
+				let item_entry = mmtemplates#core#EscapeMenu ( item, 'entry' )
+				let item_entry = substitute ( item_entry, '\w', '\&&', '' )   " shortcut
+			endif
+			"
+			exe 'anoremenu <silent> '.a:submenu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","pick",'.string(item).')<CR>'
+			exe 'inoremenu <silent> '.a:submenu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","i","pick",'.string(item).')<CR>'
+			if a:visual == 1
+				exe 'vnoremenu <silent> '.a:submenu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","v","pick",'.string(item).')<CR>'
+			endif
+		endfor
+		"
+	else
+		let s:t_runtime.macro_stack = []
+		"
+		let m_local = {}
+		"
+		for item in list_keys
+			"
+			if is_list
+				let m_local.KEY   = item
+				let m_local.VALUE = item
+			else
+				let m_local.KEY   = item
+				let m_local.VALUE = list_compl[item]
+			endif
+			"
+			try
+				"
+				let item_left  = s:ReplaceMacros ( expand_left,  m_local )
+				let item_right = s:ReplaceMacros ( expand_right, m_local )
+				"
+				if empty ( item_left )
+					let item_entry = mmtemplates#core#EscapeMenu ( item, 'entry' )
+					let item_entry = substitute ( item_entry, '\w', '\&&', '' )   " shortcut
+				else
+					let item_entry = mmtemplates#core#EscapeMenu ( item_left, 'entry' )
+					let item_entry = substitute ( item_entry, '\w', '\&&', '' )   " shortcut
+					if ! empty ( item_right )
+						let item_entry .= '<TAB>'.mmtemplates#core#EscapeMenu ( item_right, 'right' )
+					endif
+				endif
+				"
+			catch /.*/
+				"
+				call s:ErrorMsg ( v:exception )
+				let item_entry = mmtemplates#core#EscapeMenu ( item, 'entry' )
+				let item_entry = substitute ( item_entry, '\w', '\&&', '' )   " shortcut
+				"
+			endtry
+			"
+			exe 'anoremenu <silent> '.a:submenu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","pick",'.string(item).')<CR>'
+			exe 'inoremenu <silent> '.a:submenu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","i","pick",'.string(item).')<CR>'
+			if a:visual == 1
+				exe 'vnoremenu <silent> '.a:submenu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","v","pick",'.string(item).')<CR>'
+			endif
+		endfor
+	endif
+	"
+endfunction    " ----------  end of function s:CreateListMenus  ----------
+"
+"----------------------------------------------------------------------
 " s:CreateTemplateMenus : Create menus for the templates.   {{{2
 "----------------------------------------------------------------------
 "
-function! s:CreateTemplateMenus ( t_lib )
+function! s:CreateTemplateMenus (  )
 	"
-	let map_ldr = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::Mapleader' ], 'right' )
+	let map_ldr = mmtemplates#core#EscapeMenu ( s:library.properties[ 'Templates::Mapleader' ], 'right' )
 	"
 	" go through all the templates
-	for t_name in a:t_lib.menu_order
+	for t_name in s:library.menu_order
 		"
-		exe 'let [ ignore1, visual, mp, entry, ignore2, shortcut ] = ['.a:t_lib.templates[ t_name.'!!menu' ].']'
+		exe 'let [ ignore1, visual, mp, entry, ignore2, shortcut ] = ['.s:library.templates[ t_name.'!!menu' ].']'
 		"
 		" no menu entry?
 		if entry == 0
@@ -3612,8 +3724,8 @@ function! s:CreateTemplateMenus ( t_lib )
 		let [ t_menu, t_last ] = matchlist ( t_name, '^\(.*\.\)\?\([^\.]\+\)$' )[1:2]
 		"
 		" menu does not exist?
-		if ! empty ( t_menu ) && ! has_key ( a:t_lib.menu_existing, t_menu[ 0 : -2 ] )
-			call s:CreateSubmenu ( a:t_lib, t_menu[ 0 : -2 ], s:StandardPriority )
+		if ! empty ( t_menu ) && ! has_key ( s:library.menu_existing, t_menu[ 0 : -2 ] )
+			call s:CreateSubmenu ( t_menu[ 0 : -2 ], s:StandardPriority )
 		endif
 		"
 		if entry == 11
@@ -3622,8 +3734,8 @@ function! s:CreateTemplateMenus ( t_lib )
 				let m_key = '!base'
 			endif
 			"
-			let sep_nr = a:t_lib.menu_existing[ m_key ] + 1
-			let a:t_lib.menu_existing[ m_key ] = sep_nr
+			let sep_nr = s:library.menu_existing[ m_key ] + 1
+			let s:library.menu_existing[ m_key ] = sep_nr
 			"
 			exe 'anoremenu '.s:t_runtime.root_menu.escape( t_menu, ' ' ).'-TSep'.sep_nr.'- :'
 			"
@@ -3655,16 +3767,8 @@ function! s:CreateTemplateMenus ( t_lib )
 				exe 'vnoremenu <silent> '.s:t_runtime.root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","v")<CR>'
 			endif
 		elseif entry == 2
-			call s:CreateSubmenu ( a:t_lib, t_menu.t_last.map_entry, s:StandardPriority )
-			"
-			for item in s:GetPickList ( t_name )
-				let item_entry = compl_entry.'.'.substitute ( substitute ( escape ( item, ' .' ), '&', '\&\&', 'g' ), '\w', '\&&', '' )
-				exe 'anoremenu <silent> '.s:t_runtime.root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","pick",'.string(item).')<CR>'
-				exe 'inoremenu <silent> '.s:t_runtime.root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","i","pick",'.string(item).')<CR>'
-				if visual == 1
-					exe 'vnoremenu <silent> '.s:t_runtime.root_menu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","v","pick",'.string(item).')<CR>'
-				endif
-			endfor
+			call s:CreateSubmenu ( t_menu.t_last.map_entry, s:StandardPriority )
+			call s:CreateListMenus ( t_name, s:t_runtime.root_menu.compl_entry.'.', visual )
 		endif
 		"
 	endfor
@@ -3675,14 +3779,14 @@ endfunction    " ----------  end of function s:CreateTemplateMenus  ----------
 " s:CreateSpecialsMenus : Create menus for a template library.   {{{2
 "----------------------------------------------------------------------
 "
-function! s:CreateSpecialsMenus ( t_lib, styles_only )
+function! s:CreateSpecialsMenus ( styles_only )
 	"
 	" sanitize
 	let specials_menu = substitute( s:t_runtime.spec_menu, '\.$', '', '' )
-	let map_ldr       = mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::Mapleader' ], 'right' )
+	let map_ldr       = mmtemplates#core#EscapeMenu ( s:library.properties[ 'Templates::Mapleader' ], 'right' )
 	"
 	" create the specials menu
-	call s:CreateSubmenu ( a:t_lib, specials_menu, s:StandardPriority )
+	call s:CreateSubmenu ( specials_menu, s:StandardPriority )
 	"
 	" ==================================================
 	"  create a menu for all the styles
@@ -3710,14 +3814,14 @@ function! s:CreateSpecialsMenus ( t_lib, styles_only )
 		" no template library with a symbolic name?
 		" -> add standard entry for last file
 		if empty ( entries )
-			let sc_edit  = a:t_lib.properties[ 'Templates::EditTemplates::Shortcut' ]
-			let map_edit = a:t_lib.properties[ 'Templates::EditTemplates::Map' ]
+			let sc_edit  = s:library.properties[ 'Templates::EditTemplates::Shortcut' ]
+			let map_edit = s:library.properties[ 'Templates::EditTemplates::Map' ]
 			call add ( entries, [ 'edit\ templates', sc_edit, map_edit, ':call mmtemplates#core#EditTemplateFiles('.s:t_runtime.lib_name.',-1)<CR>' ] )
 		endif
 		"
 		" add entry for reloading the whole library
-		let sc_read  = a:t_lib.properties[ 'Templates::RereadTemplates::Shortcut' ]
-		let map_read = a:t_lib.properties[ 'Templates::RereadTemplates::Map' ]
+		let sc_read  = s:library.properties[ 'Templates::RereadTemplates::Shortcut' ]
+		let map_read = s:library.properties[ 'Templates::RereadTemplates::Map' ]
 		call add ( entries, [ 'reread\ templates', sc_read, map_read, ':call mmtemplates#core#ReadTemplates('.s:t_runtime.lib_name.',"reload","all")<CR>' ] )
 		"
 		" create edit and reread templates
@@ -3733,17 +3837,17 @@ function! s:CreateSpecialsMenus ( t_lib, styles_only )
 	" ==================================================
 	"  create a menu for all the styles
 	" ==================================================
-	let sc_style  = a:t_lib.properties[ 'Templates::ChooseStyle::Shortcut' ]
-	let map_style = map_ldr.mmtemplates#core#EscapeMenu ( a:t_lib.properties[ 'Templates::ChooseStyle::Map' ], 'right' )
+	let sc_style  = s:library.properties[ 'Templates::ChooseStyle::Shortcut' ]
+	let map_style = map_ldr.mmtemplates#core#EscapeMenu ( s:library.properties[ 'Templates::ChooseStyle::Map' ], 'right' )
 	"
 	" create the submenu
 	if sc_style == 's' | let entry_styles = '.choose &style<TAB>'.map_style
 	else               | let entry_styles = s:InsertShortcut ( '.choose style', sc_style, 0 ).'<TAB>'.map_style
 	endif
-	call s:CreateSubmenu ( a:t_lib, specials_menu.entry_styles, s:StandardPriority )
+	call s:CreateSubmenu ( specials_menu.entry_styles, s:StandardPriority )
 	"
 	" add entries for all styles
-	for s in a:t_lib.styles
+	for s in s:library.styles
 		exe 'anoremenu <silent> '.s:t_runtime.root_menu.specials_menu.'.choose\ style.&'.s
 					\ .' :call mmtemplates#core#ChooseStyle('.s:t_runtime.lib_name.','.string(s).')<CR>'
 	endfor
@@ -3870,21 +3974,21 @@ function! mmtemplates#core#CreateMenus ( library, root_menu, ... )
 	"
 	" sub-menus
 	for name in submenus
-		call s:CreateSubmenu ( t_lib, name, priority )
+		call s:CreateSubmenu ( name, priority )
 	endfor
 	"
 	" templates
 	if do_templates
-		call s:CreateTemplateMenus ( t_lib )
+		call s:CreateTemplateMenus ()
 	endif
 	"
 	" specials
 	if do_specials == 1
 		" all specials
-		call s:CreateSpecialsMenus ( t_lib, 0 )
+		call s:CreateSpecialsMenus ( 0 )
 	elseif do_specials == 2
 		" styles only
-		call s:CreateSpecialsMenus ( t_lib, 1 )
+		call s:CreateSpecialsMenus ( 1 )
 	endif
 	"
 	" ==================================================

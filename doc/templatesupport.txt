@@ -2,7 +2,7 @@
 
 MM Template Support                                        *template-support*
 
-                           Plug-in version 1.0alpha
+                            Plug-in version 1.0alpha
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -56,6 +56,7 @@ Here is a list of high profile plug-ins which use the template support:
  5.    Lists                                 |template-support-lists|
  5.1    Formats                              |template-support-lists-format|
  5.2    Hashes                               |template-support-lists-hash|
+ 5.3    Menu Customization                   |template-support-lists-menu|
  6.    Advanced Features                     |template-support-advanced|
  6.1    Coding Styles                        |template-support-adv-styles|
  6.2    File Pickers                         |template-support-adv-files|
@@ -806,7 +807,9 @@ the template is used via a map. But whenever the template includes the
 "expandmenu" option, a submenu is created which lists all the entries, which
 allows the user to choose in the menu, rather than on the command line: >
 	== Preprocessor.c libs == below, expandmenu, map:pcl ==
-<
+Further options for customizing the look of the submenu are explained in
+|template-support-lists-menu|.
+
 ------------------------------------------------------------------------------
 5.1  FORMATS                                *template-support-lists-format*
 ------------------------------------------------------------------------------
@@ -865,6 +868,57 @@ parameters:
 <
 These templates also support the option "expandmenu". The menu will list all
 the keys.
+
+------------------------------------------------------------------------------
+5.3  MENU CUSTOMIZATION                          *template-support-lists-menu*
+------------------------------------------------------------------------------
+
+                                               ** Interface Version 1.0+ **
+With interface version 1.0+, the look of the submenu created for a template
+can be modified.
+
+A list can be given explicitly with "expandmenu", which is then used to create
+the menu entries: >
+  == Idioms.string function == insert, expandmenu:String_Functions ==
+It is up to the user to ensure that the entries in this list are suitable to
+select entries from the list used inside the template. The only purpose of the
+list given with "expandmenu" is to change the look of the menu.
+
+The created menu entries can use both the left- and the right-aligned text of
+the entry. By default, the list element or the dictionary key are shown in the
+menu. The right-aligned text can be set using "expandright:...": >
+
+  == LIST: regex_char_class == hash ==
+    'digit'        : '\d',
+    'whitespace'   : '\s',
+    'word char.'   : '\w',
+  == ENDLIST ==
+
+  == Regex.Character Class == insert, expandmenu, expandright:value, map:xc ==
+  |PickList( 'Char Class', 'regex_char_class' )|
+  |PICK|<CURSOR>
+  == ENDTEMPLATE ==
+<
+The created menu will use the values from the dictionary to create the menu
+entries' right-aligned text: >
+
+  Character Class            \xc
+  ------------------------------
+  digit                       \d
+  whitespace                  \s
+  word char.                  \w
+<
+This way the template becomes self documenting. Additionally, the user can go
+to the menu for an overview of the character classes and their associated
+expressions.
+In the same way "expandleft:..." can be used to define the left-aligned text
+of the menu entry. The allowed values for "expandleft:..." and
+"expandright:..." are "key" and "value". With lists, both refer to the list
+element, with dictionaries, they refer to the key and value, respectively. The
+following would thus be possible: >
+  == ... == expandmenu, expandleft:value, expandright:key ==
+The submenu would show each dictionary key on the right, and each associated
+value on the left.
 
 ==============================================================================
 6.  ADVANCED FEATURES                              *template-support-advanced*
@@ -2329,9 +2383,9 @@ dictionaries, the user has to choose one of the keys.
 
 After the user selected an entry, several replacements for macros are created,
 which can be inserted in the template:
--	*|VALUE|* : the selected entry from the list or dictionary
--	*|KEY|*   : the selected key (dictionaries only)
--	*|PICK|*  : same as *|VALUE|*
+- *|VALUE|* : the selected entry from the list or dictionary
+- *|KEY|*   : for dictionaries: the selected key, for lists: same as *|VALUE|*
+- *|PICK|*  : same as *|VALUE|*
 
 Example:
 >
@@ -2465,16 +2519,30 @@ Note: "visual" is the default for templates containing the split tag,
                   *template-support-map*
 Menus and Maps:
 
-	nomenu        - No menu entry is created.
-	expandmenu    - A submenu is created for this template with entries matching
-	                those of a given list.
-	sc:<sc>       - A shortcut is created for the menu entry of this template.
-	shortcut:<sc> - Long version of sc:<sc>.
-	map:<map>     - A map is created for this template.
+  nomenu        - No menu entry is created.
+  sc:<sc>       - A shortcut is created for the menu entry of this template.
+  shortcut:<sc> - Long version of sc:<sc>.
+  map:<map>     - A map is created for this template.
 
 Note: The default is for a menu entry to be created.
 Note: A shortcut can only be one character long. A map can be several
       characters long. It is always preceded by the local mapleader.
+
+Submenus for templates using lists (|template-support-PickList()|):
+
+  expandmenu         - A submenu is created with entries matching those of the
+                       list used in the templates.
+  expandmenu:<list>  - A submenu is created with entries matching those of the
+                       list <list>. (interface 1.0+)
+  expandleft:<what>  - When creating the submenu, use the element <what> for
+                       the left-aligned side of the menu entry.
+                       (interface 1.0+)
+  expandright:<what> - When creating the submenu, use the element <what> for
+                       the right-aligned side of the menu entry.
+                       (interface 1.0+)
+
+Note: Valid value for the element <what> are: key, value
+Note: For an explanation of these options, see |template-support-lists-menu|.
 
 ------------------------------------------------------------------------------
 C.2  LISTS                                         *template-support-opt-list*
@@ -2525,11 +2593,16 @@ D.  CHANGE LOG                                   *template-support-change-log*
   created for that filetype.
 - Added: New jump tags [+NAME+] and [-NAME-] for optional parameters.
 - Added: New map <ctrl-d> to delete optional jump tags [+NAME+] and [-NAME-].
+- Added: Template options "expandleft" and "expandright". Extended the option
+  "expandmenu".
+- Changed: During the creation of the submenu for a list-picking template, all
+  special characters are escaped correctly. (The characters "\" and "|" were
+  not escaped before.)
 - Added: User setting |g:Templates_TemplateBrowser| to configure the browser
   used for editing templates.
 - Added: User settings |g:Templates_PersonalizationFile| and
   |g:Templates_UsePersonalizationFile| to configure the personalization file.
-- Added: Help templates can call a browser using |Browser( <url> )|:
+- Added: Help templates can call a browser using |Browser( <url> )|.
 - Added: User settings |g:Templates_InternetBrowserExec| and
   |g:Templates_InternetBrowserFlags| to configure the browser used by help
   templates.
@@ -2671,7 +2744,12 @@ See also |template-support-lib-interf|.
   used as targets for jumps.
 - Added: New map <ctrl-d> to delete optional jump tags [+NAME+] and [-NAME-]
   together with their separator ",".
-- Added: Help templates can call a browser using |Browser( <url> )|:
+- Added: Template options "expandleft" and "expandright". Extended the option
+  "expandmenu".
+- Changed: During the creation of the submenu for a list-picking template, all
+  special characters are escaped correctly. (The characters "\" and "|" were
+  not escaped before.)
+- Added: Help templates can call a browser using |Browser( <url> )|.
 
 ------------------------------------------------------------------------------
   INTERFACE VERSION 0.9
