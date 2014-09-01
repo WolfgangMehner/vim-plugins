@@ -2981,18 +2981,21 @@ let s:Status_SectionCodes = {
 " Parameters:
 "   -
 " Returns:
-"   [ <file-name>, <file-status>, <section-code> ] - data (list: 3x string)
+"   [ <section-code>, <file-status>, <file-name> ] - data (list: 3x string)
+"     or
+"   [ <section-code>, <file-status>, <old-name>, <new-name> ] - data (list: 4x string)
 "
 " The entries are as follows:
-"   file name    - name of the file under the cursor (string)
-"   file status  - status of the file, see below (string)
 "   section code - one character encoding the section the file was found in,
 "                  use 's:Status_SectionCodes' to decode the meaning (string)
+"   file status  - status of the file, see below (string)
+"   file name    - name of the file under the cursor (string)
 "
 " Status:
 " - "new file"
 " - "modified"
 " - "deleted"
+" - "renamed"
 " - "conflict"
 " - one of the two-letter status codes of "git status --short"
 "
@@ -3003,6 +3006,7 @@ let s:Status_SectionCodes = {
 function! s:Status_GetFile()
 	"
 	let f_name   = ''
+	let f_new    = ''
 	let f_status = ''
 	let s_code   = ''
 	"
@@ -3194,12 +3198,27 @@ function! s:Status_GetFile()
 		"
 	endif
 	"
+	if f_status == 'renamed' || f_status =~ '^R'
+		let mlist = matchlist( f_name, '^\(.*\) -> \(.*\)$' )
+		"
+		" check the filename
+		if empty( mlist )
+			return [ '', '', 'Could not correctly detect the rename.' ]
+		endif
+		"
+		let [ f_name, f_new ] = mlist[1:2]
+	endif
+	"
 	if f_name =~ '^".\+"$'
 		let f_name = substitute ( f_name, '\_^"\|"\_$', '', 'g' )
 		let f_name = substitute ( f_name, '\\\(.\)', '\1', 'g' )
 	endif
 	"
-	return [ f_name, f_status, s_code ]
+	if f_new == ''
+		return [ s_code, f_status, f_name ]
+	else
+		return [ s_code, f_status, f_name, f_new ]
+	endif
 	"
 endfunction    " ----------  end of function s:Status_GetFile  ----------
 "
@@ -3233,61 +3252,73 @@ function! s:Status_FileAction( action )
 	" the file under the cursor
 	let fileinfo = s:Status_GetFile()
 	"
-	let [ f_name, f_status, s_code ] = fileinfo
-	"
-	if f_name == ''
-		call s:ErrorMsg ( s_code )
-		return 0
+	if len ( fileinfo ) == 3
+		let [ s_code, f_status, f_name_old ] = fileinfo
+		let f_name_new = f_name_old
+	else
+		let [ s_code, f_status, f_name_old, f_name_new ] = fileinfo
 	endif
 	"
-	let f_name_esc = '-- '.shellescape( f_name )
+	if s_code == ''
+		" in this case 'f_name_old' contains the error message
+		call s:ErrorMsg ( f_name_old )
+		return 0
+	endif
 	"
 	if a:action == 'edit'
 		"
 		" any section, action "edit"
-		call s:OpenFile( f_name )
+		call s:OpenFile( f_name_new )
 		"
 	elseif s_code == 's' && ( a:action == 'diff' || a:action == 'diff-word' )
+		"
+		" section "staged", action "diff"
 		"
 		if a:action == 'diff' | let mode = 'update'
 		else                  | let mode = 'color-words' | endif
 		"
-		" section "staged", action "diff"
 		if g:Git_StatusStagedOpenDiff == 'cached'
-			call GitS_Diff( mode, '--cached '.f_name_esc )
+			let which = '--cached '
 		elseif g:Git_StatusStagedOpenDiff == 'head'
-			call GitS_Diff( mode, 'HEAD '.f_name_esc )
+			let which = 'HEAD '
 		else
-			call GitS_Diff( mode, f_name_esc )
+			let which = ''
+		endif
+		"
+		if f_name_new == f_name_old
+			call GitS_Diff( mode, which.'-- '.shellescape( f_name_old ) )
+		else
+			call GitS_Diff( mode, '--find-renames '.which.'-- '.shellescape( f_name_old ).' '.shellescape( f_name_new ) )
 		endif
 		"
 	elseif s_code =~ '[bmcd]' && ( a:action == 'diff' || a:action == 'diff-word' )
 		"
+		" section "modified", "conflict" or "diff", action "diff"
+		" (this is also called for section "both" in short status output)
+		"
 		if a:action == 'diff' | let mode = 'update'
 		else                  | let mode = 'color-words' | endif
 		"
-		" section "modified", "conflict" or "diff", action "diff"
-		" (this is also called for section "both" in short status output)
-		call GitS_Diff( mode, f_name_esc )
+		call GitS_Diff( mode, '-- '.shellescape( f_name_new ) )
 		"
 	elseif s_code =~ '[bsmcd]' && a:action == 'log'
 		"
 		" section "staged", "modified", "conflict" or "diff", action "log"
-		call GitS_Log( 'update', f_name_esc )
+		call GitS_Log( 'update', '-- '.shellescape( f_name_old ) )
 		"
 	elseif s_code == 'i' && a:action == 'add'
 		"
 		" section "ignored", action "add"
-		if s:Question( 'Add ignored file "'.f_name.'"?', 'warning' ) == 1
-			call GitS_Add( f_name_esc, 'f' )
+		if s:Question( 'Add ignored file "'.f_name_old.'"?', 'warning' ) == 1
+			call GitS_Add( '-- '.shellescape( f_name_old ), 'f' )
 			return 1
 		endif
 		"
 	elseif s_code == 'u' && a:action == 'add'
 		"
 		" section "untracked", action "add"
-		if s:Question( 'Add untracked file "'.f_name.'"?' ) == 1
-			call GitS_Add( f_name_esc, '' )
+		if s:Question( 'Add untracked file "'.f_name_old.'"?' ) == 1
+			call GitS_Add( '-- '.shellescape( f_name_old ), '' )
 			return 1
 		endif
 		"
@@ -3297,14 +3328,14 @@ function! s:Status_FileAction( action )
 		"
 		if f_status == 'modified' || f_status =~ '^.M$'
 			" add a modified file?
-			if s:Question( 'Add file "'.f_name.'"?' ) == 1
-				call GitS_Add( f_name_esc, '' )
+			if s:Question( 'Add file "'.f_name_old.'"?' ) == 1
+				call GitS_Add( '-- '.shellescape( f_name_old ), '' )
 				return 1
 			endif
 		elseif f_status == 'deleted' || f_status =~ '^.D$'
 			" add a deleted file? -> remove it?
-			if s:Question( 'Remove file "'.f_name.'"?' ) == 1
-				call GitS_Remove( f_name_esc, '' )
+			if s:Question( 'Remove file "'.f_name_old.'"?' ) == 1
+				call GitS_Remove( '-- '.shellescape( f_name_old ), '' )
 				return 1
 			endif
 		else
@@ -3316,7 +3347,7 @@ function! s:Status_FileAction( action )
 		" section "modified", action "add-patch"
 		"
 		if f_status == 'modified' || f_status =~ '^.M$'
-			call GitS_GitBash( 'add -p '.f_name_esc )
+			call GitS_GitBash( 'add -p -- '.shellescape( f_name_old ) )
 			return 1
 		else
 			call s:ErrorMsg ( 'No "add -p" for file status "'.f_status.'".' )
@@ -3328,8 +3359,8 @@ function! s:Status_FileAction( action )
 		"
 		if f_status == 'modified' || f_status == 'deleted' || f_status =~ '^.[MD]$'
 			" check out a modified or deleted file?
-			if s:Question( 'Checkout file "'.f_name.'"?', 'warning' ) == 1
-				call GitS_Checkout( f_name_esc, '' )
+			if s:Question( 'Checkout file "'.f_name_old.'"?', 'warning' ) == 1
+				call GitS_Checkout( '-- '.shellescape( f_name_old ), '' )
 				return 1
 			endif
 		else
@@ -3342,12 +3373,12 @@ function! s:Status_FileAction( action )
 		"
 		if f_status == 'modified' || f_status == 'deleted' || f_status =~ '^[MAD].$' || f_status =~ '^.[MD]$'
 			" check out a modified or deleted file?
-			if s:Question( 'Checkout file "'.f_name.'" and change both the index and working tree copy?', 'warning' ) == 1
-				call GitS_Checkout( 'HEAD '.f_name_esc, '' )
+			if s:Question( 'Checkout file "'.f_name_old.'" and change both the index and working tree copy?', 'warning' ) == 1
+				call GitS_Checkout( 'HEAD -- '.shellescape( f_name_old ), '' )
 				return 1
 			endif
 		else
-			call s:ErrorMsg ( 'Checking out not implemented yet for file status "'.f_status.'".' )
+			call s:ErrorMsg ( 'Checking out the HEAD not implemented yet for file status "'.f_status.'".' )
 		endif
 		"
 	elseif s_code =~ '[bm]' && a:action == 'checkout-patch'
@@ -3355,7 +3386,7 @@ function! s:Status_FileAction( action )
 		" section "modified", action "checkout-patch"
 		"
 		if f_status == 'modified' || f_status =~ '^.M$'
-			call GitS_GitBash( 'checkout -p '.f_name_esc )
+			call GitS_GitBash( 'checkout -p -- '.shellescape( f_name_old ) )
 			return 1
 		else
 			call s:ErrorMsg ( 'No "checkout -p" for file status "'.f_status.'".' )
@@ -3365,12 +3396,24 @@ function! s:Status_FileAction( action )
 		"
 		" section "staged" or "diff", action "reset"
 		"
-		if f_status == 'modified' || f_status == 'new file' || f_status == 'deleted' || f_status =~ '^[MADRC].$'
+		if f_status == 'modified' || f_status == 'new file' || f_status == 'deleted' || f_status =~ '^[MADC].$'
 			" reset a modified, new or deleted file?
-			if s:Question( 'Reset file "'.f_name.'"?' ) == 1
-				call GitS_Reset( '-q '.f_name_esc, '' )         " use '-q' to prevent return value '1' and suppress output
+			if s:Question( 'Reset file "'.f_name_old.'"?' ) == 1
+				call GitS_Reset( '-q -- '.shellescape( f_name_old ), '' )   " use '-q' to prevent return value '1' and suppress output
 				return 1
 			endif
+		elseif f_status == 'renamed' || f_status =~ '^R.$'
+			" reset a modified, new or deleted file?
+			if s:Question( 'Reset the old file "'.f_name_old.'"?' ) == 1
+				call GitS_Reset( '-q -- '.shellescape( f_name_old ), '' )   " use '-q' to prevent return value '1' and suppress output
+			endif
+			if s:Question( 'Reset the new file "'.f_name_new.'"?' ) == 1
+				call GitS_Reset( '-q -- '.shellescape( f_name_new ), '' )   " use '-q' to prevent return value '1' and suppress output
+			endif
+			if s:Question( 'Undo the rename?' ) == 1
+				call rename( f_name_new, f_name_old )
+			endif
+			return 1
 		else
 			call s:ErrorMsg ( 'Reseting not implemented yet for file status "'.f_status.'".' )
 		endif
@@ -3380,7 +3423,7 @@ function! s:Status_FileAction( action )
 		" section "staged", action "reset-patch"
 		"
 		if f_status == 'modified' || f_status =~ '^M.$'
-			call GitS_GitBash( 'reset -p '.f_name_esc )
+			call GitS_GitBash( 'reset -p -- '.shellescape( f_name_old ) )
 			return 1
 		else
 			call s:ErrorMsg ( 'No "reset -p" for file status "'.f_status.'".' )
@@ -3389,16 +3432,16 @@ function! s:Status_FileAction( action )
 	elseif s_code =~ 'c' && a:action == 'add'
 		"
 		" section "unmerged", action "add"
-		if s:Question( 'Add unmerged file "'.f_name.'"?' ) == 1
-			call GitS_Add( f_name_esc, '' )
+		if s:Question( 'Add unmerged file "'.f_name_old.'"?' ) == 1
+			call GitS_Add( '-- '.shellescape( f_name_old ), '' )
 			return 1
 		endif
 		"
 	elseif s_code =~ 'c' && a:action == 'reset'
 		"
 		" section "unmerged", action "reset"
-		if s:Question( 'Reset unmerged file "'.f_name.'"?' ) == 1
-			call GitS_Reset( f_name_esc, '' )
+		if s:Question( 'Reset unmerged file "'.f_name_old.'"?' ) == 1
+			call GitS_Reset( '-- '.shellescape( f_name_old ), '' )
 			return 1
 		endif
 		"
@@ -3408,8 +3451,8 @@ function! s:Status_FileAction( action )
 		"
 		if ! exists( '*delete' )
 			call s:ErrorMsg ( 'Can not delete files from harddisk.' )
-		elseif s:Question( 'Delete file "'.f_name.'" from harddisk?' ) == 1
-			return delete ( f_name ) == 0
+		elseif s:Question( 'Delete file "'.f_name_old.'" from harddisk?' ) == 1
+			return delete ( f_name_old ) == 0
 		endif
 		"
 	else
