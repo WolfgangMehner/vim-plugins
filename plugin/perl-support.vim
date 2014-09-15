@@ -57,7 +57,7 @@
 if exists("g:Perl_PluginVersion") || &compatible
   finish
 endif
-let g:Perl_PluginVersion= "5.3.1"
+let g:Perl_PluginVersion= "5.3.2"
 "
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_SetGlobalVariable     {{{1
