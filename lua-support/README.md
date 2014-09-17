@@ -162,7 +162,10 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 
   RELEASE NOTES FOR VERSION 0.9pre
 ----------------------------------------------------------------------
-- New templates.
+- Added: Hardcopy to postscript.
+- Changed: Better error recognition while running scripts.
+- Fixed: Setup of local templates in case of global installation.
+- New templates and codesnippets.
 - Minor improvements.
 
   RELEASE NOTES FOR OLDER VERSIONS

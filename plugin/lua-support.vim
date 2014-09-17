@@ -288,6 +288,7 @@ call s:GetGlobalSetting ( 'Xterm_Executable' )
 call s:ApplyDefaultSetting ( 'Lua_CompiledExtension', 'luac' )         " default: 'luac'
 call s:ApplyDefaultSetting ( 'Lua_InsertFileHeader', 'yes' )           " default: do insert a file header
 call s:ApplyDefaultSetting ( 'Lua_MapLeader', '' )                     " default: do not overwrite 'maplocalleader'
+call s:ApplyDefaultSetting ( 'Lua_Printheader', "%<%f%h%m%<  %=%{strftime('%x %H:%M')}     Page %N" )
 call s:ApplyDefaultSetting ( 'Xterm_Options', '-fa courier -fs 12 -geometry 80x24' )
 "
 let s:Lua_GlbTemplateFile = expand ( s:Lua_GlbTemplateFile )
@@ -745,6 +746,18 @@ function! Lua_Run ( args )
 					\ 'Further information: :help g:Lua_Executable' )
 	endif
 	"
+	" recognized errors:
+	" lua: [string ...]:line_in_string: msg
+	" lua: file:line: msg
+	" lua: msg
+	"  [string ...]:line_in_string: msg
+	" file:line: msg
+	let errformat = substitute( s:Lua_Executable, '%\\%\\', '%\', 'g' ).': [string %.%\\+]:%\\d%\\+: %m,'
+				\ .substitute( s:Lua_Executable, '%\\%\\', '%\', 'g' ).': %f:%l: %m,'
+				\ .substitute( s:Lua_Executable, '%\\%\\', '%\', 'g' ).': %m,'
+				\ .'%\\s%\\+[string %.%\\+]:%\\d%\\+: %m,'
+				\ .'%f:%l: %m'
+	"
 	let script = shellescape ( expand ( '%' ) )
 	"
 	if s:Lua_OutputMethod == 'vim-io'
@@ -773,7 +786,7 @@ function! Lua_Run ( args )
 			"
 			" run code checker
 			" :TODO:26.03.2014 20:54:WM: check escaping of errorformat
-			let &g:errorformat = substitute( s:Lua_Executable, '%\\%\\', '%\', 'g' ).': %f:%l: %m,'.substitute( s:Lua_CompilerExec, '%\\%\\', '%\', 'g' ).': %m,%f:%l: %m'
+			let &g:errorformat = errformat
 			"
 			silent exe 'cexpr lua_output'
 			"
@@ -809,8 +822,6 @@ function! Lua_Run ( args )
 		exe '0r!'.shellescape( s:Lua_Executable ).' '.script.' '.a:args
 		silent exe '$del'
 		"
-		let errorf_saved  = &l:errorformat
-		"
 		if v:shell_error == 0
 			setlocal nomodifiable
 			setlocal nomodified
@@ -823,7 +834,7 @@ function! Lua_Run ( args )
 			"
 			" run code checker
 			" :TODO:26.03.2014 20:54:WM: check escaping of errorformat
-			let &l:errorformat = substitute( s:Lua_Executable, '%\\%\\', '%\', 'g' ).': %f:%l: %m,'.substitute( s:Lua_CompilerExec, '%\\%\\', '%\', 'g' ).': %m,%f:%l: %m'
+			let &l:errorformat = errformat
 			"
 			silent exe 'cgetbuffer'
 			"
@@ -856,6 +867,7 @@ endfunction    " ----------  end of function Lua_Run  ----------
 " Parameters:
 "   mode - "compile" or "check" (string)
 "-------------------------------------------------------------------------------
+"
 function! Lua_Compile( mode ) range
 	"
 	silent exe 'update'   | " write source file if necessary
@@ -909,6 +921,59 @@ function! Lua_Compile( mode ) range
 	endif
 	"
 endfunction    " ----------  end of function Lua_Compile  ----------
+"
+"-------------------------------------------------------------------------------
+" Lua_Hardcopy : Print the code to a file.   {{{1
+"
+" Parameters:
+"   mode - "n" or "v", normal or visual mode (string)
+"-------------------------------------------------------------------------------
+"
+function! Lua_Hardcopy ( mode )
+	"
+  let outfile = expand("%:t")
+	"
+	" check the buffer
+  if ! s:MSWIN && empty ( outfile )
+		return s:ImportantMsg ( 'The buffer has no filename.' )
+  endif
+	"
+	" save current settings
+	let printheader_saved = &g:printheader
+	"
+	let &g:printheader = g:Lua_Printheader
+	"
+	if s:MSWIN
+		" we simply call hardcopy, which will open the systems printing dialog
+		if a:mode == 'n'
+			silent exe  'hardcopy'
+		elseif a:mode == 'v'
+			silent exe  '*hardcopy'
+		endif
+	else
+		"
+		" directory to print to
+		let outdir = getcwd()
+		if filewritable ( outdir ) != 2
+			let outdir = $HOME
+		endif
+		"
+		let psfile = outdir.'/'.outfile.'.ps'
+		"
+		if a:mode == 'n'
+			silent exe  'hardcopy > '.psfile
+			call s:ImportantMsg ( 'file "'.outfile.'" printed to "'.psfile.'"' )
+		elseif a:mode == 'v'
+			silent exe  '*hardcopy > '.psfile
+			call s:ImportantMsg ( 'file "'.outfile.'" (lines '.line("'<").'-'.line("'>").') printed to "'.psfile.'"' )
+		endif
+	endif
+	"
+	" restore current settings
+	let &g:printheader = printheader_saved
+	"
+	return
+endfunction    " ----------  end of function Lua_Hardcopy  ----------
 "
 "------------------------------------------------------------------------------
 "  === Templates API ===   {{{1
@@ -1222,6 +1287,13 @@ function! s:CreateMaps ()
 	vnoremap    <buffer>            <LocalLeader>rsc   <Esc>:LuaCompilerExec<SPACE>
 	"
 	"-------------------------------------------------------------------------------
+	" hardcopy
+	"-------------------------------------------------------------------------------
+	nnoremap    <buffer>  <silent> <LocalLeader>rh         :call Lua_Hardcopy('n')<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>rh    <C-C>:call Lua_Hardcopy('n')<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>rh    <C-C>:call Lua_Hardcopy('v')<CR>
+	"
+	"-------------------------------------------------------------------------------
 	" settings
 	"-------------------------------------------------------------------------------
 	nnoremap    <buffer>  <silent>  <LocalLeader>rs         :call Lua_Settings(0)<CR>
@@ -1370,6 +1442,10 @@ function! s:InitMenus()
 	exe ahead.'&set\ executable<TAB>'.esc_mapl.'rse                :LuaExecutable<SPACE>'
 	exe ahead.'&set\ compiler\ exec\.<TAB>'.esc_mapl.'rsc          :LuaCompilerExec<SPACE>'
 	exe shead.'-Sep02-                                             :'
+	"
+	exe shead.'&hardcopy\ to\ filename\.ps<TAB>'.esc_mapl.'rh      :call Lua_Hardcopy("n")<CR>'
+	exe vhead.'&hardcopy\ to\ filename\.ps<TAB>'.esc_mapl.'rh <C-C>:call Lua_Hardcopy("v")<CR>'
+	exe shead.'-Sep03-                                             :'
 	"
 	exe shead.'&settings<TAB>'.esc_mapl.'rs  :call Lua_Settings(0)<CR>'
 	"

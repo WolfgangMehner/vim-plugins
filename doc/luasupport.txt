@@ -1,4 +1,4 @@
-*luasupport.txt*                 Lua Support                       Aug 07 2014
+*luasupport.txt*                 Lua Support                       Sep 16 2014
 
 Lua Support                                          *lua-support* *luasupport*
 
@@ -31,7 +31,8 @@ Lua is: Copyright 1994-2014 Lua.org, PUC-Rio.
  2.3    Snippets                        |luasupport-usage-snippets|
  2.4    Run and Compile                 |luasupport-usage-run|
  2.4.1   Using QuickFix                 |luasupport-usage-qf|
- 2.5    Help                            |luasupport-usage-help|
+ 2.5    Hardcopy                        |luasupport-usage-hardcopy|
+ 2.6    Help                            |luasupport-usage-help|
  3.    Templates                        |luasupport-templates|
  3.1    Introduction                    |luasupport-templates-introduction|
  3.2    Jump Tags                       |luasupport-templates-jump-tags|
@@ -39,14 +40,16 @@ Lua is: Copyright 1994-2014 Lua.org, PUC-Rio.
  3.4    Auxiliary Functions             |luasupport-templates-aux|
  4.    Configuration                    |luasupport-configuration|
  4.1    Executables                     |luasupport-config-executable|
- 4.1.1   Output Redirection             |luasupport-config-output|
+ 4.1.1   Direct Run                     |luasupport-config-direct-run|
+ 4.1.2   Output Redirection             |luasupport-config-output|
  4.2    Menus                           |luasupport-config-menus|
  4.3    Maps                            |luasupport-config-maps|
  4.4    Comments                        |luasupport-config-comments|
  4.5    Snippets                        |luasupport-config-snippets|
  4.6    Template Library                |luasupport-config-template-lib|
  4.7    Template Customization          |luasupport-config-template-cstm|
- 4.8    Browser                         |luasupport-config-browser|
+ 4.8    Hardcopy                        |luasupport-config-hardcopy|
+ 4.9    Browser                         |luasupport-config-browser|
  5.    System-wide Installation         |luasupport-system-wide|
 
  A.    Troubleshooting - Known Issues   |luasupport-troubleshooting|
@@ -269,12 +272,15 @@ The file in the current buffer can be run or compiled with a keystroke.
   check the code             Run.check code                 <LocalLeader>rk
 
   output method for "run"    Run.output method              <LocalLeader>ro
+  change "direct run"        Run.direct run                 <LocalLeader>rd
   change the interpreter     Run.set executable             <LocalLeader>rse
   change the compiler        Run.set compiler exec.         <LocalLeader>rsc
+
+  make script executable     Run.make script exec./not      <LocalLeader>re
  ----------------------------------------------------------------------------
 
 The functionality is also available through commands. These commands can also
-be used to set maps in the ftplugin.
+be used to set different maps in the ftplugin.
 
   Command                       Explanation
  ----------------------------------------------------------------------------
@@ -283,6 +289,7 @@ be used to set maps in the ftplugin.
   *:LuaCheck*                     run the code checker
 
   *:LuaOutputMethod* [<method>]   set (or print) the output method
+  *:LuaDirectRun* [<yes_no>]      set (or print) the option "direct run"
   *:LuaExecutable* [<exec>]       set (or print) the interpreter
   *:LuaCompilerExec* [<exec>]     set (or print) the compiler
  ----------------------------------------------------------------------------
@@ -296,7 +303,13 @@ methods are non-interactive but support quickfix (see
 The interpreter and compiler executables can be changed on-the-fly, using the
 maps, menu entries or ex-commands: >
   :LuaExecutable lua5.1
+  :LuaCompilerExec luac5.1
 <
+Executable scripts can be run directly, without using the interpreter set via
+|:LuaExecutable|. Use the map, menu entry, or the ex-command: >
+  :LuaDirectRun yes
+(see |luasupport-config-direct-run|)
+
 The extension for compiled chunks can be changed using the global variable
 |g:Lua_CompiledExtension|, the default is "luac".
 
@@ -328,7 +341,24 @@ You can now use F5 and F6 to open and close the quickfix window and F7 and F8
 to jump to the errors.
 
 ------------------------------------------------------------------------------
-2.5  HELP                                              *luasupport-usage-help*
+2.5  HARDCOPY                                      *luasupport-usage-hardcopy*
+------------------------------------------------------------------------------
+
+The current buffer, or a range in it, can be quickly printed into a file,
+using the menu entry "Run -> hardcopy to filename.ps".
+
+  Feature                    Menu Entry                     Map
+ ----------------------------------------------------------------------------
+  hardcopy to postscript     Run.hardcopy to ...            <LocalLeader>rh
+ ----------------------------------------------------------------------------
+
+The file will be put into the current working directory. If the user can not
+write there, it is put into the home directory instead.
+
+The printheader on top of each page can be set via |g:Lua_Printheader|.
+
+------------------------------------------------------------------------------
+2.6  HELP                                              *luasupport-usage-help*
 ------------------------------------------------------------------------------
 
 The menu "Help" speeds up the access to various resources, such as the online
@@ -474,17 +504,22 @@ set in the .vimrc file.
   |g:Lua_OutputMethod|        'vim-io'      the method for running Lua
   |g:Lua_CompilerExec|        'luac'        the luac executable (^1)
   |g:Lua_CompiledExtension|   'luac'        extension used for compile chunks
+
   |g:Lua_LoadMenus|           'auto'        when to load the menus ('startup',
                                             'auto' or 'manual')
   |g:Lua_RootMenu|            '&Lua'        name and shortcut of the root menu
   |g:Lua_MapLeader|           ''            the |maplocalleader| used for maps
+
   |g:Lua_InsertFileHeader|    'yes'         insert a file header automatically
   |g:Lua_LineEndCommentColumn|              standard column used for end-of-
                             49              line comments
+
   |g:Lua_SnippetDir|          (see below)   directory with code snippers
   |g:Lua_SnippetBrowser|      'gui'         browser to select code snippets
   |g:Lua_LclTemplateFile|     (see below)   the local top-level template file
   |g:Lua_GlbTemplateFile|     (see below)   the global top-level template file
+
+  |g:Lua_Printheader|         '...'         printheader used for hardcopy
 
   g:Xterm_Executable        'xterm'       the xterm executable (^2)
   g:Xterm_Options           '...'         the xterm default settings (^2)
@@ -546,7 +581,31 @@ value on the command line.
 
 ------------------------------------------------------------------------------
 
-4.1.1  Output Redirection                           *luasupport-config-output*
+4.1.1  Direct Run                               *luasupport-config-direct-run*
+
+                                                             *g:Lua_DirectRun*
+When running a script using ":Lua <args>", the default behavior is to call the
+interpreter set via |g:Lua_Executable| and pass the scriptname and the
+optional arguments. For executable scripts, this can be changed by setting: >
+  g:Lua_DirectRun = 'yes'
+Subsequently, executable scripts will be used as the executable directly. This
+can be useful when working with different versions of Lua, or when using own
+applications to interpret Lua scripts.
+
+The possible settings are listed below:
+
+  Value               Meaning
+ ----------------------------------------------------------------------------
+  'yes'               use executable scripts themselves as the executable
+  'no' (default)      all scripts are run using |g:Lua_Executable|
+ ----------------------------------------------------------------------------
+
+The behavior can be changed on the fly using the menu entry or the map "\rd"
+(see |luasupport-usage-run|).
+
+------------------------------------------------------------------------------
+
+4.1.2  Output Redirection                           *luasupport-config-output*
 
                                                           *g:Lua_OutputMethod*
 The initial method for output redirection can be set via g:Lua_OutputMethod: >
@@ -764,7 +823,19 @@ Afterwards, use the menu entry "Snippets -> reread templates" to apply the
 changes.
 
 ------------------------------------------------------------------------------
-4.8  BROWSER                                       *luasupport-config-browser*
+4.8  HARDCOPY                                     *luasupport-config-hardcopy*
+------------------------------------------------------------------------------
+                                                           *g:Lua_Printheader*
+The printheader used by "Run -> hardcopy to filename.ps" is set via the
+variable g:Lua_Printheader. It is temporarily set as the value of
+'printheader' while printing the hardcopy. See the documentation of the
+option 'printheader' for the possible contents of g:Lua_Printheader.
+
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
+------------------------------------------------------------------------------
+4.9  BROWSER                                       *luasupport-config-browser*
 ------------------------------------------------------------------------------
 
 Opening the online reference for various items is a feature of the template
