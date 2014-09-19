@@ -70,14 +70,20 @@ endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
 " s:AssembleCmdLine : Assembles a cmd-line with the cursor in the right place.   {{{2
 "
 " Parameters:
-"   part1 - name of the variable (string)
-"   part1 - default value (string)
+"   part1 - part left of the cursor (string)
+"   part2 - part right of the cursor (string)
+"   left  - used to move the cursor left (string, optional)
 " Returns:
 "   cmd_line - the command line (string)
 "-------------------------------------------------------------------------------
 "
-function! s:AssembleCmdLine ( part1, part2 )
-	return a:part1.a:part2.repeat( "\<Left>", s:UnicodeLen( a:part2 ) )
+function! s:AssembleCmdLine ( part1, part2, ... )
+	if a:0 == 0 || a:1 == ''
+		let left = "\<Left>"
+	else
+		let left = a:1
+	endif
+	return a:part1.a:part2.repeat( left, s:UnicodeLen( a:part2 ) )
 endfunction    " ----------  end of function s:AssembleCmdLine  ----------
 "
 "-------------------------------------------------------------------------------
@@ -585,7 +591,7 @@ function! s:GenerateCustomMenu ( prefix, data )
 		" prepare command
 		if cmd =~ '<CURSOR>'
 			let mlist = matchlist ( cmd, '^\(.\+\)<CURSOR>\(.\{-}\)$' )
-			let cmd = mlist[1].mlist[2].repeat( '<LEFT>', len( mlist[2] ) )
+			let cmd = s:AssembleCmdLine ( mlist[1], mlist[2], '<Left>' )
 			let silent = ''
 		elseif cmd =~ '<EXECUTE>$'
 			let cmd = substitute ( cmd, '<EXECUTE>$', '<CR>', '' )
@@ -595,7 +601,8 @@ function! s:GenerateCustomMenu ( prefix, data )
 		let cmd = substitute ( cmd, '<FILE>',   '<cfile>', 'g' )
 		let cmd = substitute ( cmd, '<BUFFER>', '%',       'g' )
 		"
-		exe 'anoremenu '.silent.entry.' '.cmd
+		exe 'anoremenu '.silent.entry.'      '.cmd
+		exe 'vnoremenu '.silent.entry.' <C-C>'.cmd
 	endfor
 	"
 endfunction    " ----------  end of function s:GenerateCustomMenu  ----------
@@ -3766,11 +3773,13 @@ function! GitS_GitK( param )
 		return s:ErrorMsg ( s:DisableGitKMessage, s:GitKScriptReason )
 	endif
 	"
+	let param = escape( a:param, '%#' )
+	"
 	if s:MSWIN
 		" :TODO:02.01.2014 13:00:WM: Windows: try the shell command 'start'
-		silent exe '!start '.s:Git_GitKExecutable.' '.s:Git_GitKScript.' '.a:param
+		silent exe '!start '.s:Git_GitKExecutable.' '.s:Git_GitKScript.' '.param
 	else
-		silent exe '!'.s:Git_GitKExecutable.' '.s:Git_GitKScript.' '.a:param.' &'
+		silent exe '!'.s:Git_GitKExecutable.' '.s:Git_GitKScript.' '.param.' &'
 	endif
 	"
 endfunction    " ----------  end of function GitS_GitK  ----------
@@ -3787,7 +3796,7 @@ function! GitS_GitBash( param )
 	endif
 	"
 	let title = 'git '.matchstr( a:param, '\S\+' )
-	let param = a:param
+	let param = escape( a:param, '%#' )
 	"
 	if s:MSWIN && param =~ '^\s*$'
 		" no parameters: start interactive mode in background
@@ -3796,8 +3805,6 @@ function! GitS_GitBash( param )
 		" otherwise: block editor and execute command
 		silent exe '!'.s:Git_GitBashExecutable.' --login -c '.shellescape ( 'git '.param )
 	else
-		let param = substitute( param, '[#%]', '\\&', 'g' )
-		"
 		" UNIX: block editor and execute command, wait for confirmation afterwards
 		silent exe '!'.s:Git_GitBashExecutable.' '.g:Xterm_Options
 					\ .' -title '.shellescape( title )
