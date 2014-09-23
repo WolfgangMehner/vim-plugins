@@ -1,4 +1,4 @@
-*luasupport.txt*                 Lua Support                       Sep 16 2014
+*luasupport.txt*                 Lua Support                       Sep 23 2014
 
 Lua Support                                          *lua-support* *luasupport*
 
@@ -270,13 +270,12 @@ The file in the current buffer can be run or compiled with a keystroke.
   run the code               Run.run                        <LocalLeader>rr
   compile the code           Run.compile                    <LocalLeader>rc
   check the code             Run.check code                 <LocalLeader>rk
+  make script executable     Run.make script exec./not      <LocalLeader>re
 
   output method for "run"    Run.output method              <LocalLeader>ro
   change "direct run"        Run.direct run                 <LocalLeader>rd
   change the interpreter     Run.set executable             <LocalLeader>rse
   change the compiler        Run.set compiler exec.         <LocalLeader>rsc
-
-  make script executable     Run.make script exec./not      <LocalLeader>re
  ----------------------------------------------------------------------------
 
 The functionality is also available through commands. These commands can also

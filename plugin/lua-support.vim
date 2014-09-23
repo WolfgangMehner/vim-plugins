@@ -243,6 +243,7 @@ let s:Lua_RootMenu              = '&Lua'       " name of the root menu
 "
 let s:Lua_OutputMethodList      = [ 'vim-io', 'vim-qf', 'buffer', 'xterm' ]
 let s:Lua_OutputMethod          = 'vim-io'     " 'vim-io', 'vim-qf', 'buffer' or 'xterm'
+let s:Lua_DirectRun             = 'no'         " 'yes' or 'no'
 let s:Lua_LineEndCommColDefault = 49
 let s:Lua_SnippetDir            = s:plugin_dir.'/lua-support/codesnippets/'
 let s:Lua_SnippetBrowser        = 'gui'
@@ -278,6 +279,7 @@ call s:GetGlobalSetting ( 'Lua_LclTemplateFile' )
 call s:GetGlobalSetting ( 'Lua_LoadMenus' )
 call s:GetGlobalSetting ( 'Lua_RootMenu' )
 call s:GetGlobalSetting ( 'Lua_OutputMethod' )
+call s:GetGlobalSetting ( 'Lua_DirectRun' )
 call s:GetGlobalSetting ( 'Lua_Executable' )
 call s:GetGlobalSetting ( 'Lua_CompilerExec' )
 call s:GetGlobalSetting ( 'Lua_LineEndCommColDefault' )
@@ -758,20 +760,26 @@ function! Lua_Run ( args )
 				\ .'%\\s%\\+[string %.%\\+]:%\\d%\\+: %m,'
 				\ .'%f:%l: %m'
 	"
-	let script = shellescape ( expand ( '%' ) )
+	if s:Lua_DirectRun == 'yes' && executable ( expand ( '%:p' ) )
+		let exec   = shellescape ( expand ( '%:p' ) )
+		let script = ''
+	else
+		let exec   = shellescape ( s:Lua_Executable )
+		let script = shellescape ( expand ( '%' ) )
+	endif
 	"
 	if s:Lua_OutputMethod == 'vim-io'
 		"
 		" method : "vim - interactive"
 		"
-		exe '!'.shellescape( s:Lua_Executable ).' '.script.' '.a:args
+		exe '!'.exec.' '.script.' '.a:args
 		"
 	elseif s:Lua_OutputMethod == 'vim-qf'
 		"
 		" method : "vim - quickfix"
 		"
 		" run script
-		let lua_output = system ( shellescape( s:Lua_Executable ).' '.script.' '.a:args )
+		let lua_output = system ( exec.' '.script.' '.a:args )
 		"
 		" successful?
 		if v:shell_error == 0
@@ -819,7 +827,7 @@ function! Lua_Run ( args )
 		setlocal modifiable
 		"
 		silent exe '%del'
-		exe '0r!'.shellescape( s:Lua_Executable ).' '.script.' '.a:args
+		exe '0r!'.exec.' '.script.' '.a:args
 		silent exe '$del'
 		"
 		if v:shell_error == 0
@@ -855,7 +863,7 @@ function! Lua_Run ( args )
 		"
 		silent exe '!'.s:Xterm_Executable.' '.g:Xterm_Options
 					\ .' -title '.shellescape( title )
-					\ .' -e '.shellescape( s:Lua_Executable.' '.script.' '.args.' ; echo "" ; read -p "  ** PRESS ENTER **  " dummy ' ).' &'
+					\ .' -e '.shellescape( exec.' '.script.' '.args.' ; echo "" ; read -p "  ** PRESS ENTER **  " dummy ' ).' &'
 		"
 	endif
 	"
@@ -921,6 +929,50 @@ function! Lua_Compile( mode ) range
 	endif
 	"
 endfunction    " ----------  end of function Lua_Compile  ----------
+"
+"-------------------------------------------------------------------------------
+" Lua_MakeExecutable : Make the script executable.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Lua_MakeExecutable ()
+	"
+	if ! executable ( 'chmod' )
+		return s:ErrorMsg ( 'Command "chmod" not executable.' )
+	endif
+	"
+	let filename = expand("%:p")
+	"
+	if executable ( filename )
+		let from_state = 'executable'
+		let to_state   = 'NOT executable'
+		let cmd        = 'chmod -x'
+	else
+		let from_state = 'NOT executable'
+		let to_state   = 'executable'
+		let cmd        = 'chmod u+x'
+	endif
+	"
+	if s:UserInput( '"'.filename.'" is '.from_state.'. Make it '.to_state.' [y/n] : ', 'y' ) == 'y'
+		"
+		" run the command
+		silent exe '!'.cmd.' '.shellescape(filename)
+		"
+		" successful?
+		if v:shell_error
+			" confirmation for the user
+			call s:ErrorMsg ( 'Could not make "'.filename.'" '.to_state.'!' )
+		else
+			" reload the file, otherwise the message will not be visible
+			if ! &l:modified
+				silent exe "edit"
+			endif
+			" confirmation for the user
+			call s:ImportantMsg ( 'Made "'.filename.'" '.to_state.'.' )
+		endif
+		"
+	endif
+
+endfunction    " ----------  end of function Lua_MakeExecutable  ----------
 "
 "-------------------------------------------------------------------------------
 " Lua_Hardcopy : Print the code to a file.   {{{1
@@ -1150,7 +1202,7 @@ function! Lua_SetOutputMethod ( method )
 	"
 	" 'method' gives the output method
 	if index ( s:Lua_OutputMethodList, a:method ) == -1
-		return s:ErrorMsg ( 'Unknown method "'.a:method.'".' )
+		return s:ErrorMsg ( 'Invalid option for output method: "'.a:method.'".' )
 	endif
 	"
 	let s:Lua_OutputMethod = a:method
@@ -1175,6 +1227,45 @@ function! Lua_SetOutputMethod ( method )
 	exe 'anoremenu ...400 '.s:Lua_RootMenu.'.Run.output\ method.Output\ Method<TAB>(current\:\ '.current.') :echo "This is a menu header."<CR>'
 	"
 endfunction    " ----------  end of function Lua_SetOutputMethod  ----------
+"
+"-------------------------------------------------------------------------------
+" Lua_GetDirectRunList : For cmd.-line completion.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Lua_GetDirectRunList (...)
+	return "yes\nno"
+endfunction    " ----------  end of function Lua_GetDirectRunList  ----------
+"
+"-------------------------------------------------------------------------------
+" Lua_SetDirectRun : Set s:Lua_DirectRun   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Lua_SetDirectRun ( option )
+	"
+	if a:option == ''
+		echo s:Lua_DirectRun
+		return
+	endif
+	"
+	" 'option' gives the setting
+	if a:option != 'yes' && a:option != 'no'
+		return s:ErrorMsg ( 'Invalid option for direct run: "'.a:option.'".' )
+	endif
+	"
+	let s:Lua_DirectRun = a:option
+	"
+	" update the menu header
+	if ! has ( 'menu' ) || s:MenuVisible == 0
+		return
+	endif
+	"
+	exe 'aunmenu '.s:Lua_RootMenu.'.Run.direct\ run.Direct\ Run'
+	"
+	let current = s:Lua_DirectRun
+	"
+	exe 'anoremenu ...400 '.s:Lua_RootMenu.'.Run.direct\ run.Direct\ Run<TAB>(currently\:\ '.current.') :echo "This is a menu header."<CR>'
+	"
+endfunction    " ----------  end of function Lua_SetDirectRun  ----------
 "
 "-------------------------------------------------------------------------------
 " s:CreateMaps : Create additional maps.   {{{1
@@ -1272,6 +1363,9 @@ function! s:CreateMaps ()
 	nnoremap    <buffer>  <silent>  <LocalLeader>rk         :call Lua_Compile('check')<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rk    <Esc>:call Lua_Compile('check')<CR>
 	vnoremap    <buffer>  <silent>  <LocalLeader>rk    <Esc>:call Lua_Compile('check')<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>re         :call Lua_MakeExecutable()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>re    <Esc>:call Lua_MakeExecutable()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>re    <Esc>:call Lua_MakeExecutable()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" output method
@@ -1279,6 +1373,9 @@ function! s:CreateMaps ()
 	nnoremap    <buffer>            <LocalLeader>ro         :LuaOutputMethod<SPACE>
 	inoremap    <buffer>            <LocalLeader>ro    <Esc>:LuaOutputMethod<SPACE>
 	vnoremap    <buffer>            <LocalLeader>ro    <Esc>:LuaOutputMethod<SPACE>
+	nnoremap    <buffer>            <LocalLeader>rd         :LuaDirectRun<SPACE>
+	inoremap    <buffer>            <LocalLeader>rd    <Esc>:LuaDirectRun<SPACE>
+	vnoremap    <buffer>            <LocalLeader>rd    <Esc>:LuaDirectRun<SPACE>
 	nnoremap    <buffer>            <LocalLeader>rse        :LuaExecutable<SPACE>
 	inoremap    <buffer>            <LocalLeader>rse   <Esc>:LuaExecutable<SPACE>
 	vnoremap    <buffer>            <LocalLeader>rse   <Esc>:LuaExecutable<SPACE>
@@ -1434,11 +1531,16 @@ function! s:InitMenus()
 	exe shead.'&run<TAB><F9>\ '.esc_mapl.'rr             :call Lua_Run()<CR>'
 	exe shead.'&compile<TAB><S-F9>\ '.esc_mapl.'rc       :call Lua_Compile("compile")<CR>'
 	exe shead.'chec&k\ code<TAB><A-F9>\ '.esc_mapl.'rk   :call Lua_Compile("check")<CR>'
+	exe shead.'make\ &executable<TAB>'.esc_mapl.'re      :call Lua_MakeExecutable()<CR>'
 	exe shead.'-Sep01-                                   :'
 	"
 	" create a dummy menu header for the "output method" sub-menu
 	exe shead.'&output\ method<TAB>'.esc_mapl.'ro.Output\ Method   :'
 	exe shead.'&output\ method<TAB>'.esc_mapl.'ro.-SepHead-        :'
+	" create a dummy menu header for the "direct run" sub-menu
+	exe shead.'&direct\ run<TAB>'.esc_mapl.'rd.Direct\ Run   :'
+	exe shead.'&direct\ run<TAB>'.esc_mapl.'rd.-SepHead-     :'
+	"
 	exe ahead.'&set\ executable<TAB>'.esc_mapl.'rse                :LuaExecutable<SPACE>'
 	exe ahead.'&set\ compiler\ exec\.<TAB>'.esc_mapl.'rsc          :LuaCompilerExec<SPACE>'
 	exe shead.'-Sep02-                                             :'
@@ -1456,9 +1558,15 @@ function! s:InitMenus()
 	exe shead.'output\ method.&buffer<TAB>quickfix       :call Lua_SetOutputMethod("buffer")<CR>'
 	exe shead.'output\ method.&xterm<TAB>interactive     :call Lua_SetOutputMethod("xterm")<CR>'
 	"
-	" deletes the dummy menu header and displays the current method
-	" in the menu header of the sub-menu
+	" run -> direct run
+	"
+	exe shead.'direct\ run.&yes<TAB>use\ executable\ scripts     :call Lua_SetDirectRun("yes")<CR>'
+	exe shead.'direct\ run.&no<TAB>always\ use\ :LuaExecutable   :call Lua_SetDirectRun("no")<CR>'
+	"
+	" deletes the dummy menu header and displays the current options
+	" in the menu header of the sub-menus
 	call Lua_SetOutputMethod ( s:Lua_OutputMethod )
+	call Lua_SetDirectRun ( s:Lua_DirectRun )
 	"
 	"-------------------------------------------------------------------------------
 	" help
@@ -1582,6 +1690,7 @@ function! Lua_Settings( verbose )
 					\ ."\n"
 					\ .'       compiled extension :  "'.g:Lua_CompiledExtension."\"\n"
 					\ .'            output method :  "'.s:Lua_OutputMethod."\"\n"
+					\ .'               direct run :  "'.s:Lua_DirectRun."\"\n"
 	endif
 	if s:UNIX && a:verbose >= 1
 		let	txt .=
@@ -1614,6 +1723,7 @@ endif
 "
 " user defined commands (working everywhere)
 command! -nargs=? -complete=custom,Lua_GetOutputMethodList LuaOutputMethod   call Lua_SetOutputMethod(<q-args>)
+command! -nargs=? -complete=custom,Lua_GetDirectRunList    LuaDirectRun      call Lua_SetDirectRun(<q-args>)
 command! -nargs=? -complete=shellcmd                       LuaExecutable     call Lua_SetExecutable('exe',<q-args>)
 command! -nargs=? -complete=shellcmd                       LuaCompilerExec   call Lua_SetExecutable('compile',<q-args>)
 "
