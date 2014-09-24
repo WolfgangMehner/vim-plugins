@@ -1312,9 +1312,15 @@ function! Perl_MakeScriptExecutable ()
 		if Perl_Input( '"'.filename.'" NOT executable. Make it executable [y/n] : ', 'y' ) == 'y'
 			silent exe "!chmod u+x ".shellescape(filename)
 			if v:shell_error
+				" confirmation for the user
 				echohl WarningMsg
 				echo 'Could not make "'.filename.'" executable!'
 			else
+				" reload the file, otherwise the message will not be visible
+				if ! &l:modified
+					silent exe "edit"
+				endif
+				" confirmation for the user
 				echohl Search
 				echo 'Made "'.filename.'" executable.'
 			endif
@@ -1328,9 +1334,15 @@ function! Perl_MakeScriptExecutable ()
 			" reset all execution bits
 			silent exe "!chmod  -x ".shellescape(filename)
 			if v:shell_error
+				" confirmation for the user
 				echohl WarningMsg
 				echo 'Could not make "'.filename.'" not executable!'
 			else
+				" reload the file, otherwise the message will not be visible
+				if ! &l:modified
+					silent exe "edit"
+				endif
+				" confirmation for the user
 				echohl Search
 				echo 'Made "'.filename.'" not executable.'
 			endif
