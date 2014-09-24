@@ -10,7 +10,7 @@ my	@<CURSOR>;
 my	@<CURSOR>	= ( <+val+>, <+val+>, );
 == Idioms.hash == map:ih, sc:h ==
 my	%<CURSOR>;
-== Idioms.hash+assignment == map:ihh, sc:h, insert ==
+== Idioms.hash+assignment == map:iha, sc:h, insert ==
 my	%<CURSOR>	= (
 	<+key1+> => <+val1+>,
 	<+key2+> => <+val2+>,
