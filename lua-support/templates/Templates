@@ -19,6 +19,9 @@ SetStyle( 'Lua_51' )
 § used by the "Comments.shebang" template:
 SetMacro( 'LUA_INTERPRETER', '/usr/bin/env lua' )
 
+§ used by the "Idioms.add to path, local modules"
+SetMacro( 'LUA_LOCAL_MODULES', $HOME.'/share/lua/5.2' )
+
 § browser for help templates (UNIX)
 SetMacro( 'HELP_BROWSER', 'firefox' )
 

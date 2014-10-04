@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Lua_Version below
 "       Created:  26.03.2014
-"      Revision:  ---
+"      Revision:  04.10.2014
 "       License:  Copyright (c) 2012-2014, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:Lua_Version') && ! exists('g:Lua_DevelopmentOverwrite') )
 	finish
 endif
-let g:Lua_Version= '0.9pre'     " version number of this script; do not change
+let g:Lua_Version= '0.9'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
@@ -187,6 +187,8 @@ let s:plugin_dir          = ''                 " the directory hosting ftplugin/
 let s:Lua_GlbTemplateFile = ''                 " the global templates, undefined for s:installation == 'local'
 let s:Lua_LclTemplateFile = ''                 " the local templates
 "
+let s:Lua_ToolboxDir      = []
+"
 if s:MSWIN
 	"
 	"-------------------------------------------------------------------------------
@@ -201,12 +203,16 @@ if s:MSWIN
 		" user installation assumed
 		let s:installation        = 'local'
 		let s:Lua_LclTemplateFile = s:plugin_dir.'/lua-support/templates/Templates'
+		let s:Lua_ToolboxDir     += [ s:plugin_dir.'/autoload/mmtoolbox/' ]
 	else
 		"
 		" system wide installation
 		let s:installation        = 'system'
 		let s:Lua_GlbTemplateFile = s:plugin_dir.'/lua-support/templates/Templates'
 		let s:Lua_LclTemplateFile = $HOME.'/vimfiles/lua-support/templates/Templates'
+		let s:Lua_ToolboxDir     += [
+					\	s:plugin_dir.'/autoload/mmtoolbox/',
+					\	$HOME.'/vimfiles/autoload/mmtoolbox/' ]
 	endif
 	"
 else
@@ -222,12 +228,16 @@ else
 		" user installation assumed
 		let s:installation        = 'local'
 		let s:Lua_LclTemplateFile = s:plugin_dir.'/lua-support/templates/Templates'
+		let s:Lua_ToolboxDir     += [ s:plugin_dir.'/autoload/mmtoolbox/' ]
 	else
 		"
 		" system wide installation
 		let s:installation        = 'system'
 		let s:Lua_GlbTemplateFile = s:plugin_dir.'/lua-support/templates/Templates'
 		let s:Lua_LclTemplateFile = $HOME.'/.vim/lua-support/templates/Templates'
+		let s:Lua_ToolboxDir     += [
+					\	s:plugin_dir.'/autoload/mmtoolbox/',
+					\	$HOME.'/.vim/autoload/mmtoolbox/' ]
 	endif
 	"
 endif
@@ -245,8 +255,10 @@ let s:Lua_OutputMethodList      = [ 'vim-io', 'vim-qf', 'buffer', 'xterm' ]
 let s:Lua_OutputMethod          = 'vim-io'     " 'vim-io', 'vim-qf', 'buffer' or 'xterm'
 let s:Lua_DirectRun             = 'no'         " 'yes' or 'no'
 let s:Lua_LineEndCommColDefault = 49
+let s:Lua_CommentLabel          = "BlockCommentNo_"
 let s:Lua_SnippetDir            = s:plugin_dir.'/lua-support/codesnippets/'
 let s:Lua_SnippetBrowser        = 'gui'
+let s:Lua_UseToolbox            = 'yes'
 "
 let s:Xterm_Executable          = 'xterm'
 "
@@ -285,12 +297,14 @@ call s:GetGlobalSetting ( 'Lua_CompilerExec' )
 call s:GetGlobalSetting ( 'Lua_LineEndCommColDefault' )
 call s:GetGlobalSetting ( 'Lua_SnippetDir' )
 call s:GetGlobalSetting ( 'Lua_SnippetBrowser' )
+call s:GetGlobalSetting ( 'Lua_UseToolbox' )
 call s:GetGlobalSetting ( 'Xterm_Executable' )
 "
 call s:ApplyDefaultSetting ( 'Lua_CompiledExtension', 'luac' )         " default: 'luac'
 call s:ApplyDefaultSetting ( 'Lua_InsertFileHeader', 'yes' )           " default: do insert a file header
 call s:ApplyDefaultSetting ( 'Lua_MapLeader', '' )                     " default: do not overwrite 'maplocalleader'
 call s:ApplyDefaultSetting ( 'Lua_Printheader', "%<%f%h%m%<  %=%{strftime('%x %H:%M')}     Page %N" )
+call s:ApplyDefaultSetting ( 'Lua_UseTool_make', 'yes' )
 call s:ApplyDefaultSetting ( 'Xterm_Options', '-fa courier -fs 12 -geometry 80x24' )
 "
 let s:Lua_GlbTemplateFile = expand ( s:Lua_GlbTemplateFile )
@@ -470,6 +484,82 @@ function! Lua_CommentCode( toggle ) range
 	endfor
 	"
 endfunction    " ----------  end of function Lua_CommentCode  ----------
+"
+"-------------------------------------------------------------------------------
+" Lua_InsertLongComment : Insert a --[[ --]] comment block.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Lua_InsertLongComment( mode )
+	"
+	let cmt_counter = 0
+	let save_line   = line(".")
+	let actual_line = 0
+	"
+	" search for the maximum option number (if any)
+	"
+	normal! gg
+	while actual_line < search ( s:Lua_CommentLabel.'\d\+' )
+		let actual_line = line ('.')
+		let actual_opt  = matchstr ( getline(actual_line), s:Lua_CommentLabel.'\zs\d\+' )
+		if cmt_counter < actual_opt
+			let cmt_counter = actual_opt
+		endif
+	endwhile
+	"
+	let cmt_counter = cmt_counter + 1
+	silent exe ":".save_line
+	"
+	" insert the comment block
+	"
+	if a:mode == 'a'
+		let zz  = "--[[  -- ".s:Lua_CommentLabel.cmt_counter." --\n"
+		let zz .= "--]]  -- ".s:Lua_CommentLabel.cmt_counter." --"
+		put =zz
+	elseif a:mode == 'v'
+		let zz=      "--[[  -- ".s:Lua_CommentLabel.cmt_counter." --"
+		'<put! =zz
+		let zz=      "--]]  -- ".s:Lua_CommentLabel.cmt_counter." --"
+		'>put  =zz
+	endif
+endfunction    " ----------  end of function Lua_InsertLongComment  ----------
+"
+"-------------------------------------------------------------------------------
+" Lua_RemoveLongComment : Remove a --[[ --]] comment block.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! Lua_RemoveLongComment()
+	"
+	let frstline = searchpair( '^--\[\[\s*--\s*'.s:Lua_CommentLabel.'\d\+',
+				\                    '',
+				\                    '^--\]\]\s*--\s*'.s:Lua_CommentLabel.'\d\+',
+				\                    'bcn' )
+	"
+	if frstline <= 0
+		return s:ImportantMsg ( 'no comment block/tag found or cursor not inside a comment block' )
+	endif
+	"
+	let lastline = searchpair( '^--\[\[\s*--\s*'.s:Lua_CommentLabel.'\d\+',
+				\                    '',
+				\                    '^--\]\]\s*--\s*'.s:Lua_CommentLabel.'\d\+',
+				\                    'n' )
+	"
+	if lastline <= 0
+		return s:ImportantMsg ( 'no comment block/tag found or cursor not inside a comment block' )
+	endif
+	"
+	let actualnumber1 = matchstr( getline(frstline), s:Lua_CommentLabel."\\d\\+" )
+	let actualnumber2 = matchstr( getline(lastline), s:Lua_CommentLabel."\\d\\+" )
+	"
+	if actualnumber1 != actualnumber2
+		return s:ImportantMsg ( 'lines '.frstline.', '.lastline.': comment tags do not match' )
+	endif
+	"
+	silent exe ':'.lastline.'d'
+	silent exe ':'.frstline.'d'
+	"
+	return s:ImportantMsg ( 'removed the block comment from lines '.frstline.' to '.lastline )
+	"
+endfunction    " ----------  end of function Lua_RemoveLongComment  ----------
 "
 "-------------------------------------------------------------------------------
 " s:GetFunctionParameters : Get the name, parameters, ... of a function.   {{{1
@@ -728,6 +818,47 @@ function! Lua_CodeSnippet ( action )
 endfunction    " ----------  end of function Lua_CodeSnippet  ----------
 "
 "-------------------------------------------------------------------------------
+" Lua_OutputBufferErrors : Load the "Lua Output" buffer into quickfix.   {{{1
+"
+" Parameters:
+"   jump - if non-zero, also jump to the first error (integer)
+"-------------------------------------------------------------------------------
+"
+function! Lua_OutputBufferErrors ( jump )
+	"
+	if bufname('%') !~ 'Lua Output$'
+		return s:ImportantMsg ( 'not inside the "Lua Output" buffer' )
+	endif
+	"
+	cclose
+	"
+	" :TODO:26.03.2014 20:54:WM: check escaping of errorformat
+	let errformat = substitute( s:Lua_Executable, '%\\%\\', '%\', 'g' ).': [string %.%\\+]:%\\d%\\+: %m,'
+				\ .substitute( s:Lua_Executable, '%\\%\\', '%\', 'g' ).': %f:%l: %m,'
+				\ .substitute( s:Lua_Executable, '%\\%\\', '%\', 'g' ).': %m,'
+				\ .'%\\s%\\+[string %.%\\+]:%\\d%\\+: %m,'
+				\ .'%f:%l: %m'
+	"
+	" save current settings
+	let errorf_saved  = &l:errorformat
+	"
+	" run code checker
+	let &l:errorformat = errformat
+	"
+	silent exe 'cgetbuffer'
+	"
+	" restore current settings
+	let &l:errorformat = errorf_saved
+	"
+	botright cwindow
+	"
+	if a:jump != 0
+		cc
+	endif
+	"
+endfunction    " ----------  end of function Lua_OutputBufferErrors  ----------
+"
+"-------------------------------------------------------------------------------
 " Lua_Run : Run the current buffer.   {{{1
 "
 " Parameters:
@@ -738,8 +869,6 @@ function! Lua_Run ( args )
 	"
 	silent exe 'update'   | " write source file if necessary
 	cclose
-	"
-	" :TODO:13.05.2014 14:58:WM: use the script as the executable (script is executable + shebang)
 	"
 	" prepare and check the executable
 	if ! executable( s:Lua_Executable )
@@ -754,6 +883,8 @@ function! Lua_Run ( args )
 	" lua: msg
 	"  [string ...]:line_in_string: msg
 	" file:line: msg
+	"
+	" :TODO:26.03.2014 20:54:WM: check escaping of errorformat
 	let errformat = substitute( s:Lua_Executable, '%\\%\\', '%\', 'g' ).': [string %.%\\+]:%\\d%\\+: %m,'
 				\ .substitute( s:Lua_Executable, '%\\%\\', '%\', 'g' ).': %f:%l: %m,'
 				\ .substitute( s:Lua_Executable, '%\\%\\', '%\', 'g' ).': %m,'
@@ -793,7 +924,6 @@ function! Lua_Run ( args )
 			let errorf_saved = &g:errorformat
 			"
 			" run code checker
-			" :TODO:26.03.2014 20:54:WM: check escaping of errorformat
 			let &g:errorformat = errformat
 			"
 			silent exe 'cexpr lua_output'
@@ -819,9 +949,21 @@ function! Lua_Run ( args )
 			setlocal noswapfile
 			setlocal syntax=none
 			setlocal tabstop=8
+			"
+			call Lua_SetMapLeader ()
+			"
+			" maps: quickfix list
+			nnoremap  <buffer>  <silent>  <LocalLeader>qf       :call Lua_OutputBufferErrors(0)<CR>
+			inoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call Lua_OutputBufferErrors(0)<CR>
+			vnoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call Lua_OutputBufferErrors(0)<CR>
+			nnoremap  <buffer>  <silent>  <LocalLeader>qj       :call Lua_OutputBufferErrors(1)<CR>
+			inoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call Lua_OutputBufferErrors(1)<CR>
+			vnoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call Lua_OutputBufferErrors(1)<CR>
+			"
+			call Lua_ResetMapLeader ()
 		else
 			" jump to window
-			exe bufwinnr( '^Lua Output$' ).'wincmd w'
+			exe bufwinnr( 'Lua Output$' ).'wincmd w'
 		endif
 		"
 		setlocal modifiable
@@ -835,13 +977,10 @@ function! Lua_Run ( args )
 			setlocal nomodified
 		else
 			"
-			"split
-			"
 			" save current settings
 			let errorf_saved  = &l:errorformat
 			"
 			" run code checker
-			" :TODO:26.03.2014 20:54:WM: check escaping of errorformat
 			let &l:errorformat = errformat
 			"
 			silent exe 'cgetbuffer'
@@ -1308,6 +1447,13 @@ function! s:CreateMaps ()
 	 noremap    <buffer>  <silent>  <LocalLeader>ct         :call Lua_CommentCode(1)<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>ct    <Esc>:call Lua_CommentCode(1)<CR>
 	"
+	nnoremap    <buffer>  <silent> <LocalLeader>cil         :call Lua_InsertLongComment('a')<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>cil    <C-C>:call Lua_InsertLongComment('a')<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>cil    <C-C>:call Lua_InsertLongComment('v')<CR>
+	nnoremap    <buffer>  <silent> <LocalLeader>crl         :call Lua_RemoveLongComment()<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>crl    <C-C>:call Lua_RemoveLongComment()<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>crl    <C-C>:call Lua_RemoveLongComment()<CR>
+	"
 	 noremap    <buffer>  <silent>  <LocalLeader>ca         :call Lua_FunctionComment()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>ca    <Esc>:call Lua_FunctionComment()<CR>
 	"
@@ -1405,6 +1551,13 @@ function! s:CreateMaps ()
 	vnoremap    <buffer>  <silent>  <LocalLeader>hs    <Esc>:call Lua_HelpPlugin()<CR>
 	"
 	"-------------------------------------------------------------------------------
+	" toolbox
+	"-------------------------------------------------------------------------------
+	if s:Lua_UseToolbox == 'yes'
+		call mmtoolbox#tools#AddMaps ( s:Lua_Toolbox )
+	endif
+	"
+	"-------------------------------------------------------------------------------
 	" settings - reset local leader
 	"-------------------------------------------------------------------------------
 	if ! empty ( g:Lua_MapLeader )
@@ -1449,7 +1602,10 @@ function! s:InitMenus()
 	" the other, automatically created menus go here; their priority is the standard priority 500
 	call mmtemplates#core#CreateMenus ( 'g:Lua_Templates', s:Lua_RootMenu, 'sub_menu', 'S&nippets', 'priority', 600 )
 	call mmtemplates#core#CreateMenus ( 'g:Lua_Templates', s:Lua_RootMenu, 'sub_menu', '&Run'     , 'priority', 700 )
-	call mmtemplates#core#CreateMenus ( 'g:Lua_Templates', s:Lua_RootMenu, 'sub_menu', '&Help'    , 'priority', 800 )
+	if s:Lua_UseToolbox == 'yes' && mmtoolbox#tools#Property ( s:Lua_Toolbox, 'empty-menu' ) == 0
+		call mmtemplates#core#CreateMenus ( 'g:Lua_Templates', s:Lua_RootMenu, 'sub_menu', '&Tool Box', 'priority', 800 )
+	endif
+	call mmtemplates#core#CreateMenus ( 'g:Lua_Templates', s:Lua_RootMenu, 'sub_menu', '&Help'    , 'priority', 900 )
 	"
 	"-------------------------------------------------------------------------------
 	" comments
@@ -1472,7 +1628,11 @@ function! s:InitMenus()
 	exe vhead.'c&omment\ ->\ code<TAB>'.esc_mapl.'co         :call Lua_CommentCode(0)<CR>'
 	exe ahead.'&toggle\ code\ <->\ com\.<TAB>'.esc_mapl.'ct  :call Lua_CommentCode(1)<CR>'
 	exe vhead.'&toggle\ code\ <->\ com\.<TAB>'.esc_mapl.'ct  :call Lua_CommentCode(1)<CR>'
-	exe ahead.'-Sep02-                                       :'
+	"
+	exe ahead.'insert\ long\ comment<Tab>'.esc_mapl.'cil       :call Lua_InsertLongComment("a")<CR>'
+	exe vhead.'insert\ long\ comment<Tab>'.esc_mapl.'cil  <C-C>:call Lua_InsertLongComment("v")<CR>'
+	exe ahead.'remove\ long\ comment<Tab>'.esc_mapl.'crl       :call Lua_RemoveLongComment()<CR>'
+	exe ahead.'-Sep02-                                         :'
 	"
 	exe ahead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca  :call Lua_FunctionComment()<CR>'
 	exe vhead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca  :call Lua_FunctionComment()<CR>'
@@ -1532,6 +1692,12 @@ function! s:InitMenus()
 	exe shead.'&compile<TAB><S-F9>\ '.esc_mapl.'rc       :call Lua_Compile("compile")<CR>'
 	exe shead.'chec&k\ code<TAB><A-F9>\ '.esc_mapl.'rk   :call Lua_Compile("check")<CR>'
 	exe shead.'make\ &executable<TAB>'.esc_mapl.'re      :call Lua_MakeExecutable()<CR>'
+	"
+	exe shead.'&buffer\ "Lua\ Output".buffer\ "Lua Output"  :echo "This is a menu header."'
+	exe shead.'&buffer\ "Lua\ Output".-SepHead-             :'
+	exe shead.'&buffer\ "Lua\ Output".load\ into\ quick&fix<TAB>'.esc_mapl.'qf               :call Lua_OutputBufferErrors(0)<CR>'
+	exe shead.'&buffer\ "Lua\ Output".qf\.\ and\ &jump\ to\ first\ error<TAB>'.esc_mapl.'qj  :call Lua_OutputBufferErrors(1)<CR>'
+	"
 	exe shead.'-Sep01-                                   :'
 	"
 	" create a dummy menu header for the "output method" sub-menu
@@ -1567,6 +1733,14 @@ function! s:InitMenus()
 	" in the menu header of the sub-menus
 	call Lua_SetOutputMethod ( s:Lua_OutputMethod )
 	call Lua_SetDirectRun ( s:Lua_DirectRun )
+	"
+	"-------------------------------------------------------------------------------
+	" tool box
+	"-------------------------------------------------------------------------------
+	"
+	if s:Lua_UseToolbox == 'yes' && mmtoolbox#tools#Property ( s:Lua_Toolbox, 'empty-menu' ) == 0
+		call mmtoolbox#tools#AddMenus ( s:Lua_Toolbox, s:Lua_RootMenu.'.&Tool\ Box' )
+	endif
 	"
 	"-------------------------------------------------------------------------------
 	" help
@@ -1653,6 +1827,7 @@ function! Lua_Settings( verbose )
 	let luac_exe_status = executable( s:Lua_CompilerExec ) ? '' : ' (not executable)'
 	"
 	let	txt = " Lua-Support settings\n\n"
+	" template settings: macros, style, ...
 	if exists ( 'g:Lua_Templates' )
 		let [ templ_style, msg ] = mmtemplates#core#Resource( g:Lua_Templates, 'style' )
 		"
@@ -1670,10 +1845,23 @@ function! Lua_Settings( verbose )
 					\  "                templates : -not loaded- \n"
 					\ ."\n"
 	endif
+	" plug-in installation, template engine
 	let txt .=
 				\  '      plugin installation :  '.s:installation.' on '.sys_name."\n"
 				\ .'    using template engine :  version '.g:Templates_Version." by Wolfgang Mehner\n"
-				\ ."\n"
+	" toolbox
+	if s:Lua_UseToolbox == 'yes'
+		let toollist = mmtoolbox#tools#GetList ( s:Lua_Toolbox )
+		if empty ( toollist )
+			let txt .= "            using toolbox :  -no tools-\n"
+		else
+			let sep  = "\n"."                             "
+			let txt .=      "            using toolbox :  "
+						\ .join ( toollist, sep )."\n"
+		endif
+	endif
+	let txt .= "\n"
+	" templates, snippets, executables
 	if s:installation == 'system'
 		let txt .= '     global template file :  '.s:Lua_GlbTemplateFile.glb_t_status."\n"
 	endif
@@ -1682,6 +1870,7 @@ function! Lua_Settings( verbose )
 				\ .'       code snippets dir. :  '.s:Lua_SnippetDir."\n"
 				\ .'        lua (interpreter) :  '.s:Lua_Executable.lua_exe_status."\n"
 				\ .'          luac (compiler) :  '.s:Lua_CompilerExec.luac_exe_status."\n"
+	" various settings, maps, menus, running, compiling, ...
 	if a:verbose >= 1
 		let	txt .= "\n"
 					\ .'                mapleader :  "'.g:Lua_MapLeader."\"\n"
@@ -1692,6 +1881,7 @@ function! Lua_Settings( verbose )
 					\ .'            output method :  "'.s:Lua_OutputMethod."\"\n"
 					\ .'               direct run :  "'.s:Lua_DirectRun."\"\n"
 	endif
+	" xterm (UNIX only)
 	if s:UNIX && a:verbose >= 1
 		let	txt .=
 					\  '         xterm executable :  "'.s:Xterm_Executable."\"\n"
@@ -1710,8 +1900,22 @@ function! Lua_Settings( verbose )
 endfunction    " ----------  end of function Lua_Settings  ----------
 "
 "-------------------------------------------------------------------------------
-" Setup: Templates and menus.   {{{1
+" Setup: Templates, toolbox and menus.   {{{1
 "-------------------------------------------------------------------------------
+"
+" setup the toolbox
+"
+if s:Lua_UseToolbox == 'yes'
+	"
+	let s:Lua_Toolbox = mmtoolbox#tools#NewToolbox ( 'Lua' )
+	call mmtoolbox#tools#Property ( s:Lua_Toolbox, 'mapleader', g:Lua_MapLeader )
+	"
+	call mmtoolbox#tools#Load ( s:Lua_Toolbox, s:Lua_ToolboxDir )
+	"
+	" debugging only:
+	"call mmtoolbox#tools#Info ( s:Lua_Toolbox )
+	"
+endif
 "
 " tool menu entry
 call s:ToolMenu ( 'setup' )

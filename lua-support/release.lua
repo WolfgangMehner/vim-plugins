@@ -25,8 +25,12 @@ local outfile = 'lua-support.zip'
 
 local filelist = {
 	'autoload/mmtemplates/',
+	'autoload/mmtoolbox/make.vim',
+	'autoload/mmtoolbox/tools.vim',
 	'doc/luasupport.txt',
 	'doc/templatesupport.txt',
+	'doc/toolbox.txt',
+	'doc/toolboxmake.txt',
 	'ftplugin/lua.vim',
 	'plugin/lua-support.vim',
 	'lua-support/codesnippets/',

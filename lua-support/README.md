@@ -1,4 +1,4 @@
-README for lua-support.vim (Version 0.9pre) / Sep 23 2014
+README for lua-support.vim (Version 0.9) / Oct 04 2014
 ================================================================================
 
   *  INSTALLATION
@@ -160,11 +160,15 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
   RELEASE NOTES
 ================================================================================
 
-  RELEASE NOTES FOR VERSION 0.9pre
+  RELEASE NOTES FOR VERSION 0.9
 ----------------------------------------------------------------------
+- Added: Inserting and removing long comments ( --[[ --]] ).
 - Added: Hardcopy to postscript.
 - Added: Direct run, run executable scripts directly, using their shebang.
 - Added: Make script executable/not exec.
+- Added: The contents of the buffer "Lua Output" can be loaded into the quickfix
+  list even if the interpreter did not terminate with an error.
+- Added: Toolbox for make integration.
 - Changed: Better error recognition while running scripts.
 - Fixed: Setup of local templates in case of global installation.
 - New templates and codesnippets.
