@@ -1,8 +1,8 @@
-*toolboxmake.txt*                  Make Tool                       Aug 07 2014
+*toolboxmake.txt*                  Make Tool                       Oct 19 2014
 
 Make Tool                                                       *toolbox-make*
 
-                            Plug-in version 1.0.2
+                            Plug-in version 1.0.3
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -166,6 +166,13 @@ The executable is set by g:Make_Executable: >
 ==============================================================================
 A.  CHANGE LOG                                       *toolbox-make-change-log*
 ==============================================================================
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.0.3
+------------------------------------------------------------------------------
+
+- Internal changes, less global functions.
+- Minor changes.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 1.0.2

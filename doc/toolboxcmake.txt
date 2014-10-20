@@ -1,4 +1,4 @@
-*toolboxcmake.txt*                 CMake Tool                      Aug 07 2014
+*toolboxcmake.txt*                 CMake Tool                      Oct 20 2014
 
 CMake Tool                                                     *toolbox-cmake*
 
@@ -232,8 +232,9 @@ A.  CHANGE LOG                                      *toolbox-cmake-change-log*
 
 - Change: Echo a different message if the build succeeded, but warnings are
   present.
-- Internal changes.
-- Minor changes.
+- Internal changes, less global functions.
+- Further internal changes.
+- Minor changes and bugfixes.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.1

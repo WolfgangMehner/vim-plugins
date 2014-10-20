@@ -13,7 +13,7 @@
 "  Organization:  
 "       Version:  see variable g:Make_Version below
 "       Created:  06.05.2013
-"      Revision:  10.11.2013
+"      Revision:  19.10.2014
 "       License:  Copyright (c) 2013-2014, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -43,7 +43,7 @@ endif
 if &cp || ( exists('g:Make_Version') && ! exists('g:Make_DevelopmentOverwrite') )
 	finish
 endif
-let g:Make_Version= '1.0.2'     " version number of this script; do not change
+let g:Make_Version= '1.0.3'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions   {{{1
@@ -137,13 +137,13 @@ endif
 if s:Enabled == 1
 	command! -bang -nargs=* -complete=file MakeCmdlineArgs   :call mmtoolbox#make#Property('<bang>'=='!'?'echo':'set','cmdline-args',<q-args>)
 	command! -bang -nargs=? -complete=file MakeFile          :call mmtoolbox#make#Property('<bang>'=='!'?'echo':'set','makefile',<q-args>)
-	command!       -nargs=* -complete=file Make              :call mmtoolbox#make#Run(<q-args>)
-	command!       -nargs=0                MakeHelp          :call mmtoolbox#make#Help()
-	command! -bang -nargs=0                MakeSettings      :call mmtoolbox#make#Settings('<bang>'=='!')
+	command!       -nargs=* -complete=file Make              :call <SID>Run(<q-args>)
+	command!       -nargs=0                MakeHelp          :call <SID>Help()
+	command! -bang -nargs=?                MakeSettings      :call <SID>Settings(('<bang>'=='!')+str2nr(<q-args>))
 else
 	"
-	" Disabled : Print why the script is disabled.   {{{3
-	function! mmtoolbox#make#Disabled ()
+	" s:Disabled : Print why the script is disabled.   {{{3
+	function! s:Disabled ()
 		let txt = "Make tool not working:\n"
 		if ! executable ( s:Make_Executable )
 			let txt .= "make not executable (".s:Make_Executable.")\n"
@@ -156,12 +156,12 @@ else
 		echo txt
 		echohl None
 		return
-	endfunction    " ----------  end of function mmtoolbox#make#Disabled  ----------
+	endfunction    " ----------  end of function s:Disabled  ----------
 	" }}}3
 	"
-	command! -bang -nargs=* Make          :call mmtoolbox#make#Disabled()
-	command!       -nargs=0 MakeHelp      :call mmtoolbox#make#Help()
-	command! -bang -nargs=0 MakeSettings  :call mmtoolbox#make#Settings('<bang>'=='!')
+	command! -bang -nargs=* Make          :call <SID>Disabled()
+	command!       -nargs=0 MakeHelp      :call <SID>Help()
+	command! -bang -nargs=? MakeSettings  :call <SID>Settings(('<bang>'=='!')+str2nr(<q-args>))
 	"
 endif
 "
@@ -255,33 +255,32 @@ function! mmtoolbox#make#Property ( mode, key, ... )
 endfunction    " ----------  end of function mmtoolbox#make#Property  ----------
 "
 "-------------------------------------------------------------------------------
-" Help : Plugin help.   {{{1
+" s:Help : Plugin help.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#make#Help ()
+function! s:Help ()
 	try
 		help toolbox-make
 	catch
 		exe 'helptags '.s:plugin_dir.'/doc'
 		help toolbox-make
 	endtry
-endfunction    " ----------  end of function mmtoolbox#make#Help  ----------
+endfunction    " ----------  end of function s:Help  ----------
 "
 "-------------------------------------------------------------------------------
-" Settings : Plugin settings.   {{{1
+" s:Settings : Plugin settings.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#make#Settings ( verbose )
+function! s:Settings ( verbose )
 	"
 	if     s:MSWIN | let sys_name = 'Windows'
 	elseif s:UNIX  | let sys_name = 'UNIX'
 	else           | let sys_name = 'unknown' | endif
 	"
-	let make_status = executable( s:Make_Executable ) ? '<yes>' : '<no>'
+	let make_status = executable( s:Make_Executable ) ? '' : ' (not executable)'
 	let make_file   = s:Makefile != '' ? s:Makefile : '(default) local Makefile'
 	"
 	let	txt = " Make-Support settings\n\n"
 				\ .'     plug-in installation :  toolbox on '.sys_name."\n"
-				\ .'          make executable :  '.s:Make_Executable."\n"
-				\ .'                > enabled :  '.make_status."\n"
+				\ .'          make executable :  '.s:Make_Executable.make_status."\n"
 				\ .'            using toolbox :  version '.g:Toolbox_Version." by Wolfgang Mehner\n"
 	if a:verbose
 		let	txt .= "\n"
@@ -292,8 +291,13 @@ function! mmtoolbox#make#Settings ( verbose )
 				\  "________________________________________________________________________________\n"
 				\ ." Make-Tool, Version ".g:Make_Version." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
 	"
-	echo txt
-endfunction    " ----------  end of function mmtoolbox#make#Settings  ----------
+	if a:verbose == 2
+		split Make_Settings.txt
+		put = txt
+	else
+		echo txt
+	endif
+endfunction    " ----------  end of function s:Settings  ----------
 "
 "-------------------------------------------------------------------------------
 " Modul setup (abort early?).   {{{1
@@ -304,9 +308,9 @@ endif
 "
 "-------------------------------------------------------------------------------
 "
-" Run : Run make.   {{{1
+" s:Run : Run make.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#make#Run ( args )
+function! s:Run ( args )
 	"
 	silent exe 'update'   | " write source file if necessary
 	cclose
@@ -330,7 +334,7 @@ function! mmtoolbox#make#Run ( args )
 	"
 	botright cwindow
 	"
-endfunction    " ----------  end of function mmtoolbox#make#Run  ----------
+endfunction    " ----------  end of function s:Run  ----------
 " }}}1
 "-------------------------------------------------------------------------------
 "

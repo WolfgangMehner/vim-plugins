@@ -298,18 +298,18 @@ let s:Policies_List = [
 if s:Enabled == 1
 	command! -bang -nargs=? -complete=file CMakeProjectDir    :call mmtoolbox#cmake#Property('<bang>'=='!'?'echo':'set','project-dir',<q-args>)
 	command! -bang -nargs=? -complete=file CMakeBuildLocation :call mmtoolbox#cmake#Property('<bang>'=='!'?'echo':'set','build-dir',<q-args>)
-	command! -bang -nargs=* -complete=file CMake              :call mmtoolbox#cmake#Run(<q-args>,'<bang>'=='!')
-	command!       -nargs=? -complete=file CMakeHelpCommand   :call mmtoolbox#cmake#Help('command',<q-args>)
-	command!       -nargs=? -complete=file CMakeHelpModule    :call mmtoolbox#cmake#Help('module',<q-args>)
-	command!       -nargs=? -complete=file CMakeHelpPolicy    :call mmtoolbox#cmake#Help('policy',<q-args>)
-	command!       -nargs=? -complete=file CMakeHelpProperty  :call mmtoolbox#cmake#Help('property',<q-args>)
-	command!       -nargs=? -complete=file CMakeHelpVariable  :call mmtoolbox#cmake#Help('variable',<q-args>)
-	command!       -nargs=0                CMakeHelp          :call mmtoolbox#cmake#HelpPlugin()
-	command! -bang -nargs=0                CMakeSettings      :call mmtoolbox#cmake#Settings('<bang>'=='!')
+	command! -bang -nargs=* -complete=file CMake              :call <SID>Run(<q-args>,'<bang>'=='!')
+	command!       -nargs=? -complete=file CMakeHelpCommand   :call <SID>Help('command',<q-args>)
+	command!       -nargs=? -complete=file CMakeHelpModule    :call <SID>Help('module',<q-args>)
+	command!       -nargs=? -complete=file CMakeHelpPolicy    :call <SID>Help('policy',<q-args>)
+	command!       -nargs=? -complete=file CMakeHelpProperty  :call <SID>Help('property',<q-args>)
+	command!       -nargs=? -complete=file CMakeHelpVariable  :call <SID>Help('variable',<q-args>)
+	command!       -nargs=0                CMakeHelp          :call <SID>HelpPlugin()
+	command! -bang -nargs=?                CMakeSettings      :call <SID>Settings(('<bang>'=='!')+str2nr(<q-args>))
 else
 	"
-	" Disabled : Print why the script is disabled.   {{{3
-	function! mmtoolbox#cmake#Disabled ()
+	" s:Disabled : Print why the script is disabled.   {{{3
+	function! s:Disabled ()
 		let txt = "CMake tool not working:\n"
 		if ! executable ( s:CMake_Executable )
 			let txt .= "CMake not executable (".s:CMake_Executable.")\n"
@@ -323,12 +323,12 @@ else
 		endif
 		call s:ImportantMsg ( txt )
 		return
-	endfunction    " ----------  end of function mmtoolbox#cmake#Disabled  ----------
+	endfunction    " ----------  end of function s:Disabled  ----------
 	" }}}3
 	"
-	command! -bang -nargs=* CMake          :call mmtoolbox#cmake#Disabled()
-	command!       -nargs=0 CMakeHelp      :call mmtoolbox#cmake#HelpPlugin()
-	command! -bang -nargs=0 CMakeSettings  :call mmtoolbox#cmake#Settings('<bang>'=='!')
+	command! -bang -nargs=* CMake          :call <SID>Disabled()
+	command!       -nargs=0 CMakeHelp      :call <SID>HelpPlugin()
+	command! -bang -nargs=? CMakeSettings  :call <SID>Settings(('<bang>'=='!')+str2nr(<q-args>))
 	"
 endif
 "
@@ -436,35 +436,33 @@ function! mmtoolbox#cmake#Property ( mode, key, ... )
 endfunction    " ----------  end of function mmtoolbox#cmake#Property  ----------
 "
 "-------------------------------------------------------------------------------
-" HelpPlugin : Plugin help.   {{{1
+" s:HelpPlugin : Plugin help.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#cmake#HelpPlugin ()
+function! s:HelpPlugin ()
 	try
 		help toolbox-cmake
 	catch
 		exe 'helptags '.s:plugin_dir.'/doc'
 		help toolbox-cmake
 	endtry
-endfunction    " ----------  end of function mmtoolbox#cmake#HelpPlugin  ----------
+endfunction    " ----------  end of function s:HelpPlugin  ----------
 "
 "-------------------------------------------------------------------------------
-" Settings : Plugin settings.   {{{1
+" s:Settings : Plugin settings.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#cmake#Settings ( verbose )
+function! s:Settings ( verbose )
 	"
 	if     s:MSWIN | let sys_name = 'Windows'
 	elseif s:UNIX  | let sys_name = 'UNIX'
 	else           | let sys_name = 'unknown' | endif
 	"
-	let cmake_status = executable( s:CMake_Executable ) ? '<yes>' : '<no>'
-	let make_status  = executable( s:CMake_MakeTool   ) ? '<yes>' : '<no>'
+	let cmake_status = executable( s:CMake_Executable ) ? '' : ' (not executable)'
+	let make_status  = executable( s:CMake_MakeTool   ) ? '' : ' (not executable)'
 	"
 	let	txt = " CMake-Support settings\n\n"
 				\ .'     plug-in installation :  toolbox on '.sys_name."\n"
-				\ .'         cmake executable :  '.s:CMake_Executable."\n"
-				\ .'                > enabled :  '.cmake_status."\n"
-				\ .'                make tool :  '.s:CMake_MakeTool."\n"
-				\ .'                > enabled :  '.make_status."\n"
+				\ .'         cmake executable :  '.s:CMake_Executable.cmake_status."\n"
+				\ .'                make tool :  '.s:CMake_MakeTool.make_status."\n"
 				\ .'            using toolbox :  version '.g:Toolbox_Version." by Wolfgang Mehner\n"
 	if a:verbose
 		let	txt .= "\n"
@@ -477,8 +475,13 @@ function! mmtoolbox#cmake#Settings ( verbose )
 				\  "________________________________________________________________________________\n"
 				\ ." CMake-Tool, Version ".g:CMake_Version." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
 	"
-	echo txt
-endfunction    " ----------  end of function mmtoolbox#cmake#Settings  ----------
+	if a:verbose == 2
+		split CMake_Settings.txt
+		put = txt
+	else
+		echo txt
+	endif
+endfunction    " ----------  end of function s:Settings  ----------
 "
 "-------------------------------------------------------------------------------
 " Modul setup (abort early?).   {{{1
@@ -488,9 +491,9 @@ if s:Enabled == 0
 endif
 "
 "-------------------------------------------------------------------------------
-" Run : Run CMake or make.   {{{1
+" s:Run : Run CMake or make.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#cmake#Run ( args, cmake_only )
+function! s:Run ( args, cmake_only )
 	"
 	let g:CMakeDebugStr = 'cmake#run: '   " debug
 	"
@@ -625,7 +628,7 @@ function! mmtoolbox#cmake#Run ( args, cmake_only )
 	"
 	let g:CMakeDebugStr .= 'done'   " debug
 	"
-endfunction    " ----------  end of function mmtoolbox#cmake#Run  ----------
+endfunction    " ----------  end of function s:Run  ----------
 "
 "-------------------------------------------------------------------------------
 " s:TextFromSystem : Get text from a system command.   {{{1
@@ -664,7 +667,7 @@ function! s:OpenManBuffer ( text_cmd, buf_name, jump_reaction )
 	if bufnr ( a:buf_name ) != -1
 		" yes -> go to the window containing the buffer
 		exe bufwinnr( a:buf_name ).'wincmd w'
-		return
+		return 1
 	endif
 	"
 	" no -> open a buffer and insert the text
@@ -695,9 +698,9 @@ function! s:OpenManBuffer ( text_cmd, buf_name, jump_reaction )
 endfunction    " ----------  end of function s:OpenManBuffer  ----------
 "
 "-------------------------------------------------------------------------------
-" Help : Print help for commands, modules and variables.   {{{1
+" s:Help : Print help for commands, modules and variables.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#cmake#Help ( type, topic )
+function! s:Help ( type, topic )
 	"
 	" help for which type of object?
 	if a:type == 'command'
@@ -727,7 +730,7 @@ function! mmtoolbox#cmake#Help ( type, topic )
 		let topic    = a:type
 		let category = 'list'
 		"
-		let jump = ':call mmtoolbox#cmake#HelpJump("'.a:type.'")<CR>'
+		let jump = ':call <SID>HelpJump("'.a:type.'")<CR>'
 	elseif a:topic == ''
 		"
 		" get the list of topics
@@ -736,7 +739,7 @@ function! mmtoolbox#cmake#Help ( type, topic )
 		let topic    = a:type
 		let category = 'list'
 		"
-		let jump = ':call mmtoolbox#cmake#HelpJump("'.a:type.'")<CR>'
+		let jump = ':call <SID>HelpJump("'.a:type.'")<CR>'
 	else
 		"
 		" get help for a topic
@@ -750,7 +753,7 @@ function! mmtoolbox#cmake#Help ( type, topic )
 		endif
 		let category = a:type
 		"
-		let jump = ':call mmtoolbox#cmake#Help("'.a:type.'","")<CR>'
+		let jump = ':call <SID>Help("'.a:type.'","")<CR>'
 	endif
 	"
 	" get the help
@@ -762,12 +765,12 @@ function! mmtoolbox#cmake#Help ( type, topic )
 		call s:WarningMsg ( 'CMake : No help for "'.topic.'".' )
 	endif
   "
-endfunction    " ----------  end of function mmtoolbox#cmake#Help  ----------
+endfunction    " ----------  end of function s:Help  ----------
 "
 "-------------------------------------------------------------------------------
-" HelpJump : Jump to help for commands, modules and variables.   {{{1
+" s:HelpJump : Jump to help for commands, modules and variables.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#cmake#HelpJump ( type )
+function! s:HelpJump ( type )
 	"
 	" get help for the word in the line
 	"
@@ -789,9 +792,9 @@ function! mmtoolbox#cmake#HelpJump ( type )
 		return
 	endif
 	"
-	call mmtoolbox#cmake#Help ( a:type, line )
+	call s:Help ( a:type, line )
   "
-endfunction    " ----------  end of function mmtoolbox#cmake#HelpJump  ----------
+endfunction    " ----------  end of function s:HelpJump  ----------
 " }}}1
 "-------------------------------------------------------------------------------
 "

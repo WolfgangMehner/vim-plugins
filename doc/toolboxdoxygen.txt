@@ -1,4 +1,4 @@
-*toolboxdoxygen.txt*              Doxygen Tool                     Aug 07 2014
+*toolboxdoxygen.txt*              Doxygen Tool                     Oct 20 2014
 
 Doxygen Tool                                                 *toolbox-doxygen*
 
@@ -224,7 +224,8 @@ A.  CHANGE LOG                                    *toolbox-doxygen-change-log*
   RELEASE NOTES FOR VERSION 0.9.2
 ------------------------------------------------------------------------------
 
-- Internal changes.
+- Internal changes, less global functions.
+- Further internal changes.
 - Minor changes.
 
 ------------------------------------------------------------------------------

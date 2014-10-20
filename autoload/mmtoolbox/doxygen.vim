@@ -252,17 +252,17 @@ if s:Enabled == 1
 	command! -bang -nargs=? -complete=file DoxygenConfigFile     :call mmtoolbox#doxygen#Property('<bang>'=='!'?'echo':'set','config-file',<q-args>)
 	command! -bang -nargs=? -complete=file DoxygenLogFile        :call mmtoolbox#doxygen#Property('<bang>'=='!'?'echo':'set','log-file',<q-args>)
 	command! -bang -nargs=? -complete=file DoxygenWarningFile    :call mmtoolbox#doxygen#Property('<bang>'=='!'?'echo':'set','warning-file',<q-args>)
-	command!       -nargs=* -complete=file Doxygen               :call mmtoolbox#doxygen#Run(<q-args>)
-	command!       -nargs=0 -complete=file DoxygenGenerateConfig :call mmtoolbox#doxygen#GenerateConfig()
-	command!       -nargs=0 -complete=file DoxygenEditConfig     :call mmtoolbox#doxygen#EditConfig()
-	command!       -nargs=0 -complete=file DoxygenViewLog        :call mmtoolbox#doxygen#ViewLog()
-	command!       -nargs=0                DoxygenWarnings       :call mmtoolbox#doxygen#Warnings()
-	command!       -nargs=0                DoxygenHelp           :call mmtoolbox#doxygen#Help()
-	command! -bang -nargs=0                DoxygenSettings       :call mmtoolbox#doxygen#Settings('<bang>'=='!')
+	command!       -nargs=* -complete=file Doxygen               :call <SID>Run(<q-args>)
+	command!       -nargs=0 -complete=file DoxygenGenerateConfig :call <SID>GenerateConfig()
+	command!       -nargs=0 -complete=file DoxygenEditConfig     :call <SID>EditConfig()
+	command!       -nargs=0 -complete=file DoxygenViewLog        :call <SID>ViewLog()
+	command!       -nargs=0                DoxygenWarnings       :call <SID>Warnings()
+	command!       -nargs=0                DoxygenHelp           :call <SID>Help()
+	command! -bang -nargs=?                DoxygenSettings       :call <SID>Settings(('<bang>'=='!')+str2nr(<q-args>))
 else
 	"
-	" Disabled : Print why the script is disabled.   {{{3
-	function! mmtoolbox#doxygen#Disabled ()
+	" s:Disabled : Print why the script is disabled.   {{{3
+	function! s:Disabled ()
 		let txt = "Doxygen tool not working:\n"
 		if ! executable ( s:Doxygen_Executable )
 			let txt .= "Doxygen not executable (".s:Doxygen_Executable.")\n"
@@ -273,12 +273,12 @@ else
 		endif
 		call s:ImportantMsg ( txt )
 		return
-	endfunction    " ----------  end of function mmtoolbox#doxygen#Disabled  ----------
+	endfunction    " ----------  end of function s:Disabled  ----------
 	" }}}3
 	"
-	command! -bang -nargs=* Doxygen          :call mmtoolbox#doxygen#Disabled()
-	command!       -nargs=0 DoxygenHelp      :call mmtoolbox#doxygen#Help()
-	command! -bang -nargs=0 DoxygenSettings  :call mmtoolbox#doxygen#Settings('<bang>'=='!')
+	command! -bang -nargs=* Doxygen          :call <SID>Disabled()
+	command!       -nargs=0 DoxygenHelp      :call <SID>Help()
+	command! -bang -nargs=? DoxygenSettings  :call <SID>Settings(('<bang>'=='!')+str2nr(<q-args>))
 	"
 endif
 "
@@ -394,32 +394,31 @@ function! mmtoolbox#doxygen#Property ( mode, key, ... )
 endfunction    " ----------  end of function mmtoolbox#doxygen#Property  ----------
 "
 "-------------------------------------------------------------------------------
-" Help : Plugin help.   {{{1
+" s:Help : Plugin help.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#doxygen#Help ()
+function! s:Help ()
 	try
 		help toolbox-doxygen
 	catch
 		exe 'helptags '.s:plugin_dir.'/doc'
 		help toolbox-doxygen
 	endtry
-endfunction    " ----------  end of function mmtoolbox#doxygen#Help  ----------
+endfunction    " ----------  end of function s:Help  ----------
 "
 "-------------------------------------------------------------------------------
-" Settings : Plugin settings.   {{{1
+" s:Settings : Plugin settings.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#doxygen#Settings ( verbose )
+function! s:Settings ( verbose )
 	"
 	if     s:MSWIN | let sys_name = 'Windows'
 	elseif s:UNIX  | let sys_name = 'UNIX'
 	else           | let sys_name = 'unknown' | endif
 	"
-	let doxygen_status = executable( s:Doxygen_Executable ) ? '<yes>' : '<no>'
+	let doxygen_status = executable( s:Doxygen_Executable ) ? '' : ' (not executable)'
 	"
 	let	txt = " Doxygen-Support settings\n\n"
 				\ .'     plug-in installation :  toolbox on '.sys_name."\n"
-				\ .'       doxygen executable :  '.s:Doxygen_Executable."\n"
-				\ .'                > enabled :  '.doxygen_status."\n"
+				\ .'       doxygen executable :  '.s:Doxygen_Executable.doxygen_status."\n"
 				\ .'            using toolbox :  version '.g:Toolbox_Version." by Wolfgang Mehner\n"
 	if a:verbose
 		let	txt .= "\n"
@@ -431,8 +430,13 @@ function! mmtoolbox#doxygen#Settings ( verbose )
 				\  "________________________________________________________________________________\n"
 				\ ." Doxygen-Tool, Version ".g:Doxygen_Version." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
 	"
-	echo txt
-endfunction    " ----------  end of function mmtoolbox#doxygen#Settings  ----------
+	if a:verbose == 2
+		split Doxygen_Settings.txt
+		put = txt
+	else
+		echo txt
+	endif
+endfunction    " ----------  end of function s:Settings  ----------
 "
 "-------------------------------------------------------------------------------
 " Modul setup (abort early?).   {{{1
@@ -442,9 +446,9 @@ if s:Enabled == 0
 endif
 "
 "-------------------------------------------------------------------------------
-" Run : Run Doxygen.   {{{1
+" s:Run : Run Doxygen.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#doxygen#Run ( args )
+function! s:Run ( args )
 	"
 	silent exe 'update'   | " write source file if necessary
 	cclose
@@ -491,14 +495,14 @@ function! mmtoolbox#doxygen#Run ( args )
 	lchdir -
 	"
 	" process the warnings
-	call mmtoolbox#doxygen#Warnings ()
+	call s:Warnings ()
 	"
-endfunction    " ----------  end of function mmtoolbox#doxygen#Run  ----------
+endfunction    " ----------  end of function s:Run  ----------
 "
 "-------------------------------------------------------------------------------
-" GenerateConfig : Generate a Doxygen configuration file.   {{{1
+" s:GenerateConfig : Generate a Doxygen configuration file.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#doxygen#GenerateConfig ()
+function! s:GenerateConfig ()
 	" pick a location
 	if 0   " has('browse')
 		let doxyfile = browse ( 1, 'generate a doxygen configuration file', '.', 'Doxyfile' )
@@ -523,24 +527,24 @@ function! mmtoolbox#doxygen#GenerateConfig ()
 	if ! v:shell_error
 		call mmtoolbox#doxygen#Property ( 'set', 'config-file', doxyfile )
 	endif
-endfunction    " ----------  end of function mmtoolbox#doxygen#GenerateConfig  ----------
+endfunction    " ----------  end of function s:GenerateConfig  ----------
 "
 "-------------------------------------------------------------------------------
-" EditConfig : Edit the Doxygen configuration file.   {{{1
+" s:EditConfig : Edit the Doxygen configuration file.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#doxygen#EditConfig ()
+function! s:EditConfig ()
 	if ! filereadable ( s:ConfigFile )
-		" :TODO:27.10.2013 18:49:WM: call mmtoolbox#doxygen#GenerateConfig
+		" :TODO:27.10.2013 18:49:WM: call s:GenerateConfig
 		return s:ErrorMsg ( 'Doxygen : File not readable: '.s:ConfigFile )
 	endif
 	"
 	exe 'split '.fnameescape( s:ConfigFile )
-endfunction    " ----------  end of function mmtoolbox#doxygen#EditConfig  ----------
+endfunction    " ----------  end of function s:EditConfig  ----------
 "
 "-------------------------------------------------------------------------------
-" ViewLog : Edit the Doxygen configuration file.   {{{1
+" s:ViewLog : Edit the Doxygen configuration file.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#doxygen#ViewLog ()
+function! s:ViewLog ()
 	"
 	" go to the directory of 's:ConfigFile', so that the standard for 's:LogFile' works
 	exe	'lchdir '.fnameescape( fnamemodify( s:ConfigFile, ':p:h' ) )
@@ -554,12 +558,12 @@ function! mmtoolbox#doxygen#ViewLog ()
 	lchdir -
 	"
 	exe 'sview '.fnameescape( logfile )
-endfunction    " ----------  end of function mmtoolbox#doxygen#ViewLog  ----------
+endfunction    " ----------  end of function s:ViewLog  ----------
 "
 "-------------------------------------------------------------------------------
-" Warnings : Send the warning file through QuickFix.   {{{1
+" s:Warnings : Send the warning file through QuickFix.   {{{1
 "-------------------------------------------------------------------------------
-function! mmtoolbox#doxygen#Warnings ()
+function! s:Warnings ()
 	"
 	silent exe 'update'   | " write source file if necessary
 	cclose
@@ -589,7 +593,7 @@ function! mmtoolbox#doxygen#Warnings ()
 	"
 	lchdir -
 	"
-endfunction    " ----------  end of function mmtoolbox#doxygen#Warnings  ----------
+endfunction    " ----------  end of function s:Warnings  ----------
 " }}}1
 "-------------------------------------------------------------------------------
 "
