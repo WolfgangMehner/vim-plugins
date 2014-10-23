@@ -32,10 +32,16 @@ filelist="
  ./${plugin}/templates/Templates
  ./${plugin}/wordlists/*
  ./autoload/mmtemplates/core.vim
- ./autoload/mmtoolbox/*.vim
+ ./autoload/mmtoolbox/cmake.vim
+ ./autoload/mmtoolbox/doxygen.vim
+ ./autoload/mmtoolbox/make.vim
+ ./autoload/mmtoolbox/tools.vim
  ./doc/csupport.txt
  ./doc/templatesupport.txt
- ./doc/toolbox*.txt
+ ./doc/toolbox.txt
+ ./doc/toolboxcmake.txt
+ ./doc/toolboxdoxygen.txt
+ ./doc/toolboxmake.txt
  ./ftplugin/c.vim
  ./ftplugin/make.vim
  ./plugin/c.vim

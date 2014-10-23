@@ -25,10 +25,14 @@ Templates:
 
 Awk:
 - (FM) 'code->comment' should not insert a space following the hash?
+- (FM) The conformation message for 'make script exec.' is not visible (see fix
+  in perl-support).
 - (FM) Rename function 'g:Awk_RereadTemplates'.
 
 Bash:
 - (FM) 'code->comment' should not insert a space following the hash?
+- (FM) The conformation message for 'make script exec.' is not visible (see fix
+  in perl-support).
 - (FM) Rename function 'g:BASH_RereadTemplates'.
 
 C/C++:
