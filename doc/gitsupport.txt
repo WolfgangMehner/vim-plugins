@@ -1,4 +1,4 @@
-*gitsupport.txt*                  Git Support                      Aug 21 2014
+*gitsupport.txt*                  Git Support                      Oct 24 2014
 
 Git Support                                          *git-support* *gitsupport*
 
@@ -1224,6 +1224,10 @@ See files 'git-support/README.md' and 'git-support/doc/ChangeLog'.
 C.  CREDITS                                               *gitsupport-credits*
 ==============================================================================
 
+Jinhu Lu (KingTiger):
+- the idea for command-line completion of branches, remotes, tags, ...
+  (|gitsupport-cmds-cmd-line|) is taken from his plug-in "cmdline completion"
+  ( http://www.vim.org/scripts/script.php?script_id=3531 )
 
 ==============================================================================
 vim:tw=78:noet:ts=2:ft=help:norl:expandtab:

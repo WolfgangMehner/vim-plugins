@@ -7,6 +7,10 @@ if exists("b:current_syntax")
 	finish
 endif
 
+" use 'GitDiffRegion' as a top-level category
+runtime! syntax/gitsdiff.vim
+unlet b:current_syntax
+
 syn sync fromstart
 syn case match
 
@@ -25,10 +29,6 @@ syn case match
 " - GitUntrackedRegionX
 " imported:
 " - GitDiffRegion
-
-" use 'GitDiffRegion' as a top-level category
-runtime! syntax/gitsdiff.vim
-unlet b:current_syntax
 
 syn region GitStatusHashRegion  start=/^#/ end=/^#\@!/ contains=GitStagedRegion,GitModifiedRegion,GitUntrackedRegion,GitIgnoredRegion,GitUnmergedRegion fold
 syn region GitStatusBareRegion  start=/^[^#]\%1l/ end=/^\%(diff\)\@=/ contains=GitStagedRegionB,GitModifiedRegionB,GitUntrackedRegionB,GitIgnoredRegionB,GitUnmergedRegionB fold

@@ -7,6 +7,10 @@ if exists("b:current_syntax")
 	finish
 endif
 
+" use 'GitDiffRegion' contained in 'GitLogCommit'
+syn include <sfile>:p:h/gitsdiff.vim
+
+"syn sync minlines=100
 syn sync fromstart
 syn case match
 
@@ -16,13 +20,14 @@ syn case match
 
 " top-level categories:
 " - GitLogCommit
-
-" use 'GitDiffRegion' contained in 'GitLogCommit'
-syn include <sfile>:p:h/gitsdiff.vim
+" - GitStash
+" - GitAnnoTag
 
 syn region GitLogCommit  start=/^commit\s/ end=/^\%(commit\s\)\@=/ contains=GitLogHash,GitLogInfo,GitDiffRegion fold keepend
 syn match  GitLogHash    "^commit\s.\+$" contained
 syn match  GitLogInfo    "^\w\+:\s.\+$"  contained
+syn match  GitLogInfo    "^Notes:\s*$"  contained
+syn match  GitLogInfo    "^Notes\s(.*):\s*$"  contained
 
 syn region GitStash      start=/^stash@{\d\+}:\s/ end=/^\%(stash@{\d\+}:\s\)\@=/ contains=GitStashName,GitDiffRegion fold keepend
 syn match  GitStashName  "^stash@{\d\+}:\s.\+$" contained

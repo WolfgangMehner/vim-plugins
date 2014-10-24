@@ -1,4 +1,4 @@
-README for git-support.vim (Version 0.9.2) / August 21 2014
+README for git-support.vim (Version 0.9.2) / Oct 24 2014
 ================================================================================
 
   *  INSTALLATION

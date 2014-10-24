@@ -1051,6 +1051,7 @@ function! s:OpenGitBuffer ( buf_name )
 	if bufnr ( a:buf_name ) != -1
 		" yes -> settings of the new buffer
 		silent exe 'edit #'.bufnr( a:buf_name )
+		return 0
 	else
 		" no -> settings of the new buffer
 		silent exe 'file '.escape( a:buf_name, ' ' )
