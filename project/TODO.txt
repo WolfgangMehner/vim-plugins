@@ -77,6 +77,8 @@ Git:
 - (WM) Update buffer after executing a command: :GitBranch, :GitRemote, :GitStash, ...
 - (WM) Buffer "git stash list", maps for: create
 - (WM) Feed output of "git apply" into quickfix.
+- (WM) Rename function 'GitS_FoldLog' into 'GitS_FoldLogTxt'.
+- (WM) Set 'foldmethod' individually and not in 's:OpenGitBuffer'.
 
 LaTeX:
 - (FM) Documentation: Menu 'Beamer' missing.
