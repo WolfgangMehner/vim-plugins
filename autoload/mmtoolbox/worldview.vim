@@ -112,6 +112,43 @@ function! s:GetGlobalSetting ( varname )
 endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 "
 "-------------------------------------------------------------------------------
+" s:GetVisualArea : Get the visual area.   {{{2
+"
+" Get the visual area using the register " and reset the register afterwards.
+"
+" Parameters:
+"   -
+" Returns:
+"   selection - the visual selection (string)
+"
+" Credits:
+"   The solution is take from Jeremy Cantrell, vim-opener, which is distributed
+"   under the same licence as Vim itself.
+"-------------------------------------------------------------------------------
+function! s:GetVisualArea ()
+	" windows:  register @* does not work
+	" solution: recover area of the visual mode and yank,
+	"           puts the selected area into the register @"
+	"
+	" save contents of register " and the 'clipboard' setting
+	" set clipboard to it default value
+	let reg_save     = getreg('"')
+	let regtype_save = getregtype('"')
+	let cb_save      = &clipboard
+	set clipboard&
+	"
+	" get the register
+	normal! gv""y
+	let res = @"
+	"
+	" reset register " and 'clipboard'
+	call setreg ( '"', reg_save, regtype_save )
+	let &clipboard = cb_save
+	"
+	return res
+endfunction    " ----------  end of function s:GetVisualArea  ----------
+"
+"-------------------------------------------------------------------------------
 " s:ImportantMsg : Print an important message.   {{{2
 "
 " Parameters:
@@ -228,7 +265,12 @@ function! s:UserInput ( prompt, text, ... )
 endfunction    " ----------  end of function s:UserInput ----------
 "
 "-------------------------------------------------------------------------------
-" s:SID : Return the <SID>   {{{2
+" s:SID : Return the <SID>.   {{{2
+"
+" Parameters:
+"   -
+" Returns:
+"   SID - the SID of the script (string)
 "-------------------------------------------------------------------------------
 function! s:SID ()
 	return matchstr ( expand('<sfile>'), '<SNR>\zs\d\+\ze_SID$' )
@@ -400,7 +442,6 @@ endif
 " maps {{{2
 if s:WorldView_ManGlobalMap != ''
 	silent exe 'nnoremap <silent> '.s:WorldView_ManGlobalMap.'      :call <SID>Man("cursor","")<CR>'
-	silent exe 'inoremap <silent> '.s:WorldView_ManGlobalMap.' <ESC>:call <SID>Man("cursor","")<CR>'
 	silent exe 'vnoremap <silent> '.s:WorldView_ManGlobalMap.' <ESC>:call <SID>Man("visual","")<CR>'
 endif
 "
@@ -447,14 +488,22 @@ function! mmtoolbox#worldview#AddMenu ( root, esc_mapl )
 "			exe 'amenu '.a:root.'.view\ &'.menuname.'<Tab>'.cmd.'  '.cmd.' '
 "		endif
 "	endfor
+"	"
+"	exe 'amenu '.a:root.'.-SEP-MAN- <Nop>'
 	"
 	if s:WorldView_ManCommand == 'yes'
 		exe 'amenu '.a:root.'.view\ &manpage<Tab>:Man      :Man '
 	else
 		exe 'amenu '.a:root.'.view\ &manpage<Tab>:ViewMan  :ViewMan '
 	endif
+	exe 'amenu '.a:root.'.manpage\ buffer.Manpage<TAB>WorldView  :echo "This is a menu header."<CR>'
+	exe 'amenu '.a:root.'.manpage\ buffer.-SEP00-                :'
 	"
-	exe 'amenu '.a:root.'.-SEP01- <Nop>'
+	exe 'amenu <silent> '.a:root.'.manpage\ buffer.jump\ to\ page\ under\ cursor<TAB><CTRL-]>  :call <SID>Man("man-jump","")<CR>'
+	exe 'amenu <silent> '.a:root.'.manpage\ buffer.jump\ to\ section<TAB>\\s                   :call <SID>TagJump(<SID>TagJumpParam("man-section"))<CR>'
+	exe 'amenu <silent> '.a:root.'.manpage\ buffer.jump\ to\ option<TAB>\\o                    :call <SID>TagJump(<SID>TagJumpParam("man-option"))<CR>'
+	"
+	exe 'amenu '.a:root.'.-SEP-PLUGIN- <Nop>'
 	"
 	exe 'amenu '.a:root.'.&help<Tab>:WorldviewHelp          :WorldviewHelp<CR>'
 	exe 'amenu '.a:root.'.&settings<Tab>:WorldviewSettings  :WorldviewSettings<CR>'
@@ -650,41 +699,83 @@ function! s:UpdateBuffer ( command )
 endfunction    " ----------  end of function s:UpdateBuffer  ----------
 "
 "-------------------------------------------------------------------------------
-" s:TocJump : Jumps to a section in a buffer.   {{{1
+" s:TagJumpParam : Parameters for tags in manpages.   {{{1
 "
 " Parameters:
-"   section_regexp  - regexp matching section headings (string, optional)
-"   section_pattern - pattern for cleaning up headings (string, optional)
-"   section_replace - replacement for cleaning up headings (string, optional)
+"   mode - the mode (string)
+" Returns:
+"   param - the parameters (table)
+"-------------------------------------------------------------------------------
+function! s:TagJumpParam ( mode )
+	"
+	let param = {}
+	"
+	if a:mode == 'man-section'
+		"
+		let param.regexp  = '^\u.*'
+		let param.pattern = '\s\s.*'
+		let param.replace = ''
+		let param.category_name = 'section'
+		let param.show_overview = 1
+		"
+	elseif a:mode == 'man-option'
+		"
+		let param.regexp  = '^\s\+--\?.\+'
+		let param.pattern = '^\s\+'
+		let param.replace = ''
+		let param.category_name = 'option'
+		let param.show_overview = 0
+		"
+	endif
+	"
+	return param
+endfunction    " ----------  end of function s:TagJumpParam  ----------
+"
+"-------------------------------------------------------------------------------
+" s:TagJump : Jumps to a tag in a buffer.   {{{1
+"
+" Parameters:
+"   param  - parameters (dict, optional)
 " Returns:
 "   -
 "
-" If both 'section_pattern' and 'section_replace' are given, each found
-" section heading is cleaned up using:
-"   let head = substitute ( head, section_pattern, section_replace, 'g' )
+" The options are given as a dictionary 'param' with the fields:
+"   tag_regexp  - regexp matching tag (string, optional)
+"   tag_pattern - pattern for cleaning up tags (string, optional)
+"   tag_replace - replacement for cleaning up tags (string, optional)
+"
+"   category_name - name of the category of tags, used for user interaction
+"                   (string, optional)
+"   show_overview - if true, show an overview/a ToC before starting the
+"                   selection (integer, optional)
+"
+" If both 'tag_pattern' and 'tag_replace' are given, each found tag is cleaned
+" up using:
+"   let tag = substitute ( tag, tag_pattern, tag_replace, 'g' )
 "-------------------------------------------------------------------------------
-function! s:TocJump ( ... )
+function! s:TagJump ( ... )
 	"
-	let sec_regexp  = '^\S.*'
-	let sec_pattern = ''
-	let sec_replace = ''
-	"
-	if a:0 >= 1
-		let sec_regexp = a:1
-	endif
-	if a:0 >= 3
-		let sec_pattern = a:2
-		let sec_replace = a:3
+	if a:0 == 0
+		let param = s:TagJumpParam ( 'man-section' )
+	else
+		let param = a:1
 	endif
 	"
-	let toc_topics = [ 'top' ]
-	let toc_lines  = [ 1 ]
+	let tag_regexp  = get ( param, 'regexp' , '^\S.*' )
+	let tag_pattern = get ( param, 'pattern', '' )
+	let tag_replace = get ( param, 'replace', '' )
+	"
+	let cat_name      = get ( param, 'category_name', 'section' )
+	let show_overview = get ( param, 'show_overview', 1 )
+	"
+	let toc_topics = []
+	let toc_lines  = []
 	let last_line  = line ( '$' )
 	let cursorpos  = getpos ( '.' )
 	"
 	call cursor ( 1, 1 )
 	while 1
-		let line_no = search ( sec_regexp, 'W' )    " don't wrap around
+		let line_no = search ( tag_regexp, 'W' )    " don't wrap around
 		"
 		if line_no == 0
 			break
@@ -692,8 +783,8 @@ function! s:TocJump ( ... )
 			continue
 		endif
 		"
-		let line_str = matchstr ( getline( line_no ), sec_regexp )
-		let line_str = substitute ( line_str, sec_pattern, sec_replace, 'g' )
+		let line_str = matchstr ( getline( line_no ), tag_regexp )
+		let line_str = substitute ( line_str, tag_pattern, tag_replace, 'g' )
 		"
 		if line_str !~ '^\s*$'
 			call add ( toc_topics, line_str )
@@ -701,18 +792,17 @@ function! s:TocJump ( ... )
 		endif
 	endwhile
 	"
-	call add ( toc_topics, 'bottom' )
-	call add ( toc_lines,  last_line )
-	"
-	if len ( toc_topics ) == 2
-		call s:WarningMsg ( 'no sections found' )
+	if len ( toc_topics ) == 0
+		call s:WarningMsg ( 'no '.cat_name.' found' )
 	else
-		echo 'Section:'
-		for val in toc_topics
-			echo val
-		endfor
+		if show_overview
+			echo cat_name.':'
+			for val in toc_topics
+				echo val
+			endfor
+		endif
 		"
-		let item_str = s:UserInput ( 'section (tab-compl.): ', '', 'customlist', toc_topics )
+		let item_str = s:UserInput ( cat_name.' (tab-compl.): ', '', 'customlist', toc_topics )
 		"
 		let item_idx = index ( toc_topics, item_str )
 		"
@@ -723,7 +813,7 @@ function! s:TocJump ( ... )
 	endif
 	"
 	call setpos ( '.', cursorpos )
-endfunction    " ----------  end of function s:TocJump  ----------
+endfunction    " ----------  end of function s:TagJump  ----------
 "
 "-------------------------------------------------------------------------------
 " s:Man : View a manpage.   {{{1
@@ -800,7 +890,7 @@ function! s:Man ( mode, cmdline, ... )
 		let page = matchstr ( getline('.'), '\f*\%'.getpos('.')[2].'c\f\+' )
 	elseif a:mode == 'visual'
 		" get page from selection
-		" :TODO:19.10.2014 20:43:WM: add this
+		let page = s:GetVisualArea ()
 	else
 		" 'mode' names the section (as a number or string)
 		let section = ''.a:mode
@@ -866,7 +956,8 @@ function! s:Man ( mode, cmdline, ... )
 		" :TODO:14.10.2014 23:04:WM: maps CTRL-O, CTRL-I ?
 		silent exe 'nmap <silent> <buffer> <C-]>            :call <SID>Man("man-jump","")<CR>'
 		silent exe 'nmap <silent> <buffer> <2-Leftmouse>    :call <SID>Man("man-jump","")<CR>'
-		silent exe 'nmap <silent> <buffer> <LocalLeader>t   :call <SID>TocJump("^\\u.*","\\s\\s.*","")<CR>'
+		silent exe 'nmap <silent> <buffer> <LocalLeader>s   :call <SID>TagJump(<SID>TagJumpParam("man-section"))<CR>'
+		silent exe 'nmap <silent> <buffer> <LocalLeader>o   :call <SID>TagJump(<SID>TagJumpParam("man-option"))<CR>'
 		"
 	endif
 	"
@@ -902,7 +993,7 @@ function! mmtoolbox#worldview#Interface ()
 	"
 	let namelist = [
 				\ 'OpenBuffer' ,  'UpdateBuffer' ,
-				\ 'TocJump'    ,  'Man'          ,
+				\ 'TagJump'    ,  'Man'          ,
 				\ ]
 	"
 	let interface = {}
