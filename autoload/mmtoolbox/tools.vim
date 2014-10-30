@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Toolbox_Version below
 "       Created:  29.12.2012
-"      Revision:  15.08.2014
+"      Revision:  23.10.2014
 "       License:  Copyright (c) 2012-2014, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -42,7 +42,7 @@ if &cp || ( exists('g:Toolbox_Version') && g:Toolbox_Version != 'searching' && !
 	finish
 endif
 "
-let s:Toolbox_Version= '1.1'     " version number of this script; do not change
+let s:Toolbox_Version= '1.2'     " version number of this script; do not change
 "
 "----------------------------------------------------------------------
 "  --- Find Newest Version ---   {{{2
@@ -192,14 +192,37 @@ endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 "-------------------------------------------------------------------------------
 function! s:GetToolConfig ( plugin, name )
 	"
-	let name = 'g:'.a:plugin.'_UseTool_'.a:name
+	let name = s:GetToolConfigVarName ( a:plugin, a:name )
 	if exists ( name )
 		return {name}
 	endif
 	return 'no'
 endfunction    " ----------  end of function s:GetToolConfig  ----------
+"
+"-------------------------------------------------------------------------------
+" s:GetToolConfigVarName : Get the name of the configuration variable.   {{{2
+"
+" Parameters:
+"   plugin - the name of the plg-in (string)
+"   name - the name of the tool (string)
+" Returns:
+"   varname - name of the configuration variable (string)
+"
+" Returns the variable g:<plugin>_UseTool_<name>.
+"-------------------------------------------------------------------------------
+function! s:GetToolConfigVarName ( plugin, name )
+	return 'g:'.a:plugin.'_UseTool_'.a:name
+endfunction    " ----------  end of function s:GetToolConfigVarName  ----------
 " }}}2
 "-------------------------------------------------------------------------------
+"
+"-------------------------------------------------------------------------------
+" Modul setup.   {{{1
+"-------------------------------------------------------------------------------
+"
+" tool registry,
+" maps plug-in name -> toolbox
+let s:ToolRegistry = {}
 "
 "-------------------------------------------------------------------------------
 " NewToolbox : Create a new toolbox.   {{{1
@@ -213,19 +236,113 @@ function! mmtoolbox#tools#NewToolbox ( plugin )
 	"               used, it must already be set accordingly
 	" - tools     : dictionary holding the meta information about the tools
 	"               associates: name -> info
+	" - unused    : further tools which have not been loaded
 	" - names     : the names of all the tools, sorted alphabetically
 	" - n_menu    : the number of tools which create a menu
+	" - menu_root : last root menu used for menu creation
+	" - menu_mldr : last mapleader menu used for menu creation (escaped)
 	let toolbox = {
 				\ 'plugin'    : a:plugin,
 				\ 'mapleader' : '\',
 				\ 'tools'     : {},
+				\ 'unused'    : {},
 				\ 'names'     : [],
 				\ 'n_menu'    : 0,
+				\ 'menu_root' : '',
+				\ 'menu_mldr' : '',
 				\	}
+	"
+	let s:ToolRegistry[ a:plugin ] = toolbox
 	"
 	return toolbox
 	"
 endfunction    " ----------  end of function mmtoolbox#tools#NewToolbox  ----------
+"
+"-------------------------------------------------------------------------------
+" s:LoadTool : Load a tool.   {{{1
+"
+" Parameters:
+"   toolbox - the toolbox (dict)
+"   name - the name of the tool (string)
+"   file - the script (string)
+" Returns:
+"   success - tool loaded without errors, but might still be disabled (integer)
+"-------------------------------------------------------------------------------
+function! s:LoadTool ( toolbox, name, file )
+	"
+	let toolbox = a:toolbox
+	let name    = a:name
+	"
+	" try to load and initialize
+	try
+		"
+		" get tool information
+		let retlist = mmtoolbox#{name}#GetInfo()
+		"
+		" assemble the entry
+		let entry = {
+					\	"name"       : name,
+					\	"prettyname" : retlist[0],
+					\	"version"    : retlist[1],
+					\	"enabled"    : 1,
+					\	"domenu"     : 1,
+					\	"filename"   : a:file,
+					\	}
+		"
+		" process the flags
+		if len ( retlist ) > 2
+			if index ( retlist, 'nomenu', 2 ) != -1
+				let entry.domenu = 0
+			endif
+			if index ( retlist, 'disabled', 2 ) != -1
+				let entry.enabled = 0
+			endif
+		endif
+		"
+		" save the entry
+		let toolbox.tools[ name ] = entry
+		call add ( toolbox.names, name )
+		"
+		if entry.enabled && entry.domenu
+			let toolbox.n_menu += 1
+		endif
+		"
+		return 1
+		"
+	catch /.*/
+		" could not load the plugin: ?
+		call s:ErrorMsg ( "Could not load the tool \"".name."\" (".v:exception.")",
+					\	" - occurred at " . v:throwpoint )
+	endtry
+	"
+	return 0
+	"
+endfunction    " ----------  end of function s:LoadTool  ----------
+"
+"-------------------------------------------------------------------------------
+" s:RegisterTool : Register an unused tool.   {{{1
+"
+" Parameters:
+"   toolbox - the toolbox (dict)
+"   name - the name of the tool (string)
+"   file - the script (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:RegisterTool ( toolbox, name, file )
+	"
+	" assemble the entry
+	" - also record which tools was loaded later on, to keep creating correct
+	"   menus
+	let entry = {
+				\	"name"       : a:name,
+				\	"filename"   : a:file,
+				\ "loaded"     : 0,
+				\	}
+	"
+	let a:toolbox.unused[ a:name ] = entry
+	"
+endfunction    " ----------  end of function s:RegisterTool  ----------
 "
 "-------------------------------------------------------------------------------
 " Load : Load the tools from various directories.   {{{1
@@ -266,49 +383,11 @@ function! mmtoolbox#tools#Load ( toolbox, directories )
 			endif
 			"
 			" check whether to use the tool
-			if s:GetToolConfig ( a:toolbox.plugin, name ) != 'yes'
-				continue
+			if s:GetToolConfig ( a:toolbox.plugin, name ) == 'yes'
+				call s:LoadTool ( a:toolbox, name, file )
+			else
+				call s:RegisterTool ( a:toolbox, name, file )
 			endif
-			"
-			" try to load and initialize
-			try
-				" 
-				" get tool information
-				let retlist = mmtoolbox#{name}#GetInfo()
-				"
-				" assemble the entry
-				let entry = {
-							\	"name"       : name,
-							\	"prettyname" : retlist[0],
-							\	"version"    : retlist[1],
-							\	"enabled"    : 1,
-							\	"domenu"     : 1,
-							\	"filename"   : file,
-							\	}
-				"
-				" process the flags
-				if len ( retlist ) > 2
-					if index ( retlist, 'nomenu', 2 ) != -1
-						let entry.domenu = 0
-					endif
-					if index ( retlist, 'disabled', 2 ) != -1
-						let entry.enabled = 0
-					endif
-				endif
-				"
-				" save the entry
-				let a:toolbox.tools[ name ] = entry
-				call add ( a:toolbox.names, name )
-				"
-				if entry.enabled && entry.domenu
-					let a:toolbox.n_menu += 1
-				endif
-				"
-			catch /.*/
-				" could not load the plugin: ?
-				call s:ErrorMsg ( "Could not load the tool \"".name."\" (".v:exception.")",
-							\	" - occurred at " . v:throwpoint )
-			endtry
 			"
 		endfor
 		"
@@ -318,6 +397,49 @@ function! mmtoolbox#tools#Load ( toolbox, directories )
 	call sort ( a:toolbox.names )
 	"
 endfunction    " ----------  end of function mmtoolbox#tools#Load  ----------
+"
+"-------------------------------------------------------------------------------
+" s:LoadAdditionalTool : Load an additional tool.   {{{1
+"
+" Parameters:
+"   toolbox_name - the name of the toolbox (string)
+"   name - the name of the tool (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:LoadAdditionalTool ( toolbox_name, name )
+	"
+	let toolbox = s:ToolRegistry[ a:toolbox_name ]
+	let name    = a:name
+	"
+	" do not load multiple times
+	if has_key ( toolbox.tools, name )
+		continue
+	endif
+	"
+	" check the 'unused' entry
+	if ! has_key ( toolbox.unused, name ) || toolbox.unused[name].loaded == 1
+		continue
+	endif
+	"
+	" check the 'menu_root' and 'menu_mldr' entry
+	if empty ( toolbox.menu_root ) || empty ( toolbox.menu_mldr )
+		continue
+	endif
+	"
+	" load the tool
+	let toolbox.unused[name].loaded = 1
+	let success = s:LoadTool ( toolbox, name, toolbox.unused[name].filename )
+	"
+	" create the menu entry
+	if success
+		call s:CreateToolMenu ( toolbox, name, toolbox.menu_root, toolbox.menu_mldr )
+	endif
+	"
+	echo
+				\  "To always load the tool, add this line to your vimrc:\n"
+				\ ."  let ".s:GetToolConfigVarName ( toolbox.plugin, name )." = 'yes'"
+endfunction    " ----------  end of function s:LoadAdditionalTool  ----------
 "
 "-------------------------------------------------------------------------------
 " ToolEnabled : Whether a tool is enabled.   {{{1
@@ -333,8 +455,8 @@ function! mmtoolbox#tools#ToolEnabled ( toolbox, name )
 		return s:ErrorMsg ( 'Argument "name" must be given as a string.' )
 	endif
 	"
-	" has been loaded?
-	if s:GetToolConfig ( a:toolbox.plugin, a:name ) != 'yes'
+	" has not been loaded?
+	if ! has_key ( a:toolbox.tools, a:name )
 		return 0
 	endif
 	"
@@ -469,6 +591,47 @@ function! mmtoolbox#tools#AddMaps ( toolbox )
 endfunction    " ----------  end of function mmtoolbox#tools#AddMaps  ----------
 "
 "-------------------------------------------------------------------------------
+" s:CreateToolMenu : Create the sub-menu for a tool.   {{{1
+"
+" Parameters:
+"   toolbox - the toolbox (dict)
+"   name - the name of the tool (string)
+"   root - the root menu (string)
+"   mleader - the map leader (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:CreateToolMenu ( toolbox, name, root, mleader )
+	"
+	let entry = a:toolbox.tools[ a:name ]
+	"
+	if ! entry.enabled || ! entry.domenu
+		continue
+	endif
+	"
+	" correctly escape the name
+	" and add a shortcut
+	let menu_item_r = escape ( entry.prettyname, ' .|\' )
+	let menu_item_l = substitute ( menu_item_r, '\V&', '\&&', 'g' )
+	let menu_scut   = substitute ( menu_item_l, '\w',  '\&&', '' )
+	let menu_root   = a:root.'.'.menu_scut
+	"
+	" create the menu header
+	exe 'amenu '.menu_root.'.'.menu_item_l.'<TAB>'.menu_item_r.' :echo "This is a menu header."<CR>'
+	exe 'amenu '.menu_root.'.-SepHead-     :'
+	"
+	try
+		" try to create the menu
+		call mmtoolbox#{entry.name}#AddMenu( menu_root, a:mleader )
+	catch /.*/
+		" could not load the plugin: ?
+		call s:ErrorMsg ( "Could not create menus for the tool \"".a:name."\" (".v:exception.")",
+					\	" - occurred at " . v:throwpoint )
+	endtry
+	"
+endfunction    " ----------  end of function s:CreateToolMenu  ----------
+"
+"-------------------------------------------------------------------------------
 " AddMenus : Create menus for all tools.   {{{1
 "-------------------------------------------------------------------------------
 function! mmtoolbox#tools#AddMenus ( toolbox, root )
@@ -495,37 +658,32 @@ function! mmtoolbox#tools#AddMenus ( toolbox, root )
 	let mleader = escape ( mleader, ' .|\' )
 	let mleader = substitute ( mleader, '\V&', '\&&', 'g' )
 	"
+	" save the information for later use
+	let a:toolbox.menu_root = a:root
+	let a:toolbox.menu_mldr = mleader
+	"
 	" go through all the tools
 	for name in a:toolbox.names
-		let entry = a:toolbox.tools[ name ]
-		"
-		if ! entry.enabled || ! entry.domenu
-			continue
-		endif
-		"
-		" correctly escape the name
-		" and add a shortcut
-		let menu_item_r = escape ( entry.prettyname, ' .|\' )
-		let menu_item_l = substitute ( menu_item_r, '\V&', '\&&', 'g' )
-		let menu_scut   = substitute ( menu_item_l, '\w',  '\&&', '' )
-		let menu_root   = a:root.'.'.menu_scut
-		"
-		" create the menu header
-		exe 'amenu '.menu_root.'.'.menu_item_l.'<TAB>'.menu_item_r.' :echo "This is a menu header."<CR>'
-		exe 'amenu '.menu_root.'.-SepHead-     :'
-		"
-		try
-			" try to create the menu
-			call mmtoolbox#{entry.name}#AddMenu( menu_root, mleader )
-		catch /.*/
-			" could not load the plugin: ?
-			call s:ErrorMsg ( "Could not create menus for the tool \"".name."\" (".v:exception.")",
-						\	" - occurred at " . v:throwpoint )
-		endtry
+		call s:CreateToolMenu ( a:toolbox, name, a:root, mleader )
 	endfor
+	"
+	" create 'load more tools' below the other entries
+	let root_level  = len( split( a:root, '\%(\_^\|[^\\]\)\%(\\\\\)*\zs\.' ) )
+	let prio_prefix = repeat ( '.', root_level )
+	exe 'amenu '.prio_prefix.'600     '.a:root.'.-SepBottom-                          :'
+	exe 'amenu '.prio_prefix.'600.400 '.a:root.'.load\ more\ tools.Available\ Tools   :echo "This is a menu header."<CR>'
+	exe 'amenu '.prio_prefix.'600.400 '.a:root.'.load\ more\ tools.-SepHead-          :'
+	"
+	let shead = 'amenu <silent> '.a:root.'.load\ more\ tools.'
+	"
+	for name in sort ( keys ( a:toolbox.unused ) )
+		silent exe shead.'load\ '.name.'  :call <SID>LoadAdditionalTool('.string( a:toolbox.plugin ).','.string( name ).')<CR>'
+	endfor
+	"
 	"
 endfunction    " ----------  end of function mmtoolbox#tools#AddMenus  ----------
 " }}}1
+"-------------------------------------------------------------------------------
 "
 " =====================================================================================
 "  vim: foldmethod=marker

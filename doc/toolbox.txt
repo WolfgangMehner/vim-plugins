@@ -1,11 +1,10 @@
-*toolbox.txt*                   MM Toolbox Support                 Aug 15 2014
+*toolbox.txt*                   MM Toolbox Support                 Oct 23 2014
 
 MM Toolbox Support                                                  *toolbox*
 
-                             Plug-in version 1.1
+                             Plug-in version 1.2
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
-                  Fritz Mehner  <mehner.fritz at fh-swf.de>
 
      --- The Maps & Menus Toolbox Support ---
 
@@ -377,6 +376,12 @@ See also |toolbox-support-AddMenu()|.
 ==============================================================================
 A.  CHANGE LOG                                    *toolbox-support-change-log*
 ==============================================================================
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.2
+------------------------------------------------------------------------------
+
+- Added sub-menu "load additional tools" to load tools during a session.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 1.1
