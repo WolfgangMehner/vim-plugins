@@ -1309,12 +1309,14 @@ function! Lua_SetExecutable ( exe_type, new_exec )
 		return s:ErrorMsg ( 'Unknown type "'.a:exe_type.'".' )
 	endif
 	"
-	if a:new_exec == ''
+	let new_exec = expand ( a:new_exec )
+	"
+	if new_exec == ''
 		echo {var}
-	elseif ! executable ( a:new_exec )
-		return s:ErrorMsg ( '"'.a:new_exec.'" is not executable, nothing set.' )
+	elseif ! executable ( new_exec )
+		return s:ErrorMsg ( '"'.new_exec.'" is not executable, nothing set.' )
 	else
-		let {var} = a:new_exec
+		let {var} = new_exec
 	endif
 	"
 	return
@@ -1693,8 +1695,8 @@ function! s:InitMenus()
 	exe shead.'chec&k\ code<TAB><A-F9>\ '.esc_mapl.'rk   :call Lua_Compile("check")<CR>'
 	exe shead.'make\ &executable<TAB>'.esc_mapl.'re      :call Lua_MakeExecutable()<CR>'
 	"
-	exe shead.'&buffer\ "Lua\ Output".buffer\ "Lua Output"  :echo "This is a menu header."'
-	exe shead.'&buffer\ "Lua\ Output".-SepHead-             :'
+	exe shead.'&buffer\ "Lua\ Output".buffer\ "Lua\ Output"  :echo "This is a menu header."<CR>'
+	exe shead.'&buffer\ "Lua\ Output".-SepHead-              :'
 	exe shead.'&buffer\ "Lua\ Output".load\ into\ quick&fix<TAB>'.esc_mapl.'qf               :call Lua_OutputBufferErrors(0)<CR>'
 	exe shead.'&buffer\ "Lua\ Output".qf\.\ and\ &jump\ to\ first\ error<TAB>'.esc_mapl.'qj  :call Lua_OutputBufferErrors(1)<CR>'
 	"
