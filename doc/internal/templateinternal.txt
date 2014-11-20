@@ -45,6 +45,12 @@ variable 's:library' contains the current template library.
 
 The template library contains the following fields:
 
+- interface_str (string)
+    Version of the library as a version number "X.Y", "0.9" by default.
+- interface (integer)
+    Version of the library. Is "0.9" by default which is represented by the
+    integer 9000.
+
 - macros (dict, name -> replacement)
     The last replacements entered by the user.
     key - Name of the macro (string).

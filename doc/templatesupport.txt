@@ -2598,6 +2598,9 @@ D.  CHANGE LOG                                   *template-support-change-log*
 - Changed: During the creation of the submenu for a list-picking template, all
   special characters are escaped correctly. (The characters "\" and "|" were
   not escaped before.)
+- Changed: Inserting templates in visual mode does not overwrite the unnamed
+  register anymore.
+- Fixed: Map creation could fail after reloading the template library.
 - Added: User setting |g:Templates_TemplateBrowser| to configure the browser
   used for editing templates.
 - Added: User settings |g:Templates_PersonalizationFile| and

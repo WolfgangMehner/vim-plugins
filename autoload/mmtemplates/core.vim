@@ -559,6 +559,18 @@ endfunction    " ----------  end of function s:GetNormalizedPath  ----------
 "    endtry
 "----------------------------------------------------------------------
 "
+" s:UserInputEx : ex-command for s:UserInput   {{{3
+function! s:UserInputEx ( ArgLead, CmdLine, CursorPos )
+	if empty( a:ArgLead )
+		return copy( s:UserInputList )
+	endif
+	return filter( copy( s:UserInputList ), 'v:val =~ ''\V\<'.escape(a:ArgLead,'\').'\w\*''' )
+endfunction    " ----------  end of function s:UserInputEx  ----------
+"
+" s:UserInputList : list for s:UserInput   {{{3
+let s:UserInputList = []
+" }}}3
+"
 function! s:UserInput ( prompt, text, ... )
 	"
 	echohl Search																					" highlight prompt
@@ -567,7 +579,7 @@ function! s:UserInput ( prompt, text, ... )
 		let retval = input( a:prompt, a:text )
 	elseif a:1 == 'customlist'
 		let s:UserInputList = a:2
-		let retval = input( a:prompt, a:text, 'customlist,mmtemplates#core#UserInputEx' )
+		let retval = input( a:prompt, a:text, 'customlist,<SNR>'.s:SID().'_UserInputEx' )
 		let s:UserInputList = []
 	else
 		let retval = input( a:prompt, a:text, a:1 )
@@ -585,20 +597,6 @@ function! s:UserInput ( prompt, text, ... )
 	return retval
 	"
 endfunction    " ----------  end of function s:UserInput ----------
-"
-"----------------------------------------------------------------------
-"  mmtemplates#core#UserInputEx : ex-command for s:UserInput.   {{{3
-"----------------------------------------------------------------------
-"
-function! mmtemplates#core#UserInputEx ( ArgLead, CmdLine, CursorPos )
-	if empty( a:ArgLead )
-		return copy( s:UserInputList )
-	endif
-	return filter( copy( s:UserInputList ), 'v:val =~ ''\V\<'.escape(a:ArgLead,'\').'\w\*''' )
-endfunction    " ----------  end of function mmtemplates#core#UserInputEx  ----------
-" }}}3
-"
-let s:UserInputList = []
 "
 "----------------------------------------------------------------------
 "  s:ErrorMsg : Print an error message.   {{{2
@@ -638,6 +636,44 @@ function! s:DebugMsg ( lvl, ... )
 	endfor
 endfunction    " ----------  end of function s:DebugMsg  ----------
 "
+"-------------------------------------------------------------------------------
+" s:GetVisualArea : Get the visual area.   {{{2
+"
+" Get the visual area using the register " and reset the register afterwards.
+"
+" Parameters:
+"   -
+" Returns:
+"   selection - the visual selection (string)
+"
+" Credits:
+"   The solution is take from Jeremy Cantrell, vim-opener, which is distributed
+"   under the same licence as Vim itself.
+"-------------------------------------------------------------------------------
+"
+function! s:GetVisualArea ()
+	" windows:  register @* does not work
+	" solution: recover area of the visual mode and yank,
+	"           puts the selected area into the register @"
+	"
+	" save contents of register " and the 'clipboard' setting
+	" set clipboard to it default value
+	let reg_save     = getreg('"')
+	let regtype_save = getregtype('"')
+	let cb_save      = &clipboard
+	set clipboard&
+	"
+	" get the register
+	normal! gv""y
+	let res = @"
+	"
+	" reset register " and 'clipboard'
+	call setreg ( '"', reg_save, regtype_save )
+	let &clipboard = cb_save
+	"
+	return res
+endfunction    " ----------  end of function s:GetVisualArea  ----------
+"
 "----------------------------------------------------------------------
 " s:OpenFold : Open fold and go to the first or last line of this fold.   {{{2
 "----------------------------------------------------------------------
@@ -658,6 +694,19 @@ function! s:OpenFold ( mode )
 		exe ":".foldstart
 	endif
 endfunction    " ----------  end of function s:OpenFold  ----------
+"
+"-------------------------------------------------------------------------------
+" s:SID : Return the <SID>.   {{{2
+"
+" Parameters:
+"   -
+" Returns:
+"   SID - the SID of the script (string)
+"-------------------------------------------------------------------------------
+"
+function! s:SID ()
+	return matchstr ( expand('<sfile>'), '<SNR>\zs\d\+\ze_SID$' )
+endfun
 " }}}2
 "----------------------------------------------------------------------
 "
@@ -2994,8 +3043,7 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 			"           puts the selected area into the buffer @"
 			let pos1 = line("'<")
 			let pos2 = line("'>") + len(split( text, '\n' )) - 1
-			normal! gvy
-			let repl = escape ( part[0].@".part[1], '\&~' )
+			let repl = escape ( part[0].s:GetVisualArea().part[1], '\&~' )
 			" substitute the selected area (using the '< and '> marks)
 			exe ':s/\%''<.*\%''>./'.repl.'/'
 			let indentation = 0
@@ -3271,6 +3319,29 @@ function! mmtemplates#core#InsertTemplate ( library, t_name, ... ) range
 endfunction    " ----------  end of function mmtemplates#core#InsertTemplate  ----------
 "
 "----------------------------------------------------------------------
+" === Create Maps: Auxiliary Functions ===   {{{1
+"----------------------------------------------------------------------
+"
+"-------------------------------------------------------------------------------
+" s:DoCreateMap : Check whether a map already exists.   {{{2
+"-------------------------------------------------------------------------------
+"
+function! s:DoCreateMap ( map, mode, report )
+	"
+	let mapinfo = maparg ( a:map, a:mode )
+	if ! empty ( mapinfo ) && mapinfo !~ 'mmtemplates#core#'
+		if a:report
+			call s:ErrorMsg ( 'Mapping already in use: "'.a:map.'", mode "'.a:mode.'", command:', '  '.mapinfo )
+		endif
+		return 0
+	endif
+	"
+	return 1
+endfunction    " ----------  end of function s:DoCreateMap  ----------
+" }}}2
+"----------------------------------------------------------------------
+"
+"----------------------------------------------------------------------
 " mmtemplates#core#CreateMaps : Create maps for a template library.   {{{1
 "----------------------------------------------------------------------
 "
@@ -3387,73 +3458,46 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 			continue
 		endif
 		"
-		for mode in [ 'n', 'v', 'i' ]
-			"
-			" map already existing?
-			if ! empty ( maparg( leader.mp, mode ) )
-				if echo_warning
-					let mapinfo = maparg( leader.mp, mode )
-					call s:ErrorMsg ( 'Mapping already in use: "'.leader.mp.'", mode "'.mode.'", command:', '  '.mapinfo )
-				endif
-				continue
-			endif
-			"
-			" insert and visual mode: insert '<Esc>'
-			if mode == 'n' | let esc = ''
-			else           | let esc = '<Esc>' | endif
-			"
-			" insert mode, flag 'i':
-			" change behavior of templates with placement 'insert'
-			" visual mode, flag 'v':
-			" template contains a split tag, or the mode is forced
-			if     mode == 'i'                | let flag = ',"i"'
-			elseif mode == 'v' && visual == 1 | let flag = ',"v"'
-			else                              | let flag = ''     | endif
-			"
-			" assemble the command to create the maps
-			let cmd .= mode.'noremap '.options.' '.leader.mp.' '.esc.':call mmtemplates#core#InsertTemplate('.a:library.',"'.t_name.'"'.flag.')<CR>'.sep
-		endfor
+		" visual mode, flag 'v': template contains a split tag, or the mode is forced
+		if visual == 1
+			let v_flag = ',"v"'
+		else
+			let v_flag = ''
+		endif
 		"
+		if s:DoCreateMap ( leader.mp, 'n', echo_warning )
+			let cmd .= 'nnoremap '.options.' '.leader.mp.'      :call mmtemplates#core#InsertTemplate('.a:library.',"'.t_name.'")<CR>'.sep
+		endif
+		if s:DoCreateMap ( leader.mp, 'v', echo_warning )
+			let cmd .= 'vnoremap '.options.' '.leader.mp.' <Esc>:call mmtemplates#core#InsertTemplate('.a:library.',"'.t_name.'"'.v_flag.')<CR>'.sep
+		endif
+		if s:DoCreateMap ( leader.mp, 'i', echo_warning )
+			let cmd .= 'inoremap '.options.' '.leader.mp.' <Esc>:call mmtemplates#core#InsertTemplate('.a:library.',"'.t_name.'","i")<CR>'.sep
+		endif
 	endfor
 	"
 	" jump map
 	if do_jump_map
-		"
 		let jump_key = '<C-j>'   " TODO: configurable
-		if ! empty ( maparg( jump_key, 'n' ) )
-			if echo_warning
-				let mapinfo = maparg( jump_key, 'n' )
-				call s:ErrorMsg ( 'Mapping already in use: "'.jump_key.'", mode "n", command:', '  '.mapinfo )
-			endif
-		elseif ! empty ( maparg( jump_key, 'i' ) )
-			if echo_warning
-				let mapinfo = maparg( jump_key, 'i' )
-				call s:ErrorMsg ( 'Mapping already in use: "'.jump_key.'", mode "i", command:', '  '.mapinfo )
-			endif
-		else
-			let jump_regex = string ( escape ( t_lib.regex_template.JumpTagAll, '|' ) )
+		let jump_regex = string ( escape ( t_lib.regex_template.JumpTagAll, '|' ) )
+		"
+		if s:DoCreateMap ( jump_key, 'n', echo_warning )
 			let cmd .= 'nnoremap '.options.' '.jump_key.' i<C-R>=mmtemplates#core#JumpToTag('.jump_regex.')<CR>'.sep
+		endif
+		if s:DoCreateMap ( jump_key, 'i', echo_warning )
 			let cmd .= 'inoremap '.options.' '.jump_key.'  <C-R>=mmtemplates#core#JumpToTag('.jump_regex.')<CR>'.sep
 		endif
 	endif
 	"
 	if do_del_opt_map && t_lib.interface >= 1000000
-		"
 		let jump_key = '<C-d>'   " TODO: configurable
-		if ! empty ( maparg( jump_key, 'n' ) )
-			if echo_warning
-				let mapinfo = maparg( jump_key, 'n' )
-				call s:ErrorMsg ( 'Mapping already in use: "'.jump_key.'", mode "n", command:', '  '.mapinfo )
-			endif
-		elseif ! empty ( maparg( jump_key, 'i' ) )
-			if echo_warning
-				let mapinfo = maparg( jump_key, 'i' )
-				call s:ErrorMsg ( 'Mapping already in use: "'.jump_key.'", mode "i", command:', '  '.mapinfo )
-			endif
-		else
-			let del_regex  = string ( escape ( t_lib.regex_template.JumpTagOpt, '|' ) )
-			let del_sep    = string ( escape ( t_lib.regex_template.JTListSep, '|' ) )
+		let del_regex = string ( escape ( t_lib.regex_template.JumpTagOpt, '|' ) )
+		let del_sep   = string ( escape ( t_lib.regex_template.JTListSep, '|' ) )
+		"
+		if s:DoCreateMap ( jump_key, 'n', echo_warning )
 			let cmd .= 'nnoremap '.options.' '.jump_key.'      :call mmtemplates#core#DeleteOptTag('.del_regex.','.del_sep.',"n")<CR>'.sep
+		endif
+		if s:DoCreateMap ( jump_key, 'i', echo_warning )
 			let cmd .= 'inoremap '.options.' '.jump_key.' <Esc>:call mmtemplates#core#DeleteOptTag('.del_regex.','.del_sep.',"i")<CR>gi'.sep
 		endif
 	endif
@@ -3483,18 +3527,13 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		call add ( special_maps, [ t_lib.properties[ 'Templates::ChooseStyle::Map'     ], ':call mmtemplates#core#ChooseStyle('.a:library.',"!pick")<CR>' ] )
 		"
 		for [ mp, action ] in special_maps
-			if ! empty ( maparg( leader.mp, 'n' ) )
-				if echo_warning
-					let mapinfo = maparg( leader.mp, 'n' )
-					call s:ErrorMsg ( 'Mapping already in use: "'.leader.mp.'", mode "n", command:', '  '.mapinfo )
-				endif
-			elseif ! empty ( maparg( leader.mp, 'i' ) )
-				if echo_warning
-					let mapinfo = maparg( leader.mp, 'i' )
-					call s:ErrorMsg ( 'Mapping already in use: "'.leader.mp.'", mode "i", command:', '  '.mapinfo )
-				endif
-			else
-				let cmd .= ' noremap '.options.' '.leader.mp.'      '.action.sep
+			if s:DoCreateMap ( leader.mp, 'n', echo_warning )
+				let cmd .= 'nnoremap '.options.' '.leader.mp.'      '.action.sep
+			endif
+			if s:DoCreateMap ( leader.mp, 'v', echo_warning )
+				let cmd .= 'vnoremap '.options.' '.leader.mp.' <Esc>'.action.sep
+			endif
+			if s:DoCreateMap ( leader.mp, 'i', echo_warning )
 				let cmd .= 'inoremap '.options.' '.leader.mp.' <Esc>'.action.sep
 			endif
 		endfor
@@ -3853,6 +3892,8 @@ function! s:CreateSpecialsMenus ( styles_only )
 	endfor
 	"
 endfunction    " ----------  end of function s:CreateSpecialsMenus  ----------
+" }}}2
+"----------------------------------------------------------------------
 "
 "----------------------------------------------------------------------
 " mmtemplates#core#CreateMenus : Create menus for a template library.   {{{1
