@@ -1,8 +1,8 @@
-*luasupport.txt*                 Lua Support                       Oct 04 2014
+*luasupport.txt*                 Lua Support                       Nov 20 2014
 
 Lua Support                                          *lua-support* *luasupport*
 
-                            Plug-in version 0.9
+                            Plug-in version 1.0pre
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -1023,10 +1023,10 @@ C.  CREDITS                                               *luasupport-credits*
 ==============================================================================
 
 Fritz Mehner (vim.org user name: mehner) for a number of things:
-- His plug-ins (bash-support, c-support, perl-support, ...) provided the
-  inspiration and template for this plug-in and the utilized template system.
-- Parts of the documentation and other material are taken from his plug-ins as
-  well.
+- his plug-ins (bash-support, c-support, perl-support, ...) provided the
+  inspiration and template for this plug-in and the utilized template system
+- parts of the documentation and other material are taken from his plug-ins as
+  well
 
 ==============================================================================
 vim:tw=78:noet:ts=2:ft=help:norl:expandtab:

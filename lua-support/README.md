@@ -1,4 +1,4 @@
-README for lua-support.vim (Version 0.9) / Oct 04 2014
+README for lua-support.vim (Version 1.0pre) / Nov 20 2014
 ================================================================================
 
   *  INSTALLATION
@@ -160,18 +160,9 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
   RELEASE NOTES
 ================================================================================
 
-  RELEASE NOTES FOR VERSION 0.9
+  RELEASE NOTES FOR VERSION 1.0pre
 ----------------------------------------------------------------------
-- Added: Inserting and removing long comments ( --[[ --]] ).
-- Added: Hardcopy to postscript.
-- Added: Direct run, run executable scripts directly, using their shebang.
-- Added: Make script executable/not exec.
-- Added: The contents of the buffer "Lua Output" can be loaded into the quickfix
-  list even if the interpreter did not terminate with an error.
-- Added: Toolbox for make integration.
-- Changed: Better error recognition while running scripts.
-- Fixed: Setup of local templates in case of global installation.
-- New templates and codesnippets.
+- New templates.
 - Minor improvements.
 
   RELEASE NOTES FOR OLDER VERSIONS
@@ -277,10 +268,10 @@ ___The settings are explained in the files themselves.___
 ================================================================================
 
 * Fritz Mehner (vim.org user name: mehner) for a number of things:
-  - His plug-ins (bash-support, c-support, perl-support, ...) provided the
-    inspiration and model for this plug-in and the utilized template support.
-  - Parts of the documentation and other material (including the 'ADDITIONAL TIPS'
-    above) are taken from his plug-ins as well.
+  - his plug-ins (bash-support, c-support, perl-support, ...) provided the
+    inspiration and model for this plug-in and the utilized template support
+  - parts of the documentation and other material (including the 'ADDITIONAL TIPS'
+    above) are taken from his plug-ins as well
 
 
 For a complete list of people who made contributions to this plug-in,

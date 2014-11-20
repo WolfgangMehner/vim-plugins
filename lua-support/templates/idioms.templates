@@ -19,6 +19,8 @@ function |?FUNCTION_NAME| ( <CURSOR>|PARAMETER_LIST| )
 	<SPLIT>{-FUNCTION_BODY-}
 end  -----  end of function |FUNCTION_NAME|  -----
 
+== Idioms.inline function definition == insert, map:in, sc:n ==
+function ( <CURSOR> ) <SPLIT>{-BODY-} return {+RETURN+} end
 == ENDTEMPLATE ==
 
 § use "default" style as well,
