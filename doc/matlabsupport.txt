@@ -755,13 +755,13 @@ C.  CREDITS                                            *matlabsupport-credits*
 ==============================================================================
 
 Fritz Mehner (vim.org user name: mehner) for a number of things:
-- His plug-ins (bash-support, c-support, perl-support, ...) provided the
-  inspiration and template for this plug-in and the utilized template system.
-- Parts of the documentation and other material are taken from his plug-ins as
-  well.
+- his plug-ins (bash-support, c-support, perl-support, ...) provided the
+  inspiration and template for this plug-in and the utilized template system
+- parts of the documentation and other material are taken from his plug-ins as
+  well
 
-Sameer Sheorey (sameer0s) and Fabrice Guy (Fabrice)
-  for demonstrating how to use mlint with Vim.
+Sameer Sheorey (sameer0s) and Fabrice Guy (Fabrice):
+- for demonstrating how to use mlint with Vim
 
 ==============================================================================
 vim:tw=78:noet:ts=2:ft=help:norl:expandtab:

@@ -269,13 +269,13 @@ ___The settings are explained in the files themselves.___
 ================================================================================
 
 * Fritz Mehner (vim.org user name: mehner) for a number of things:
-  - His plug-ins (bash-support, c-support, perl-support, ...) provided the
-    inspiration and model for this plug-in and the utilized template support.
-  - Parts of the documentation and other material (including the 'ADDITIONAL TIPS'
-    above) are taken from his plug-ins as well.
+  - his plug-ins (bash-support, c-support, perl-support, ...) provided the
+    inspiration and model for this plug-in and the utilized template support
+  - parts of the documentation and other material (including the 'ADDITIONAL TIPS'
+    above) are taken from his plug-ins as well
 
-* Sameer Sheorey (sameer0s) and Fabrice Guy (Fabrice)
-  - for demonstrating how to use mlint with Vim.
+* Sameer Sheorey (sameer0s) and Fabrice Guy (Fabrice):
+  - for demonstrating how to use mlint with Vim
 
 
 For a complete list of people who made contributions to this plug-in,

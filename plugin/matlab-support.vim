@@ -675,7 +675,7 @@ function! Matlab_CheckCode() range
 	"
 	if empty ( errors_mlint )
 		redraw                                      " redraw after cclose, before echoing
-		call s:ImportantMsg ( 'No warnings.' )
+		call s:ImportantMsg ( bufname('%').': No warnings.' )
 	else
 		botright cwindow
 		cc
