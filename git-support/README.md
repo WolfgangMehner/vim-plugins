@@ -1,4 +1,4 @@
-README for git-support.vim (Version 0.9.3pre) / September 1 2014
+README for git-support.vim (Version 0.9.3pre) / Nov 20 2014
 ================================================================================
 
   *  INSTALLATION
@@ -124,31 +124,10 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
   RELEASE NOTES
 ================================================================================
 
-  RELEASE NOTES FOR VERSION 0.9.2
---------------------------------------------------------------------------------
-- Added: Command :GitBash for running interactive Git commands.
-- Added: Command :GitSlist as a shorthand for ":GitStash list".
-- Added: New maps for the buffers: branch, remote, stash, tag
-- Added: New maps for the buffer: status
-- Added: New setting g:Git_BinPath, to set the path to the executables.
-- Added: Command-line completion for subcommands, branches, remotes, tags.
-- Changed: :GitShow shows different objects in an according way.
-- Changed: :GitCommitFile updates the file before committing.
-- Changed: :GitHelp shows man page text with appropriate width.
-- Changed: :GitStatus can be restricted to a path by passing it as an argument.
-- Changed: :GitStatus respects the option 'status.relativePaths'.
-- Changed: :GitStatus can work with changes introduced by Git version 1.8.5.
-- Changed: Calling :GitCheckout and :GitReset without arguments
-  (see g:Git_CheckoutExpandEmpty and g:Git_ResetExpandEmpty).
-- Fixed: Jumping to files was still not working correctly.
-- Fixed: Better compatibility with custom mappings
-  (use "normal!", "noremap" and "noremenu" consistently).
-- Improved syntax highlighting.
-- Minor changes.
-
-  RELEASE NOTES FOR VERSION 0.9.3
+  RELEASE NOTES FOR VERSION 0.9.3pre
 --------------------------------------------------------------------------------
 - Added: The diff buffer can be use to add/reset chunks, added new maps.
+- Added: Extended command-line completion to handle options for Git commands.
 - Changed: The status buffer can handle renamed files.
 
   RELEASE NOTES FOR OLDER VERSIONS

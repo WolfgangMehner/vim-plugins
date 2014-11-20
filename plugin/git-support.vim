@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:GitSupport_Version') && ! exists('g:GitSupport_DevelopmentOverwrite') )
 	finish
 endif
-let g:GitSupport_Version= '0.9.2'     " version number of this script; do not change
+let g:GitSupport_Version= '0.9.3pre'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
@@ -763,6 +763,8 @@ endif
 let s:Git_LoadMenus      = 'yes'    " load the menus?
 let s:Git_RootMenu       = '&Git'   " name of the root menu
 "
+let s:Git_CmdLineOptionsFile = s:plugin_dir.'/git-support/data/options.txt'
+"
 if ! exists ( 's:MenuVisible' )
 	let s:MenuVisible = 0           " menus are not visible at the moment
 endif
@@ -988,7 +990,7 @@ if s:Enabled
 	command! -nargs=* -complete=file                                 GitK               :call GitS_GitK(<q-args>)
 	command! -nargs=* -complete=file                                 GitBash            :call GitS_GitBash(<q-args>)
 	command! -nargs=0                                                GitSupportHelp     :call GitS_PluginHelp("gitsupport")
-	command! -nargs=0                -bang                           GitSupportSettings :call GitS_PluginSettings('<bang>'=='!')
+	command! -nargs=?                -bang                           GitSupportSettings :call GitS_PluginSettings(('<bang>'=='!')+str2nr(<q-args>))
 	"
 else
 	command  -nargs=*                -bang                           Git                :call GitS_Help('disabled')
@@ -996,7 +998,7 @@ else
 	command! -nargs=*                                                GitBuf             :call GitS_Help('disabled')
 	command! -nargs=*                                                GitHelp            :call GitS_Help('disabled')
 	command! -nargs=0                                                GitSupportHelp     :call GitS_PluginHelp("gitsupport")
-	command! -nargs=0                -bang                           GitSupportSettings :call GitS_PluginSettings('<bang>'=='!')
+	command! -nargs=?                -bang                           GitSupportSettings :call GitS_PluginSettings(('<bang>'=='!')+str2nr(<q-args>))
 endif
 "
 " syntax highlighting   {{{2
@@ -3887,6 +3889,8 @@ function! GitS_PluginSettings( verbose )
 	let gitk_s_status  = s:FoundGitKScript ? '' : ' (not found)'
 	let gitbash_status = s:EnabledGitBash  ? '' : ' (not executable)'
 	"
+	let file_options_status = filereadable ( s:Git_CmdLineOptionsFile ) ? '' : ' (not readable)'
+	"
 	let	txt = " Git-Support settings\n\n"
 				\ .'     plug-in installation :  '.s:installation.' on '.sys_name."\n"
 				\ .'           git executable :  '.s:Git_Executable.git_e_status."\n"
@@ -3904,7 +3908,8 @@ function! GitS_PluginSettings( verbose )
 		let	txt .= "\n"
 					\ .'             expand empty :  checkout: "'.g:Git_CheckoutExpandEmpty.'" ; diff: "'.g:Git_DiffExpandEmpty.'" ; reset: "'.g:Git_ResetExpandEmpty."\"\n"
 					\ .'     open fold after jump :  "'.g:Git_OpenFoldAfterJump."\"\n"
-					\ .'  status staged open diff :  "'.g:Git_StatusStagedOpenDiff."\"\n"
+					\ .'  status staged open diff :  "'.g:Git_StatusStagedOpenDiff."\"\n\n"
+					\ .'    cmd-line options file :  '.s:Git_CmdLineOptionsFile.file_options_status."\n"
 	endif
 	let txt .=
 				\  "________________________________________________________________________________\n"
@@ -3917,6 +3922,33 @@ function! GitS_PluginSettings( verbose )
 		echo txt
 	endif
 endfunction    " ----------  end of function GitS_PluginSettings  ----------
+"
+"-------------------------------------------------------------------------------
+" s:LoadCmdLineOptions : Load s:CmdLineOptions   {{{1
+"-------------------------------------------------------------------------------
+"
+function! s:LoadCmdLineOptions ()
+	"
+	let s:CmdLineOptions = {}
+	let current_list     = []
+	"
+	if ! filereadable ( s:Git_CmdLineOptionsFile )
+		return
+	endif
+	"
+	for line in readfile ( s:Git_CmdLineOptionsFile )
+		let name = matchstr ( line, '^\s*\zs.*\S\ze\s*$' )
+		"
+		if line =~ '^\S'
+			let current_list = []
+			let s:CmdLineOptions[ name ] = current_list
+		else
+			call add ( current_list, name )
+		endif
+	endfor
+endfunction    " ----------  end of function s:LoadCmdLineOptions  ----------
+"
+call s:LoadCmdLineOptions ()
 "
 "-------------------------------------------------------------------------------
 " GitS_CmdLineComplete : Command line completion.   {{{1
@@ -3937,6 +3969,15 @@ function! GitS_CmdLineComplete ( mode, ... )
 	let cmdline_head = strpart ( cmdline, 0, cmdpos )
 	"
 	let idx = match ( cmdline_head, '[^[:blank:]:]*$' )
+	"
+	" for a branch or tag, split at a ".." or "..."
+	if a:mode == 'branch' || a:mode == 'tag'
+		let idx2 = matchend ( strpart ( cmdline_head, idx ), '\.\.\.\?' )
+		if idx2 >= 0
+			let idx += idx2
+		endif
+	endif
+	"
 	let cmdline_pre = strpart ( cmdline_head, 0, idx )
 	"
 	" not a word, skip completion
@@ -3967,9 +4008,20 @@ function! GitS_CmdLineComplete ( mode, ... )
 				endif
 			endfor
 		elseif a:mode == 'command'
-			let suc = 0                               " initialized variable 'suc' needed below
+			let suc      = 0                          " initialized variable 'suc' needed below
+			let use_list = s:GitCommands
+			let sub_cmd  = matchstr ( cmdline_pre,
+						\       '\c\_^Git\%(!\|Run\|Buf\|Bash\)\?\s\+\zs[a-z\-]\+\ze\s'
+						\ .'\|'.'\c\_^Git\zs[a-z]\+\ze\s' )
 			"
-			for part in s:GitCommands
+			if sub_cmd != ''
+				let sub_cmd = tolower ( sub_cmd )
+				if has_key ( s:CmdLineOptions, sub_cmd )
+					let use_list = get ( s:CmdLineOptions, sub_cmd, s:GitCommands )
+				endif
+			endif
+				"
+			for part in use_list
 				if -1 != match( part, '\V\^'.b:GitSupport_WordMatch )
 					call add ( b:GitSupport_WordList, part )
 				endif

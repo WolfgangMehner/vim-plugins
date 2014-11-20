@@ -1,8 +1,8 @@
-*gitsupport.txt*                  Git Support                      Oct 24 2014
+*gitsupport.txt*                  Git Support                      Nov 20 2014
 
 Git Support                                          *git-support* *gitsupport*
 
-                            Plug-in version 0.9.2
+                            Plug-in version 0.9.3pre
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -715,6 +715,43 @@ may be configured like this:
 These maps are not set up by default. Only if one of these variables is set,
 then the corresponding map is created.
 
+Normally, the part between the cursor and the last space is completed. For
+example, with the cursor at ^: >
+  :GitShow ma
+             ^
+Using CTRL-B (for completing branches) would result in: >
+  :GitShow master
+                 ^
+Using CTRL-B again would go back to the beginning or another branch starting
+with "ma...": >
+  :GitShow maintain-v1.1
+                        ^
+For completing branches and tags a special rule is used. If the part between
+the cursor and the last space contains a ".." or "...", then only the part
+starting at the dots is completed: >
+  :GitShow feature.dev..ma
+                          ^
+Using CTRL-B will still result in: >
+  :GitShow feature.dev..master
+                              ^
+<
+Completing for Git commands and options is performed with the maps configured
+via |g:Git_MapCompleteCommand|. For the first word after |:Git|, |:GitRun|,
+|:GitBash|, ..., the names of Git commands are complete: >
+  :GitBash a
+  :GitBash add
+  :GitBash apply
+  :GitBash a...
+If the Git command has been recognized, such as: >
+  :GitDiff
+  :Git! diff
+  :GitBash diff
+then command-line options are completed: >
+  :GitBash diff --c
+  :GitBash diff --cached
+  :GitBash diff --color-words
+  :GitBash diff --c...
+<
 ==============================================================================
 4.  SYNTAX HIGHLIGHTING                                    *gitsupport-syntax*
 ==============================================================================
@@ -1224,7 +1261,7 @@ See files 'git-support/README.md' and 'git-support/doc/ChangeLog'.
 C.  CREDITS                                               *gitsupport-credits*
 ==============================================================================
 
-Jinhu Lu (KingTiger):
+Jinhu Lu (vim.org user name: KingTiger):
 - the idea for command-line completion of branches, remotes, tags, ...
   (|gitsupport-cmds-cmd-line|) is taken from his plug-in "cmdline completion"
   ( http://www.vim.org/scripts/script.php?script_id=3531 )
