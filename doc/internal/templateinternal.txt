@@ -1,0 +1,330 @@
+*templateinternal.txt*        MM Template Support                  Aug 24 2014
+
+MM Template Support (internal documentation)             *templates-internal*
+
+                            Plug-in version 1.0alpha
+                        for Vim version 7.0 and above
+                   Wolfgang Mehner <wolfgang-mehner@web.de>
+
+This is the internal documentation of the template support. It describes the
+data structures used inside the template library and their processing. All
+issues relevant to the user are documented in |template-support|.
+
+==============================================================================
+0.  TABLE OF CONTENTS                                   *templates-i-contents*
+==============================================================================
+
+ 1.    Data Structures                      |templates-i-data|
+ 1.1    Template Library                    |templates-i-data-lib|
+ 1.2    Runtime                             |templates-i-data-runtime|
+ 1.2.1   Loading                            |templates-i-data-rt-load|
+ 1.2.2   Template Insertion                 |templates-i-data-rt-ins|
+ 1.3    Templates                           |templates-i-data-templ|
+ 1.4    Resources                           |templates-i-data-resource|
+ 1.5    Separators                          |templates-i-data-sep|
+ 1.6    Exceptions                          |templates-i-data-except|
+
+ A.    Vim Issues                           |templates-i-vim-issues|
+ A.1    Escaped Characters                  |templates-i-vim-issues-esc-char|
+ N.    Notes                                |templates-i-notes|
+ N.1    Missing Features                    |templates-i-notes-features|
+ N.2    Open Questions                      |templates-i-notes-questions|
+
+==============================================================================
+1.  DATA STRUCTURES                                         *templates-i-data*
+==============================================================================
+
+This chapter describes the data structures used by the template system. 
+
+------------------------------------------------------------------------------
+1.1  TEMPLATE LIBRARY                                   *templates-i-data-lib*
+------------------------------------------------------------------------------
+
+During the loading of a template library and during template insertion the
+variable 's:library' contains the current template library.
+
+The template library contains the following fields:
+
+- interface_str (string)
+    Version of the library as a version number "X.Y", "0.9" by default.
+- interface (integer)
+    Version of the library. Is "0.9" by default which is represented by the
+    integer 9000.
+
+- macros (dict, name -> replacement)
+    The last replacements entered by the user.
+    key - Name of the macro (string).
+    val - Last replacement (string).
+    There are some exceptions (see 's:StandardMacros'). These macros can not
+    be set by the user. The fields 'DATE', 'TIME' and 'YEAR' are used to store
+    their respective formats (see 's:SetFormat')
+- properties (dict)
+    Holds the properties.
+    key - The name (string).
+    val - The value (string).
+- resources (dict)
+    Holds various types of data, see |templates-i-data-resource|.
+    key - category + name (string): "<cat>!<name>"
+    val - The data (various types).
+- templates (dict)
+    Holds the templates, see |templates-i-data-templ|.
+    key - name + "type" (string): "<name>!!type"
+    val - Type of the template (string).
+      or
+    key - name + "menu" (string): "<name>!!menu"
+    val - Information about map and menu creation (string).
+      or
+    key - name + "expand" (string): "<name>!!expand"
+    val - Information about list menu expansion (string).
+      or
+    key - name + style (string): "<name>!<style>"
+    val - Text for a style (string).
+
+- menu_order (list of strings)
+    Names of the menu entries in the order they were encountered during the
+    loading process.
+
+- styles (list of strings)
+    The names of all styles.
+- current_style (string)
+    The name of the current style.
+
+- menu_shortcuts (dict)
+    The shortcuts for menus.
+    key - Name of the menu (string).
+    val - The shortcut (string).
+- menu_existing (dict)
+    The menus which were already created via the API.
+    key - Name of the menu (string).
+    val - Number of separators inserted into this menu (integer).
+      or
+    key - Special entry (string): "!base"
+    val - Number of separators inserted into the base menu (integer).
+
+- regex_settings (dict, token -> regex)
+    The basic building blocks used to build the regular expressions for
+    reading files and templates.
+    key - Class of tokens (string).
+    val - Regular expression for parsing the token (string).
+- regex_file (dict: syntax category -> regex)
+    Regular expressions for parsing template files.
+    key - Syntax category (string).
+    val - Regular expressions for parsing the category (string).
+- regex_template (dict: syntax category -> regex)
+    Regular expressions for parsing templates.
+    key - Syntax category (string).
+    val - Regular expressions for parsing the category (string).
+
+- library_files (list of dicts)
+    Top-level template files in the order they were loaded by 'ReadTemplates'.
+    Dicts with fields:
+    filename   - The path and filename (string).
+    reload_map - Map to reload the file (string).
+    reload_sc  - Shortcut to reload the file (string).
+    sym_name   - A symbolic name for the library file (string).
+
+- "map_commands!<filetype>". (string)
+    Contains all command to create the maps for filetype. It has to be
+    executed separately for each buffer. The entry is only created once
+    'CreateMaps' is first called for each filetype.
+
+------------------------------------------------------------------------------
+1.2  RUNTIME                                        *templates-i-data-runtime*
+------------------------------------------------------------------------------
+
+During the loading of a template library and during template insertion the
+variable 's:t_runtime' contains runtime information.
+
+------------------------------------------------------------------------------
+
+1.2.1  Loading                                      *templates-i-data-rt-load*
+
+The runtime information contains the following fields:
+
+- state_stack (list of dicts)
+    Information about the current file. Each list entry is a dict with the
+    fields:
+    current_path       - The current path (string).
+    style_stack_top    - Size of the style stack (integer).
+    filetype_stack_top - Size of the filetype stack (integer).
+- use_styles (list of stings)
+    List of styles currently in use.
+- styles_stack (list of list of strings)
+    Stack containing all the nested style lists.
+- use_filetypes (list of stings)
+    List of filetypes currently in use.
+- use_ft_string (sting)
+    List 'use_filetypes' as a string.
+- filetypes_stack (list of list of strings)
+    Stack containing all the nested filetype lists.
+- files_visited (dict, file -> visited)
+    Has an entry for each visited file.
+    key - Name of a file (string).
+    val - Always the number '1', meaning the file has been visited (integer).
+- overwrite_warning (boolean)
+    Whether to warn if a template is overwritten.
+
+------------------------------------------------------------------------------
+
+1.2.2  Template Insertion                            *templates-i-data-rt-ins*
+
+  *Todo description
+- local macros
+- prompted variables
+
+------------------------------------------------------------------------------
+1.3  TEMPLATES                                        *templates-i-data-templ*
+------------------------------------------------------------------------------
+
+The templates are saved in the library in a dictionary under the key
+"templates". Each template has several entries with the following keys:
+
+- "<name>!!type" -> "<type>,<placement>,<indentation>"
+    The entry is a string containing;
+    - type        - the type: template, help, separator, ...
+    - placement   - the placement: help, start, above, below, ...
+    - indentation - indentation: no ("0") or yes ("1")
+    The entries are not escaped and can be recovered by splitting at ",".
+- "<name>!!menu" -> "[<filetypes>],<visual>,'<map>',<entry>,'<mname>','<shortcut>'"
+    The entry is a string meant to be interpreted as a list: >
+      exe 'let [ filetypes, visual, map, entry, mname, shortcut ]'
+            \ '= ['.lib.templates[ name.'!!menu' ].']'
+<   - filetypes (lst) - filetypes: list of strings naming the filetypes
+    - visual    (int) - split in visual mode: no (0) or yes/force (1)
+    - map       (str) - the map, not prefixed with the mapleader
+    - entry     (int) - no entry (0), entry (1), expand list (2), separator(11)
+    - mname     (str) - name in the menu
+    - shortcut  (str) - the shortcut, string of length one
+    The entries are escaped as appropriate.
+- "<name>!!menu" -> "'<uselist>','<lefttext>','<righttext>'"
+    The entry is a string meant to be interpreted as a list: >
+      exe 'let [ uselist, lefttext, righttext ]'
+            \ '= ['.lib.templates[ name.'!!expand' ].']'
+<   - uselist   (str) - the list to use when expanding the menu, can be empty,
+                        in which case the template is searched for the list
+    - lefttext  (str) - the left-aligned text of the menu entry
+    - righttext (str) - the right-aligned text of the menu entry
+    The left- and right-aligned text can contain macros *|KEY|* and *|VALUE|* ,
+    which are replaced appropriately for each created entry.
+
+- "<name>!<style>"
+    The text for the style. If there is no text for a certain style, no entry
+    is created.
+
+  *Todo internal structure of the template texts
+
+------------------------------------------------------------------------------
+1.4  RESOURCES                                     *templates-i-data-resource*
+------------------------------------------------------------------------------
+
+The resources are saved in the library in a dictionary under the key
+"resources". Each entry is a different resource:
+
+- "list!<name>" -> [...] / {...}
+    A list or dictionary known by the name <name>.
+- "path!<name>" -> "<path>"
+    A path known by the name <name>.
+
+------------------------------------------------------------------------------
+1.5  SEPARATORS                                         *templates-i-data-sep*
+------------------------------------------------------------------------------
+
+Separators are not templates, but they appear in the list "menu_order". They
+get an entry "<name>!!type" and "<name>!!menu", so they can be properly
+processed during loading and menu creation. Their entries have the following
+format:
+- "<name>!!type" -> "sep,,0" (type separator and two dummy entries)
+- "<name>!!menu" -> "[],0,'',11,'',''" (create separator entry and nothing else)
+
+------------------------------------------------------------------------------
+1.6  EXCEPTIONS                                      *templates-i-data-except*
+------------------------------------------------------------------------------
+
+The following exceptions are used during the loading of a template library:
+
+- Template:Check:<message>
+    - A call to a function has the wrong syntax, the function does not exist
+      or has been given the wrong parameters. (see 's:FunctionCheck')
+    - A file can not be read or has already been read.
+
+The following exceptions are used during template insertion:
+
+- Template:UserInputAborted
+    - The user aborted the input or entered an empty string in 's:UserInput'.
+- Template:Check:<message>
+    - A call to a function has the wrong syntax, the function does not exist
+      or has been given the wrong parameters. (see 's:FunctionCheck')
+- Template:Prepare:<message>
+    - When trying to retrieve a template which does not exist.
+    - A template does neither have a certain style nor the default style.
+    - InsertLine() inserts more than a single line.
+    - SurroundWith() with a template which does not have a <CONTENTS> or
+      <SPLIT> tag.
+    - When trying to retrieve a resource which does not exist.
+    - A dictionary does not have a certain key.
+- Template:Recursion
+    - A recursion has been discovered while preparing templates.
+      (The names of the templates are available in the runtime.)
+- Template:MacroRecursion
+    - A recursion has been discovered while replacing macros.
+      (The names of the macros are available in the runtime.)
+- Template:Insert:<message>
+    - Placement "insert" or "append" on a closed fold.
+    - Insertion with flag "v" of a template with a placement other than
+      "insert" or "below".
+
+==============================================================================
+A.  VIM ISSUES                                        *templates-i-vim-issues*
+==============================================================================
+
+------------------------------------------------------------------------------
+A.1  ESCAPED CHARACTERS                      *templates-i-vim-issues-esc-char*
+------------------------------------------------------------------------------
+
+Menu Creation:
+
+The following characters have to be escaped:
+- \ . | and <space> with \
+- & with & (left-aligned text only)
+
+==============================================================================
+N.  NOTES                                                  *templates-i-notes*
+==============================================================================
+
+------------------------------------------------------------------------------
+N.1  MISSING FEATURES                             *templates-i-notes-features*
+------------------------------------------------------------------------------
+
+General:
+- Review the integration of 'help', not really a template.
+
+API:
+- Check parameters of API/global functions.
+
+Library Loading:
+- Options in the template header should also be applied if the template
+  already exists. This would enable changes to the maps, ... in a local
+  installation.
+
+Template Insertion:
+- Remove <CURSOR> and <SPLIT> when inserting into another template.
+- Option "v" without a <SPLIT> tag currently causes an error?
+
+Map/Menu Creation:
+- Insert menu separators via the template library.
+- Check whether the library is correctly loaded.
+
+------------------------------------------------------------------------------
+N.2  OPEN QUESTIONS                              *templates-i-notes-questions*
+------------------------------------------------------------------------------
+
+Functionality:
+- Normalization of path and files works for windows? (win)
+  -> According to the documentation of Vim it should, since '/' also stands
+  for the Windows path-separator.
+- Creation of maps for the insert mode, what the difference between:
+  * inoremap ... <Esc>:call f()<CR>          " used in ftplugin/c.vim
+  * inoremap ... <C-C>:call f()<CR>          " used in ftplugin/perl.vim
+
+==============================================================================
+vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
