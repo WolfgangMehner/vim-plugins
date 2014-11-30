@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Templates_Version below
 "       Created:  30.08.2011
-"      Revision:  24.08.2014
+"      Revision:  30.11.2014
 "       License:  Copyright (c) 2012-2014, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -598,34 +598,9 @@ function! s:UserInput ( prompt, text, ... )
 	"
 endfunction    " ----------  end of function s:UserInput ----------
 "
-"----------------------------------------------------------------------
-"  s:ErrorMsg : Print an error message.   {{{2
-"----------------------------------------------------------------------
-"
-function! s:ErrorMsg ( ... )
-	echohl WarningMsg
-	for line in a:000
-		echomsg line
-	endfor
-	echohl None
-endfunction    " ----------  end of function s:ErrorMsg  ----------
-"
-"----------------------------------------------------------------------
-" s:ImportantMsg : Print an important message.   {{{2
 "-------------------------------------------------------------------------------
-"
-function! s:ImportantMsg ( ... )
-	echohl Search
-	for line in a:000
-		echomsg line
-	endfor
-	echohl None
-endfunction    " ----------  end of function s:ImportantMsg  ----------
-"
+" s:DebugMsg : Print debug information.   {{{2
 "-------------------------------------------------------------------------------
-"  s:DebugMsg : Print debug information.   {{{2
-"----------------------------------------------------------------------
-"
 function! s:DebugMsg ( lvl, ... )
 	if s:DebugLevel < a:lvl
 		return
@@ -635,6 +610,24 @@ function! s:DebugMsg ( lvl, ... )
 		echomsg line
 	endfor
 endfunction    " ----------  end of function s:DebugMsg  ----------
+"
+"-------------------------------------------------------------------------------
+" s:ErrorMsg : Print an error message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:ErrorMsg ( ... )
+	echohl WarningMsg
+	for line in a:000
+		echomsg line
+	endfor
+	echohl None
+endfunction    " ----------  end of function s:ErrorMsg  ----------
 "
 "-------------------------------------------------------------------------------
 " s:GetVisualArea : Get the visual area.   {{{2
@@ -650,7 +643,6 @@ endfunction    " ----------  end of function s:DebugMsg  ----------
 "   The solution is take from Jeremy Cantrell, vim-opener, which is distributed
 "   under the same licence as Vim itself.
 "-------------------------------------------------------------------------------
-"
 function! s:GetVisualArea ()
 	" windows:  register @* does not work
 	" solution: recover area of the visual mode and yank,
@@ -674,10 +666,33 @@ function! s:GetVisualArea ()
 	return res
 endfunction    " ----------  end of function s:GetVisualArea  ----------
 "
-"----------------------------------------------------------------------
-" s:OpenFold : Open fold and go to the first or last line of this fold.   {{{2
-"----------------------------------------------------------------------
+"-------------------------------------------------------------------------------
+" s:ImportantMsg : Print an important message.   {{{2
 "
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:ImportantMsg ( ... )
+	echohl Search
+	echo join ( a:000, "\n" )
+	echohl None
+endfunction    " ----------  end of function s:ImportantMsg  ----------
+"
+"-------------------------------------------------------------------------------
+" s:OpenFold : Open fold and go to the first or last line of this fold.   {{{2
+"
+" If the cursor is on a closed fold at the "start" of the file or "below" the
+" cursor, open it and move the cursor appropriately.
+"
+" Parameters:
+"   mode - "start" or "below" (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
 function! s:OpenFold ( mode )
 	if foldclosed(".") < 0
 		return
@@ -703,10 +718,25 @@ endfunction    " ----------  end of function s:OpenFold  ----------
 " Returns:
 "   SID - the SID of the script (string)
 "-------------------------------------------------------------------------------
-"
 function! s:SID ()
 	return matchstr ( expand('<sfile>'), '<SNR>\zs\d\+\ze_SID$' )
 endfun
+"
+"-------------------------------------------------------------------------------
+" s:WarningMsg : Print a warning/error message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:WarningMsg ( ... )
+	echohl WarningMsg
+	echo join ( a:000, "\n" )
+	echohl None
+endfunction    " ----------  end of function s:WarningMsg  ----------
 " }}}2
 "----------------------------------------------------------------------
 "
@@ -4171,6 +4201,16 @@ function! mmtemplates#core#Resource ( library, mode, ... )
 		return [ t_lib.regex_template.JumpTagAll, '' ]
 	elseif a:mode == 'style'
 		return [ t_lib.current_style, '' ]
+	elseif a:mode == 'template_list'
+		let templist = []
+		"
+		for fileinfo in t_lib.library_files
+			call add ( templist, fileinfo.filename." (".fileinfo.sym_name.")" )
+		endfor
+		"
+		call add ( templist, '(template engine version '.g:Templates_Version.', interface version '.t_lib.interface_str.')' )
+		"
+		return templist
 	else
 		return [ '', 'Mode "'.a:mode.'" is unknown.' ]
 	endif
@@ -4528,6 +4568,67 @@ function! mmtemplates#core#FindPersonalizationFile ( library )
 	"
 	return files[0]
 endfunction    " ----------  end of function mmtemplates#core#FindPersonalizationFile  ----------
+"
+"-------------------------------------------------------------------------------
+" mmtemplates#core#AddCustomTemplateFiles : Add custom template files.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! mmtemplates#core#AddCustomTemplateFiles ( library, temp_list, list_name )
+	"
+	" ==================================================
+	"  parameters
+	" ==================================================
+	"
+	if type( a:library ) == type( '' )
+		exe 'let t_lib = '.a:library
+	elseif type( a:library ) == type( {} )
+		let t_lib = a:library
+	else
+		return s:ErrorMsg ( 'Argument "library" must be given as a dict or string.' )
+	endif
+	"
+	if type( a:temp_list ) != type( [] )
+		return s:ErrorMsg ( 'Argument "temp_list" must be given as a list.' )
+	endif
+	"
+	if type( a:list_name ) != type( '' )
+		return s:ErrorMsg ( 'Argument "list_name" must be given as a string.' )
+	endif
+	"
+	" ==================================================
+	"  do the job
+	" ==================================================
+	"
+	for i in range( 0, len ( a:temp_list )-1 )
+		"
+		if type( a:temp_list[i] ) != type( [] )
+			call s:ErrorMsg ( 'The entry of "'.a:list_name.'" with index '.i.' is not a list.' )
+			continue
+		endif
+		"
+		let entry     = a:temp_list[i]
+		let file_name = get ( entry, 0, '' )
+		let sym_name  = get ( entry, 1, '' )
+		let edit_map  = get ( entry, 2, '' )
+		let file_name = expand ( file_name )
+		"
+		if file_name == ''
+			call s:ErrorMsg ( 'The entry of "'.a:list_name.'" with index '.i.' does not contain a file name.' )
+			continue
+		elseif ! filereadable ( file_name )
+			call s:ErrorMsg ( 'The entry of "'.a:list_name.'" with index '.i.' does not name a readable file.' )
+			continue
+		endif
+		"
+		let sym_name = ! empty ( sym_name ) ? sym_name : 'No. '.(i+1)
+		let edit_map = ! empty ( edit_map ) ? edit_map : 'nt'.(i+1)
+		"
+		call mmtemplates#core#ReadTemplates ( t_lib, 'load', file_name,
+					\ 'name', sym_name, 'map', reload_map )
+		"
+	endfor
+	"
+endfunction    " ----------  end of function mmtemplates#core#AddCustomTemplateFiles  ----------
 "
 "----------------------------------------------------------------------
 " mmtemplates#core#JumpToTag : Jump to the next tag.   {{{1

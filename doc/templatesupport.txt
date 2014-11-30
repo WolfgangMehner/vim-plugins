@@ -1,4 +1,4 @@
-*templatesupport.txt*         MM Template Support                  Aug 24 2014
+*templatesupport.txt*         MM Template Support                  Nov 30 2014
 
 MM Template Support                                        *template-support*
 
@@ -87,6 +87,7 @@ Here is a list of high profile plug-ins which use the template support:
  C.2    List                                 |template-support-opt-list|
  D.    Change Log                            |template-support-change-log|
  D.1    Interface Versions                   |template-support-change-interf|
+ E.    Credits                               |template-support-credits|
 
 ==============================================================================
 
@@ -1850,9 +1851,11 @@ variable containing the library.
 
 Special resources:
 
--	"escaped_mapleader" : Return the mapleader, escaped for use in a menu.
--	"jumptag"           : Return the regex used to find jump tags.
--	"style"             : Return the name of the current style.
+- "escaped_mapleader" : Return the mapleader, escaped for use in a menu.
+- "jumptag"           : Return the regex used to find jump tags.
+- "style"             : Return the name of the current style.
+- "template_list"     : Return a list of the template files and their symbolic
+                        names, for debugging purposes.
 
 Regular resources:
 
@@ -1996,7 +1999,7 @@ would turn into the entry: >
                                   *mmtemplates#core#FindPersonalizationFile()*
 Search for the template personalization file:
 
-  str = mmtemplates#core#FindPersonalizationFile ( str ) ~
+  file = mmtemplates#core#FindPersonalizationFile ( library ) ~
 
 Parameters:
 	library - The template library. (string or dict)
@@ -2010,6 +2013,45 @@ returned if:
 - |g:Templates_UsePersonalizationFile| is set to "no"
 - the property "Templates::UsePersonalizationFile" is set to "no" for the
   library
+
+------------------------------------------------------------------------------
+                                   *mmtemplates#core#AddCustomTemplateFiles()*
+Add additional template files:
+
+  mmtemplates#core#AddCustomTemplateFiles  ( library, list, list_name ) ~
+
+Parameters:
+	library   - The template library. (string or dict)
+	list      - The list of files. (list of lists of strings)
+	list_name - Name of the list variable, used for error reporting. (string)
+No returns.
+
+Loads additional template files given in 'list'. The files are given as a list
+of lists, each of which describes a custom template file: >
+  [ filename, symbolic_name, edit_map ]
+The file 'filename' will be loaded. It is associated with the name
+'symbolic_name'. The map 'edit_map' can be used to open the file for editing.
+The second and third list entry are optional and will be replaced by default
+values if missing.
+
+A plug-in might offer a configuration variable, which can be used for adding
+custom templates. This list can then be passed on to the template engine.
+
+User's .vimrc:
+>
+  let g:C_AdditionalTemplates = []
+  call add ( g:C_AdditionalTemplates,
+    \ [ $HOME.'/.vim/.../doxygen.templates', 'Doxygen', 'ntd' ] )
+  call add ( g:C_AdditionalTemplates,
+    \ [ $HOME.'/.vim/.../lua_capi.templates', 'Lua', 'ntlc' ] )
+<
+Plug-in script:
+>
+  call mmtemplates#core#AddCustomTemplateFiles (
+    \ g:My_C_Templates, g:C_AdditionalTemplates, 'g:C_AdditionalTemplates' )
+<
+The third argument 'list_name' is used to print debug messages which refer to
+the name of the variable the user assigned in the .vimrc.
 
 ==============================================================================
 2. BACKWARDS COMPATIBILITY                        *template-support-backwards*
@@ -2760,6 +2802,19 @@ See also |template-support-lib-interf|.
 
 - Initial version of the interface with all changes introduced prior to
   version "1.0".
+
+==============================================================================
+E.  CREDITS                                         *template-support-credits*
+==============================================================================
+
+Fritz Mehner (vim.org user name: mehner):
+- his plug-ins (bash-support, c-support, perl-support, ...) provided the
+  inspiration for the template engine
+
+Jeremy Cantrell (jmcantrell):
+- the solution for getting the visual area is take from his plug-in
+  "opener.vim", which is distributed under the same licence as Vim itself
+  ( http://www.vim.org/scripts/script.php?script_id=3543 )
 
 ==============================================================================
 vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
