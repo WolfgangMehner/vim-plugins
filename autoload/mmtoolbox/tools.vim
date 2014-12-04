@@ -414,17 +414,17 @@ function! s:LoadAdditionalTool ( toolbox_name, name )
 	"
 	" do not load multiple times
 	if has_key ( toolbox.tools, name )
-		continue
+		return
 	endif
 	"
 	" check the 'unused' entry
 	if ! has_key ( toolbox.unused, name ) || toolbox.unused[name].loaded == 1
-		continue
+		return
 	endif
 	"
 	" check the 'menu_root' and 'menu_mldr' entry
 	if empty ( toolbox.menu_root ) || empty ( toolbox.menu_mldr )
-		continue
+		return
 	endif
 	"
 	" load the tool
@@ -606,7 +606,7 @@ function! s:CreateToolMenu ( toolbox, name, root, mleader )
 	let entry = a:toolbox.tools[ a:name ]
 	"
 	if ! entry.enabled || ! entry.domenu
-		continue
+		return
 	endif
 	"
 	" correctly escape the name
@@ -677,7 +677,7 @@ function! mmtoolbox#tools#AddMenus ( toolbox, root )
 	let shead = 'amenu <silent> '.a:root.'.load\ more\ tools.'
 	"
 	for name in sort ( keys ( a:toolbox.unused ) )
-		silent exe shead.'load\ '.name.'  :call <SID>LoadAdditionalTool('.string( a:toolbox.plugin ).','.string( name ).')<CR>'
+		silent exe shead.name.'  :call <SID>LoadAdditionalTool('.string( a:toolbox.plugin ).','.string( name ).')<CR>'
 	endfor
 	"
 	"

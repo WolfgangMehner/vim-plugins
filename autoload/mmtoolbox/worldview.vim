@@ -414,8 +414,12 @@ let s:Enabled = 1
 if s:Enabled == 1
 	command! -bang -nargs=* -complete=file     View               :call mmtoolbox#worldview#Run(<q-args>,'<bang>'=='!')
 	command!       -nargs=* -complete=shellcmd ViewMan            :call <SID>Man('cmd-line',<q-args>)
+	command!       -nargs=* -complete=shellcmd ViewManApropos     :call <SID>Man('cmd-line','-k '.<q-args>)
+	command!       -nargs=* -complete=shellcmd ViewManWhatis      :call <SID>Man('cmd-line','-f '.<q-args>)
 	if s:WorldView_ManCommand == 'yes'
 		command!     -nargs=* -complete=shellcmd Man                :call <SID>Man('cmd-line',<q-args>)
+		command!     -nargs=* -complete=shellcmd ManApropos         :call <SID>Man('cmd-line','-k '.<q-args>)
+		command!     -nargs=* -complete=shellcmd ManWhatis          :call <SID>Man('cmd-line','-f '.<q-args>)
 	endif
 	command!       -nargs=0                    WorldviewHelp      :call <SID>HelpPlugin()
 	command! -bang -nargs=?                    WorldviewSettings  :call <SID>Settings(('<bang>'=='!')+str2nr(<q-args>))
@@ -492,12 +496,16 @@ function! mmtoolbox#worldview#AddMenu ( root, esc_mapl )
 "	exe 'amenu '.a:root.'.-SEP-MAN- <Nop>'
 	"
 	if s:WorldView_ManCommand == 'yes'
-		exe 'amenu '.a:root.'.view\ &manpage<Tab>:Man      :Man '
+		exe 'amenu '.a:root.'.view\ &manpage<Tab>:Man         :Man '
+		exe 'amenu '.a:root.'.view\ &apropos<Tab>:ManApropos  :ManApropos '
+		exe 'amenu '.a:root.'.view\ &whatis<Tab>:ManWhatis    :ManWhatis '
 	else
-		exe 'amenu '.a:root.'.view\ &manpage<Tab>:ViewMan  :ViewMan '
+		exe 'amenu '.a:root.'.view\ &manpage<Tab>:ViewMan         :ViewMan '
+		exe 'amenu '.a:root.'.view\ &apropos<Tab>:ViewManApropos  :ViewManApropos '
+		exe 'amenu '.a:root.'.view\ &whatis<Tab>:ViewManWhatis    :ViewManWhatis '
 	endif
-	exe 'amenu '.a:root.'.manpage\ buffer.Manpage<TAB>WorldView  :echo "This is a menu header."<CR>'
-	exe 'amenu '.a:root.'.manpage\ buffer.-SEP00-                :'
+	exe 'amenu '.a:root.'.&manpage\ buffer.Manpage<TAB>WorldView  :echo "This is a menu header."<CR>'
+	exe 'amenu '.a:root.'.&manpage\ buffer.-SEP00-                :'
 	"
 	exe 'amenu <silent> '.a:root.'.manpage\ buffer.jump\ to\ page\ under\ cursor<TAB><CTRL-]>  :call <SID>Man("man-jump","")<CR>'
 	exe 'amenu <silent> '.a:root.'.manpage\ buffer.jump\ to\ section<TAB>\\s                   :call <SID>TagJump(<SID>TagJumpParam("man-section"))<CR>'
@@ -855,6 +863,8 @@ function! s:Man ( mode, cmdline, ... )
 	" :TODO:19.10.2014 21:01:WM: configuration
 	let manview = 'man'
 	"
+	let skip_section = 0
+	let use_cmd_line = ''
 	let section = ''
 	let page    = ''
 	"
@@ -869,7 +879,7 @@ function! s:Man ( mode, cmdline, ... )
 	"
 	if a:mode == 'cmd-line'
 		" get page (and section?) from the cmdline
-		let mlist = matchlist ( a:cmdline, '^\s*\%(\(\d\+\a*\)\s\+\)\?\(\f\+\)' )
+		let mlist = matchlist ( a:cmdline, '^\s*\%(\(\d\+\a*\|-k\|-f\)\s\+\)\?\(\f\+\)' )
 		"
 		if ! empty ( mlist )
 			let section = mlist[1]
@@ -878,12 +888,22 @@ function! s:Man ( mode, cmdline, ... )
 		"
 	elseif a:mode == 'man-jump'
 		" get page from the word under the cursor
-		let mlist = matchlist ( getline('.'), '\S*\%'.getpos('.')[2].'c\S\&\(\f\+\)\%((\(\d\+\a*\))\)\?' )
+		" or get line in output of 'apropos' or 'whatis'
 		"
-		if ! empty ( mlist )
-			let page    = mlist[1]
-			let section = mlist[2]
-		endif
+		let pat = [
+					\ '^\(\f\+\)\s(\(\d\+\a*\))\s\+-\s',
+					\ '\S*\%'.getpos('.')[2].'c\S\&\(\f\+\)\%((\(\d\+\a*\))\)\?',
+					\ ]
+		"
+		for val in pat
+			let mlist = matchlist ( getline('.'), val )
+			"
+			if ! empty ( mlist )
+				let page    = mlist[1]
+				let section = mlist[2]
+				break
+			endif
+		endfor
 		"
 	elseif a:mode == 'cursor'
 		" get page from the word under the cursor
@@ -901,11 +921,17 @@ function! s:Man ( mode, cmdline, ... )
 		return 0
 	endif
 	"
-	if section == ''
+	if section == '' && ! skip_section
 		" may need to select section, use 'apropos'
 		"
+		let cmd = shellescape( manview )
+		"
+		if s:WorldView_ManLang != ''
+			let cmd .= ' -L '.shellescape( s:WorldView_ManLang, 1 )
+		endif
+		"
 		" get a list of topics
-		let manpages = system( manview.' -k '.page )
+		let manpages = system( cmd.' -k '.page )
 		if v:shell_error
 			return s:WarningMsg ( "shell command '".manview." -k ".page."' failed" )
 		endif
@@ -954,10 +980,10 @@ function! s:Man ( mode, cmdline, ... )
 		set filetype=man
 		"
 		" :TODO:14.10.2014 23:04:WM: maps CTRL-O, CTRL-I ?
-		silent exe 'nmap <silent> <buffer> <C-]>            :call <SID>Man("man-jump","")<CR>'
-		silent exe 'nmap <silent> <buffer> <2-Leftmouse>    :call <SID>Man("man-jump","")<CR>'
-		silent exe 'nmap <silent> <buffer> <LocalLeader>s   :call <SID>TagJump(<SID>TagJumpParam("man-section"))<CR>'
-		silent exe 'nmap <silent> <buffer> <LocalLeader>o   :call <SID>TagJump(<SID>TagJumpParam("man-option"))<CR>'
+		silent exe 'nnoremap <silent> <buffer> <C-]>            :call <SID>Man("man-jump","")<CR>'
+		silent exe 'nnoremap <silent> <buffer> <2-Leftmouse>    :call <SID>Man("man-jump","")<CR>'
+		silent exe 'nnoremap <silent> <buffer> <LocalLeader>s   :call <SID>TagJump(<SID>TagJumpParam("man-section"))<CR>'
+		silent exe 'nnoremap <silent> <buffer> <LocalLeader>o   :call <SID>TagJump(<SID>TagJumpParam("man-option"))<CR>'
 		"
 	endif
 	"
@@ -970,13 +996,13 @@ function! s:Man ( mode, cmdline, ... )
 		let cmd .= 'MANWIDTH='.win_w.' '
 	endif
 	"
-	let cmd .= manview
+	let cmd .= shellescape( manview )
 	"
 	if s:WorldView_ManLang != ''
 		let cmd .= ' -L '.shellescape( s:WorldView_ManLang, 1 )
 	endif
 	"
-	call s:UpdateBuffer ( ':r! '.cmd.' '.section.' '.shellescape( page, 1 ) )
+	call s:UpdateBuffer ( ':r! '.cmd.' '.use_cmd_line.' '.section.' '.shellescape( page, 1 ) )
 	"
 	return 1
 endfunction    " ----------  end of function s:Man  ----------
