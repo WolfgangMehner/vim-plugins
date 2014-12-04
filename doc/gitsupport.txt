@@ -735,6 +735,14 @@ Using CTRL-B will still result in: >
   :GitShow feature.dev..master
                               ^
 <
+If the part after the last space starts with "--some-option=", the part follow
+the "=" is completed: >
+  :GitK --select-commit=ma
+                          ^
+Using CTRL-B will also correctly complete the name of the branch: >
+  :GitK --select-commit=master
+                              ^
+<
 Completing for Git commands and options is performed with the maps configured
 via |g:Git_MapCompleteCommand|. For the first word after |:Git|, |:GitRun|,
 |:GitBash|, ..., the names of Git commands are complete: >

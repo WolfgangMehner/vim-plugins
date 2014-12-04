@@ -3951,10 +3951,10 @@ endfunction    " ----------  end of function s:LoadCmdLineOptions  ----------
 call s:LoadCmdLineOptions ()
 "
 "-------------------------------------------------------------------------------
-" GitS_CmdLineComplete : Command line completion.   {{{1
+" s:CmdLineComplete : Command line completion.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! GitS_CmdLineComplete ( mode, ... )
+function! s:CmdLineComplete ( mode, ... )
 	"
 	let forward = 1
 	"
@@ -3969,6 +3969,14 @@ function! GitS_CmdLineComplete ( mode, ... )
 	let cmdline_head = strpart ( cmdline, 0, cmdpos )
 	"
 	let idx = match ( cmdline_head, '[^[:blank:]:]*$' )
+	"
+	" prefixed by --option=
+	if a:mode != 'command' && -1 != match ( strpart ( cmdline_head, idx ), '^--[^=]\+=' )
+		let idx2 = matchend ( strpart ( cmdline_head, idx ), '^--[^=]\+=' )
+		if idx2 >= 0
+			let idx += idx2
+		endif
+	endif
 	"
 	" for a branch or tag, split at a ".." or "..."
 	if a:mode == 'branch' || a:mode == 'tag'
@@ -4072,7 +4080,7 @@ function! GitS_CmdLineComplete ( mode, ... )
 	"
 	return b:GitSupport_NewCmdLine.cmdline_tail
 	"
-endfunction    " ----------  end of function GitS_CmdLineComplete  ----------
+endfunction    " ----------  end of function s:CmdLineComplete  ----------
 "
 "-------------------------------------------------------------------------------
 " s:InitMenus : Initialize menus.   {{{1
@@ -4256,10 +4264,10 @@ endfunction    " ----------  end of function Git_RemoveMenus  ----------
 "-------------------------------------------------------------------------------
 "
 let s:maps = [
-			\ [ 'complete branch',  'g:Git_MapCompleteBranch',  '<C-\>eGitS_CmdLineComplete("branch")<CR>'  ],
-			\ [ 'complete command', 'g:Git_MapCompleteCommand', '<C-\>eGitS_CmdLineComplete("command")<CR>' ],
-			\ [ 'complete remote',  'g:Git_MapCompleteRemote',  '<C-\>eGitS_CmdLineComplete("remote")<CR>'  ],
-			\ [ 'complete tag',     'g:Git_MapCompleteTag',     '<C-\>eGitS_CmdLineComplete("tag")<CR>'     ],
+			\ [ 'complete branch',  'g:Git_MapCompleteBranch',  '<C-\>e<SID>CmdLineComplete("branch")<CR>'  ],
+			\ [ 'complete command', 'g:Git_MapCompleteCommand', '<C-\>e<SID>CmdLineComplete("command")<CR>' ],
+			\ [ 'complete remote',  'g:Git_MapCompleteRemote',  '<C-\>e<SID>CmdLineComplete("remote")<CR>'  ],
+			\ [ 'complete tag',     'g:Git_MapCompleteTag',     '<C-\>e<SID>CmdLineComplete("tag")<CR>'     ],
 			\ ]
 "
 for [ name, map_var, cmd ] in s:maps
