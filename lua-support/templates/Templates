@@ -1,4 +1,10 @@
 § =============================================================
+§  Interface Version
+§ =============================================================
+
+InterfaceVersion ( '1.0' )
+
+§ =============================================================
 §  User Macros
 § =============================================================
 
@@ -11,22 +17,16 @@ SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
 SetMacro( 'LICENSE',      'GNU General Public License' )
 
 SetFormat( 'DATE', '%x' )
-SetFormat( 'TIME', '%H:%M' )
+SetFormat( 'TIME', '%X' )
 SetFormat( 'YEAR', '%Y' )
 
 SetStyle( 'Lua_51' )
 
-§ used by the "Comments.shebang" template:
+§ used by the template "Comments.shebang":
 SetMacro( 'LUA_INTERPRETER', '/usr/bin/env lua' )
 
-§ used by the "Idioms.add to path, local modules"
+§ used by the template "Idioms.add to path, local modules":
 SetMacro( 'LUA_LOCAL_MODULES', $HOME.'/share/lua/5.2' )
-
-§ browser for help templates (UNIX)
-SetMacro( 'HELP_BROWSER', 'firefox' )
-
-§ browser for help templates (Windows)
-§SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
 
 § =============================================================
 §  File Includes
@@ -57,9 +57,8 @@ SetMacro( 'HelpPathLua',     'http://www.lua.org/manual/5.2/' )
 == HELP: Help.English == map:he, sc:e ==
 |Word( '' )|
 |Substitute( '\W', '', 'g' )|
-|System( '|HELP_BROWSER| |HelpPathEnglish||PICK:l|' )|
+|Browser( '|HelpPathEnglish||PICK:l|' )|
 == HELP: Help.Lua function == map:hl, sc:l ==
 |Pattern( '\<\%(\w\+[.:]\)\?\w\+\>' )|
-|System( '|HELP_BROWSER| |HelpPathLua|manual.html#pdf-|PICK|' )|
-|Default( '|HELP_BROWSER| |HelpPathLua|contents.html#index' )|
+|Browser( '|HelpPathLua|manual.html#pdf-|PICK|', '|HelpPathLua|contents.html#index' )|
 == ENDTEMPLATE ==

@@ -44,16 +44,15 @@
 [<SPLIT><CURSOR>]
 == Regex.balanced brackets == insert, sc:b ==
 <CURSOR>%b{+LEFT+}{+RIGHT+}
+== Regex.frontier pattern, zero-width == insert, sc:f ==
+%f[<SPLIT><CURSOR>]
 == ENDTEMPLATE ==
 
 § :TODO:29.03.2014 19:53:WM: name "brackets", "braces", ...?
 
 == USE STYLES : default, Lua_51 ==
 
-§ frontier patterns are only available since Lua 5.2
-== Regex.frontier pattern, zero-width == insert, sc:f ==
-<CURSOR>
-== Regex.character classes == expandmenu, insert, map:xcl, sc:l ==
+== Regex.character classes == expandmenu:regex_character_classes_5_2, expandright:value, insert, map:xcl, sc:l ==
 |PickList( 'character class', 'regex_character_classes_5_1' )|
 |PICK|<CURSOR>
 == ENDTEMPLATE ==
@@ -62,9 +61,7 @@
 
 == USE STYLES : Lua_52, Lua_53 ==
 
-== Regex.frontier pattern, zero-width == insert, sc:f ==
-%f[<SPLIT><CURSOR>]
-== Regex.character classes == expandmenu, insert, map:xcl, sc:l ==
+== Regex.character classes == expandmenu:regex_character_classes_5_2, expandright:value, insert, map:xcl, sc:l ==
 |PickList( 'character class', 'regex_character_classes_5_2' )|
 |PICK|<CURSOR>
 == ENDTEMPLATE ==

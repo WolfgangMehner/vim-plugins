@@ -75,7 +75,7 @@ auto completion.)
 The features of the plug-in are:
 - Turn code lines into comments and vice versa.
     |luasupport-usage-comments-lines|
-- Automatically add comments for functions and its parameters.
+- Automatically add comments for functions and their parameters.
     |luasupport-usage-comments-auto|
 - Open the online documentation for a given function.
     |luasupport-usage-help|
@@ -203,8 +203,9 @@ preventing their execution. To remove the inner-most long comment, use \crl.
 2.1.3  Automated Comments                     *luasupport-usage-comments-auto*
 
 A skeleton for a comment can be created automatically for a given function.
-This works on the current line or a selected range of lines. After choosing
-the function definition line, use "Comments -> function description (auto)".
+This works on the current line or a selected range of lines. After placing the
+cursor in the line defining the function, use "Comments ->
+function description (auto)".
 The appearance can be change in the template library.
 
 Example:
@@ -240,9 +241,9 @@ and fill in the information (see Sec. |luasupport-templates-jump-tags|).
 
 The menu regex helps with writing patterns. It contains all the elements of
 patterns, including all character classes. Most of the menu entries are
-defined in the template library.  The entries "Regex -> character classes
--> printable char." and "Regex -> frontier pattern" insert no text for
-Lua 5.1, since these features were introduced in Lua 5.2.
+defined in the template library. The entry "Regex -> character classes
+-> printable char." inserts no text for Lua 5.1, since this feature was
+introduced in Lua 5.2.
 The menu entry "Regex -> esc. magic char." is not part of the template
 library. It can be used to escape the character under (in normal mode) or
 behind (in insert mode) the cursor. If it is one of the magic characters, a
@@ -259,7 +260,7 @@ behind (in insert mode) the cursor. If it is one of the magic characters, a
 
 Useful code snippets can be kept in a central place. This way, they can
 quickly be inserted into the code, using "Snippets -> insert code snippet".
-New snippets can be created from existing lines of code be selecting them in
+New snippets can be created from existing lines of code by selecting them in
 visual mode and saving them using "Snippets -> create code snippet".
 
 Code snippets are kept in a directory which can be changed using the setting
@@ -466,15 +467,22 @@ Hitting <ESC> or entering an empty text will abort template insertion.
 ------------------------------------------------------------------------------
 
 Templates can include special tags, which mark positions where text needs to
-be added.
-
+be added: >
+  {+TAGNAME+} {-TAGNAME-}
+  <+TAGNAME+> <-TAGNAME->
+  [+TAGNAME+] [-TAGNAME-]
+<
   Feature                    Menu Entry                     Map
  ----------------------------------------------------------------------------
   jump to next tag           -                              <CTRL-J>
+  delete optional tag        -                              <CTRL-D>
  ----------------------------------------------------------------------------
 
 Use the <CTRL-J> to jump to the next tag. The maps works in normal and insert
-mode.
+mode. Use <CTRL-D> to delete optional tags on the same line, for example: >
+  string.match ( <+str+>, <+pattern+>, [+init+] )
+The optional argument "init" can be written down after jumping to the tag
+using <CTRL-J> or deleted together with the comma using <CTRL-D>-
 
 ------------------------------------------------------------------------------
 3.3  SPLIT TAGS                              *luasupport-templates-split-tags*
@@ -880,36 +888,9 @@ value on the command line.
 ------------------------------------------------------------------------------
 
 Opening the online reference for various items is a feature of the template
-library. The browser has to be configured there, in your local template file
-(see |luasupport-config-template-lib|), by setting the macro *|HELP_BROWSER|*
-(see below).
-
-The help facility will open the reference with a system call like this: >
-  |HELP_BROWSER| |URL|
-where *|URL|* is replaced with an appropriate URL and *|HELP_BROWSER|* is
-replaced with a string set by the user.
-
-Example:
-
-By adding this line to your local template file: >
-  SetMacro( 'HELP_BROWSER', 'firefox -new-tab' )
-The online reference will be opened like this: >
-  firefox -new-tab http://wiki.awesomeluawiki.de/wiki/sin
-<
-Under Windows, the browser for opening the online documentation has to be
-configured. To set the executable, the template library has to be modified.
-In case of a local installation (the default), choose:
-  Lua -> Snippets -> edit local templates
-and for a system-wide installation:
-  Lua -> Snippets -> edit global templates
-Open the main template file 'Templates' and uncomment the line >
- §SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
-by removing the leading '§' >
- SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
-Then set the right executable. Mind the double quotes which escape the name of
-the executable.
-Finally, reread the template library using:
-  Lua -> Snippets -> reread templates
+library. The browser has to be configured using these variables:
+- |g:Templates_InternetBrowserExec|
+- |g:Templates_InternetBrowserFlags|
 
 ------------------------------------------------------------------------------
 4.10  TOOLBOX                                      *luasupport-config-toolbox*
