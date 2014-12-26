@@ -182,6 +182,8 @@ function! s:GetGlobalSetting ( varname, ... )
 	elseif exists ( 'g:'.a:varname )
 		let { 's:'.a:varname } = { 'g:'.a:varname }
 	endif
+	"
+	let s:Templates_AllSettings[ a:varname ] = { 's:'.a:varname }
 endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 "
 " }}}2
@@ -222,6 +224,8 @@ let s:Templates_TemplateBrowser = 'explore'
 "
 let s:Templates_PersonalizationFile = 'templates/personal.template*'
 let s:Templates_UsePersonalizationFile = 'yes'
+"
+let s:Templates_AllSettings = {}
 "
 call s:GetGlobalSetting ( 'Templates_MapInUseWarn', 'bin' )
 call s:GetGlobalSetting ( 'Templates_TemplateBrowser' )
@@ -267,15 +271,22 @@ let s:StandardMacros = {
 let s:StandardProperties = {
 			\ 'Templates::EditTemplates::Map'   : 're',
 			\ 'Templates::RereadTemplates::Map' : 'rr',
+			\ 'Templates::SetupWizard::Map'     : 'rw',
 			\ 'Templates::ChooseStyle::Map'     : 'rs',
 			\
 			\ 'Templates::EditTemplates::Shortcut'   : 'e',
 			\ 'Templates::RereadTemplates::Shortcut' : 'r',
+			\ 'Templates::SetupWizard::Shortcut'     : 'w',
 			\ 'Templates::ChooseStyle::Shortcut'     : 's',
 			\
 			\ 'Templates::Mapleader' : '\',
 			\
 			\ 'Templates::UsePersonalizationFile' : s:Templates_UsePersonalizationFile,
+			\
+			\ 'Templates::Names::Plugin'          : '',
+			\ 'Templates::Names::Filetype'        : '',
+			\ 'Templates::FileSkeleton::personal' : '',
+			\ 'Templates::FileSkeleton::custom'   : '',
 			\ }
 "
 "----------------------------------------------------------------------
@@ -532,6 +543,9 @@ function! s:ConcatNormalizedFilename ( ... )
 		let filename = ( a:1 )
 	elseif a:0 == 2
 		let filename = ( a:1 ).'/'.( a:2 )
+	endif
+	if filename == ''
+		return ''
 	endif
 	return fnamemodify( filename, ':p' )
 endfunction    " ----------  end of function s:ConcatNormalizedFilename  ----------
@@ -1265,6 +1279,25 @@ function! s:RevertFiletypes ( times )
 	"
 endfunction    " ----------  end of function s:RevertFiletypes  ----------
 "
+"-------------------------------------------------------------------------------
+" s:InterfaceVersionRuntimeUpdates : Set the library version (runtime info).   {{{2
+"-------------------------------------------------------------------------------
+function! s:InterfaceVersionRuntimeUpdates ()
+	"
+	" version 1.0 setup
+	if s:library.interface >= 1000000
+		let s:t_runtime.use_ft_string = "['default']"
+	endif
+	"
+	" version 1.1 setup
+	if s:library.interface >= 1001000
+		" ...
+	endif
+	"
+endfunction    " ----------  end of function s:InterfaceVersionRuntimeUpdates  ----------
+" }}}2
+"----------------------------------------------------------------------
+"
 "----------------------------------------------------------------------
 "  === Read Templates: Template File Namespace ===   {{{1
 "----------------------------------------------------------------------
@@ -1317,8 +1350,6 @@ function! s:InterfaceVersion ( version_str )
 	"
 	" version 1.0 setup
 	if s:library.interface >= 1000000
-		let s:t_runtime.use_ft_string = "['default']"
-		"
 		let s:library.namespace_templ_hlp = s:NamespaceHelp_1_0
 	endif
 	"
@@ -1330,6 +1361,11 @@ function! s:InterfaceVersion ( version_str )
 	" version 1.0+ syntax
 	if s:library.interface >= 1000000
 		call s:UpdateTemplateRegex ( s:library.regex_template, s:library.regex_settings, s:library.interface )
+	endif
+	"
+	" version 1.0+ runtime environment
+	if s:library.interface >= 1000000
+		call s:InterfaceVersionRuntimeUpdates ()
 	endif
 	"
 endfunction    " ----------  end of function s:InterfaceVersion  ----------
@@ -1804,8 +1840,13 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 				\ 'overwrite_warning' : 0,
 				\ }
 	"
+	if s:library.interface >= 1000000
+		call s:InterfaceVersionRuntimeUpdates ()
+	endif
+	"
 	let mode = ''
 	let file = ''
+	let optional_file = 0
 	let reload_map    = ''
 	let reload_sc     = ''
 	let symbolic_name = ''
@@ -1829,10 +1870,7 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 			let mode = 'load'
 			let file = mmtemplates#core#FindPersonalizationFile ( s:library )
 			let symbolic_name = 'personal'
-			"
-			if empty ( file )
-				return
-			endif
+			let optional_file = 1
 			"
 			let i += 1
 		elseif a:[i] == 'map' && i+1 <= a:0
@@ -1844,6 +1882,9 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 		elseif a:[i] == 'name' && i+1 <= a:0
 			let symbolic_name = a:[i+1]
 			let i += 2
+		elseif a:[i] == 'optional'
+			let optional_file = 1
+			let i += 1
 		elseif a:[i] == 'overwrite_warning'
 			let s:t_runtime.overwrite_warning = 1
 			let i += 1
@@ -1872,8 +1913,15 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 		endif
 		"
 		" expand ~, $HOME, ... and normalize
-		let file = s:ConcatNormalizedFilename ( expand ( file ) )
-		call add ( templatefiles, file )
+		let file = s:ConcatNormalizedFilename ( expand ( file, 1 ) )
+		let available = filereadable ( file )
+		"
+		if available
+			call add ( templatefiles, file )
+		endif
+		"
+		" :TODO:24.12.2014 18:18:WM: Non-readable files are now automatically 'hidden',
+		" there will not be any error messages. Review this.
 		"
 		" add to library
 		let fileinfo = {
@@ -1881,6 +1929,8 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 					\ 'reload_map' : reload_map,
 					\ 'reload_sc'  : reload_sc,
 					\ 'sym_name'   : symbolic_name,
+					\ 'available'  : available,
+					\ 'hidden'     : ! available && ! optional_file,
 					\ }
 		call add ( t_lib.library_files, fileinfo )
 		"
@@ -1890,12 +1940,16 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 			if empty( get( t_lib.library_files, file, [] ) )
 				return s:ErrorMsg ( 'No template file with index '.file.'.' )
 			endif
-			call add ( templatefiles, t_lib.library_files[ file ].filename )
+			if t_lib.library_files[ file ].available
+				call add ( templatefiles, t_lib.library_files[ file ].filename )
+			endif
 		elseif type( file ) == type( '' )
 			" load all or a specific file
 			if file == 'all'
 				for fileinfo in t_lib.library_files
-					call add ( templatefiles, fileinfo.filename )
+					if fileinfo.available
+						call add ( templatefiles, fileinfo.filename )
+					endif
 				endfor
 			else
 				"
@@ -1908,7 +1962,7 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 				else
 					let found_file = 0
 					for fileinfo in t_lib.library_files
-						if fileinfo.filename == file
+						if fileinfo.filename == file && fileinfo.available
 							let found_file = 1
 							break
 						endif
@@ -1967,7 +2021,10 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 	call sort ( s:library.styles )          " sort the styles
 	"
 	" debug:
-	call s:DebugMsg ( 2, 'Loading library ('.templatefiles[0].'): '.reltimestr( reltime( time_start ) ) )
+	if ! empty ( templatefiles )
+		call s:DebugMsg ( 2, 'Loading library ('.templatefiles[0].'): '.reltimestr( reltime( time_start ) ) )
+	endif
+	"
 	"
 	if mode == 'reload'
 		echo 'Reloaded the template library.'
@@ -1983,6 +2040,59 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 	let s:DebugLevel = s:DebugGlobalOverwrite   " reset debug
 	"
 endfunction    " ----------  end of function mmtemplates#core#ReadTemplates  ----------
+"
+"-------------------------------------------------------------------------------
+" mmtemplates#core#EnableTemplateFile : Enable a template file.   {{{1
+"-------------------------------------------------------------------------------
+"
+function! mmtemplates#core#EnableTemplateFile ( library, sym_name )
+	"
+	" ==================================================
+	"  parameters
+	" ==================================================
+	"
+	if type( a:library ) == type( '' )
+		exe 'let t_lib = '.a:library
+	elseif type( a:library ) == type( {} )
+		let t_lib = a:library
+	else
+		return s:ErrorMsg ( 'Argument "library" must be given as a dict or string.' )
+	endif
+	"
+	if type( a:sym_name ) != type( '' )
+		return s:ErrorMsg ( 'Argument "sym_name" must be given as a string.' )
+	endif
+	"
+	" ==================================================
+	"  enable
+	" ==================================================
+	"
+	let symbolic_name = a:sym_name
+	let fileinfo_use = {}
+	"
+	for fileinfo in t_lib.library_files
+		if fileinfo.sym_name == symbolic_name
+			let fileinfo_use = fileinfo
+		endif
+	endfor
+	"
+	if symbolic_name == 'personal'
+		let file = mmtemplates#core#FindPersonalizationFile ( t_lib )
+		"
+		if ! empty ( file )
+			let fileinfo_use.filename  = file     " the filename was empty before
+			let fileinfo_use.available = 1        " file is readable now
+			let fileinfo_use.hidden    = 0        " ... and visible
+		endif
+	else
+		if filereadable ( fileinfo.filename )
+			let fileinfo_use.available = 1        " file is readable now
+			let fileinfo_use.hidden    = 0        " ... and visible
+		endif
+	endif
+	"
+	return
+endfunction    " ----------  end of function mmtemplates#core#EnableTemplateFile  ----------
 "
 "----------------------------------------------------------------------
 " === Templates ===   {{{1
@@ -3540,7 +3650,7 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		"
 		for idx in range( 0, len ( t_lib.library_files ) - 1 )
 			let fileinfo = t_lib.library_files[idx]
-			if ! empty ( fileinfo.reload_map )
+			if ! empty ( fileinfo.reload_map ) && ! fileinfo.hidden
 				call add ( special_maps, [
 							\ fileinfo.reload_map,
 							\ ':call mmtemplates#core#EditTemplateFiles('.a:library.','.idx.')<CR>' ] )
@@ -3554,6 +3664,7 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		endif
 		"
 		call add ( special_maps, [ t_lib.properties[ 'Templates::RereadTemplates::Map' ], ':call mmtemplates#core#ReadTemplates('.a:library.',"reload","all")<CR>' ] )
+		call add ( special_maps, [ t_lib.properties[ 'Templates::SetupWizard::Map'     ], ':call mmtemplates#wizard#SetupWizard('.a:library.')<CR>' ] )
 		call add ( special_maps, [ t_lib.properties[ 'Templates::ChooseStyle::Map'     ], ':call mmtemplates#core#ChooseStyle('.a:library.',"!pick")<CR>' ] )
 		"
 		for [ mp, action ] in special_maps
@@ -3866,7 +3977,7 @@ function! s:CreateSpecialsMenus ( styles_only )
 		" add entries for template files
 		for idx in range( 0, len ( s:library.library_files ) - 1 )
 			let fileinfo = s:library.library_files[idx]
-			if ! empty ( fileinfo.sym_name )
+			if ! empty ( fileinfo.sym_name ) && ! fileinfo.hidden
 				call add ( entries, [
 							\ mmtemplates#core#EscapeMenu ( 'edit '.fileinfo.sym_name.' templates', 'entry' ),
 							\ fileinfo.reload_sc,
@@ -3892,6 +4003,11 @@ function! s:CreateSpecialsMenus ( styles_only )
 		let sc_read  = s:library.properties[ 'Templates::RereadTemplates::Shortcut' ]
 		let map_read = s:library.properties[ 'Templates::RereadTemplates::Map' ]
 		call add ( entries, [ 'reread\ templates', sc_read, map_read, ':call mmtemplates#core#ReadTemplates('.s:t_runtime.lib_name.',"reload","all")<CR>' ] )
+		"
+		" add entry for starting the setup wizard
+		let sc_read  = s:library.properties[ 'Templates::SetupWizard::Shortcut' ]
+		let map_read = s:library.properties[ 'Templates::SetupWizard::Map' ]
+		call add ( entries, [ 'template\ setup\ wizard', sc_read, map_read, ':call mmtemplates#wizard#SetupWizard('.s:t_runtime.lib_name.')<CR>' ] )
 		"
 		" create edit and reread templates
 		for [ e_name, e_sc, e_map, cmd ] in entries
@@ -4201,16 +4317,26 @@ function! mmtemplates#core#Resource ( library, mode, ... )
 		return [ t_lib.regex_template.JumpTagAll, '' ]
 	elseif a:mode == 'style'
 		return [ t_lib.current_style, '' ]
+	elseif a:mode == 'settings_table'
+		return [ s:Templates_AllSettings, '' ]
 	elseif a:mode == 'template_list'
 		let templist = []
 		"
 		for fileinfo in t_lib.library_files
-			call add ( templist, fileinfo.filename." (".fileinfo.sym_name.")" )
+			if fileinfo.available
+				call add ( templist, fileinfo.filename." (".fileinfo.sym_name.")" )
+			elseif ! fileinfo.hidden
+				if fileinfo.filename == ''
+					call add ( templist, "-missing- (".fileinfo.sym_name.", not available)" )
+				else
+					call add ( templist, fileinfo.filename." (".fileinfo.sym_name.", not available)" )
+				endif
+			endif
 		endfor
 		"
 		call add ( templist, '(template engine version '.g:Templates_Version.', interface version '.t_lib.interface_str.')' )
 		"
-		return templist
+		return [ templist, '' ]
 	else
 		return [ '', 'Mode "'.a:mode.'" is unknown.' ]
 	endif
@@ -4452,10 +4578,12 @@ function! mmtemplates#core#EditTemplateFiles ( library, file )
 			return s:ErrorMsg ( 'No template file with index '.a:file.'.' )
 		endif
 		let file = t_lib.library_files[ a:file ].filename
+		let available = t_lib.library_files[ a:file ].available
 	elseif type( a:file ) == type( '' )
 		"
 		let file = expand ( a:file )
 		let file = s:ConcatNormalizedFilename ( file )
+		let available = 0
 		"
 		if ! filereadable ( file )
 			return s:ErrorMsg ( 'The file "'.file.'" does not exist.' )
@@ -4464,6 +4592,7 @@ function! mmtemplates#core#EditTemplateFiles ( library, file )
 			for fileinfo in t_lib.library_files
 				if fileinfo.filename == file
 					let found_file = 1
+					let available  = fileinfo.available
 					break
 				endif
 			endfor
@@ -4477,11 +4606,20 @@ function! mmtemplates#core#EditTemplateFiles ( library, file )
 	endif
 	"
 	" ==================================================
+	"  file optional
+	" ==================================================
+	"
+	if ! available
+		" :TODO:18.12.2014 20:01:WM: start setup wizard
+		return
+	endif
+	"
+	" ==================================================
 	"  do the job
 	" ==================================================
 	"
 	if ! filereadable ( file )
-		return s:ErrorMsg ( 'The template file "'.dir.'" does not exist.' )
+		return s:ErrorMsg ( 'The template file "'.file.'" does not exist.' )
 	endif
 	"
 	" get the directory

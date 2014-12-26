@@ -9,19 +9,23 @@ vim.org:
 - (FM, DONE?) Reference github on plug-in pages.
 
 Templates:
-- (WM) Correct escape for menu names.
-  * At least these special characters must be escaped: <space> . | \ &
-  * Expanded menus for lists.
-- (WM) API 'EditTemplateFiles'.
-  * (DONE) Check whether an indexed file actually exists.
+- (WM, DONE) API 'EditTemplateFiles'.
+  * Check whether an indexed file actually exists.
   * Configuration of the file browser (+ documentation).
-- (WM) When overwriting templates, also set new map and shortcut, if one is
-  given.
-- (WM) Help templates.
+- (WM, DONE?) After reloading a template library, it is possible that the maps
+  are not created anymore.
+- (WM, DONE) Help templates.
   * The browser for help templates should be called by a dedicated function in
     the help template.
   * The browser should be configurable from outside, so it does not have to be
     set up within the template library.
+- (WM) Correct escape for menu names.
+  * At least these special characters must be escaped: <space> . | \ &
+  * Expanded menus for lists.
+- (WM) When overwriting templates, also set new map and shortcut, if one is
+  given.
+- (WM) Better debugging while reading template files:
+  Print filename and line number for errors and warnings.
 
 Awk:
 - (FM) 'code->comment' should not insert a space following the hash?

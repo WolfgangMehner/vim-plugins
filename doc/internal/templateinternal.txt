@@ -122,6 +122,9 @@ The template library contains the following fields:
     reload_map - Map to reload the file (string).
     reload_sc  - Shortcut to reload the file (string).
     sym_name   - A symbolic name for the library file (string).
+    available  - The file is available/readable (bool).
+    hidden     - The file is hidden, will not show up in menus, debug output,
+                 ... (bool).
 
 - "map_commands!<filetype>". (string)
     Contains all command to create the maps for filetype. It has to be

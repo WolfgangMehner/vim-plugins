@@ -1308,6 +1308,10 @@ next lower one is used:
 The name and directory (relative to |runtimepath|) of the personalization
 file: >
   let g:Templates_PersonalizationFile = 'templates/personal.template*'
+The first file which matches g:Templates_PersonalizationFile on runtimepath
+will be used (uses |globpath|, with 'runtimepath' as the list of paths and
+g:Templates_PersonalizationFile as the expressions).
+
 The file "templates/personal.template" or "templates/personal.templates" will
 be loaded by every template library that uses this feature. Since it is loaded
 by every library, it should not contain anything that is specific to a
@@ -1401,6 +1405,8 @@ Optional parameters:
   "name", name        - Associated symbolic name of the file. (string)
   "shortcut", sc      - Associated shortcut for editing the file. (string)
   "map", map          - Associated map for editing the file. (string)
+  "optional"          - If non-zero, this is an optional template file.
+                        (integer)
   "overwrite_warning" - Print a warning each time a template is overwritten.
   "debug", level      - View debug information with the given level of detail.
                         (integer, default: show no debug information)
@@ -1478,6 +1484,20 @@ Reload templates by name: >
   call mmtemplates#core#ReadTemplates ( g:My_C_Templates,
     \ "reload", "$HOME/.vim/.../local.templates" )
 <
+------------------------------------------------------------------------------
+                                       *mmtemplates#core#EnableTemplateFile()*
+Previously unreadable template files can be enabled by using:
+
+  mmtemplates#core#EnableTemplateFile ( library, sym_name ) ~
+
+Parameters:
+  library  - The template library. (string or dict)
+  sym_name - The symbolic name of the file. (string)
+No returns.
+
+Checks whether the template file named 'sym_name' is now available. If so, it
+will be loaded the next time the library is reloaded.
+
 ------------------------------------------------------------------------------
                                            *mmtemplates#core#InsertTemplate()*
 To insert templates into the current buffer use:
@@ -1856,6 +1876,13 @@ Special resources:
 - "style"             : Return the name of the current style.
 - "template_list"     : Return a list of the template files and their symbolic
                         names, for debugging purposes.
+
+More special resources, mostly for internal usage:
+
+- "settings_table"    : Return a dict of all the settings. Has one key
+                        "Templates_SomeSetting" for every configuration
+                        variable "g:Templates_SomeSetting" listed in the
+                        section |template-support-config|.
 
 Regular resources:
 
@@ -2651,16 +2678,22 @@ D.  CHANGE LOG                                   *template-support-change-log*
 - Added: User settings |g:Templates_InternetBrowserExec| and
   |g:Templates_InternetBrowserFlags| to configure the browser used by help
   templates.
+- Added: Setup wizard.
 - Extended the documentation.
 
 API:
 - Changed: Template files can be associated with a symbolic name and a map,
   which are used for the creation of the "edit templates" menu entries and
   maps.
+- Changed: Template files can be optional. Information such as their symbolic
+  name is kept. They still show up in debug information, ... They can be
+  enabled later on, e.g. by the template setup wizard.
 - Added: Extended the API with functionality for adding a personalization file
   which can be used by all libraries.
+- Added: Function |mmtemplates#core#EnableTemplateFile()|.
 - Added: Function |mmtemplates#core#FindPersonalizationFile()|.
-- Changed: New options for the function |mmtemplates#core#ReadTemplates()|.
+- Changed: New options for the function |mmtemplates#core#ReadTemplates()| and
+  |mmtemplates#core#Resource()|.
 
 Internal Changes:
 - Major internal changes and code cleanup.
