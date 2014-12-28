@@ -813,6 +813,7 @@ function! mmtemplates#core#NewLibrary ( ... )
 				\ }
 	" entries used by maps: 'map_commands!<filetype>'
 	"
+	let library.macros.AUTHOR = 'YOUR NAME'
 	call extend ( library.macros,     s:StandardMacros,     'keep' )
 	call extend ( library.properties, s:StandardProperties, 'keep' )
 	"
@@ -1847,6 +1848,7 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 	let mode = ''
 	let file = ''
 	let optional_file = 0
+	let hidden_file   = 0
 	let reload_map    = ''
 	let reload_sc     = ''
 	let symbolic_name = ''
@@ -1885,6 +1887,10 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 		elseif a:[i] == 'optional'
 			let optional_file = 1
 			let i += 1
+		elseif a:[i] == 'hidden'
+			let optional_file = 1
+			let hidden_file   = 1
+			let i += 1
 		elseif a:[i] == 'overwrite_warning'
 			let s:t_runtime.overwrite_warning = 1
 			let i += 1
@@ -1918,10 +1924,9 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 		"
 		if available
 			call add ( templatefiles, file )
+		elseif ! optional_file                      " optional and hidden files do not cause this warning
+			call s:ErrorMsg ( 'The template file "'.file.'",', 'named "'.symbolic_name.'", does not exist or is not readable.' )
 		endif
-		"
-		" :TODO:24.12.2014 18:18:WM: Non-readable files are now automatically 'hidden',
-		" there will not be any error messages. Review this.
 		"
 		" add to library
 		let fileinfo = {
@@ -1930,7 +1935,8 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 					\ 'reload_sc'  : reload_sc,
 					\ 'sym_name'   : symbolic_name,
 					\ 'available'  : available,
-					\ 'hidden'     : ! available && ! optional_file,
+					\ 'optional'   : optional_file,
+					\ 'hidden'     : hidden_file && ! available,
 					\ }
 		call add ( t_lib.library_files, fileinfo )
 		"
@@ -1999,7 +2005,7 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 		"
 		" file exists?
 		if !filereadable ( f )
-			call s:ErrorMsg ( 'Template library "'.f.'" does not exist or is not readable.' )
+			call s:ErrorMsg ( 'The template file "'.f.'" does not exist or is not readable.' )
 			continue
 		endif
 		"
@@ -4326,10 +4332,11 @@ function! mmtemplates#core#Resource ( library, mode, ... )
 			if fileinfo.available
 				call add ( templist, fileinfo.filename." (".fileinfo.sym_name.")" )
 			elseif ! fileinfo.hidden
-				if fileinfo.filename == ''
-					call add ( templist, "-missing- (".fileinfo.sym_name.", not available)" )
+				let fname = fileinfo.filename == '' ? '-missing-' : fileinfo.filename
+				if fileinfo.optional
+					call add ( templist, fname." (".fileinfo.sym_name.", not used)" )
 				else
-					call add ( templist, fileinfo.filename." (".fileinfo.sym_name.", not available)" )
+					call add ( templist, fname." (".fileinfo.sym_name.", missing!)" )
 				endif
 			endif
 		endfor
@@ -4606,7 +4613,7 @@ function! mmtemplates#core#EditTemplateFiles ( library, file )
 	endif
 	"
 	" ==================================================
-	"  file optional
+	"  file not available
 	" ==================================================
 	"
 	if ! available

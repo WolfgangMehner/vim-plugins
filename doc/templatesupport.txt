@@ -1407,6 +1407,8 @@ Optional parameters:
   "map", map          - Associated map for editing the file. (string)
   "optional"          - If non-zero, this is an optional template file.
                         (integer)
+  "hidden"            - If non-zero, this is an optional and hidden template
+                        file. (integer)
   "overwrite_warning" - Print a warning each time a template is overwritten.
   "debug", level      - View debug information with the given level of detail.
                         (integer, default: show no debug information)
@@ -1429,6 +1431,10 @@ mapleader. The call >
 will cause the creation of a menu entry "edit additional templates" and a map
 "\nta", depending on the mapleader. The default shortcut is the first letter
 of the name. If no map is associated, none is created.
+
+Optional template files will not cause warnings if they are not readable.
+Hidden template files do not show up in menus, debug output, ... if they are
+not available.
 
 To load the template personalization file into the library, call: >
   mmtemplates#core#ReadTemplates ( library, "personalization",
