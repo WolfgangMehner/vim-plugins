@@ -110,7 +110,7 @@
 'do not match property \\P{}' : '\P{<SPLIT><CURSOR>}',
 == ENDLIST ==
 
-== Regex.metasymbols == expandmenu, insert, sc:m, map:xms ==
+== Regex.metasymbols == expandmenu, insert, visual, sc:m, map:xms ==
 |PickList( 'Metasymbols', 'Metasymbols' )|
 |PICK|
 == ENDTEMPLATE ==

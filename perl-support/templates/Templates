@@ -2,13 +2,17 @@
 §  User Macros
 § ==========================================================
 
-SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
-SetMacro( 'AUTHORREF',   'fgm' )
-SetMacro( 'COMPANY',     '' )
-SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
-SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
-SetMacro( 'LICENSE',     'GNU General Public License' )
-SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
+SetMacro( 'AUTHOR',       'YOUR NAME' )
+SetMacro( 'AUTHORREF',    '' )
+SetMacro( 'EMAIL',        '' )
+SetMacro( 'ORGANIZATION', '' )
+SetMacro( 'COMPANY',      '' )
+SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
+SetMacro( 'LICENSE',      'GNU General Public License' )
+
+SetFormat( 'DATE', '%x' )
+SetFormat( 'TIME', '%X' )
+SetFormat( 'YEAR', '%Y' )
 
 SetStyle( 'default' )
 

@@ -1,4 +1,4 @@
-README for perl-support.vim (Version 5.3.2) / September 24 2014
+README for perl-support.vim (Version 5.4pre) / December 29 2014
 
   *  INSTALLATION
   *  RELEASE NOTES
@@ -139,11 +139,11 @@ For a system-wide installation please see the help file 'doc/perlsupport.txt'.
 =======================================================================================
 
 ---------------------------------------------------------------------------------------
-  RELEASE NOTES FOR VERSION 5.3.2
+  RELEASE NOTES FOR VERSION 5.4pre
 ---------------------------------------------------------------------------------------
-- Use Perl::Tags::Naive instead of Perl::Tags.
-- Minor bugfixes.
-- Fixed some templates.
+- Added 'g:Perl_CustomTemplateFile' and 'g:Perl_AdditionalTemplates'.
+- Added template personalization file and setup wizard.
+- Removed unused 'g:Perl_GuiTemplateBrowser'.
 
 ---------------------------------------------------------------------------------------
   OLDER RELEASE NOTES : see file 'ChangeLog'

@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 5.3.2
+---------------------------------------------------------------------------------------
+- Use Perl::Tags::Naive instead of Perl::Tags.
+- Minor bugfixes.
+- Fixed some templates.
+
+---------------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 5.3.1
 ---------------------------------------------------------------------------------------
 - Always load the newest version of the template engine available on 'runtimepath'.
