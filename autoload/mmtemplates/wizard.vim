@@ -339,12 +339,21 @@ function! s:SetupPersonal ( library )
 					\ ."\n    :help g:Templates_PersonalizationFile"
 	elseif ! filereadable ( personal_file )
 		" automatic setup failed
-		help g:Templates_PersonalizationFile
+		let help_topic_missing = 0
+		try
+			help g:Templates_PersonalizationFile
+		catch /.*/   " failed, print some more help below
+			let help_topic_missing = 1
+		endtry
 		redraw
 		echo "Failed to create the personalization file:"
 					\ ."\n    ".personal_file
 					\ ."\nFor configuring the file manually, see:"
 					\ ."\n    :help g:Templates_PersonalizationFile"
+		if help_topic_missing
+			echo "... but redo your helptags first:"
+						\ ."\n    :helptags .../doc"
+		endif
 	else
 		call mmtemplates#core#EnableTemplateFile ( t_lib, 'personal' )
 		"

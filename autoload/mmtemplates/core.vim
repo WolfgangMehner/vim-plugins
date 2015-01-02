@@ -3832,6 +3832,8 @@ function! s:CreateListMenus ( t_name, submenu, visual )
 				let item_entry = substitute ( item_entry, '\w', '\&&', '' )   " shortcut
 			endif
 			"
+			let item = escape ( item, '|' )           " must be escaped, even inside a string
+			"
 			exe 'anoremenu <silent> '.a:submenu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","pick",'.string(item).')<CR>'
 			exe 'inoremenu <silent> '.a:submenu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","i","pick",'.string(item).')<CR>'
 			if a:visual == 1
@@ -3877,6 +3879,8 @@ function! s:CreateListMenus ( t_name, submenu, visual )
 				let item_entry = substitute ( item_entry, '\w', '\&&', '' )   " shortcut
 				"
 			endtry
+			"
+			let item = escape ( item, '|' )           " must be escaped, even inside a string
 			"
 			exe 'anoremenu <silent> '.a:submenu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","pick",'.string(item).')<CR>'
 			exe 'inoremenu <silent> '.a:submenu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","i","pick",'.string(item).')<CR>'
@@ -3999,6 +4003,7 @@ function! s:CreateSpecialsMenus ( styles_only )
 		"
 		" no template library with a symbolic name?
 		" -> add standard entry for last file
+		" :TODO:27.12.2014 16:26:WM: review this, maybe add no file?
 		if empty ( entries )
 			let sc_edit  = s:library.properties[ 'Templates::EditTemplates::Shortcut' ]
 			let map_edit = s:library.properties[ 'Templates::EditTemplates::Map' ]
