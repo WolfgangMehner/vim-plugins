@@ -11,8 +11,8 @@
 "  Organization:  
 "       Version:  see variable g:Lua_Version below
 "       Created:  26.03.2014
-"      Revision:  04.10.2014
-"       License:  Copyright (c) 2012-2014, Wolfgang Mehner
+"      Revision:  30.12.2014
+"       License:  Copyright (c) 2014-2015, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -90,16 +90,22 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 "
 " Parameters:
 "   varname - name of the variable (string)
+"   glbname - name of the global variable (string, optional)
 " Returns:
 "   -
 "
-" If g:<varname> exists, assign:
-"   s:<varname> = g:<varname>
+" If 'glbname' is given, it is used as the name of the global variable.
+" Otherwise the global variable will also be named 'varname'.
+"
+" If g:<glbname> exists, assign:
+"   s:<varname> = g:<glbname>
 "-------------------------------------------------------------------------------
 "
-function! s:GetGlobalSetting ( varname )
-	if exists ( 'g:'.a:varname )
-		exe 'let s:'.a:varname.' = g:'.a:varname
+function! s:GetGlobalSetting ( varname, ... )
+	let lname = a:varname
+	let gname = a:0 >= 1 ? a:1 : lname
+	if exists ( 'g:'.gname )
+		let { 's:'.lname } = { 'g:'.gname }
 	endif
 endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 "
@@ -182,11 +188,11 @@ endfunction    " ----------  end of function Lua_UserInputEx  ----------
 let s:MSWIN = has("win16") || has("win32")   || has("win64")    || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
-let s:installation        = '*undefined*'      " 'local' or 'system'
-let s:plugin_dir          = ''                 " the directory hosting ftplugin/ plugin/ lua-support/ ...
-let s:Lua_GlbTemplateFile = ''                 " the global templates, undefined for s:installation == 'local'
-let s:Lua_LclTemplateFile = ''                 " the local templates
-let s:Lua_CustomTemplateFile = ''              " the custom templates
+let s:installation           = '*undefined*'    " 'local' or 'system'
+let s:plugin_dir             = ''               " the directory hosting ftplugin/ plugin/ lua-support/ ...
+let s:Lua_GlobalTemplateFile = ''               " the global templates, undefined for s:installation == 'local'
+let s:Lua_LocalTemplateFile  = ''               " the local templates
+let s:Lua_CustomTemplateFile = ''               " the custom templates
 "
 let s:Lua_ToolboxDir      = []
 "
@@ -202,18 +208,18 @@ if s:MSWIN
 				\   '\V'.substitute( expand('$HOME'),   '\\', '/', 'g' ) ) == 0
 		"
 		" user installation assumed
-		let s:installation        = 'local'
-		let s:Lua_LclTemplateFile = s:plugin_dir.'/lua-support/templates/Templates'
+		let s:installation           = 'local'
+		let s:Lua_LocalTemplateFile  = s:plugin_dir.'/lua-support/templates/Templates'
 		let s:Lua_CustomTemplateFile = $HOME.'/vimfiles/templates/lua.templates'
-		let s:Lua_ToolboxDir     += [ s:plugin_dir.'/autoload/mmtoolbox/' ]
+		let s:Lua_ToolboxDir        += [ s:plugin_dir.'/autoload/mmtoolbox/' ]
 	else
 		"
 		" system wide installation
-		let s:installation        = 'system'
-		let s:Lua_GlbTemplateFile = s:plugin_dir.'/lua-support/templates/Templates'
-		let s:Lua_LclTemplateFile = $HOME.'/vimfiles/lua-support/templates/Templates'
+		let s:installation           = 'system'
+		let s:Lua_GlobalTemplateFile = s:plugin_dir.'/lua-support/templates/Templates'
+		let s:Lua_LocalTemplateFile  = $HOME.'/vimfiles/lua-support/templates/Templates'
 		let s:Lua_CustomTemplateFile = $HOME.'/vimfiles/templates/lua.templates'
-		let s:Lua_ToolboxDir     += [
+		let s:Lua_ToolboxDir        += [
 					\	s:plugin_dir.'/autoload/mmtoolbox/',
 					\	$HOME.'/vimfiles/autoload/mmtoolbox/' ]
 	endif
@@ -229,18 +235,18 @@ else
 	if match( expand('<sfile>'), '\V'.resolve(expand('$HOME')) ) == 0
 		"
 		" user installation assumed
-		let s:installation        = 'local'
-		let s:Lua_LclTemplateFile = s:plugin_dir.'/lua-support/templates/Templates'
+		let s:installation           = 'local'
+		let s:Lua_LocalTemplateFile  = s:plugin_dir.'/lua-support/templates/Templates'
 		let s:Lua_CustomTemplateFile = $HOME.'/.vim/templates/lua.templates'
-		let s:Lua_ToolboxDir     += [ s:plugin_dir.'/autoload/mmtoolbox/' ]
+		let s:Lua_ToolboxDir        += [ s:plugin_dir.'/autoload/mmtoolbox/' ]
 	else
 		"
 		" system wide installation
-		let s:installation        = 'system'
-		let s:Lua_GlbTemplateFile = s:plugin_dir.'/lua-support/templates/Templates'
-		let s:Lua_LclTemplateFile = $HOME.'/.vim/lua-support/templates/Templates'
+		let s:installation           = 'system'
+		let s:Lua_GlobalTemplateFile = s:plugin_dir.'/lua-support/templates/Templates'
+		let s:Lua_LocalTemplateFile  = $HOME.'/.vim/lua-support/templates/Templates'
 		let s:Lua_CustomTemplateFile = $HOME.'/.vim/templates/lua.templates'
-		let s:Lua_ToolboxDir     += [
+		let s:Lua_ToolboxDir        += [
 					\	s:plugin_dir.'/autoload/mmtoolbox/',
 					\	$HOME.'/.vim/autoload/mmtoolbox/' ]
 	endif
@@ -292,8 +298,10 @@ else
 	let s:Lua_CompilerExec = s:Lua_BinPath.'luac'      " luac executable
 endif
 "
-call s:GetGlobalSetting ( 'Lua_GlbTemplateFile' )
-call s:GetGlobalSetting ( 'Lua_LclTemplateFile' )
+call s:GetGlobalSetting ( 'Lua_GlobalTemplateFile', 'Lua_GlbTemplateFile' )
+call s:GetGlobalSetting ( 'Lua_LocalTemplateFile',  'Lua_LclTemplateFile' )
+call s:GetGlobalSetting ( 'Lua_GlobalTemplateFile' )
+call s:GetGlobalSetting ( 'Lua_LocalTemplateFile' )
 call s:GetGlobalSetting ( 'Lua_CustomTemplateFile' )
 call s:GetGlobalSetting ( 'Lua_AdditionalTemplates' )
 call s:GetGlobalSetting ( 'Lua_LoadMenus' )
@@ -315,10 +323,10 @@ call s:ApplyDefaultSetting ( 'Lua_Printheader', "%<%f%h%m%<  %=%{strftime('%x %H
 call s:ApplyDefaultSetting ( 'Lua_UseTool_make', 'yes' )
 call s:ApplyDefaultSetting ( 'Xterm_Options', '-fa courier -fs 12 -geometry 80x24' )
 "
-let s:Lua_GlbTemplateFile = expand ( s:Lua_GlbTemplateFile )
-let s:Lua_LclTemplateFile = expand ( s:Lua_LclTemplateFile )
+let s:Lua_GlobalTemplateFile = expand ( s:Lua_GlobalTemplateFile )
+let s:Lua_LocalTemplateFile  = expand ( s:Lua_LocalTemplateFile )
 let s:Lua_CustomTemplateFile = expand ( s:Lua_CustomTemplateFile )
-let s:Lua_SnippetDir      = expand ( s:Lua_SnippetDir )
+let s:Lua_SnippetDir         = expand ( s:Lua_SnippetDir )
 "
 " }}}2
 "-------------------------------------------------------------------------------
@@ -1236,20 +1244,17 @@ function! s:SetupTemplates()
 	"
 	" global templates (global installation only)
 	if s:installation == 'system'
-		if filereadable( s:Lua_GlbTemplateFile )
-			call mmtemplates#core#ReadTemplates ( g:Lua_Templates, 'load', s:Lua_GlbTemplateFile,
-						\ 'name', 'global', 'map', 'ntg' )
-		else
-			return s:ErrorMsg ( 'Global template file "'.s:Lua_GlbTemplateFile.'" not readable.' )
-		endif
+		call mmtemplates#core#ReadTemplates ( g:Lua_Templates, 'load', s:Lua_GlobalTemplateFile,
+					\ 'name', 'global', 'map', 'ntg' )
 	endif
 	"
 	" local templates (optional for global installation)
-	if filereadable ( s:Lua_LclTemplateFile )
-		call mmtemplates#core#ReadTemplates ( g:Lua_Templates, 'load', s:Lua_LclTemplateFile,
+	if s:installation == 'global'
+		call mmtemplates#core#ReadTemplates ( g:Lua_Templates, 'load', s:Lua_LocalTemplateFile,
+					\ 'name', 'local', 'map', 'ntl', 'optional', 'hidden' )
+	else
+		call mmtemplates#core#ReadTemplates ( g:Lua_Templates, 'load', s:Lua_LocalTemplateFile,
 					\ 'name', 'local', 'map', 'ntl' )
-	elseif s:installation == 'local'
-		return s:ErrorMsg ( 'Local template file "'.s:Lua_LclTemplateFile.'" not readable.' )
 	endif
 	"
 	" custom templates (optional, existence of file checked by template engine)
@@ -1824,11 +1829,9 @@ endfunction    " ----------  end of function Lua_RemoveMenus  ----------
 function! Lua_Settings( verbose )
 	"
 	if     s:MSWIN | let sys_name = 'Windows'
-	elseif s:UNIX  | let sys_name = 'UNIX'
+	elseif s:UNIX  | let sys_name = 'UN*X'
 	else           | let sys_name = 'unknown' | endif
 	"
-	let glb_t_status = filereadable ( s:Lua_GlbTemplateFile ) ? '' : ' (not readable)'
-	let lcl_t_status = filereadable ( s:Lua_LclTemplateFile ) ? '' : ' (not readable)'
 	let lua_exe_status = executable( s:Lua_Executable ) ? '' : ' (not executable)'
 	let luac_exe_status = executable( s:Lua_CompilerExec ) ? '' : ' (not executable)'
 	"
@@ -1848,7 +1851,7 @@ function! Lua_Settings( verbose )
 					\ ."\n"
 	else
 		let txt .=
-					\  "                templates : -not loaded- \n"
+					\  "                templates :  -not loaded- \n"
 					\ ."\n"
 	endif
 	" plug-in installation, template engine
@@ -1878,8 +1881,8 @@ function! Lua_Settings( verbose )
 	let txt .=
 				\  '       code snippets dir. :  '.s:Lua_SnippetDir."\n"
 	if a:verbose >= 1
-		let	txt .=
-					\  '                mapleader :  "'.g:Lua_MapLeader."\"\n"
+		let	txt .= "\n"
+					\ .'                mapleader :  "'.g:Lua_MapLeader."\"\n"
 					\ .'               load menus :  "'.s:Lua_LoadMenus."\"\n"
 					\ .'       insert file header :  "'.g:Lua_InsertFileHeader."\"\n"
 	endif

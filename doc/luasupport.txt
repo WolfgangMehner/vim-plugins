@@ -1,4 +1,4 @@
-*luasupport.txt*                 Lua Support                       Nov 20 2014
+*luasupport.txt*                 Lua Support                       Jan 04 2015
 
 Lua Support                                          *lua-support* *luasupport*
 
@@ -15,7 +15,7 @@ functions.
 See the chapter |luasupport-introduction| for a quick overview and a short
 guide to this documentation.
 
-Lua is: Copyright 1994-2014 Lua.org, PUC-Rio.
+Lua is: Copyright 1994-2015 Lua.org, PUC-Rio.
 
 ==============================================================================
 0.  TABLE OF CONTENTS                            *luasupport-support-contents*
@@ -100,7 +100,7 @@ advanced user (see |templatesupport.txt|).
 ==============================================================================
 
 Features are accessible via menu entries and maps. Most maps are preceded by a
-mapleader. The leader is backslash, if the standard configuration is used.
+mapleader. The leader is a backslash, if the standard configuration is used.
 
 ------------------------------------------------------------------------------
 2.1  COMMENTS                                      *luasupport-usage-comments*
@@ -166,7 +166,7 @@ Now each entry of the table can be documented.
 2.1.2  Comment Lines                         *luasupport-usage-comments-lines*
 
 Lines of code can be changed into comments and vice versa with just a few
-keystrokes.  In normal and insert mode, the comment, uncomment and toggle
+keystrokes. In normal and insert mode, the comment, uncomment and toggle
 functions will change the current line. In visual mode the entire selected
 range is affected.
 The maps can also be used together with a count, such as: >
@@ -297,9 +297,8 @@ The file in the current buffer can be run or compiled with a keystroke.
   change the compiler        Run.set compiler exec.         <LocalLeader>rsc
  ----------------------------------------------------------------------------
 
-(^1)
-  Only inside the buffer "Lua Output", where running a script echoes the
-  script's output, see |luasupport-config-output|.
+(^1) Works only inside the buffer "Lua Output", where running a script echoes
+  the script's output, see |luasupport-config-output|.
 
 The functionality is also available through commands. These commands can also
 be used to set different maps in the ftplugin.
@@ -402,7 +401,7 @@ documentation of Lua functions or an English dictionary.
   open plug-in help          Help.help (Lua support)        <LocalLeader>hs
  ----------------------------------------------------------------------------
 
-The online reference can by opened very conveniently for Lua functions. Simply
+The online reference can be opened very conveniently for Lua functions. Simply
 place the cursor on the name of a function in your source code, and use the
 menu entry or the map to open the online reference for that function.
 (See Section |luasupport-config-browser| for the configuration.)
@@ -457,7 +456,7 @@ with macros and tags to provide further convenience. Macros can be
 automatically replaced with the date or the filename, or they can be replaced
 with input from the user, for example the name of a new function.
 
-While inserting a template, the user will often be ask to enter some
+While inserting a template, the user will often be asked to enter some
 replacement text on the command line, for example the name of a function. The
 replacement text will then be used in the template while it is inserted.
 Hitting <ESC> or entering an empty text will abort template insertion.
@@ -519,22 +518,30 @@ The template system comes with several auxiliary functions.
 
   Feature                    Menu Entry                     Map
  ----------------------------------------------------------------------------
+  edit the global template   Snippets.edit global templates <LocalLeader>ntg
+    library (^1)
   edit the local template    Snippets.edit local templates  <LocalLeader>ntl
     library
-  edit the global template   Snippets.edit global templates <LocalLeader>ntg
-    library (*1)
+  edit the custom template   Snippets.edit custom templates <LocalLeader>ntc
+    library
+  edit the personal templ.   Snippets.edit personal templ.  <LocalLeader>ntp
+    library
   reread the templates       Snippets.reread templates      <LocalLeader>ntr
+  setup wizard               Snippets.template setup wizard <LocalLeader>ntw
   choose a style             Snippets.choose style          <LocalLeader>nts
  ----------------------------------------------------------------------------
 
-"Snippets -> edit templates" will open a file browser in the directory
+(^1) system-wide installation only
+
+"Snippets -> edit ... templates" will open a file browser in the directory
 containing your template library. This feature is merely a fast way to jump to
-the files.  After the templates have been edited, they need to be read again.
+the files. After the templates have been edited, they need to be read again.
 
-See the documentation of the template system for a more in-depth discussion:
-|templatesupport.txt|
+For how to use these files to configure and personalize the template library,
+see |luasupport-config-template-cstm|.
 
-Note *1: system-wide installation only
+For help with setting up the template library, use the setup wizard
+"Snippets -> template setup wizard".
 
 ==============================================================================
 4.  CONFIGURATION                                   *luasupport-configuration*
@@ -562,8 +569,12 @@ set in the .vimrc file.
 
   |g:Lua_SnippetDir|          (see below)   directory with code snippers
   |g:Lua_SnippetBrowser|      'gui'         browser to select code snippets
-  |g:Lua_LclTemplateFile|     (see below)   the local top-level template file
-  |g:Lua_GlbTemplateFile|     (see below)   the global top-level template file
+  |g:Lua_LocalTemplateFile|   (see below)   the local top-level template file
+  |g:Lua_GlobalTemplateFile|  (see below)   the global top-level template file
+  |g:Lua_CustomTemplateFile|  (see below)   the optional custom template file
+  |g:Lua_AdditionalTemplates| []            further template files
+  |g:Templates_PersonalizationFile|
+                            (see below)   the personalization template file
 
   |g:Lua_Printheader|         '...'         printheader used for hardcopy
 
@@ -805,9 +816,10 @@ or on the command line by setting: >
 ------------------------------------------------------------------------------
 4.6  TEMPLATE LIBRARY                         *luasupport-config-template-lib*
 ------------------------------------------------------------------------------
-                                                       *g:Lua_LclTemplateFile*
-                                                       *g:Lua_GlbTemplateFile*
-The variables g:Lua_LclTemplateFile and g:Lua_GlbTemplateFile set the
+                        *g:Lua_LclTemplateFile*    *g:Lua_GlbTemplateFile*
+                        *g:Lua_LocalTemplateFile*  *g:Lua_GlobalTemplateFile*
+                        *g:Lua_CustomTemplateFile* *g:Lua_AdditionalTemplates*
+The variables g:Lua_LocalTemplateFile and g:Lua_GlobalTemplateFile set the
 locations and names of the local and global template files, respectively.
 The default for the local and global template files depend on the type of the
 installation.
@@ -817,40 +829,67 @@ installation.
 
 Local installation:
 
-If the plug-in lua-support.vim can be found here: >
-  <VIMDIR>/plugin/lua-support.vim
+If the plug-in lua-support.vim can be found somewhere in the $HOME directory: >
+  <RUNTIMEPATH>/plugin/lua-support.vim
 The default for the local template file is: >
-  g:Lua_LclTemplateFile
-    = '<VIMDIR>/lua-support/templates/Templates'
+  g:Lua_LocalTemplateFile
+    = '<RUNTIMEPATH>/lua-support/templates/Templates'
 There is no global template file.
 
 
-System-wide installation:
+System-wide installation (|luasupport-system-wide|):
 
 The default for the global template file is: >
-  g:Lua_GlbTemplateFile
+  g:Lua_GlobalTemplateFile
     = $VIM.'/vimfiles/lua-support/templates/Templates'
 The default for the local template file is (UNIX/Linux): >
-  s:Lua_LclTemplateFile
+  s:Lua_LocalTemplateFile
     = $HOME.'/.vim/lua-support/templates/Templates'
 or (Windows): >
-  s:Lua_LclTemplateFile
+  s:Lua_LocalTemplateFile
     = $HOME.'/vimfiles/lua-support/templates/Templates'
 <
 
+Independent of the type of installation, the default custom template file is: >
+  s:Lua_CustomTemplateFile = $HOME.'/.vim/templates/lua.templates'
+The personalization file is located in a directory relative to |runtimepath|: >
+  <RUNTIMEPATH>/templates/personal.templates
+For configuring the personalization file, see |g:Templates_PersonalizationFile|.
+
+Using the custom and personalization template files will give the average
+user sufficient options for customization. Adding even more template files is
+possible though, using the setting "g:Lua_AdditionalTemplates". Additional
+template files are given as a list of lists, each of which describes a custom
+template file: >
+  g:Lua_AdditionalTemplates = []
+  call add ( g:Lua_AdditionalTemplates,
+      \ [ filename, symbolic_name, edit_map ] )
+The file 'filename' will be loaded. It is associated with the name
+'symbolic_name'. The map 'edit_map' can be used to open the file for editing.
+The second and third list entry are optional and will be replaced by default
+values if missing.
+
+
 Example:
 
-To set a different local template file, add this line to your vimrc: >
-  let g:Lua_LclTemplateFile = $HOME.'/myvim/lua/templates/my.templates'
+To set a different custom template file, set this variable in your vimrc: >
+  let g:Lua_CustomTemplateFile = $HOME.'/myvim/lua/templates/my.templates'
 <
 ------------------------------------------------------------------------------
 4.7  TEMPLATE CUSTOMIZATION                  *luasupport-config-template-cstm*
 ------------------------------------------------------------------------------
 
-The template library is customized via your local template file. Use the menu
-entry "Snippets -> edit local templates" to get there.
+The template library is customized via your local template files. Use the menu
+entries "Snippets -> edit local templates", "Snippets -> edit custom
+templates", or "Snippets -> edit personal templates" to get there.
 
-You should fill in your name and other information here:
+The personalization template file is used to set personal information, and
+will be read by other plug-ins which use this feature. Use "Snippets ->
+template setup wizard" for help with its setup. Since it is used by all
+plug-ins, it should only contain information which is independent of a
+specific programming language.
+
+You should fill in your name and other information there:
 >
   SetMacro( 'AUTHOR',    'Your Name' )
   SetMacro( 'AUTHORREF', 'YN' )
@@ -870,6 +909,11 @@ represented using four digits.
 
 Afterwards, use the menu entry "Snippets -> reread templates" to apply the
 changes.
+
+The custom template file can be used to set the personal information and/or to
+change or add Lua templates. The custom template file eliminates the need to
+edit the stock templates provided in the local template file (or the global
+template file for global installations).
 
 ------------------------------------------------------------------------------
 4.8  HARDCOPY                                     *luasupport-config-hardcopy*
@@ -910,11 +954,9 @@ of the "make" tool: >
 
 A system-wide installation (one installation for all users) of the plug-in can
 be done. This will mean however, that a user can not edit the template
-library, for example to set his own name. So in case of a system-wide
-installation, every user can have an own set of templates (called local
-templates), which are localed in each users' home directory.
-Note: As you might have guessed, this behavior is much more inspired by Linux
-than Windows.
+library, for example to set a name and mail. So in case of a system-wide
+installation, every user should use the customization options, which allow to
+put customization files into each users' home directory.
 
 A system-wide installation is done as follows.
 
@@ -946,27 +988,16 @@ These directories will not be found automatically. After installing the
 plug-in below '/usr/share/vim/site' the use of the templates will be enabled
 by the following line in '~/.vimrc' (see |luasupport-config-template-lib|):
 >
-  let g:Lua_GlbTemplateFile =
+  let g:Lua_GlobalTemplateFile =
     \ '/usr/share/vim/site/lua-support/templates/Templates'
 <
 ------------------------------------------------------------------------------
 
 As *** USER *** :
 
-This plug-in will try to create your private template directory, taking the
-path from the setting g:Lua_LclTemplateFile. The default is: >
-  ~/.vim/lua-support/templates
-The directory will contain a minimal personal main template file. You should
-set some macros in this file with your personal information in order to obtain
-personalized comments:
->
-  SetMacro( 'AUTHOR',    'Your Name' )
-  SetMacro( 'AUTHORREF', 'YN' )
-  SetMacro( 'EMAIL',     'your-email@i-use-vim.org' )
-  SetMacro( 'COPYRIGHT', 'Copyright (c) |YEAR|, |AUTHOR|' )
-<
-You can also have local templates which override the global ones. To edit the
-file, use the menu entry "Lua -> Snippets -> edit local templates".
+Use the template setup wizard "Snippets -> template setup wizard" to add your
+personalization. Use the custom template file for further customization. (see
+|luasupport-config-template-cstm|)
 
 ==============================================================================
 A.  TROUBLESHOOTING - KNOWN ISSUES                *luasupport-troubleshooting*
@@ -1010,4 +1041,4 @@ Fritz Mehner (vim.org user name: mehner) for a number of things:
   well
 
 ==============================================================================
-vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
+vim:tw=78:expandtab:ts=2:ft=help:norl:

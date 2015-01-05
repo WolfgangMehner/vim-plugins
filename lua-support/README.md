@@ -1,4 +1,4 @@
-README for lua-support.vim (Version 1.0pre) / Nov 20 2014
+README for lua-support.vim (Version 1.0pre) / Jan 04 2015
 ================================================================================
 
   *  INSTALLATION
@@ -17,7 +17,7 @@ functions.
 Please read the documentation.
 This plug-in can be used with Vim version 7.x .
 
-Lua is: Copyright 1994–2014 Lua.org, PUC-Rio.
+Lua is: Copyright 1994–2015 Lua.org, PUC-Rio.
 
 
 --------------------------------------------------------------------------------
@@ -162,6 +162,11 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 
   RELEASE NOTES FOR VERSION 1.0pre
 ----------------------------------------------------------------------
+- Renamed 'g:Lua_GlbTemplateFile' into 'g:Lua_GlobalTemplateFile'.
+- Renamed 'g:Lua_LclTemplateFile' into 'g:Lua_LocalTemplateFile'.
+- Added optional custom templates (g:Lua_CustomTemplateFile).
+- Added optional additional templates (g:Lua_AdditionalTemplates).
+- Added template personalization file and setup wizard.
 - New templates.
 - Minor improvements.
 
@@ -223,7 +228,7 @@ ___lua-support.vim will work without them:___
 
 ___The settings are explained in the files themselves.___
 
-    lua-support/rc/sample_template_file
+    lua-support/rc/personal.templates
                         Sample template file for personalization, when using a
                         system-wide installation.
 

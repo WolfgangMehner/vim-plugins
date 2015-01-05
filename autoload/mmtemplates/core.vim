@@ -12,7 +12,7 @@
 "       Version:  see variable g:Templates_Version below
 "       Created:  30.08.2011
 "      Revision:  30.11.2014
-"       License:  Copyright (c) 2012-2014, Wolfgang Mehner
+"       License:  Copyright (c) 2012-2015, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -1027,15 +1027,17 @@ function! s:AddTemplate ( type, name, settings, lines )
 				if s:library.interface < 1000000
 					call s:ErrorMsg ( 'The option "expandleft:..." is only available for libraries using versions >= 1.0.' )
 				else
-					let expand_left = matchstr ( s, '^expandleft\s*:\s*\zs'.s:library.regex_file.MacroName )
-					let expand_left = '|'.toupper( expand_left ).'|'
+					let expand_left = matchstr ( s, '^expandleft\s*:\s*\zs.*' )
+					let expand_left = s:HandleMenuExpandOptions ( expand_left )
+					" :TODO:04.01.2015 17:35:WM: error handling, disallowed options, ...
 				endif
 			elseif s =~ '^expandright\s*:'
 				if s:library.interface < 1000000
 					call s:ErrorMsg ( 'The option "expandright:..." is only available for libraries using versions >= 1.0.' )
 				else
-					let expand_right = matchstr ( s, '^expandright\s*:\s*\zs'.s:library.regex_file.MacroName )
-					let expand_right = '|'.toupper( expand_right ).'|'
+					let expand_right = matchstr ( s, '^expandright\s*:\s*\zs.*' )
+					let expand_right = s:HandleMenuExpandOptions ( expand_right )
+					" :TODO:04.01.2015 17:35:WM: error handling, disallowed options, ...
 				endif
 			elseif s =~ '^sc\s*:' || s =~ '^shortcut\s*:'
 				let sc = matchstr ( s, '^\w\+\s*:\s*\zs'.s:library.regex_file.Mapping )
@@ -1281,8 +1283,29 @@ function! s:RevertFiletypes ( times )
 endfunction    " ----------  end of function s:RevertFiletypes  ----------
 "
 "-------------------------------------------------------------------------------
+" s:HandleMenuExpandOptions : Handle "expandleft:..." and "expandright:..." {{{2
+"-------------------------------------------------------------------------------
+"
+function! s:HandleMenuExpandOptions ( option )
+	"
+	if a:option == 'key'
+		return '|KEY|'
+	elseif a:option == 'key-clean'
+		return '|KEY:T|'
+	elseif a:option == 'value'
+		return '|VALUE|'
+	elseif a:option == 'value-clean'
+		return '|VALUE:T|'
+	endif
+	"
+	" error
+	return ''
+endfunction    " ----------  end of function s:HandleMenuExpandOptions  ----------
+"
+"-------------------------------------------------------------------------------
 " s:InterfaceVersionRuntimeUpdates : Set the library version (runtime info).   {{{2
 "-------------------------------------------------------------------------------
+"
 function! s:InterfaceVersionRuntimeUpdates ()
 	"
 	" version 1.0 setup
@@ -2122,6 +2145,10 @@ function! s:ApplyFlag ( text, flag )
 		let text = substitute( a:text, '\s\+', '_', 'g' ) " multiple whitespaces
 		let text = substitute(   text, '\W\+', '_', 'g' ) " multiple non-word characters
 		let text = substitute(   text, '_\+',  '_', 'g' ) " multiple underscores
+		return text
+	elseif a:flag == 'T'                  " T : remove tags
+		let text = substitute( a:text, '<CURSOR>\|{CURSOR}\|<SPLIT>',       '', 'g' ) " cursor and split tags
+		let text = substitute(   text, s:library.regex_template.JumpTagAll, '', 'g' ) " jump tags
 		return text
 	else                                   " flag not valid
 		return a:text
