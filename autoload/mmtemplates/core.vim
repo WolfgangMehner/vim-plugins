@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Templates_Version below
 "       Created:  30.08.2011
-"      Revision:  30.11.2014
+"      Revision:  08.01.2015
 "       License:  Copyright (c) 2012-2015, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -1290,11 +1290,11 @@ function! s:HandleMenuExpandOptions ( option )
 	"
 	if a:option == 'key'
 		return '|KEY|'
-	elseif a:option == 'key-clean'
+	elseif a:option == 'key-notags'
 		return '|KEY:T|'
 	elseif a:option == 'value'
 		return '|VALUE|'
-	elseif a:option == 'value-clean'
+	elseif a:option == 'value-notags'
 		return '|VALUE:T|'
 	endif
 	"

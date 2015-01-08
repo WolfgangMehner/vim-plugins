@@ -1,4 +1,4 @@
-*templatesupport.txt*         MM Template Support                  Nov 30 2014
+*templatesupport.txt*         MM Template Support                  Jan 08 2015
 
 MM Template Support                                        *template-support*
 
@@ -913,13 +913,31 @@ This way the template becomes self documenting. Additionally, the user can go
 to the menu for an overview of the character classes and their associated
 expressions.
 In the same way "expandleft:..." can be used to define the left-aligned text
-of the menu entry. The allowed values for "expandleft:..." and
+of the menu entry. Among the allowed values for "expandleft:..." and
 "expandright:..." are "key" and "value". With lists, both refer to the list
 element, with dictionaries, they refer to the key and value, respectively. The
 following would thus be possible: >
   == ... == expandmenu, expandleft:value, expandright:key ==
 The submenu would show each dictionary key on the right, and each associated
 value on the left.
+
+Values for "expandleft:..." and "expandright:...":
+
+  Value           usage with lists
+ ----------------------------------------------------------------------------
+  key             the list element
+  key-notags      same as "key", but all tags (cursor, split, jump) removed
+  value           same as "key"
+  value-notags    same as "key-notags"
+ ----------------------------------------------------------------------------
+
+  Value           usage with dictionaries
+ ----------------------------------------------------------------------------
+  key             the key
+  key-notags      the key, all tags removed
+  value           the value
+  value-notags    the value, all tags removed
+ ----------------------------------------------------------------------------
 
 ==============================================================================
 6.  ADVANCED FEATURES                              *template-support-advanced*
@@ -1270,10 +1288,9 @@ session. The variables can be set in the .vimrc file.
                               ''          additional flags for the browser
  ----------------------------------------------------------------------------
 
-(^1)
-  The Unix defaults are as follows:
+(^1) the Unix defaults are as follows:
   |g:Templates_InternetBrowserExec|    - firefox
-  the Windows defaults are as follows:
+the Windows defaults are as follows:
   |g:Templates_InternetBrowserExec|    - C:\Program Files\Mozilla Firefox\
                                        firefox.exe
 
@@ -2361,7 +2378,7 @@ Set the macro 'name' to 'text':
 This is used to set replacements for macros.
 
 Setting the macros "TIME", "DATE", "YEAR", "BASENAME", "FILENAME" , "PATH" and
-"SUFFIX" is not allowed.  They are set to the appropriate values before
+"SUFFIX" is not allowed. They are set to the appropriate values before
 insertion of a template.
 
 Example: >
@@ -2449,7 +2466,7 @@ Open a prompt and let the user select an entry from a list:
 
 	|PickList ( prompt, list )| ~
 
-Displays 'prompt' and lets the user select an entry from a list.  If 'list' is
+Displays 'prompt' and lets the user select an entry from a list. If 'list' is
 a string and matches an identifier, the list resource by this name is used.
 If 'list' is a list or a dictionary, it is used directly.
 
@@ -2610,14 +2627,14 @@ Submenus for templates using lists (|template-support-PickList()|):
   expandmenu:<list>  - A submenu is created with entries matching those of the
                        list <list>. (interface 1.0+)
   expandleft:<what>  - When creating the submenu, use the element <what> for
-                       the left-aligned side of the menu entry.
+                       the left-aligned side of the menu entry. (^1)
                        (interface 1.0+)
   expandright:<what> - When creating the submenu, use the element <what> for
-                       the right-aligned side of the menu entry.
+                       the right-aligned side of the menu entry. (^1)
                        (interface 1.0+)
 
-Note: Valid value for the element <what> are: key, value
-Note: For an explanation of these options, see |template-support-lists-menu|.
+(^1) valid values for <what> are (see |template-support-lists-menu|):
+  key, key-notags, value, value-notags
 
 ------------------------------------------------------------------------------
 C.2  LISTS                                         *template-support-opt-list*
@@ -2698,6 +2715,7 @@ API:
   which can be used by all libraries.
 - Added: Function |mmtemplates#core#EnableTemplateFile()|.
 - Added: Function |mmtemplates#core#FindPersonalizationFile()|.
+- Added: Function |mmtemplates#core#AddCustomTemplateFiles()|.
 - Changed: New options for the function |mmtemplates#core#ReadTemplates()| and
   |mmtemplates#core#Resource()|.
 
