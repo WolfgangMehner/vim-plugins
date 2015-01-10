@@ -27,7 +27,7 @@
 
 == Tests.file permissions == expandmenu, insert, sc:p, map:tfp ==
 |PickList( 'file permission', 'TestsFilePermission' )|
-[ <CURSOR> |PICK|  ]
+[ |PICK| <CURSOR> ]
 == ENDTEMPLATE ==
 
 == LIST: TestsFileTypes == hash ==
@@ -42,7 +42,7 @@
 
 == Tests.file types == expandmenu, insert, sc:t, map:tft ==
 |PickList( 'file type', 'TestsFileTypes' )|
-[ <CURSOR> |PICK|  ]
+[ |PICK| <CURSOR> ]
 == ENDTEMPLATE ==
 
 == LIST: TestsFileCharacteristics == hash ==
@@ -58,7 +58,7 @@
 
 == Tests.file characteristics == expandmenu, insert, sc:c, map:tfc ==
 |PickList( 'file characteristics', 'TestsFileCharacteristics' )|
-[ <CURSOR> |PICK|  ]
+[ |PICK| <CURSOR> ]
 == ENDTEMPLATE ==
 
 == LIST: TestsStrings == hash ==
