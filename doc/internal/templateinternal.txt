@@ -69,16 +69,16 @@ The template library contains the following fields:
 - templates (dict)
     Holds the templates, see |templates-i-data-templ|.
     key - name + "type" (string): "<name>!!type"
-    val - Type of the template (string).
+    val - basic information (table)
       or
     key - name + "menu" (string): "<name>!!menu"
-    val - Information about map and menu creation (string).
+    val - information about map and menu creation (table)
       or
     key - name + "expand" (string): "<name>!!expand"
-    val - Information about list menu expansion (string).
+    val - information about list menu expansion (table)
       or
     key - name + style (string): "<name>!<style>"
-    val - Text for a style (string).
+    val - text for a style (string)
 
 - menu_order (list of strings)
     Names of the menu entries in the order they were encountered during the
@@ -184,16 +184,14 @@ The runtime information contains the following fields:
 The templates are saved in the library in a dictionary under the key
 "templates". Each template has several entries with the following keys:
 
-- "<name>!!type" -> "<type>,<placement>,<indentation>"
-    The entry is a string containing;
-    - type        - the type: template, help, separator, ...
-    - placement   - the placement: help, start, above, below, ...
-    - indentation - indentation: no ("0") or yes ("1")
+- "<name>!!type" -> { ... }
+    The entry is a dict containing:
+    - type        (str) - the type: template, help, separator, ...
+    - placement   (str) - the placement: help, start, above, below, ...
+    - indentation (int) - indentation: no ("0") or yes ("1")
     The entries are not escaped and can be recovered by splitting at ",".
-- "<name>!!menu" -> "[<filetypes>],<visual>,'<map>',<entry>,'<mname>','<shortcut>'"
-    The entry is a string meant to be interpreted as a list: >
-      exe 'let [ filetypes, visual, map, entry, mname, shortcut ]'
-            \ '= ['.lib.templates[ name.'!!menu' ].']'
+- "<name>!!menu" -> { ... }
+    The entry is a dict containing: >
 <   - filetypes (lst) - filetypes: list of strings naming the filetypes
     - visual    (int) - split in visual mode: no (0) or yes/force (1)
     - map       (str) - the map, not prefixed with the mapleader
@@ -201,10 +199,8 @@ The templates are saved in the library in a dictionary under the key
     - mname     (str) - name in the menu
     - shortcut  (str) - the shortcut, string of length one
     The entries are escaped as appropriate.
-- "<name>!!menu" -> "'<uselist>','<lefttext>','<righttext>'"
-    The entry is a string meant to be interpreted as a list: >
-      exe 'let [ uselist, lefttext, righttext ]'
-            \ '= ['.lib.templates[ name.'!!expand' ].']'
+- "<name>!!expand" -> { ... }
+    The entry is a dict containing: >
 <   - uselist   (str) - the list to use when expanding the menu, can be empty,
                         in which case the template is searched for the list
     - lefttext  (str) - the left-aligned text of the menu entry
@@ -238,8 +234,8 @@ Separators are not templates, but they appear in the list "menu_order". They
 get an entry "<name>!!type" and "<name>!!menu", so they can be properly
 processed during loading and menu creation. Their entries have the following
 format:
-- "<name>!!type" -> "sep,,0" (type separator and two dummy entries)
-- "<name>!!menu" -> "[],0,'',11,'',''" (create separator entry and nothing else)
+- "<name>!!type" -> { "type" : "sep" } (type is separator)
+- "<name>!!menu" -> { "entry" : 11 } (create separator entry and nothing else)
 
 ------------------------------------------------------------------------------
 1.6  EXCEPTIONS                                      *templates-i-data-except*

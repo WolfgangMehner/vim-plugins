@@ -959,7 +959,7 @@ function! s:AddTemplate ( type, name, settings, lines )
 	"
 	if has_key ( s:library.templates, name.'!!type' )
 		let my_type    = a:type
-		let other_type = split ( s:library.templates[ name.'!!type' ], ',' )[0]
+		let other_type = s:library.templates[ name.'!!type' ].type
 		"
 		if my_type != other_type
 			if my_type == 't'
@@ -976,7 +976,7 @@ function! s:AddTemplate ( type, name, settings, lines )
 		" --------------------------------------------------
 		let type        = a:type
 		let placement   = 'below'
-		let indentation = '1'
+		let indentation = 1
 		"
 		let visual    = -1 != stridx ( a:lines, '<SPLIT>' )
 		let mp        = ''
@@ -997,9 +997,9 @@ function! s:AddTemplate ( type, name, settings, lines )
 
 				" indentation
 			elseif s == 'indent'
-				let indentation = '1'
+				let indentation = 1
 			elseif s == 'noindent'
-				let indentation = '0'
+				let indentation = 0
 
 				" special insertion in visual mode:
 			elseif s == 'visual'
@@ -1056,11 +1056,26 @@ function! s:AddTemplate ( type, name, settings, lines )
 		" --------------------------------------------------
 		"  new template
 		" --------------------------------------------------
-		let s:library.templates[ name.'!!type' ] = type.','.placement.','.indentation
-		let s:library.templates[ name.'!!menu' ] = s:t_runtime.use_ft_string.",".visual.",".string(mp).",".entry.",'',".string(sc)
+		let s:library.templates[ name.'!!type' ] = {
+					\ 'type'        : type,
+					\ 'placement'   : placement,
+					\ 'indentation' : indentation,
+					\ }
+		let s:library.templates[ name.'!!menu' ] = {
+					\ 'filetypes' : s:t_runtime.use_filetypes,
+					\ 'visual'    : visual,
+					\ 'map'       : mp,
+					\ 'entry'     : entry,
+					\ 'mname'     : '',
+					\ 'shortcut'  : sc,
+					\ }
 		"
 		if entry == 2
-			let s:library.templates[ name.'!!expand' ] = string(expand_list).",".string(expand_left).",".string(expand_right)
+			let s:library.templates[ name.'!!expand' ] = {
+						\ 'expand_list'  : expand_list,
+						\ 'expand_left'  : expand_left,
+						\ 'expand_right' : expand_right,
+						\ }
 		endif
 		"
 		call add ( s:library.menu_order, name )
@@ -1124,7 +1139,7 @@ function! s:AddSeparator ( type, name, settings )
 	if has_key ( s:library.templates, name.'!!type' )
 		"
 		let my_type    = a:type
-		let other_type = split ( s:library.templates[ name.'!!type' ], ',' )[0]
+		let other_type = s:library.templates[ name.'!!type' ].type
 		"
 		if my_type != other_type
 			call s:ErrorMsg ( 'Separator "'.name.'" can not overwrite an object of the same name of type "'.s:TemplateTypeNames[other_type].'".' )
@@ -1132,8 +1147,8 @@ function! s:AddSeparator ( type, name, settings )
 		endif
 	else
 		"
-		let s:library.templates[ name.'!!type' ] = 'sep,,0'
-		let s:library.templates[ name.'!!menu' ] = "[],0,'',11,'',''"
+		let s:library.templates[ name.'!!type' ] = { 'type'  : 'sep', }
+		let s:library.templates[ name.'!!menu' ] = { 'entry' : 11, }
 		"
 		call add ( s:library.menu_order, name )
 		"
@@ -1222,9 +1237,9 @@ function! s:UseFiletypes ( filetypes )
 		return
 	endif
 	"
-	" 'use_filetypes' empty? -> we may have new filetypes
-	" otherwise              -> must be a subset, so no new filetypes
-	if empty ( s:t_runtime.use_filetypes )
+	" 'filetypes_stack' empty? -> we may have new filetypes
+	" otherwise                -> must be a subset, so no new filetypes
+	if empty ( s:t_runtime.filetypes_stack )
 		" :TODO:05.09.2013 19:26:WM: Call 'AddFiletypes' ?
 		" add the filetypes to the list
 		"call s:AddFiletypes ( a:filetypes )
@@ -1239,9 +1254,12 @@ function! s:UseFiletypes ( filetypes )
 	endif
 	"
 	" push the new filetype and use it as the current filetype
-	call add ( s:t_runtime.filetypes_stack, a:filetypes )
-	let  s:t_runtime.use_filetypes = a:filetypes
-	let  s:t_runtime.use_ft_string = string( s:t_runtime.use_filetypes )
+	call add ( s:t_runtime.filetypes_stack, copy ( a:filetypes ) )
+	if empty ( a:filetypes )
+		let s:t_runtime.use_filetypes = [ 'default' ]
+	else
+		let s:t_runtime.use_filetypes = copy ( a:filetypes )
+	endif
 	"
 endfunction    " ----------  end of function s:UseFiletypes  ----------
 "
@@ -1271,13 +1289,10 @@ function! s:RevertFiletypes ( times )
 	" reset the current filetype
 	if state_top > a:times
 		let s:t_runtime.use_filetypes = s:t_runtime.filetypes_stack[ -1 ]
-		let s:t_runtime.use_ft_string = string( s:t_runtime.use_filetypes )
 	elseif s:library.interface >= 1000000
-		let s:t_runtime.use_filetypes = []
-		let s:t_runtime.use_ft_string = "['default']"
+		let s:t_runtime.use_filetypes = [ 'default' ]
 	else
 		let s:t_runtime.use_filetypes = []
-		let s:t_runtime.use_ft_string = "[]"
 	endif
 	"
 endfunction    " ----------  end of function s:RevertFiletypes  ----------
@@ -1310,7 +1325,7 @@ function! s:InterfaceVersionRuntimeUpdates ()
 	"
 	" version 1.0 setup
 	if s:library.interface >= 1000000
-		let s:t_runtime.use_ft_string = "['default']"
+		let s:t_runtime.use_filetypes = [ 'default' ]
 	endif
 	"
 	" version 1.1 setup
@@ -1814,7 +1829,7 @@ function! s:IncludeFile ( templatefile, ... )
 	" all filetype sections closed?
 	let state_lim = s:t_runtime.state_stack[-1].filetype_stack_top
 	let state_top = len( s:t_runtime.filetypes_stack )
-	if state_lim < state_top
+	if s:library.interface >= 1000000 && state_lim < state_top
 		call s:RevertFiletypes ( state_top - state_lim )
 		call s:ErrorMsg ( 'Section has not been closed: '.last_section )
 	endif
@@ -1857,7 +1872,6 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 				\ 'use_styles'      : [],
 				\ 'styles_stack'    : [],
 				\ 'use_filetypes'   : [],
-				\ 'use_ft_string'   : '[]',
 				\ 'filetypes_stack' : [],
 				\ 'files_visited'   : {},
 				\
@@ -2451,7 +2465,6 @@ function! s:GetTemplate ( name, style )
 	" check the template
 	if has_key ( s:library.templates, name.'!!type' )
 		let info = s:library.templates[ a:name.'!!type' ]
-		let [ type, placement, indentation ] = split ( info, ',' )
 	else
 		throw 'Template:Prepare:template does not exist'
 	endif
@@ -2494,7 +2507,7 @@ function! s:GetTemplate ( name, style )
 	else
 		"
 		" do checks
-		let [ cmds, text ] = s:CheckTemplate ( template, type )
+		let [ cmds, text ] = s:CheckTemplate ( template, info.type )
 		"
 		" save the result
 		if empty ( cmds )
@@ -2506,7 +2519,7 @@ function! s:GetTemplate ( name, style )
 		"
 	end
 	"
-	return [ cmds, text, type, placement, indentation ]
+	return [ cmds, text, info.type, info.placement, info.indentation ]
 endfunction    " ----------  end of function s:GetTemplate  ----------
 "
 "----------------------------------------------------------------------
@@ -3114,7 +3127,7 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 	let regex = s:library.regex_template
 	"
 	let placement   = a:placement
-	let indentation = a:indentation == '1'
+	let indentation = a:indentation
 	"
 	if a:flag_mode != 'v'
 		" --------------------------------------------------
@@ -3618,25 +3631,27 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 	" go through all the templates
 	for t_name in t_lib.menu_order
 		"
-		exe 'let [ filetypes, visual, mp ] = ['.t_lib.templates[ t_name.'!!menu' ].'][0:2]'
+		let info = t_lib.templates[ t_name.'!!menu' ]
 		"
-		" wrong filetype?
-		if t_lib.interface >= 1000000 && -1 == index ( filetypes, opt_ft )
+		" a separator?
+		" no map?
+		if info.entry == 11 || empty ( info.map )
 			continue
 		endif
 		"
-		" no map?
-		" separators have an empty string "map", so they are skipped here
-		if empty ( mp )
+		" wrong filetype?
+		if t_lib.interface >= 1000000 && -1 == index ( info.filetypes, opt_ft )
 			continue
 		endif
 		"
 		" visual mode, flag 'v': template contains a split tag, or the mode is forced
-		if visual == 1
+		if info.visual == 1
 			let v_flag = ',"v"'
 		else
 			let v_flag = ''
 		endif
+		"
+		let mp = info.map
 		"
 		if s:DoCreateMap ( leader.mp, 'n', echo_warning )
 			let cmd .= 'nnoremap '.options.' '.leader.mp.'      :call mmtemplates#core#InsertTemplate('.a:library.',"'.t_name.'")<CR>'.sep
@@ -3829,16 +3844,16 @@ function! s:CreateListMenus ( t_name, submenu, visual )
 	let t_name = a:t_name
 	let plain  = 1
 	"
-	exe 'let [ expand_list, expand_left, expand_right ] = ['.s:library.templates[ t_name.'!!expand' ].']'
+	let info = s:library.templates[ t_name.'!!expand' ]
 	"
-	if expand_left != ''
+	if info.expand_left != ''
 		let plain = 0
-	elseif expand_right != ''
+	elseif info.expand_right != ''
 		let plain = 0
-		let expand_left = '|KEY|'                   " default for left-hand side
+		let info.expand_left = '|KEY|'                   " default for left-hand side
 	endif
 	"
-	let list_compl = s:GetPickList ( t_name, expand_list )
+	let list_compl = s:GetPickList ( t_name, info.expand_list )
 	"
 	if type ( list_compl ) == type ( [] )
 		let list_keys = list_compl
@@ -3885,8 +3900,8 @@ function! s:CreateListMenus ( t_name, submenu, visual )
 			"
 			try
 				"
-				let item_left  = s:ReplaceMacros ( expand_left,  m_local )
-				let item_right = s:ReplaceMacros ( expand_right, m_local )
+				let item_left  = s:ReplaceMacros ( info.expand_left,  m_local )
+				let item_right = s:ReplaceMacros ( info.expand_right, m_local )
 				"
 				if empty ( item_left )
 					let item_entry = mmtemplates#core#EscapeMenu ( item, 'entry' )
@@ -3930,10 +3945,10 @@ function! s:CreateTemplateMenus (  )
 	" go through all the templates
 	for t_name in s:library.menu_order
 		"
-		exe 'let [ ignore1, visual, mp, entry, ignore2, shortcut ] = ['.s:library.templates[ t_name.'!!menu' ].']'
+		let info = s:library.templates[ t_name.'!!menu' ]
 		"
 		" no menu entry?
-		if entry == 0
+		if info.entry == 0
 			continue
 		endif
 		"
@@ -3945,7 +3960,7 @@ function! s:CreateTemplateMenus (  )
 			call s:CreateSubmenu ( t_menu[ 0 : -2 ], s:StandardPriority )
 		endif
 		"
-		if entry == 11
+		if info.entry == 11
 			let m_key = t_menu[ 0 : -2 ]
 			if empty ( m_key )
 				let m_key = '!base'
@@ -3960,32 +3975,32 @@ function! s:CreateTemplateMenus (  )
 		endif
 		"
 		" shortcut and menu entry
-		if ! empty ( shortcut )
-			if stridx ( tolower( t_last ), tolower( shortcut ) ) == -1
-				let t_last .= ' (&'.shortcut.')'
+		if ! empty ( info.shortcut )
+			if stridx ( tolower( t_last ), tolower( info.shortcut ) ) == -1
+				let t_last .= ' (&'.info.shortcut.')'
 			else
-				let t_last = substitute( t_last, '\c'.shortcut, '\&&', '' )
+				let t_last = substitute( t_last, '\c'.info.shortcut, '\&&', '' )
 			endif
 		endif
 		"
 		" assemble the entry, including the map, TODO: escape the map
 		let compl_entry = escape( t_menu.t_last, ' ' )
-		if empty ( mp )
+		if empty ( info.map )
 			let map_entry = ''
 		else
-			let map_entry = '<TAB>'.map_ldr.mp
+			let map_entry = '<TAB>'.map_ldr.( info.map )
 		end
 		"
-		if entry == 1
+		if info.entry == 1
 			" <Esc><Esc> prevents problems in insert mode
 			exe 'anoremenu <silent> '.s:t_runtime.root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'")<CR>'
 			exe 'inoremenu <silent> '.s:t_runtime.root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","i")<CR>'
-			if visual == 1
+			if info.visual == 1
 				exe 'vnoremenu <silent> '.s:t_runtime.root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","v")<CR>'
 			endif
-		elseif entry == 2
+		elseif info.entry == 2
 			call s:CreateSubmenu ( t_menu.t_last.map_entry, s:StandardPriority )
-			call s:CreateListMenus ( t_name, s:t_runtime.root_menu.compl_entry.'.', visual )
+			call s:CreateListMenus ( t_name, s:t_runtime.root_menu.compl_entry.'.', info.visual )
 		endif
 		"
 	endfor
