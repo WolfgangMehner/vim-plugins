@@ -396,7 +396,9 @@ documentation of Lua functions or an English dictionary.
   Feature                    Menu Entry                     Map
  ----------------------------------------------------------------------------
   open English dictionary    Help.English                   <LocalLeader>he
-  open reference for a       Help.Lua function              <LocalLeader>hl
+  open online reference      Help.Lua function, browser     <LocalLeader>hl
+    for a library function
+  open Vim help for a 5.2    Help.Lua 52 function, Vim help <LocalLeader>h2
     library function
   open plug-in help          Help.help (Lua support)        <LocalLeader>hs
  ----------------------------------------------------------------------------
@@ -406,12 +408,16 @@ place the cursor on the name of a function in your source code, and use the
 menu entry or the map to open the online reference for that function.
 (See Section |luasupport-config-browser| for the configuration.)
 
+Similarly, the help can be read in Vim's help format, using the map "\h2".
+
 Example:
 
 Place the cursor on "sin" and invoke the map: >
   a = math.sin ( r * pi )
-The following URL will be opened in your browser: >
+The following URL will be opened in your browser (using "\hl"): >
   http://www.lua.org/manual/5.2/manual.html#pdf-math.sin
+or the following help topic will be shown (using "\h2"): >
+  :help luaref-5.2-math.sin
 <
 ------------------------------------------------------------------------------
 2.7  TOOLBOX                                        *luasupport-usage-toolbox*

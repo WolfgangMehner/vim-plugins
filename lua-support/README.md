@@ -167,6 +167,8 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 - Added optional custom templates (g:Lua_CustomTemplateFile).
 - Added optional additional templates (g:Lua_AdditionalTemplates).
 - Added template personalization file and setup wizard.
+- Added Lua's reference manual in Vim's help format.
+- Added map and menu entry to jump to it conveniently.
 - New templates.
 - Minor improvements.
 

@@ -58,7 +58,10 @@ SetMacro( 'HelpPathLua',     'http://www.lua.org/manual/5.2/' )
 |Word( '' )|
 |Substitute( '\W', '', 'g' )|
 |Browser( '|HelpPathEnglish||PICK:l|' )|
-== HELP: Help.Lua function == map:hl, sc:l ==
+== HELP: Help.Lua function, browser == map:hl, sc:l ==
 |Pattern( '\<\%(\w\+[.:]\)\?\w\+\>' )|
 |Browser( '|HelpPathLua|manual.html#pdf-|PICK|', '|HelpPathLua|contents.html#index' )|
+== HELP: Help.Lua 52 function, Vim help == map:h2, sc:2 ==
+|Pattern( '\<\%(\w\+[.:]\)\?\w\+\>' )|
+|Vim( ':help luaref-5.2-|PICK|', ':help luaref-5.2-contents' )|
 == ENDTEMPLATE ==
