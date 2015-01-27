@@ -2700,7 +2700,7 @@ endfunction    " ----------  end of function s:PrepareHelp  ----------
 " s:PrepareStdTempl : Prepare a template (standard).   {{{2
 "----------------------------------------------------------------------
 "
-function! s:PrepareStdTempl ( cmds, text )
+function! s:PrepareStdTempl ( cmds, text, name )
 	"
 	" TODO: revert must work like a stack, first set, last reverted
 	" TODO: revert in case of PickList and PickFile
@@ -2796,8 +2796,59 @@ function! s:PrepareStdTempl ( cmds, text )
 				let input_list = sort ( keys ( list ) )
 			endif
 			"
+			let plain     = 1
+			let menu_info = get ( s:library.templates, a:name.'!!menu' )
+			"
+			if menu_info.entry == 2
+				let expand_info = get ( s:library.templates, a:name.'!!expand' )
+				let expand_l    = ''
+				let expand_r    = ''
+				"
+				if get ( expand_info, 'expand_left', '' ) != ''
+					let plain = 0
+					let expand_l = get ( expand_info, 'expand_left' )
+					let expand_r = get ( expand_info, 'expand_right', '' )
+				elseif get ( expand_info, 'expand_left', '' ) != ''
+					let plain = 0
+					let expand_l = '|KEY|'
+					let expand_r = get ( expand_info, 'expand_right' )
+				endif
+			endif
+			"
 			if exists ( 'l:pick_entry' )
 				let entry = l:pick_entry
+			elseif ! plain
+				let formated_list = []
+				let format_string = expand_l.' ('.expand_r.')'
+				"
+				let m_local = {}
+				"
+				for item in input_list
+					"
+					if type == 'list'
+						let m_local.KEY   = item
+						let m_local.VALUE = item
+					else
+						let m_local.KEY   = item
+						let m_local.VALUE = list[item]
+					endif
+					"
+					try
+						let f_item = s:ReplaceMacros ( format_string,  m_local )
+						"
+						call add ( formated_list, f_item )
+					catch /.*/
+						call s:ErrorMsg ( v:exception )
+						"
+						call add ( formated_list, item )
+					endtry
+				endfor
+				"
+				let entry = s:UserInput ( p_prompt.' : ', '', 'customlist', formated_list )
+				let idx   = index ( formated_list, entry )
+				if idx != -1
+					let entry = input_list[ idx ]
+				endif
 			else
 				let entry = s:UserInput ( p_prompt.' : ', '', 'customlist', input_list )
 			endif
@@ -2805,8 +2856,10 @@ function! s:PrepareStdTempl ( cmds, text )
 			let m_local.KEY = entry
 			"
 			if type == 'dict'
-				if ! has_key ( list, entry )
+				if ! has_key ( list, entry ) && plain
 					throw 'Template:Prepare:the entry "'.entry.'" does not exist'
+				elseif ! has_key ( list, entry ) && ! plain
+					throw 'Template:Prepare:no entry associated with "'.entry.'"'
 				endif
 				let entry = list[ entry ]
 			endif
@@ -3074,7 +3127,7 @@ function! s:PrepareTemplate ( name, ... )
 	" ==================================================
 	"
 	if type == 't'
-		let text = s:PrepareStdTempl( cmds, text )
+		let text = s:PrepareStdTempl( cmds, text, a:name )
 "		" TODO: remove this code:
 " 	elseif type == 'pick-file'
 " 		let text = s:PreparePickFile( cmds, text )
