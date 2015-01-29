@@ -1,4 +1,8 @@
-Project
+Interesting:
+- Documentation of Windows idiosyncrasies:
+    :help win32
+
+Project:
 - (FM,WM, DONE?) Use normal!, noremap and noremenu consistently.
 - (FM,WM) Is the difference between local and global/system installation
   documented somewhere?
@@ -26,6 +30,7 @@ Templates:
   given.
 - (WM) Better debugging while reading template files:
   Print filename and line number for errors and warnings.
+- (WM) Add configuration "g:Templates_OverwriteWarning".
 
 Awk:
 - (FM) 'code->comment' should not insert a space following the hash?
@@ -54,6 +59,7 @@ C/C++:
   * (DONE) Templates for "overload".
   * (DONE) Append "short, after member" to several lines.
   * Add escaped characters "\" and "|" once the template engine supports this.
+- (WM) Documentation: The documentation of "g:Templates_MapInUseWarn" is wrong.
 
 Git:
 - (WM, DONE) Add more suggestions for custom menu entries to 's:Git_CustomMenu'.
@@ -89,6 +95,7 @@ LaTeX:
 - (WM, DONE) Documentation: Menu 'Help' missing.
 - (FM) Reference Card: Menu 'Beamer' missing.
 - (WM, DONE) Reference Card: Entry 'Help->english' missing.
+- (WM) Documentation: The documentation of "g:Templates_MapInUseWarn" is wrong.
 
 Perl:
 - (FM, DONE) Documentation: Change documentation with regard to Make integration.
@@ -97,6 +104,9 @@ Perl:
   * Reference documentation of toolbox.
   * Reference toolbox in 'perl-hotkeys.tex'?
   * Document 'g:Perl_UseToolbox' and 'g:Perl_UseTool_make'.
+- (WM) Documentation: Maps Ctrl+j and Crtl+d.
+- (WM) Documentation: 'g:Perl_AdditionalTemplates'.
+- (WM) Documentation: The documentation of "g:Templates_MapInUseWarn" is wrong.
 
 Vim:
 - (WM, DONE) 'code->comment' should not insert a space following the quote.
