@@ -1,3 +1,11 @@
+§ =============================================================
+§  Interface Version
+§
+§  enable advanced features
+§ =============================================================
+
+InterfaceVersion ( '1.0' )
+
 § ==========================================================
 §  User Macros
 § ==========================================================
@@ -28,6 +36,7 @@ MenuShortcut( 'Special Variables', 'v' )
 MenuShortcut( 'Regex', 'r' )
 MenuShortcut( 'Snippets', 'n' )
 MenuShortcut( 'File-Test', 'f' )
+MenuShortcut( 'Help', 'h' )
 
 IncludeFile( 'comments.templates' )
 IncludeFile( 'statements.templates' )
@@ -38,3 +47,20 @@ IncludeFile( 'pod.templates' )
 IncludeFile( 'snippets.templates' )
 IncludeFile( 'filetests.templates' )
 
+§ =============================================================
+§  Help
+§
+§  help English:
+§  - pick up the word under the cursor
+§  - delete non-word characters before calling the help
+§  - the word is always included in the URL in lowercase,
+§    which seems to work better
+§ =============================================================
+
+SetMacro( 'HelpPathEnglish', 'http://en.wiktionary.org/wiki/' )
+
+== HELP: Help.English == map:he, sc:e ==
+|Word( '' )|
+|Substitute( '\W', '', 'g' )|
+|Browser( '|HelpPathEnglish||PICK:l|' )|
+== ENDTEMPLATE ==

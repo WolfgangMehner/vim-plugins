@@ -1,13 +1,15 @@
-== LIST: snippets_jamptags == hash ==
-	'less-plus'   : '<+<CURSOR>+>',
-	'less-minus'  : '<-<CURSOR>->',
-	'brace-plus'  : '{+<CURSOR>+}',
-	'brace-minus' : '{-<CURSOR>-}',
+== LIST: snippets_jumptags == hash ==
+	'less-plus'      : '<+<CURSOR>+>',
+	'less-minus'     : '<-<CURSOR>->',
+	'brace-plus'     : '{+<CURSOR>+}',
+	'brace-minus'    : '{-<CURSOR>-}',
+	'optional-plus'  : '[+<CURSOR>+]',
+	'optional-minus' : '[-<CURSOR>-]',
 == ENDLIST ==
 
-== Snippets.jump tags == expandmenu, insert, map:njt, sc:m ==
-|PickList( 'jumptags', 'snippets_jamptags' )|
-|PICK|
+== Snippets.jump tags == expandmenu, expandright:value, insert, map:njt, sc:m ==
+|PickList( 'jumptags', 'snippets_jumptags' )|
+|VALUE|
 == ENDTEMPLATE ==
 
 == Snippets.regex == map:nxs, sc:x ==

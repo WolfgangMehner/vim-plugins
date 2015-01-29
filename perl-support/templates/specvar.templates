@@ -1,102 +1,102 @@
 
 == LIST: basics == hash ==
-  '$BASETIME $^T'         : '$BASETIME<CURSOR>',
-  '$PERL_VERSION $^V'     : '$PERL_VERSION<CURSOR>',
-  '$EXECUTABLE_NAME $^X'  : '$EXECUTABLE_NAME<CURSOR>',
-  '$PROGRAM_NAME $0'      : '$PROGRAM_NAME<CURSOR>',
-  '$OSNAME $^O'           : '$OSNAME<CURSOR>',
-  '$SYSTEM_FD_MAX $^F'    : '$SYSTEM_FD_MAX<CURSOR>',
-  '$ENV{ }'               : '$ENV{<CURSOR>}',
-  '$INC{ }'               : '$INC{<CURSOR>}',
-  '$SIG{ }'               : '$SIG{<CURSOR>}',
+  '$BASETIME<CURSOR>'        : '$^T',
+  '$PERL_VERSION<CURSOR>'    : '$^V',
+  '$EXECUTABLE_NAME<CURSOR>' : '$^X',
+  '$PROGRAM_NAME<CURSOR>'    : '$0',
+  '$OSNAME<CURSOR>'          : '$^O',
+  '$SYSTEM_FD_MAX<CURSOR>'   : '$^F',
+  '$ENV{<CURSOR>}'           : '',
+  '$INC{<CURSOR>}'           : '',
+  '$SIG{<CURSOR>}'           : '',
 == ENDLIST ==
 
-== Special Variables.basics == expandmenu, insert, sc:b, map:vb ==
+== Special Variables.basics == expandmenu, expandleft:key-notags, expandright:value, insert, sc:b, map:vb ==
 |PickList( 'basics', 'basics' )|
-|PICK|
+|KEY|
 == ENDTEMPLATE ==
 
 == LIST: errors == hash ==
-  '$CHILD_ERROR $?'       : '$CHILD_ERROR',
-  '$ERRNO $!'             : '$ERRNO{<CURSOR>}',
-  '$EVAL_ERROR $@'        : '$EVAL_ERROR',
-  '$EXTENDED_OS_ERROR $^E': '$EXTENDED_OS_ERROR',
-  '$WARNING $^W'          : '$WARNING',
+  '$CHILD_ERROR<CURSOR>'       : '$?',
+  '$ERRNO{<CURSOR>}'           : '$!',
+  '$EVAL_ERROR<CURSOR>'        : '$@',
+  '$EXTENDED_OS_ERROR<CURSOR>' : '$^E',
+  '$WARNING<CURSOR>'           : '$^W',
 == ENDLIST ==
 
-== Special Variables.errors == expandmenu, insert, sc:e, map:ve ==
+== Special Variables.errors == expandmenu, expandleft:key-notags, expandright:value, insert, sc:e, map:ve ==
 |PickList( 'errors', 'errors' )|
-|PICK|<CURSOR>
+|KEY|
 == ENDTEMPLATE ==
 
 == LIST: filehandle == hash ==
-  '$AUTOFLUSH $\|'                   : '$AUTOFLUSH',
-  '$FORMAT_LINES_LEFT $-'            : '$FORMAT_LINES_LEFT',
-  '$FORMAT_LINES_PER_PAGE $='        : '$FORMAT_LINES_PER_PAGE',
-  '$FORMAT_LINE_BREAK_CHARACTER $:'  : '$FORMAT_LINE_BREAK_CHARACTER',
-  '$FORMAT_NAME $~'                  : '$FORMAT_NAME',
-  '$FORMAT_PAGE_NUMBER $%'           : '$FORMAT_PAGE_NUMBER',
-  '$FORMAT_TOP_NAME $^'              : '$FORMAT_TOP_NAME',
-  '$OUTPUT_AUTOFLUSH $\|'            : '$OUTPUT_AUTOFLUSH',
+  '$AUTOFLUSH'                   : '$|',
+  '$FORMAT_LINES_LEFT'           : '$-',
+  '$FORMAT_LINES_PER_PAGE'       : '$=',
+  '$FORMAT_LINE_BREAK_CHARACTER' : '$:',
+  '$FORMAT_NAME'                 : '$~',
+  '$FORMAT_PAGE_NUMBER'          : '$%',
+  '$FORMAT_TOP_NAME'             : '$^',
+  '$OUTPUT_AUTOFLUSH'            : '$|',
 == ENDLIST ==
 
-== Special Variables.filehandle == expandmenu, insert, sc:f, map:vf ==
+== Special Variables.filehandle == expandmenu, expandleft:key-notags, expandright:value, insert, sc:f, map:vf ==
 |PickList( 'filehandle', 'filehandle' )|
-|PICK|<CURSOR>
+|KEY|<CURSOR>
 == ENDTEMPLATE ==
 
 == LIST: IDs == hash ==
-  '$PID $$'                   : '$PID',
-  '$PROCESS_ID $$'            : '$PROCESS_ID',
-  '$UID $<'                   : '$UID',
-  '$REAL_USER_ID $<'          : '$REAL_USER_ID',
-  '$EUID $>'                  : '$EUID',
-  '$EFFECTIVE_USER_ID $>'     : '$EFFECTIVE_USER_ID',
-  '$GID $('                   : '$GID',
-  '$REAL_GROUP_ID $('         : '$REAL_GROUP_ID',
-  '$EGID $)'                  : '$EGID',
-  '$EFFECTIVE_GROUP_ID $)'    : '$EFFECTIVE_GROUP_ID',
+  '$PID'                : '$$',
+  '$PROCESS_ID'         : '$$',
+  '$UID'                : '$<',
+  '$REAL_USER_ID'       : '$<',
+  '$EUID'               : '$>',
+  '$EFFECTIVE_USER_ID'  : '$>',
+  '$GID'                : '$(',
+  '$REAL_GROUP_ID'      : '$(',
+  '$EGID'               : '$)',
+  '$EFFECTIVE_GROUP_ID' : '$)',
 == ENDLIST ==
 
-== Special Variables.IDs == expandmenu, insert, sc:i, map:vid ==
+== Special Variables.IDs == expandmenu, expandleft:key-notags, expandright:value, insert, sc:i, map:vid ==
 |PickList( 'IDs', 'IDs' )|
-|PICK|<CURSOR>
+|KEY|<CURSOR>
 == ENDTEMPLATE ==
 
 == LIST: IO == hash ==
-  '$ARG $_'                        : '$ARG',
-  '$INPUT_LINE_NUMBER $\.'         : '$INPUT_LINE_NUMBER',
-  '$NR $\.'                        : '$NR',
-  '$INPUT_RECORD_SEPARATOR $/'     : '$INPUT_RECORD_SEPARATOR',
-  '$RS $/'                         : '$RS',
-  '$LIST_SEPARATOR $"'             : '$LIST_SEPARATOR',
-  '$OUTPUT_FIELD_SEPARATOR $,'     : '$OUTPUT_FIELD_SEPARATOR',
-  '$OFS $,'                        : '$OFS',
-  '$OUTPUT_RECORD_SEPARATOR $\\'   : '$OUTPUT_RECORD_SEPARATOR',
-  '$ORS $\\'                       : '$ORS',
-  '$SUBSCRIPT_SEPARATOR $;'        : '$SUBSCRIPT_SEPARATOR',
-  '$SUBSEP $;'                     : '$SUBSEP',
+  '$ARG'                     : '$_',
+  '$INPUT_LINE_NUMBER'       : '$.',
+  '$NR'                      : '$.',
+  '$INPUT_RECORD_SEPARATOR'  : '$/',
+  '$RS'                      : '$/',
+  '$LIST_SEPARATOR'          : '$"',
+  '$OUTPUT_FIELD_SEPARATOR'  : '$,',
+  '$OFS'                     : '$,',
+  '$OUTPUT_RECORD_SEPARATOR' : '$\',
+  '$ORS'                     : '$\',
+  '$SUBSCRIPT_SEPARATOR'     : '$;',
+  '$SUBSEP'                  : '$;',
 == ENDLIST ==
 
-== Special Variables.IO == expandmenu, insert, sc:i, map:vio ==
+== Special Variables.IO == expandmenu, expandleft:key-notags, expandright:value, insert, sc:i, map:vio ==
 |PickList( 'IO', 'IO' )|
-|PICK|<CURSOR>
+|KEY|<CURSOR>
 == ENDTEMPLATE ==
 
 == LIST: regexp == hash ==
-  '$MATCH $&'                      : '$MATCH',
-  '$POSTMATCH $'''                 : '$POSTMATCH',
-  '$PREMATCH $`'                   : '$PREMATCH',
-  '$LAST_MATCH_START $-'           : '$LAST_MATCH_START',
-  '$LAST_MATCH_END $+'             : '$LAST_MATCH_END',
-  '$LAST_PAREN_MATCH $+'           : '$LAST_PAREN_MATCH',
-  '$LAST_SUBMATCH_RESULT $^N'      : '$LAST_SUBMATCH_RESULT',
-  '$LAST_REGEXP_CODE_RESULT $^R'   : '$LAST_REGEXP_CODE_RESULT',
+  '$MATCH'                   : '$&',
+  '$POSTMATCH'               : '$''',
+  '$PREMATCH'                : '$`',
+  '$LAST_MATCH_START'        : '$-',
+  '$LAST_MATCH_END'          : '$+',
+  '$LAST_PAREN_MATCH'        : '$+',
+  '$LAST_SUBMATCH_RESULT'    : '$^N',
+  '$LAST_REGEXP_CODE_RESULT' : '$^R',
 == ENDLIST ==
 
-== Special Variables.regexp == expandmenu, insert, sc:r, map:vr ==
+== Special Variables.regexp == expandmenu, expandleft:key-notags, expandright:value, insert, sc:r, map:vr ==
 |PickList( 'regexp', 'regexp' )|
-|PICK|<CURSOR>
+|KEY|<CURSOR>
 == ENDTEMPLATE ==
 
 == LIST: POSIX_signals == list ==

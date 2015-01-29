@@ -101,18 +101,18 @@
 == ENDTEMPLATE ==
 
 == LIST: POD_markup == hash ==
-  'bold B'         :   'B',
-  'literal C'      :   'C',
-  'escape E'       :   'E',
-  'filename F'     :   'F',
-  'italic I'       :   'I',
-  'link L'         :   'L',
-  'nonbr. spaces S':   'S',
-  'index X'        :   'X',
-  'zero-width Z'   :   'Z'
+  'bold'         :   'B',
+  'literal'      :   'C',
+  'escape'       :   'E',
+  'filename'     :   'F',
+  'italic'       :   'I',
+  'link'         :   'L',
+  'nonbr. spaces':   'S',
+  'index'        :   'X',
+  'zero-width'   :   'Z'
 == ENDLIST ==
 
-== POD.markup sequences == expandmenu, insert, map:pm, sc:m ==
+== POD.markup sequences == expandmenu, expandright:value, insert, map:pm, sc:m ==
 |PickList( 'Markup', 'POD_markup' )|
 |PICK|<<SPLIT><CURSOR>>
 == ENDTEMPLATE ==

@@ -1,4 +1,4 @@
-README for perl-support.vim (Version 5.4pre) / December 29 2014
+README for perl-support.vim (Version 5.4pre) / January 28 2015
 
   *  INSTALLATION
   *  RELEASE NOTES
@@ -35,6 +35,12 @@ structure which is needed below the local installation directory $HOME/.vim/
 
       unzip perl-support.zip
 
+   Afterwards, these files should exist:
+
+      $HOME/.vim/autoload/mmtemplates/...
+      $HOME/.vim/doc/...
+      $HOME/.vim/plugin/perl-support.vim
+
 (1.2) Loading of plugin files must be enabled. If not use
 
       :filetype plugin on
@@ -42,8 +48,11 @@ structure which is needed below the local installation directory $HOME/.vim/
     This is the minimal content of the file '$HOME/.vimrc'. Create one if there
     is none or use the files in $HOME/.vim/perl-support/rc as a starting point.
 
-(1.3) Set at least some personal details in the file
-    '$HOME/.vim/perl-support/templates/Templates'
+(1.3) Set at least some personal details. Use the map \ntw inside a Perl buffer
+   or the menu entry:
+
+      Perl -> Snippets -> template setup wizard
+
     Here is the minimal personalization (my settings as an example):
 
        SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
@@ -79,6 +88,12 @@ $HOME/vimfiles/ (find the value of $HOME with ":echo $HOME" from inside Vim).
 
       unzip perl-support.zip
 
+   Afterwards, these files should exist:
+
+      $HOME/vimfiles/autoload/mmtemplates/...
+      $HOME/vimfiles/doc/...
+      $HOME/vimfiles/plugin/perl-support.vim
+
 (2.2) Loading of plugin files must be enabled. If not use
 
       :filetype plugin on
@@ -86,8 +101,11 @@ $HOME/vimfiles/ (find the value of $HOME with ":echo $HOME" from inside Vim).
     This is the minimal content of the file '$HOME/_vimrc'. Create one if there
     is none or use the files in $HOME/vimfiles/perl-support/rc as a starting point.
 
-(2.3) Set at least some personal details in the file
-    '$HOME/vimfiles/perl-support/templates/Templates'
+(2.3) Set at least some personal details. Use the map \ntw inside a Perl buffer
+   or the menu entry:
+
+      Perl -> Snippets -> template setup wizard
+
     Here is the minimal personalization (my settings as an example):
 
        SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
@@ -144,6 +162,8 @@ For a system-wide installation please see the help file 'doc/perlsupport.txt'.
 - Added 'g:Perl_CustomTemplateFile' and 'g:Perl_AdditionalTemplates'.
 - Added template personalization file and setup wizard.
 - Removed unused 'g:Perl_GuiTemplateBrowser'.
+- New and reworked templates.
+- Minor changes.
 
 ---------------------------------------------------------------------------------------
   OLDER RELEASE NOTES : see file 'ChangeLog'

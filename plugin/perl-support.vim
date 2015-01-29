@@ -2737,7 +2737,7 @@ function! s:CreateAdditionalMaps ()
 	" templates
 	"-------------------------------------------------------------------------------
 	"
-	if !exists("g:Perl_Ctrl_j") || ( exists("g:Perl_Ctrl_j") && g:Perl_Ctrl_j != 'off' )
+	if s:Perl_Ctrl_j == 'on'
 		nnoremap    <buffer>  <silent>  <C-j>    i<C-R>=Perl_JumpCtrlJ()<CR>
 		inoremap    <buffer>  <silent>  <C-j>     <C-R>=Perl_JumpCtrlJ()<CR>
 	endif

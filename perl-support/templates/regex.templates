@@ -22,47 +22,47 @@
 == ENDTEMPLATE ==
 
 == LIST: UnicodeProperties == hash ==
-  'Letter L'                        : 'Letter',
-  'Lowercase_Letter Ll'             : 'Lowercase_Letter',
-  'Uppercase_Letter Lu'             : 'Uppercase_Letter',
-  'Titlecase_Letter Lt'             : 'Titlecase_Letter',
-  'Modifier_Letter Lm'              : 'Modifier_Letter',
-  'Other_Letter Lo'                 : 'Other_Letter',
-  'Mark M'                          : 'Mark',
-  'Non_Spacing_Mark Mn'             : 'Non_Spacing_Mark',
-  'Spacing_Combining_Mark M'        : 'Spacing_Combining_Mark',
-  'Enclosing_Mark Me'               : 'Enclosing_Mark',
-  'Separator Z'                     : 'Separator',
-  'Space_Separator Zs'              : 'Space_Separator',
-  'Line_Separator Zl'               : 'Line_Separator',
-  'Paragraph_Separator Zp'          : 'Paragraph_Separator',
-  'Symbol S'                        : 'Symbol',
-  'Math_Symbol Sm'                  : 'Math_Symbol',
-  'Currency_Symbol Sc'              : 'Currency_Symbol',
-  'Modifier_Symbol Sk'              : 'Modifier_Symbol',
-  'Other_Symbol So'                 : 'Other_Symbol',
-  'Number N'                        : 'Number',
-  'Decimal_Digit_Number Nd'         : 'Decimal_Digit_Number',
-  'Letter_Number Nl'                : 'Letter_Number',
-  'Other_Number No'                 : 'Other_Number',
-  'Punctuation P'                   : 'Punctuation',
-  'Dash_Punctuation Pd'             : 'Dash_Punctuation',
-  'Open_Punctuation Ps'             : 'Open_Punctuation',
-  'Close_Punctuation Pe'            : 'Close_Punctuation',
-  'Initial_Punctuation Pi'          : 'Initial_Punctuation',
-  'Final_Punctuation Pf'            : 'Final_Punctuation',
-  'Connector_Punctuation Pc'        : 'Connector_Punctuation',
-  'Other_Punctuation Po'            : 'Other_Punctuation',
-  'Other C'                         : 'Other',
-  'Control Cc'                      : 'Control',
-  'Format Cf'                       : 'Format',
-  'Private_Use Co'                  : 'Private_Use',
-  'Unassigned Cn'                   : 'Unassigned',
+  'Letter'                 : 'L',
+  'Lowercase_Letter'       : 'Ll',
+  'Uppercase_Letter'       : 'Lu',
+  'Titlecase_Letter'       : 'Lt',
+  'Modifier_Letter'        : 'Lm',
+  'Other_Letter'           : 'Lo',
+  'Mark'                   : 'M',
+  'Non_Spacing_Mark'       : 'Mn',
+  'Spacing_Combining_Mark' : 'M',
+  'Enclosing_Mark'         : 'Me',
+  'Separator'              : 'Z',
+  'Space_Separator'        : 'Zs',
+  'Line_Separator'         : 'Zl',
+  'Paragraph_Separator'    : 'Zp',
+  'Symbol'                 : 'S',
+  'Math_Symbol'            : 'Sm',
+  'Currency_Symbol'        : 'Sc',
+  'Modifier_Symbol'        : 'Sk',
+  'Other_Symbol'           : 'So',
+  'Number'                 : 'N',
+  'Decimal_Digit_Number'   : 'Nd',
+  'Letter_Number'          : 'Nl',
+  'Other_Number'           : 'No',
+  'Punctuation'            : 'P',
+  'Dash_Punctuation'       : 'Pd',
+  'Open_Punctuation'       : 'Ps',
+  'Close_Punctuation'      : 'Pe',
+  'Initial_Punctuation'    : 'Pi',
+  'Final_Punctuation'      : 'Pf',
+  'Connector_Punctuation'  : 'Pc',
+  'Other_Punctuation'      : 'Po',
+  'Other'                  : 'C',
+  'Control'                : 'Cc',
+  'Format'                 : 'Cf',
+  'Private_Use'            : 'Co',
+  'Unassigned'             : 'Cn',
 == ENDLIST ==
 
-== Regex.Unicode Property == expandmenu, insert, sc:u, map:xup ==
+== Regex.Unicode Property == expandmenu, expandright:value, insert, sc:u, map:xup ==
 |PickList( 'Unicode Property', 'UnicodeProperties' )|
-\p{|PICK|}<CURSOR>
+\p{|KEY|}<CURSOR>
 == ENDTEMPLATE ==
 
 
@@ -82,9 +82,9 @@
   'prohibit backtracking'    : '(?><SPLIT><CURSOR>)',
 == ENDLIST ==
 
-== Regex.extended Regex == expandmenu, insert, visual, sc:e, map:xex ==
+== Regex.extended Regex == expandmenu, expandright:value-notags, insert, visual, sc:e, map:xex ==
 |PickList( 'Regex, extended', 'ExtendedRegex' )|
-|PICK|
+|VALUE|
 == ENDTEMPLATE ==
 
 §§== Regex.grouping == insert ==
@@ -98,20 +98,20 @@
 §§== ENDTEMPLATE ==
 
 == LIST: Metasymbols == hash ==
-'word boundary \\b'           : '\b<CURSOR>',
-'digit \\d'                   : '\d<CURSOR>',
-'whitespace \\s'              : '\s<CURSOR>',
-'word character \\w'          : '\w<CURSOR>',
-'match property \\p{}'        : '\p{<SPLIT><CURSOR>}',
-'non-word boundary \\B'       : '\B<CURSOR>',
-'non-digit \\D'               : '\D<CURSOR>',
-'non-whitespace \\S'          : '\S<CURSOR>',
-'non-word character \\W'      : '\W<CURSOR>',
-'do not match property \\P{}' : '\P{<SPLIT><CURSOR>}',
+  'word boundary'         : '\b<CURSOR>',
+  'digit'                 : '\d<CURSOR>',
+  'whitespace'            : '\s<CURSOR>',
+  'word character'        : '\w<CURSOR>',
+  'match property'        : '\p{<SPLIT><CURSOR>}',
+  'non-word boundary'     : '\B<CURSOR>',
+  'non-digit'             : '\D<CURSOR>',
+  'non-whitespace'        : '\S<CURSOR>',
+  'non-word character'    : '\W<CURSOR>',
+  'do not match property' : '\P{<SPLIT><CURSOR>}',
 == ENDLIST ==
 
-== Regex.metasymbols == expandmenu, insert, visual, sc:m, map:xms ==
+== Regex.metasymbols == expandmenu, expandright:value-notags, insert, visual, sc:m, map:xms ==
 |PickList( 'Metasymbols', 'Metasymbols' )|
-|PICK|
+|VALUE|
 == ENDTEMPLATE ==
 
