@@ -990,9 +990,14 @@ function! Lua_Run ( args )
 		silent exe '$del'
 		"
 		if v:shell_error == 0
+			" jump to the first line of the output
+			normal! gg
+			"
 			setlocal nomodifiable
 			setlocal nomodified
 		else
+			" jump to the last line of the output, where the error is mentioned
+			normal! G
 			"
 			" save current settings
 			let errorf_saved  = &l:errorformat

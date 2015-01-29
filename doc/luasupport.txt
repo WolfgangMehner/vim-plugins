@@ -417,7 +417,7 @@ Place the cursor on "sin" and invoke the map: >
 The following URL will be opened in your browser (using "\hl"): >
   http://www.lua.org/manual/5.2/manual.html#pdf-math.sin
 or the following help topic will be shown (using "\h2"): >
-  :help luaref-5.2-math.sin
+  :help lua52-math.sin
 <
 ------------------------------------------------------------------------------
 2.7  TOOLBOX                                        *luasupport-usage-toolbox*

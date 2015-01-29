@@ -21,6 +21,18 @@
 os.setlocale ( 'C' )
 
 ------------------------------------------------------------------------
+--  settings for Lua 5.1.5
+------------------------------------------------------------------------
+
+--local lua_major           = 5
+--local lua_minor           = 1
+--local lua_date            = 'Feb 13 2012'
+--local lua_copyright       = '2006 - 2012'
+--local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref51.txt'
+--local link_main_component = 'lua51'
+--local html_filename       = '/home/wolfgang/Software/lua-5.1.5/doc/manual.html'
+
+------------------------------------------------------------------------
 --  settings for Lua 5.2.3
 ------------------------------------------------------------------------
 
@@ -29,7 +41,7 @@ local lua_minor           = 2
 local lua_date            = 'Mar 21 2013'
 local lua_copyright       = '2011 - 2013'
 local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref52.txt'
-local link_main_component = 'luaref-5.2'
+local link_main_component = 'lua52'
 local html_filename       = '/home/wolfgang/Software/lua-5.2.3/doc/manual.html'
 
 ------------------------------------------------------------------------
@@ -41,7 +53,7 @@ local html_filename       = '/home/wolfgang/Software/lua-5.2.3/doc/manual.html'
 --local lua_date            = 'Jan 06 2015'
 --local lua_copyright       = '2015'
 --local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref53.txt'
---local link_main_component = 'luaref-5.3'
+--local link_main_component = 'lua53'
 --local html_filename       = '/home/wolfgang/Software/lua-5.3.0/doc/manual.html'
 
 ------------------------------------------------------------------------
@@ -53,6 +65,7 @@ local handle_double = {}
 -- :TODO:18.01.2015 20:34:19:WM: find unicode for some tags
 -- :TODO:18.01.2015 20:34:19:WM: find unicode for pi
 local html_text_code_replace_data = {
+	acute  = '´',
 	amp    = '&',
 	copy   = '©',
 	gt     = '>',
@@ -381,9 +394,10 @@ function handle_double.h1 ( data, opt, text )
 		print ( string.format ( '--- found special header "%s"', text_cc ) )
 
 		t_add ( data, text_data.text, { newline = true, } )
-	elseif string.match ( text_cc, '%d+ &ndash; [%w ]+' ) then
+	elseif string.match ( text_cc, '%d+ %- [%w ]+' )
+			or string.match ( text_cc, '%d+ &ndash; [%w ]+' ) then
 
-		local chp, name = string.match ( text_cc, '(%d+) &ndash; ([%w ]+)' )
+		local chp, name = string.match ( text_cc, '(%d+) %S+ ([%w ]+)' )
 
 		local t_sec  = string.format ( templates.toc_sec_1, chp, name )
 		local t_link = string.format ( templates.link_1, chp, name )
@@ -422,9 +436,10 @@ function handle_double.h2 ( data, opt, text )
 
 	local text_cc = t_assemble ( text_data, ' ' )
 
-	if string.match ( text_cc, '%d+.%d+ &ndash; [%w ]+' ) then
+	if string.match ( text_cc, '%d+.%d+ %- [%w ]+' )
+			or string.match ( text_cc, '%d+.%d+ &ndash; [%w ]+' ) then
 
-		local chp, sec, name = string.match ( text_cc, '(%d+).(%d+) &ndash; ([%w ]+)' )
+		local chp, sec, name = string.match ( text_cc, '(%d+).(%d+) %S+ ([%w ]+)' )
 
 		local t_sec  = string.format ( templates.toc_sec_2, chp, sec, name )
 		local t_link = string.format ( templates.link_2, chp, sec, name )
@@ -463,11 +478,12 @@ function handle_double.h3 ( data, opt, text )
 
 	local text_cc = t_assemble ( text_data, ' ' )
 
-	if string.match ( text_cc, '%d+.%d+.%d+ &ndash; [%w ]+' ) then
+	if string.match ( text_cc, '%d+.%d+.%d+ %- [%w ]+' )
+			or string.match ( text_cc, '%d+.%d+.%d+ &ndash; [%w ]+' ) then
 
 		-- subsection header
 
-		local chp, sec, ssec, name = string.match ( text_cc, '(%d+).(%d+).(%d+) &ndash; ([%w ]+)' )
+		local chp, sec, ssec, name = string.match ( text_cc, '(%d+).(%d+).(%d+) %S+ ([%w ]+)' )
 
 		local t_sec  = string.format ( templates.toc_sec_3, chp, sec, ssec, name )
 		local t_link = string.format ( templates.link_3, chp, sec, ssec, name )
@@ -718,7 +734,7 @@ function handle_double.a ( data, opt, text, space )
 		elseif href and string.match ( href, 'contents%.html#contents' ) and string.match ( text, 'contents' ) then
 			-- link to the contents (table of contents)
 			print ( string.format ( '--- found special link "%s"', text ) )
-			p_add ( data, string.format ( "%s |luaref-%d.%d-contents|", text, lua_major, lua_minor )..space )
+			p_add ( data, string.format ( "%s |%s-contents|", text, link_main_component )..space )
 		elseif href and string.match ( href, 'contents%.html#index' ) and string.match ( text, 'index' ) then
 			-- link to the contents (function index)
 			print ( string.format ( '--- found special link "%s"', text ) )
@@ -763,6 +779,12 @@ function handle_double.a ( data, opt, text, space )
 
 			local f_name = string.match ( name, 'pdf%-(io%.std%l+)' )
 			t_add_anchor ( string.format ( templates.anchor_pdf, f_name ) )
+			p_add ( data, f_name..space )
+		elseif name and string.match ( name, 'lua_[%w_]+' ) then
+			-- C-function (lua_...) anchor
+
+			local f_name = string.match ( name, '(lua_[%w_]+)' )
+			t_add_anchor ( string.format ( templates.anchor_c_api, f_name ) )
 			p_add ( data, f_name..space )
 		elseif name and string.match ( name, 'pdf%-luaopen_[%w_]+' ) then
 			-- C-function (luaopen_...) anchor
@@ -1062,7 +1084,7 @@ end  -----  end of function parse_html  -----
 header_txt = [[
 *luaref%MAJOR%%MINOR%.txt*             Lua %MAJOR%.%MINOR% Reference Manual                %DATE%
 
-Lua %MAJOR%.%MINOR% Reference Manual                                *luaref-%MAJOR%.%MINOR%* *luaref%MAJOR%%MINOR%*
+Lua %MAJOR%.%MINOR% Reference Manual                                     *%LINKMAIN%* *luaref%MAJOR%%MINOR%*
 
 by Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes
 Copyright © %COPYRIGHT% Lua.org, PUC-Rio. Freely available under the terms of
@@ -1072,7 +1094,7 @@ Formated for Vim help by
   Wolfgang Mehner <wolfgang-mehner at web.de>
 
 ==============================================================================
-0.  Table of Contents                                    *luaref-%MAJOR%.%MINOR%-contents*
+0.  Table of Contents                                         *%LINKMAIN%-contents*
 ==============================================================================
 
 ]]
@@ -1093,6 +1115,7 @@ local replace = {
 	MINOR = lua_minor,
 	DATE      = lua_date,
 	COPYRIGHT = lua_copyright,
+	LINKMAIN  = link_main_component
 }
 
 header_txt = string.gsub ( header_txt, '%%(%w+)%%', replace )

@@ -1,4 +1,4 @@
-README for lua-support.vim (Version 1.0pre) / Jan 04 2015
+README for lua-support.vim (Version 1.0pre) / Jan 28 2015
 ================================================================================
 
   *  INSTALLATION
@@ -17,7 +17,7 @@ functions.
 Please read the documentation.
 This plug-in can be used with Vim version 7.x .
 
-Lua is: Copyright 1994–2015 Lua.org, PUC-Rio.
+Lua is: Copyright 1994-2015 Lua.org, PUC-Rio.
 
 
 --------------------------------------------------------------------------------
@@ -49,6 +49,12 @@ structure which is needed below the local installation directory
 
       unzip lua-support.zip
 
+   Afterwards, these files should exist:
+
+      $HOME/.vim/autoload/mmtemplates/...
+      $HOME/.vim/doc/...
+      $HOME/.vim/plugin/lua-support.vim
+
 (1.2) Loading of plug-in files must be enabled. If not use
 
       :filetype plugin on
@@ -56,9 +62,10 @@ structure which is needed below the local installation directory
    This is the minimal content of the file '$HOME/.vimrc'. Create one if there
    is none or use the file in $HOME/.vim/lua-support/rc as a starting point.
 
-(1.3) Set at least some personal details in the file
+(1.3) Set at least some personal details. Use the map \ntw inside a Lua buffer
+   or the menu entry:
 
-      '$HOME/.vim/lua-support/templates/Templates'
+      Lua -> Snippets -> template setup wizard
 
    Here is the minimal personalization (my settings as an example):
 
@@ -97,6 +104,12 @@ structure which is needed below the local installation directory
 
       unzip lua-support.zip
 
+   Afterwards, these files should exist:
+
+      $HOME/vimfiles/autoload/mmtemplates/...
+      $HOME/vimfiles/doc/...
+      $HOME/vimfiles/plugin/lua-support.vim
+
 (2.2) Loading of plug-in files must be enabled. If not use
 
       :filetype plugin on
@@ -105,9 +118,10 @@ structure which is needed below the local installation directory
    is none or use the file in $HOME/vimfiles/lua-support/rc as a starting
    point.
 
-(2.3) Set at least some personal details in the file
+(2.3) Set at least some personal details. Use the map \ntw inside a Lua buffer
+   or the menu entry:
 
-      '$HOME/vimfiles/lua-support/templates/Templates'
+      Lua -> Snippets -> template setup wizard
 
    Here is the minimal personalization (my settings as an example):
 
