@@ -130,7 +130,7 @@
   'XFSZ',
 == ENDLIST ==
 
-== Special Variables.POSIX signals == expandmenu, insert, sc:p, map:vs ==
+== Special Variables.POSIX signals == expandmenu, insert, sc:p, map:vps ==
 |PickList( 'POSIX signals', 'POSIX_signals' )|
 |PICK|<CURSOR>
 == ENDTEMPLATE ==

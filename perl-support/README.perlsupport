@@ -163,6 +163,7 @@ For a system-wide installation please see the help file 'doc/perlsupport.txt'.
 - Added template personalization file and setup wizard.
 - Removed unused 'g:Perl_GuiTemplateBrowser'.
 - New and reworked templates.
+- Changed map "\vs" -> "\vps", in favor of a more consistent naming scheme.
 - Minor changes.
 
 ---------------------------------------------------------------------------------------

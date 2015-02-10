@@ -1488,7 +1488,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \vid       IDs                                (in )
      \vio       IO                                 (in )
      \vr        regexp                             (in )
-     \vs        POSIX signals                      (in )
+     \vps       POSIX signals                      (in )
 
   -- POD -----------------------------------------------
 
