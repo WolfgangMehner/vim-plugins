@@ -1,3 +1,23 @@
+§ ==========================================================
+§  Comments
+§
+§  various templates are used by the plug-in, their names
+§  should not be changed, but they can be edited to
+§  customize the inserted code:
+§  - the template "Comments.end-of-line-comment" is used by
+§    the menu entry Perl -> Comments -> end-of-line comment,
+§    it does not generate a menu entry
+§  - the template "Comments.file description pl" is used as
+§    a file header for files names "*.pl".
+§  - the template "Comments.file description pm" is used as
+§    a file header for files names "*.pm".
+§  - the template "Comments.file description t" is used as
+§    a file header for files names "*.t".
+§  automatic insertion of the file headers can be prevented
+§  by setting the configuration variable in your ".vimrc":
+§    let g:Perl_InsertFileHeader = 'no'
+§ ==========================================================
+
 == Comments.end-of-line-comment == append, nomenu ==
 # <CURSOR>
 == Comments.frame == map:cfr, sc:f  ==

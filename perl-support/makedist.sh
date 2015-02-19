@@ -31,7 +31,7 @@ filelist="
  ./${plugin}/scripts/*
  ./${plugin}/templates/*
  ./${plugin}/wordlists/*
- ./autoload/mmtemplates/core.vim
+ ./autoload/mmtemplates/*.vim
  ./autoload/mmtoolbox/make.vim
  ./autoload/mmtoolbox/tools.vim
  ./autoload/perlsupportprofiling.vim

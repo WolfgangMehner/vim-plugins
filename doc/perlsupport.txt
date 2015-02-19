@@ -1750,6 +1750,7 @@ g:Perl_InsertFileHeader        'yes'
 g:Perl_CreateMenusDelayed      'yes'
 g:Perl_PerlTags                'off'
 g:Perl_PerltidyBackup          'off'
+g:Perl_Perl                    "/usr/bin/perl" or "C:/Perl/bin/perl.exe"
 g:Perl_DirectRun               'no'
 
 g:Perl_PerlModuleList          root_dir.'perl-support/modules/perl-modules.list'
@@ -1798,6 +1799,7 @@ The variable root_dir will automatically be set to one of the following values:
            g:Perl_PerlTags           : switch use of Perl::Tags on/off ( 'on', 'off' )
            g:Perl_Perltidy           : use perltidy as standard beautifier
            g:Perl_PerltidyBackup     : write a backup file before running perltidy
+           g:Perl_Perl               : the Perl executable
            g:Perl_DirectRun          : run script via shebang
 
  3. group: g:Perl_PerlModuleList          : The name of the Perl module list (text file,
