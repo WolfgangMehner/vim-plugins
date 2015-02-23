@@ -67,13 +67,18 @@ structure which is needed below the local installation directory
 
       Lua -> Snippets -> template setup wizard
 
-   Here is the minimal personalization (my settings as an example):
+   It will help you set up the file <runtimepath>/templates/personal.templates .
+   The file is read by all plug-ins supporting this feature to get your personal
+   details. Here is the minimal personalization (my settings as an example):
 
        SetMacro( 'AUTHOR',       'Wolfgang Mehner' )
        SetMacro( 'AUTHORREF',    'WM' )
        SetMacro( 'EMAIL',        'wolfgang-mehner@web.de' )
        SetMacro( 'ORGANIZATION', '' )
        SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
+
+   Use the file $HOME/.vim/templates/lua.templates to customize or add to your
+   Lua template library. It can also be set up via the wizard.
 
    (Read more about the template system in the plug-in documentation)
 
@@ -123,13 +128,18 @@ structure which is needed below the local installation directory
 
       Lua -> Snippets -> template setup wizard
 
-   Here is the minimal personalization (my settings as an example):
+   It will help you set up the file <runtimepath>/templates/personal.templates .
+   The file is read by all plug-ins supporting this feature to get your personal
+   details. Here is the minimal personalization (my settings as an example):
 
        SetMacro( 'AUTHOR',       'Wolfgang Mehner' )
        SetMacro( 'AUTHORREF',    'WM' )
        SetMacro( 'EMAIL',        'wolfgang-mehner@web.de' )
        SetMacro( 'ORGANIZATION', '' )
        SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
+
+   Use the file $HOME/vimfiles/templates/lua.templates to customize or add to
+   your Lua template library. It can also be set up via the wizard.
 
    (Read more about the template system in the plug-in documentation)
 
@@ -182,7 +192,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 - Added optional additional templates (g:Lua_AdditionalTemplates).
 - Added template personalization file and setup wizard.
 - Added Lua's reference manual in Vim's help format.
-- Added map and menu entry to jump to it conveniently.
+- Added maps and menu entries to jump to it conveniently.
 - New templates.
 - Minor improvements.
 

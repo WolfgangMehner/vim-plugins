@@ -33,6 +33,7 @@ local filelist = {
 	'doc/toolboxmake.txt',
 	'ftplugin/lua.vim',
 	'plugin/lua-support.vim',
+	'syntax/template.vim',
 	'lua-support/codesnippets/',
 	'lua-support/doc/',
 	'lua-support/rc/',
