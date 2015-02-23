@@ -1,4 +1,4 @@
-*gitsupport.txt*                  Git Support                      Nov 20 2014
+*gitsupport.txt*                  Git Support                      Feb 22 2015
 
 Git Support                                          *git-support* *gitsupport*
 
@@ -451,6 +451,11 @@ The second version runs log for the given arguments.
   S-F1      help: show a list of all maps
   q         close the buffer
   u         update the buffer
+
+  commit under the cursor ...
+  ch        checkout
+  cr        use as starting point for creating a new branch
+  sh / cs   show the commit
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -636,7 +641,7 @@ Git command.
   ch        checkout HEAD (set index and working tree to HEAD)
   od        open diff
   of        open file (edit)
-  ol        open log
+  ol        open log (with --stat)
   r         reset
   rp        reset --patch (^1)
   D         delete from file system (only untracked files)

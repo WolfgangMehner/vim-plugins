@@ -12,7 +12,7 @@
 "       Version:  see variable g:GitSupport_Version below
 "       Created:  06.10.2012
 "      Revision:  29.12.2013
-"       License:  Copyright (c) 2012-2014, Wolfgang Mehner
+"       License:  Copyright (c) 2012-2015, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -2345,12 +2345,48 @@ endfunction    " ----------  end of function GitS_Help  ----------
 " GitS_Log : execute 'git log ...'   {{{1
 "-------------------------------------------------------------------------------
 "
+"-------------------------------------------------------------------------------
+" s:Log_GetCommit : Get the commit under the cursor.   {{{2
+"
+" Parameters:
+"   -
+" Returns:
+"   <commit-name> - the name of the commit (string)
+"
+" If the commit could not be obtained returns an empty string.
+"-------------------------------------------------------------------------------
+"
+function! s:Log_GetCommit()
+	"
+	" in case of "git log --oneline"
+	if match ( getline('.'), '^\x\{6,}\(\s\|\_$\)' ) >= 0
+		echo 'oneline'
+		return matchstr ( getline('.'), '^\x\+' )
+	endif
+	"
+	let c_pos = search ( '\m\_^commit \x', 'bcnW' )      " the position of the commit name
+	"
+	if c_pos == 0
+		return ''
+	endif
+	"
+	return matchstr ( getline(c_pos), '^commit\s\zs\x\+' )
+	"
+endfunction    " ----------  end of function s:Log_GetCommit  ----------
+" }}}2
+"-------------------------------------------------------------------------------
+"
 function! GitS_Log( action, ... )
 	"
 	let param = ''
 	"
 	if a:action == 'help'
-		echo s:HelpTxtStd
+		let txt  = s:HelpTxtStd."\n\n"
+		let txt .= "commit under cursor ...\n"
+		let txt .= "ch      : checkout\n"
+		let txt .= "cr      : use as starting point for creating a new branch\n"
+		let txt .= "sh / cs : show the commit\n"
+		echo txt
 		return
 	elseif a:action == 'quit'
 		close
@@ -2362,6 +2398,23 @@ function! GitS_Log( action, ... )
 		else                | let param = a:1
 		endif
 		"
+	elseif -1 != index ( [ 'checkout', 'create', 'show' ], a:action )
+		"
+		let c_name = s:Log_GetCommit ()
+		"
+		if c_name == ''
+			return s:ErrorMsg ( 'No commit under the cursor.' )
+		endif
+		"
+		if a:action == 'checkout'
+			call GitS_Checkout( shellescape(c_name), 'c' )
+		elseif a:action == 'create'
+			return s:AssembleCmdLine ( ':GitBranch ', ' '.c_name )
+		elseif a:action == 'show'
+			call GitS_Show( 'update', shellescape(c_name), '' )
+		endif
+		"
+		return
 	else
 		echoerr 'Unknown action "'.a:action.'".'
 		return
@@ -2379,6 +2432,11 @@ function! GitS_Log( action, ... )
 		exe 'nnoremap          <buffer> <S-F1> :call GitS_Log("help")<CR>'
 		exe 'nnoremap <silent> <buffer> q      :call GitS_Log("quit")<CR>'
 		exe 'nnoremap <silent> <buffer> u      :call GitS_Log("update")<CR>'
+		"
+		exe 'nnoremap <silent> <buffer> ch     :call GitS_Log("checkout")<CR>'
+		exe 'nnoremap <expr>   <buffer> cr     GitS_Log("create")'
+		exe 'nnoremap <silent> <buffer> sh     :call GitS_Log("show")<CR>'
+		exe 'nnoremap <silent> <buffer> cs     :call GitS_Log("show")<CR>'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -3057,22 +3115,17 @@ function! s:Status_GetFile()
 		"
 		if c_line =~ '^#'
 			"
+			let h_pos = search ( '^# [[:alnum:][:space:]]\+:$', 'bcnW' )
+			"
 			" find header
-			while h_pos > 0
-				"
+			if h_pos > 0
 				let s_head = matchstr( getline(h_pos), '^# \zs[[:alnum:][:space:]]\+\ze:$' )
-				"
-				if ! empty( s_head )
-					break
-				endif
-				"
-				let h_pos -= 1
-			endwhile
+			else
+				return [ '', '', 'Not in any section.' ]
+			endif
 			"
 			" which header?
-			if s_head == ''
-				return [ '', '', 'Not in any section.' ]
-			elseif s_head == 'Changes to be committed'
+			if s_head == 'Changes to be committed'
 				let s_code = 's'
 			elseif s_head == 'Changed but not updated' || s_head == 'Changes not staged for commit'
 				let s_code = 'm'
@@ -3314,7 +3367,7 @@ function! s:Status_FileAction( action )
 	elseif s_code =~ '[bsmcd]' && a:action == 'log'
 		"
 		" section "staged", "modified", "conflict" or "diff", action "log"
-		call GitS_Log( 'update', '-- '.shellescape( f_name_old ) )
+		call GitS_Log( 'update', '--stat -- '.shellescape( f_name_old ) )
 		"
 	elseif s_code == 'i' && a:action == 'add'
 		"
@@ -3702,15 +3755,13 @@ endfunction    " ----------  end of function GitS_Tag  ----------
 "
 function! s:TagList_GetTag()
 	"
-	let name  = ''
-	let t_pos = line('.')
+	let t_pos = search ( '\m\_^\S', 'bcnW' )      " the position of the tag name
 	"
-	while t_pos > 0 && empty ( name )
-		let name = matchstr ( getline(t_pos), '^\S\+' )
-		let t_pos -= 1
-	endwhile
+	if t_pos == 0
+		return ''
+	endif
 	"
-	return name
+	return matchstr ( getline(t_pos), '^\S\+' )
 	"
 endfunction    " ----------  end of function s:TagList_GetTag  ----------
 " }}}2
@@ -4143,7 +4194,7 @@ function! s:InitMenus()
 	exe vhead.'&blame<TAB>:GitBlame       :GitBlame -- %<CR>'
 	exe shead.'&checkout<TAB>:GitCheckout :GitCheckout -- %<CR>'
 	exe shead.'&diff<TAB>:GitDiff         :GitDiff -- %<CR>'
-	exe shead.'&log<TAB>:GitLog           :GitLog -- %<CR>'
+	exe shead.'&log<TAB>:GitLog           :GitLog --stat -- %<CR>'
 	exe shead.'r&m<TAB>:GitRm             :GitRm -- %<CR>'
 	exe shead.'&reset<TAB>:GitReset       :GitReset -- %<CR>'
 	"
