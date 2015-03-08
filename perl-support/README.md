@@ -1,4 +1,4 @@
-README for perl-support.vim (Version 5.4pre) / January 28 2015
+README for perl-support.vim (Version 5.4pre) / March 08 2015
 ================================================================================
 
   *  INSTALLATION
@@ -193,13 +193,14 @@ For a system-wide installation please see the help file 'doc/perlsupport.txt'.
   FILES
 ================================================================================
 
-    README.perlsupport
+    README.md
                         This file.
+
     autoload/perlsupportprofiling.vim
                         Profiler support.
     autoload/perlsupportregex.vim
                         Regex analyser code.
-    autoload/mmtemplates/core.vim
+    autoload/mmtemplates/*
                         The template system.
     autoload/mmtoolbox/*
                         The toolbox (make, ...).
@@ -224,7 +225,7 @@ For a system-wide installation please see the help file 'doc/perlsupport.txt'.
     plugin/perl-support.vim
                         The Perl plugin for Vim/gVim.
 
-    perl-support/codesnippets-perl/*
+    perl-support/codesnippets/*
                         Some Perl code snippets as a starting point.
 
     perl-support/modules/
@@ -235,12 +236,15 @@ For a system-wide installation please see the help file 'doc/perlsupport.txt'.
 
     perl-support/templates/Templates
                         Perl main template file.
-    perl-support/templates/*.template
+    perl-support/templates/*.templates
                         Several dependent template files.
 
     perl-support/wordlists/perl.list
                         A file used as dictionary for automatic word completion.
                         This file is referenced in the file customization.vimrc.
+
+    syntax/template.vim
+                        Template syntax file.
 
 ___The following files and extensions are for convenience only.___
 ___perl-support.vim will work without them:___
@@ -248,27 +252,27 @@ ___perl-support.vim will work without them:___
     perl-support/rc/customization.ctags
                         Additional settings I use in .ctags to enable navigation
                         through POD with the plugin taglist.vim.
-
     perl-support/rc/customization.gvimrc
                         Additional settings I use in  .gvimrc:
                           hot keys, mouse settings, ...
                         The file is commented. Append it to your .gvimrc if you
                         like.
-
     perl-support/rc/customization.perltidyrc
                         Additional settings I use in .perltidyrc to customize
                         perltidy.
-
     perl-support/rc/customization.smallprof
                         Additional settings I use to control the profiler
                         Devel::SmallProf
-
     perl-support/rc/customization.vimrc
                         Additional settings I use in  .vimrc:
                           incremental search, tabstop, hot keys,
                           font, use of dictionaries, ...
                         The file is commented. Append it to your .vimrc if you
                         like.
+
+    perl-support/rc/*.templates
+                        Sample template files for customization. Used by the
+                        template setup wizard.
 
     perl-support/doc/perl-hot-keys.pdf
                         Reference card for the key mappings. The mappings can

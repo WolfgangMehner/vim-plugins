@@ -24,6 +24,9 @@ SetFormat( 'YEAR', '%Y' )
 
 SetStyle( 'default' )
 
+§ used by the template "Comments.file description pl":
+SetMacro( 'PERL_INTERPRETER', '/usr/bin/env perl' )
+
 § ==========================================================
 §  File Includes and Shortcuts
 § ==========================================================

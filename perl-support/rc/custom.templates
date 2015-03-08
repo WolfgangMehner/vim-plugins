@@ -1,0 +1,48 @@
+§ =============================================================
+§  Custom Templates
+§ =============================================================
+
+§ set the template style used after loading the library
+SetStyle( 'default' )
+
+§ used by the template "Comments.file description pl":
+SetMacro( 'PERL_INTERPRETER', '/usr/bin/env perl' )
+
+§ -------------------------------------------------------------
+§  A template definition is build like this:
+§    == Menu.some name == <options> ==
+§    <inserted code>
+§    == Menu.other name == <options> ==
+§    <inserted code>
+§    == ENDTEMPLATE ==
+§  A template ends with the line "== ENDTEMPLATE ==" or with
+§  the start of a new template.
+§ -------------------------------------------------------------
+
+§ -------------------------------------------------------------
+§  Statements
+§ -------------------------------------------------------------
+
+§ uncomment and edit to customize
+
+§== Statements.given == map:sg, sc:g ==
+§given ( <CURSOR> ) {
+§	when () {}
+§	when () {}
+§	default {}
+§}
+§== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Subroutine Definition
+§ -------------------------------------------------------------
+
+§ uncomment and edit to customize
+
+§== Idioms.subroutine == map:isu, sc:s ==
+§sub |?FUNCTION_NAME| {
+§	my	( $par1<CURSOR> )	= @_;
+§<SPLIT>	return ;
+§} ## --- end sub |FUNCTION_NAME|
+§== ENDTEMPLATE ==
+

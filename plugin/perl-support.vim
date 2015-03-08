@@ -789,7 +789,6 @@ function! Perl_perldoc()
       let command=":%!perldoc  ".s:Perl_perldoc_flags." ".item.delete_perldoc_errors
       silent exe command
       if v:shell_error != 0
-        redraw!
         let s:Perl_PerldocTry         = 'function'
       endif
       if s:MSWIN
@@ -802,7 +801,6 @@ function! Perl_perldoc()
       " -otext has to be ahead of -f and -q
       silent exe ":%!perldoc ".s:Perl_perldoc_flags." -f ".item.delete_perldoc_errors
       if v:shell_error != 0
-        redraw!
         let s:Perl_PerldocTry         = 'faq'
       endif
     endif
@@ -811,18 +809,17 @@ function! Perl_perldoc()
     if s:Perl_PerldocTry == 'faq'
       silent exe ":%!perldoc ".s:Perl_perldoc_flags." -q ".item.delete_perldoc_errors
       if v:shell_error != 0
-        redraw!
         let s:Perl_PerldocTry         = 'error'
       endif
     endif
     "
     " no documentation found
     if s:Perl_PerldocTry == 'error'
-      redraw!
       let zz=   "No documentation found for perl module, perl function or perl FAQ keyword\n"
       let zz=zz."  '".item."'  "
       silent put! =zz
-      normal!  2jdd$
+			" delete into black hole register "_
+      normal!  2j"_dd
       let s:Perl_PerldocTry         = 'module'
       let s:Perl_PerldocSearchWord  = ""
     endif
@@ -834,11 +831,10 @@ function! Perl_perldoc()
     redraw!
 		" highlight the headlines
 		:match Search '^\S.*$'
-		" ------------
-	"
-	" ---------- Add ':' to the keyword characters -------------------------------
-	"            Tokens like 'File::Find' are recognized as one keyword
-	setlocal iskeyword+=:
+		"
+		" ---------- Add ':' to the keyword characters -------------------------------
+		"            Tokens like 'File::Find' are recognized as one keyword
+		setlocal iskeyword+=:
  		 noremap   <buffer>  <silent>  <S-F1>             :call Perl_perldoc()<CR>
  		inoremap   <buffer>  <silent>  <S-F1>        <C-C>:call Perl_perldoc()<CR>
   endif
@@ -2014,10 +2010,13 @@ function! s:Perl_RereadTemplates ()
 	" map: choose style
 	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::ChooseStyle::Map', 'nts' )
 	" some metainfo
-	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Names::Plugin',   'Perl' )
-	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Names::Filetype', 'Perl' )
-	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::FileSkeleton::personal', g:Perl_PluginDir.'/perl-support/rc/personal.templates' )
-	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::FileSkeleton::custom',   'TODO' )
+	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Wizard::PluginName',   'Perl' )
+	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Wizard::FiletypeName', 'Perl' )
+	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Wizard::FileCustomNoPersonal',   g:Perl_PluginDir.'/perl-support/rc/custom.templates' )
+	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Wizard::FileCustomWithPersonal', g:Perl_PluginDir.'/perl-support/rc/custom_with_personal.templates' )
+	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Wizard::FilePersonal',           g:Perl_PluginDir.'/perl-support/rc/personal.templates' )
+	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Wizard::CustomFileVariable',     'g:Perl_CustomTemplateFile' )
+	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Wizard::AddFileListVariable',    'g:Perl_AdditionalTemplates' )
 	"
 	" maps: special operations
 	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::RereadTemplates::Map', 'ntr' )
