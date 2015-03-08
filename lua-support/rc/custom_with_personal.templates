@@ -1,0 +1,69 @@
+§ =============================================================
+§  Template Customization
+§ =============================================================
+
+§ prevent the loading of the personal file,
+§ since we configure the personalization here
+§ (see :help g:Templates_UsePersonalizationFile)
+SetProperty( 'Templates::UsePersonalizationFile', 'no' )
+
+§ =============================================================
+§  Personal Information
+§ =============================================================
+
+SetMacro( 'AUTHOR',       'YOUR NAME' )
+SetMacro( 'AUTHORREF',    '' )
+SetMacro( 'EMAIL',        '' )
+SetMacro( 'ORGANIZATION', '' )
+SetMacro( 'COMPANY',      '' )
+SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
+SetMacro( 'LICENSE',      'GNU General Public License' )
+
+§ =============================================================
+§  Date and Time Format
+§ =============================================================
+
+§SetFormat( 'DATE', '%x' )
+§SetFormat( 'TIME', '%H:%M' )
+§SetFormat( 'YEAR', '%Y' )
+
+§ =============================================================
+§  Custom Templates
+§ =============================================================
+
+§ insert code for this Lua version (Lua_51, Lua_52, or Lua_53)
+SetStyle( 'Lua_52' )
+
+§ used by the template "Comments.shebang":
+SetMacro( 'LUA_INTERPRETER', '/usr/bin/env lua' )
+
+§ used by the template "Idioms.add to path, local modules":
+SetMacro( 'LUA_LOCAL_MODULES', $HOME.'/share/lua/5.2' )
+
+§ -------------------------------------------------------------
+§  A template definition is build like this:
+§    == Menu.some name == <options> ==
+§    <inserted code>
+§    == Menu.other name == <options> ==
+§    <inserted code>
+§    == ENDTEMPLATE ==
+§  A template ends with the line "== ENDTEMPLATE ==" or with
+§  the start of a new template.
+§ -------------------------------------------------------------
+
+§ -------------------------------------------------------------
+§  Function Definition
+§ -------------------------------------------------------------
+
+§ uncomment and edit to customize
+
+§== Idioms.function definition == below, map:if, sc:f ==
+§function |?FUNCTION_NAME| ( <CURSOR>|PARAMETER_LIST| )
+§	<SPLIT>{-FUNCTION_BODY-}
+§end  -----  end of function |FUNCTION_NAME|  -----
+§== ENDTEMPLATE ==
+§
+§== Idioms.inline function definition == insert, map:in, sc:n ==
+§function ( <CURSOR> ) <SPLIT>{-BODY-} return {+RETURN+} end
+§== ENDTEMPLATE ==
+

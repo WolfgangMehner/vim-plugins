@@ -2,7 +2,7 @@
 §  Files
 § =============================================================
 
-== USE STYLES : default, Lua_51 ==
+== USE STYLES : Lua_51 ==
 
 == Files.module == below, map:fm, sc:m ==
 local module_name = ...
@@ -18,7 +18,7 @@ local args = { ... }
 
 == ENDSTYLES ==
 
-== USE STYLES : Lua_52, Lua_53 ==
+== USE STYLES : default, Lua_52, Lua_53 ==
 
 == Files.module == below, map:fm, sc:m ==
 local module_name = ...

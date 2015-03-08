@@ -985,9 +985,9 @@ function! Lua_Run ( args )
 		"
 		setlocal modifiable
 		"
-		silent exe '%del'
+		silent exe '%delete _'
 		exe '0r!'.exec.' '.script.' '.a:args
-		silent exe '$del'
+		silent exe '$delete _'
 		"
 		if v:shell_error == 0
 			" jump to the first line of the output
@@ -1230,10 +1230,13 @@ function! s:SetupTemplates()
 	endif
 	"
 	" some metainfo
-	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::Names::Plugin',   'Lua' )
-	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::Names::Filetype', 'Lua' )
-	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::FileSkeleton::personal', s:plugin_dir.'/lua-support/rc/personal.templates' )
-	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::FileSkeleton::custom',   'TODO' )
+	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::Wizard::PluginName',   'Lua' )
+	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::Wizard::FiletypeName', 'Lua' )
+	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::Wizard::FileCustomNoPersonal',   s:plugin_dir.'/lua-support/rc/custom.templates' )
+	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::Wizard::FileCustomWithPersonal', s:plugin_dir.'/lua-support/rc/custom_with_personal.templates' )
+	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::Wizard::FilePersonal',           s:plugin_dir.'/lua-support/rc/personal.templates' )
+	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::Wizard::CustomFileVariable',     'g:Lua_CustomTemplateFile' )
+	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::Wizard::AddFileListVariable',    'g:Lua_AdditionalTemplates' )
 	"
 	" maps: special operations
 	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::RereadTemplates::Map', 'ntr' )

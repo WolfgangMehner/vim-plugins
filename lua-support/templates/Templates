@@ -20,7 +20,8 @@ SetFormat( 'DATE', '%x' )
 SetFormat( 'TIME', '%X' )
 SetFormat( 'YEAR', '%Y' )
 
-SetStyle( 'Lua_51' )
+§ insert code for this Lua version (Lua_51, Lua_52, or Lua_53)
+SetStyle( 'Lua_52' )
 
 § used by the template "Comments.shebang":
 SetMacro( 'LUA_INTERPRETER', '/usr/bin/env lua' )

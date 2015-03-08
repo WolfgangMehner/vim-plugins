@@ -50,7 +50,7 @@
 
 § :TODO:29.03.2014 19:53:WM: name "brackets", "braces", ...?
 
-== USE STYLES : default, Lua_51 ==
+== USE STYLES : Lua_51 ==
 
 == Regex.character classes == expandmenu:regex_character_classes_5_2, expandright:value, insert, map:xcl, sc:l ==
 |PickList( 'character class', 'regex_character_classes_5_1' )|
@@ -59,7 +59,7 @@
 
 == ENDSTYLES ==
 
-== USE STYLES : Lua_52, Lua_53 ==
+== USE STYLES : default, Lua_52, Lua_53 ==
 
 == Regex.character classes == expandmenu:regex_character_classes_5_2, expandright:value, insert, map:xcl, sc:l ==
 |PickList( 'character class', 'regex_character_classes_5_2' )|
