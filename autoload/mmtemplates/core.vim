@@ -283,10 +283,13 @@ let s:StandardProperties = {
 			\
 			\ 'Templates::UsePersonalizationFile' : s:Templates_UsePersonalizationFile,
 			\
-			\ 'Templates::Names::Plugin'          : '',
-			\ 'Templates::Names::Filetype'        : '',
-			\ 'Templates::FileSkeleton::personal' : '',
-			\ 'Templates::FileSkeleton::custom'   : '',
+			\ 'Templates::Wizard::PluginName'             : '',
+			\ 'Templates::Wizard::FiletypeName'           : '',
+			\ 'Templates::Wizard::FileCustomNoPersonal'   : '',
+			\ 'Templates::Wizard::FileCustomWithPersonal' : '',
+			\ 'Templates::Wizard::FilePersonal'           : '',
+			\ 'Templates::Wizard::CustomFileVariable'     : '',
+			\ 'Templates::Wizard::AddFileListVariable'    : '',
 			\ }
 "
 "----------------------------------------------------------------------
@@ -2088,11 +2091,17 @@ endfunction    " ----------  end of function mmtemplates#core#ReadTemplates  ---
 " mmtemplates#core#EnableTemplateFile : Enable a template file.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! mmtemplates#core#EnableTemplateFile ( library, sym_name )
+function! mmtemplates#core#EnableTemplateFile ( library, sym_name, ... )
 	"
 	" ==================================================
 	"  parameters
 	" ==================================================
+	"
+	let new_filename = ''
+	"
+	if a:0 >= 1
+		let new_filename = a:1
+	endif
 	"
 	if type( a:library ) == type( '' )
 		exe 'let t_lib = '.a:library
@@ -2104,6 +2113,8 @@ function! mmtemplates#core#EnableTemplateFile ( library, sym_name )
 	"
 	if type( a:sym_name ) != type( '' )
 		return s:ErrorMsg ( 'Argument "sym_name" must be given as a string.' )
+	elseif type( new_filename ) != type( '' )
+		return s:ErrorMsg ( 'Argument "new_filename" must be given as a string.' )
 	endif
 	"
 	" ==================================================
@@ -2128,7 +2139,10 @@ function! mmtemplates#core#EnableTemplateFile ( library, sym_name )
 			let fileinfo_use.hidden    = 0        " ... and visible
 		endif
 	else
-		if filereadable ( fileinfo.filename )
+		if new_filename != '' && filereadable ( new_filename )
+			let fileinfo_use.filename = new_filename
+		endif
+		if filereadable ( fileinfo_use.filename )
 			let fileinfo_use.available = 1        " file is readable now
 			let fileinfo_use.hidden    = 0        " ... and visible
 		endif
@@ -4327,6 +4341,13 @@ function! mmtemplates#core#EscapeMenu ( str, ... )
 		let str = substitute (   str, '&', '\&\&', 'g' )
 	endif
 	"
+	" entry: escape '-...-' by appending a space
+	if mode == 'entry'
+		if match ( str, '^-.*-$' ) > -1
+			let str .= '\ '
+		endif
+	endif
+	"
 	return str
 	"
 endfunction    " ----------  end of function mmtemplates#core#EscapeMenu  ----------
@@ -4453,7 +4474,7 @@ function! mmtemplates#core#Resource ( library, mode, ... )
 	" ==================================================
 	"
 	" type of 'resource'
-	let types = { 'list' : '[ld]', 'macro' : 's', 'path' : 's', 'property' : 's' }
+	let types = { 'list' : '[ld]', 'macro' : 's', 'path' : 's', 'property' : 's', 'template_file' : '' }
 	"
 	if a:mode == 'add' && a:0 != 3
 		return [ '', 'Mode "add" requires three additional arguments.' ]
@@ -4506,6 +4527,28 @@ function! mmtemplates#core#Resource ( library, mode, ... )
 			else
 				return [ '', 'Property "'.key.'" does not exist.' ]
 			endif
+		elseif resource == 'template_file'
+			"
+			let fileinfo_use = {}
+			"
+			for fileinfo in t_lib.library_files
+				if fileinfo.sym_name == key
+					let fileinfo_use = {
+								\ 'filename'  : fileinfo.filename,
+								\ 'sym_name'  : fileinfo.sym_name,
+								\ 'available' : fileinfo.available,
+								\ 'optional'  : fileinfo.optional,
+								\ 'hidden'    : fileinfo.hidden,
+								\ }
+				endif
+			endfor
+			"
+			if ! empty ( fileinfo_use )
+				return [ fileinfo_use, '' ]
+			else
+				return [ {}, 'Template file "'.key.'" does not exist.' ]
+			endif
+			"
 		endif
 		"
 	elseif a:mode == 'set'
@@ -4513,7 +4556,9 @@ function! mmtemplates#core#Resource ( library, mode, ... )
 		let value = a:3
 		"
 		" check type and set
-		if s:TypeNames[ type( value ) ] !~ types[ resource ]
+		if types[ resource ] == ''
+			return [ '', 'Resource "'.a:1.'" can not be set.' ]
+		elseif s:TypeNames[ type( value ) ] !~ types[ resource ]
 			return [ '', 'Argument "value" has the wrong type.' ]
 		elseif resource == 'list'
 			let t_lib.resources[ 'list!'.key ] = value

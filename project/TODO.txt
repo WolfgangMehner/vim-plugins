@@ -31,6 +31,7 @@ Templates:
 - (WM) Better debugging while reading template files:
   Print filename and line number for errors and warnings.
 - (WM) Add configuration "g:Templates_OverwriteWarning".
+- (WM) Configure CTRL+J and CTRL+D.
 
 Awk:
 - (FM) 'code->comment' should not insert a space following the hash?
