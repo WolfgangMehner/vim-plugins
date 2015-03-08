@@ -682,7 +682,7 @@ function! s:UpdateBuffer ( command )
 	" delete the previous contents
 	setlocal modifiable
 	setlocal noro
-	silent exe '1,$delete'
+	silent exe '1,$delete _'
 	"
 	" pause syntax highlighting (for speed)
 	if &syntax != ''
@@ -693,7 +693,7 @@ function! s:UpdateBuffer ( command )
 	silent exe a:command
 	"
 	" delete the first line (empty)
-	normal! ggdd
+	normal! gg"_dd
 	"
 	" restart syntax highlighting
 	if &syntax != ''

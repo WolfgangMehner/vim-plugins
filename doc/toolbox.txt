@@ -382,6 +382,7 @@ A.  CHANGE LOG                                    *toolbox-support-change-log*
 ------------------------------------------------------------------------------
 
 - Added sub-menu "load additional tools" to load tools during a session.
+- Minor changes.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 1.1

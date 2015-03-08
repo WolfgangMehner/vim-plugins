@@ -12,7 +12,7 @@
 "       Version:  see variable g:Toolbox_Version below
 "       Created:  29.12.2012
 "      Revision:  23.10.2014
-"       License:  Copyright (c) 2012-2014, Wolfgang Mehner
+"       License:  Copyright (c) 2012-2015, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -222,7 +222,9 @@ endfunction    " ----------  end of function s:GetToolConfigVarName  ----------
 "
 " tool registry,
 " maps plug-in name -> toolbox
-let s:ToolRegistry = {}
+if ! exists ( 's:ToolRegistry' )
+	let s:ToolRegistry = {}
+endif
 "
 "-------------------------------------------------------------------------------
 " NewToolbox : Create a new toolbox.   {{{1
@@ -414,16 +416,19 @@ function! s:LoadAdditionalTool ( toolbox_name, name )
 	"
 	" do not load multiple times
 	if has_key ( toolbox.tools, name )
+		echo 'The tool "'.name.'" has already been loaded.'
 		return
 	endif
 	"
-	" check the 'unused' entry
+	" check the 'unused' entry (should not cause any problems)
 	if ! has_key ( toolbox.unused, name ) || toolbox.unused[name].loaded == 1
+		echo 'Internal error #1 while loading the tool "'.name.'".'
 		return
 	endif
 	"
-	" check the 'menu_root' and 'menu_mldr' entry
+	" check the 'menu_root' and 'menu_mldr' entry (should not cause any problems)
 	if empty ( toolbox.menu_root ) || empty ( toolbox.menu_mldr )
+		echo 'Internal error #2 while loading the tool "'.name.'".'
 		return
 	endif
 	"
@@ -436,9 +441,8 @@ function! s:LoadAdditionalTool ( toolbox_name, name )
 		call s:CreateToolMenu ( toolbox, name, toolbox.menu_root, toolbox.menu_mldr )
 	endif
 	"
-	echo
-				\  "To always load the tool, add this line to your vimrc:\n"
-				\ ."  let ".s:GetToolConfigVarName ( toolbox.plugin, name )." = 'yes'"
+	echomsg 'To always load the tool "'.name.'", add this line to your vimrc:'
+	echomsg '  let '.s:GetToolConfigVarName ( toolbox.plugin, name )." = 'yes'"
 endfunction    " ----------  end of function s:LoadAdditionalTool  ----------
 "
 "-------------------------------------------------------------------------------
