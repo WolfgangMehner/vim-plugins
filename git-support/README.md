@@ -178,7 +178,8 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
                         gitscommit.vim is used for commit messages.
 
 ___The following files and extensions are for convenience only.___
-___git-support.vim will work without them:___
+___git-support.vim will work without them.___
+___The settings are explained in the files themselves.___
 
     git-support/doc/ChangeLog
                         Complete change log.
@@ -199,8 +200,6 @@ ___git-support.vim will work without them:___
                         Suggestion for the configuration file .vimrc:
                           hot keys, tabstop, use of dictionaries,
                           the setup of the plug-in, ...
-
-___The settings are explained in the files themselves.___
 
 
 --------------------------------------------------------------------------------

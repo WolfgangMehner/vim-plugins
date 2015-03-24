@@ -456,6 +456,7 @@ The second version runs log for the given arguments.
   ch        checkout
   cr        use as starting point for creating a new branch
   sh / cs   show the commit
+  ta        tag the commit
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------

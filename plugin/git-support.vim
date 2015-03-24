@@ -610,57 +610,6 @@ endfunction    " ----------  end of function s:GenerateCustomMenu  ----------
 "-------------------------------------------------------------------------------
 "
 "-------------------------------------------------------------------------------
-" Test: Custom cmdline completion.   {{{1
-"-------------------------------------------------------------------------------
-"
-" Debug:
-let g:GitSupport_LastCmdlineComplete = []
-"
-"-------------------------------------------------------------------------------
-" s:GitS_CmdlineComplete : Git-specific command line completion.   {{{2
-"-------------------------------------------------------------------------------
-"
-function! GitS_CmdlineComplete ( ArgLead, CmdLine, CursorPos )
-	"
-	let git_cmd = tolower ( matchstr ( a:CmdLine, '^Git\zs\w*' ) )
-	"
-	if git_cmd == ''
-		let git_cmd = matchstr ( a:CmdLine, '^Git\s\+\zs\w*' )
-	endif
-	"
-	" files
-	let filelist = split ( glob ( a:ArgLead.'*' ), "\n" )
-	"
-	for i in range( 0, len(filelist)-1 )
-		if isdirectory ( filelist[i] )
-			let filelist[i] .= '/'
-		endif
-	endfor
-	"
-	" git objects: branched, tags, remotes
-	let gitlist = []
-	"
-	" branches
-	let gitlist += split ( s:StandardRun ( 'branch', '-a', 't' ), '\_[* ]\+\%(remotes/\)\?' )[1]
-	"
-	" tags
-	let gitlist += split ( s:StandardRun ( 'tag', '', 't' ), "\n" )[1]
-	"
-	" remotes
-	let gitlist += split ( s:StandardRun ( 'remote', '', 't' ), "\n" )[1]
-	"
-	call filter ( gitlist, '0 == match ( v:val, "\\V'.escape(a:ArgLead,'\').'" )' )
-	"
-	let g:GitSupport_LastCmdlineComplete = [ git_cmd, a:ArgLead, gitlist ]
-	"
-" 	return filelist
-	return escape ( join ( filelist + gitlist, "\n" ), ' \?*"' )
-	"
-endfunction    " ----------  end of function GitS_CmdlineComplete  ----------
-" }}}2
-"-------------------------------------------------------------------------------
-"
-"-------------------------------------------------------------------------------
 " Modul setup.   {{{1
 "-------------------------------------------------------------------------------
 "
@@ -1095,7 +1044,7 @@ function! s:UpdateGitBuffer ( command, ... )
 	" delete the previous contents
 	setlocal modifiable
 	setlocal noro
-	silent exe '1,$delete'
+	silent exe '1,$delete _'
 	"
 	" pause syntax highlighting (for speed)
 	if &syntax != ''
@@ -1106,7 +1055,7 @@ function! s:UpdateGitBuffer ( command, ... )
 	silent exe 'r! '.a:command
 	"
 	" delete the first line (empty) and go to position
-	normal! ggdd
+	normal! gg"_dd
 	silent exe 'normal! '.pos_window.'zt'
 	silent exe ':'.pos_cursor
 	"
@@ -2386,6 +2335,7 @@ function! GitS_Log( action, ... )
 		let txt .= "ch      : checkout\n"
 		let txt .= "cr      : use as starting point for creating a new branch\n"
 		let txt .= "sh / cs : show the commit\n"
+		let txt .= "ta      : tag the commit\n"
 		echo txt
 		return
 	elseif a:action == 'quit'
@@ -2398,7 +2348,7 @@ function! GitS_Log( action, ... )
 		else                | let param = a:1
 		endif
 		"
-	elseif -1 != index ( [ 'checkout', 'create', 'show' ], a:action )
+	elseif -1 != index ( [ 'checkout', 'create', 'show', 'tag' ], a:action )
 		"
 		let c_name = s:Log_GetCommit ()
 		"
@@ -2412,6 +2362,8 @@ function! GitS_Log( action, ... )
 			return s:AssembleCmdLine ( ':GitBranch ', ' '.c_name )
 		elseif a:action == 'show'
 			call GitS_Show( 'update', shellescape(c_name), '' )
+		elseif a:action == 'tag'
+			return s:AssembleCmdLine ( ':GitTag ', ' '.c_name )
 		endif
 		"
 		return
@@ -2437,6 +2389,7 @@ function! GitS_Log( action, ... )
 		exe 'nnoremap <expr>   <buffer> cr     GitS_Log("create")'
 		exe 'nnoremap <silent> <buffer> sh     :call GitS_Log("show")<CR>'
 		exe 'nnoremap <silent> <buffer> cs     :call GitS_Log("show")<CR>'
+		exe 'nnoremap <expr>   <buffer> ta     GitS_Log("tag")'
 	endif
 	"
 	call s:ChangeCWD ( buf )
