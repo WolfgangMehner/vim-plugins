@@ -240,7 +240,7 @@ The plug-in assists in the usage of the Matlab code checker 'mlint'.
 
   Feature                    Menu Entry                     Map
  ----------------------------------------------------------------------------
-  check the code             Run.check code                 <LocalLeader>rc
+  check the code             Run.check code                 <LocalLeader>rk
   ignore a warning           Run.ignore warning             <LocalLeader>ri
  ----------------------------------------------------------------------------
 

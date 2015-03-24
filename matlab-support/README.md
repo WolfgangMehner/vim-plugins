@@ -198,7 +198,8 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
                         Several dependent template files.
 
 ___The following files and extensions are for convenience only.___
-___matlab-support.vim will work without them:___
+___matlab-support.vim will work without them.___
+___The settings are explained in the files themselves.___
 
     ftplugin/matlab.vim
                         Example filetype plug-in for Matlab:
@@ -221,8 +222,6 @@ ___matlab-support.vim will work without them:___
                         Suggestion for the configuration file .vimrc:
                           hot keys, tabstop, use of dictionaries,
                           the setup of the plug-in, ...
-
-___The settings are explained in the files themselves.___
 
     matlab-support/rc/sample_template_file
                         Sample template file for personalization, when using a

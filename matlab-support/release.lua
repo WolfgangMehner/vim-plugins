@@ -29,6 +29,7 @@ local filelist = {
 	'doc/templatesupport.txt',
 	'ftplugin/matlab.vim',
 	'plugin/matlab-support.vim',
+	'syntax/template.vim',
 	'matlab-support/codesnippets/',
 	'matlab-support/doc/',
 	'matlab-support/rc/',

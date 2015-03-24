@@ -12,7 +12,7 @@
 "       Version:  see variable g:Matlab_Version below
 "       Created:  11.04.2010
 "      Revision:  24.11.2013
-"       License:  Copyright (c) 2012-2014, Wolfgang Mehner
+"       License:  Copyright (c) 2012-2015, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -942,9 +942,9 @@ function! s:CreateMaps ()
 	"-------------------------------------------------------------------------------
 	" code checker
 	"-------------------------------------------------------------------------------
-	nnoremap    <buffer>  <silent>  <LocalLeader>rc         :call Matlab_CheckCode()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>rc    <Esc>:call Matlab_CheckCode()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>rc    <Esc>:call Matlab_CheckCode()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>rk         :call Matlab_CheckCode()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rk    <Esc>:call Matlab_CheckCode()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>rk    <Esc>:call Matlab_CheckCode()<CR>
 	nnoremap    <buffer>  <silent>  <LocalLeader>ri         :call Matlab_IgnoreWarning()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>ri    <Esc>:call Matlab_IgnoreWarning()<CR>
 	vnoremap    <buffer>  <silent>  <LocalLeader>ri    <Esc>:call Matlab_IgnoreWarning()<CR>
@@ -1074,7 +1074,7 @@ function! s:InitMenus()
 	let ahead = 'anoremenu <silent> '.s:Matlab_RootMenu.'.Run.'
 	let vhead = 'vnoremenu <silent> '.s:Matlab_RootMenu.'.Run.'
 	"
-	exe ahead.'&check\ code<TAB>'.esc_mapl.'rc      :call Matlab_CheckCode()<CR>'
+	exe ahead.'&check\ code<TAB>'.esc_mapl.'rk      :call Matlab_CheckCode()<CR>'
 	exe ahead.'&ignore\ warning<TAB>'.esc_mapl.'ri  :call Matlab_IgnoreWarning()<CR>'
 	exe ahead.'-Sep01-                              :'
 	"
@@ -1154,7 +1154,7 @@ endfunction    " ----------  end of function Matlab_RemoveMenus  ----------
 function! Matlab_Settings( verbose )
 	"
 	if     s:MSWIN | let sys_name = 'Windows'
-	elseif s:UNIX  | let sys_name = 'UNIX'
+	elseif s:UNIX  | let sys_name = 'UN*X'
 	else           | let sys_name = 'unknown' | endif
 	"
 	let glb_t_status = filereadable ( s:Matlab_GlbTemplateFile ) ? '' : ' (not readable)'
@@ -1176,7 +1176,7 @@ function! Matlab_Settings( verbose )
 					\ ."\n"
 	else
 		let txt .=
-					\  "                templates : -not loaded- \n"
+					\  "                templates :  -not loaded- \n"
 					\ ."\n"
 	endif
 	let txt .=
