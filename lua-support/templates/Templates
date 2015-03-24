@@ -61,14 +61,18 @@ SetMacro( 'HelpPathLua',     'http://www.lua.org/manual/5.2/' )
 |Browser( '|HelpPathEnglish||PICK:l|' )|
 == HELP: Help.Lua function, browser == map:hl, sc:l ==
 |Pattern( '\<\%(\w\+[.:]\)\?\w\+\>' )|
+|Substitute( '^\i\+:\(close\|flush\|lines\|read\|seek\|setvbuf\|write\)', 'file:\1', '' )|
 |Browser( '|HelpPathLua|manual.html#pdf-|PICK|', '|HelpPathLua|contents.html#index' )|
 == HELP: Help.Lua 51 function, Vim help == map:h1, sc:1 ==
 |Pattern( '\<\%(\w\+[.:]\)\?\w\+\>' )|
+|Substitute( '^\i\+:\(close\|flush\|lines\|read\|seek\|setvbuf\|write\)', 'file:\1', '' )|
 |Vim( ':help lua51-|PICK|', ':help lua51-contents' )|
 == HELP: Help.Lua 52 function, Vim help == map:h2, sc:2 ==
 |Pattern( '\<\%(\w\+[.:]\)\?\w\+\>' )|
+|Substitute( '^\i\+:\(close\|flush\|lines\|read\|seek\|setvbuf\|write\)', 'file:\1', '' )|
 |Vim( ':help lua52-|PICK|', ':help lua52-contents' )|
 == HELP: Help.Lua 53 function, Vim help == map:h3, sc:3 ==
 |Pattern( '\<\%(\w\+[.:]\)\?\w\+\>' )|
+|Substitute( '^\i\+:\(close\|flush\|lines\|read\|seek\|setvbuf\|write\)', 'file:\1', '' )|
 |Vim( ':help lua53-|PICK|', ':help lua53-contents' )|
 == ENDTEMPLATE ==
