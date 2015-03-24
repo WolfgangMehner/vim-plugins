@@ -27,6 +27,7 @@ local filelist = {
 	'autoload/mmtemplates/',
 	'autoload/mmtoolbox/make.vim',
 	'autoload/mmtoolbox/tools.vim',
+	'doc/luaref*.txt',
 	'doc/luasupport.txt',
 	'doc/templatesupport.txt',
 	'doc/toolbox.txt',
@@ -42,6 +43,7 @@ local filelist = {
 }
 
 local filelist_repo = {
+	'lua-support/html2doc/',
 	'lua-support/lua-doc/',
 	'lua-support/release.lua',
 }

@@ -1060,5 +1060,11 @@ Fritz Mehner (vim.org user name: mehner) for a number of things:
 - parts of the documentation and other material are taken from his plug-ins as
   well
 
+Luis Carvalho (Kozure):
+- the idea for suppling Lua's reference manual in Vim's help format is taken
+  from his plug-in "luarefvim", which contains previous versions of the
+  reference manual
+  ( http://vim.sourceforge.net/scripts/script.php?script_id=1291 )
+
 ==============================================================================
 vim:tw=78:expandtab:ts=2:ft=help:norl:

@@ -33,16 +33,16 @@ os.setlocale ( 'C' )
 --local html_filename       = '/home/wolfgang/Software/lua-5.1.5/doc/manual.html'
 
 ------------------------------------------------------------------------
---  settings for Lua 5.2.3
+--  settings for Lua 5.2.4
 ------------------------------------------------------------------------
 
 local lua_major           = 5
 local lua_minor           = 2
-local lua_date            = 'Mar 21 2013'
-local lua_copyright       = '2011 - 2013'
+local lua_date            = 'Feb 23 2015'
+local lua_copyright       = '2011 - 2015'
 local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref52.txt'
 local link_main_component = 'lua52'
-local html_filename       = '/home/wolfgang/Software/lua-5.2.3/doc/manual.html'
+local html_filename       = '/home/wolfgang/Software/lua-5.2.4/doc/manual.html'
 
 ------------------------------------------------------------------------
 --  settings for Lua 5.3
@@ -73,7 +73,7 @@ local html_text_code_replace_data = {
 	le     = '<=',
 	lt     = '<',
 	nbsp   = ' ',
-	ndash  = ' - ',
+	ndash  = '-',
 	middot = '.',
 	pi     = 'pi',
 	rsquo  = "'",

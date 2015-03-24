@@ -315,6 +315,12 @@ ___The settings are explained in the files themselves.___
   - parts of the documentation and other material (including the 'ADDITIONAL TIPS'
     above) are taken from his plug-ins as well
 
+* Luis Carvalho (Kozure):
+  - the idea for suppling Lua's reference manual in Vim's help format is taken
+    from his plug-in "luarefvim", which contains previous versions of the
+    reference manual
+    ( http://vim.sourceforge.net/scripts/script.php?script_id=1291 )
+
 
 For a complete list of people who made contributions to this plug-in,
 please be so kind as to take a look at the credits:
