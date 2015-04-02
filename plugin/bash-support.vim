@@ -35,7 +35,7 @@ if exists("g:BASH_Version") || &cp
  finish
 endif
 "
-let g:BASH_Version= "4.2.1"                  " version number of this script; do not change
+let g:BASH_Version= "4.3pre"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  BASH_SetGlobalVariable     {{{1
@@ -1799,9 +1799,15 @@ function! BASH_MakeScriptExecutable ()
 		if BASH_Input( '"'.filename.'" NOT executable. Make it executable [y/n] : ', 'y' ) == 'y'
 			silent exe "!chmod u+x ".shellescape(filename)
 			if v:shell_error
+				" confirmation for the user
 				echohl WarningMsg
 				echo 'Could not make "'.filename.'" executable!'
 			else
+				" reload the file, otherwise the message will not be visible
+				if &autoread && ! &l:modified
+					silent exe "edit"
+				endif
+				" confirmation for the user
 				echohl Search
 				echo 'Made "'.filename.'" executable.'
 			endif
@@ -1814,9 +1820,15 @@ function! BASH_MakeScriptExecutable ()
 		if BASH_Input( '"'.filename.'" is executable. Make it NOT executable [y/n] : ', 'y' ) == 'y'
 			silent exe "!chmod u-x ".shellescape(filename)
 			if v:shell_error
+				" confirmation for the user
 				echohl WarningMsg
 				echo 'Could not make "'.filename.'" not executable!'
 			else
+				" reload the file, otherwise the message will not be visible
+				if &autoread && ! &l:modified
+					silent exe "edit"
+				endif
+				" confirmation for the user
 				echohl Search
 				echo 'Made "'.filename.'" not executable.'
 			endif

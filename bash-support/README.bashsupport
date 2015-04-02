@@ -1,4 +1,4 @@
-README for bash-support.vim (Version 4.2.1) / March 25 2014
+README for bash-support.vim (Version 4.3pre) / March 16 2015
 
   *  INSTALLATION
   *  RELEASE NOTES
@@ -123,14 +123,8 @@ Look at the bashsupport help with
              +-----------------------------------------------+
 
 =======================================================================================
-  RELEASE NOTES FOR VERSION 4.2.1
+  RELEASE NOTES FOR VERSION 4.3pre
 =======================================================================================
-- Bugfix: Setup of local templates in case of global installation.
-- Help: Bash and utility manuals wrapped on window width.
-- Bugfix: \hm and \hh work wrong in insert mode.
-- Bugfix: Better compatibility with custom mappings
-  (use "normal!" and "noremap" consistently).
-- Added 'Bash_SetMapLeader' and 'Bash_ResetMapLeader'.
 - Minor corrections and improvements.
 
   OLDER RELEASE NOTES : see file 'ChangeLog'
