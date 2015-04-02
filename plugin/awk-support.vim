@@ -36,7 +36,7 @@ if exists("g:AwkSupportVersion") || &cp
  finish
 endif
 "
-let g:AwkSupportVersion= "1.2"                  " version number of this script; do not change
+let g:AwkSupportVersion= "1.3pre"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  awk_SetGlobalVariable     {{{1
@@ -1470,9 +1470,15 @@ function! Awk_MakeScriptExecutable ()
 		if Awk_Input( '"'.filename.'" NOT executable. Make it executable [y/n] : ', 'y' ) == 'y'
 			silent exe "!chmod u+x ".shellescape(filename)
 			if v:shell_error
+				" confirmation for the user
 				echohl WarningMsg
 				echo 'Could not make "'.filename.'" executable!'
 			else
+				" reload the file, otherwise the message will not be visible
+				if &autoread && ! &l:modified
+					silent exe "edit"
+				endif
+				" confirmation for the user
 				echohl Search
 				echo 'Made "'.filename.'" executable.'
 			endif
@@ -1485,9 +1491,15 @@ function! Awk_MakeScriptExecutable ()
 		if Awk_Input( '"'.filename.'" is executable. Make it NOT executable [y/n] : ', 'y' ) == 'y'
 			silent exe "!chmod u-x ".shellescape(filename)
 			if v:shell_error
+				" confirmation for the user
 				echohl WarningMsg
 				echo 'Could not make "'.filename.'" not executable!'
 			else
+				" reload the file, otherwise the message will not be visible
+				if &autoread && ! &l:modified
+					silent exe "edit"
+				endif
+				" confirmation for the user
 				echohl Search
 				echo 'Made "'.filename.'" not executable.'
 			endif
