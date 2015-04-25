@@ -1,4 +1,4 @@
-*luasupport.txt*                 Lua Support                       Jan 04 2015
+*luasupport.txt*                 Lua Support                       Apr 25 2015
 
 Lua Support                                          *lua-support* *luasupport*
 

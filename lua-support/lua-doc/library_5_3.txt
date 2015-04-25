@@ -25,19 +25,8 @@
 	'tostring'
 	'type'
 	'xpcall'
-	'bit32.arshift'
-	'bit32.band'
-	'bit32.bnot'
-	'bit32.bor'
-	'bit32.btest'
-	'bit32.bxor'
-	'bit32.extract'
-	'bit32.lrotate'
-	'bit32.lshift'
-	'bit32.replace'
-	'bit32.rrotate'
-	'bit32.rshift'
 	'coroutine.create'
+	'coroutine.isyieldable'
 	'coroutine.resume'
 	'coroutine.running'
 	'coroutine.status'
@@ -81,29 +70,25 @@
 	'math.acos'
 	'math.asin'
 	'math.atan'
-	'math.atan2'
 	'math.ceil'
 	'math.cos'
-	'math.cosh'
 	'math.deg'
 	'math.exp'
 	'math.floor'
 	'math.fmod'
-	'math.frexp'
-	'math.ldexp'
 	'math.log'
 	'math.max'
 	'math.min'
 	'math.modf'
-	'math.pow'
 	'math.rad'
 	'math.random'
 	'math.randomseed'
 	'math.sin'
-	'math.sinh'
 	'math.sqrt'
 	'math.tan'
-	'math.tanh'
+	'math.tointeger'
+	'math.type'
+	'math.ult'
 	'os.clock'
 	'os.date'
 	'os.difftime'
@@ -127,16 +112,25 @@
 	'string.len'
 	'string.lower'
 	'string.match'
+	'string.pack'
+	'string.packsize'
 	'string.rep'
 	'string.reverse'
 	'string.sub'
+	'string.unpack'
 	'string.upper'
 	'table.concat'
 	'table.insert'
+	'table.move'
 	'table.pack'
 	'table.remove'
 	'table.sort'
 	'table.unpack'
+	'utf8.char'
+	'utf8.codepoint'
+	'utf8.codes'
+	'utf8.len'
+	'utf8.offset'
 
 --------------------------------------------------------------------------------
 --  Fields
@@ -148,6 +142,8 @@
 	'io.stdin'
 	'io.stdout'
 	'math.huge'
+	'math.maxinteger'
+	'math.mininteger'
 	'math.pi'
 	'package.config'
 	'package.cpath'
@@ -155,6 +151,7 @@
 	'package.path'
 	'package.preload'
 	'package.searchers'
+	'utf8.charpattern'
 
 --------------------------------------------------------------------------------
 --  Metamethods
@@ -168,6 +165,13 @@
 	"mod" : op1, op2
 	"pow" : op1, op2
 	"unm" : op
+	"idiv" : op1, op2
+	"band" : op1, op2
+	"bor" : op1, op2
+	"bxor" : op1, op2
+	"bnot" : op
+	"shl" : op, displace
+	"shr" : op, displace
 	"concat" : op1, op2
 	"len" : op
 	"eq" : op1, op2
@@ -178,7 +182,6 @@
 	"call" : func, ...
 	"tostring" : value
 	"gc" : udata
-	"ipairs" : value
 	"pairs" : value
 
 	fields:

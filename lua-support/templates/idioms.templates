@@ -8,7 +8,7 @@
 
 IncludeFile( 'library_5_1.templates' )
 IncludeFile( 'library_5_2.templates' )
-§IncludeFile( 'library_5_3.templates' )
+IncludeFile( 'library_5_3.templates' )
 
 § -------------------------------------------------------------
 §  Function Definition
@@ -49,17 +49,17 @@ end  -----  end of function |TABLE_NAME|.__|KEY|  -----
 
 == ENDSTYLES ==
 
-§== USE STYLES : Lua_53 ==
-§
-§== Idioms.metamethod == expandmenu, below, map:im, sc:m ==
-§|PickList( 'metamethod ', 'idioms_metamethod_5_3' )|
-§function <CURSOR>|?TABLE_NAME|.__|KEY| ( |VALUE| )
-§	<SPLIT>{-FUNCTION_BODY-}
-§end  -----  end of function |TABLE_NAME|.__|KEY|  -----
-§
-§== ENDTEMPLATE ==
-§
-§== ENDSTYLES ==
+== USE STYLES : Lua_53 ==
+
+== Idioms.metamethod == expandmenu, below, map:im, sc:m ==
+|PickList( 'metamethod ', 'idioms_metamethod_5_3' )|
+function <CURSOR>|?TABLE_NAME|.__|KEY| ( |VALUE| )
+	<SPLIT>{-FUNCTION_BODY-}
+end  -----  end of function |TABLE_NAME|.__|KEY|  -----
+
+== ENDTEMPLATE ==
+
+== ENDSTYLES ==
 
 § -------------------------------------------------------------
 §  Error Handling
@@ -94,9 +94,9 @@ error ( 'bad argument #<CURSOR> to \'|?FUNCTION_NAME|\' ({+TYPE+} expected, got 
 == Idioms.library functions == insert, map:il, sc:l ==
 |PickList( 'lua function', 'idioms_func_5_1' )|
 <CURSOR>|KEY| ( |VALUE| )
-== Idioms.library variables == expandmenu, insert, map:iv, sc:v ==
+== Idioms.library variables == expandmenu:idioms_var_5_2, expandright:value, insert, map:iv, sc:v ==
 |PickList( 'lua variable', 'idioms_var_5_1' )|
-|PICK|<CURSOR>
+|KEY|<CURSOR>
 == ENDTEMPLATE ==
 
 == ENDSTYLES ==
@@ -108,24 +108,24 @@ error ( 'bad argument #<CURSOR> to \'|?FUNCTION_NAME|\' ({+TYPE+} expected, got 
 == Idioms.library functions == insert, map:il, sc:l ==
 |PickList( 'lua function', 'idioms_func_5_2' )|
 <CURSOR>|KEY| ( |VALUE| )
-== Idioms.library variables == expandmenu, insert, map:iv, sc:v ==
+== Idioms.library variables == expandmenu:idioms_var_5_2, expandright:value, insert, map:iv, sc:v ==
 |PickList( 'lua variable', 'idioms_var_5_2' )|
-|PICK|<CURSOR>
+|KEY|<CURSOR>
 == ENDTEMPLATE ==
 
 == ENDSTYLES ==
 
-§== USE STYLES : Lua_53 ==
-§
-§== Idioms.library functions == insert, map:il, sc:l ==
-§|PickList( 'lua function', 'idioms_func_5_3' )|
-§<CURSOR>|KEY| ( |VALUE| )
-§== Idioms.library variables == expandmenu, insert, map:iv, sc:v ==
-§|PickList( 'lua variable', 'idioms_var_5_3' )|
-§|PICK|<CURSOR>
-§== ENDTEMPLATE ==
-§
-§== ENDSTYLES ==
+== USE STYLES : Lua_53 ==
+
+== Idioms.library functions == insert, map:il, sc:l ==
+|PickList( 'lua function', 'idioms_func_5_3' )|
+<CURSOR>|KEY| ( |VALUE| )
+== Idioms.library variables == expandmenu:idioms_var_5_2, expandright:value, insert, map:iv, sc:v ==
+|PickList( 'lua variable', 'idioms_var_5_3' )|
+|KEY|<CURSOR>
+== ENDTEMPLATE ==
+
+== ENDSTYLES ==
 
 § -------------------------------------------------------------
 §  Iterators

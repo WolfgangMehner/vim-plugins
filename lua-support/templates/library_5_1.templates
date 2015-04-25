@@ -127,13 +127,21 @@
 == ENDLIST ==
 
 == LIST: idioms_var_5_1 == hash ==
-	'global environment'    : '_G',
-	'interpreter version'   : '_VERSION',
-	'largest numeric value' : 'math.huge',
-	'pi'                    : 'math.pi',
-	'stderr'                : 'io.stderr',
-	'stdin'                 : 'io.stdin',
-	'stdout'                : 'io.stdout',
+	'_G'       : 'global environment',
+	'_VERSION' : 'interpreter version',
+
+	'io.stderr' : 'stderr',
+	'io.stdin'  : 'stdin',
+	'io.stdout' : 'stdout',
+
+	'math.huge' : 'largest numeric value',
+	'math.pi'   : 'pi',
+
+	'package.cpath'   : 'C loader path',
+	'package.loaded'  : 'loaded modules',
+	'package.loaders' : 'searcher functions',
+	'package.path'    : 'Lua loader path',
+	'package.preload' : 'table for loaders',
 == ENDLIST ==
 
 § we also include the new metamethods supported by Lua 5.2,
