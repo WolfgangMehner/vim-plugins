@@ -2698,6 +2698,8 @@ D.  CHANGE LOG                                   *template-support-change-log*
   created for that filetype.
 - Added: New jump tags [+NAME+] and [-NAME-] for optional parameters.
 - Added: New map <ctrl-d> to delete optional jump tags [+NAME+] and [-NAME-].
+- Changed: Insert a breakpoint into the undo sequence before inserting
+  templates or jumping via <ctrl+j>.
 - Added: Template options "expandleft" and "expandright". Extended the option
   "expandmenu".
 - Changed: During the creation of the submenu for a list-picking template, all

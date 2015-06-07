@@ -3721,13 +3721,13 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		let mp = info.map
 		"
 		if s:DoCreateMap ( leader.mp, 'n', echo_warning )
-			let cmd .= 'nnoremap '.options.' '.leader.mp.'      :call mmtemplates#core#InsertTemplate('.a:library.',"'.t_name.'")<CR>'.sep
+			let cmd .= 'nnoremap '.options.' '.leader.mp.'            :call mmtemplates#core#InsertTemplate('.a:library.',"'.t_name.'")<CR>'.sep
 		endif
 		if s:DoCreateMap ( leader.mp, 'v', echo_warning )
-			let cmd .= 'vnoremap '.options.' '.leader.mp.' <Esc>:call mmtemplates#core#InsertTemplate('.a:library.',"'.t_name.'"'.v_flag.')<CR>'.sep
+			let cmd .= 'vnoremap '.options.' '.leader.mp.'       <Esc>:call mmtemplates#core#InsertTemplate('.a:library.',"'.t_name.'"'.v_flag.')<CR>'.sep
 		endif
 		if s:DoCreateMap ( leader.mp, 'i', echo_warning )
-			let cmd .= 'inoremap '.options.' '.leader.mp.' <Esc>:call mmtemplates#core#InsertTemplate('.a:library.',"'.t_name.'","i")<CR>'.sep
+			let cmd .= 'inoremap '.options.' '.leader.mp.' <C-g>u<Esc>:call mmtemplates#core#InsertTemplate('.a:library.',"'.t_name.'","i")<CR>'.sep
 		endif
 	endfor
 	"
@@ -3737,10 +3737,10 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		let jump_regex = string ( escape ( t_lib.regex_template.JumpTagAll, '|' ) )
 		"
 		if s:DoCreateMap ( jump_key, 'n', echo_warning )
-			let cmd .= 'nnoremap '.options.' '.jump_key.' i<C-R>=mmtemplates#core#JumpToTag('.jump_regex.')<CR>'.sep
+			let cmd .= 'nnoremap '.options.' '.jump_key.'      i<C-R>=mmtemplates#core#JumpToTag('.jump_regex.')<CR>'.sep
 		endif
 		if s:DoCreateMap ( jump_key, 'i', echo_warning )
-			let cmd .= 'inoremap '.options.' '.jump_key.'  <C-R>=mmtemplates#core#JumpToTag('.jump_regex.')<CR>'.sep
+			let cmd .= 'inoremap '.options.' '.jump_key.' <C-g>u<C-R>=mmtemplates#core#JumpToTag('.jump_regex.')<CR>'.sep
 		endif
 	endif
 	"
@@ -3750,10 +3750,10 @@ function! mmtemplates#core#CreateMaps ( library, localleader, ... )
 		let del_sep   = string ( escape ( t_lib.regex_template.JTListSep, '|' ) )
 		"
 		if s:DoCreateMap ( jump_key, 'n', echo_warning )
-			let cmd .= 'nnoremap '.options.' '.jump_key.'      :call mmtemplates#core#DeleteOptTag('.del_regex.','.del_sep.',"n")<CR>'.sep
+			let cmd .= 'nnoremap '.options.' '.jump_key.'            :call mmtemplates#core#DeleteOptTag('.del_regex.','.del_sep.',"n")<CR>'.sep
 		endif
 		if s:DoCreateMap ( jump_key, 'i', echo_warning )
-			let cmd .= 'inoremap '.options.' '.jump_key.' <Esc>:call mmtemplates#core#DeleteOptTag('.del_regex.','.del_sep.',"i")<CR>gi'.sep
+			let cmd .= 'inoremap '.options.' '.jump_key.' <C-g>u<Esc>:call mmtemplates#core#DeleteOptTag('.del_regex.','.del_sep.',"i")<CR>gi'.sep
 		endif
 	endif
 	"
@@ -3943,8 +3943,8 @@ function! s:CreateListMenus ( t_name, submenu, visual )
 			"
 			let item = escape ( item, '|' )           " must be escaped, even inside a string
 			"
-			exe 'anoremenu <silent> '.a:submenu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","pick",'.string(item).')<CR>'
-			exe 'inoremenu <silent> '.a:submenu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","i","pick",'.string(item).')<CR>'
+			exe 'anoremenu <silent> '.a:submenu.item_entry.'       <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","pick",'.string(item).')<CR>'
+			exe 'inoremenu <silent> '.a:submenu.item_entry.' <C-g>u<Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","i","pick",'.string(item).')<CR>'
 			if a:visual == 1
 				exe 'vnoremenu <silent> '.a:submenu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","v","pick",'.string(item).')<CR>'
 			endif
@@ -3991,8 +3991,8 @@ function! s:CreateListMenus ( t_name, submenu, visual )
 			"
 			let item = escape ( item, '|' )           " must be escaped, even inside a string
 			"
-			exe 'anoremenu <silent> '.a:submenu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","pick",'.string(item).')<CR>'
-			exe 'inoremenu <silent> '.a:submenu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","i","pick",'.string(item).')<CR>'
+			exe 'anoremenu <silent> '.a:submenu.item_entry.'       <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","pick",'.string(item).')<CR>'
+			exe 'inoremenu <silent> '.a:submenu.item_entry.' <C-g>u<Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","i","pick",'.string(item).')<CR>'
 			if a:visual == 1
 				exe 'vnoremenu <silent> '.a:submenu.item_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","v","pick",'.string(item).')<CR>'
 			endif
@@ -4060,8 +4060,8 @@ function! s:CreateTemplateMenus (  )
 		"
 		if info.entry == 1
 			" <Esc><Esc> prevents problems in insert mode
-			exe 'anoremenu <silent> '.s:t_runtime.root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'")<CR>'
-			exe 'inoremenu <silent> '.s:t_runtime.root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","i")<CR>'
+			exe 'anoremenu <silent> '.s:t_runtime.root_menu.compl_entry.map_entry.'       <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'")<CR>'
+			exe 'inoremenu <silent> '.s:t_runtime.root_menu.compl_entry.map_entry.' <C-g>u<Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","i")<CR>'
 			if info.visual == 1
 				exe 'vnoremenu <silent> '.s:t_runtime.root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","v")<CR>'
 			endif
