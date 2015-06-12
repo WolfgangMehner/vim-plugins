@@ -9,7 +9,7 @@
 "  Organization:  
 "       Version:  1.0
 "       Created:  30.08.2011
-"      Revision:  08.07.2014
+"      Revision:  07.06.2015
 "       License:  Copyright (c) 2012-2014, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -27,6 +27,24 @@ if exists("b:did_Template_ftplugin")
   finish
 endif
 let b:did_Template_ftplugin = 1
+"
+"-------------------------------------------------------------------------------
+" Editing: repeat comments, ...
+"-------------------------------------------------------------------------------
+"
+" default: -something-
+setlocal comments=sO:§\ -,mO:§\ \ ,eO:§§,:§
+" default: tcq
+" - remove auto-wrap text
+" - keep autowrap comments
+" - add insertion of comment leader after hitting <Enter>, o, O
+" - add do not break lines which were already to long
+setlocal formatoptions-=t
+setlocal formatoptions+=rol
+"
+"-------------------------------------------------------------------------------
+" Comments Functions
+"-------------------------------------------------------------------------------
 "
 if ! exists ( '*Templates_CodeComment' )
 	"----------------------------------------------------------------------
@@ -51,10 +69,18 @@ if ! exists ( '*Templates_CodeComment' )
 	" }}}1
 endif
 "
+"-------------------------------------------------------------------------------
+" Comments
+"-------------------------------------------------------------------------------
+"
  noremap    <buffer>  <silent>  <LocalLeader>cc         :call Templates_CodeComment()<CR>
 inoremap    <buffer>  <silent>  <LocalLeader>cc    <Esc>:call Templates_CodeComment()<CR>
  noremap    <buffer>  <silent>  <LocalLeader>cu         :call Templates_CommentCode()<CR>
 inoremap    <buffer>  <silent>  <LocalLeader>cu    <Esc>:call Templates_CommentCode()<CR>
+"
+"-------------------------------------------------------------------------------
+" Tags
+"-------------------------------------------------------------------------------
 "
 inoremap  {+  {++}<Left><Left>
 inoremap  {-  {--}<Left><Left>

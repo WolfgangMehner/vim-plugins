@@ -2716,6 +2716,7 @@ D.  CHANGE LOG                                   *template-support-change-log*
 - Added: User settings |g:Templates_InternetBrowserExec| and
   |g:Templates_InternetBrowserFlags| to configure the browser used by help
   templates.
+- Added: Proper filetype detection for template files, filetype plug-in.
 - Added: Setup wizard.
 - Extended the documentation.
 
@@ -2887,6 +2888,10 @@ Jeremy Cantrell (jmcantrell):
 - the solution for getting the visual area is take from his plug-in
   "opener.vim", which is distributed under the same licence as Vim itself
   ( http://www.vim.org/scripts/script.php?script_id=3543 )
+
+Andrew L:
+- suggested to insert a breakpoint into the undo sequence before inserting
+  templates and provided the outline for the solution
 
 ==============================================================================
 vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
