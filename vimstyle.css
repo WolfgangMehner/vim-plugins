@@ -1,0 +1,364 @@
+/*
+ * color palette:
+ *
+ * green-light:#59eaa1;
+ * green-dark:#46b77f;
+ * blue-light:#84d3e3;
+ * blue-dark:#3ba1b6;
+ * blue-text:#098da9;
+ * pink:#a000ff;
+ */
+
+/*
+ * table for the title bar
+ *
+ * defines:
+ * - the table
+ * - table data for 2 rows:
+ *   - 1st: 1 column (multi-column)
+ *   - 2nd: max 5 columns, 1st empty, last with special corner
+ * - links (gray)
+ */
+table.title_bar
+{
+	width:95%;
+	border-spacing:4px;
+	text-align:center;
+
+	background-color:pink;
+	background-color:#59eaa1;
+	background-image:url("green_box.png");
+	background-position:bottom;
+	background-repeat:repeat-x;
+	border-radius:5px;
+	border-top-left-radius:11px;
+	border-bottom-right-radius:11px;
+}
+
+table.title_bar > tbody > tr > td
+{
+}
+
+table.title_bar > tbody > tr:nth-child(1) > td:nth-child(1)
+{
+	padding:0px;
+	color:White;
+}
+
+table.title_bar > tbody > tr:nth-child(2) > td:nth-child(1)
+{
+}
+
+table.title_bar > tbody > tr:nth-child(2) > td:nth-child(2),
+table.title_bar > tbody > tr:nth-child(2) > td:nth-child(3),
+table.title_bar > tbody > tr:nth-child(2) > td:nth-child(4),
+table.title_bar > tbody > tr:nth-child(2) > td:nth-child(5)
+{
+	color:White;
+	width:120px;
+	padding:0px;
+	border-style:solid;
+	border-width:1px;
+	border-radius:5px;
+}
+
+table.title_bar > tbody > tr:nth-child(2) > td:last-child
+{
+	border-bottom-right-radius:9px;
+}
+
+/* use the whole td as the link: "display:block;" */
+table.title_bar a:link,
+table.title_bar a:visited
+{
+	display:block;
+	color:white;
+	text-decoration:none;
+}
+
+table.title_bar a:hover
+{
+	display:block;
+	color:#dddddd;
+	text-decoration:none;
+}
+
+/*
+ * table for the page header
+ *
+ * defines:
+ * - the table
+ * - table data for 3 columns
+ * - links (blue/violet)
+ */
+table.page_header
+{
+	width:95%;
+	border-spacing:4px;
+	text-align:center;
+}
+
+table.page_header > tbody > tr > td:nth-child(1)
+{
+	width:20%;
+}
+
+table.page_header > tbody > tr > td:nth-child(2)
+{
+	width:60%;
+}
+
+table.page_header > tbody > tr > td:nth-child(3)
+{
+	width:20%;
+}
+
+table.page_header a:link,
+table.page_header a:visited
+{
+	color:#098da9;
+	font-weight:bold;
+	text-decoration:none;
+}
+
+table.page_header a:hover
+{
+	color:#a000ff;
+	font-weight:bold;
+	text-decoration:none;
+}
+
+/*
+ * table for links to plug-ins and tools
+ *
+ * defines:
+ * - the table
+ * - table heads and data
+ * - links (gray)
+ */
+/* center the table inside the td: "margin:0 auto;" */
+table.other_plugins
+{
+	margin:0 auto;
+	border-spacing:4px;
+	padding-right:5px;
+}
+
+table.other_plugins > tbody > tr > th
+{
+	color:White;
+	text-align:right;
+	padding:3px;
+	padding-left:7px;
+	padding-right:7px;
+
+	background-color:pink;
+	background-color:#84d3e3;
+	background-image:url("blue_box_small.png");
+	background-position:center;
+	background-repeat:repeat-x;
+	border-radius:3px;
+	border-top-left-radius:5px;
+}
+
+table.other_plugins > tbody > tr > td
+{
+	text-align:right;
+	padding-left:7px;
+	padding-right:7px;
+
+	border-color:gray;
+	border-style:solid;
+	border-width:1px;
+	border-radius:3px;
+}
+
+table.other_plugins > tbody > tr:last-child > td
+{
+	border-bottom-right-radius:5px;
+}
+
+/* use the whole td as the link: "display:block;" */
+table.other_plugins a:link,
+table.other_plugins a:visited
+{
+	display:block;
+	color:gray;
+	font-weight:normal;
+	text-decoration:none;
+}
+
+table.other_plugins a:hover
+{
+	display:block;
+	color:#444444;
+	font-weight:normal;
+	text-decoration:none;
+}
+
+/*
+ * table for menu structure
+ *
+ * defines:
+ * - the table
+ * - table heads and data
+ * - headings and horizontal rules
+ * - 'pre' for code
+ */
+table.menu_structure
+{
+	width:95%;
+	border-spacing:4px;
+}
+
+table.menu_structure > thead > tr > th
+{
+	background-color:pink;
+	background-color:#84d3e3;
+	background-image:url("blue_box.png");
+	background-position:center;
+	background-repeat:repeat-x;
+	border-radius:5px;
+}
+
+table.menu_structure > thead > tr > th:first-child
+{
+	border-top-left-radius:11px;
+}
+
+table.menu_structure > thead > tr > th:last-child
+{
+	border-bottom-right-radius:11px;
+}
+
+table.menu_structure > thead > tr > th > h2
+{
+	margin-top:16px;
+	margin-bottom:16px;
+	color:White;
+}
+
+table.menu_structure > tbody > tr > td
+{
+	padding:5px;
+	border-bottom-style:solid;
+	border-bottom-width:3px;
+	border-bottom-color:SkyBlue;
+}
+
+/* TODO: nicer green */
+table.menu_structure > tbody > tr > td > h3,
+table.img_float_table > tbody > tr > td > h3
+{
+	color:Green;
+}
+
+table.menu_structure > tbody > tr > td > hr,
+table.img_float_table > tbody > tr > td > hr
+{
+	color:SkyBlue;
+	border-style:solid;
+	border-width:1px;
+}
+
+table.menu_structure pre
+{
+	margin-left:10px;
+}
+
+/*
+ * table with text on the left and images on the right,
+ * split : text 85 - img 15
+ *
+ * defines:
+ * - the table
+ * - table data for 2 columns
+ * - images
+ */
+table.img_float_table
+{
+	width:95%;
+	border-spacing:0px;
+}
+
+table.img_float_table > tbody > tr > td:first-child
+{
+	width:85%;
+	padding:0px;
+	padding-right:5px;
+}
+
+table.img_float_table > tbody > tr > td:last-child
+{
+	width:15%;
+	padding:0px;
+	padding-left:5px;
+}
+
+table.img_float_table > tbody > tr > td img
+{
+	max-width: 100%;
+	max-height: 100%;
+}
+
+/*
+ * table with some room between the cells
+ */
+table.nice_table
+{
+	border-spacing:7px;
+}
+
+/*
+ * highlighting for various syntax categories:
+ * - comment
+ * - cursor (cursor_ins and cursor_nrm)
+ * - jumptag (not yellow as Vim uses, since the yellow background looks really bold)
+ * - identifier
+ * - keyword
+ * - type
+ *
+ * Usage:
+ * Place the word within a span:
+ *   <span class="type">double</span>
+ * There are two variants of the cursor class. "cursor_ins" for an insert-mode cursor,
+ * use a bar "|" inside the span:
+ *   <span class="cursor_ins">|</span>
+ * And "cursor_nrm" for a normal-mode cursor, use any character inside the span,
+ * including spaces:
+ *   <span class="cursor_nrm">a</span>
+ */
+span.comment
+{
+	color:Blue;
+}
+span.cursor_ins
+{
+	color:Red;
+}
+span.cursor_nrm
+{
+	background-color:Red;
+}
+span.identifier
+{
+	color:DarkCyan;
+}
+span.jumptag
+{
+	background-color:PaleGoldenRod;
+}
+span.keyword
+{
+	color:Brown;
+	font-weight:bold;
+}
+span.visual
+{
+	background-color:LightGray;
+}
+span.type
+{
+	color:SeaGreen;
+	font-weight:bold;
+}

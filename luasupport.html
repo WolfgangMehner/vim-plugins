@@ -1,0 +1,367 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>Lua Support - Vim Plug-In</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15">
+		<meta name="GENERATOR" content="Quanta Plus">
+		<link rel="stylesheet" type="text/css" href="vimstyle.css">
+	</head>
+	<body>
+		<!-- ###################################################################################-->
+		<!-- ################################## TITLE BAR ######################################-->
+		<!-- ###################################################################################-->
+		<table class="title_bar">
+			<tr>
+				<td colspan=5>
+					<h1>Lua Support&nbsp;&nbsp;&#150;&nbsp;&nbsp;Vim Plug-In</h1>
+				</td>
+			</tr>
+			<tr>
+				<td>
+				</td>
+				<td>
+					<a href="index.html">plug-in<br>overview</a>
+				</td>
+				<td>
+					<a href="http://vim.sourceforge.net/scripts/script.php?script_id=4950">view on<br>vim.org</a>
+				</td>
+				<td>
+					<a href="https://github.com/WolfgangMehner/lua-support">view on<br>GitHub</a>
+				</td>
+			</tr>
+		</table>
+		<br>
+		<!-- ###################################################################################-->
+		<!-- ################################## PAGE HEADER ####################################-->
+		<!-- ###################################################################################-->
+		<table class="page_header">
+			<tbody>
+				<tr>
+					<td>
+						<img src="luasupport/lua_menu_main.png"><br>
+						<b>root menu</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					</td>
+					<td>
+						<h2>Lua Support - Vim Plug-In</h2><h3>( version 0.9 )</h3>
+						Read the Lua Support <a target=_blank href="doc/luasupport.html">Help File</a>
+					</td>
+					<td>
+						<table class="other_plugins">
+							<tr><th>
+								More plug-ins
+							</th></tr>
+							<tr><td>
+								<a href="index.html">overview</a>
+							</td></tr>
+							<tr><td>
+								<a href="http://vim.sourceforge.net/scripts/script.php?script_id=365">Bash IDE</a>
+							</td></tr>
+							<tr><td>
+								<a href="http://vim.sourceforge.net/scripts/script.php?script_id=213">C/C++ IDE</a>
+							</td></tr>
+							<tr><td>
+								<a href="http://vim.sourceforge.net/scripts/script.php?script_id=4497">Git Integration</a>
+							</td></tr>
+							<tr><td>
+								<a href="http://vim.sourceforge.net/scripts/script.php?script_id=4405">LaTeX IDE</a>
+							</td></tr>
+							<tr><td>
+								<a href="http://vim.sourceforge.net/scripts/script.php?script_id=556">Perl IDE</a>
+							</td></tr>
+							<tr><td>
+								<a href="http://vim.sourceforge.net/scripts/script.php?script_id=3931">Vim Script IDE</a>
+							</td></tr>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+		<!-- ###################################################################################-->
+		<!-- ################################## MENU STRUCTURE #################################-->
+		<!-- ###################################################################################-->
+		<a name="MENUES"></a>
+		<table class="menu_structure">
+			<thead>
+				<tr>
+					<th scope=col> <h2>Menus</h2></th>
+					<th scope=col> <h2>Explanation<h2> </th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU COMMENTS ##################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="luasupport/lua_menu_comments.png"> </td>
+					<td>
+						<h3>Menu <i>Comments</i> : insert comments</h3>
+						<p>A lot of the menu entries are defined in a so-called template library.
+						The library defines the menu entries, maps and the inserted text.
+						The personal information can also be configured there.</p>
+						<hr>
+						<p>A file header is automatically inserted into each new file (can be switched off):
+						<pre>
+<span class="comment">--
+--------------------------------------------------------------------------------
+--         File:  somefile.lua
+--
+--        Usage:  ./somefile.lua
+--
+--  Description:  
+--
+--      Options:  ---
+-- Requirements:  ---
+--         Bugs:  ---
+--        Notes:  ---
+--       Author:  Wolfgang Mehner (WM), &lt;thisguy@doggymail.de>
+-- Organization:  
+--      Version:  1.0
+--      Created:  29.05.14
+--     Revision:  ---
+--------------------------------------------------------------------------------
+--</span> </pre>
+						</p>
+						<hr>
+						<p>Append end-of-line comments to several lines at once:
+						<pre>
+record = <span class="type">{</span>
+	name    = '',
+	address = '',
+	mail    = '',
+<span class="type">}</span> </pre>
+						Visually select the three lines in the table and use the entry <b>end-of-line comment</b> or the map <b>\cl</b>
+						and get aligned comments, that can also be realigned:
+						<pre>
+record = <span class="type">{</span>
+	name    = '',                                 <span class="comment">--</span> <span class="cursor_ins">|</span>
+	address = '',                                 <span class="comment">--</span>
+	mail    = '',                                 <span class="comment">--</span>
+<span class="type">}</span> </pre>
+						</p>
+						<hr>
+						<p>Automatically generate a comment documenting a function. The name and parameters are read from the buffer.
+						Place the cursor on the function header and hit <b>\ca</b>:
+						<pre>
+<span class="comment">------------------------------------------------------------------------
+--         Name:  compare
+--      Purpose:  <span class="jumptag">{+PURPOSE+}</span>
+--  Description:  <span class="jumptag">{+DESCRIPTION+}</span>
+--   Parameters:  thee - <span class="jumptag">{+DESCRIPTION+}</span> (<span class="jumptag">{+TYPE+}</span>)
+--                summers_day - <span class="jumptag">{+DESCRIPTION+}</span> (<span class="jumptag">{+TYPE+}</span>)
+--      Returns:  <span class="jumptag">{+RETURNS+}</span>
+------------------------------------------------------------------------</span>
+
+<span class="identifier">function</span> com<span class="cursor_nrm">p</span>are ( thee, summers_day )
+	<span class="comment">-- something</span>
+<span class="identifier">end</span>  <span class="comment">-----  end of function compare  -----</span> </pre>
+						</p>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU STATEMENTS ################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="luasupport/lua_menu_statements.png"> </td>
+					<td>
+						<h3>Menu <i>Statements</i> : insert statements</h3>
+						<p>Insert statements with jump tags for convinient editing, using the entry <b>if, else</b> or via the map <b>\sie</b>:<br>
+						<pre>
+<span class="keyword"><b>if</b></span> <span class="cursor_ins">|</span> <span class="keyword"><b>then</b></span>
+	<span class="jumptag">{-IF_PART-}</span>
+<span class="keyword"><b>else</b></span>
+	<span class="jumptag">{+ELSE_PART+}</span>
+<span class="keyword">end</span> </pre>
+						The cursor is positioned after the "if". Use <b>CTRL+J</b> to jump to the tags and start editing.</p>
+						<hr>
+						<p>A lot of menu entires have a special behavior in visual mode. Select some lines in visual mode ...</p>
+						<pre>
+<span class="visual">x = <span class="identifier">math.sqrt</span> ( y )</span>
+
+<span class="identifier">print</span> ( x ) </pre>
+						then use the entry <b>if, else</b>. The text is inserted around the selected lines and they are indented:
+						<pre>
+<span class="keyword"><b>if</b></span> <span class="cursor_ins">|</span> <span class="keyword"><b>then</b></span>
+	x = <span class="identifier">math.sqrt</span> ( y )
+<span class="keyword"><b>else</b></span>
+	<span class="jumptag">{+ELSE_PART+}</span>
+<span class="keyword">end</span>
+
+<span class="identifier">print</span> ( x ) </pre>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU IDIOMS ####################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="luasupport/lua_menu_idioms.png"> </td>
+					<td>
+						<table class="img_float_table"><tbody>
+							<tr>
+								<td>
+									<h3>Menu <i>Idioms</i> : insert frequently used statements</h3>
+									<p>Insert an empty function using <b>function definition</b>:<br>
+									<pre>
+<span class="identifier">function</span> brain_function ( <span class="cursor_ins">|</span> )
+	<span class="jumptag">{-FUNCTION_BODY-}</span>
+<span class="identifier">end</span>  <span class="comment">-----  end of function brain_function  -----</span> </pre>
+									</p>
+									<hr>
+									<p>Choose the standard <b>library functions</b> from a list.
+									They are inserted with jumps tags named for the functions parameters:
+									<pre>
+<span class="identifier">string.gsub</span> ( <span class="jumptag">{+str+}</span>, <span class="jumptag">{+pattern+}</span>, <span class="jumptag">{+repl+}</span> ) </pre>
+									Often used iterators are available in <b>iterators</b>:
+									<pre>
+<span class="keyword"><b>for</b></span> line <span class="keyword"><b>in</b></span> <span class="identifier">io.lines</span> ( <span class="jumptag">{+FILENAME+}</span> ) <span class="keyword"><b>do</b></span>
+	<span class="jumptag">{-LOOP_BODY-}</span>
+<span class="keyword"><b>end</b></span> </pre>
+									</p>
+									<hr>
+									<p>Insert function skeletons for <b>metamethods:</b></p>
+									<pre>
+<span class="identifier">function</span> my_metatable.__newindex ( object, key, value )
+	<span class="jumptag">{-FUNCTION_BODY-}</span>
+<span class="identifier">end</span>  <span class="comment">-----  end of function my_metatable.__newindex  -----</span> </pre>
+								</td>
+								<td>
+									<img src="luasupport/lua_menu_idioms_it.png">
+								</td>
+							</tr>
+						</tbody></table>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU REGEX #####################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="luasupport/lua_menu_regex.png"> </td>
+					<td>
+						<table class="img_float_table"><tbody>
+							<tr>
+								<td>
+									<h3>Menu <i>Regex</i> : assemble regular expressions</h3>
+									<p>Insert <b>character classes</b> and other constructs:
+									<pre>
+res = <span class="identifier">string.match</span> ( str, '%s*(%w+)' ) </pre>
+									</p>
+									<hr>
+									<p>Use <b>esc. magic char.</b> or <b>\xe</b> to escape the character under the cursor,
+									if it is a magic character:
+									<pre>
+op1, op2 = <span class="identifier">string.match</span> ( expr, '(%d+)<span class="cursor_nrm">+</span>(%d+)' ) </pre>
+									Place the cursor on the "+" and hit <b>\xe</b>:
+									<pre>
+op1, op2 = <span class="identifier">string.match</span> ( expr, '(%d+)%<span class="cursor_nrm">+</span>(%d+)' ) </pre>
+									</p>
+								</td>
+								<td>
+									<img src="luasupport/lua_menu_regex_classes.png">
+								</td>
+							</tr>
+						</tbody></table>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU SNIPPETS ##################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="luasupport/lua_menu_snippets.png"> </td>
+					<td>
+						<h3>Menu <i>Snippets</i> : insert code snippets</h3>
+						<p>The plug-in comes with a facility to extract, manage and insert often used code snippets.
+						Visually select a few lines and use the menu entry <b>create code snippet</b> to write these lines into a file.
+						The code snippet can then be edited and inserted again using <b>insert code snippet</b>.<br>
+						A few snippets are shipped with Lua Support, for example "print_cmdline_arguments":
+						<pre>
+<span class="comment">-- echo command line arguments</span>
+
+<span class="keyword">for</span> idx, val <span class="keyword">in</span> <span class="identifier">ipairs</span> ( { ... } ) <span class="keyword">do</span>
+	<span class="identifier">print</span> ( idx, val )
+<span class="keyword">end</span> </pre>
+						</p>
+						<hr>
+						<p>The templates which define the behavior of most of the menu entries are also manage here.
+						The templates support different coding styles, which are used here to support Lua 5.1, 5.2 and 5.3.
+						Use the entry <b>choose style</b> to switch between them.</p>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU RUN #######################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="luasupport/lua_menu_run.png"> </td>
+					<td>
+						<table class="img_float_table"><tbody>
+							<tr>
+								<td>
+									<h3>Menu <i>Run</i> : run/compile/check the code</h3>
+									<p>A script can be run from inside Vim. The executable can be configured in your <i>.vimrc</i>:
+									<pre>let g:Lua_Executable = "/usr/local/bin/lua"</pre>
+									It can also be changed on the fly using the entry <b>set executable</b> or the ex-command:
+									<pre>:LuaExecutable lua5.1</pre>
+									Then Lua can be run using the menu entry, the map <b>\rr</b> or the ex-command, which also supports cmd.-line arguments:
+									<pre>:Lua arg1 arg2</pre>
+									Alternatively, "direct run" can be used:
+									<pre>:LuaDirectRun yes</pre>
+									Now executable scripts are run as the executable, which results in the interpreter given in the shebang being used.</p>
+									<hr>
+									<p>The output of the script can be viewed in several ways. Depending on the method quickfix is supported, both for syntax and runtime errors.
+									The output method can be changed using the menu entry or the ex-command:
+									<pre>:LuaOutputMethod buffer</pre>
+									</p>
+									<hr>
+									<p>The script can be made executable via a keystroke (map <b>\re</b>). It can be printed into a file (map <b>\rh</b>). ...</p>
+								<td>
+									<a href="lua_window_run.png"><img src="luasupport/s_lua_window_run.png"></a><br>
+									&nbsp;&nbsp;&nbsp;Lua output and quickfix
+								</td>
+							</tr>
+						</tbody></table>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU HELP ######################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="luasupport/lua_menu_help.png"> </td>
+					<td>
+						<h3>Menu <i>Help</i> : call help</h3>
+						<p>Help is quickly accessible through the <b>Help</b> menu. Place the cursor on the name of a standard funcion ...
+						<pre>
+<span class="identifier">str<span class="cursor_nrm">i</span>ng.gsub</span> ( str, "%d+", repl_f ) </pre>
+						</pre>
+						then use the entry or the map <b>\hl</b> and the browser will open with a URL like:
+						<pre>http://www.lua.org/manual/5.2/manual.html#pdf-string.gsub</pre>
+						</p>
+						<hr>
+						<p>The same works for any word in the English language. Placing the cursor on a word and hitting <b>\he</b> opens a dictionary for the word.</p>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## TOOL BOX - MAKE ################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="luasupport/lua_menu_tool_make.png"> </td>
+					<td>
+						<h3>Toolbox <i>Make</i> : make integration</h3>
+						<p>Run make in the current directory, passing cmd.-line arguments:
+						<pre>:Make -j3</pre>
+						</p>
+						<hr>
+						<p>In larger projects a specific makefile can be chosen:
+						<pre>:MakeFile ../Makefile</pre>
+						... and run from anywhere:
+						<pre>:Make doc</pre>
+						The tool will change the directory and execute the previously chosen makefile, independently of the current working directory.</p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<!-- ###################################################################################-->
+		<!-- ################################## FOOTER #########################################-->
+		<!-- ###################################################################################-->
+		<p>Page updated: July 04 2015 &nbsp;&nbsp;/&nbsp;&nbsp;
+		<font face="helvetica, helv, geneva">Mail to:</font> <a href="mailto:wolfgang-mehner@web.de">Wolfgang Mehner</a></p>
+	</body>
+</html>

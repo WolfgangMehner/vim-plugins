@@ -1,0 +1,1168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>VIM: gitsupport</title>
+<link rel="stylesheet" href="vim-stylesheet.css" type="text/css">
+</head>
+<body>
+<h2>GITSUPPORT</h2>
+<pre>
+<b class="vimtag"><a name="gitsupport.txt">gitsupport.txt</a></b>                  Git Support                      Oct 24 2014
+
+Git Support                                          <b class="vimtag"><a name="git-support">git-support</a></b> <b class="vimtag"><a name="gitsupport">gitsupport</a></b>
+
+                            Plug-in version 0.9.2
+                        for Vim version 7.0 and above
+                 Wolfgang Mehner <code class="special">&lt;wolfgang-mehner at web.de&gt;</code>
+
+Integration of Git for Vim/gVim. The plug-in at hand allows to use Git from
+within Vim, eliminating the need for context switches. The output of commands
+like "git status" is written into buffers, and the commit can be manipulated
+from right there. Further commands allow to quickly add the file in the
+current buffer or show its diff. See the chapter |<a href="gitsupport.html#gitsupport-introduction">gitsupport-introduction</a>| for
+a quick overview and a short guide to this documentation.
+
+</pre><hr><pre>0.  TABLE OF CONTENTS                                    <b class="vimtag"><a name="gitsupport-contents">gitsupport-contents</a></b>
+</pre><hr><pre>
+ 1.    Introduction                               |<a href="gitsupport.html#gitsupport-introduction">gitsupport-introduction</a>|
+ 2.    Overview                                   |<a href="gitsupport.html#gitsupport-overview">gitsupport-overview</a>|
+ 2.1    Menu                                      |<a href="gitsupport.html#gitsupport-overview-menu">gitsupport-overview-menu</a>|
+ 2.2    Workflow                                  |<a href="gitsupport.html#gitsupport-overview-work">gitsupport-overview-work</a>|
+ 3.    Commands                                   |<a href="gitsupport.html#gitsupport-commands">gitsupport-commands</a>|
+ 3.1    Command-Line Completion                   |<a href="gitsupport.html#gitsupport-cmds-cmd-line">gitsupport-cmds-cmd-line</a>|
+ 4.    Syntax Highlighting                        |<a href="gitsupport.html#gitsupport-syntax">gitsupport-syntax</a>|
+ 4.1    Branch                                    |<a href="gitsupport.html#gitsupport-syn-branch">gitsupport-syn-branch</a>|
+ 4.2    Commit                                    |<a href="gitsupport.html#gitsupport-syn-commit">gitsupport-syn-commit</a>|
+ 4.3    Diff                                      |<a href="gitsupport.html#gitsupport-syn-diff">gitsupport-syn-diff</a>|
+ 4.4    Grep                                      |<a href="gitsupport.html#gitsupport-syn-grep">gitsupport-syn-grep</a>|
+ 4.5    Log                                       |<a href="gitsupport.html#gitsupport-syn-log">gitsupport-syn-log</a>|
+ 4.6    Status                                    |<a href="gitsupport.html#gitsupport-syn-status">gitsupport-syn-status</a>|
+ 5.    Custom Menus                               |<a href="gitsupport.html#gitsupport-menus">gitsupport-menus</a>|
+ 6.    Configuration                              |<a href="gitsupport.html#gitsupport-configuration">gitsupport-configuration</a>|
+ 6.1    Executable                                |<a href="gitsupport.html#gitsupport-config-executable">gitsupport-config-executable</a>|
+ 6.2    Menus                                     |<a href="gitsupport.html#gitsupport-config-menus">gitsupport-config-menus</a>|
+ 6.3    Maps                                      |<a href="gitsupport.html#gitsupport-config-maps">gitsupport-config-maps</a>|
+ 6.4    Settings                                  |<a href="gitsupport.html#gitsupport-config-settings">gitsupport-config-settings</a>|
+ 6.5    Xterm                                     |<a href="gitsupport.html#gitsupport-config-xterm">gitsupport-config-xterm</a>|
+
+ A.    Troubleshooting - Known Issues             |<a href="gitsupport.html#gitsupport-troubleshooting">gitsupport-troubleshooting</a>|
+ B.    Release <code class="note">Note</code>s - Change Log                 |<a href="gitsupport.html#gitsupport-release-notes">gitsupport-release-notes</a>|
+ C.    Credits                                    |<a href="gitsupport.html#gitsupport-credits">gitsupport-credits</a>|
+
+</pre><hr><pre>1.  INTRODUCTION                                     <b class="vimtag"><a name="gitsupport-introduction">gitsupport-introduction</a></b>
+</pre><hr><pre>
+Git Support defines two types of commands. The first kind provides convenient
+access to various Git commands which manipulate the working directory and
+staging area. The second kind redirects the output from Git commands like "git
+status" into buffers. For each such buffer maps are defined which can be used
+to run other commands. For example, after running :GitStatus, you can use maps
+like "a" and "c" to add or check out the file under the cursor, provided its
+name appears in the section "Changes not staged for commit:". Each buffer has
+a map <code class="special">&lt;SHIFT-F1&gt;</code> for showing a short help.
+
+All commands are listed in a menu "Git". It provides convenient access to all
+the commands and gives an overview of the plug-in's functionality. The plug-in
+supports custom menu entries, which can be configured easily.
+
+The next chapter |<a href="gitsupport.html#gitsupport-overview">gitsupport-overview</a>| gives an overview of the plug-in, fol-
+lowed by a detailed description of the commands in |<a href="gitsupport.html#gitsupport-commands">gitsupport-commands</a>|. The
+customization of the syntax highlighting is explained in |<a href="gitsupport.html#gitsupport-syntax">gitsupport-syntax</a>|,
+the customizable menu entries in |<a href="gitsupport.html#gitsupport-menus">gitsupport-menus</a>|.  The chapter
+|<a href="gitsupport.html#gitsupport-configuration">gitsupport-configuration</a>| documents further configurations.
+
+</pre><hr><pre>2.  OVERVIEW                                             <b class="vimtag"><a name="gitsupport-overview">gitsupport-overview</a></b>
+</pre><hr><pre>
+The following commands are provided by Git Support. Each command is executed
+in the current working directory, just as it would work on the shell. You can
+run the commands in every subdirectory of the project.
+
+  Command                          Short Description
+ ----------------------------------------------------------------------------
+  |<a href="gitsupport.html#:Git">:Git</a>|    <code class="special">&lt;cmd&gt;</code> [<code class="special">&lt;args&gt;</code>]           (run) git <code class="special">&lt;cmd&gt;</code> <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:Git">:Git</a>|!   <code class="special">&lt;cmd&gt;</code> [<code class="special">&lt;args&gt;</code>]           (buf) git <code class="special">&lt;cmd&gt;</code> <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitRun">:GitRun</a>| <code class="special">&lt;cmd&gt;</code> [<code class="special">&lt;args&gt;</code>]           (run) git <code class="special">&lt;cmd&gt;</code> <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitBuf">:GitBuf</a>| <code class="special">&lt;cmd&gt;</code> [<code class="special">&lt;args&gt;</code>]           (buf) git <code class="special">&lt;cmd&gt;</code> <code class="special">&lt;args&gt;</code>
+
+  |<a href="gitsupport.html#:GitAdd">:GitAdd</a>| [<code class="special">&lt;args&gt;</code>]                 (run) git add <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitBlame">:GitBlame</a>| [<code class="special">&lt;args&gt;</code>]               (buf) git blame <code class="special">&lt;args&gt;</code> (supports ranges)
+  |<a href="gitsupport.html#:GitBranch">:GitBranch</a>|                       (buf) git branch
+  |<a href="gitsupport.html#:GitBranch">:GitBranch</a>| <code class="special">&lt;args&gt;</code>                (run) git branch <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitCheckout">:GitCheckout</a>| [<code class="special">&lt;args&gt;</code>]            (run) git checkout <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitCommit">:GitCommit</a>| [<code class="special">&lt;args&gt;</code>]              (run) git commit <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitCommit">:GitCommit</a>| --dry-run [<code class="special">&lt;args&gt;</code>]    (buf) git commit --dry-run <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitCommitFile">:GitCommitFile</a>| [<code class="special">&lt;file&gt;</code>]          (run) git commit -F <code class="special">&lt;file&gt;</code>
+  |<a href="gitsupport.html#:GitCommitMerge">:GitCommitMerge</a>|                  (run) git commit -F <code class="special">&lt;base&gt;</code>/.git/MERGE_MSG
+  |<a href="gitsupport.html#:GitCommitMsg">:GitCommitMsg</a>| <code class="special">&lt;msg&gt;</code>              (run) git commit -m "<code class="special">&lt;msg&gt;</code>"
+  |<a href="gitsupport.html#:GitDiff">:GitDiff</a>| [<code class="special">&lt;args&gt;</code>]                (buf) git diff <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitFetch">:GitFetch</a>| [<code class="special">&lt;args&gt;</code>]               (run) git fetch <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitGrep">:GitGrep</a>| <code class="special">&lt;args&gt;</code>                  (buf) git grep <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitGrepTop">:GitGrepTop</a>| <code class="special">&lt;args&gt;</code>               (buf) git grep <code class="special">&lt;args&gt;</code> (^1)
+  |<a href="gitsupport.html#:GitHelp">:GitHelp</a>| [<code class="special">&lt;args&gt;</code>]                (buf) git help <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitLog">:GitLog</a>| [<code class="special">&lt;args&gt;</code>]                 (buf) git log <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitMerge">:GitMerge</a>| [<code class="special">&lt;args&gt;</code>]               (run) git merge <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitMergeUpstream">:GitMergeUpstream</a>| [<code class="special">&lt;args&gt;</code>]       (run) git merge <code class="special">&lt;args&gt;</code> <code class="special">&lt;upstream-branch&gt;</code>
+  |<a href="gitsupport.html#:GitMove">:GitMove</a>| [<code class="special">&lt;args&gt;</code>]                (run) git mv <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitMv">:GitMv</a>| [<code class="special">&lt;args&gt;</code>]                  (run) git mv <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitPull">:GitPull</a>| [<code class="special">&lt;args&gt;</code>]                (run) git pull <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitPush">:GitPush</a>| [<code class="special">&lt;args&gt;</code>]                (run) git push <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitRemote">:GitRemote</a>|                       (buf) git remote
+  |<a href="gitsupport.html#:GitRemote">:GitRemote</a>| <code class="special">&lt;args&gt;</code>                (run) git remote <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitRemove">:GitRemove</a>| [<code class="special">&lt;args&gt;</code>]              (run) git rm <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitRm">:GitRm</a>| [<code class="special">&lt;args&gt;</code>]                  (run) git rm <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitReset">:GitReset</a>| [<code class="special">&lt;args&gt;</code>]               (run) git reset <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitShow">:GitShow</a>| [<code class="special">&lt;args&gt;</code>]                (buf) git show <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitStash">:GitStash</a>| [<code class="special">&lt;args&gt;</code>]               (run) git stash <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitStash">:GitStash</a>| list [<code class="special">&lt;args&gt;</code>]          (buf) git stash list <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitStash">:GitStash</a>| show [<code class="special">&lt;args&gt;</code>]          (buf) git stash show <code class="special">&lt;args&gt;</code>
+  |<a href="gitsupport.html#:GitSlist">:GitSlist</a>|                        (buf) git stash list
+  |<a href="gitsupport.html#:GitStatus">:GitStatus</a>| [<code class="special">&lt;path&gt;</code>]              (buf) git status
+  |<a href="gitsupport.html#:GitTag">:GitTag</a>|                          (buf) git tag
+  |<a href="gitsupport.html#:GitTag">:GitTag</a>| <code class="special">&lt;args&gt;</code>                   (run) git tag <code class="special">&lt;args&gt;</code>
+
+  |<a href="gitsupport.html#:GitK">:GitK</a>| <code class="special">&lt;args&gt;</code>                     start gitk with the given arguments
+  |<a href="gitsupport.html#:GitBash">:GitBash</a>| <code class="special">&lt;args&gt;</code>                  run git in an external terminal
+
+  |<a href="gitsupport.html#:GitSupportHelp">:GitSupportHelp</a>|                  show plug-in help
+  |<a href="gitsupport.html#:GitSupportSettings">:GitSupportSettings</a>|              show plug-in settings
+ ----------------------------------------------------------------------------
+
+(run) runs the command after asking for confirmation
+(buf) runs the command and redirects its output in a new buffer
+(^1)  runs the command within the context of the top-level directory
+
+When a command opens a new buffer, several maps are defined for this buffer.
+Hitting <code class="special">&lt;SHIFT-F1&gt;</code> always prints a short help with all available maps.
+
+The default argument for GitAdd, GitBlame, GitCheckout, GitCommitFile, GitRm,
+GitRemove and GitReset is the current buffer.
+
+When called without arguments, the commands GitBranch and GitRemote open a
+buffer, otherwise they run the respective Git command with the given
+arguments.
+
+Names of Git objects can be completed while on the Vim command-line, similar
+to the way words can be completed in buffers using <code class="keystroke">CTRL-P</code> (see |<code class="badlink">i_CTRL-P</code>|).
+The names of branches, commands, remotes and tags can be completed that way.
+This feature has to be enabled by hand, see |<a href="gitsupport.html#gitsupport-cmds-cmd-line">gitsupport-cmds-cmd-line</a>| for
+details.
+
+</pre><hr><pre>2.1  MENU                                           <b class="vimtag"><a name="gitsupport-overview-menu">gitsupport-overview-menu</a></b>
+</pre><hr><pre>
+Git Support comes with a menu "Git" which contains all commands for convenient
+access. The menu contains several entries which open buffers for a quick
+overview of your repository: branch, log, status, ...
+
+All commands are listed in the menu "git ...". Each entry opens the command-
+line and inserts the respective command, awaiting further input. This menu
+provides an overview of the plug-in's functionality.
+
+The menu "file" contains several commands which can be run on the current
+buffer. Each entry runs the command directly. This is designed to support the
+work on the current file: viewing diffs, adding or checking out the file, ...
+
+Some special commands are provided in the menu "specials". See their documen-
+tation for further help.
+
+</pre><hr><pre>2.2  WORKFLOW                                       <b class="vimtag"><a name="gitsupport-overview-work">gitsupport-overview-work</a></b>
+</pre><hr><pre>
+To be completely honest, the plug-in in its current state is probably best
+suited for my own workflow. This is the main reason why simply running
+|<a href="gitsupport.html#:GitCommit">:GitCommit</a>| without arguments currently does not work, and why there is a
+|<a href="gitsupport.html#:GitCommitFile">:GitCommitFile</a>| command.
+
+I keep a file like 'project/commit.txt' around and protocol the changes while
+working on the files. This has the advantage that names of variables,
+functions or classes can quickly be inserted using <code class="special">&lt;<code class="keystroke">CTRL-P</code>&gt;</code>. Intermediate
+results can be staged using |<a href="gitsupport.html#:GitAdd">:GitAdd</a>|, so the output of |<a href="gitsupport.html#:GitDiff">:GitDiff</a>| is clean
+again. After a look at the output of |<a href="gitsupport.html#:GitStatus">:GitStatus</a>| and assembling the release
+in the status buffer, I finalize the commit message in 'project/commit.txt'.
+Running |<a href="gitsupport.html#:GitCommitFile">:GitCommitFile</a>| on the buffer commits the changes using the contents
+of the file as the message.
+
+I am convinced, since you do not have to leave Vim to manage your repository,
+that this is a better way of doing things. Editing the commit message in a
+window gives you the chance to browse around your project in the environment
+your already working in. You furthermore can have a look at logs, compare
+different branches or add another file while writing the commit message. And
+seeing how you use Vim for a big project like the kinds of projects you manage
+in a version control system, you obviously do not have a problem dealing with
+one further file.
+
+</pre><hr><pre>3.  COMMANDS                                             <b class="vimtag"><a name="gitsupport-commands">gitsupport-commands</a></b>
+</pre><hr><pre>
+Whenever a command opens a buffer, several maps are defined for this buffer.
+Hitting <code class="special">&lt;SHIFT-F1&gt;</code> always prints a short help with all available maps. All
+buffers can be closed via <code class="special">&lt;q&gt;</code> and updated via <code class="special">&lt;u&gt;</code>.
+
+</pre><hr><pre>                                                        <b class="vimtag"><a name=":Git">:Git</a></b> <b class="vimtag"><a name=":GitRun">:GitRun</a></b> <b class="vimtag"><a name=":GitBuf">:GitBuf</a></b>
+<code class="section">  :Git <code class="special">&lt;cmd&gt;</code> [<code class="special">&lt;args&gt;</code>] </code>
+<code class="section">  :GitRun <code class="special">&lt;cmd&gt;</code> [<code class="special">&lt;args&gt;</code>] </code>
+<code class="section">  :Git! <code class="special">&lt;cmd&gt;</code> [<code class="special">&lt;args&gt;</code>] </code>
+<code class="section">  :GitBuf <code class="special">&lt;cmd&gt;</code> [<code class="special">&lt;args&gt;</code>] </code>
+
+Executes "git <code class="special">&lt;cmd&gt;</code> ...". The last two versions redirect the output into a
+buffer.
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>                                                                     <b class="vimtag"><a name=":GitAdd">:GitAdd</a></b>
+<code class="section">  :GitAdd [<code class="special">&lt;args&gt;</code>] </code>
+<code class="section">  :GitAdd! [<code class="special">&lt;args&gt;</code>] </code>
+
+Executes "git add ...". The second version forces the add. If no arguments are
+given, adds the current buffer.
+
+Examples:
+
+Add the current buffer:
+<code class="example">  :GitAdd</code>
+Similarly:
+<code class="example">  :GitAdd -- %</code>
+Is equivalent to:
+<code class="example">  git add -- <code class="special">&lt;currentfile&gt;</code></code>
+<code class="example"></code>
+Add all the Vim scripts in the current directory:
+<code class="example">  :GitAdd! *.vim</code>
+Is equivalent to:
+<code class="example">  git add -f *.vim</code>
+<code class="example"></code>
+</pre><hr><pre><code class="example">                                                                   <b class="vimtag"><a name=":GitBlame">:GitBlame</a></b></code>
+<code class="example"><code class="section">  :<code class="special">[range]</code>GitBlame </code></code>
+<code class="example"><code class="section">  :<code class="special">[range]</code>GitBlame <code class="special">&lt;args&gt;</code> </code></code>
+<code class="example"></code>
+The first version opens a buffer containing the output of Git's blame for the
+current buffer. The second version runs blame for the given arguments. When a
+range is given, the output is limited to these lines.
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
+
+  of        file under cursor: open file (edit)
+  oj        file under cursor: open and jump to the corresponding line
+
+  cs        commit under cursor: show
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>                                                                  <b class="vimtag"><a name=":GitBranch">:GitBranch</a></b>
+<code class="section">  :GitBranch </code>
+<code class="section">  :GitBranch <code class="special">&lt;args&gt;</code> </code>
+
+The first version opens a buffer listing all branches, including remote ones.
+The second version executes "git branch ...".
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
+
+  branch under the cursor ...
+  ch        checkout
+  cr        use as starting point for creating a new branch
+  de        delete
+  De / DE   delete (via -D)
+  me        merge with current branch
+  re        use as upstream for rebase
+  rn        rename
+  su        set as upstream from current branch
+  cs        show the commit
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>                                                                <b class="vimtag"><a name=":GitCheckout">:GitCheckout</a></b>
+<code class="section">  :GitCheckout [<code class="special">&lt;args&gt;</code>] </code>
+
+Executes "git checkout ...".
+
+Examples:
+
+Check out the file in the current buffer:
+<code class="example">  :GitCheckout -- %</code>
+(Might require running ":e" to update the buffer itself.)
+
+Check out the branch "master":
+<code class="example">  :GitCheckout master</code>
+<code class="example"></code>
+Settings:
+- |<a href="gitsupport.html#g:Git_CheckoutExpandEmpty">g:Git_CheckoutExpandEmpty</a>|
+
+</pre><hr><pre>                                     <b class="vimtag"><a name=":GitCommit">:GitCommit</a></b> <b class="vimtag"><a name=":GitCommitFile">:GitCommitFile</a></b> <b class="vimtag"><a name=":GitCommitMsg">:GitCommitMsg</a></b>
+<code class="section">  :GitCommit [<code class="special">&lt;args&gt;</code>] </code>
+<code class="section">  :GitCommitFile [<code class="special">&lt;file&gt;</code>] </code>
+<code class="section">  :GitCommitMsg <code class="special">&lt;msg&gt;</code> </code>
+
+The first version runs "git commit" with the given arguments. If the arguments
+include the "--dry-run" flag, the output is redirected into a buffer. The
+second version takes the commit message from the given file (default: current
+buffer). The third version uses the commit message provided on the command
+line.
+
+<code class="note">Note</code> The command :GitCommit currently can not be run without arguments. Supply
+     the commit message using either the -m or -F options, or by using the
+     other versions :GitCommitFile or :GitCommitMsg.
+
+                                                             <b class="vimtag"><a name=":GitCommitMerge">:GitCommitMerge</a></b>
+Commit a merge:
+
+<code class="section">  :GitCommitMerge </code>
+
+This version commits changes from a merge conflict. It first looks for the
+base (toplevel) directory of the repository (<code class="special">&lt;base&gt;</code>) and checks whether there
+is a file <code class="special">&lt;base&gt;</code>/.git/MERGE_HEAD located there. Then the changes are committed
+via:
+<code class="example">  git commit -F <code class="special">&lt;base&gt;</code>/.git/MERGE_MSG</code>
+The file MERGE_MSG contains the standard message for merges, which looks
+similar to this:
+
+<code class="example">  Merge remote-tracking branch 'origin/master'</code>
+<code class="example"></code>
+<code class="example">  Conflicts:</code>
+<code class="example">      somedir/thefile.txt</code>
+
+<code class="note">Note</code> I do not know whether this is a "proper" usage of Git. However, it seems
+     to work and even the files in the .git/ directory which indicate the
+     merge conflict (MERGE_HEAD, MERGE_MSG, ...) are gone afterwards.
+
+
+Examples:
+
+Make a small commit:
+<code class="example">  :GitCommitMsg Minor changes.</code>
+Is equivalent to:
+<code class="example">  git commit -m "Minor changes."</code>
+<code class="example"></code>
+Make a larger commit, take the commit message from a file:
+<code class="example">  :GitCommitFile commit.txt</code>
+Is equivalent to:
+<code class="example">  git commit -F commit.txt</code>
+<code class="example"></code>
+Amend the previous commit:
+<code class="example">  :GitCommit --amend -F commit.txt</code>
+Is equivalent to:
+<code class="example">  git commit --amend -F commit.txt</code>
+<code class="example"></code>
+</pre><hr><pre><code class="example">                                                                    <b class="vimtag"><a name=":GitDiff">:GitDiff</a></b></code>
+<code class="example"><code class="section">  :GitDiff </code></code>
+<code class="example"><code class="section">  :GitDiff <code class="special">&lt;args&gt;</code> </code></code>
+<code class="example"></code>
+Both version run diff for the given arguments. The behavior of the first
+version depends on the setting |<a href="gitsupport.html#g:Git_DiffExpandEmpty">g:Git_DiffExpandEmpty</a>|.
+By default, the first version opens the diff showing all unstaged changes. If
+|<a href="gitsupport.html#g:Git_DiffExpandEmpty">g:Git_DiffExpandEmpty</a>| is set to 'yes', only the diff of the current file is
+shown. This makes the behavior of :GitDiff more consistent with commands like
+|<a href="gitsupport.html#:GitAdd">:GitAdd</a>|.
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
+
+  of        file under cursor: open file (edit)
+  oj        file under cursor: open and jump to the position under the cursor
+ ----------------------------------------------------------------------------
+
+Example:
+
+Show the diff for the current file:
+<code class="example">  :GitDiff %</code>
+<code class="example"></code>
+Show the diff for a file Vector.cc and its header Vector.h:
+<code class="example">  :GitDiff Vector.*</code>
+Is equivalent to:
+<code class="example">  git diff Vector.*</code>
+<code class="example"></code>
+Settings:
+- |<a href="gitsupport.html#g:Git_DiffExpandEmpty">g:Git_DiffExpandEmpty</a>|
+
+</pre><hr><pre>                                                                   <b class="vimtag"><a name=":GitFetch">:GitFetch</a></b>
+<code class="section">  :GitFetch [<code class="special">&lt;args&gt;</code>] </code>
+
+Executes "git fetch ...".
+
+</pre><hr><pre>                                                        <b class="vimtag"><a name=":GitGrep">:GitGrep</a></b> <b class="vimtag"><a name=":GitGrepTop">:GitGrepTop</a></b>
+<code class="section">  :GitGrep <code class="special">&lt;args&gt;</code> </code>
+<code class="section">  :GitGrepTop <code class="special">&lt;args&gt;</code> </code>
+
+The first version opens a buffer containing the output of Git's grep. The
+second version runs grep within the context of the top-level directory of the
+repository.
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
+
+  of        file under cursor: open file (edit)
+  oj        file under cursor: open and jump to the corresponding line
+  <code class="special">&lt;Enter&gt;</code>   file under cursor: open and jump to the corresponding line
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>                                                                    <b class="vimtag"><a name=":GitHelp">:GitHelp</a></b>
+<code class="section">  :GitHelp [<code class="special">&lt;args&gt;</code>] </code>
+
+Opens a buffer containing the help for one of Git's commands. If no command is
+given, opens the help for Git itself.
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+ ----------------------------------------------------------------------------
+
+Example:
+
+Show the help for the add command:
+<code class="example">  :GitHelp add</code>
+Is equivalent to:
+<code class="example">  git help add</code>
+<code class="example"></code>
+</pre><hr><pre><code class="example">                                                                     <b class="vimtag"><a name=":GitLog">:GitLog</a></b></code>
+<code class="example"><code class="section">  :GitLog </code></code>
+<code class="example"><code class="section">  :GitLog <code class="special">&lt;args&gt;</code> </code></code>
+<code class="example"></code>
+The first version opens a buffer containing the log for the current branch.
+The second version runs log for the given arguments.
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>                                                 <b class="vimtag"><a name=":GitMerge">:GitMerge</a></b> <b class="vimtag"><a name=":GitMergeUpstream">:GitMergeUpstream</a></b>
+<code class="section">  :GitMerge [<code class="special">&lt;args&gt;</code>] </code>
+<code class="section">  :GitMergeUpstream [<code class="special">&lt;args&gt;</code>] </code>
+
+The first version executes "git merge ...". The second version automatically
+obtains the name of the upstream branch and merges it into the current branch.
+arguments can still be given:
+<code class="example">  :GitMergeUpstream --ff-only</code>
+Is equivalent to:
+<code class="example">  git merge --ff-only <code class="special">&lt;upstream-branch&gt;</code></code>
+
+</pre><hr><pre>                                                             <b class="vimtag"><a name=":GitMove">:GitMove</a></b> <b class="vimtag"><a name=":GitMv">:GitMv</a></b>
+<code class="section">  :GitMove [<code class="special">&lt;args&gt;</code>] </code>
+<code class="section">  :GitMv [<code class="special">&lt;args&gt;</code>] </code>
+
+Both versions behave the same. Executes "git mv ...".
+
+</pre><hr><pre>                                                                    <b class="vimtag"><a name=":GitPull">:GitPull</a></b>
+<code class="section">  :GitPull [<code class="special">&lt;args&gt;</code>] </code>
+
+Executes "git pull ...".
+
+</pre><hr><pre>                                                                    <b class="vimtag"><a name=":GitPush">:GitPush</a></b>
+<code class="section">  :GitPush [<code class="special">&lt;args&gt;</code>] </code>
+
+Executes "git push ...".
+
+</pre><hr><pre>                                                                  <b class="vimtag"><a name=":GitRemote">:GitRemote</a></b>
+<code class="section">  :GitRemote </code>
+<code class="section">  :GitRemote <code class="special">&lt;args&gt;</code> </code>
+
+The first version opens a buffer listing all the remotes together with their
+URLs. The second version executes "git remote ...".
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
+
+  remote under the cursor ...
+  fe        fetch
+  ph        push
+  pl        pull
+  rm        remove
+  rn        rename
+  su        set-url
+  sh        show
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>                                                           <b class="vimtag"><a name=":GitRemove">:GitRemove</a></b> <b class="vimtag"><a name=":GitRm">:GitRm</a></b>
+<code class="section">  :GitRemove [<code class="special">&lt;args&gt;</code>] </code>
+<code class="section">  :GitRm [<code class="special">&lt;args&gt;</code>] </code>
+
+Both versions behave the same. Executes "git rm ...". If no arguments are
+given, removes the current buffer.
+
+Example:
+
+Reset the current file:
+<code class="example">  :GitRemove</code>
+Is equivalent to:
+<code class="example">  git rm -- <code class="special">&lt;currentfile&gt;</code></code>
+<code class="example"></code>
+</pre><hr><pre><code class="example">                                                                   <b class="vimtag"><a name=":GitReset">:GitReset</a></b></code>
+<code class="example"><code class="section">  :GitReset [<code class="special">&lt;args&gt;</code>] </code></code>
+<code class="example"></code>
+Executes "git reset ...".
+
+Example:
+
+Reset the current file:
+<code class="example">  :GitReset -- %</code>
+<code class="example"></code>
+Settings:
+- |<a href="gitsupport.html#g:Git_ResetExpandEmpty">g:Git_ResetExpandEmpty</a>|
+
+</pre><hr><pre>                                                                    <b class="vimtag"><a name=":GitShow">:GitShow</a></b>
+<code class="section">  :GitShow [<code class="special">&lt;args&gt;</code>] </code>
+
+Opens a buffer containing the output of "git show ...". For commits and
+annotated tags, shows the commit/tag message and the diff. For blobs a
+separate buffer is opened.
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>                                                         <b class="vimtag"><a name=":GitStash">:GitStash</a></b> <b class="vimtag"><a name=":GitSlist">:GitSlist</a></b>
+<code class="section">  :GitStash [<code class="special">&lt;args&gt;</code>] </code>
+<code class="section">  :GitStash list [<code class="special">&lt;args&gt;</code>] </code>
+<code class="section">  :GitStash show [<code class="special">&lt;args&gt;</code>] </code>
+<code class="section">  :GitSlist </code>
+
+The first version executes "git stash ...". The second and third version open
+buffers listing the stashes or showing a stash. The command ":GitSlist" is a
+shorthand for ":GitStash list"
+
+The buffer for ":GitStash list" defines the following maps:
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
+
+  sh        show the stash under the cursor
+  sp        show the stash in patch form
+
+  sa        save with a message
+  pu        create a new stash (push)
+
+  stash under the cursor ...
+  ap        apply
+  po        pop
+  dr        drop
+  br        create and checkout a new branch
+ ----------------------------------------------------------------------------
+
+The buffer for ":GitStash show" defines the following maps:
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>                                                                  <b class="vimtag"><a name=":GitStatus">:GitStatus</a></b>
+<code class="section">  :GitStatus [<code class="special">&lt;path&gt;</code>] </code>
+
+Opens a buffer showing the current status. Several different actions can be
+performed for the file under the cursor, see below.
+
+A path can be given as an argument to restrict the output to changes in that
+folder, for example the current one:
+<code class="example">  :GitStatus .</code>
+The paths will be printed relative to the given path, not the current working
+directory, as Git would do it. The special argument "/" has the same effect as
+passing the top-level directory of the repository:
+<code class="example">  :GitStatus /</code>
+In any case, :GitStatus respects the option "status.relativePaths".
+
+The map 'od' opens the diff for the file under the cursor. The normal behavior
+is to open the "default" diff between the index and the working tree. In the
+section containing the staged files, titled "Changes to be committed", this
+behavior is different. The default behavior is to open the diff displaying the
+staged changes. This can be modified using |<a href="gitsupport.html#g:Git_StatusStagedOpenDiff">g:Git_StatusStagedOpenDiff</a>|.
+
+The map 'D' to remove untracked files is special, in that it does not run a
+Git command.
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer
+
+  toggle ...
+  i         show ignored files
+  s         short output
+  v         verbose output
+
+  file under cursor ...
+  a         add
+  ap        add --patch (^1)
+  c         checkout
+  cp        checkout --patch (^1)
+  ch        checkout HEAD (set index and working tree to HEAD)
+  od        open diff
+  of        open file (edit)
+  ol        open log
+  r         reset
+  rp        reset --patch (^1)
+  D         delete from file system (only untracked files)
+ ----------------------------------------------------------------------------
+
+(^1) requires working "git bash"
+
+Settings:
+- |<a href="gitsupport.html#g:Git_StatusStagedOpenDiff">g:Git_StatusStagedOpenDiff</a>|
+
+</pre><hr><pre>                                                                     <b class="vimtag"><a name=":GitTag">:GitTag</a></b>
+<code class="section">  :GitTag [-n[<code class="special">&lt;num&gt;</code>]] [--contains <code class="special">&lt;commit&gt;</code>] [-l [<code class="special">&lt;pattern&gt;</code>...]] </code>
+<code class="section">  :GitTag <code class="special">&lt;args&gt;</code> </code>
+
+The first version opens a buffer listing the tags. The second version executes
+"git tag ...".
+
+  Map       Meaning
+ ----------------------------------------------------------------------------
+  S-F1      help: show a list of all maps
+  q         close the buffer
+  u         update the buffer (list only)
+
+  tag under cursor ...
+  ch        checkout
+  cr        use as starting point for creating a new branch
+  de        delete
+  me        merge with current branch
+  sh        show the tag
+  cs        show the commit
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>                                                                       <b class="vimtag"><a name=":GitK">:GitK</a></b>
+<code class="section">  :GitK <code class="special">&lt;args&gt;</code> </code>
+
+Starts gitk with the given arguments.
+
+</pre><hr><pre>                                                                    <b class="vimtag"><a name=":GitBash">:GitBash</a></b>
+<code class="section">  :GitBash <code class="special">&lt;args&gt;</code> </code>
+
+Runs git in an external terminal. Useful for interactive commands, for
+example:
+<code class="example">  :GitBash add --patch %</code>
+
+Windows: If called without arguments, starts the git bash in interactive mode.
+
+</pre><hr><pre>                                         <b class="vimtag"><a name=":GitSupportHelp">:GitSupportHelp</a></b> <b class="vimtag"><a name=":GitSupportSettings">:GitSupportSettings</a></b>
+<code class="section">  :GitSupportHelp </code>
+
+Opens the help for Git Support.
+
+<code class="section">  :GitSupportSettings </code>
+<code class="section">  :GitSupportSettings! </code>
+
+Shows the plug-in settings. The second version is verbose.
+
+</pre><hr><pre>3.1  COMMAND-LINE COMPLETION                        <b class="vimtag"><a name="gitsupport-cmds-cmd-line">gitsupport-cmds-cmd-line</a></b>
+</pre><hr><pre>                            <b class="vimtag"><a name="g:Git_MapCompleteBranch">g:Git_MapCompleteBranch</a></b> <b class="vimtag"><a name="g:Git_MapCompleteCommand">g:Git_MapCompleteCommand</a></b>
+                            <b class="vimtag"><a name="g:Git_MapCompleteRemote">g:Git_MapCompleteRemote</a></b> <b class="vimtag"><a name="g:Git_MapCompleteTag">g:Git_MapCompleteTag</a></b>
+The user can configure maps to complete the names of branches, remotes, tags
+and Git-commands on the command-line. The command-line is set up to complete
+filenames using "tab". Other elements are completed using special keys, which
+may be configured like this:
+
+<code class="example">  let g:Git_MapCompleteBranch  = '<code class="special">&lt;c-b&gt;</code>'        " complete branches, <code class="keystroke">CTRL-B</code></code>
+<code class="example">  let g:Git_MapCompleteCommand = '<code class="special">&lt;c-s&gt;</code>'        " complete commands, <code class="keystroke">CTRL-S</code></code>
+<code class="example">  let g:Git_MapCompleteRemote  = '<code class="special">&lt;c-r&gt;</code>'        " complete remotes, <code class="keystroke">CTRL-R</code></code>
+<code class="example">  let g:Git_MapCompleteTag     = '<code class="special">&lt;c-t&gt;</code>'        " complete tags, <code class="keystroke">CTRL-T</code></code>
+
+These maps are not set up by default. Only if one of these variables is set,
+then the corresponding map is created.
+
+</pre><hr><pre>4.  SYNTAX HIGHLIGHTING                                    <b class="vimtag"><a name="gitsupport-syntax">gitsupport-syntax</a></b>
+</pre><hr><pre>
+Git Support comes with syntax highlighting for various kinds of Git output.
+The appearance can be changed by the user, by adding custom settings to the
+file .vimrc.
+
+The default configuration is to use Vim's own syntax categories as fallbacks,
+which should achieve a certain interoperability with Vim's colorschemes.
+
+  Category        Short Description                         Example
+ ----------------------------------------------------------------------------
+  GitComment      comments (uses 'Comment')                 see :GitStatus
+  GitHeading      a heading (bold font)                     diff header
+  GitHighlight1   a highlight (uses 'Identifier')           current branch
+  GitHighlight2   another highlight (uses 'PreProc')        commit hash
+  GitHighlight3   another highlight (underlined)            diff range
+  GitWarning      a warning (uses 'WarningMsg')
+  GitSevere       a stern warning (uses 'ErrorMsg')
+
+  GitAdd          an added file/line (uses 'DiffAdd')       diff output
+  GitRemove       a removed file/line (uses 'DiffDelete')   diff output
+  GitConflict     a (merge) conflict (uses 'DiffText')      diff output
+
+  GitGrepPath     a path (uses 'Directory')                 grep output
+  GitGrepLineNr   a line number (uses 'LineNr')             grep output
+ ----------------------------------------------------------------------------
+
+Suggestions for a syntax highlighting which resemble Git's own highlighting
+can be found in the file "git-support/rc/additions.vimrc". For a bright
+background it suggests the following settings:
+<code class="example"></code>
+<code class="example">  highlight GitHeading     cterm=bold                gui=bold</code>
+<code class="example">  highlight GitHighlight1  ctermfg=Green             guifg=DarkGreen</code>
+<code class="example">  highlight GitHighlight2  ctermfg=DarkYellow        guifg=DarkYellow</code>
+<code class="example">  highlight GitHighlight3  cterm=bold  ctermfg=Cyan  gui=bold  guifg=DarkCyan</code>
+<code class="example">  highlight GitAdd         ctermfg=Green             guifg=SeaGreen</code>
+<code class="example">  highlight GitRemove      ctermfg=Red               guifg=Red</code>
+<code class="example">  highlight GitConflict    cterm=bold  ctermfg=White  ctermbg=Red</code>
+<code class="example">      \ gui=bold  guifg=White  guibg=Red</code>
+<code class="example"></code>
+Example:
+<code class="example"></code>
+To display the current branch in yellow instead of green use:
+<code class="example">  highlight GitBranchCurrent  ctermfg=Yellow  guifg=DarkYellow</code>
+<code class="example"></code>
+</pre><hr><pre>4.1  BRANCH                                            <b class="vimtag"><a name="gitsupport-syn-branch">gitsupport-syn-branch</a></b>
+</pre><hr><pre>
+Only the current branch is highlighted.
+
+  Category                Short Description
+ ----------------------------------------------------------------------------
+  GitBranchCurrent        the current branch (line starting with "*")
+                          -&gt; uses GitHighlight1
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>4.2  COMMIT                                            <b class="vimtag"><a name="gitsupport-syn-commit">gitsupport-syn-commit</a></b>
+</pre><hr><pre>
+Highlights characters exceeding the maximal length of a line:
+  1st line - max. 50 characters
+  2st line - should be empty
+  others   - max. 76 characters
+
+  Category                Short Description
+ ----------------------------------------------------------------------------
+  GitWarning              characters exceeding the maximal length of the line
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>4.3  DIFF                                                <b class="vimtag"><a name="gitsupport-syn-diff">gitsupport-syn-diff</a></b>
+</pre><hr><pre>
+The headers of the output for each file are highlighted, as well as each range
+"@@ <code class="special">&lt;range&gt;</code> @@" and inserted and deleted lines. Folds are created for each
+file and subfolds for each block (starting with "@@ <code class="special">&lt;range&gt;</code> @@"). For unmerged
+files, regions with conflicts are highlighted as well.
+This highlighting is also used for ":GitStash show"
+
+  Category                Short Description
+ ----------------------------------------------------------------------------
+  GitDiffHeader           the header generated for each file
+                            (lines like "diff ...", "index ...", ...)
+                          -&gt; uses GitHeading
+  GitWhiteTab             whitespaces before a tab in an inserted line
+                          -&gt; uses GitSevere
+  GitTrailingWhite        trailing whitespaces in an inserted line
+                          -&gt; uses GitSevere
+ ----------------------------------------------------------------------------
+  GitDiffRange            the range of a single block of the output
+                            (line "@@ <code class="special">&lt;range&gt;</code> @@ ...")
+                          -&gt; uses GitHighlight3
+  GitDiffLineP            inserted lines (lines starting with "+")
+                          -&gt; uses GitAdd
+  GitDiffLineM            removed lines (lines starting with "-")
+                          -&gt; uses GitRemove
+ ----------------------------------------------------------------------------
+  GitMergeRange           the range of a single block of the output
+                            (line "@@@ <code class="special">&lt;range&gt;</code> @@@ ...")
+                          -&gt; uses GitHighlight3
+  GitMergeLineP           inserted lines (lines starting with "+ " or " +")
+                          -&gt; uses GitAdd
+  GitMergeLineM           removed lines (lines starting with "- " or " -")
+                          -&gt; uses GitRemove
+  GitMergeConflict        lines signaling regions with conflicts
+                            (lines like "++&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD", "++=======" or
+                            "++&gt;&gt;&gt;&gt;&gt;&gt;&gt; master")
+                          -&gt; uses GitConflict
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>4.4  GREP                                                <b class="vimtag"><a name="gitsupport-syn-grep">gitsupport-syn-grep</a></b>
+</pre><hr><pre>
+Highlights the path and (optional) line number at the beginning of each line.
+
+  Category                Short Description
+ ----------------------------------------------------------------------------
+  GitGrepPath             the path at the beginning of each line
+  GitGrepLineNr           the line number following it
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>4.5  LOG                                                  <b class="vimtag"><a name="gitsupport-syn-log">gitsupport-syn-log</a></b>
+</pre><hr><pre>
+The name of each commit and the information about the author, date, ... are
+highlighted. Folds are created for each commit.
+This highlighting is also used for ":GitStash list", ":GitShow <code class="special">&lt;commit&gt;</code>" and
+":GitShow <code class="special">&lt;tag&gt;</code>".
+
+  Category                Short Description
+ ----------------------------------------------------------------------------
+  GitLogHash              the name of the commit (line "commit <code class="special">&lt;hash&gt;</code>")
+                          -&gt; uses GitHighlight2
+  GitLogInfo              information about the commit
+                            (lines like "Author: ..." or "Date: ...")
+                          -&gt; uses GitHighlight1
+  GitStashName            the name of a stash (line "stash@<code class="special">{123}</code>: ...")
+                          -&gt; no highlighting by default
+  GitTagName              the name of the tag (line "tag <code class="special">&lt;name&gt;</code>")
+                          -&gt; uses GitHighlight2
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>4.6  STATUS                                            <b class="vimtag"><a name="gitsupport-syn-status">gitsupport-syn-status</a></b>
+</pre><hr><pre>
+Various items are hightlighted, like the headlines of each section and the
+files (in green and red). Adds a fold for each section "Changes to be
+committed:", "Changes not staged for commit:", ...
+
+  Category                Short Description
+ ----------------------------------------------------------------------------
+  GitStatusHeader         the header of each section
+                            (lines like "# Changes not staged for commit:")
+                          -&gt; uses GitHeading
+  GitStatusComment        additional help inserted into the output
+                            (lines like "#  (use 'git add <code class="special">&lt;file&gt;</code>...' to ...)")
+                          -&gt; uses GitComment
+  GitStagedFile           files listed as "to be committed"
+                          -&gt; uses GitAdd
+  GitModifiedFile         files listed as "not staged for commit"
+                          -&gt; uses GitRemove
+  GitUntrackedFile        files listed as "untracked"
+                          -&gt; uses GitRemove
+  GitIgnoredFile          files listed as "ignored"
+                          -&gt; uses GitRemove
+  GitUnmergedFile         files listed as "unmerged"
+                          -&gt; uses GitRemove
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>5.  CUSTOM MENUS                                            <b class="vimtag"><a name="gitsupport-menus">gitsupport-menus</a></b>
+</pre><hr><pre>                                                            <b class="vimtag"><a name="g:Git_CustomMenu">g:Git_CustomMenu</a></b>
+The custom menu entries offer convenient access to often used Git commands,
+especially those with regularly used combinations of flags. All custom menu
+entries appear in the sub menu "Git-&gt;custom". They are defined via the global
+variable 'g:Git_CustomMenu':
+
+<code class="example">  let g:Git_CustomMenu = [</code>
+<code class="example">   \ [ 'log, grep &amp;commit msg..', ':GitLog', ':GitLog -i --grep="<code class="special">&lt;CURSOR&gt;</code>"' ],</code>
+<code class="example">   \ [ 'log, grep &amp;diff output',  ':GitLog', ':GitLog -p -S "<code class="special">&lt;CURSOR&gt;</code>"' ],</code>
+<code class="example">   \ [ 'log, &amp;graph',             ':GitLog', ':GitLog --graph<code class="special">&lt;EXECUTE&gt;</code>' ],</code>
+<code class="example">   \ [ '-SEP1-', '', '' ],</code>
+<code class="example">   \ [ '&amp;merge, ff only',   ':GitMerge', ':GitMerge --ff-only <code class="special">&lt;CURSOR&gt;</code>' ],</code>
+<code class="example">   \ [ '&amp;merge, no commit', ':GitMerge', ':GitMerge --no-commit <code class="special">&lt;CURSOR&gt;</code>' ],</code>
+<code class="example">   \ [ '&amp;merge, abort',     ':GitMerge', ':GitMerge --abort<code class="special">&lt;EXECUTE&gt;</code>' ],</code>
+<code class="example">   \ ]</code>
+
+The variable must contain a list of lists of strings. A |<code class="badlink">List</code>| is constructed
+using square brackets containing a number of comma-separated entries. Each
+list contained in 'g:Git_CustomMenu' defines a menu entry. It consists of
+three strings. The first defines the submenu and the menu entry, the second
+the right-aligned side of the menu entry and the third the command triggered
+by the entry.
+
+The menu entry is a string, where dots and ampersands have special meanings.
+Dots structure the menu by defining submenus. To put the entries from above
+into a submenu "log", use:
+
+<code class="example">  let g:Git_CustomMenu = [</code>
+<code class="example">   \ [ '&amp;log.grep &amp;commit msg..', ':GitLog', ':GitLog -i --grep="<code class="special">&lt;CURSOR&gt;</code>"' ],</code>
+<code class="example">   \ [ '&amp;log.grep &amp;diff output',  ':GitLog', ':GitLog -p -S "<code class="special">&lt;CURSOR&gt;</code>"' ],</code>
+<code class="example">   \ [ '&amp;log.-SEP1-',             '',        '' ],</code>
+<code class="example">   \ [ '&amp;log.&amp;graph',             ':GitLog', ':GitLog --graph<code class="special">&lt;EXECUTE&gt;</code>' ],</code>
+<code class="example">   ...</code>
+
+Ampersands set shortcuts for menu entries and submenus. To include a literal
+dot or ampersands use '..' or '&amp;&amp;' respectively. Separators are inserted if
+the name of the entry starts and ends with a minus. They can also appear in
+submenus.
+
+The third string defines the command associated with the entry. If it contains
+the <code class="special">&lt;EXECUTE&gt;</code> tag at the end, the command will be executed directly. The <code class="special">&lt;CR&gt;</code>
+tag, which advanced Vim users will be familiar with, is also supported. If the
+command contains the <code class="special">&lt;CURSOR&gt;</code> tag instead, the command will be shown on the
+command line, with the cursor at that position. Now the user can configure the
+call before executing it.
+
+Furthermore, <code class="special">&lt;WORD&gt;</code> is replaced with the |<code class="badlink">word</code>| under the cursor (|<code class="badlink">&lt;cword&gt;</code>| or
+|<code class="badlink">&lt;cWORD&gt;</code>| can be used as well). The tag <code class="special">&lt;FILE&gt;</code> is replaced with the name of the
+file under the cursor, <code class="special">&lt;BUFFER&gt;</code> with the name of the file loaded in the
+current buffer.
+
+These tags are available:
+
+  Tag             Short Description
+ ----------------------------------------------------------------------------
+  <code class="special">&lt;EXECUTE&gt;</code>       execute the command immediately
+  <code class="special">&lt;CURSOR&gt;</code>        open the command-line with the cursor at this position
+
+  <code class="special">&lt;BUFFER&gt;</code>        the name of the current buffer
+  <code class="special">&lt;FILE&gt;</code>          the file under the cursor (see |<code class="badlink">&lt;cfile&gt;</code>|)
+  <code class="special">&lt;WORD&gt;</code>          the word under the cursor (see |<code class="badlink">&lt;cword&gt;</code>|)
+ ----------------------------------------------------------------------------
+
+The file "git-support/rc/additions.vimrc" contains the standard value for
+'g:Git_CustomMenu', as a basis for customization.
+
+</pre><hr><pre>6.  CONFIGURATION                                   <b class="vimtag"><a name="gitsupport-configuration">gitsupport-configuration</a></b>
+</pre><hr><pre>
+The configuration is done via a number of global variables, which can be set
+in the .vimrc file.
+
+  Variable                    Default     Description and further information
+ ----------------------------------------------------------------------------
+  |<a href="gitsupport.html#g:Git_BinPath">g:Git_BinPath</a>|               ''          the path to the Git binaries (^1)
+  |<a href="gitsupport.html#g:Git_Executable">g:Git_Executable</a>|            'git'       the Git executable (^1)
+  |<a href="gitsupport.html#g:Git_GitKExecutable">g:Git_GitKExecutable</a>|        'gitk'      the gitk executable (^1)
+  |<a href="gitsupport.html#g:Git_GitKScript">g:Git_GitKScript</a>|            ''          the gitk script (^1)
+  |<a href="gitsupport.html#g:Git_GitBashExecutable">g:Git_GitBashExecutable</a>|     'xterm'     the git bash executable (^1) (^2)
+  |<a href="gitsupport.html#g:Git_LoadMenus">g:Git_LoadMenus</a>|             'yes'       whether to load the menus
+                                          ('yes' or 'no')
+  |<a href="gitsupport.html#g:Git_RootMenu">g:Git_RootMenu</a>|              '&amp;Git'      name and shortcut of the root menu
+  |<a href="gitsupport.html#g:Git_CustomMenu">g:Git_CustomMenu</a>|            [ ... ]     custom menu entries
+
+      expansion of empty argument lists to the current file:
+  |<a href="gitsupport.html#g:Git_CheckoutExpandEmpty">g:Git_CheckoutExpandEmpty</a>|   'no'        for |<a href="gitsupport.html#:GitCheckout">:GitCheckout</a>|
+  |<a href="gitsupport.html#g:Git_DiffExpandEmpty">g:Git_DiffExpandEmpty</a>|       'no'        for |<a href="gitsupport.html#:GitDiff">:GitDiff</a>|
+  |<a href="gitsupport.html#g:Git_ResetExpandEmpty">g:Git_ResetExpandEmpty</a>|      'no'        for |<a href="gitsupport.html#:GitReset">:GitReset</a>|
+
+  |<a href="gitsupport.html#g:Git_OpenFoldAfterJump">g:Git_OpenFoldAfterJump</a>|     'yes'       whether commands which open a file
+                                          open the folds under the cursor
+  |<a href="gitsupport.html#g:Git_StatusStagedOpenDiff">g:Git_StatusStagedOpenDiff</a>|  'cached'    how to execute "open diff" from
+                                          inside the status buffer in section
+                                          "Changes to be committed"
+
+  g:Xterm_Executable          'xterm'     the xterm executable (^3)
+  g:Xterm_Options             '...'       the xterm default settings (^3)
+ ----------------------------------------------------------------------------
+
+(^1)
+  The Unix defaults are as follows:
+  |<a href="gitsupport.html#g:Git_BinPath">g:Git_BinPath</a>|           - -empty-
+  |<a href="gitsupport.html#g:Git_Executable">g:Git_Executable</a>|        - g:Git_BinPath + git
+  |<a href="gitsupport.html#g:Git_GitKExecutable">g:Git_GitKExecutable</a>|    - g:Git_BinPath + gitk
+  |<a href="gitsupport.html#g:Git_GitKScript">g:Git_GitKScript</a>|        - -empty-
+  the Windows defaults are as follows:
+  |<a href="gitsupport.html#g:Git_BinPath">g:Git_BinPath</a>|           - C:\Program Files\Git\bin\
+  |<a href="gitsupport.html#g:Git_Executable">g:Git_Executable</a>|        - g:Git_BinPath + git.exe
+  |<a href="gitsupport.html#g:Git_GitKExecutable">g:Git_GitKExecutable</a>|    - g:Git_BinPath + tclsh.exe
+  |<a href="gitsupport.html#g:Git_GitKScript">g:Git_GitKScript</a>|        - g:Git_BinPath + gitk
+  |<a href="gitsupport.html#g:Git_GitBashExecutable">g:Git_GitBashExecutable</a>| - g:Git_BinPath + sh.exe
+(^2) under UNIX, the default for g:Git_GitBashExecutable is the value of
+  g:Xterm_Executable, which in turn is "xterm"
+(^3) UNIX only
+
+</pre><hr><pre>6.1  EXECUTABLE                                 <b class="vimtag"><a name="gitsupport-config-executable">gitsupport-config-executable</a></b>
+</pre><hr><pre>                                                               <b class="vimtag"><a name="g:Git_BinPath">g:Git_BinPath</a></b>
+The path to the executables is set by g:Git_BinPath:
+<code class="example">  let g:Git_BinPath = '/usr/local/bin/'</code>
+Since git and gitk will be on the path, this will not be necessary on most
+UNIX systems.
+
+For Windows, set up the binary path similar to this:
+<code class="example">  let g:Git_BinPath = 'C:\Program Files\Git\bin\'</code>
+
+The defaults for |<a href="gitsupport.html#g:Git_Executable">g:Git_Executable</a>|, |<a href="gitsupport.html#g:Git_GitKExecutable">g:Git_GitKExecutable</a>|, |<a href="gitsupport.html#g:Git_GitKScript">g:Git_GitKScript</a>|
+and |<a href="gitsupport.html#g:Git_GitBashExecutable">g:Git_GitBashExecutable</a>| are derived from g:Git_BinPath. However, the
+setting g:Git_BinPath is only used to derive the defaults. If one of the
+executables is set explicitly, it has to be set with the whole path.
+
+                                                            <b class="vimtag"><a name="g:Git_Executable">g:Git_Executable</a></b>
+The executable is set by g:Git_Executable. You should use the English language
+environment:
+<code class="example">  let g:Git_Executable = 'LANG=en_US git'</code>
+
+For Windows, set up the executable similar to this:
+<code class="example">  let g:Git_Executable = 'C:\Program Files\Git\bin\git.exe'</code>
+
+                                       <b class="vimtag"><a name="g:Git_GitKExecutable">g:Git_GitKExecutable</a></b> <b class="vimtag"><a name="g:Git_GitKScript">g:Git_GitKScript</a></b>
+Sets the gitk executable. You should use the English language environment:
+<code class="example">  let g:Git_Executable = 'LANG=en_US gitk'</code>
+
+For Windows, set up gitk similar to this, the interpreter and the gitk script
+have to be given separately:
+<code class="example">  let g:Git_GitKExecutable = 'C:\Program Files\Git\bin\tclsh.exe'</code>
+<code class="example">  let g:Git_GitKScript     = 'C:\Program Files\Git\bin\gitk'</code>
+
+                                                     <b class="vimtag"><a name="g:Git_GitBashExecutable">g:Git_GitBashExecutable</a></b>
+Sets the git bash executable. Under UNIX "xterm" is used.
+
+For Windows, set up the executable similar to this:
+<code class="example">  let g:Git_GitBashExecutable= 'C:\Program Files\Git\bin\sh.exe'</code>
+
+</pre><hr><pre>6.2  MENUS                                           <b class="vimtag"><a name="gitsupport-config-menus">gitsupport-config-menus</a></b>
+</pre><hr><pre>                                                             <b class="vimtag"><a name="g:Git_LoadMenus">g:Git_LoadMenus</a></b>
+The creation of the menus is controlled by g:Git_LoadMenus. The default
+setting:
+<code class="example">  let g:Git_LoadMenus = 'yes'</code>
+causes the menus to appear right away after starting Vim.
+The automatic creation of the menus is prevented by:
+<code class="example">  let g:Git_LoadMenus = 'no'</code>
+Now the menus can only be loaded by using the tool menu entry 'Tools-&gt;Load
+Git Support'.
+
+</pre><hr><pre>                                                              <b class="vimtag"><a name="g:Git_RootMenu">g:Git_RootMenu</a></b>
+The name and shortcut of the root menu is set via g:Git_RootMenu. The
+character prefixed by '&amp;' will be the shortcut.
+
+Example:
+<code class="example">  let g:Git_RootMenu = 'G&amp;it'</code>
+Sets the shortcut to 'i'.
+
+</pre><hr><pre>6.3  MAPS                                             <b class="vimtag"><a name="gitsupport-config-maps">gitsupport-config-maps</a></b>
+</pre><hr><pre>
+You can add hotkeys for your favorite commands by adding maps to your .vimrc.
+
+With these lines, <code class="special">&lt;F10&gt;</code> will open the status buffer:
+<code class="example">   noremap <code class="special">&lt;silent&gt;</code> <code class="special">&lt;F10&gt;</code>       :GitStatus<code class="special">&lt;CR&gt;</code></code>
+<code class="example">  inoremap <code class="special">&lt;silent&gt;</code> <code class="special">&lt;F10&gt;</code>  <code class="special">&lt;C-C&gt;</code>:GitStatus<code class="special">&lt;CR&gt;</code></code>
+
+</pre><hr><pre>6.4  SETTINGS                                     <b class="vimtag"><a name="gitsupport-config-settings">gitsupport-config-settings</a></b>
+</pre><hr><pre>                             <b class="vimtag"><a name="g:Git_CheckoutExpandEmpty">g:Git_CheckoutExpandEmpty</a></b> <b class="vimtag"><a name="g:Git_DiffExpandEmpty">g:Git_DiffExpandEmpty</a></b>
+                                                      <b class="vimtag"><a name="g:Git_ResetExpandEmpty">g:Git_ResetExpandEmpty</a></b>
+The default behavior of |<a href="gitsupport.html#:GitDiff">:GitDiff</a>|, when called without arguments, is to show
+a diff containing all unstaged changes.
+
+In order to make the behavior more consistent with commands like |<a href="gitsupport.html#:GitAdd">:GitAdd</a>|,
+this can be changed by setting:
+<code class="example">  let g:Git_DiffExpandEmpty = 'yes'</code>
+Now calling ":GitDiff" without any arguments opens a buffer displaying only
+the changes of the file in the current buffer, which is the same as calling:
+<code class="example">  :GitDiff %</code>
+So the empty argument list is "expanded".
+But even with g:Git_DiffExpandEmpty == 'yes', you can still display a diff
+containing all changes by calling:
+<code class="example">  :GitDiff --</code>
+This is not detected to be an empty argument list.
+
+Similarly, the behavior of |<a href="gitsupport.html#:GitCheckout">:GitCheckout</a>| and |<a href="gitsupport.html#:GitReset">:GitReset</a>| can be changed to
+operate on the file in the current buffer when called without arguments, by
+setting:
+<code class="example">  let g:Git_CheckoutExpandEmpty = 'yes'</code>
+<code class="example">  let g:Git_ResetExpandEmpty    = 'yes'</code>
+
+The possible settings are listed below:
+
+  Value             Meaning                      :GitDiff expands to ...
+ ----------------------------------------------------------------------------
+  'yes'             expand empty argument list   git diff -- <code class="special">&lt;file&gt;</code>
+  'no' (default)    Git's standard behavior      git diff
+ ----------------------------------------------------------------------------
+
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
+</pre><hr><pre>                                                     <b class="vimtag"><a name="g:Git_OpenFoldAfterJump">g:Git_OpenFoldAfterJump</a></b>
+Some maps jump from Git buffers to files. By default they open all the folds
+under the cursor via |<code class="badlink">zv</code>|. This behavior can be switched off by settings:
+<code class="example">  let g:Git_OpenFoldAfterJump = 'no'</code>
+
+The possible settings are listed below:
+
+  Value             Meaning
+ ----------------------------------------------------------------------------
+  'yes' (default)   open all the folds under the cursor
+  'no'              do not
+ ----------------------------------------------------------------------------
+
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
+</pre><hr><pre>                                                  <b class="vimtag"><a name="g:Git_StatusStagedOpenDiff">g:Git_StatusStagedOpenDiff</a></b>
+Within the status buffer, the map 'od' can be used to display the diff for the
+file under the cursor. The normal behavior is to open the "default" diff
+between the index and the working tree. In the section containing the staged
+files, titled "Changes to be committed", this behavior is different and can be
+controlled by g:Git_StatusStagedOpenDiff. Setting
+<code class="example">  let g:Git_StatusStagedOpenDiff = 'cached'</code>
+means the diff will be opened displaying the staged changes.
+
+The other possible settings are listed below:
+
+  Value                Meaning            Open diff via ...
+ ----------------------------------------------------------------------------
+  'cached' (default)   staged changes     git diff --cached -- <code class="special">&lt;file&gt;</code>
+  'head'               all changes        git diff HEAD -- <code class="special">&lt;file&gt;</code>
+  any other            unstaged changes   git diff -- <code class="special">&lt;file&gt;</code>
+ ----------------------------------------------------------------------------
+
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
+</pre><hr><pre>6.5  XTERM                                           <b class="vimtag"><a name="gitsupport-config-xterm">gitsupport-config-xterm</a></b>
+</pre><hr><pre>
+The xterm related functionality is only available under UNIX. It is used to
+run interactive commands.
+
+                                                          g:Xterm_Executable
+The xterm executable is set by g:Xterm_Executable, for example:
+<code class="example">  let g:Xterm_Executable = '/usr/local/bin/xterm'</code>
+
+                                                             g:Xterm_Options
+Set additional options for xterm. The default is:
+<code class="example">  let g:Xterm_Options = '-fa courier -fs 12 -geometry 80x24'</code>
+
+For example, use these arguments for black letters on a white background:
+<code class="example">  let g:Xterm_Options = '-fg black -bg white -fs 12 -geometry 80x24'</code>
+
+See the man-page of xterm for the possible options.
+
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
+</pre><hr><pre>A.  TROUBLESHOOTING - KNOWN ISSUES                <b class="vimtag"><a name="gitsupport-troubleshooting">gitsupport-troubleshooting</a></b>
+</pre><hr><pre>
+* How can I see what was loaded?
+  - Use ':scriptnames' from the Vim command line.
+
+* git is not running.
+  - Is "git" executable from the command line?
+  - Is the $PATH variable set correctly?
+  - Are the settings correct? See:
+      :help |<a href="gitsupport.html#gitsupport-config-executable">gitsupport-config-executable</a>|
+
+* Windows: When entered on the Vim command line, commands containing filenames
+  as arguments cause errors such as "... file not found ...".
+  - This may happen if filenames contain special characters such as spaces.
+    The Vim command line escapes those differently then Windows expects them
+    to be escaped.
+  - However, a filename containing spaces can always be escape using quotes:
+      :GitAdd "help 1.txt"
+  - If you already are in the corresponding buffer, simply use:
+      :GitAdd
+
+</pre><hr><pre>
+* :GitBlame does not work correctly when the visual area consists only of the
+  first line.
+  - This seems to be a weakness with Vim's support for ranges. At least I
+    could not find a way around this.
+  - Workaround: Run :GitBlame on the first two lines.
+  - The usefulness of :GitBlame supporting ranges by far outweighs this
+    downside, in my opinion.
+
+</pre><hr><pre>B.  RELEASE <code class="note">NOTE</code>S - CHANGE LOG                      <b class="vimtag"><a name="gitsupport-release-notes">gitsupport-release-notes</a></b>
+</pre><hr><pre>
+See files 'git-support/README.md' and 'git-support/doc/ChangeLog'.
+
+</pre><hr><pre>C.  CREDITS                                               <b class="vimtag"><a name="gitsupport-credits">gitsupport-credits</a></b>
+</pre><hr><pre>
+Jinhu Lu (vim.org user name: KingTiger):
+- the idea for command-line completion of branches, remotes, tags, ...
+  (|<a href="gitsupport.html#gitsupport-cmds-cmd-line">gitsupport-cmds-cmd-line</a>|) is taken from his plug-in "cmdline completion"
+  ( http://www.vim.org/scripts/script.php?script_id=3531 )
+
+</pre><hr><pre>vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
+</pre>
+<p><i>Generated by vim2html (modified) on Sa 15. Nov 18:58:06 CET 2014</i></p>
+</body>
+</html>
