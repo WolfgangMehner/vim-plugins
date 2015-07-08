@@ -169,7 +169,7 @@ function generate_output ( config, template_data, custom_data )
     os.exit ( 1 )
   end
 
-	for idx, name in ipairs ( config.order ) do
+	for idx, name in ipairs ( config.plugin.template.order ) do
 		
 		local part = custom_data[name] or template_data[name]
 
@@ -202,10 +202,10 @@ local help_text_short = script_name..' [options]'
 
 local help_text = help_text_short..'\n\n'..[[
 Options:
--p <name>         name of the plug-in
+	-p <name>         name of the plug-in
 
--h, --help        print this help
--v, --version     print version information
+	-h, --help        print this help
+	-v, --version     print version information
 ]]
 
 -- check for "--help" and "--version", exit
@@ -221,7 +221,6 @@ end
 
 local options = {
   plugin   = '',
-  template = 'template_plugin.html',
 }
 
 -- go through arguments
@@ -257,7 +256,7 @@ if not config.plugin then
 end
 
 local custom_data   = read_file ( config.plugin.input )
-local template_data = read_file ( options.template )
+local template_data = read_file ( config.plugin.template.filename )
 
 template_data.head = [[
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">

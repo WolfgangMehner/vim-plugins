@@ -18,6 +18,25 @@
 --------------------------------------------------------------------------------
 --
 
+local template_plugin = {
+	filename = 'template_plugin.html',
+}
+
+template_plugin.order = {
+	'head',
+	'HTML_HEAD',
+	'head_body',
+	'TITLE_BAR',
+	'PAGE_HEADER_PART1',
+	'PAGE_HEADER_OTHERS_PART1',
+	'PAGE_HEADER_OTHERS',
+	'PAGE_HEADER_OTHERS_PART2',
+	'PAGE_HEADER_PART2',
+	'MENU_STRUCTURE',
+	'FOOTER',
+	'body',
+}
+
 local config = {}
 
 config.plugin_links = {
@@ -32,8 +51,9 @@ config.plugin_links = {
 }
 
 config.git = {
-	input  = 'gitsupport/menus.html',
-	output = 'gitsupport.html',
+	input    = 'gitsupport/content.html',
+	output   = 'gitsupport.html',
+	template = template_plugin,
 	fields = {
 		TOOL_CAT     = 'Vim Plug-In',
 		TOOL_NAME    = 'Git Support',
@@ -56,8 +76,9 @@ config.git = {
 }
 
 config.lua = {
-	input  = 'luasupport/menus.html',
-	output = 'luasupport.html',
+	input    = 'luasupport/content.html',
+	output   = 'luasupport.html',
+	template = template_plugin,
 	fields = {
 		TOOL_CAT     = 'Vim Plug-In',
 		TOOL_NAME    = 'Lua Support',
@@ -77,21 +98,6 @@ config.lua = {
 	},
 	links_others = {
 	},
-}
-
-config.order = {
-	'head',
-	'HTML_HEAD',
-	'head_body',
-	'TITLE_BAR',
-	'PAGE_HEADER_PART1',
-	'PAGE_HEADER_OTHERS_PART1',
-	'PAGE_HEADER_OTHERS',
-	'PAGE_HEADER_OTHERS_PART2',
-	'PAGE_HEADER_PART2',
-	'MENU_STRUCTURE',
-	'FOOTER',
-	'body',
 }
 
 return config
