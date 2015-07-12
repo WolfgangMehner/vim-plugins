@@ -1176,7 +1176,7 @@ function! Lua_MakeExecutable ()
 			call s:ErrorMsg ( 'Could not make "'.filename.'" '.to_state.'!' )
 		else
 			" reload the file, otherwise the message will not be visible
-			if ! &l:modified
+			if &autoread && ! &l:modified
 				silent exe "edit"
 			endif
 			" confirmation for the user

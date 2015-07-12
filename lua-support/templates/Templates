@@ -27,7 +27,7 @@ SetStyle( 'Lua_52' )
 SetMacro( 'LUA_INTERPRETER', '/usr/bin/env lua' )
 
 § used by the template "Idioms.add to path, local modules":
-SetMacro( 'LUA_LOCAL_MODULES', $HOME.'/share/lua/5.2' )
+SetMacro( 'LUA_LOCAL_MODULES', $HOME.'/lib/lua/5.2' )
 
 § =============================================================
 §  File Includes

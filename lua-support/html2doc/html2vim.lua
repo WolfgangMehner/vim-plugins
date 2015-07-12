@@ -45,16 +45,22 @@ local link_main_component = 'lua52'
 local html_filename       = '/home/wolfgang/Software/lua-5.2.4/doc/manual.html'
 
 ------------------------------------------------------------------------
---  settings for Lua 5.3
+--  settings for Lua 5.3.1
 ------------------------------------------------------------------------
 
 --local lua_major           = 5
 --local lua_minor           = 3
---local lua_date            = 'Jan 06 2015'
+--local lua_date            = 'Jun 17 2015'
 --local lua_copyright       = '2015'
 --local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref53.txt'
 --local link_main_component = 'lua53'
---local html_filename       = '/home/wolfgang/Software/lua-5.3.0/doc/manual.html'
+--local html_filename       = '/home/wolfgang/Software/lua-5.3.1/doc/manual.html'
+
+------------------------------------------------------------------------
+--  links to all versions (since Lua 5.3.1)
+------------------------------------------------------------------------
+
+local lua_all_version_links = '|lua51| |lua52| |lua53|'
 
 ------------------------------------------------------------------------
 
@@ -260,7 +266,7 @@ function html_text_code_replace ( code )
 end  -----  end of function html_text_code_replace_data  -----
 
 
-local function p_wrapup ( data )
+local function p_wrapup ( data, transform )
 
 	if not data.p_collect then
 		return
@@ -311,6 +317,10 @@ local function p_wrapup ( data )
 		t_format = t_format .. line .. '\n'
 	end
 
+	if transform then
+		t_format = transform ( t_format )
+	end
+
 	t_add ( data, t_format )
 
 end  -----  end of function p_wrapup  -----
@@ -328,16 +338,44 @@ end  -----  end of function p_wrapup  -----
 
 function handle_single.p ( data, opt )
 
-	assert ( opt == nil )
+	local class
+
+	if opt then
+		class = string.lower ( string.match ( opt, '[cC][lL][aA][sS][sS]="([^"]+)"' ) )
+	end
 
 	p_wrapup ( data )
 
+	if class == 'footer' then
+		-- since Lua 5.3 we need to insert the rule before the footer by hand
+		t_add ( data, '', { newline = true, } )
+		t_add ( data, templates.rule_single, { newline = true, } )
+	end
+
 	data.p_collect = true
 	data.p_accu = {
+		in_class = class,
 		text = '',
 	}
 
 end  -----  end of function handle_single.p  -----
+
+------------------------------------------------------------------------
+--  handle_single.p_end   {{{2
+------------------------------------------------------------------------
+
+function handle_single.p_end ( data, opt )
+
+	if data.p_accu.in_class == 'footer' then
+		-- since Lua 5.3 we need to insert a line-break by hand
+		p_wrapup ( data, function ( text )
+			return string.gsub ( text, '(Last update:)%s', '%1\n', 1 )
+		end )
+	else
+		p_wrapup ( data )
+	end
+
+end  -----  end of function handle_single.p_end  -----
 
 ------------------------------------------------------------------------
 --  handle_single.hr   {{{2
@@ -725,7 +763,7 @@ function handle_double.a ( data, opt, text, space )
 	if data.p_collect then
 
 		local _, name = string.match ( opt, 'name=(["\'])([^"\']+)%1' )
-		local _, href = string.match ( opt, 'href=(["\'])([^"\']+)%1' )
+		local _, href = string.match ( opt, '[hH][rR][eE][fF]=(["\'])([^"\']+)%1' )
 
 		if href and string.match ( href, 'www%.lua%.org/license%.html' ) and string.match ( text, 'Lua license' ) then
 			-- link to the licence
@@ -739,6 +777,10 @@ function handle_double.a ( data, opt, text, space )
 			-- link to the contents (function index)
 			print ( string.format ( '--- found special link "%s"', text ) )
 			p_add ( data, string.format ( "%s |TODO-link|", text )..space )
+		elseif href and string.match ( href, 'http://www%.lua%.org/manual/' ) and string.match ( text, 'other versions' ) then
+			-- link to other versions (we replace it with our own links)
+			print ( string.format ( '--- found special link "%s"', text ) )
+			p_add ( data, string.format ( "%s %s", text, lua_all_version_links )..space )
 		elseif href and string.match ( href, '#%d+%.%d+%.%d+' ) then
 			-- link to a subsection
 			print ( string.format ( '--- found subsection link "%s"', href ) )
@@ -890,6 +932,42 @@ function handle_double.li ( data, opt, text, space )
 
 end  -----  end of function handle_double.li  -----
 
+------------------------------------------------------------------------
+--  handle_double.div   {{{2
+------------------------------------------------------------------------
+
+function handle_double.div ( data, opt, text, space )
+
+	local class
+
+	if opt then
+		class = string.lower ( string.match ( opt, '[cC][lL][aA][sS][sS]="([^"]+)"' ) )
+	end
+
+	if class == 'menubar' then
+		-- since 5.3.1 this holds the links: contents, index, other versions
+
+		if data.p_collect then
+			p_wrapup ( data )
+		end
+
+		t_add ( data, '', { newline = true, } )
+		t_add ( data, templates.rule_single, { newline = true, } )
+
+		local text_data = parse_html ( text, { in_paragraph = true, } )
+		local text = t_assemble ( text_data, ' ' )
+
+		text = string.gsub ( text, '\n', ' ' )
+
+		t_add ( data, text )
+
+		handle_single.p ( data, nil )
+	else
+		error ( '<div> inside a paragraph with unknown class' )
+	end
+
+end  -----  end of function handle_double.div  -----
+
 --  }}}2
 ------------------------------------------------------------------------
 
@@ -1006,6 +1084,10 @@ function parse_html ( str_html, options )
 			skip = true
 		elseif tag == '/body' or tag == '/html' then
 			break
+		elseif tag == '/p' then
+			handle_single.p_end ( data, nil )
+			tail = string.match ( str_html, '^<[^>]+>%s*(.*)' )
+			skip = true
 		elseif tag and string.match ( tag, '^/' ) then
 			-- should not encounter </...>
 			debug ( '>>> '..string.gsub ( string.sub ( str_html, 1, 72 ), '\n', ' ' ) )
@@ -1142,6 +1224,13 @@ fout:write ( header_txt )
 for _, txt in ipairs ( data.toc ) do
 	fout:write ( txt )
 	fout:write ( '\n' )
+end
+
+if ( lua_major == 5 and lua_minor >= 3 ) or lua_major >= 6 then
+	-- since Lua 5.3 we need to insert the rule after the ToC by hand
+	fout:write ( '\n' )
+	fout:write ( templates.rule_single )
+	fout:write ( '\n\n' )
 end
 
 for _, txt in ipairs ( data.text ) do
