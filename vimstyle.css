@@ -3,6 +3,7 @@
  *
  * green-light:#59eaa1;
  * green-dark:#46b77f;
+ * green-text:#2f8f5e;
  * blue-light:#84d3e3;
  * blue-dark:#3ba1b6;
  * blue-text:#098da9;
@@ -246,11 +247,10 @@ table.menu_structure > tbody > tr > td
 	border-bottom-color:SkyBlue;
 }
 
-/* TODO: nicer green */
 table.menu_structure > tbody > tr > td > h3,
 table.img_float_table > tbody > tr > td > h3
 {
-	color:Green;
+	color:#2d9460;
 }
 
 table.menu_structure > tbody > tr > td > hr,
