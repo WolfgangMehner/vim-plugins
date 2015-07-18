@@ -491,7 +491,7 @@ endfunction    " ----------  end of function Bash_ResetMapLeader  ----------
 "    PARAMETERS:  -
 "       RETURNS:
 "===============================================================================
-function! g:BASH_RereadTemplates ( displaymsg )
+function! BASH_RereadTemplates ( displaymsg )
 	"
 	"-------------------------------------------------------------------------------
 	" SETUP TEMPLATE LIBRARY
@@ -1042,8 +1042,8 @@ function! s:CreateAdditionalMaps ()
 	 noremap  <buffer>  <silent>  <LocalLeader>hbs        :call BASH_HelpBashSupport()<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>hbs   <C-C>:call BASH_HelpBashSupport()<CR>
 	"
-	nnoremap    <buffer>  <silent>  <C-j>    i<C-R>=BASH_JumpForward()<CR>
-	inoremap    <buffer>  <silent>  <C-j>     <C-R>=BASH_JumpForward()<CR>
+	nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=BASH_JumpForward()<CR>
+	inoremap  <buffer>  <silent>  <C-j>  <C-g>u<C-R>=BASH_JumpForward()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" settings - reset local leader
@@ -1361,7 +1361,7 @@ function! BASH_CreateGuiMenus ()
 		amenu   <silent> 40.1000 &Tools.-SEP100- :
 		amenu   <silent> 40.1020 &Tools.Unload\ Bash\ Support :call BASH_RemoveGuiMenus()<CR>
 		"
-		call g:BASH_RereadTemplates('no')
+		call BASH_RereadTemplates('no')
 		call s:InitMenus ()
 		"
 		let s:BASH_MenuVisible = 'yes'
@@ -1864,8 +1864,8 @@ if has( 'autocmd' )
   autocmd FileType *
         \ if &filetype == 'sh' |
         \   if ! exists( 'g:BASH_Templates' ) |
-        \     if s:BASH_LoadMenus == 'yes' | call BASH_CreateGuiMenus ()        |
-        \     else                         | call g:BASH_RereadTemplates ('no') |
+        \     if s:BASH_LoadMenus == 'yes' | call BASH_CreateGuiMenus ()      |
+        \     else                         | call BASH_RereadTemplates ('no') |
         \     endif |
         \   endif |
         \   call s:CreateAdditionalMaps () |
