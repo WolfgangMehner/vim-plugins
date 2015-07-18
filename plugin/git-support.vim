@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:GitSupport_Version below
 "       Created:  06.10.2012
-"      Revision:  29.12.2013
+"      Revision:  18.07.2015
 "       License:  Copyright (c) 2012-2015, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -294,6 +294,7 @@ endfunction    " ----------  end of function s:GitGetConfig  ----------
 "
 " The possible options for 'file' are:
 "   'top'        - the top-level directory (default)
+"   'top/<file>  - a file in the top-level directory <top-level>/<file>
 "   'git/<file>' - a file in the git directory <top-level>/.git/<file>,
 "                    respects $GIT_DIR
 "-------------------------------------------------------------------------------
@@ -308,6 +309,13 @@ function! s:GitRepoDir ( ... )
 	"
 	if a:0 == 0 || a:1 == '' || a:1 == 'top'
 		let [ sh_err, text ] = s:StandardRun ( 'rev-parse', '--show-toplevel', 't' )
+	elseif a:1 =~ '^top/'
+		let dir = a:1
+		let [ sh_err, text ] = s:StandardRun ( 'rev-parse', '--show-toplevel', 't' )
+		"
+		if sh_err == 0
+			let text = substitute ( a:1, 'top', escape( text, '\&' ), '' )
+		endif
 	elseif a:1 =~ '^git/'
 		let dir = a:1
 		let [ sh_err, text ] = s:StandardRun ( 'rev-parse', '--git-dir', 't' )
@@ -659,6 +667,20 @@ function! GitS_HelpTopicsComplete ( ArgLead, CmdLine, CursorPos )
 	return filter( copy( s:HelpTopics ), 'v:val =~ "\\V\\<'.escape(a:ArgLead,'\').'\\w\\*"' )
 endfunction    " ----------  end of function GitS_HelpTopicsComplete  ----------
 "
+"----------------------------------------------------------------------
+" list of file IDs for :GitEdit   {{{2
+"
+let s:EditFileIDs = [
+			\ 'config-global', 'config-local',
+			\ 'description',
+			\ 'hooks',
+			\ 'ignore-global', 'ignore-local', 'ignore-private',
+			\ ]
+"
+function! GitS_EditFilesComplete ( ArgLead, CmdLine, CursorPos )
+	return filter( copy( s:EditFileIDs ), 'v:val =~ "\\V\\<'.escape(a:ArgLead,'\').'\\w\\*"' )
+endfunction    " ----------  end of function GitS_EditFilesComplete  ----------
+"
 " configuration defaults   {{{2
 " - only defaults which are relevant for Git-Support are listed here
 "
@@ -938,6 +960,7 @@ if s:Enabled
 	command! -nargs=* -complete=file                                 GitBuf             :call GitS_Run(<q-args>,'b')
 	command! -nargs=* -complete=file                                 GitK               :call GitS_GitK(<q-args>)
 	command! -nargs=* -complete=file                                 GitBash            :call GitS_GitBash(<q-args>)
+	command! -nargs=1 -complete=customlist,GitS_EditFilesComplete    GitEdit            :call GitS_GitEdit(<q-args>)
 	command! -nargs=0                                                GitSupportHelp     :call GitS_PluginHelp("gitsupport")
 	command! -nargs=?                -bang                           GitSupportSettings :call GitS_PluginSettings(('<bang>'=='!')+str2nr(<q-args>))
 	"
@@ -3864,6 +3887,41 @@ function! GitS_GitBash( param )
 endfunction    " ----------  end of function GitS_GitBash  ----------
 "
 "-------------------------------------------------------------------------------
+" GitS_GitEdit : edit a Git config file   {{{1
+"-------------------------------------------------------------------------------
+"
+function! GitS_GitEdit( fileid )
+	"
+	let filename = ''
+	"
+	if a:fileid == 'config-global'
+		let filename = expand ( '$HOME/.gitconfig' )
+	elseif a:fileid == 'config-local'
+		let filename = expand ( '$GIT_CONFIG' )
+		if filename == '$GIT_CONFIG'
+			let filename = s:GitRepoDir ( 'git/config' )
+		endif
+	elseif a:fileid == 'description'
+		let filename = s:GitRepoDir ( 'git/description' )
+	elseif a:fileid == 'hooks'
+		let filename = s:GitRepoDir ( 'git/hooks/' )
+	elseif a:fileid == 'ignore-global'
+		let filename = s:GitGetConfig ( 'core.excludesfile' )
+	elseif a:fileid == 'ignore-local'
+		let filename = s:GitRepoDir ( 'top/.gitignore' )
+	elseif a:fileid == 'ignore-private'
+		let filename = s:GitRepoDir ( 'git/info/exclude' )
+	endif
+	"
+	if filename == ''
+		call s:ErrorMsg ( 'No file with ID "'.a:fileid.'".' )
+	else
+		exe 'spl '.fnameescape( filename )
+	endif
+	"
+endfunction    " ----------  end of function GitS_GitEdit  ----------
+"
+"-------------------------------------------------------------------------------
 " GitS_PluginHelp : Plug-in help.   {{{1
 "-------------------------------------------------------------------------------
 "
@@ -4182,6 +4240,18 @@ function! s:InitMenus()
 		exe ahead.'help\ (custom\ menu)<TAB>:GitSupportHelp   :call GitS_PluginHelp("gitsupport-menus")<CR>'
 		"
 	endif
+	"
+	" Edit
+	let ahead = 'anoremenu          '.s:Git_RootMenu.'.&edit.'
+	let shead = 'anoremenu <silent> '.s:Git_RootMenu.'.&edit.'
+	"
+	exe ahead.'Edit File<TAB>Git :echo "This is a menu header!"<CR>'
+	exe ahead.'-Sep00-          :'
+	"
+	for fileid in s:EditFileIDs
+		let filepretty = substitute ( fileid, '-', '\\ ', 'g' )
+		exe shead.'&'.filepretty.'<TAB>:GitEdit   :GitEdit '.fileid.'<CR>'
+	endfor
 	"
 	" Help
 	let ahead = 'anoremenu          '.s:Git_RootMenu.'.help.'

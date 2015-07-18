@@ -1,4 +1,4 @@
-*gitsupport.txt*                  Git Support                      Feb 22 2015
+*gitsupport.txt*                  Git Support                     July 18 2015
 
 Git Support                                          *git-support* *gitsupport*
 
@@ -119,6 +119,8 @@ run the commands in every subdirectory of the project.
   |:GitK| <args>                     start gitk with the given arguments
   |:GitBash| <args>                  run git in an external terminal
 
+  |:GitEdit| <fileid>                edit the file referred to by <fileid>
+
   |:GitSupportHelp|                  show plug-in help
   |:GitSupportSettings|              show plug-in settings
  ----------------------------------------------------------------------------
@@ -161,6 +163,12 @@ work on the current file: viewing diffs, adding or checking out the file, ...
 
 Some special commands are provided in the menu "specials". See their documen-
 tation for further help.
+
+The menu "custom" is configurable by the user. It can be used to list Git
+commands with regularly used combination of flags. (see |gitsupport-menus|)
+
+To quickly jump to important files, such as config and ignore files, use the
+menu "edit". (or the command |:GitEdit|)
 
 ------------------------------------------------------------------------------
 2.2  WORKFLOW                                       *gitsupport-overview-work*
@@ -423,7 +431,7 @@ repository.
   :GitHelp [<args>] ~
 
 Opens a buffer containing the help for one of Git's commands. If no command is
-given, opens the help for Git itself.
+given, opens the help for Git itself. Use tab-completion for convenience.
 
   Map       Meaning
  ----------------------------------------------------------------------------
@@ -691,6 +699,24 @@ example: >
   :GitBash add --patch %
 <
 Windows: If called without arguments, starts the git bash in interactive mode.
+
+------------------------------------------------------------------------------
+                                                                    *:GitEdit*
+  :GitEdit <fileid> ~
+
+Edit the file referred to by <fileid>, which must be one of the IDs below.
+Use tab-completion for convenience.
+
+  ID               File
+ ----------------------------------------------------------------------------
+  config-global    $HOME/.gitconfig
+  config-local     $GIT_CONFIG or .git/config
+  description      .git/description
+  hooks            .git/hooks/
+  ignore-global    -> value of "core.excludesfile"
+  ignore-local     .gitignore
+  ignore-private   .git/info/exclude
+ ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
                                          *:GitSupportHelp* *:GitSupportSettings*
