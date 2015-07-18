@@ -439,7 +439,7 @@ endfunction    " ----------  end of function Awk_CommentCode  ----------
 "    PARAMETERS:  -
 "       RETURNS:
 "===============================================================================
-function! g:Awk_RereadTemplates ( displaymsg )
+function! Awk_RereadTemplates ( displaymsg )
 	"
 	"-------------------------------------------------------------------------------
 	" SETUP TEMPLATE LIBRARY
@@ -954,8 +954,8 @@ function! s:CreateAdditionalMaps ()
 	 noremap  <buffer>  <silent>  <LocalLeader>hp         :call Awk_HelpAwkSupport()<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>hp    <C-C>:call Awk_HelpAwkSupport()<CR>
 	"
-	nnoremap    <buffer>  <silent>  <C-j>    i<C-R>=Awk_JumpForward()<CR>
-	inoremap    <buffer>  <silent>  <C-j>     <C-R>=Awk_JumpForward()<CR>
+	nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=Awk_JumpForward()<CR>
+	inoremap  <buffer>  <silent>  <C-j>  <C-g>u<C-R>=Awk_JumpForward()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" settings - reset local leader
@@ -1099,7 +1099,7 @@ function! Awk_CreateGuiMenus ()
 		amenu   <silent> 40.1000 &Tools.-SEP100- :
 		amenu   <silent> 40.1010 &Tools.Unload\ Awk\ Support :call Awk_RemoveGuiMenus()<CR>
 		"
-		call g:Awk_RereadTemplates('no')
+		call Awk_RereadTemplates('no')
 		call s:InitMenus ()
 		"
 		let s:Awk_MenuVisible = 'yes'
@@ -1523,8 +1523,8 @@ if has( 'autocmd' )
   autocmd FileType *
         \ if &filetype == 'awk' |
         \   if ! exists( 'g:Awk_Templates' ) |
-        \     if s:Awk_LoadMenus == 'yes' | call Awk_CreateGuiMenus ()        |
-        \     else                        | call g:Awk_RereadTemplates ('no') |
+        \     if s:Awk_LoadMenus == 'yes' | call Awk_CreateGuiMenus ()      |
+        \     else                        | call Awk_RereadTemplates ('no') |
         \     endif |
         \   endif |
         \   call s:CreateAdditionalMaps () |
