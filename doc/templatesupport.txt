@@ -1,4 +1,4 @@
-*templatesupport.txt*         MM Template Support                  Mar 08 2015
+*templatesupport.txt*         MM Template Support                 July 19 2015
 
 MM Template Support                                        *template-support*
 
@@ -408,10 +408,10 @@ entry within the menu "Statements".
 ------------------------------------------------------------------------------
 
 Templates are useful because in source code, certain structures are repeated
-regularly. Within this structures however, certain parts a variable. Templates
-represent those via macros. Macros have a name, which has to follow the same
-rules as C identifiers. They start with a letter or underscore, and can
-contain numbers after that. Within a template, macros are written as their
+regularly. Within this structures however, certain parts are variable.
+Templates represent those via macros. Macros have a name, which has to follow
+the same rules as C identifiers. They start with a letter or underscore, and
+can contain numbers after that. Within a template, macros are written as their
 names, surrounded by two bars:
 	*|AUTHOR|*
 Replacement for macros can be given in the template library itself: >
@@ -2398,6 +2398,28 @@ Example: >
 	SetMacro ( "AUTHOR", "My cat." )
 
 ------------------------------------------------------------------------------
+                                                   *template-support-SetMap()*
+Set the map of the template 'name' to 'map':
+
+	SetMap ( name, map ) ~
+
+This changes the map of the template named 'name'. The map has to follow the
+rules as the "map:<map>" option (see |template-support-map|). The name of the
+template appears in the template definition between the first pair of == , the
+menu is part of the name, also whitespaces contained within the name.
+
+Example: >
+
+Consider this template definition:
+>
+	== Include.global include == below, map:igi ==
+     ^                    ^
+     |----- the name -----|
+<
+Then you can set a different map using: >
+  SetMap ( "Include.global include", "igl" )
+<
+------------------------------------------------------------------------------
                                                   *template-support-SetPath()*
 Set the resource 'name' to the given path.
 
@@ -2414,6 +2436,29 @@ Set the property 'name' to the given value.
 Only existing properties can be set. If 'name' does not refer to an existing
 property, an error will be printed.
 
+------------------------------------------------------------------------------
+                                              *template-support-SetShortcut()*
+Set the shortcut of the template 'name' to 'sc':
+
+	SetShortcut ( name, sc ) ~
+
+This changes the shortcut of the template named 'name'. The shortcut has to
+follow the rules as the "shortcut:<sc>" option (see |template-support-sc|).
+The name of the template appears in the template definition between the first
+pair of == , the menu is part of the name, also whitespaces contained within
+the name.
+
+Example: >
+
+Consider this template definition:
+>
+	== Include.global include == below, sc:g ==
+     ^                    ^
+     |----- the name -----|
+<
+Then you can set a different shortcut using: >
+  SetShortcut ( "Include.global include", "l" )
+<
 ------------------------------------------------------------------------------
                                                  *template-support-SetStyle()*
 Set the active style to 'name':
@@ -2702,6 +2747,8 @@ D.  CHANGE LOG                                   *template-support-change-log*
   templates or jumping via <ctrl+j>.
 - Added: Template options "expandleft" and "expandright". Extended the option
   "expandmenu".
+- Added: Functions 'SetMap' and 'SetShortcut'.
+- Changed: If a template is redefined, the options are read again.
 - Changed: During the creation of the submenu for a list-picking template, all
   special characters are escaped correctly. (The characters "\" and "|" were
   not escaped before.)

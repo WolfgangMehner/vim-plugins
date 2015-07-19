@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Templates_Version below
 "       Created:  30.08.2011
-"      Revision:  08.01.2015
+"      Revision:  19.07.2015
 "       License:  Copyright (c) 2012-2015, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -977,113 +977,106 @@ function! s:AddTemplate ( type, name, settings, lines )
 		" --------------------------------------------------
 		"  new template
 		" --------------------------------------------------
-		let type        = a:type
-		let placement   = 'below'
-		let indentation = 1
-		"
-		let visual    = -1 != stridx ( a:lines, '<SPLIT>' )
-		let mp        = ''
-		let entry     = 1
-		let sc        = ''
-		"
-		let expand_list  = ''
-		let expand_left  = ''
-		let expand_right = ''
-		"
-		" --------------------------------------------------
-		"  settings
-		" --------------------------------------------------
-		for s in a:settings
-			"
-			if s == 'start' || s == 'above' || s == 'below' || s == 'append' || s == 'insert'
-				let placement = s
-
-				" indentation
-			elseif s == 'indent'
-				let indentation = 1
-			elseif s == 'noindent'
-				let indentation = 0
-
-				" special insertion in visual mode:
-			elseif s == 'visual'
-				let visual = 1
-			elseif s == 'novisual'
-				let visual = 0
-
-				" map:
-			elseif s =~ '^map\s*:'
-				let mp = matchstr ( s, '^map\s*:\s*\zs'.s:library.regex_file.Mapping )
-
-				" entry and shortcut:
-			elseif s == 'nomenu'
-				let entry = 0
-			elseif s == 'expandmenu'
-				let entry = 2
-			elseif s =~ '^expandmenu\s*:'
-				let entry = 2
-				if s:library.interface < 1000000
-					call s:ErrorMsg ( 'The option "expandmenu:..." with an explicitly named list is only available for libraries using versions >= 1.0.' )
-				else
-					let expand_list = matchstr ( s, '^expandmenu\s*:\s*\zs'.s:library.regex_file.MacroName )
-				endif
-			elseif s =~ '^expandleft\s*:'
-				if s:library.interface < 1000000
-					call s:ErrorMsg ( 'The option "expandleft:..." is only available for libraries using versions >= 1.0.' )
-				else
-					let expand_left = matchstr ( s, '^expandleft\s*:\s*\zs.*' )
-					let expand_left = s:HandleMenuExpandOptions ( expand_left )
-					" :TODO:04.01.2015 17:35:WM: error handling, disallowed options, ...
-				endif
-			elseif s =~ '^expandright\s*:'
-				if s:library.interface < 1000000
-					call s:ErrorMsg ( 'The option "expandright:..." is only available for libraries using versions >= 1.0.' )
-				else
-					let expand_right = matchstr ( s, '^expandright\s*:\s*\zs.*' )
-					let expand_right = s:HandleMenuExpandOptions ( expand_right )
-					" :TODO:04.01.2015 17:35:WM: error handling, disallowed options, ...
-				endif
-			elseif s =~ '^sc\s*:' || s =~ '^shortcut\s*:'
-				let sc = matchstr ( s, '^\w\+\s*:\s*\zs'.s:library.regex_file.Mapping )
-
-			else
-				call s:ErrorMsg ( 'Warning: Unknown setting in template "'.name.'": "'.s.'"' )
-			endif
-			"
-		endfor
-		"
-		" TODO: review this
-		if a:type == 'help'
-			let placement = 'help'
-		endif
-		"
-		" --------------------------------------------------
-		"  new template
-		" --------------------------------------------------
 		let s:library.templates[ name.'!!type' ] = {
-					\ 'type'        : type,
-					\ 'placement'   : placement,
-					\ 'indentation' : indentation,
+					\ 'type'        : a:type,
+					\ 'placement'   : 'below',
+					\ 'indentation' : 1,
 					\ }
 		let s:library.templates[ name.'!!menu' ] = {
 					\ 'filetypes' : s:t_runtime.use_filetypes,
-					\ 'visual'    : visual,
-					\ 'map'       : mp,
-					\ 'entry'     : entry,
+					\ 'visual'    : -1 != stridx ( a:lines, '<SPLIT>' ),
+					\ 'map'       : '',
+					\ 'entry'     : 1,
 					\ 'mname'     : '',
-					\ 'shortcut'  : sc,
+					\ 'shortcut'  : '',
 					\ }
+		" when "entry == 2" these entries also appear:
+		" - expand_list
+		" - expand_left
+		" - expand_right
 		"
-		if entry == 2
-			let s:library.templates[ name.'!!expand' ] = {
-						\ 'expand_list'  : expand_list,
-						\ 'expand_left'  : expand_left,
-						\ 'expand_right' : expand_right,
-						\ }
+		" TODO: review this
+		if a:type == 'help'
+			let s:library.templates[ name.'!!type' ].placement = 'help'
 		endif
 		"
 		call add ( s:library.menu_order, name )
 		"
 	endif
+	"
+	" --------------------------------------------------
+	"  settings
+	" --------------------------------------------------
+	"
+	let templ_type = s:library.templates[ name.'!!type' ]
+	let templ_menu = s:library.templates[ name.'!!menu' ]
+	"
+	for s in a:settings
+		"
+		if s == 'start' || s == 'above' || s == 'below' || s == 'append' || s == 'insert'
+			let templ_type.placement = s
+
+			" indentation
+		elseif s == 'indent'
+			let templ_type.indentation = 1
+		elseif s == 'noindent'
+			let templ_type.indentation = 0
+
+			" special insertion in visual mode:
+		elseif s == 'visual'
+			let templ_menu.visual = 1
+		elseif s == 'novisual'
+			let templ_menu.visual = 0
+
+			" map:
+		elseif s =~ '^map\s*:'
+			let templ_menu.map = matchstr ( s, '^map\s*:\s*\zs'.s:library.regex_file.Mapping )
+
+			" entry and shortcut:
+		elseif s == 'nomenu'
+			let templ_menu.entry = 0
+		elseif s == 'expandmenu'
+			let templ_menu.entry = 2
+			if ! has_key ( templ_menu, 'expand_list' )
+				let templ_menu.expand_list  = ''
+				let templ_menu.expand_left  = ''
+				let templ_menu.expand_right = ''
+			endif
+		elseif s =~ '^expandmenu\s*:'
+			let templ_menu.entry = 2
+			if s:library.interface < 1000000
+				call s:ErrorMsg ( 'The option "expandmenu:..." with an explicitly named list is only available for libraries using versions >= 1.0.' )
+			else
+				if ! has_key ( templ_menu, 'expand_list' )
+					let templ_menu.expand_left  = ''
+					let templ_menu.expand_right = ''
+				endif
+				let templ_menu.expand_list = matchstr ( s, '^expandmenu\s*:\s*\zs'.s:library.regex_file.MacroName )
+			endif
+		elseif s =~ '^expandleft\s*:'
+			if s:library.interface < 1000000
+				call s:ErrorMsg ( 'The option "expandleft:..." is only available for libraries using versions >= 1.0.' )
+			else
+				let templ_menu.expand_left = matchstr ( s, '^expandleft\s*:\s*\zs.*' )
+				let templ_menu.expand_left = s:HandleMenuExpandOptions ( templ_menu.expand_left )
+				" :TODO:04.01.2015 17:35:WM: error handling, disallowed options, ...
+			endif
+		elseif s =~ '^expandright\s*:'
+			if s:library.interface < 1000000
+				call s:ErrorMsg ( 'The option "expandright:..." is only available for libraries using versions >= 1.0.' )
+			else
+				let templ_menu.expand_right = matchstr ( s, '^expandright\s*:\s*\zs.*' )
+				let templ_menu.expand_right = s:HandleMenuExpandOptions ( templ_menu.expand_right )
+				" :TODO:04.01.2015 17:35:WM: error handling, disallowed options, ...
+			endif
+		elseif s =~ '^sc\s*:' || s =~ '^shortcut\s*:'
+			let templ_menu.shortcut = matchstr ( s, '^\w\+\s*:\s*\zs'.s:library.regex_file.Mapping )
+
+		else
+			call s:ErrorMsg ( 'Warning: Unknown setting in template "'.name.'": "'.s.'"' )
+		endif
+		"
+	endfor
 	"
 	" ==================================================
 	"  text
@@ -1358,10 +1351,11 @@ let s:FileReadNameSpace_0_9 = {
 			\ 'SetProperty'  : 'ss',
 			\ 'SetStyle'     : 's',
 			\
+			\ 'SetMap'       : 'ss',
+			\ 'SetShortcut'  : 'ss',
+			\
 			\ 'MenuShortcut' : 'ss',
 			\ }
-" 			\ 'SetMap'       : 'ss',
-" 			\ 'SetShortcut'  : 'ss',
 "
 "----------------------------------------------------------------------
 "  s:InterfaceVersion : Set the library version (template function).   {{{2
@@ -1498,12 +1492,19 @@ function! s:MenuShortcut ( name, shortcut )
 endfunction    " ----------  end of function s:MenuShortcut  ----------
 "
 "----------------------------------------------------------------------
-"  s:SetMap : TODO (template function).   {{{2
+"  s:SetMap : Set the map of a template (template function).   {{{2
 "----------------------------------------------------------------------
 "
 function! s:SetMap ( name, map )
 	"
-	call s:ErrorMsg ( 'SetMap: TO BE IMPLEMENTED' )
+	" check for valid name and format
+	if ! has_key ( s:library.templates, a:name.'!!type' )
+		return s:ErrorMsg ( 'The template does not exist: '.a:name )
+	elseif -1 == match ( a:map, '^'.s:library.regex_file.Mapping.'$' )
+		return s:ErrorMsg ( 'The new map has an illegal format: '.a:map )
+	endif
+	"
+	let s:library.templates[ a:name.'!!menu' ].map = a:map
 	"
 endfunction    " ----------  end of function s:SetMap  ----------
 "
@@ -1522,18 +1523,21 @@ function! s:SetProperty ( name, value )
 endfunction    " ----------  end of function s:SetProperty  ----------
 "
 "----------------------------------------------------------------------
-"  s:SetShortcut : TODO (template function).   {{{2
+"  s:SetShortcut : Set the shortcut of a template (template function).   {{{2
 "----------------------------------------------------------------------
 "
 function! s:SetShortcut ( name, shortcut )
 	"
-	" check for valid shortcut
-	if len ( a:shortcut ) > 1
-		call s:ErrorMsg ( 'The shortcut for "'.a:name.'" must be a single character.' )
-		return
+	" check for valid name and format
+	if ! has_key ( s:library.templates, a:name.'!!type' )
+		return s:ErrorMsg ( 'The template does not exist: '.a:name )
+	elseif len ( a:shortcut ) > 1
+		return s:ErrorMsg ( 'The new shortcut must be a single character: '.a:shortcut )
+	elseif -1 == match ( a:shortcut, '^'.s:library.regex_file.Mapping.'$' )
+		return s:ErrorMsg ( 'The new shortcut has an illegal format: '.a:shortcut )
 	endif
 	"
-	call s:ErrorMsg ( 'SetShortcut: TO BE IMPLEMENTED' )
+	let s:library.templates[ a:name.'!!menu' ].shortcut = a:shortcut
 	"
 endfunction    " ----------  end of function s:SetShortcut  ----------
 "
@@ -2814,18 +2818,17 @@ function! s:PrepareStdTempl ( cmds, text, name )
 			let menu_info = get ( s:library.templates, a:name.'!!menu' )
 			"
 			if menu_info.entry == 2
-				let expand_info = get ( s:library.templates, a:name.'!!expand' )
-				let expand_l    = ''
-				let expand_r    = ''
+				let expand_l = ''
+				let expand_r = ''
 				"
-				if get ( expand_info, 'expand_left', '' ) != ''
+				if menu_info.expand_left != ''
 					let plain = 0
-					let expand_l = get ( expand_info, 'expand_left' )
-					let expand_r = get ( expand_info, 'expand_right', '' )
-				elseif get ( expand_info, 'expand_left', '' ) != ''
+					let expand_l = menu_info.expand_left
+					let expand_r = menu_info.expand_right
+				elseif menu_info.expand_right != ''
 					let plain = 0
 					let expand_l = '|KEY|'
-					let expand_r = get ( expand_info, 'expand_right' )
+					let expand_r = menu_info.expand_right
 				endif
 			endif
 			"
@@ -3911,7 +3914,7 @@ function! s:CreateListMenus ( t_name, submenu, visual )
 	let t_name = a:t_name
 	let plain  = 1
 	"
-	let info = s:library.templates[ t_name.'!!expand' ]
+	let info = s:library.templates[ t_name.'!!menu' ]
 	"
 	if info.expand_left != ''
 		let plain = 0

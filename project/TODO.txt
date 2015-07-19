@@ -26,8 +26,8 @@ Templates:
 - (WM) Correct escape for menu names.
   * At least these special characters must be escaped: <space> . | \ &
   * Expanded menus for lists.
-- (WM) When overwriting templates, also set new map and shortcut, if one is
-  given.
+- (WM, DONE) When overwriting templates, also set new map and shortcut, if one
+  is given.
 - (WM) Better debugging while reading template files:
   Print filename and line number for errors and warnings.
 - (WM) Add configuration "g:Templates_OverwriteWarning".

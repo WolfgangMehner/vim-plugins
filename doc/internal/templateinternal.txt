@@ -74,9 +74,6 @@ The template library contains the following fields:
     key - name + "menu" (string): "<name>!!menu"
     val - information about map and menu creation (table)
       or
-    key - name + "expand" (string): "<name>!!expand"
-    val - information about list menu expansion (table)
-      or
     key - name + style (string): "<name>!<style>"
     val - text for a style (string)
 
@@ -191,22 +188,20 @@ The templates are saved in the library in a dictionary under the key
     - indentation (int) - indentation: no ("0") or yes ("1")
     The entries are not escaped and can be recovered by splitting at ",".
 - "<name>!!menu" -> { ... }
-    The entry is a dict containing: >
-<   - filetypes (lst) - filetypes: list of strings naming the filetypes
+    The entry is a dict containing:
+    - filetypes (lst) - filetypes: list of strings naming the filetypes
     - visual    (int) - split in visual mode: no (0) or yes/force (1)
     - map       (str) - the map, not prefixed with the mapleader
     - entry     (int) - no entry (0), entry (1), expand list (2), separator(11)
     - mname     (str) - name in the menu
     - shortcut  (str) - the shortcut, string of length one
-    The entries are escaped as appropriate.
-- "<name>!!expand" -> { ... }
-    The entry is a dict containing: >
-<   - uselist   (str) - the list to use when expanding the menu, can be empty,
+    - uselist   (str) - the list to use when expanding the menu, can be empty,
                         in which case the template is searched for the list
     - lefttext  (str) - the left-aligned text of the menu entry
     - righttext (str) - the right-aligned text of the menu entry
-    The left- and right-aligned text can contain macros *|KEY|* and *|VALUE|* ,
-    which are replaced appropriately for each created entry.
+    The entries are escaped as appropriate. The left- and right-aligned text
+    can contain macros *|KEY|* and *|VALUE|* , which are replaced
+    appropriately for each created entry.
 
 - "<name>!<style>"
     The text for the style. If there is no text for a certain style, no entry
