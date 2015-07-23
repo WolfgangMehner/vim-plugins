@@ -13,8 +13,8 @@
 "  Organization:  
 "       Version:  see variable g:CMake_Version below
 "       Created:  28.12.2011
-"      Revision:  30.06.2014
-"       License:  Copyright (c) 2012-2014, Wolfgang Mehner
+"      Revision:  23.07.2015
+"       License:  Copyright (c) 2012-2015, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -216,6 +216,8 @@ endif
 "
 " settings   {{{2
 "
+let s:makelib = mmtoolbox#make#Interface ()
+"
 let s:ProjectDir    = '.'
 let s:BuildLocation = '.'
 "
@@ -228,7 +230,8 @@ let s:CMake_MakeTool   = 'make'
 "
 call s:GetGlobalSetting ( 'CMake_Executable' )
 call s:GetGlobalSetting ( 'CMake_MakeTool' )
-call s:ApplyDefaultSetting ( 'CMake_JumpToError', 'cmake' )
+call s:ApplyDefaultSetting ( 'CMake_JumpToError',       'cmake' )
+call s:ApplyDefaultSetting ( 'CMake_FilterFastTargets', 'no' )
 "
 let s:Enabled = 1
 "
@@ -293,12 +296,37 @@ let s:Policies_List = [
 			\ [ 'CMP????', 'There might be more policies not mentioned here, since this list is not maintained automatically.', '?.?.?' ],
 			\ ]
 "
+" Make target complete {{{2
+"
+function! s:MakeTargetComplete ( ArgLead, CmdLine, CursorPos )
+	"
+	" files
+	let filelist = split ( glob ( a:ArgLead.'*' ), "\n" )
+	"
+	for i in range ( 0, len(filelist)-1 )
+		if isdirectory ( filelist[i] )
+			let filelist[i] .= '/'
+		endif
+	endfor
+	"
+	" targets
+	let target_list = filter( copy( s:makelib.GetMakeTargets( s:BuildLocation.'/Makefile' ) ), 'v:val =~ "\\V\\<'.escape(a:ArgLead,'\').'\\w\\*"' )
+	"
+	" filter fast targets?
+	if g:CMake_FilterFastTargets == 'yes'
+		let target_list = filter( target_list, 'v:val !~ "/fast$"' )
+	endif
+	"
+	return filelist + target_list
+endfunction    " ----------  end of function s:MakeTargetComplete  ----------
+"
 " custom commands {{{2
 "
 if s:Enabled == 1
+	command! -bang -nargs=* -complete=customlist,s:MakeTargetComplete  CMake  :call <SID>Run(<q-args>,'<bang>'=='!')
+	"
 	command! -bang -nargs=? -complete=file CMakeProjectDir    :call mmtoolbox#cmake#Property('<bang>'=='!'?'echo':'set','project-dir',<q-args>)
 	command! -bang -nargs=? -complete=file CMakeBuildLocation :call mmtoolbox#cmake#Property('<bang>'=='!'?'echo':'set','build-dir',<q-args>)
-	command! -bang -nargs=* -complete=file CMake              :call <SID>Run(<q-args>,'<bang>'=='!')
 	command!       -nargs=? -complete=file CMakeHelpCommand   :call <SID>Help('command',<q-args>)
 	command!       -nargs=? -complete=file CMakeHelpModule    :call <SID>Help('module',<q-args>)
 	command!       -nargs=? -complete=file CMakeHelpPolicy    :call <SID>Help('policy',<q-args>)

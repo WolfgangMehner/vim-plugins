@@ -1,4 +1,4 @@
-*toolboxcmake.txt*                 CMake Tool                      Oct 20 2014
+*toolboxcmake.txt*                 CMake Tool                     July 23 2015
 
 CMake Tool                                                     *toolbox-cmake*
 
@@ -8,7 +8,8 @@ CMake Tool                                                     *toolbox-cmake*
 
 The CMake tool offers an integration of CMake's makefile generator. It also
 helps with calling the make tool in the build location, independently of the
-current working directory. CMake's help can be quickly accessed within Vim.
+current working directory. It comes with command-line completion for make
+targets. CMake's help can be quickly accessed within Vim.
 
 ==============================================================================
 0.  TABLE OF CONTENTS                                 *toolbox-cmake-contents*
@@ -35,6 +36,9 @@ After that, :CMake (without a bang) can be used to execute the make tool in
 the build location: >
   :CMake -j3
 Errors will be listed in the quick-fix buffer.
+
+The :CMake command has command-line completion for the targets of the makefile
+in the build location.
 
 Help for CMake's commands can be accessed using |:CMakeHelpCommand|: >
   :CMakeHelpCommand add_library
@@ -83,6 +87,10 @@ If the tool is not working properly, prints the reason.
 
 Runs make with the given arguments. Beforehand, the working directory is set
 to the directory configured with |:CMakeBuildLocation|.
+
+The command has command-line completion for the targets of the makefile in the
+build location. All targets named ".../fast" can be hidden by setting
+|g:CMake_FilterFastTargets|.
 
 ------------------------------------------------------------------------------
                                         *:CMakeProjectDir* *:CMakeBuildLocation*
@@ -212,6 +220,25 @@ The possible settings are listed below:
 The behavior can be changed on the fly by settings the variable to a different
 value on the command line.
 
+------------------------------------------------------------------------------
+                                                   *g:CMake_FilterFastTargets*
+The command-line completion for the |:CMake| command shows the targets in the
+makefile in the directories set via |:CMakeBuildLocation|. The list of
+possible targets can get quite cluttered if all targets named ".../fast" are
+included. They can be filtered out by setting: >
+  let g:CMake_FilterFastTargets = 'yes'
+<
+The possible settings are listed below:
+
+  Value           Effect
+ ----------------------------------------------------------------------------
+  'yes'           filter out targets named ".../fast"
+  'no'            show all targets
+ ----------------------------------------------------------------------------
+
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
 ==============================================================================
 4.  KNOWN ISSUES                                        *toolbox-cmake-issues*
 ==============================================================================
@@ -230,6 +257,7 @@ A.  CHANGE LOG                                      *toolbox-cmake-change-log*
   RELEASE NOTES FOR VERSION 0.9.2
 ------------------------------------------------------------------------------
 
+- Add: Command-line completion for Make targets.
 - Change: Echo a different message if the build succeeded, but warnings are
   present.
 - Internal changes, less global functions.
