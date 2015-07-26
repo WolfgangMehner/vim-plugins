@@ -43,7 +43,12 @@ table.title_bar > tbody > tr > td
 table.title_bar > tbody > tr:nth-child(1) > td:nth-child(1)
 {
 	padding:0px;
+
+	padding-top:20px;
+	padding-bottom:20px;
 	color:White;
+	font-size:2em;
+	font-weight:bold;
 }
 
 table.title_bar > tbody > tr:nth-child(2) > td:nth-child(1)
@@ -217,9 +222,14 @@ table.menu_structure > thead > tr > th
 	background-color:pink;
 	background-color:#84d3e3;
 	background-image:url("blue_box.png");
-	background-position:center;
+	background-position:bottom;
 	background-repeat:repeat-x;
 	border-radius:5px;
+
+	padding-top:16px;
+	padding-bottom:16px;
+	color:White;
+	font-size:1.5em;
 }
 
 table.menu_structure > thead > tr > th:first-child
@@ -230,13 +240,6 @@ table.menu_structure > thead > tr > th:first-child
 table.menu_structure > thead > tr > th:last-child
 {
 	border-bottom-right-radius:11px;
-}
-
-table.menu_structure > thead > tr > th > h2
-{
-	margin-top:16px;
-	margin-bottom:16px;
-	color:White;
 }
 
 table.menu_structure > tbody > tr > td

@@ -65,7 +65,8 @@ config.git = {
 		GITHUB_USER = 'WolfgangMehner',
 		GITHUB_REPO = 'git-support',
 
-		IMG_MAIN_MENU = 'gitsupport/git_menu_main.png',
+		IMG_MAIN_FILE    = 'gitsupport/git_menu_main.png',
+		IMG_MAIN_CAPTION = 'root menu',
 		REF_HELP      = 'doc/gitsupport.html',
 	},
 	links_plugins = {
@@ -90,7 +91,8 @@ config.lua = {
 		GITHUB_USER = 'WolfgangMehner',
 		GITHUB_REPO = 'lua-support',
 
-		IMG_MAIN_MENU = 'luasupport/lua_menu_main.png',
+		IMG_MAIN_FILE    = 'luasupport/lua_menu_main.png',
+		IMG_MAIN_CAPTION = 'root menu',
 		REF_HELP      = 'doc/luasupport.html',
 	},
 	links_plugins = {
