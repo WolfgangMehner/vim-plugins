@@ -32,6 +32,7 @@ template_plugin.order = {
 	'PAGE_HEADER_OTHERS',
 	'PAGE_HEADER_OTHERS_PART2',
 	'PAGE_HEADER_PART2',
+	'FEATURES',
 	'MENU_STRUCTURE',
 	'FOOTER',
 	'body',
@@ -40,14 +41,14 @@ template_plugin.order = {
 local config = {}
 
 config.plugin_links = {
-	awk   = { id = 4415, name = 'AWK IDE',         }, 
-	bash  = { id =  365, name = 'Bash IDE',        }, 
-	c     = { id =  213, name = 'C/C++ IDE',       }, 
-	git   = { id = 4497, name = 'Git Integration', }, 
-	latex = { id = 4405, name = 'LaTeX IDE',       }, 
-	lua   = { id = 4950, name = 'Lua IDE',         }, 
-	perl  = { id =  556, name = 'Perl IDE',        }, 
-	vim   = { id = 3931, name = 'Vim Script IDE',  }, 
+	awk   = { id = 4415, name = 'AWK IDE',         doc = '',                    },
+	bash  = { id =  365, name = 'Bash IDE',        doc = '',                    },
+	c     = { id =  213, name = 'C/C++ IDE',       doc = '',                    },
+	git   = { id = 4497, name = 'Git Integration', doc = 'doc/gitsupport.html', },
+	latex = { id = 4405, name = 'LaTeX IDE',       doc = '',                    },
+	lua   = { id = 4950, name = 'Lua IDE',         doc = 'doc/luasupport.html', },
+	perl  = { id =  556, name = 'Perl IDE',        doc = '',                    },
+	vim   = { id = 3931, name = 'Vim Script IDE',  doc = '',                    },
 }
 
 config.git = {
@@ -67,7 +68,7 @@ config.git = {
 
 		IMG_MAIN_FILE    = 'gitsupport/git_menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
-		REF_HELP      = 'doc/gitsupport.html',
+		REF_HELP      = config.plugin_links.git.doc,
 	},
 	links_plugins = {
 		'bash', 'c', 'latex', 'lua', 'perl', 'vim',
@@ -93,7 +94,7 @@ config.lua = {
 
 		IMG_MAIN_FILE    = 'luasupport/lua_menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
-		REF_HELP      = 'doc/luasupport.html',
+		REF_HELP      = config.plugin_links.lua.doc,
 	},
 	links_plugins = {
 		'bash', 'c', 'git', 'latex', 'perl', 'vim',

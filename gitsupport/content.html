@@ -7,6 +7,44 @@
 		<link rel="stylesheet" type="text/css" href="../vimstyle.css">
 	</head>
 	<body>
+		<!-- ::FEATURES::START:: -->
+		<!-- ###################################################################################-->
+		<!-- ################################## FEATURES #######################################-->
+		<!-- ###################################################################################-->
+		<a name="FEATURES"></a>
+		<table class="features">
+			<thead>
+				<tr>
+					<th scope=col> FEATURES</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						Integration of Git for Vim/gVim:
+						<ul>
+							<li>use Git from within Vim and eliminate the need for context switches</li>
+							<li>quickly add the file in the current buffer or show its diff</li>
+							<li>the output of commands like "git status" is redirected into buffers</li>
+							<li>... the commit can be manipulated from right there</li>
+						</ul>
+						<ul>
+							<li>show the stash, logs, branches, tags, remotes, ...</li>
+							<li>show the Git help in a buffer, or open it in the browser</li>
+							<li>each buffer comes with a short help: press <code>&lt;SHIFT+F1></code></li>
+							<li>run arbitrary Git commands and optionally redirect their output into a buffer</li>
+							<li>start gitk with arguments: <code>:GitK --all</code></li>
+						</ul>
+						<ul>
+							<li>comes with a menu, which also severs as an overview of the plug-in's functionality</li>
+							<li>custom menu for often used combination of arguments</li>
+							<li>configurable syntax highlighting designed to match Git's own highlighting</li>
+							<li>automatic folds for diffs and logs</li>
+						</ul>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 		<!-- ::MENU_STRUCTURE::START:: -->
 		<!-- ###################################################################################-->
 		<!-- ################################## MENU STRUCTURE #################################-->
@@ -97,9 +135,10 @@
 					<td>
 						<h3>Menu <i>Specials</i> : some helpful commands</h3>
 						The menu provides various specialized versions of commands.
+						Each command comes with its own help entry, such as <a target=_blank href="%REF_HELP%#:GitGrepTop">:help :GitGrepTop</a>.</p>
 						<hr>
 						For short commit messages use:
-						<pre>:GitCommitMsg Fixed a minor issue in the previous commit.</pre>
+						<pre>:GitCommitMsg Fix a minor issue in the previous commit</pre>
 						For taking the commit message from the current file:
 						<pre>:GitCommitFile %</pre>
 						For commiting a merge:
@@ -126,9 +165,10 @@ Conflicts:
 					<td><img src="gitsupport/git_menu_custom.png"> </td>
 					<td>
 						<h3>Menu <i>Custom</i> : custom commands</h3>
-						A configurable menu for custom commands.
+						<p>A configurable menu for custom commands.
 						This provides a place for often used combinations of flags and other complicated commands.
-						Git Support comes with example menu entries:
+						For the configuration of the custom menu see <a target=_blank href="%REF_HELP%#gitsupport-menus">:help gitsupport-menus</a>.</p>
+						<p>Git Support comes with example menu entries:</p>
 						<hr>
 						To search the repository for the word under the cursor:
 						<pre>custom -> grep, word under cursor</pre>

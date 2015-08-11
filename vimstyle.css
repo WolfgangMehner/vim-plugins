@@ -11,6 +11,27 @@
  */
 
 /*
+ * prettier links
+ *
+ * defines:
+ * - links (blue/violet)
+ */
+a:link,
+a:visited
+{
+	color:#098da9;
+	font-weight:bold;
+	text-decoration:none;
+}
+
+a:hover
+{
+	color:#a000ff;
+	font-weight:bold;
+	text-decoration:none;
+}
+
+/*
  * table for the title bar
  *
  * defines:
@@ -95,7 +116,6 @@ table.title_bar a:hover
  * defines:
  * - the table
  * - table data for 3 columns
- * - links (blue/violet)
  */
 table.page_header
 {
@@ -117,21 +137,6 @@ table.page_header > tbody > tr > td:nth-child(2)
 table.page_header > tbody > tr > td:nth-child(3)
 {
 	width:20%;
-}
-
-table.page_header a:link,
-table.page_header a:visited
-{
-	color:#098da9;
-	font-weight:bold;
-	text-decoration:none;
-}
-
-table.page_header a:hover
-{
-	color:#a000ff;
-	font-weight:bold;
-	text-decoration:none;
 }
 
 /*
@@ -200,6 +205,63 @@ table.other_plugins a:hover
 	color:#444444;
 	font-weight:normal;
 	text-decoration:none;
+}
+
+/*
+ * table for features
+ *
+ * defines:
+ * - the table
+ * - table heads and data
+ * - unorder list
+ */
+table.features
+{
+	border-spacing:4px;
+}
+
+table.features > thead > tr > th
+{
+	background-color:pink;
+	background-color:#84d3e3;
+	background-image:url("blue_box.png");
+	background-position:bottom;
+	background-repeat:repeat-x;
+	border-radius:5px;
+	border-top-left-radius:11px;
+	border-bottom-right-radius:11px;
+
+	padding-top:16px;
+	padding-bottom:16px;
+	color:White;
+	font-size:1.5em;
+}
+
+table.features > tbody > tr > td
+{
+	padding:7px;
+	padding-top:10px;
+
+	font-size:1.1em;
+}
+
+table.features > tbody > tr > td > ul
+{
+	margin-top:0.5em;
+	margin-bottom:1em;
+	padding-left:30px;
+	padding-right:20px;
+}
+
+table.features > tbody > tr > td > ul > li
+{
+	font-size:0.95em;
+}
+
+table.features > tbody > tr > td > ul > li > code
+{
+	font-size:1.1em;
+	color:#666666;
 }
 
 /*
