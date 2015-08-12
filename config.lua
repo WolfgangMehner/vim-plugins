@@ -68,7 +68,9 @@ config.git = {
 
 		IMG_MAIN_FILE    = 'gitsupport/git_menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
-		REF_HELP      = config.plugin_links.git.doc,
+
+		REF_README = 'blob/master/README.md',
+		REF_HELP   = config.plugin_links.git.doc,
 	},
 	links_plugins = {
 		'bash', 'c', 'latex', 'lua', 'perl', 'vim',
@@ -94,7 +96,9 @@ config.lua = {
 
 		IMG_MAIN_FILE    = 'luasupport/lua_menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
-		REF_HELP      = config.plugin_links.lua.doc,
+
+		REF_README = 'blob/master/README.md',
+		REF_HELP   = config.plugin_links.lua.doc,
 	},
 	links_plugins = {
 		'bash', 'c', 'git', 'latex', 'perl', 'vim',
