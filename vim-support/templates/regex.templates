@@ -47,10 +47,10 @@
 \<<CURSOR>\>
 == ENDTEMPLATE ==
 
-== Regex.character classes == expandmenu, insert, map:xcc, sc:l ==
+== Regex.character classes == expandmenu, expandright:value, insert, map:xcc, sc:l ==
 |PickList( 'character class', 'regex_character_classes' )|
 |PICK|<CURSOR>
-== Regex.switches == expandmenu, insert, map:xs, sc:s ==
+== Regex.switches == expandmenu, expandright:value, insert, map:xs, sc:s ==
 |PickList( 'switch', 'regex_switches' )|
 |PICK|<CURSOR>
 == ENDTEMPLATE ==

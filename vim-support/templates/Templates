@@ -1,4 +1,12 @@
 § =============================================================
+§  Interface Version
+§
+§  enable advanced features
+§ =============================================================
+
+InterfaceVersion ( '1.0' )
+
+§ =============================================================
 §  User Macros
 § =============================================================
 
@@ -15,12 +23,6 @@ SetFormat( 'TIME', '%H:%M' )
 SetFormat( 'YEAR', '%Y' )
 
 SetStyle( 'default' )
-
-§ browser for help templates (UNIX)
-SetMacro( 'HELP_BROWSER', 'firefox' )
-
-§ browser for help templates, the executable is escaped using quotes (Windows)
-§SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
 
 § =============================================================
 §  File Includes and Shortcuts
@@ -44,10 +46,10 @@ IncludeFile( 'documentation.templates' )
 §  Help
 § =============================================================
 
-SetMacro( 'HelpPathEnglish',   'http://en.wiktionary.org/wiki/' )
+SetMacro( 'HelpPathEnglish', 'http://en.wiktionary.org/wiki/' )
 
-== HELP: Help.english == map:he, sc:e ==
+== HELP: Help.English == map:he, sc:e ==
 |Word( '' )|
 |Substitute( '\W', '', 'g' )|
-|System( '|HELP_BROWSER| |HelpPathEnglish||PICK:l|' )|
+|Browser( '|HelpPathEnglish||PICK:l|' )|
 == ENDTEMPLATE ==

@@ -59,7 +59,7 @@ catch //
 catch /.*/
   echo "Internal error (" . v:exception . ")"
   echo " - occurred at " . v:throwpoint
-finally 
+finally
 endtry
 == ENDTEMPLATE ==
 

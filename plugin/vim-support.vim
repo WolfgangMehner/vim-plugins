@@ -555,7 +555,6 @@ endfunction    " ----------  end of function Vim_HelpVimSupport ----------
 "===============================================================================
 function! Vim_RereadTemplates ( displaymsg )
 	"
-	"
 	"-------------------------------------------------------------------------------
 	" SETUP TEMPLATE LIBRARY
 	"-------------------------------------------------------------------------------
@@ -575,7 +574,6 @@ function! Vim_RereadTemplates ( displaymsg )
 	"
 	" syntax: comments
 	call mmtemplates#core#ChangeSyntax ( g:Vim_Templates, 'comment', '§' )
-	let s:Vim_TemplateJumpTarget = mmtemplates#core#Resource ( g:Vim_Templates, "jumptag" )[0]
 	"
 	let	messsage = ''
  	"
@@ -639,10 +637,18 @@ function! Vim_RereadTemplates ( displaymsg )
 		endif
 		"
 	endif
+	"
 	if a:displaymsg == 'yes'
 		echomsg messsage.'.'
 	endif
-
+	"
+	"-------------------------------------------------------------------------------
+	" SETUP TEMPLATE LIBRARY
+	"-------------------------------------------------------------------------------
+	"
+	" get the jump tags
+	let s:Vim_TemplateJumpTarget = mmtemplates#core#Resource ( g:Vim_Templates, "jumptag" )[0]
+	"
 endfunction    " ----------  end of function Vim_RereadTemplates  ----------
 "
 "===  FUNCTION  ================================================================
@@ -1066,7 +1072,7 @@ if has( 'autocmd' )
         \     endif |
         \   endif |
         \   call s:CreateAdditionalMaps() |
-        \   call mmtemplates#core#CreateMaps ( 'g:Vim_Templates', g:Vim_MapLeader, 'do_special_maps' ) |
+        \   call mmtemplates#core#CreateMaps ( 'g:Vim_Templates', g:Vim_MapLeader, 'do_special_maps', 'do_del_opt_map' ) |
         \ endif
 
 endif

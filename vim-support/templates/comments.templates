@@ -38,7 +38,7 @@
 
 == Comments.date == append, map:cd, sc:d ==
 |DATE|<CURSOR>
-== Comments.date-time == append, map:ct, sc:t ==
+== Comments.date+time == append, map:ct, sc:t ==
 |DATE| |TIME|<CURSOR>
 == ENDTEMPLATE ==
 

@@ -2,6 +2,8 @@
 §  Idioms
 § =============================================================
 
+IncludeFile( 'functions.templates' )
+
 == LIST: idioms_iterators == hash ==
 	'dict, keys'    : 'key in keys( <+DICT+> )',
 	'dict, key+val' : '[ key, val ] in items( <+DICT+> )',
@@ -12,6 +14,9 @@
 	'string, split' : 'part in split( <+STRING+>, <+SEP+> )',
 == ENDLIST ==
 
+== Idioms.builtin functions == insert, map:ib, sc:b ==
+|PickList( 'builtin function', 'builtin_functions' )|
+<CURSOR>|KEY| ( |VALUE| )
 == Idioms.iterators == expandmenu, map:ii, sc:i ==
 |PickList( 'iterate over', 'idioms_iterators' )|
 for <CURSOR>|PICK|
