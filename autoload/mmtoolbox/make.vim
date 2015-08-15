@@ -173,9 +173,10 @@ function! s:MakeTargetComplete ( ArgLead, CmdLine, CursorPos )
 		endif
 	endfor
 	"
+	" the makefile
 	let make_file = s:Makefile != '' ? s:Makefile : 'Makefile'
 	"
-	return filelist + filter( copy( s:GetMakeTargets( make_file ) ), 'v:val =~ "\\V\\<'.escape(a:ArgLead,'\').'\\w\\*"' )
+	return filter( copy( s:GetMakeTargets( make_file ) ), 'v:val =~ "\\V\\<'.escape(a:ArgLead,'\').'\\w\\*"' ) + filelist
 endfunction    " ----------  end of function s:MakeTargetComplete  ----------
 "
 " custom commands {{{2

@@ -300,6 +300,14 @@ let s:Policies_List = [
 "
 function! s:MakeTargetComplete ( ArgLead, CmdLine, CursorPos )
 	"
+	" targets
+	let target_list = filter( copy( s:makelib.GetMakeTargets( s:BuildLocation.'/Makefile' ) ), 'v:val =~ "\\V\\<'.escape(a:ArgLead,'\').'\\w\\*"' )
+	"
+	" filter fast targets?
+	if g:CMake_FilterFastTargets == 'yes'
+		let target_list = filter( target_list, 'v:val !~ "/fast$"' )
+	endif
+	"
 	" files
 	let filelist = split ( glob ( a:ArgLead.'*' ), "\n" )
 	"
@@ -309,21 +317,13 @@ function! s:MakeTargetComplete ( ArgLead, CmdLine, CursorPos )
 		endif
 	endfor
 	"
-	" targets
-	let target_list = filter( copy( s:makelib.GetMakeTargets( s:BuildLocation.'/Makefile' ) ), 'v:val =~ "\\V\\<'.escape(a:ArgLead,'\').'\\w\\*"' )
-	"
-	" filter fast targets?
-	if g:CMake_FilterFastTargets == 'yes'
-		let target_list = filter( target_list, 'v:val !~ "/fast$"' )
-	endif
-	"
-	return filelist + target_list
+	return target_list + filelist
 endfunction    " ----------  end of function s:MakeTargetComplete  ----------
 "
 " custom commands {{{2
 "
 if s:Enabled == 1
-	command! -bang -nargs=* -complete=customlist,s:MakeTargetComplete  CMake  :call <SID>Run(<q-args>,'<bang>'=='!')
+	command! -bang -nargs=* -complete=customlist,<SID>MakeTargetComplete  CMake  :call <SID>Run(<q-args>,'<bang>'=='!')
 	"
 	command! -bang -nargs=? -complete=file CMakeProjectDir    :call mmtoolbox#cmake#Property('<bang>'=='!'?'echo':'set','project-dir',<q-args>)
 	command! -bang -nargs=? -complete=file CMakeBuildLocation :call mmtoolbox#cmake#Property('<bang>'=='!'?'echo':'set','build-dir',<q-args>)
