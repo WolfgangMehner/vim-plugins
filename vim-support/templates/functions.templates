@@ -138,7 +138,7 @@
 	'maparg'            : '<+name+>, [+mode+], [+abbr+], [+dict+]',
 	'mapcheck'          : '<+name+>, [+mode+], [+abbr+]',
 	'map'               : '<+expr+>, <+string+>',
-	'matchadd'          : '<+group+>, <+pattern+>, [, {priority}[+id+]',
+	'matchadd'          : '<+group+>, <+pattern+>, [+priority+], [+id+]',
 	'matcharg'          : '<+nr+>',
 	'matchdelete'       : '<+id+>',
 	'matchend'          : '<+expr+>, <+pat+>, [+start+], [+count+]',

@@ -6,6 +6,14 @@
 §  Structure
 § -------------------------------------------------------------
 
+== Documentation.chapter, ToC == below, noindent, map:dcc, sc:c ==
+ |CNUMBER|    |CNAME:c|                                   ||CTAG||
+== Documentation.section, ToC == below, noindent, map:dcs, sc:s ==
+ |SNUMBER|    |SNAME:c|                                   ||STAG||
+== Documentation.subsection, ToC == below, noindent, map:dcu, sc:u ==
+ |SSNUMBER|   |SSNAME:c|                                    ||SSTAG||
+== ENDTEMPLATE ==
+
 == Documentation.chapter, text == below, noindent, map:dtc, sc:c ==
 |Prompt( 'CNAME', '' )|
 ==============================================================================
@@ -30,12 +38,6 @@
 
 <CURSOR>
 
-== Documentation.chapter, contents == below, noindent, map:dcc, sc:c ==
- |CNUMBER|    |CNAME:c|                                   ||CTAG||
-== Documentation.section, contents == below, noindent, map:dcs, sc:s ==
- |SNUMBER|    |SNAME:c|                                   ||STAG||
-== Documentation.subsection, contents == below, noindent, map:dcu, sc:u ==
- |SSNUMBER|   |SSNAME:c|                                    ||SSTAG||
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
@@ -46,8 +48,9 @@
 
 == Documentation.separator == below, noindent ==
 ------------------------------------------------------------------------------
+<CURSOR>
 == Documentation.function description == below, noindent, map:df, sc:f ==
-                                                     *|FUNCTION_NAME|*
+                                                   *|FUNCTION_NAME|()*
 <CURSOR>:
 
 	|?FUNCTION_NAME| (  ) ~
@@ -64,8 +67,6 @@ Example:
 >
 	<CURSOR><SPLIT>
 <
-== Documentation.list entry == below, noindent, map:dl, sc:l ==
-	-	<CURSOR>
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
@@ -77,9 +78,9 @@ Example:
 == Documentation.magenta colored line == below, noindent, sc:m ==
 	<CURSOR> ~
 == Documentation.note == insert, noindent ==
-Note
+Note: <CURSOR>
 == Documentation.notes == insert, noindent ==
-Notes
+Notes: <CURSOR>
 == Documentation.todo == below, noindent ==
 	*Todo		<CURSOR>
 == Documentation.error == below, noindent ==

@@ -273,7 +273,7 @@ You will be asked for number, name, and tag:
   3  DOCUMENTATION                                *xxxx*
   ============================================================================
 <
-Now generate a line for the content using 'chapter, contents':
+Now generate a line for the table of content using 'chapter, ToC':
 Example:
 >
   3    Documentation                                   |xxxx|

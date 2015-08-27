@@ -13,8 +13,8 @@
 "          NAME:  |?FUNCTION_NAME|     {{{1
 "   DESCRIPTION:  <CURSOR>
 "    PARAMETERS:  -|PARAMETERS:EMPTY|
-"    PARAMETERS:  |PARAMETERS:FIRST| - {+DESCRIPTION+}
-"                 |PARAMETERS:ENTRY| - {+DESCRIPTION+}
+"    PARAMETERS:  |PARAMETERS:FIRST| - <+DESCRIPTION+>
+"                 |PARAMETERS:ENTRY| - <+DESCRIPTION+>
 "       RETURNS:  
 "===============================================================================
 == Comments.file description == start, map:ch ==
@@ -36,9 +36,9 @@
 
 § -------------------------------------------------------------
 
-== Comments.date == append, map:cd, sc:d ==
+== Comments.date == insert, map:cd, sc:d ==
 |DATE|<CURSOR>
-== Comments.date+time == append, map:ct, sc:t ==
+== Comments.date+time == insert, map:ct, sc:t ==
 |DATE| |TIME|<CURSOR>
 == ENDTEMPLATE ==
 
@@ -52,7 +52,7 @@
 	'tricky'      : ':TRICKY:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
 	'warning'     : ':WARNING:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
 	'workaround'  : ':WORKAROUND:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
-	'new keyword' : ':<CURSOR>:|DATE| |TIME|:|AUTHORREF|: {+COMMENT+}',
+	'new keyword' : ':<CURSOR>:|DATE| |TIME|:|AUTHORREF|: <+COMMENT+>',
 == LIST: comments_macros == hash ==
 	'AUTHOR'       : '|AUTHOR|',
 	'AUTHORREF'    : '|AUTHORREF|',
