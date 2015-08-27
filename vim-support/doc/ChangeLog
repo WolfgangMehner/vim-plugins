@@ -1,4 +1,15 @@
 ---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 2.3
+---------------------------------------------------------------------------------------
++ Change the way lines of code are turned into comments
+  (insert no space after the quote).
++ Bugfix: Better compatibility with custom mappings
+  (use "normal!", "noremap" and "noremenu" consistently).
++ Bugfix: Setup of local templates in case of global installation.
++ Bugfix: Renamed function which were named "g:*".
++ Always load the newest version of the template engine available on 'runtimepath'.
+
+---------------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 2.2
 ---------------------------------------------------------------------------------------
 + Map "adjust end-of-line com." now works in visual mode.

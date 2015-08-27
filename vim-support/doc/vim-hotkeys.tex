@@ -28,7 +28,7 @@
 
 \setlength\parindent{0pt}
 
-\newcommand{\Pluginversion}{2.3}
+\newcommand{\Pluginversion}{2.4pre}
 \newcommand{\Rep}{{\scriptsize{[n]}}}
 
 %%----------------------------------------------------------------------
@@ -45,7 +45,7 @@
 %%  luximono : Type1-font
 %%  Makes keyword stand out by using semibold letters.
 %%----------------------------------------------------------------------
-\usepackage[scaled]{luximono}
+%\usepackage[scaled]{luximono}
 
 %%----------------------------------------------------------------------
 %%  hyperref
@@ -161,9 +161,13 @@ Fritz Mehner (mehner.fritz@fh-swf.de)\\
 \hline \verb'\nw'  & write code snippet        \hfill (n, v, i)\\
 \hline \verb'\ne'  & edit code snippet         \hfill (n, i)   \\
 %
-%\hline \verb'\ntl' & edit local templates      \hfill (n, i)\\
-%\hline \verb'\ntg' & edit global templates$^1$ \hfill (n, i)\\
-%\hline \verb'\ntr' & reread the templates      \hfill (n, i)\\
+\hline \verb'\ntl' & edit local templates      \hfill (n, i)\\
+\hline \verb'\ntc' & edit custom templates     \hfill (n, i)\\
+\hline \verb'\ntp' & edit personal templates   \hfill (n, i)\\
+\hline \verb'\ntr' & reread the templates      \hfill (n, i)\\
+\hline \verb'\ntw' & template setup wizard     \hfill (n, i)\\
+\hline \verb'\nts' & choose template style     \hfill (n, i)\\
+%
 \hline
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~

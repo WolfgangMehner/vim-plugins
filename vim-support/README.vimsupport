@@ -1,4 +1,4 @@
-README for vim-support.vim (Version 2.3) / August 15 2014
+README for vim-support.vim (Version 2.4pre) / August 13 2015
 
   *  INSTALLATION
   *  RELEASE NOTES 
@@ -78,15 +78,12 @@ For a system-wide installation please see the help file 'doc/vimsupport.txt'.
 =======================================================================================
 
 ---------------------------------------------------------------------------------------
-  RELEASE NOTES FOR VERSION 2.3
+  RELEASE NOTES FOR VERSION 2.4pre
 ---------------------------------------------------------------------------------------
-+ Change the way lines of code are turned into comments
-  (insert no space after the quote).
-+ Bugfix: Better compatibility with custom mappings
-  (use "normal!", "noremap" and "noremenu" consistently).
-+ Bugfix: Setup of local templates in case of global installation.
-+ Bugfix: Renamed function which were named "g:*".
-+ Always load the newest version of the template engine available on 'runtimepath'.
++ Add 'g:Vim_CustomTemplateFile' and 'g:Vim_AdditionalTemplates'.
++ Add template personalization file and setup wizard.
++ New and reworked templates.
++ Minor changes.
 
 =======================================================================================
   FILES

@@ -12,7 +12,7 @@
 "  Organization:  FH Südwestfalen, Iserlohn
 "       Version:  see variable g:VimSupportVersion below
 "       Created:  14.01.2012 10:49
-"       License:  Copyright (c) 2012-2013, Dr. Fritz Mehner
+"       License:  Copyright (c) 2012-2015, Dr. Fritz Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -35,7 +35,7 @@ if exists("g:VimSupportVersion") || &cp
  finish
 endif
 "
-let g:VimSupportVersion= "2.3"                  " version number of this script; do not change
+let g:VimSupportVersion= "2.4pre"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  GetGlobalSetting     {{{1
@@ -64,11 +64,13 @@ endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
 "------------------------------------------------------------------------------
 " *** PLATFORM SPECIFIC ITEMS ***     {{{1
 "------------------------------------------------------------------------------
-let s:MSWIN =   has("win16") || has("win32") || has("win64") || has("win95")
+let s:MSWIN = has("win16") || has("win32") || has("win64") || has("win95")
+let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
 let s:installation						= '*undefined*'
 let s:Vim_GlobalTemplateFile	= ''
 let s:Vim_LocalTemplateFile		= ''
+let s:Vim_CustomTemplateFile = ''              " the custom templates
 let s:Vim_FilenameEscChar 		= ''
 
 if	s:MSWIN
@@ -81,14 +83,16 @@ if	s:MSWIN
 				\		substitute( expand("$HOME"),   '\', '/', 'g' ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
-		let s:installation					= 'local'
-		let s:Vim_LocalTemplateFile	= s:plugin_dir.'/vim-support/templates/Templates'
+		let s:installation					 = 'local'
+		let s:Vim_LocalTemplateFile	 = s:plugin_dir.'/vim-support/templates/Templates'
+		let s:Vim_CustomTemplateFile = $HOME.'/vimfiles/templates/vim.templates'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
-		let s:installation					= 'system'
-		let s:Vim_GlobalTemplateFile= s:plugin_dir.'/vim-support/templates/Templates'
-		let s:Vim_LocalTemplateFile	= $HOME.'/vimfiles/vim-support/templates/Templates'
+		let s:installation					 = 'system'
+		let s:Vim_GlobalTemplateFile = s:plugin_dir.'/vim-support/templates/Templates'
+		let s:Vim_LocalTemplateFile	 = $HOME.'/vimfiles/vim-support/templates/Templates'
+		let s:Vim_CustomTemplateFile = $HOME.'/vimfiles/templates/vim.templates'
 	endif
 	"
   let s:Vim_FilenameEscChar 		= ''
@@ -102,14 +106,16 @@ else
 	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
-		let s:installation					= 'local'
-		let s:Vim_LocalTemplateFile	= s:plugin_dir.'/vim-support/templates/Templates'
+		let s:installation					 = 'local'
+		let s:Vim_LocalTemplateFile	 = s:plugin_dir.'/vim-support/templates/Templates'
+		let s:Vim_CustomTemplateFile = $HOME.'/.vim/templates/vim.templates'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
-		let s:installation					= 'system'
-		let s:Vim_GlobalTemplateFile= s:plugin_dir.'/vim-support/templates/Templates'
-		let s:Vim_LocalTemplateFile	= $HOME.'/.vim/vim-support/templates/Templates'
+		let s:installation					 = 'system'
+		let s:Vim_GlobalTemplateFile = s:plugin_dir.'/vim-support/templates/Templates'
+		let s:Vim_LocalTemplateFile	 = $HOME.'/.vim/vim-support/templates/Templates'
+		let s:Vim_CustomTemplateFile = $HOME.'/.vim/templates/vim.templates'
 	endif
 	"
   let s:Vim_FilenameEscChar 		= ' \%#[]'
@@ -117,6 +123,7 @@ else
 	"
 endif
 "
+let s:Vim_AdditionalTemplates   = []
 let s:Vim_CodeSnippets  				= s:plugin_dir.'/vim-support/codesnippets/'
 "
 "----------------------------------------------------------------------
@@ -143,6 +150,8 @@ call s:GetGlobalSetting ( 'Vim_CreateMapsForHelp' )
 call s:GetGlobalSetting ( 'Vim_Printheader' )
 call s:GetGlobalSetting ( 'Vim_LocalTemplateFile' )
 call s:GetGlobalSetting ( 'Vim_GlobalTemplateFile' )
+call s:GetGlobalSetting ( 'Vim_CustomTemplateFile' )
+call s:GetGlobalSetting ( 'Vim_AdditionalTemplates' )
 call s:GetGlobalSetting ( 'Vim_CodeSnippets' )
 call s:GetGlobalSetting ( 'Vim_CreateMenusDelayed' )
 call s:GetGlobalSetting ( 'Vim_LineEndCommColDefault' )
@@ -553,10 +562,10 @@ endfunction    " ----------  end of function Vim_HelpVimSupport ----------
 "    PARAMETERS:  -
 "       RETURNS:  
 "===============================================================================
-function! Vim_RereadTemplates ( displaymsg )
+function! Vim_RereadTemplates ()
 	"
 	"-------------------------------------------------------------------------------
-	" SETUP TEMPLATE LIBRARY
+	" setup template library
 	"-------------------------------------------------------------------------------
  	let g:Vim_Templates = mmtemplates#core#NewLibrary ()
 	"
@@ -567,89 +576,93 @@ function! Vim_RereadTemplates ( displaymsg )
 		call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Mapleader', g:Vim_MapLeader )
 	endif
 	"
+	" some metainfo
+	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Wizard::PluginName',   'Vim' )
+	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Wizard::FiletypeName', 'Vim' )
+	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Wizard::FileCustomNoPersonal',   s:plugin_dir.'/vim-support/rc/custom.templates' )
+	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Wizard::FileCustomWithPersonal', s:plugin_dir.'/vim-support/rc/custom_with_personal.templates' )
+	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Wizard::FilePersonal',           s:plugin_dir.'/vim-support/rc/personal.templates' )
+	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Wizard::CustomFileVariable',     'g:Vim_CustomTemplateFile' )
+	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Wizard::AddFileListVariable',    'g:Vim_AdditionalTemplates' )
+	"
 	" map: choose style
-	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::EditTemplates::Map',   'ntl' )
 	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::RereadTemplates::Map', 'ntr' )
 	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::ChooseStyle::Map',     'nts' )
+	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::SetupWizard::Map',     'ntw' )
 	"
 	" syntax: comments
 	call mmtemplates#core#ChangeSyntax ( g:Vim_Templates, 'comment', '§' )
 	"
-	let	messsage = ''
- 	"
+	"-------------------------------------------------------------------------------
+	" load template library
+	"-------------------------------------------------------------------------------
+	"
+	" global templates (global installation only)
 	if s:installation == 'system'
-		"-------------------------------------------------------------------------------
-		" SYSTEM INSTALLATION
-		"-------------------------------------------------------------------------------
-		if filereadable( s:Vim_GlobalTemplateFile )
-			call mmtemplates#core#ReadTemplates ( g:Vim_Templates, 'load', s:Vim_GlobalTemplateFile )
-		else
-			echomsg "Global template file '".s:Vim_GlobalTemplateFile."' not readable."
-			return
-		endif
-		let	messsage	= "Templates read from '".s:Vim_GlobalTemplateFile."'"
-		"
-		"-------------------------------------------------------------------------------
-		" handle local template files
-		"-------------------------------------------------------------------------------
-		let templ_dir = fnamemodify( s:Vim_LocalTemplateFile, ":p:h" ).'/'
-		"
-		if finddir( templ_dir ) == ''
-			" try to create a local template directory
-			if exists("*mkdir")
-				try 
-					call mkdir( templ_dir, "p" )
-				catch /.*/
-				endtry
-			endif
-		endif
-
-		if isdirectory( templ_dir ) && !filereadable( s:Vim_LocalTemplateFile )
-			" write a default local template file
-			let template	= [	]
-			let sample_template_file	= s:plugin_dir.'/vim-support/rc/sample_template_file'
-			if filereadable( sample_template_file )
-				for line in readfile( sample_template_file )
-					call add( template, line )
-				endfor
-				call writefile( template, s:Vim_LocalTemplateFile )
-			endif
-		endif
-		"
-		if filereadable( s:Vim_LocalTemplateFile )
-			call mmtemplates#core#ReadTemplates ( g:Vim_Templates, 'load', s:Vim_LocalTemplateFile )
-			let messsage	= messsage." and '".s:Vim_LocalTemplateFile."'"
-			if mmtemplates#core#ExpandText( g:Vim_Templates, '|AUTHOR|' ) == 'YOUR NAME'
-				echomsg "Please set your personal details in file '".s:Vim_LocalTemplateFile."'."
-			endif
-		endif
-		"
-	else
-		"-------------------------------------------------------------------------------
-		" LOCAL INSTALLATION
-		"-------------------------------------------------------------------------------
-		if filereadable( s:Vim_LocalTemplateFile )
-			call mmtemplates#core#ReadTemplates ( g:Vim_Templates, 'load', s:Vim_LocalTemplateFile )
-			let	messsage	= "Templates read from '".s:Vim_LocalTemplateFile."'"
-		else
-			echomsg "Local template file '".s:Vim_LocalTemplateFile."' not readable." 
-			return
-		endif
-		"
+		call mmtemplates#core#ReadTemplates ( g:Vim_Templates, 'load', s:Vim_GlobalTemplateFile,
+					\ 'name', 'global', 'map', 'ntg' )
 	endif
 	"
-	if a:displaymsg == 'yes'
-		echomsg messsage.'.'
+	" local templates (optional for global installation)
+	if s:installation == 'system'
+		call mmtemplates#core#ReadTemplates ( g:Vim_Templates, 'load', s:Vim_LocalTemplateFile,
+					\ 'name', 'local', 'map', 'ntl', 'optional', 'hidden' )
+	else
+		call mmtemplates#core#ReadTemplates ( g:Vim_Templates, 'load', s:Vim_LocalTemplateFile,
+					\ 'name', 'local', 'map', 'ntl' )
 	endif
+	"
+	" custom templates (optional, existence of file checked by template engine)
+	call mmtemplates#core#ReadTemplates ( g:Vim_Templates, 'load', s:Vim_CustomTemplateFile,
+				\ 'name', 'custom', 'map', 'ntc', 'optional' )
+	"
+	" additional templates (optional)
+	if ! empty ( s:Vim_AdditionalTemplates )
+		call mmtemplates#core#AddCustomTemplateFiles ( g:Vim_Templates, s:Vim_AdditionalTemplates, 'g:Vim_AdditionalTemplates' )
+	endif
+	"
+	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)
+	call mmtemplates#core#ReadTemplates ( g:Vim_Templates, 'personalization',
+				\ 'name', 'personal', 'map', 'ntp' )
 	"
 	"-------------------------------------------------------------------------------
-	" SETUP TEMPLATE LIBRARY
+	" further setup
 	"-------------------------------------------------------------------------------
 	"
 	" get the jump tags
 	let s:Vim_TemplateJumpTarget = mmtemplates#core#Resource ( g:Vim_Templates, "jumptag" )[0]
 	"
 endfunction    " ----------  end of function Vim_RereadTemplates  ----------
+"
+"===  FUNCTION  ================================================================
+"          NAME:  s:CheckTemplatePersonalization     {{{1
+"   DESCRIPTION:  check whether the name, .. has been set
+"    PARAMETERS:  -
+"       RETURNS:
+"===============================================================================
+let s:DoneCheckTemplatePersonalization = 0
+"
+function! s:CheckTemplatePersonalization ()
+	"
+	" check whether the templates are personalized
+	if ! s:DoneCheckTemplatePersonalization
+				\ && mmtemplates#core#ExpandText ( g:Vim_Templates, '|AUTHOR|' ) == 'YOUR NAME'
+		let s:DoneCheckTemplatePersonalization = 1
+		"
+		let maplead = mmtemplates#core#Resource ( g:Vim_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
+		"
+		redraw
+		echohl Search
+		echo 'The personal details (name, mail, ...) are not set in the template library.'
+		echo 'They are used to generate comments, ...'
+		echo 'To set them, start the setup wizard using:'
+		echo '- use the menu entry "Vim -> Snippets -> template setup wizard"'
+		echo '- use the map "'.maplead.'ntw" inside a Vim buffer'
+		echo "\n"
+		echohl None
+	endif
+	"
+endfunction    " ----------  end of function s:CheckTemplatePersonalization  ----------
 "
 "===  FUNCTION  ================================================================
 "          NAME:  InitMenus     {{{1
@@ -731,6 +744,7 @@ function! s:InitMenus()
 		"
 	endif
 	"
+	" templates: edit and reload templates, styles
 	call mmtemplates#core#CreateMenus ( 'g:Vim_Templates', s:Vim_RootMenu, 'do_specials', 'specials_menu', 'S&nippets' )
 	"
 	"-------------------------------------------------------------------------------
@@ -748,7 +762,7 @@ function! s:InitMenus()
 		exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call Vim_Hardcopy("v")<CR>'
 	endif
 	"
-	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rs                 :call Vim_Settings()<CR>'
+	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rs                 :call Vim_Settings(0)<CR>'
 	"
  	"-------------------------------------------------------------------------------
  	" help
@@ -962,7 +976,7 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	"   help
 	"-------------------------------------------------------------------------------
-	nnoremap    <buffer>  <silent>  <LocalLeader>rs         :call Vim_Settings()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>rs         :call Vim_Settings(0)<CR>
 	nnoremap    <buffer>  <silent>  <LocalLeader>hk          :call Vim_Help()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>hk     <C-C>:call Vim_Help()<CR>
 	 noremap    <buffer>  <silent>  <LocalLeader>hp         :call Vim_HelpVimSupport()<CR>
@@ -972,9 +986,6 @@ function! s:CreateAdditionalMaps ()
 		nnoremap    <buffer>  <silent>  <S-F1>             :call Vim_Help()<CR>
 		inoremap    <buffer>  <silent>  <S-F1>        <C-C>:call Vim_Help()<CR>
 	endif
-	"
-	nnoremap    <buffer>  <silent>  <C-j>    i<C-R>=Vim_JumpForward()<CR>
-	inoremap    <buffer>  <silent>  <C-j>     <C-R>=Vim_JumpForward()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" settings - reset local leader
@@ -987,6 +998,17 @@ function! s:CreateAdditionalMaps ()
 		endif
 	endif
 	"
+	"-------------------------------------------------------------------------------
+	" templates
+	"-------------------------------------------------------------------------------
+	"
+	nnoremap    <buffer>  <silent>  <C-j>       i<C-R>=Vim_JumpForward()<CR>
+	inoremap    <buffer>  <silent>  <C-j>  <C-G>u<C-R>=Vim_JumpForward()<CR>
+	"
+	" ----------------------------------------------------------------------------
+	"
+	call mmtemplates#core#CreateMaps ( 'g:Vim_Templates', g:Vim_MapLeader, 'do_special_maps', 'do_del_opt_map' ) |
+	"
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 "
 "===  FUNCTION  ================================================================
@@ -995,23 +1017,53 @@ endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 "    PARAMETERS:  -
 "       RETURNS:  
 "===============================================================================
-function! Vim_Settings ()
+function! Vim_Settings ( verbose )
+	"
+	if     s:MSWIN | let sys_name = 'Windows'
+	elseif s:UNIX  | let sys_name = 'UN*X'
+	else           | let sys_name = 'unknown' | endif
+	"
 	let	txt =     " Vim-Support settings\n\n"
-	let txt = txt.'      plugin installation :  "'.s:installation."\"\n"
-	let txt = txt.'    using template engine :  version '.g:Templates_Version." by Wolfgang Mehner\n"
- 	let txt = txt.'   code snippet directory :  "'.s:Vim_CodeSnippets."\"\n"
-	if s:installation == 'system'
-		let txt = txt.'     global template file :  '.s:Vim_GlobalTemplateFile."\n"
-		if filereadable( s:Vim_LocalTemplateFile )
-			let txt = txt.'      local template file :  '.s:Vim_LocalTemplateFile."\n"
-		endif
+	" template settings: macros, style, ...
+	if exists ( 'g:Vim_Templates' )
+		let txt .= '                   author :  "'.mmtemplates#core#ExpandText( g:Vim_Templates, '|AUTHOR|'       )."\"\n"
+		let txt .= '                authorref :  "'.mmtemplates#core#ExpandText( g:Vim_Templates, '|AUTHORREF|'    )."\"\n"
+		let txt .= '                    email :  "'.mmtemplates#core#ExpandText( g:Vim_Templates, '|EMAIL|'        )."\"\n"
+		let txt .= '             organization :  "'.mmtemplates#core#ExpandText( g:Vim_Templates, '|ORGANIZATION|' )."\"\n"
+		let txt .= '         copyright holder :  "'.mmtemplates#core#ExpandText( g:Vim_Templates, '|COPYRIGHT|'    )."\"\n"
+		let txt .= '         copyright holder :  "'.mmtemplates#core#ExpandText( g:Vim_Templates, '|LICENSE|'      )."\"\n"
+		let txt .= '           template style :  "'.mmtemplates#core#Resource ( g:Vim_Templates, "style" )[0]."\"\n\n"
 	else
-		let txt = txt.'      local template file :  '.s:Vim_LocalTemplateFile."\n"
+		let txt .= "                templates :  -not loaded- \n\”"
 	endif
-	let txt = txt."\n"
-	let	txt = txt."__________________________________________________________________________\n"
-	let	txt = txt." Vim-Support, Version ".g:VimSupportVersion." / Dr.-Ing. Fritz Mehner / mehner@fh-swf.de\n\n"
-	echo txt
+	" plug-in installation, template engine
+	let txt .= '      plugin installation :  '.s:installation.' on '.sys_name."\n"
+	let txt .= "\n"
+	" templates, snippets
+	let [ templist, msg ] = mmtemplates#core#Resource ( g:Vim_Templates, 'template_list' )
+	if empty ( templist )
+		let txt .= "           template files :  -no template files-\n"
+	else
+		let sep  = "\n"."                             "
+		let txt .=      "           template files :  "
+					\ .join ( templist, sep )."\n"
+	endif
+	let txt .=
+				\  '       code snippets dir. :  '.s:Vim_CodeSnippets."\n"
+	if a:verbose >= 1
+		let	txt .= "\n"
+					\ .'                mapleader :  "'.g:Vim_MapLeader."\"\n"
+					\ .'     load menus / delayed :  "'.s:Vim_LoadMenus.'" / "'.s:Vim_CreateMenusDelayed."\"\n"
+	endif
+	let	txt .= "__________________________________________________________________________\n"
+	let	txt .= " Vim-Support, Version ".g:VimSupportVersion." / Dr.-Ing. Fritz Mehner / mehner@fh-swf.de\n\n"
+	"
+	if a:verbose == 2
+		split VimSupport_Settings.txt
+		put = txt
+	else
+		echo txt
+	endif
 endfunction    " ----------  end of function Vim_Settings ----------
 "
 "------------------------------------------------------------------------------
@@ -1023,7 +1075,7 @@ function! Vim_CreateGuiMenus ()
 		anoremenu   <silent> 40.1000 &Tools.-SEP100- :
 		anoremenu   <silent> 40.1170 &Tools.Unload\ Vim\ Support :call Vim_RemoveGuiMenus()<CR>
 		"
-		call Vim_RereadTemplates('no')
+		call Vim_RereadTemplates()
 		call s:InitMenus () 
 		"
 		let s:Vim_MenuVisible = 'yes'
@@ -1067,12 +1119,12 @@ if has( 'autocmd' )
   autocmd FileType *
         \ if &filetype == 'vim' || ( &filetype == 'help' && &modifiable == 1 && s:Vim_CreateMapsForHelp == 'yes' ) |
         \   if ! exists( 'g:Vim_Templates' ) |
-        \     if s:Vim_LoadMenus == 'yes' | call Vim_CreateGuiMenus ()      |
-        \     else                        | call Vim_RereadTemplates ('no') |
+        \     if s:Vim_LoadMenus == 'yes' | call Vim_CreateGuiMenus ()  |
+        \     else                        | call Vim_RereadTemplates () |
         \     endif |
         \   endif |
         \   call s:CreateAdditionalMaps() |
-        \   call mmtemplates#core#CreateMaps ( 'g:Vim_Templates', g:Vim_MapLeader, 'do_special_maps', 'do_del_opt_map' ) |
+				\		call s:CheckTemplatePersonalization() |
         \ endif
 
 endif

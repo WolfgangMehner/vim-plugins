@@ -1,0 +1,45 @@
+§ =============================================================
+§  Custom Templates
+§ =============================================================
+
+§ -------------------------------------------------------------
+§  A template definition is build like this:
+§    == Menu.some name == <options> ==
+§    <inserted code>
+§    == Menu.other name == <options> ==
+§    <inserted code>
+§    == ENDTEMPLATE ==
+§  A template ends with the line "== ENDTEMPLATE ==" or with
+§  the start of a new template.
+§ -------------------------------------------------------------
+
+§ -------------------------------------------------------------
+§  Function Description
+§ -------------------------------------------------------------
+
+§ uncomment and edit to customize
+
+§== Comments.function == map:cfu, sc:f ==
+§"===  FUNCTION  ================================================================
+§"          NAME:  |?FUNCTION_NAME|     {{{1
+§"   DESCRIPTION:  <CURSOR>
+§"    PARAMETERS:  -|PARAMETERS:EMPTY|
+§"    PARAMETERS:  |PARAMETERS:FIRST| - {+DESCRIPTION+}
+§"                 |PARAMETERS:ENTRY| - {+DESCRIPTION+}
+§"       RETURNS:  
+§"===============================================================================
+§== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Function Definition
+§ -------------------------------------------------------------
+
+§ uncomment and edit to customize
+
+§== Idioms.function == map:if, sc:f ==
+§function! |?FUNCTION_NAME| (<CURSOR>)
+§	<SPLIT><-FUNCTION_BODY->
+§	return
+§endfunction    " ----------  end of function |FUNCTION_NAME|  ----------
+§== ENDTEMPLATE ==
+
