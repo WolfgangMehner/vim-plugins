@@ -1441,7 +1441,6 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \ntl       edit local template file           (in )
      \ntc       edit custom template file          (in )
      \ntp       edit personal template file        (in )
-     \ntp       edit personal template file        (in )
      \ntr       reread template file               (in )
      \ntw       template setup wizard              (in )
      \nts       choose template style              (in )
@@ -1667,7 +1666,7 @@ unintentional use.  Use mappings instead (|perlsupport-mappings|).
 4.1  FILES                                          *perlsupport-custom-files*
 ------------------------------------------------------------------------------
 
-README.perlsupport                The starting point.
+perl-support/README.md            The starting point.
 
 autoload/perlsupportgui.vim       Menu definitions.
 autoload/perlsupportregex.vim     Regex analyser code.
@@ -1738,7 +1737,7 @@ global variable                default value               tag (see below)
 g:Perl_GlobalTemplateFile      root_dir.'perl-support/templates/Templates'
 g:Perl_LocalTemplateFile       $HOME.'/.vim/perl-support/templates/Templates'
 g:Perl_CustomTemplateFile      $HOME.'/.vim/templates/perl.templates'
-g:Perl_AdditionalTemplates     [ ... ]
+g:Perl_AdditionalTemplates     []
 g:Perl_Ctrl_j                  'on'
 
 g:Perl_CodeSnippets            root_dir.'perl-support/codesnippets/'
@@ -2535,7 +2534,7 @@ for the system
 15.  RELEASE NOTES / CHANGELOG                     *perlsupport-release-notes*
 ==============================================================================
 
-See files 'README.perlsupport' and 'ChangeLog'.
+See files 'README.md' and 'ChangeLog'.
 
 ==============================================================================
 16.  CREDITS                                             *perlsupport-credits*

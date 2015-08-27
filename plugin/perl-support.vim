@@ -15,8 +15,7 @@
 "                  documentation.
 "
 "  Configuration:  There are at least some personal details which should be
-"                   configured (see the files README.perlsupport and
-"                   perlsupport.txt).
+"                   configured (see the files README.md and perlsupport.txt).
 "
 "   Dependencies:  perl           pod2man
 "                  podchecker     pod2text
@@ -2037,7 +2036,7 @@ function! s:Perl_RereadTemplates ()
 	endif
 	"
 	" local templates (optional for global installation)
-	if g:Perl_Installation == 'global'
+	if g:Perl_Installation == 'system'
 		call mmtemplates#core#ReadTemplates ( g:Perl_Templates, 'load', s:Perl_LocalTemplateFile,
 					\ 'name', 'local', 'map', 'ntl', 'optional', 'hidden' )
 	else
