@@ -21,7 +21,7 @@
 "       Version:  1.0
 "       Created:  06.10.2014
 "      Revision:  ---
-"       License:  Copyright (c) 2014, Wolfgang Mehner
+"       License:  Copyright (c) 2014-2015, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -274,7 +274,7 @@ endfunction    " ----------  end of function s:UserInput ----------
 "-------------------------------------------------------------------------------
 function! s:SID ()
 	return matchstr ( expand('<sfile>'), '<SNR>\zs\d\+\ze_SID$' )
-endfun
+endfunction    " ----------  end of function s:SID  ----------
 "
 "-------------------------------------------------------------------------------
 " s:WarningMsg : Print a warning/error message.   {{{2
@@ -874,8 +874,15 @@ function! s:Man ( mode, cmdline, ... )
 		let defaultcatalogs = [ '1' ]
 	endif
 	"
+	"-------------------------------------------------------------------------------
+	" get the section and page according to the mode
+	"
+	" - for "cmd-line" get them from the Vim command-line
+	" - for "man-jump", "cursor", and "visual" the word under the cursor is used
+	"
 	" All the regexps use \f (file name character) for characters making up the
 	" name of manpages. This follows the example of the 'man' syntax highlighting.
+	"-------------------------------------------------------------------------------
 	"
 	if a:mode == 'cmd-line'
 		" get page (and section?) from the cmdline
@@ -917,9 +924,14 @@ function! s:Man ( mode, cmdline, ... )
 		let page    = a:cmdline
 	endif
 	"
+	" no page found in the cmd-line or under the cursor
 	if page =~ '^\s*$'
 		return 0
 	endif
+	"
+	"-------------------------------------------------------------------------------
+	" prompt for a section, if necessary
+	"-------------------------------------------------------------------------------
 	"
 	if section == '' && ! skip_section
 		" may need to select section, use 'apropos'
@@ -975,6 +987,10 @@ function! s:Man ( mode, cmdline, ... )
 		endif
 	endif
 	"
+	"-------------------------------------------------------------------------------
+	" open the buffer
+	"-------------------------------------------------------------------------------
+	"
 	if s:OpenBuffer ( 'Manpage' )
 		"
 		set filetype=man
@@ -987,6 +1003,10 @@ function! s:Man ( mode, cmdline, ... )
 		"
 	endif
 	"
+	"-------------------------------------------------------------------------------
+	" assemble and run the command
+	"-------------------------------------------------------------------------------
+	"
 	let cmd = ''
 	"
 	" get the width of the newly opened window
@@ -996,12 +1016,15 @@ function! s:Man ( mode, cmdline, ... )
 		let cmd .= 'MANWIDTH='.win_w.' '
 	endif
 	"
+	" the 'man' command
 	let cmd .= shellescape( manview )
 	"
+	" the language
 	if s:WorldView_ManLang != ''
 		let cmd .= ' -L '.shellescape( s:WorldView_ManLang, 1 )
 	endif
 	"
+	" update the buffer
 	call s:UpdateBuffer ( ':r! '.cmd.' '.use_cmd_line.' '.section.' '.shellescape( page, 1 ) )
 	"
 	return 1
