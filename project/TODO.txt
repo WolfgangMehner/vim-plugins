@@ -8,6 +8,7 @@ Project:
   documented somewhere?
 - (WM, DONE?) Improve 'adjust end-of-line comment' to change the line if the comment
   itself contains ignored sections?
+- (WM) Remove old ".../rc/sample_template_file".
 
 vim.org:
 - (FM, DONE?) Reference github on plug-in pages.
@@ -44,6 +45,7 @@ Bash:
 - (FM) The conformation message for 'make script exec.' is not visible (see fix
   in perl-support).
 - (FM) Rename function 'g:BASH_RereadTemplates'.
+- (FM) Compl.-func. 'BASH_BuiltinComplete' missing.
 
 C/C++:
 - (FM, DONE) Documentation: Change documentation with regard to Make integration.

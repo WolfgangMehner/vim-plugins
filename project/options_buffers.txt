@@ -1,0 +1,24 @@
+'bufhidden' 'bh'	string (default: "")
+			local to buffer
+	This option specifies what happens when a buffer is no longer
+	displayed in a window:
+'buflisted' 'bl'	boolean (default: on)
+			local to buffer
+	When this option is set, the buffer shows up in the buffer list.
+'buftype' 'bt'		string (default: "")
+			local to buffer
+	The value of this option specifies the type of a buffer:
+'hidden' 'hid'		boolean	(default off)
+			global
+	When off a buffer is unloaded when it is abandoned.  When on a
+	buffer becomes hidden when it is abandoned.
+'modifiable' 'ma'	boolean	(default on)
+			local to buffer
+	When off the buffer contents cannot be changed.
+'modified' 'mod'	boolean	(default off)
+			local to buffer
+	When on, the buffer is considered to be modified.
+'swapfile' 'swf'	boolean (default on)
+			local to buffer
+	Use a swapfile for the buffer. This option can be reset when a
+	swapfile is not wanted for a specific buffer.
