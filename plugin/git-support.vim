@@ -1899,36 +1899,42 @@ function! s:Diff_GetFile( ... )
 endfunction    " ----------  end of function s:Diff_GetFile  ----------
 "
 "-------------------------------------------------------------------------------
-" s:Diff_ChunkHandler : Add/checkout/reset a chunk.   {{{2
+" s:Diff_GetChunk : Get a diff header and chunk.   {{{2
 "
 " Parameters:
-"   action - "add-chunk", "checkout-chunk", "reset-chunk" (string)
+"   line - the chunk containing this line will be extracted (integer)
 " Returns:
-"   success - true, if the command was run successfully (integer)
+"   [ <diff-head>, <chunk-head>, <chunk-text> ] - extract texts (list of strings)
+"
+" The entries are as follows:
+"   diff_head  - diff header "diff --git a/..." (string)
+"   chunk_head - chunk header "@@ -45,6 ..." (string)
+"   chunk_text - chunk text (string)
+"   c_pos - position of the chunk header in the buffer (integer)
 "-------------------------------------------------------------------------------
 "
-function! s:Diff_ChunkHandler ( action, ... )
+function! s:Diff_GetChunk ( line )
 	"
-	let l_pos = line('.')                               " the current position
+	let pos_save = getpos ( '.' )
+	call cursor ( a:line, 1 )
 	"
 	" the positions in the buffer
 	let d_pos = search ( '\m\_^diff ', 'bcnW' )         " the position of the diff header
 	let c_pos = search ( '\m\_^@@ ', 'bcnW' )           " the start of the chunk
 	let c_end = search ( '\m\_^@@ \|\_^diff ', 'nW' )   " ... the end
 	"
+	call setpos ( '.', pos_save )
+	"
 	if d_pos == 0 || c_pos == 0
-		return 0
+		return [ '', '', 'no valid chunk selected', 0 ]
 	elseif c_end == 0
 		" found the other two positions
 		" -> the end of the chunk must be the end of the file
 		let c_end = line('$')+1
 	endif
 	"
-	" get the chunk
-	let chunk = join ( getline ( c_pos, c_end-1 ), "\n" )."\n"
-	"
 	" get the diff header
-	let head = getline(d_pos)
+	let diff_head = getline(d_pos)
 	"
 	while 1
 		let d_pos += 1
@@ -1938,10 +1944,118 @@ function! s:Diff_ChunkHandler ( action, ... )
 			break
 		endif
 		"
-		let head .= "\n".line
+		let diff_head .= "\n".line
 	endwhile
 	"
-	" apply the patch, depending on the action
+	" get the chunk
+	let chunk_head = getline ( c_pos )
+	let chunk_text = join ( getline ( c_pos+1, c_end-1 ), "\n" )
+	"
+	return [ diff_head, chunk_head, chunk_text, c_pos ]
+endfunction    " ----------  end of function s:Diff_GetChunk  ----------
+"
+"-------------------------------------------------------------------------------
+" s:Diff_VisualChunk : Rewrite a chunk to only change the visual selection.   {{{2
+"
+" In case of an error, a list with two empty string and the error message is
+" returned:
+"   [ '', '', <error-msg> ]
+"
+" Parameters:
+"   diff_head  - diff header "diff --git a/..." (string)
+"   chunk_head - chunk header "@@ -45,6 ..." (string)
+"   chunk_text - chunk text (string)
+"   reverse - will be committed with the "--reverse" flag (integer)
+"   v_start - start of the visual selection (integer)
+"   v_end - end of the visual selection (integer)
+" Returns:
+"   diff_head  - diff header "diff --git a/..." (string)
+"   chunk_head - rewritten chunk header "@@ -45,6 ..." (string)
+"   chunk_text - rewritten chunk text (string)
+"-------------------------------------------------------------------------------
+"
+function! s:Diff_VisualChunk ( diff_head, chunk_head, chunk_text, reverse, v_start, v_end )
+	"
+	" error message from 's:Diff_GetChunk'?
+	if a:diff_head == ''
+		return [ a:diff_head, a:chunk_head, a:chunk_text ]
+	endif
+	"
+	let v_start = a:v_start - 1                   " convert to indices
+	let v_end   = a:v_end   - 1                   " ...
+	let lines = split ( a:chunk_text, '\n' )
+	"
+	if v_start < 0 || v_end >= len ( lines )
+		return [ '', '', 'visual selection crosses chunk boundary' ]
+	elseif a:chunk_head =~ '^@@@'
+		return [ '', '', 'can not handle this type of chunk' ]
+	endif
+	"
+	let n_add_off = 0
+	let n_rm_off  = 0
+	"
+	let r = range ( len(lines)-1, v_end+1, -1 ) + range ( v_start-1, 0, -1 )
+	"
+	for i in r
+		let line = lines[i]
+		"
+		if line =~ '^-' && ! a:reverse
+			let lines[i] = substitute ( line, '^-', ' ', '' )
+			let n_add_off += 1                        " we add one more line
+		elseif line =~ '^+' && ! a:reverse
+			call remove ( lines, i )
+			let n_add_off -= 1                        " we add one less line
+		elseif line =~ '^-' && a:reverse
+			call remove ( lines, i )
+			let n_rm_off -= 1                         " we remove one less line
+		elseif line =~ '^+' && a:reverse
+			let lines[i] = substitute ( line, '^+', ' ', '' )
+			let n_rm_off += 1                         " we remove one more line
+		endif
+		"
+	endfor
+	"
+	let mlist = matchlist ( a:chunk_head, '^@@ -\(\d\+\),\(\d\+\) +\(\d\+\),\(\d\+\) @@\s\?\(.*\)' )
+	"
+	if empty ( mlist )
+		return [ '', '', 'can not parse the chunk header' ]
+	else
+		let [ l_rm, n_rm, l_add, n_add ] = mlist[1:4]
+		let n_rm  += n_rm_off
+		let n_add += n_add_off
+		let chunk_head = printf ( '@@ -%d,%d +%d,%d @@ %s', l_rm, n_rm, l_add, n_add, mlist[5] )
+	endif
+	"
+	return [ a:diff_head, chunk_head, join ( lines, "\n" ) ]
+endfunction    " ----------  end of function s:Diff_VisualChunk  ----------
+"
+"-------------------------------------------------------------------------------
+" s:Diff_ChunkHandler : Add/checkout/reset a chunk.   {{{2
+"
+" Parameters:
+"   action - "add-chunk", "checkout-chunk", "reset-chunk" (string)
+" Returns:
+"   success - true, if the command was run successfully (integer)
+"-------------------------------------------------------------------------------
+"
+function! s:Diff_ChunkHandler ( action, mode, v_start, v_end )
+	"
+	" get the chunk under the cursor/visual selection
+	if a:mode == 'n'
+		let [ diff_head, chunk_head, chunk_text, c_pos ] = s:Diff_GetChunk ( getpos('.')[1] )
+	elseif a:mode == 'v'
+		let reverse = a:action == 'add-chunk' ? 0 : 1
+		let [ diff_head, chunk_head, chunk_text, c_pos ] = s:Diff_GetChunk ( a:v_start )
+		let [ diff_head, chunk_head, chunk_text        ] = s:Diff_VisualChunk ( diff_head, chunk_head, chunk_text, reverse, a:v_start - c_pos, a:v_end - c_pos )
+	endif
+	"
+	" error while extracting chunk?
+	if diff_head == ''
+		echo chunk_text
+		return 0
+	endif
+	"
+	" change to the top-level dir
 	let base = s:GitRepoDir()
 	"
 	" could not get top-level?
@@ -1949,16 +2063,20 @@ function! s:Diff_ChunkHandler ( action, ... )
 	"
 	silent exe 'lchdir '.fnameescape( base )
 	"
+	" apply the patch, depending on the action
+	let chunk = diff_head."\n".chunk_head."\n".chunk_text."\n"
+	"
 	if a:action == 'add-chunk'
-		let text = system ( s:Git_Executable.' apply --cached -- -', head."\n".chunk )
+		let text = system ( s:Git_Executable.' apply --cached -- -', chunk )
 	elseif a:action == 'checkout-chunk'
-		let text = system ( s:Git_Executable.' apply -R -- -', head."\n".chunk )
+		let text = system ( s:Git_Executable.' apply -R -- -', chunk )
 	elseif a:action == 'reset-chunk'
-		let text = system ( s:Git_Executable.' apply --cached -R -- -', head."\n".chunk )
+		let text = system ( s:Git_Executable.' apply --cached -R -- -', chunk )
 	endif
 	"
 	silent exe 'lchdir -'
 	"
+	" check the result
 	if v:shell_error != 0
 		echo "applying the chunk failed:\n\n".text              | " failure
 	elseif text =~ '^\_s*$'
@@ -1976,18 +2094,22 @@ endfunction    " ----------  end of function s:Diff_ChunkHandler  ----------
 " GitS_Diff : execute 'git diff ...'
 "-------------------------------------------------------------------------------
 "
-function! GitS_Diff( action, ... )
+function! GitS_Diff( action, ... ) range
 	"
 	let update_only = 0
 	let param = ''
 	"
 	if a:action == 'help'
 		let txt  = s:HelpTxtStd."\n\n"
-		let txt .= "of      : file under cursor: open file (edit)\n"
-		let txt .= "oj      : file under cursor: open and jump to the position under the cursor\n\n"
-"		let txt .= "ac      : chunk under cursor: add to index (add chunk)\n"
-"		let txt .= "cc      : chunk under cursor: undo change (checkout chunk)\n"
-"		let txt .= "rc      : chunk under cursor: remove from index (reset chunk)\n\n"
+		let txt .= "file under cursor ...\n"
+		let txt .= "of      : open file (edit)\n"
+		let txt .= "oj      : open and jump to the position under the cursor\n\n"
+		let txt .= "\n"
+		let txt .= "chunk under cursor ...\n"
+		let txt .= "ac      : add to index (add chunk)\n"
+		let txt .= "cc      : undo change (checkout chunk)\n"
+		let txt .= "rc      : remove from index (reset chunk)\n"
+		let txt .= " ->       in visual mode, these maps only apply the selected lines\n\n"
 		let txt .= "For settings see:\n"
 		let txt .= "  :help g:Git_DiffExpandEmpty"
 		echo txt
@@ -2043,7 +2165,7 @@ function! GitS_Diff( action, ... )
 		return
 	elseif a:action =~ '\<\%(\|add\|checkout\|reset\)-chunk\>'
 		"
-		if s:Diff_ChunkHandler ( a:action )
+		if s:Diff_ChunkHandler ( a:action, a:1, a:firstline, a:lastline )
 			call GitS_Diff ( 'update' )
 		endif
 		"
@@ -2069,9 +2191,12 @@ function! GitS_Diff( action, ... )
 		exe 'nnoremap <silent> <buffer> of     :call GitS_Diff("edit")<CR>'
 		exe 'nnoremap <silent> <buffer> oj     :call GitS_Diff("jump")<CR>'
 		"
-		exe 'nnoremap <silent> <buffer> ac     :call GitS_Diff("add-chunk")<CR>'
-		exe 'nnoremap <silent> <buffer> cc     :call GitS_Diff("checkout-chunk")<CR>'
-		exe 'nnoremap <silent> <buffer> rc     :call GitS_Diff("reset-chunk")<CR>'
+		exe 'nnoremap <silent> <buffer> ac     :call GitS_Diff("add-chunk","n")<CR>'
+		exe 'vnoremap <silent> <buffer> ac     :call GitS_Diff("add-chunk","v")<CR>'
+		exe 'nnoremap <silent> <buffer> cc     :call GitS_Diff("checkout-chunk","n")<CR>'
+		exe 'vnoremap <silent> <buffer> cc     :call GitS_Diff("checkout-chunk","v")<CR>'
+		exe 'nnoremap <silent> <buffer> rc     :call GitS_Diff("reset-chunk","n")<CR>'
+		exe 'vnoremap <silent> <buffer> rc     :call GitS_Diff("reset-chunk","v")<CR>'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -3537,7 +3662,7 @@ function! GitS_Status( action, ... )
 		endif
 		let txt .= "ch      : checkout HEAD\n"
 		let txt .= "od      : open diff\n"
-		let txt .= "of      : open file (edit)\n"
+		let txt .= "of / oj : open file (edit)\n"
 		let txt .= "ol      : open log\n"
 		if s:EnabledGitBash
 			let txt .= "r / rp  : reset / reset --patch\n"
@@ -3639,6 +3764,7 @@ function! GitS_Status( action, ... )
 		exe 'nnoremap <silent> <buffer> od     :call GitS_Status("diff")<CR>'
 		exe 'nnoremap <silent> <buffer> ow     :call GitS_Status("diff-word")<CR>'
 		exe 'nnoremap <silent> <buffer> of     :call GitS_Status("edit")<CR>'
+		exe 'nnoremap <silent> <buffer> oj     :call GitS_Status("edit")<CR>'
 		exe 'nnoremap <silent> <buffer> ol     :call GitS_Status("log")<CR>'
 		exe 'nnoremap <silent> <buffer> r      :call GitS_Status("reset")<CR>'
 		exe 'nnoremap <silent> <buffer> D      :call GitS_Status("delete")<CR>'
@@ -3704,6 +3830,7 @@ function! GitS_Tag( param, flags )
 	"
 	if empty ( a:param )
 				\ || index ( args, '-l', 1 ) != -1
+				\ || index ( args, '--list', 1 ) != -1
 				\ || index ( args, '--contains', 1 ) != -1
 				\ || match ( args, '^-n\d\?', 1 ) != -1
 		call GitS_TagList ( 'update', a:param )
@@ -4207,7 +4334,7 @@ function! s:InitMenus()
 	exe shead.'&diff<TAB>:GitDiff         :GitDiff -- %<CR>'
 	exe shead.'&log<TAB>:GitLog           :GitLog --stat -- %<CR>'
 	exe shead.'r&m<TAB>:GitRm             :GitRm -- %<CR>'
-	exe shead.'&reset<TAB>:GitReset       :GitReset -- %<CR>'
+	exe shead.'&reset<TAB>:GitReset       :GitReset -q -- %<CR>'
 	"
 	" Specials
 	let ahead = 'anoremenu          '.s:Git_RootMenu.'.s&pecials.'

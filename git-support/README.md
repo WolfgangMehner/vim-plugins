@@ -1,4 +1,4 @@
-README for git-support.vim (Version 0.9.3pre) / July 18 2015
+README for git-support.vim (Version 0.9.3pre) / September 20 2015
 ================================================================================
 
   *  INSTALLATION
@@ -131,6 +131,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 - Added: New maps for the buffer: log
 - Added: Command :GitEdit to quickly jump to configuration files.
 - Changed: The status buffer can handle renamed files.
+- Improved syntax highlighting.
 - Minor changes.
 
   RELEASE NOTES FOR OLDER VERSIONS

@@ -24,7 +24,9 @@ syn case match
 " - GitAnnoTag
 
 syn region GitLogCommit  start=/^commit\s/ end=/^\%(commit\s\)\@=/ contains=GitLogHash,GitLogInfo,GitDiffRegion fold keepend
-syn match  GitLogHash    "^commit\s.\+$" contained
+syn match  GitLogHash    "^commit\s.\+$" contained contains=GitLogDeco
+syn match  GitLogDeco    "(\zs.*\ze)" contained contains=GitLogRef
+syn match  GitLogRef     "[^,%s]" contained
 syn match  GitLogInfo    "^\w\+:\s.\+$"  contained
 syn match  GitLogInfo    "^Notes:\s*$"  contained
 syn match  GitLogInfo    "^Notes\s(.*):\s*$"  contained
@@ -40,6 +42,7 @@ syn match  GitTagName    "^tag\s.\+$" contained
 "-------------------------------------------------------------------------------
 
 highlight default link GitLogHash  GitHighlight2
+highlight default link GitLogRef   GitHighlight1
 highlight default link GitLogInfo  GitHighlight1
 highlight default link GitTagName  GitHighlight2
 
