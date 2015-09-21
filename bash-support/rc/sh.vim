@@ -5,8 +5,7 @@
 "   Description:  Additonal maps for bash-support (version 4.0+)
 " 
 "   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
-"  Organization:  FH Südwestfalen, Iserlohn
+"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
 "       Version:  1.0
 "       Created:  20.05.2013 17:20
 "      Revision:  ---

@@ -5,8 +5,7 @@
 "   Description:  Plugin perl-support: Profiler support
 " 
 "   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
-"  Organization:  FH Südwestfalen, Iserlohn
+"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
 "       Version:  1.0
 "       Created:  22.02.2009
 "      Revision:  ---

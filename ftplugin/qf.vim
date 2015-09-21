@@ -5,8 +5,7 @@
 "   Description:  
 " 
 "   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
-"  Organization:  FH Südwestfalen, Iserlohn
+"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
 "       Version:  1.0
 "       Created:  18.02.2012 19:51
 "       License:  Copyright (c) 2012, Dr. Fritz Mehner

@@ -4,8 +4,8 @@
 
 SetMacro( 'AUTHOR',       'Dr. Fritz Mehner' )
 SetMacro( 'AUTHORREF',    'fgm' )
-SetMacro( 'EMAIL',        'mehner.fritz@fh-swf.de' )
-SetMacro( 'ORGANIZATION', 'FH Südwestfalen, Iserlohn, Germany' )
+SetMacro( 'EMAIL',        'mehner.fritz@web.de' )
+SetMacro( 'ORGANIZATION', '' )
 SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
 
 SetFormat( 'DATE', '%x' )

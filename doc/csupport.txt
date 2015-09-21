@@ -3,7 +3,7 @@
 C/C++ Support                                           *c-support* *csupport*
                              Plugin version 6.1.2pre
                         for Vim version 7.0 and above
-                       Fritz Mehner  <mehner@fh-swf.de>
+                       Fritz Mehner  <mehner@web.de>
 
 C/C++-IDE for Vim/gVim. It is written to considerably speed up writing code in
 a consistent style.  This is done by inserting complete statements,idioms,
@@ -1629,8 +1629,7 @@ overwrite some macros, e.g.
 >
  SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
  SetMacro( 'AUTHORREF',   'fgm' )
- SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
- SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
+ SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
  SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 <
 You can also have local templates which override the global ones. To see a
@@ -1674,9 +1673,9 @@ usually looks like this (my settings as an example):
  SetMacro( 'AUTHORREF',   'fgm' )
  SetMacro( 'COMPANY',     '' )
  SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
- SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
+ SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
  SetMacro( 'LICENSE',     'GNU General Public License' )
- SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
+ SetMacro( 'ORGANIZATION','' )
 
  SetStyle( 'C' )
 

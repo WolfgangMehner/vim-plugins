@@ -8,8 +8,7 @@
 "                  variables and builtins.
 "
 "   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
-"  Organization:  FH Südwestfalen, Iserlohn
+"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
 "       Version:  see variable g:LatexSupportVersion below.
 "       Created:  27.12.2012
 "       License:  Copyright (c) 2012-2014, Dr. Fritz Mehner
@@ -1091,7 +1090,7 @@ function! Latex_Settings ()
 	endif
 	let txt = txt."\n"
 	let	txt = txt."__________________________________________________________________________\n"
-	let	txt = txt." latex-Support, Version ".g:LatexSupportVersion." / Dr.-Ing. Fritz Mehner / mehner.fritz@fh-swf.de\n\n"
+	let	txt = txt." latex-Support, Version ".g:LatexSupportVersion." / Dr.-Ing. Fritz Mehner / mehner.fritz@web.de\n\n"
 	echo txt
 endfunction    " ----------  end of function Latex_Settings ----------
 "

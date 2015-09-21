@@ -49,12 +49,12 @@ BUGS AND LIMITATIONS
 
     There are no known bugs in this module.
 
-    Please report problems to Fritz Mehner, mehner@fh-swf.de .
+    Please report problems to Fritz Mehner, mehner@web.de .
 
 AUTHORS
       Tom Christiansen, tchrist@perl.com (pmdesc)
       Aristotle, http://qs321.pair.com/~monkads/ (pmdesc2)
-      Fritz Mehner, mehner@fh-swf.de (pmdesc3.pl)
+      Fritz Mehner, mehner@web.de (pmdesc3.pl)
 
 NOTES
     pmdesc3.pl is based on pmdesc2 (Aristotle,

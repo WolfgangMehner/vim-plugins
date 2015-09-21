@@ -6,8 +6,7 @@
 "                 Regular expression explanation and visualization.
 "
 "   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
-"       Company:  FH Südwestfalen, Iserlohn
+"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
 "       Version:  1.0
 "       Created:  16.12.2008 18:16:55
 "       License:  Copyright 2008-2014, Dr. Fritz Mehner

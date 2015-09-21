@@ -3,7 +3,7 @@
 Bash Support                                      *bash-support* *bashsupport*
                              Plugin version 4.3pre
                         for Vim version 7.0 and above
-                       Fritz Mehner  <mehner@fh-swf.de>
+                       Fritz Mehner  <mehner@web.de>
 
 Bash Support implements a bash-IDE for Vim/gVim. It is written to considerably
 speed up writing code in a consistent style.  This is done by inserting
@@ -1002,9 +1002,9 @@ usually looks like this (my settings as an example):
  SetMacro( 'AUTHORREF',   'fgm' )
  SetMacro( 'COMPANY',     '' )
  SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
- SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
+ SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
  SetMacro( 'LICENSE',     'GNU General Public License' )
- SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn, Germany' )
+ SetMacro( 'ORGANIZATION','' )
 
  SetFormat( 'DATE', '%x' )
  SetFormat( 'TIME', '%H:%M' )

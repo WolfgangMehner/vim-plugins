@@ -11,8 +11,7 @@
 #  REQUIREMENTS: ---
 #          BUGS: ---
 #         NOTES: ---
-#        AUTHOR: Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
-#  ORGANIZATION: FH Südwestfalen, Iserlohn, Germany
+#        AUTHOR: Dr. Fritz Mehner (fgm), mehner.fritz@web.de
 #       CREATED: 11.08.2013 10:02
 #      REVISION:  ---
 #===============================================================================
