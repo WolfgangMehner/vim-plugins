@@ -43,8 +43,8 @@ structure which is needed below the local installation directory $HOME/.vim/
 
        SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
        SetMacro( 'AUTHORREF',   'fgm' )
-       SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
-       SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
+       SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
+       SetMacro( 'ORGANIZATION','' )
        SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 
     (Read more about the template system in the plugin documentation)
@@ -87,8 +87,8 @@ $HOME/vimfiles/ (find the value of $HOME with ":echo $HOME" from inside Vim).
 
        SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
        SetMacro( 'AUTHORREF',   'fgm' )
-       SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
-       SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
+       SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
+       SetMacro( 'ORGANIZATION','' )
        SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 
     (Read more about the template system in the plugin documentation)

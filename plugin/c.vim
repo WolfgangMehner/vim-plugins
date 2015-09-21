@@ -12,8 +12,8 @@
 "  Configuration:  There are some personal details which should be configured
 "                   (see the files README.csupport and csupport.txt).
 "
-"         Author:  Dr.-Ing. Fritz Mehner, FH Südwestfalen, 58644 Iserlohn, Germany
-"          Email:  mehner.fritz@fh-swf.de
+"         Author:  Dr.-Ing. Fritz Mehner, Germany
+"          Email:  mehner.fritz@web.de
 "
 "        Version:  see variable  g:C_Version  below
 "        Created:  04.11.2000
@@ -2133,7 +2133,7 @@ function! C_Settings ()
 	endif
 	let txt = txt."\n"
 	let	txt = txt."__________________________________________________________________________\n"
-	let	txt = txt." C/C++-Support, Version ".g:C_Version." / Dr.-Ing. Fritz Mehner / mehner.fritz@fh-swf.de\n\n"
+	let	txt = txt." C/C++-Support, Version ".g:C_Version." / Dr.-Ing. Fritz Mehner / mehner.fritz@web.de\n\n"
 	echo txt
 endfunction    " ----------  end of function C_Settings ----------
 "

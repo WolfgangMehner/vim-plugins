@@ -62,8 +62,7 @@ structure which is needed below the local installation directory $HOME/.vim/
 
        SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
        SetMacro( 'AUTHORREF',   'fgm' )
-       SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
-       SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
+       SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
        SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 
    Use the file $HOME/.vim/templates/perl.templates to customize or add to your
@@ -120,8 +119,7 @@ $HOME/vimfiles/ (find the value of $HOME with ":echo $HOME" from inside Vim).
 
        SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
        SetMacro( 'AUTHORREF',   'fgm' )
-       SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
-       SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
+       SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
        SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 
    Use the file $HOME/vimfiles/templates/perl.templates to customize or add to

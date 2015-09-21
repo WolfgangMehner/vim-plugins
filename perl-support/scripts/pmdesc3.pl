@@ -353,13 +353,13 @@ systems.  An additional shell sort command can be used.
 
 There are no known bugs in this module.
 
-Please report problems to Fritz Mehner, mehner@fh-swf.de .
+Please report problems to Fritz Mehner, mehner@web.de .
 
 =head1 AUTHORS
 
   Tom Christiansen, tchrist@perl.com (pmdesc)
   Aristotle, http://qs321.pair.com/~monkads/ (pmdesc2)
-  Fritz Mehner, mehner@fh-swf.de (pmdesc3.pl)
+  Fritz Mehner, mehner@web.de (pmdesc3.pl)
 
 =head1 NOTES
 

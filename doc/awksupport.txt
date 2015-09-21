@@ -3,7 +3,7 @@
 Awk Support                                         *awk-support* *awksupport*
                               Plugin version 1.3pre
                         for Vim version 7.0 and above
-                  Fritz Mehner  <mehner.fritz at fh-swf.de>
+                  Fritz Mehner  <mehner.fritz at web.de>
                 Wolfgang Mehner  <wolfgang-mehner at web.de>
 
 Awk Support implements an Awk-IDE for Awk/gAwk. It is written to considerably
@@ -817,9 +817,9 @@ usually looks like this (my settings as an example):
  SetMacro( 'AUTHORREF',   'fgm' )
  SetMacro( 'COMPANY',     '' )
  SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
- SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
+ SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
  SetMacro( 'LICENSE',     'GNU General Public License' )
- SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
+ SetMacro( 'ORGANIZATION','' )
 
  SetFormat( 'DATE', '%x' )
  SetFormat( 'TIME', '%H:%M' )

@@ -8,8 +8,7 @@
 "                  variables and builtins.
 "
 "   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
-"  Organization:  FH Südwestfalen, Iserlohn, Germany
+"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
 "       Version:  see g:BASH_Version below
 "       Created:  26.02.2001
 "       License:  Copyright (c) 2001-2014, Dr. Fritz Mehner
@@ -1345,7 +1344,7 @@ function! BASH_Settings ()
 	let txt = txt." Bash cmd.line argument(s) :  ".ausgabe."\n"
 	let txt = txt."\n"
 	let	txt = txt."__________________________________________________________________________\n"
-	let	txt = txt." bash-support, version ".g:BASH_Version." / Dr.-Ing. Fritz Mehner / mehner.fritz@fh-swf.de\n\n"
+	let	txt = txt." bash-support, version ".g:BASH_Version." / Dr.-Ing. Fritz Mehner / mehner.fritz@web.de\n\n"
 	echo txt
 endfunction    " ----------  end of function BASH_Settings ----------
 "

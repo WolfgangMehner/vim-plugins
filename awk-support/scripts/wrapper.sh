@@ -9,8 +9,7 @@
 #  REQUIREMENTS:  ---
 #          BUGS:  ---
 #         NOTES:  ---
-#        AUTHOR:  Dr.-Ing. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
-#       COMPANY:  Fachhochschule Südwestfalen, Iserlohn
+#        AUTHOR:  Dr.-Ing. Fritz Mehner (fgm), mehner.fritz@web.de
 #       CREATED:  23.11.2004 18:04:01 CET
 #      REVISION:  $Id: wrapper.sh,v 1.5 2009/06/04 17:14:02 mehner Exp $
 #===============================================================================

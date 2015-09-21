@@ -11,8 +11,7 @@
 #  REQUIREMENTS:  ---
 #          BUGS:  ---
 #         NOTES:  ---
-#        AUTHOR:  Dr.-Ing. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
-#       COMPANY:  Fachhochschule Südwestfalen, Iserlohn
+#        AUTHOR:  Dr.-Ing. Fritz Mehner (fgm), mehner.fritz@web.de
 #       VERSION:  2.0
 #       CREATED:  04.01.2013 13:35:48 CEST
 #===============================================================================

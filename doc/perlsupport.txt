@@ -3,7 +3,7 @@ Perl Support                                      *perl-support* *perlsupport*
 
                              Plug-in version 5.4pre
                         for Vim version 7.0 and above
-                       Fritz Mehner  <mehner@fh-swf.de>
+                       Fritz Mehner  <mehner@web.de>
 
 Perl Support implements a Perl-IDE for Vim/gVim. It is written to considerably
 speed up writing code in a consistent style.  This is done by inserting
@@ -1996,8 +1996,7 @@ obtain personalized comments, e.g. something like this:
 >
  SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
  SetMacro( 'AUTHORREF',   'fgm' )
- SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
- SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
+ SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
  SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 <
 Use the custom template file for Perl templates which override the global

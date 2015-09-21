@@ -8,8 +8,7 @@
 "                  variables and builtins.
 "
 "   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
-"  Organization:  FH Südwestfalen, Iserlohn
+"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
 "       Version:  see variable g:AwkSupportVersion below
 "       Created:  14.01.2012 10:49
 "      Revision:  0.1
@@ -1086,7 +1085,7 @@ function! Awk_Settings ()
 	endif
 	let txt = txt."\n"
 	let	txt = txt."__________________________________________________________________________\n"
-	let	txt = txt." awk-Support, Version ".g:AwkSupportVersion." / Dr.-Ing. Fritz Mehner / mehner@fh-swf.de\n\n"
+	let	txt = txt." awk-Support, Version ".g:AwkSupportVersion." / Dr.-Ing. Fritz Mehner / mehner@web.de\n\n"
 	echo txt
 endfunction    " ----------  end of function Awk_Settings ----------
 "

@@ -1,5 +1,6 @@
 
---regex-make=/^([^:# \t]+)[ \t]*:($|[^=]+)/\1/t,targets/
+--regex-make=/^[[:space:]]*([[:alnum:]_]+)[[:space:]]*:?=/\1/v,variables/
+--regex-make=/^([^:# \t]+)[ \t]*:[[:space:]]*([^=]?.*)/\1:  \2/t,targets/
 --regex-make=/^include[ \t]+(.+)/\1/i,includes/
 
 --langdef=qmake

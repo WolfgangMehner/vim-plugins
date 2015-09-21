@@ -6,9 +6,9 @@ SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
 SetMacro( 'AUTHORREF',   'fgm' )
 SetMacro( 'COMPANY',     '' )
 SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
-SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )
+SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
 SetMacro( 'LICENSE',     'GNU General Public License' )
-SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )
+SetMacro( 'ORGANIZATION','' )
 
 SetStyle( 'C' )
 

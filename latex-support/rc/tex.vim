@@ -2,7 +2,7 @@
 "
 " Language   :  Tex
 " Plugin     :  tex.vim
-" Maintainer :  Fritz Mehner <mehner@fh-swf.de>
+" Maintainer :  Fritz Mehner <mehner@web.de>
 " Last Change:  28.12.2012
 "
 " -----------------------------------------------------------------

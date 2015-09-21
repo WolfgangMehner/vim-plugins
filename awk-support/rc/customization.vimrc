@@ -198,7 +198,7 @@ endif " has("autocmd")
 " awk-support
 "-------------------------------------------------------------------------------
 "            
-" --empty --
+let tlist_awk_settings  		= 'awk;f:function;l:label'
 "                         
 "-------------------------------------------------------------------------------
 " taglist.vim : toggle the taglist window

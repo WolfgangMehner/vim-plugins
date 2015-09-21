@@ -2,7 +2,7 @@
 "
 "   Language :  bash
 "     Plugin :  bash-support.vim
-" Maintainer :  Fritz Mehner <mehner@fh-swf.de>
+" Maintainer :  Fritz Mehner <mehner@web.de>
 "
 " -----------------------------------------------------------------
 "

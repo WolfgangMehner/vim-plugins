@@ -8,8 +8,7 @@
 "                  variables and builtins.
 " 
 "   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@fh-swf.de
-"  Organization:  FH Südwestfalen, Iserlohn
+"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
 "       Version:  see variable g:VimSupportVersion below
 "       Created:  14.01.2012 10:49
 "       License:  Copyright (c) 2012-2015, Dr. Fritz Mehner
@@ -1056,7 +1055,7 @@ function! Vim_Settings ( verbose )
 					\ .'     load menus / delayed :  "'.s:Vim_LoadMenus.'" / "'.s:Vim_CreateMenusDelayed."\"\n"
 	endif
 	let	txt .= "__________________________________________________________________________\n"
-	let	txt .= " Vim-Support, Version ".g:VimSupportVersion." / Dr.-Ing. Fritz Mehner / mehner@fh-swf.de\n\n"
+	let	txt .= " Vim-Support, Version ".g:VimSupportVersion." / Dr.-Ing. Fritz Mehner / mehner@web.de\n\n"
 	"
 	if a:verbose == 2
 		split VimSupport_Settings.txt

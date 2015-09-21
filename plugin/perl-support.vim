@@ -34,7 +34,7 @@
 "                  ddd                  (debugger frontend)
 "                  sort(1)              (rearrange profiler statistics)
 "
-"         Author:  Dr.-Ing. Fritz Mehner <mehner.fritz@fh-swf.de>
+"         Author:  Dr.-Ing. Fritz Mehner <mehner.fritz@web.de>
 "
 "        Version:  see variable  g:Perl_PluginVersion  below
 "        Created:  09.07.2001
@@ -1002,7 +1002,7 @@ function! Perl_Settings ( verbose )
   let txt = txt."                 Ctrl-F9  :  run script                \n"
   let txt = txt."                Shift-F9  :  set command line arguments\n"
   let txt = txt."_________________________________________________________________________\n"
-  let txt = txt."  Perl-Support, Version ".g:Perl_PluginVersion." / Dr.-Ing. Fritz Mehner / mehner.fritz@fh-swf.de\n\n"
+  let txt = txt."  Perl-Support, Version ".g:Perl_PluginVersion." / Dr.-Ing. Fritz Mehner / mehner.fritz@web.de\n\n"
 	"
 	if a:verbose == 2
 		split PerlSupport_Settings.txt
