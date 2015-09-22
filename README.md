@@ -39,7 +39,7 @@ You can subscribe to the vim-plugins-list mailing list to post your questions or
 The list will also be used to announce new releases.
 Visit the following page for subscribing to the mailing list:
 
-[http://lug.web.de/cgi-bin/mailman/listinfo/vim-plugins-list](http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list)
+[http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list](http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list)
 
 The vim-plugins-list list is very low on traffic.
 
