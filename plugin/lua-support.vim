@@ -1680,7 +1680,7 @@ function! s:InitMenus()
 	call mmtemplates#core#CreateMenus ( 'g:Lua_Templates', s:Lua_RootMenu, 'sub_menu', 'S&nippets', 'priority', 600 )
 	call mmtemplates#core#CreateMenus ( 'g:Lua_Templates', s:Lua_RootMenu, 'sub_menu', '&Run'     , 'priority', 700 )
 	if s:Lua_UseToolbox == 'yes' && mmtoolbox#tools#Property ( s:Lua_Toolbox, 'empty-menu' ) == 0
-		call mmtemplates#core#CreateMenus ( 'g:Lua_Templates', s:Lua_RootMenu, 'sub_menu', '&Tool Box', 'priority', 800 )
+		call mmtemplates#core#CreateMenus ( 'g:Lua_Templates', s:Lua_RootMenu, 'sub_menu', '&Tool\ Box', 'priority', 800 )
 	endif
 	call mmtemplates#core#CreateMenus ( 'g:Lua_Templates', s:Lua_RootMenu, 'sub_menu', '&Help'    , 'priority', 900 )
 	"
