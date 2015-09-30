@@ -91,7 +91,8 @@ The template library contains the following fields:
     key - Name of the menu (string).
     val - The shortcut (string).
 - menu_existing (dict)
-    The menus which were already created via the API.
+    The menus which were already created via the API. The menu name is
+    escaped, but does not contain shortcuts via an ampersand.
     key - Name of the menu (string).
     val - Number of separators inserted into this menu (integer).
       or

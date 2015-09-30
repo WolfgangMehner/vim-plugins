@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Templates_Version below
 "       Created:  30.08.2011
-"      Revision:  19.07.2015
+"      Revision:  30.09.2015
 "       License:  Copyright (c) 2012-2015, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -1353,6 +1353,7 @@ let s:FileReadNameSpace_0_9 = {
 			\
 			\ 'SetMap'       : 'ss',
 			\ 'SetShortcut'  : 'ss',
+			\ 'SetMenuEntry' : 'ss',
 			\
 			\ 'MenuShortcut' : 'ss',
 			\ }
@@ -1540,6 +1541,23 @@ function! s:SetShortcut ( name, shortcut )
 	let s:library.templates[ a:name.'!!menu' ].shortcut = a:shortcut
 	"
 endfunction    " ----------  end of function s:SetShortcut  ----------
+"
+"-------------------------------------------------------------------------------
+" s:SetMenuEntry : Set the menu entry of a template (template function).   {{{2
+"-------------------------------------------------------------------------------
+"
+function! s:SetMenuEntry ( name, menu_entry )
+	"
+	" check for valid name and format
+	if ! has_key ( s:library.templates, a:name.'!!type' )
+		return s:ErrorMsg ( 'The template does not exist: '.a:name )
+	elseif a:menu_entry == ''
+		return s:ErrorMsg ( 'The menu entry can not empty.' )
+	endif
+	"
+	let s:library.templates[ a:name.'!!menu' ].mname = a:menu_entry
+	"
+endfunction    " ----------  end of function s:SetMenuEntry  ----------
 "
 "----------------------------------------------------------------------
 "  s:IncludeFile : Read a template file (template function).   {{{2
@@ -3848,7 +3866,8 @@ endfunction    " ----------  end of function s:InsertShortcut  ----------
 "----------------------------------------------------------------------
 " s:CreateSubmenu : Create sub-menus, given they do not already exists.   {{{2
 "
-" The menu 'menu' can contain '&' and a trailing '.'. Both are ignored.
+" The menu name 'menu' is supposed to be correctly escaped.
+" It can contain '&' and a trailing '.'. Both are ignored.
 "----------------------------------------------------------------------
 "
 function! s:CreateSubmenu ( menu, priority )
@@ -3877,28 +3896,24 @@ function! s:CreateSubmenu ( menu, priority )
 		let clean = substitute( part, '&', '', 'g' )
 		if ! has_key ( s:library.menu_existing, submenu.clean )
 			" a new menu!
+			" (the key is the menu name, it has to be correctly escaped)
 			let s:library.menu_existing[ submenu.clean ] = 0
 			"
 			" shortcut and menu entry
-			if has_key ( s:library.menu_shortcuts, submenu.clean )
-				let shortcut = s:library.menu_shortcuts[ submenu.clean ]
-				if stridx ( tolower( clean ), tolower( shortcut ) ) == -1
-					let assemble = submenu.clean.' (&'.shortcut.')'
-				else
-					let assemble = submenu.substitute( clean, '\c'.shortcut, '\&&', '' )
-				endif
+			let tname = substitute( submenu.clean, '\\\(.\)', '\1', 'g' )
+			if has_key ( s:library.menu_shortcuts, tname )
+				let shortcut = s:library.menu_shortcuts[ tname ]
+				let assemble = submenu.s:InsertShortcut( clean, shortcut, 1 )
 			else
 				let assemble = submenu.part
 			endif
 			"
-			let assemble .= '.'
-			"
 			if -1 != stridx ( clean, '<TAB>' )
-				exe 'anoremenu '.priority_str.s:t_runtime.root_menu.escape( assemble.clean, ' ' ).' :echo "This is a menu header."<CR>'
+				exe 'anoremenu '.priority_str.s:t_runtime.root_menu.assemble.'.'.clean.' :echo "This is a menu header."<CR>'
 			else
-				exe 'anoremenu '.priority_str.s:t_runtime.root_menu.escape( assemble.clean, ' ' ).'<TAB>'.escape( s:t_runtime.global_name, ' .' ).' :echo "This is a menu header."<CR>'
+				exe 'anoremenu '.priority_str.s:t_runtime.root_menu.assemble.'.'.clean.'<TAB>'.escape( s:t_runtime.global_name, ' .' ).' :echo "This is a menu header."<CR>'
 			endif
-			exe 'anoremenu '.s:t_runtime.root_menu.escape( assemble,       ' ' ).'-TSep00- <Nop>'
+			exe 'anoremenu '.s:t_runtime.root_menu.assemble.'.-TSep00- <Nop>'
 		endif
 		let submenu .= clean.'.'
 	endfor
@@ -4027,11 +4042,11 @@ function! s:CreateTemplateMenus (  )
 		"
 		" menu does not exist?
 		if ! empty ( t_menu ) && ! has_key ( s:library.menu_existing, t_menu[ 0 : -2 ] )
-			call s:CreateSubmenu ( t_menu[ 0 : -2 ], s:StandardPriority )
+			call s:CreateSubmenu ( mmtemplates#core#EscapeMenu( t_menu[ 0 : -2 ], 'menu' ), s:StandardPriority )
 		endif
 		"
 		if info.entry == 11
-			let m_key = t_menu[ 0 : -2 ]
+			let m_key = mmtemplates#core#EscapeMenu( t_menu[ 0 : -2 ], 'menu' )
 			if empty ( m_key )
 				let m_key = '!base'
 			endif
@@ -4044,21 +4059,23 @@ function! s:CreateTemplateMenus (  )
 			continue
 		endif
 		"
-		" shortcut and menu entry
-		if ! empty ( info.shortcut )
-			if stridx ( tolower( t_last ), tolower( info.shortcut ) ) == -1
-				let t_last .= ' (&'.info.shortcut.')'
-			else
-				let t_last = substitute( t_last, '\c'.info.shortcut, '\&&', '' )
-			endif
+		if info.mname != ''
+			let t_last = mmtemplates#core#EscapeMenu ( info.mname, 'entry' )
+		else
+			let t_last = mmtemplates#core#EscapeMenu ( t_last, 'entry' )
 		endif
 		"
-		" assemble the entry, including the map, TODO: escape the map
-		let compl_entry = escape( t_menu.t_last, ' ' )
+		" shortcut and menu entry
+		if ! empty ( info.shortcut )
+			let t_last = s:InsertShortcut( t_last, info.shortcut, 1 )
+		endif
+		"
+		" assemble the entry, including the map
+		let compl_entry = mmtemplates#core#EscapeMenu( t_menu, 'menu' ).t_last
 		if empty ( info.map )
 			let map_entry = ''
 		else
-			let map_entry = '<TAB>'.map_ldr.( info.map )
+			let map_entry = '<TAB>'.map_ldr.mmtemplates#core#EscapeMenu( info.map, 'right' )
 		end
 		"
 		if info.entry == 1
@@ -4069,7 +4086,7 @@ function! s:CreateTemplateMenus (  )
 				exe 'vnoremenu <silent> '.s:t_runtime.root_menu.compl_entry.map_entry.' <Esc><Esc>:call mmtemplates#core#InsertTemplate('.s:t_runtime.lib_name.',"'.t_name.'","v")<CR>'
 			endif
 		elseif info.entry == 2
-			call s:CreateSubmenu ( t_menu.t_last.map_entry, s:StandardPriority )
+			call s:CreateSubmenu ( compl_entry.map_entry, s:StandardPriority )
 			call s:CreateListMenus ( t_name, s:t_runtime.root_menu.compl_entry.'.', info.visual )
 		endif
 		"
@@ -4149,8 +4166,8 @@ function! s:CreateSpecialsMenus ( styles_only )
 	let map_style = map_ldr.mmtemplates#core#EscapeMenu ( s:library.properties[ 'Templates::ChooseStyle::Map' ], 'right' )
 	"
 	" create the submenu
-	if sc_style == 's' | let entry_styles = '.choose &style<TAB>'.map_style
-	else               | let entry_styles = s:InsertShortcut ( '.choose style', sc_style, 0 ).'<TAB>'.map_style
+	if sc_style == 's' | let entry_styles = '.choose\ &style<TAB>'.map_style
+	else               | let entry_styles = s:InsertShortcut ( '.choose\ style', sc_style, 0 ).'<TAB>'.map_style
 	endif
 	call s:CreateSubmenu ( specials_menu.entry_styles, s:StandardPriority )
 	"

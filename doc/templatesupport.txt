@@ -1456,10 +1456,10 @@ not available.
 To load the template personalization file into the library, call: >
   mmtemplates#core#ReadTemplates ( library, "personalization",
     \ "name", "personal", "map", "ntp" )
-It will only be added if it is available and should be used, i.e. if calling
-|mmtemplates#core#FindPersonalizationFile()| returns a non-empty string. The
-personalization file can also be associated with a symbolic name, shortcut,
-and map.
+The personalization file will only be added if it is available and should be
+used, i.e. if calling |mmtemplates#core#FindPersonalizationFile()| returns a
+non-empty string. The personalization file can also be associated with a
+symbolic name, shortcut, and map.
 
 The entire library can be reloaded by calling: >
   mmtemplates#core#ReadTemplates ( library, "reload", "all" )
@@ -1748,8 +1748,9 @@ No returns.
 creation of menu entries. Sub-menus are created automatically as needed.
 The special operations are: edit/reread the library, choose a style. The
 corresponding menu entries are put in the sub-menus given by the option
-"specials_menu". The menu entries for editing templates can be customized for
-each file by passing additional information while loading a file using
+"specials_menu". The name of this sub-menu must already be correctly escaped.
+The menu entries for editing templates can be customized for each file by
+passing additional information while loading a file using
 |mmtemplates#core#ReadTemplates()|.
 
 Each sub-menu looks like this, starting with a header:
@@ -1763,10 +1764,12 @@ Each sub-menu looks like this, starting with a header:
 The global name (option "global_name") helps to keep track of tear-off menus.
 "sub_menu" can be used to create additional menus, which have the same header.
 When a sub-menu is created through use of the API like this, an optional
-priority can be specified.
+priority can be specified. The menu names given must already be correctly
+escaped.
 
 The library keeps track of all created sub-menus, to be able to add the
-headers correctly. "existing_menu" adds menus to this list.
+headers correctly. "existing_menu" adds menus to this list. The names of the
+menus must be correctly escaped.
 "do_reset" resets this list and allows for the menus to be created once more.
 "do_all" also reset the list before it carries out further operations.
 
@@ -2037,7 +2040,7 @@ unchanged.
                                                *mmtemplates#core#EscapeMenu()*
 Escape a string to be used as a menu entry:
 
-  str = mmtemplates#core#EscapeMenu ( str ) ~
+  str = mmtemplates#core#EscapeMenu ( str, ... ) ~
 
 Parameters:
   str - The menu item. (string)
@@ -2747,7 +2750,7 @@ D.  CHANGE LOG                                   *template-support-change-log*
   templates or jumping via <ctrl+j>.
 - Added: Template options "expandleft" and "expandright". Extended the option
   "expandmenu".
-- Added: Functions 'SetMap' and 'SetShortcut'.
+- Added: Functions 'SetMap', 'SetShortcut', and 'SetMenuEntry'.
 - Changed: If a template is redefined, the options are read again.
 - Changed: During the creation of the submenu for a list-picking template, all
   special characters are escaped correctly. (The characters "\" and "|" were

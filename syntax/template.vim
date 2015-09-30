@@ -53,6 +53,7 @@ syn match Function  "MenuShortcut\ze\s*("
 syn match Function  "SetProperty\ze\s*("
 syn match Function  "SetMap\ze\s*("
 syn match Function  "SetShortcut\ze\s*("
+syn match Function  "SetMenuEntry\ze\s*("
 
 " functions: standard template
 syn match Function  "|\zsDefaultMacro\ze("
