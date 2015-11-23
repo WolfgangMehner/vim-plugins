@@ -78,15 +78,26 @@ syn match Function  "|\zsSystem\ze("
 syn match Function  "|\zsVim\ze("
 
 " strings, macros, tags, jump targets
-syn match String    "'\%([^']\|''\)*'"
-syn match String    "\"\%([^"\\]\|\\.\)*\""
+syn match TemplString  "'\%([^']\|''\)*'" contains=TemplMacro,TemplTag,TemplJump
+syn match TemplString  "\"\%([^"\\]\|\\.\)*\"" contains=TemplMacro,TemplTag,TemplJump
 
-syn match Tag       "|?\?[a-zA-Z][a-zA-Z0-9_:]*|"
-syn match Tag       "<CURSOR>\|{CURSOR}"
-syn match Tag       "<SPLIT>"
-syn match Tag       "<CONTENT>"
+syn match TemplMacro   "|?\?[a-zA-Z][a-zA-Z0-9_]*\%(:\a\)\?\%(%\%([-+*]\+\|[-+*]\?\d\+\)[lrc]\?\)\?|"
+syn match TemplTag     "<CURSOR>\|{CURSOR}"
+syn match TemplTag     "<RCURSOR>\|{RCURSOR}"
+syn match TemplTag     "<SPLIT>"
+syn match TemplTag     "<CONTENT>"
 
-syn match Search    "<\([+-]\)\w*\1>"
-syn match Search    "{\([+-]\)\w*\1}"
+syn match TemplJump    "<\([+-]\)\w*\1>"
+syn match TemplJump    "{\([+-]\)\w*\1}"
+syn match TemplJump    "\[\([+-]\)\w*\1]"
+
+"-------------------------------------------------------------------------------
+" Highlight
+"-------------------------------------------------------------------------------
+
+highlight default link TemplString  String
+highlight default link TemplMacro   Tag
+highlight default link TemplTag     Tag
+highlight default link TemplJump    Search
 
 let b:current_syntax = "template"

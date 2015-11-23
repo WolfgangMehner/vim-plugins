@@ -429,9 +429,9 @@ function! s:UpdateTemplateRegex ( regex, settings, interface )
 	let a:regex.FunctionList    = '^LIST(\(.\{-}\))$'
 	let a:regex.FunctionComment = a:settings.MacroStart.'\(C\|Comment\)'.'(\(.\{-}\))'.a:settings.MacroEnd
 	let a:regex.FunctionInsert  = a:settings.MacroStart.'\(Insert\|InsertLine\)'.'(\(.\{-}\))'.a:settings.MacroEnd
-	let a:regex.MacroRequest    = a:settings.MacroStart.'?'.a:regex.MacroNameC.'\%(:\(\a\)\)\?'.a:settings.MacroEnd
-	let a:regex.MacroInsert     = a:settings.MacroStart.''.a:regex.MacroNameC.'\%(:\(\a\)\)\?'.a:settings.MacroEnd
-	let a:regex.MacroNoCapture  = a:settings.MacroStart.a:settings.MacroName.'\%(:\a\)\?'.a:settings.MacroEnd
+	let a:regex.MacroRequest    = a:settings.MacroStart.'?'.a:regex.MacroNameC.  '\(:\a\)\?'. '\(%\%([-+*]\+\|[-+*]\?\d\+\)[lcr]\?\)\?'.a:settings.MacroEnd
+	let a:regex.MacroInsert     = a:settings.MacroStart.''.a:regex.MacroNameC.   '\(:\a\)\?'. '\(%\%([-+*]\+\|[-+*]\?\d\+\)[lcr]\?\)\?'.a:settings.MacroEnd
+	let a:regex.MacroNoCapture  = a:settings.MacroStart.   a:settings.MacroName.'\%(:\a\)\?'.'\%(%[-+*]*\d*[lcr]\?\)\?'.                a:settings.MacroEnd
 	let a:regex.ListItem        = a:settings.MacroStart.''.a:regex.MacroNameC.':ENTRY_*'.a:settings.MacroEnd
 	"
 	let a:regex.TextBlockFunctions = '^\%(C\|Comment\|Insert\|InsertLine\)$'
@@ -2177,32 +2177,92 @@ endfunction    " ----------  end of function mmtemplates#core#EnableTemplateFile
 " === Templates ===   {{{1
 "----------------------------------------------------------------------
 "
-"----------------------------------------------------------------------
-" s:ApplyFlag : Modify a text according to 'flag'.   {{{2
-"----------------------------------------------------------------------
+"-------------------------------------------------------------------------------
+" s:ApplyFlag : Modify a text according to 'flag' and 'format'.   {{{2
 "
-function! s:ApplyFlag ( text, flag )
+" Parameters:
+"   text   - the text (string)
+"   flag   - the flag (string)
+"   format - the format specifier (string)
+"   width  - width of the macro (integer)
+" Returns:
+"   text   - the modified text (string)
+"
+" For a description of the meaning of the flags and formats see:
+"   :help template-support-templ-macro
+"
+" Flags:
+"   :l :u :c - change the case
+"   :L :T   - modify the text
+" Format:
+"   % [-+*]+ [lcr]?
+"   % [-+*]?\d+ [lcr]?
+"-------------------------------------------------------------------------------
+"
+function! s:ApplyFlag ( text, flag, format, width )
 	"
+	let text = a:text
+	"
+	" apply a flag?
 	if a:flag == '' || a:flag == 'i'      " i : identity
-		return a:text
+		" noop
 	elseif a:flag == 'l'                  " l : lowercase
-		return tolower(a:text)
+		let text = tolower(a:text)
 	elseif a:flag == 'u'                  " u : uppercase
-		return toupper(a:text)
+		let text = toupper(a:text)
 	elseif a:flag == 'c'                  " c : capitalize
-		return toupper(a:text[0]).a:text[1:]
+		let text = toupper(a:text[0]).a:text[1:]
 	elseif a:flag == 'L'                  " L : legalized name
 		let text = substitute( a:text, '\s\+', '_', 'g' ) " multiple whitespaces
 		let text = substitute(   text, '\W\+', '_', 'g' ) " multiple non-word characters
 		let text = substitute(   text, '_\+',  '_', 'g' ) " multiple underscores
-		return text
+		let text = text
 	elseif a:flag == 'T'                  " T : remove tags
-		let text = substitute( a:text, '<CURSOR>\|{CURSOR}\|<SPLIT>',       '', 'g' ) " cursor and split tags
+		let text = substitute( a:text, '<R\?CURSOR>\|{R\?CURSOR}\|<SPLIT>', '', 'g' ) " cursor and split tags
 		let text = substitute(   text, s:library.regex_template.JumpTagAll, '', 'g' ) " jump tags
-		return text
-	else                                   " flag not valid
-		return a:text
+		let text = text
+	else                                  " flag not valid
+		" noop
 	endif
+	"
+	" apply a format specifier?
+	if a:format != ''
+		"
+		" last character -> the alignment (optional)
+		let align = matchstr ( a:format, '[lcr]$' )
+		"
+		" contains a number? -> use this width
+		if a:format =~ '\d'
+			let width = str2nr ( matchstr ( a:format, '^[-+]\?\zs\d\+' ) )
+		else
+			let width = a:width
+		endif
+		"
+		" first character a minus? -> cutoff
+		let cutoff = a:format[0] == '-'
+		"
+		if len ( text ) >= width
+			if ! cutoff
+				let text = text
+			else
+				let text = text[:(width-1)]
+			endif
+		else
+			let pad = width - len ( text )
+			"
+			if align == 'l' || align == ''
+				let text = text . repeat ( ' ', pad )                     " alignment: left
+			elseif align == 'r'
+				let text = repeat ( ' ', pad ) . text                     " alignment: right
+			elseif align == 'c'
+				let text = repeat ( ' ', pad/2 ) . text . repeat ( ' ', pad/2 + pad%2 ) " alignment: center
+			else
+				let text = 'ALIGNMENT FAILED!!! PLEASE REPORT!!!'
+			endif
+		end
+	endif
+	"
+	return text
 	"
 endfunction    " ----------  end of function s:ApplyFlag  ----------
 "
@@ -2231,29 +2291,34 @@ function! s:ReplaceMacros ( text, m_local )
 			let m_text = ''
 			call add ( s:t_runtime.macro_stack, mlist[2] )
 			throw 'Template:MacroRecursion'
-		elseif has_key ( a:m_local, mlist[2] )
-			let m_text = get ( a:m_local, mlist[2] )
-		else
-			let m_text = get ( s:library.macros, mlist[2], '' )
 		end
 		"
+		" has local replacement?
+		if has_key ( a:m_local, mlist[2] )
+			let m_text = get ( a:m_local, mlist[2] )                  " get local replacement
+		else
+			let m_text = get ( s:library.macros, mlist[2], '' )       " try to get global replacement
+		end
+		"
+		" the replacement text contains macros itself?
 		if m_text =~ s:library.regex_template.MacroNoCapture
 			"
-			call add ( s:t_runtime.macro_stack, mlist[2] )
+			call add ( s:t_runtime.macro_stack, mlist[2] )            " add to the macro stack (for recursion checks)
 			"
-			let m_text = s:ReplaceMacros ( m_text, a:m_local )
+			let m_text = s:ReplaceMacros ( m_text, a:m_local )        " replace the macros in the replacement text
 			"
-			call remove ( s:t_runtime.macro_stack, -1 )
+			call remove ( s:t_runtime.macro_stack, -1 )               " revert the stack
 			"
 		endif
 		"
 		" apply flag?
-		if ! empty ( mlist[3] )
-			let m_text = s:ApplyFlag ( m_text, mlist[3] )
+		if ! empty ( mlist[3] ) || ! empty ( mlist[4] )
+			let width  = 2 + len ( mlist[2] ) + len ( mlist[3] ) + len ( mlist[4] )
+			let m_text = s:ApplyFlag ( m_text, mlist[3][1:], mlist[4][1:], width )   " apply flags to the replacement text
 		endif
 		"
-		let text1 .= mlist[1].m_text
-		let text2  = mlist[4]
+		let text1 .= mlist[1].m_text                                " assemble the result
+		let text2  = mlist[5]
 		"
 	endwhile
 	"
@@ -2340,20 +2405,27 @@ function! s:CheckStdTempl ( cmds, text, calls )
 		"
 		let m_name = mlist[1]
 		let m_flag = mlist[2]
+		let m_frmt = mlist[3]
+		"
+		if ! empty ( m_frmt ) && m_frmt !~ '\d'
+			" Width specified, but not with numbers:
+			" We have to replace the character '?' we delete in the macro text,
+			" which we do by inserting the first character after the leading '%' a
+			" second time.
+			let m_frmt = m_frmt[0:1].m_frmt[1:]
+		endif
 		"
 		" not a special macro and not already done?
 		if has_key ( s:StandardMacros, m_name )
 			call s:ErrorMsg ( 'The special macro "'.m_name.'" can not be replaced via |?'.m_name.'|.' )
 		elseif ! has_key ( prompted, m_name )
-			let cmds .= "Prompt(".string(m_name).",".string(m_flag).")\n"
+			let cmds .= "Prompt(".string(m_name).",".string(m_flag[1:]).")\n"
 			let prompted[ m_name ] = 1
 		endif
 		"
-		if ! empty ( m_flag ) | let m_flag = ':'.m_flag | endif
-		"
 		" insert a normal macro
 		let text = s:LiteralReplacement ( text, 
-					\ mlist[0], ms.m_name.m_flag.me, 'g' )
+					\ mlist[0], ms.m_name.m_flag.m_frmt.me, 'g' )
 		"
 	endwhile
 	"
@@ -2914,7 +2986,7 @@ function! s:PrepareStdTempl ( cmds, text, name )
 				" prompt user for replacement
 				let flagaction = get ( s:Flagactions, m_flag, '' )         " notify flag action, if any
 				let m_text = s:UserInput ( m_name.flagaction.' : ', m_text )
-				let m_text = s:ApplyFlag ( m_text, m_flag )
+				let m_text = s:ApplyFlag ( m_text, m_flag, '', 0 )
 				"
 				" save the result
 				let m_global[ m_name ] = m_text
@@ -3173,7 +3245,8 @@ function! s:PrepareTemplate ( name, ... )
 	endif
 	"
 	if remove_cursor
-		let text = substitute( text, '<CURSOR>\|{CURSOR}', '', 'g' )
+		let text = substitute( text, '<CURSOR>\|{CURSOR}',   '', 'g' )
+		let text = substitute( text, '<RCURSOR>\|{RCURSOR}', '         ', 'g' )
 	endif
 	if remove_split
 		let text = s:LiteralReplacement( text, '<SPLIT>',  '', 'g' )
@@ -3199,6 +3272,8 @@ function! s:PrepareTemplate ( name, ... )
 	endif
 	"
 endfunction    " ----------  end of function s:PrepareTemplate  ----------
+" }}}2
+"-------------------------------------------------------------------------------
 "
 "----------------------------------------------------------------------
 " === Insert Templates: Auxiliary Functions ===   {{{1
@@ -3355,7 +3430,7 @@ function! s:PositionCursor ( placement, flag_mode, pos1, pos2 )
 	" :TODO:12.08.2013 12:00:WM: change behavior?
 	"
 	call setpos ( '.', [ bufnr('%'), a:pos1, 1, 0 ] )
-	let mtch = search( '\m<CURSOR>\|{CURSOR}', 'c', a:pos2 )
+	let mtch = search( '\m<R\?CURSOR>\|{R\?CURSOR}', 'c', a:pos2 )
 	if mtch != 0
 		" tag found (and cursor moved, we are now at the position of the match)
 		let line = getline(mtch)
@@ -3374,6 +3449,9 @@ function! s:PositionCursor ( placement, flag_mode, pos1, pos2 )
 				"call setline( mtch, substitute( line, '<CURSOR>\|{CURSOR}', '', '' ) )
 				startinsert!
 			endif
+		elseif line =~ '<RCURSOR>\|{RCURSOR}'
+			call setline( mtch, substitute( line, '<RCURSOR>\|{RCURSOR}', '         ', '' ) )
+			startreplace
 		else
 			" the line contains other characters: remove the tag and start inserting
 			call setline( mtch, substitute( line, '<CURSOR>\|{CURSOR}', '', '' ) )

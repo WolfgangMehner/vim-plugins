@@ -49,6 +49,8 @@ Here is a list of high profile plug-ins which use the template support:
  4.    Templates                             |template-support-templates|
  4.1    Macros                               |template-support-templ-macro|
  4.1.1   Predefined Macros                   |template-support-templ-predef|
+ 4.1.2   Flags                               |template-support-templ-flag|
+ 4.1.3   Format Specifiers                   |template-support-templ-format|
  4.2    Tags                                 |template-support-templ-tags|
  4.3    Placement                            |template-support-templ-place|
  4.3.1   Visual Mode                         |template-support-templ-visual|
@@ -356,7 +358,7 @@ When this call is inserted into a library, it has to be checked for constructs
 which can not be used anymore. However, existing libraries must not be changed
 immediately once a new version comes along.
 
-See |template-support-change-interf| for a change log limited to changed in
+See |template-support-change-interf| for a change log limited to changes in
 the interface.
 
 ==============================================================================
@@ -458,33 +460,11 @@ be suggested the next time the user has to replace this macro:
 
 	== ENDTEMPLATE ==
 <
-Certain uses come with special requirements on the format of the replacement.
-Consider an include guard, where usually an upper case version of the files
-name is used to name the guard, such as "_THISFILE_INC":
->
-	== Preprocessor.include guard == below, noindent ==
-	#ifndef _|BASENAME:u|_INC
-	#define _|BASENAME:u|_INC
-	<CURSOR>
-	#endif   // -----  #ifndef _|BASENAME:u|_INC  -----
-	== ENDTEMPLATE ==
-<
-The macro *|BASENAME|* is automatically replaced with the name of the current
-file, not including the extension. The flag ":u" means the replacement will be
-inserted with all letters in uppercase. So a file named "string.h" will have
-an include guard named "_STRING_INC".
-
-The possible flags are listed below:
-	:l - change text to lowercase
-	:u - change text to uppercase
-	:c - capitalize text (change first letter to uppercase)
-	:L - legalize name (replace all non-word characters with underscores)
-
 ------------------------------------------------------------------------------
 
 4.1.1  Predefined Macros                       *template-support-templ-predef*
 
-The replacements for various macros are handles automatically by the template
+The replacements for various macros are handled automatically by the template
 support. Mostly, they will help with the basic documentation of the file: What
 was edited and when?
 
@@ -502,6 +482,127 @@ of these macros, they can not be set via SetMacro().
 
 The format of the inserted dates and times can be set via SetFormat (see
 |template-support-SetFormat|).
+
+------------------------------------------------------------------------------
+
+4.1.2  Flags                                     *template-support-templ-flag*
+
+Certain uses come with special requirements on the replacement text. Consider
+an include guard, where usually an upper case version of the files name is
+used to name the guard, such as "_THISFILE_INC":
+>
+	== Preprocessor.include guard == below, noindent ==
+	#ifndef _|BASENAME:u|_INC
+	#define _|BASENAME:u|_INC
+	<CURSOR>
+	#endif   // -----  #ifndef _|BASENAME:u|_INC  -----
+	== ENDTEMPLATE ==
+<
+The macro *|BASENAME|* is automatically replaced with the name of the current
+file, not including the extension. The flag ":u" means the replacement will be
+inserted with all letters in uppercase. So a file named "string.h" will have
+an include guard named "_STRING_INC".
+
+The possible flags are listed below:
+	:l - change replacement text to lowercase
+	:u - change replacement text to uppercase
+	:c - capitalize text (change first letter to uppercase)
+	:L - legalize name (replace all non-word characters with underscores)
+	:T - remove tags (remove all cursor, split, and jump tags)
+
+------------------------------------------------------------------------------
+
+4.1.3  Format Specifiers                       *template-support-templ-format*
+
+A format specifier can be added to change the way the macro is replaced. E.g.,
+in some comment boxes the formatting should not be broken. Consider this
+example:
+>
+	== Comments.file description == start ==
+	# ################################################## #
+	#          File:  |FILENAME|                         #
+	#   Description:  <CURSOR>                           #
+	#                                                    #
+	#        Author:  |AUTHOR|                           #
+	#       Version:  1.0                                #
+	#       Created:  |DATE|                             #
+	# ################################################## #
+
+	== ENDTEMPLATE ==
+<
+Inserting this template into a file would result in a broken formatting:
+>
+	# ################################################## #
+	#          File:  test.sh                         #
+	#   Description:  |                          #
+	#                                                    #
+	#        Author:  Wolfgang Mehner                           #
+	#       Version:  1.0                                #
+	#       Created:  11.11.2015                             #
+	# ################################################## #
+<
+Therefore macros can be specified to be inserted with fixed width, for
+example:
+>
+	== Comments.file description == start ==
+	# ################################################## #
+	#          File:  |FILENAME%++++++++++++++++++++++l| #
+	#   Description:  <RCURSOR>                          #
+	#                                                    #
+	#        Author:  |AUTHOR%++++++++++++++++++++++++l| #
+	#       Version:  1.0                                #
+	#       Created:  |DATE%++++++++++++++++++++++++++l| #
+	# ################################################## #
+
+	== ENDTEMPLATE ==
+<
+The format specifier causes the replacement text to be padded with spaces,
+such that a text of the desired width is inserted. The special cursor tag
+<RCURSOR> is replaced with the right amount of spaces as well, and after the
+template insertion replacement mode is started:
+>
+	# ################################################## #
+	#          File:  test.sh                            #
+	#   Description:  |                                  #
+	#                                                    #
+	#        Author:  Wolfgang Mehner                    #
+	#       Version:  1.0                                #
+	#       Created:  11.11.2015                         #
+	# ################################################## #
+<
+The format specifier is a '%' followed by several plus characters '+', which
+are used to extend the macro to the desired width. The format specifier ends
+with an (optional) character 'l', 'c', or 'r' to indicate the alignment (left,
+center, or right, respectively).
+
+If the replacement text is longer than the macro in the template, the
+formatting will be broken. Instead of the plus character, several dashes can
+be used. In this case the replacement text will be cut off if it is longer
+than the macro:
+>
+	== Comments.file description == start ==
+	# ################################################## #
+	#          File:  |FILENAME%----------------------l| #
+  ...
+<
+The width can also be specified by a number. To insert a text which is always
+at least 4 characters long: >
+  |AUTHORREF%+4|
+To insert it such that the text is never longer than 4 characters: >
+  |AUTHORREF%-4|
+
+The following format specifiers are possible, the alignment is always optional:
+
+  %++++++l - pad the replacement text
+  %------l - pad the replacement text, cut off if it is to long
+
+  %+10l    - the width is given by the number
+  %-10l    - the width is given by the number, cut off if the text is to long
+  %10l     - the width is given by the number, do not cut off
+
+  %+l %-l  - align left
+  %+c %-c  - align center
+  %+r %-r  - align right
 
 ------------------------------------------------------------------------------
 4.2  TAGS                                        *template-support-templ-tags*
@@ -2744,6 +2845,8 @@ D.  CHANGE LOG                                   *template-support-change-log*
   (This feature is considered to be part of the old interface.)
 - Added: Templates can be associated with a filetype, and its maps only
   created for that filetype.
+- Added: Format specifiers for macros.
+- Added: New "replacement cursor" tags <RCURSOR> and {RCURSOR}.
 - Added: New jump tags [+NAME+] and [-NAME-] for optional parameters.
 - Added: New map <ctrl-d> to delete optional jump tags [+NAME+] and [-NAME-].
 - Changed: Insert a breakpoint into the undo sequence before inserting
