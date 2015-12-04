@@ -1,4 +1,4 @@
-README for lua-support.vim (Version 1.0pre) / April 25 2015
+README for lua-support.vim (Version 1.0pre) / December 04 2015
 ================================================================================
 
   *  INSTALLATION
@@ -196,7 +196,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 - Added template personalization file and setup wizard.
 - Added Lua's reference manual in Vim's help format.
 - Added maps and menu entries to jump to it conveniently.
-- New and improved templates, add Lua5.3.
+- New and improved templates, add Lua 5.3.
 - Minor improvements.
 
   RELEASE NOTES FOR OLDER VERSIONS

@@ -499,7 +499,7 @@ Use the <CTRL-J> to jump to the next tag. The maps works in normal and insert
 mode. Use <CTRL-D> to delete optional tags on the same line, for example: >
   string.match ( <+str+>, <+pattern+>, [+init+] )
 The optional argument "init" can be written down after jumping to the tag
-using <CTRL-J> or deleted together with the comma using <CTRL-D>-
+using <CTRL-J> or deleted together with the comma using <CTRL-D>.
 
 ------------------------------------------------------------------------------
 3.3  SPLIT TAGS                              *luasupport-templates-split-tags*

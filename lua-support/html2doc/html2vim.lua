@@ -45,16 +45,16 @@ local link_main_component = 'lua52'
 local html_filename       = '/home/wolfgang/Software/lua-5.2.4/doc/manual.html'
 
 ------------------------------------------------------------------------
---  settings for Lua 5.3.1
+--  settings for Lua 5.3.2
 ------------------------------------------------------------------------
 
 --local lua_major           = 5
 --local lua_minor           = 3
---local lua_date            = 'Jun 17 2015'
+--local lua_date            = 'Nov 25 2015'
 --local lua_copyright       = '2015'
 --local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref53.txt'
 --local link_main_component = 'lua53'
---local html_filename       = '/home/wolfgang/Software/lua-5.3.1/doc/manual.html'
+--local html_filename       = '/home/wolfgang/Software/lua-5.3.2/doc/manual.html'
 
 ------------------------------------------------------------------------
 --  links to all versions (since Lua 5.3.1)

@@ -1,4 +1,4 @@
-*luaref53.txt*             Lua 5.3 Reference Manual                Jun 17 2015
+*luaref53.txt*             Lua 5.3 Reference Manual                Nov 25 2015
 
 Lua 5.3 Reference Manual                                     *lua53* *luaref53*
 
@@ -279,7 +279,7 @@ You can query the metatable of any value using the |lua53-getmetatable|
 function.
 You can replace the metatable of tables using the |lua53-setmetatable|
 function. You cannot change the metatable of other types from Lua code (except
-by using the debug library (|lua53-sec6.10|)); you must use the C API for
+by using the debug library (|lua53-sec6.10|)); you should use the C API for
 that.
 Tables and full userdata have individual metatables (although multiple tables
 and userdata can share their metatables). Values of all other types share one
@@ -348,7 +348,7 @@ most uses this extra operand is irrelevant.)
   except that Lua will try a metamethod only when the values being compared
   are neither both numbers nor both strings. The result of the call is always
   converted to a boolean.
-- "le": the <= (less equal) operation. Unlike other operations, The less-equal
+- "le": the <= (less equal) operation. Unlike other operations, the less-equal
   operation can use two different events. First, Lua looks for the "__le"
   metamethod in both operands, like in the "lt" operation. If it cannot find
   such a metamethod, then it will try the "__lt" event, assuming that a <= b
@@ -591,8 +591,8 @@ Lua is a free-form language. It ignores spaces (including new lines) and
 comments between lexical elements (tokens), except as delimiters between names
 and keywords.
 Names (also called identifiers) in Lua can be any string of letters, digits,
-and underscores, not beginning with a digit. Identifiers are used to name
-variables, table fields, and labels.
+and underscores, not beginning with a digit and not being a reserved word.
+Identifiers are used to name variables, table fields, and labels.
 The following keywords are reserved and cannot be used as names:
 >
      and       break     do        else      elseif    end
@@ -1575,7 +1575,8 @@ pseudo-indices. These pseudo-indices are produced by the macro
 |lua53-lua_upvalueindex|. The first upvalue associated with a function is at
 index lua_upvalueindex(1), and so on. Any access to lua_upvalueindex(n), where
 n is greater than the number of upvalues of the current function (but not
-greater than 256), produces an acceptable but invalid index.
+greater than 256, which is one plus the maximum number of upvalues in a
+closure), produces an acceptable but invalid index.
 
 ------------------------------------------------------------------------------
 4.5  Registry                                                   *lua53-sec4.5*
@@ -1729,9 +1730,9 @@ the form x|y means the function can push (or pop) x or y elements, depending
 on the situation; an interrogation mark '?' means that we cannot know how many
 elements the function pops/pushes by looking only at its arguments (e.g., they
 may depend on what is on the stack). The third field, x, tells whether the
-function may raise errors: '-' means the function never raises any error; 'e'
-means the function may raise errors; 'v' means the function may raise an error
-on purpose.
+function may raise errors: '-' means the function never raises any error; 'm'
+means the function may raise memory errors; 'e' means the function may raise
+errors; 'v' means the function may raise an error on purpose.
 
 ------------------------------------------------------------------------------
 
@@ -1863,10 +1864,10 @@ onto the stack. All arguments and the function value are popped from the stack
 when the function is called. The function results are pushed onto the stack
 when the function returns. The number of results is adjusted to nresults,
 unless nresults is LUA_MULTRET. In this case, all results from the function
-are pushed. Lua takes care that the returned values fit into the stack space.
-The function results are pushed onto the stack in direct order (the first
-result is pushed first), so that after the call the last result is on the top
-of the stack.
+are pushed. Lua takes care that the returned values fit into the stack space,
+but it does not ensure any extra space in the stack. The function results are
+pushed onto the stack in direct order (the first result is pushed first), so
+that after the call the last result is on the top of the stack.
 Any error inside the called function is propagated upwards (with a longjmp).
 The following example shows how the host program can do the equivalent to this
 Lua code:
@@ -1949,12 +1950,13 @@ lua_checkstack ~
 >
     int lua_checkstack (lua_State *L, int n);
 <
-Ensures that the stack has space for at least n extra slots. It returns false
-if it cannot fulfill the request, either because it would cause the stack to
-be larger than a fixed maximum size (typically at least several thousand
-elements) or because it cannot allocate memory for the extra space. This
-function never shrinks the stack; if the stack is already larger than the new
-size, it is left unchanged.
+Ensures that the stack has space for at least n extra slots (that is, that you
+can safely push up to n values into it). It returns false if it cannot fulfill
+the request, either because it would cause the stack to be larger than a fixed
+maximum size (typically at least several thousand elements) or because it
+cannot allocate memory for the extra space. This function never shrinks the
+stack; if the stack already has space for the extra slots, it is left
+unchanged.
 
 ------------------------------------------------------------------------------
 
@@ -2021,14 +2023,14 @@ value at that position. Values at other positions are not affected.
 
                                                        *lua53-lua_createtable*
 lua_createtable ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     void lua_createtable (lua_State *L, int narr, int nrec);
 <
 Creates a new empty table and pushes it onto the stack. Parameter narr is a
 hint for how many elements the table will have as a sequence; parameter nrec
 is a hint for how many other elements the table will have. Lua may use these
-hints to preallocate memory for the new table. This pre-allocation is useful
+hints to preallocate memory for the new table. This preallocation is useful
 for performance when you know in advance how many elements the table will
 have. Otherwise you can use the function |lua53-lua_newtable|.
 
@@ -2036,7 +2038,7 @@ have. Otherwise you can use the function |lua53-lua_newtable|.
 
                                                               *lua53-lua_dump*
 lua_dump ~
-                                                                   [-0, +0, e]
+                                                                   [-0, +0, -]
 >
     int lua_dump (lua_State *L,
                             lua_Writer writer,
@@ -2473,7 +2475,7 @@ passes to the allocator in every call.
 
                                                           *lua53-lua_newtable*
 lua_newtable ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     void lua_newtable (lua_State *L);
 <
@@ -2484,7 +2486,7 @@ lua_createtable(L, 0, 0).
 
                                                          *lua53-lua_newthread*
 lua_newthread ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     lua_State *lua_newthread (lua_State *L);
 <
@@ -2499,7 +2501,7 @@ subject to garbage collection, like any Lua object.
 
                                                        *lua53-lua_newuserdata*
 lua_newuserdata ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     void *lua_newuserdata (lua_State *L, size_t size);
 <
@@ -2641,7 +2643,7 @@ Pushes a boolean value with value b onto the stack.
 
                                                       *lua53-lua_pushcclosure*
 lua_pushcclosure ~
-                                                                   [-n, +1, e]
+                                                                   [-n, +1, m]
 >
     void lua_pushcclosure (lua_State *L, lua_CFunction fn, int n);
 <
@@ -2676,7 +2678,7 @@ its parameters and return its results (see |lua53-lua_CFunction|).
 
                                                        *lua53-lua_pushfstring*
 lua_pushfstring ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     const char *lua_pushfstring (lua_State *L, const char *fmt, ...);
 <
@@ -2732,7 +2734,7 @@ light userdata is equal to "any" light userdata with the same C address.
 
                                                        *lua53-lua_pushliteral*
 lua_pushliteral ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     const char *lua_pushliteral (lua_State *L, const char *s);
 <
@@ -2743,7 +2745,7 @@ when s is a literal string.
 
                                                        *lua53-lua_pushlstring*
 lua_pushlstring ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     const char *lua_pushlstring (lua_State *L, const char *s, size_t len);
 <
@@ -2777,7 +2779,7 @@ Pushes a float with value n onto the stack.
 
                                                         *lua53-lua_pushstring*
 lua_pushstring ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     const char *lua_pushstring (lua_State *L, const char *s);
 <
@@ -2812,7 +2814,7 @@ Pushes a copy of the element at the given index onto the stack.
 
                                                       *lua53-lua_pushvfstring*
 lua_pushvfstring ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     const char *lua_pushvfstring (lua_State *L,
                                   const char *fmt,
@@ -2886,7 +2888,7 @@ allocated for the userdata; for other values, it is 0.
 
                                                             *lua53-lua_rawset*
 lua_rawset ~
-                                                                   [-2, +0, e]
+                                                                   [-2, +0, m]
 >
     void lua_rawset (lua_State *L, int index);
 <
@@ -2897,7 +2899,7 @@ metamethods).
 
                                                            *lua53-lua_rawseti*
 lua_rawseti ~
-                                                                   [-1, +0, e]
+                                                                   [-1, +0, m]
 >
     void lua_rawseti (lua_State *L, int index, lua_Integer i);
 <
@@ -2910,7 +2912,7 @@ it does not invoke metamethods.
 
                                                            *lua53-lua_rawsetp*
 lua_rawsetp ~
-                                                                   [-1, +0, e]
+                                                                   [-1, +0, m]
 >
     void lua_rawsetp (lua_State *L, int index, const void *p);
 <
@@ -3211,19 +3213,19 @@ whether the operation succeeded.
 
                                                          *lua53-lua_tolstring*
 lua_tolstring ~
-                                                                   [-0, +0, e]
+                                                                   [-0, +0, m]
 >
     const char *lua_tolstring (lua_State *L, int index, size_t *len);
 <
 Converts the Lua value at the given index to a C string. If len is not NULL,
-it also sets *len with the string length. The Lua value must be a string or a
+it sets *len with the string length. The Lua value must be a string or a
 number; otherwise, the function returns NULL. If the value is a number, then
 lua_tolstring also changes the actual value in the stack to a string. (This
 change confuses |lua53-lua_next| when lua_tolstring is applied to keys during
 a table traversal.)
-lua_tolstring returns a fully aligned pointer to a string inside the Lua
-state. This string always has a zero ('\0') after its last character (as in
-C), but can contain other zeros in its body.
+lua_tolstring returns a pointer to a string inside the Lua state. This string
+always has a zero ('\0') after its last character (as in C), but can contain
+other zeros in its body.
 Because Lua has garbage collection, there is no guarantee that the pointer
 returned by lua_tolstring will be valid after the corresponding Lua value is
 removed from the stack.
@@ -3271,7 +3273,7 @@ Typically this function is used only for hashing and debug information.
 
                                                           *lua53-lua_tostring*
 lua_tostring ~
-                                                                   [-0, +0, e]
+                                                                   [-0, +0, m]
 >
     const char *lua_tostring (lua_State *L, int index);
 <
@@ -3792,7 +3794,7 @@ alphabetical order.
 
                                                           *lua53-luaL_addchar*
 luaL_addchar ~
-                                                                   [-?, +?, e]
+                                                                   [-?, +?, m]
 >
     void luaL_addchar (luaL_Buffer *B, char c);
 <
@@ -3802,7 +3804,7 @@ Adds the byte c to the buffer B (see |lua53-luaL_Buffer|).
 
                                                        *lua53-luaL_addlstring*
 luaL_addlstring ~
-                                                                   [-?, +?, e]
+                                                                   [-?, +?, m]
 >
     void luaL_addlstring (luaL_Buffer *B, const char *s, size_t l);
 <
@@ -3813,7 +3815,7 @@ Adds the string pointed to by s with length l to the buffer B (see
 
                                                           *lua53-luaL_addsize*
 luaL_addsize ~
-                                                                   [-?, +?, e]
+                                                                   [-?, +?, -]
 >
     void luaL_addsize (luaL_Buffer *B, size_t n);
 <
@@ -3824,7 +3826,7 @@ copied to the buffer area (see |lua53-luaL_prepbuffer|).
 
                                                         *lua53-luaL_addstring*
 luaL_addstring ~
-                                                                   [-?, +?, e]
+                                                                   [-?, +?, m]
 >
     void luaL_addstring (luaL_Buffer *B, const char *s);
 <
@@ -3835,7 +3837,7 @@ Adds the zero-terminated string pointed to by s to the buffer B (see
 
                                                          *lua53-luaL_addvalue*
 luaL_addvalue ~
-                                                                   [-1, +?, e]
+                                                                   [-1, +?, m]
 >
     void luaL_addvalue (luaL_Buffer *B);
 <
@@ -3921,7 +3923,7 @@ must be declared as a variable (see |lua53-luaL_Buffer|).
 
                                                      *lua53-luaL_buffinitsize*
 luaL_buffinitsize ~
-                                                                   [-?, +?, e]
+                                                                   [-?, +?, m]
 >
     char *luaL_buffinitsize (lua_State *L, luaL_Buffer *B, size_t sz);
 <
@@ -4115,7 +4117,7 @@ return luaL_error(args).
 
                                                        *lua53-luaL_execresult*
 luaL_execresult ~
-                                                                   [-0, +3, e]
+                                                                   [-0, +3, m]
 >
     int luaL_execresult (lua_State *L, int stat);
 <
@@ -4126,7 +4128,7 @@ standard library (|lua53-os.execute| and |lua53-io.close|).
 
                                                        *lua53-luaL_fileresult*
 luaL_fileresult ~
-                                                           [-0, +( 1 | 3 ), e]
+                                                           [-0, +( 1 | 3 ), m]
 >
     int luaL_fileresult (lua_State *L, int stat, const char *fname);
 <
@@ -4138,7 +4140,7 @@ etc.).
 
                                                      *lua53-luaL_getmetafield*
 luaL_getmetafield ~
-                                                           [-0, +( 0 | 1 ), e]
+                                                           [-0, +( 0 | 1 ), m]
 >
     int luaL_getmetafield (lua_State *L, int obj, const char *e);
 <
@@ -4151,7 +4153,7 @@ returns LUA_TNIL.
 
                                                      *lua53-luaL_getmetatable*
 luaL_getmetatable ~
-                                                                   [-0, +1, -]
+                                                                   [-0, +1, m]
 >
     int luaL_getmetatable (lua_State *L, const char *tname);
 <
@@ -4175,7 +4177,7 @@ previous table there and false if it creates a new table.
 
                                                              *lua53-luaL_gsub*
 luaL_gsub ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     const char *luaL_gsub (lua_State *L,
                            const char *s,
@@ -4276,7 +4278,7 @@ it.
 
                                                            *lua53-luaL_newlib*
 luaL_newlib ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     void luaL_newlib (lua_State *L, const luaL_Reg l[]);
 <
@@ -4291,7 +4293,7 @@ The array l must be the actual array, not a pointer to it.
 
                                                       *lua53-luaL_newlibtable*
 luaL_newlibtable ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     void luaL_newlibtable (lua_State *L, const luaL_Reg l[]);
 <
@@ -4305,7 +4307,7 @@ pointer to it.
 
                                                      *lua53-luaL_newmetatable*
 luaL_newmetatable ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     int luaL_newmetatable (lua_State *L, const char *tname);
 <
@@ -4367,7 +4369,9 @@ luaL_optlstring ~
 <
 If the function argument arg is a string, returns this string. If this
 argument is absent or is nil, returns d. Otherwise, raises an error.
-If l is not NULL, fills the position *l with the result's length.
+If l is not NULL, fills the position *l with the result's length. If the
+result is NULL (only possible when returning d and d == NULL), its length is
+considered zero.
 
 ------------------------------------------------------------------------------
 
@@ -4398,7 +4402,7 @@ argument is absent or is nil, returns d. Otherwise, raises an error.
                                                        *lua53-LUAL_BUFFERSIZE*
                                                        *lua53-luaL_prepbuffer*
 luaL_prepbuffer ~
-                                                                   [-?, +?, e]
+                                                                   [-?, +?, m]
 >
     char *luaL_prepbuffer (luaL_Buffer *B);
 <
@@ -4409,7 +4413,7 @@ LUAL_BUFFERSIZE.
 
                                                      *lua53-luaL_prepbuffsize*
 luaL_prepbuffsize ~
-                                                                   [-?, +?, e]
+                                                                   [-?, +?, m]
 >
     char *luaL_prepbuffsize (luaL_Buffer *B, size_t sz);
 <
@@ -4422,7 +4426,7 @@ actually add it to the buffer.
 
                                                        *lua53-luaL_pushresult*
 luaL_pushresult ~
-                                                                   [-?, +1, e]
+                                                                   [-?, +1, m]
 >
     void luaL_pushresult (luaL_Buffer *B);
 <
@@ -4432,7 +4436,7 @@ Finishes the use of buffer B leaving the final string on the top of the stack.
 
                                                    *lua53-luaL_pushresultsize*
 luaL_pushresultsize ~
-                                                                   [-?, +1, e]
+                                                                   [-?, +1, m]
 >
     void luaL_pushresultsize (luaL_Buffer *B, size_t sz);
 <
@@ -4444,7 +4448,7 @@ Equivalent to the sequence |lua53-luaL_addsize|, |lua53-luaL_pushresult|.
                                                              *lua53-LUA_NOREF*
                                                               *lua53-luaL_ref*
 luaL_ref ~
-                                                                   [-1, +0, e]
+                                                                   [-1, +0, m]
 >
     int luaL_ref (lua_State *L, int t);
 <
@@ -4494,7 +4498,7 @@ Leaves a copy of the module on the stack.
 
                                                          *lua53-luaL_setfuncs*
 luaL_setfuncs ~
-                                                                 [-nup, +0, e]
+                                                                 [-nup, +0, m]
 >
     void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup);
 <
@@ -4537,14 +4541,14 @@ stream (or it can be NULL to indicate an incompletely created handle). Field
 closef points to a Lua function that will be called to close the stream when
 the handle is closed or collected; this function receives the file handle as
 its sole argument and must return either true (in case of success) or nil plus
-an error message (in case of error). Once Lua calls this field, the field
-value is changed to NULL to signal that the handle is closed.
+an error message (in case of error). Once Lua calls this field, it changes the
+field value to NULL to signal that the handle is closed.
 
 ------------------------------------------------------------------------------
 
                                                         *lua53-luaL_testudata*
 luaL_testudata ~
-                                                                   [-0, +0, e]
+                                                                   [-0, +0, m]
 >
     void *luaL_testudata (lua_State *L, int arg, const char *tname);
 <
@@ -4571,7 +4575,7 @@ result of the call as its result.
 
                                                         *lua53-luaL_traceback*
 luaL_traceback ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     void luaL_traceback (lua_State *L, lua_State *L1, const char *msg,
                          int level);
@@ -4608,7 +4612,7 @@ If ref is LUA_NOREF (|lua53-LUA_NOREF|) or LUA_REFNIL (|lua53-LUA_REFNIL|),
 
                                                             *lua53-luaL_where*
 luaL_where ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     void luaL_where (lua_State *L, int lvl);
 <
@@ -4910,10 +4914,10 @@ arguments it received.
                                                           *lua53-setmetatable*
 setmetatable (table, metatable) ~
 
-Sets the metatable for the given table. (You cannot change the metatable of
-other types from Lua, only from C.) If metatable is nil, removes the metatable
-of the given table. If the original metatable has a "__metatable" field,
-raises an error.
+Sets the metatable for the given table. (To change the metatable of other
+types from Lua code, you must use the debug library (|lua53-sec6.10|).) If
+metatable is nil, removes the metatable of the given table. If the original
+metatable has a "__metatable" field, raises an error.
 This function returns table.
 
 ------------------------------------------------------------------------------
@@ -4959,8 +4963,8 @@ of this function are "nil" (a string, not the value nil), "number", "string",
                                                               *lua53-_VERSION*
 _VERSION ~
 
-A global variable (not a function) that holds a string containing the current
-interpreter version. The current value of this variable is "Lua 5.3".
+A global variable (not a function) that holds a string containing the running
+Lua version. The current value of this variable is "Lua 5.3".
 
 ------------------------------------------------------------------------------
 
@@ -5323,8 +5327,9 @@ may produce the string:
 <
 Options A, a, E, e, f, G, and g all expect a number as argument. Options c, d,
 i, o, u, X, and x expect an integer. Option q expects a string. Option s
-expects a string without embedded zeros; if its argument is not a string, it
-is converted to one following the same rules of |lua53-tostring|.
+expects a string; if its argument is not a string, it is converted to one
+following the same rules of |lua53-tostring|. If the option has any modifier
+(flags, width, length), the string argument should not contain embedded zeros.
 When Lua is compiled with a non-C99 compiler, options A and a (hexadecimal
 floats) do not support any modifier (flags, width, length).
 
@@ -5458,6 +5463,8 @@ string.rep (s, n [, sep]) ~
 Returns a string that is the concatenation of n copies of the string s
 separated by the string sep. The default value for sep is the empty string
 (that is, no separator). Returns the empty string if n is not positive.
+(Note that it is very easy to exhaust the memory of your machine with a single
+call to this function.)
 
 ------------------------------------------------------------------------------
 
@@ -5790,10 +5797,15 @@ table.sort (list [, comp]) ~
 Sorts list elements in a given order, in-place, from list[1] to list[#list].
 If comp is given, then it must be a function that receives two list elements
 and returns true when the first element must come before the second in the
-final order (so that not comp(list[i+1],list[i]) will be true after the sort).
-If comp is not given, then the standard Lua operator < is used instead.
-The sort algorithm is not stable; that is, elements considered equal by the
-given order may have their relative positions changed by the sort.
+final order (so that, after the sort, i < j implies not
+comp(list[j],list[i])). If comp is not given, then the standard Lua operator <
+is used instead.
+Note that the comp function must define a strict partial order over the
+elements in the list; that is, it must be asymmetric and transitive.
+Otherwise, no valid sort may be possible.
+The sort algorithm is not stable; that is, elements not comparable by the
+given order (e.g., equal elements) may have their relative positions changed
+by the sort.
 
 ------------------------------------------------------------------------------
 
@@ -5967,11 +5979,10 @@ math.random ([m [, n]]) ~
 When called without arguments, returns a pseudo-random float with uniform
 distribution in the range [0,1). When called with two integers m and n,
 math.random returns a pseudo-random integer with uniform distribution in the
-range [m, n]. (The value m-n cannot be negative and must fit in a Lua
+range [m, n]. (The value n-m cannot be negative and must fit in a Lua
 integer.) The call math.random(n) is equivalent to math.random(1,n).
 This function is an interface to the underling pseudo-random generator
-function provided by C. No guarantees can be given for its statistical
-properties.
+function provided by C.
 
 ------------------------------------------------------------------------------
 
@@ -6079,7 +6090,7 @@ error code.
 ------------------------------------------------------------------------------
 
                                                               *lua53-io.lines*
-io.lines ([filename ...]) ~
+io.lines ([filename, ...]) ~
 
 Opens the given file name in read mode and returns an iterator function that
 works like file:lines(...) over the opened file. When the iterator function
@@ -6290,15 +6301,15 @@ If the time argument is present, this is the time to be formatted (see the
 formats the current time.
 If format starts with '!', then the date is formatted in Coordinated Universal
 Time. After this optional character, if format is the string "*t", then date
-returns a table with the following fields: year (four digits), month (1-12),
-day (1-31), hour (0-23), min (0-59), sec (0-61), wday (weekday, Sunday is 1),
-yday (day of the year), and isdst (daylight saving flag, a boolean). This last
-field may be absent if the information is not available.
+returns a table with the following fields: year, month (1-12), day (1-31),
+hour (0-23), min (0-59), sec (0-61), wday (weekday, Sunday is 1), yday (day of
+the year), and isdst (daylight saving flag, a boolean). This last field may be
+absent if the information is not available.
 If format is not "*t", then date returns the date as a string, formatted
 according to the same rules as the ISO C function strftime.
 When called without arguments, date returns a reasonable date and time
-representation that depends on the host system and on the current locale (that
-is, os.date() is equivalent to os.date("%c")).
+representation that depends on the host system and on the current locale.
+(More specifically, os.date() is equivalent to os.date("%c").)
 On non-POSIX systems, this function may be not thread safe because of its
 reliance on C function gmtime and C function localtime.
 
@@ -6876,10 +6887,10 @@ Numeral, and LiteralString, see |lua53-sec3.1|.)
 ------------------------------------------------------------------------------
 
 Last update:
-Wed Jun 10 18:31:15 BRT 2015
+Wed Nov 25 15:19:10 BRST 2015
 
 Formated for Vim help:
-Sun Jul 12 19:58:38 CEST 2015
+Thu Dec 03 15:45:51 CET 2015
 
 ==============================================================================
 vim:tw=78:expandtab:ts=4:ft=help:norl:
