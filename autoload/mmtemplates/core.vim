@@ -429,10 +429,11 @@ function! s:UpdateTemplateRegex ( regex, settings, interface )
 	let a:regex.FunctionList    = '^LIST(\(.\{-}\))$'
 	let a:regex.FunctionComment = a:settings.MacroStart.'\(C\|Comment\)'.'(\(.\{-}\))'.a:settings.MacroEnd
 	let a:regex.FunctionInsert  = a:settings.MacroStart.'\(Insert\|InsertLine\)'.'(\(.\{-}\))'.a:settings.MacroEnd
-	let a:regex.MacroRequest    = a:settings.MacroStart.'?'.a:regex.MacroNameC.  '\(:\a\)\?'. '\(%\%([-+*]\+\|[-+*]\?\d\+\)[lcr]\?\)\?'.a:settings.MacroEnd
-	let a:regex.MacroInsert     = a:settings.MacroStart.''.a:regex.MacroNameC.   '\(:\a\)\?'. '\(%\%([-+*]\+\|[-+*]\?\d\+\)[lcr]\?\)\?'.a:settings.MacroEnd
-	let a:regex.MacroNoCapture  = a:settings.MacroStart.   a:settings.MacroName.'\%(:\a\)\?'.'\%(%[-+*]*\d*[lcr]\?\)\?'.                a:settings.MacroEnd
+	let a:regex.MacroRequest    = a:settings.MacroStart.'?'.  a:regex.MacroNameC.   '\(:\a\)\?'. '\(%\%([-+*]\+\|[-+*]\?\d\+\)[lcr]\?\)\?'.a:settings.MacroEnd
+	let a:regex.MacroInsert     = a:settings.MacroStart.'?\?'.a:regex.MacroNameC.   '\(:\a\)\?'. '\(%\%([-+*]\+\|[-+*]\?\d\+\)[lcr]\?\)\?'.a:settings.MacroEnd
+	let a:regex.MacroNoCapture  = a:settings.MacroStart.'?\?'.a:settings.MacroName.'\%(:\a\)\?'.'\%(%[-+*]*\d*[lcr]\?\)\?'.                a:settings.MacroEnd
 	let a:regex.ListItem        = a:settings.MacroStart.''.a:regex.MacroNameC.':ENTRY_*'.a:settings.MacroEnd
+	let a:regex.LeftRightSep    = a:settings.MacroStart.'<\+>\+'.a:settings.MacroEnd
 	"
 	let a:regex.TextBlockFunctions = '^\%(C\|Comment\|Insert\|InsertLine\)$'
 	"
@@ -2272,57 +2273,82 @@ endfunction    " ----------  end of function s:ApplyFlag  ----------
 "
 function! s:ReplaceMacros ( text, m_local )
 	"
-	let text1 = ''
-	let text2 = a:text
+	let regex_macro = '\(.\{-}\)'.s:library.regex_template.MacroInsert.'\(\_.*\)'
+	let regex_lrsep = '\(.\{-}\)\s*'.s:library.regex_template.LeftRightSep.'\s*\(\_.*\)'
 	"
-	let regex = '\(\_.\{-}\)'.s:library.regex_template.MacroInsert.'\(\_.*\)'
+	let text_res = ''
 	"
-	while 1
+	" split lines (keep newline)
+	for line_raw in split( a:text, '\n\zs' )
 		"
-		let mlist = matchlist ( text2, regex )
+		let line_width = len ( line_raw )
 		"
-		" no more macros?
-		if empty ( mlist )
-			break
+		let line_res  = ''
+		let line_tail = line_raw
+		"
+		" search for macros
+		while 1
+			"
+			let mlist = matchlist ( line_tail, regex_macro )
+			"
+			" no more macros?
+			if empty ( mlist )
+				let line_res .= line_tail                                 " assemble the result
+				break
+			endif
+			"
+			" check for recursion
+			if -1 != index ( s:t_runtime.macro_stack, mlist[2] )
+				let m_text = ''
+				call add ( s:t_runtime.macro_stack, mlist[2] )
+				throw 'Template:MacroRecursion'
+			end
+			"
+			" has local replacement?
+			if has_key ( a:m_local, mlist[2] )
+				let m_text = get ( a:m_local, mlist[2] )                  " get local replacement
+			else
+				let m_text = get ( s:library.macros, mlist[2], '' )       " try to get global replacement
+			end
+			"
+			" the replacement text contains macros itself?
+			if m_text =~ s:library.regex_template.MacroNoCapture
+				"
+				call add ( s:t_runtime.macro_stack, mlist[2] )            " add to the macro stack (for recursion checks)
+				"
+				let m_text = s:ReplaceMacros ( m_text, a:m_local )        " replace the macros in the replacement text
+				"
+				call remove ( s:t_runtime.macro_stack, -1 )               " revert the stack
+				"
+			endif
+			"
+			" apply flag?
+			if ! empty ( mlist[3] ) || ! empty ( mlist[4] )
+				let width  = 2 + len ( mlist[2] ) + len ( mlist[3] ) + len ( mlist[4] )
+				let m_text = s:ApplyFlag ( m_text, mlist[3][1:], mlist[4][1:], width )   " apply flags to the replacement text
+			endif
+			"
+			let line_res .= mlist[1].m_text                             " assemble the result
+			let line_tail = mlist[5]
+			"
+		endwhile
+		"
+		" special: left-right separator
+		if line_res =~ s:library.regex_template.LeftRightSep
+			let mlist = matchlist ( line_res, regex_lrsep )
+			"
+			let text_l = mlist[1]
+			let text_r = mlist[2]
+			"
+			let pad = max ( [ line_width - len ( text_l ) - len ( text_r ), 1 ] )
+			"
+			let line_res = text_l.repeat( ' ', pad ).text_r
 		endif
 		"
-		" check for recursion
-		if -1 != index ( s:t_runtime.macro_stack, mlist[2] )
-			let m_text = ''
-			call add ( s:t_runtime.macro_stack, mlist[2] )
-			throw 'Template:MacroRecursion'
-		end
-		"
-		" has local replacement?
-		if has_key ( a:m_local, mlist[2] )
-			let m_text = get ( a:m_local, mlist[2] )                  " get local replacement
-		else
-			let m_text = get ( s:library.macros, mlist[2], '' )       " try to get global replacement
-		end
-		"
-		" the replacement text contains macros itself?
-		if m_text =~ s:library.regex_template.MacroNoCapture
-			"
-			call add ( s:t_runtime.macro_stack, mlist[2] )            " add to the macro stack (for recursion checks)
-			"
-			let m_text = s:ReplaceMacros ( m_text, a:m_local )        " replace the macros in the replacement text
-			"
-			call remove ( s:t_runtime.macro_stack, -1 )               " revert the stack
-			"
-		endif
-		"
-		" apply flag?
-		if ! empty ( mlist[3] ) || ! empty ( mlist[4] )
-			let width  = 2 + len ( mlist[2] ) + len ( mlist[3] ) + len ( mlist[4] )
-			let m_text = s:ApplyFlag ( m_text, mlist[3][1:], mlist[4][1:], width )   " apply flags to the replacement text
-		endif
-		"
-		let text1 .= mlist[1].m_text                                " assemble the result
-		let text2  = mlist[5]
-		"
-	endwhile
+		let text_res .= line_res
+	endfor
 	"
-	return text1.text2
+	return text_res
 	"
 endfunction    " ----------  end of function s:ReplaceMacros  ----------
 "
@@ -2394,26 +2420,25 @@ function! s:CheckStdTempl ( cmds, text, calls )
 	" --------------------------------------------------
 	"  replacements
 	" --------------------------------------------------
+	"
+	let pos = 0
+	"
 	while 1
 		"
-		let mlist = matchlist ( text, regex.MacroRequest )
+		let pos = match ( text, regex.MacroRequest, pos )
 		"
 		" no more macros?
-		if empty ( mlist )
+		if pos == -1
 			break
 		endif
+		"
+		let mlist = matchlist ( text, regex.MacroRequest, pos )
+		"
+		let pos += len ( mlist[0] )
 		"
 		let m_name = mlist[1]
 		let m_flag = mlist[2]
 		let m_frmt = mlist[3]
-		"
-		if ! empty ( m_frmt ) && m_frmt !~ '\d'
-			" Width specified, but not with numbers:
-			" We have to replace the character '?' we delete in the macro text,
-			" which we do by inserting the first character after the leading '%' a
-			" second time.
-			let m_frmt = m_frmt[0:1].m_frmt[1:]
-		endif
 		"
 		" not a special macro and not already done?
 		if has_key ( s:StandardMacros, m_name )
@@ -2422,10 +2447,6 @@ function! s:CheckStdTempl ( cmds, text, calls )
 			let cmds .= "Prompt(".string(m_name).",".string(m_flag[1:]).")\n"
 			let prompted[ m_name ] = 1
 		endif
-		"
-		" insert a normal macro
-		let text = s:LiteralReplacement ( text, 
-					\ mlist[0], ms.m_name.m_flag.m_frmt.me, 'g' )
 		"
 	endwhile
 	"

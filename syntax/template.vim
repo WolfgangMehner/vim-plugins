@@ -82,6 +82,7 @@ syn match TemplString  "'\%([^']\|''\)*'" contains=TemplMacro,TemplTag,TemplJump
 syn match TemplString  "\"\%([^"\\]\|\\.\)*\"" contains=TemplMacro,TemplTag,TemplJump
 
 syn match TemplMacro   "|?\?[a-zA-Z][a-zA-Z0-9_]*\%(:\a\)\?\%(%\%([-+*]\+\|[-+*]\?\d\+\)[lrc]\?\)\?|"
+syn match TemplTag     "|<\+>\+|"
 syn match TemplTag     "<CURSOR>\|{CURSOR}"
 syn match TemplTag     "<RCURSOR>\|{RCURSOR}"
 syn match TemplTag     "<SPLIT>"

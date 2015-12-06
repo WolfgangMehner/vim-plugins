@@ -2841,51 +2841,52 @@ D.  CHANGE LOG                                   *template-support-change-log*
   **  introduced prior to 1.0 .                                           **
   **  Calling InterfaceVersion() will enable newer features.              **
 
-- Added: 'InterfaceVersion' to enable newer features in the template library.
+- Add: 'InterfaceVersion' to enable newer features in the template library.
   (This feature is considered to be part of the old interface.)
-- Added: Templates can be associated with a filetype, and its maps only
-  created for that filetype.
-- Added: Format specifiers for macros.
-- Added: New "replacement cursor" tags <RCURSOR> and {RCURSOR}.
-- Added: New jump tags [+NAME+] and [-NAME-] for optional parameters.
-- Added: New map <ctrl-d> to delete optional jump tags [+NAME+] and [-NAME-].
-- Changed: Insert a breakpoint into the undo sequence before inserting
+- Add: Templates can be associated with a filetype, and its maps only created
+  for that filetype.
+- Add: Format specifiers for macros.
+- Add: New "replacement cursor" tags <RCURSOR> and {RCURSOR}.
+- Add: Left-right separators *|<<>>|* .
+- Add: New jump tags [+NAME+] and [-NAME-] for optional parameters.
+- Add: New map <ctrl-d> to delete optional jump tags [+NAME+] and [-NAME-].
+- Change: Insert a breakpoint into the undo sequence before inserting
   templates or jumping via <ctrl+j>.
-- Added: Template options "expandleft" and "expandright". Extended the option
+- Add: Template options "expandleft" and "expandright". Extended the option
   "expandmenu".
-- Added: Functions 'SetMap', 'SetShortcut', and 'SetMenuEntry'.
-- Changed: If a template is redefined, the options are read again.
-- Changed: During the creation of the submenu for a list-picking template, all
+- Add: Functions 'SetMap', 'SetShortcut', and 'SetMenuEntry'.
+- Change: If a template is redefined, the options are read again.
+- Change: During the creation of the submenu for a list-picking template, all
   special characters are escaped correctly. (The characters "\" and "|" were
   not escaped before.)
-- Changed: Inserting templates in visual mode does not overwrite the unnamed
+- Change: Inserting templates in visual mode does not overwrite the unnamed
   register anymore.
-- Fixed: Map creation could fail after reloading the template library.
-- Added: User setting |g:Templates_TemplateBrowser| to configure the browser
+- Fix: Map creation could fail after reloading the template library.
+- Add: User setting |g:Templates_TemplateBrowser| to configure the browser
   used for editing templates.
-- Added: User settings |g:Templates_PersonalizationFile| and
+- Add: User settings |g:Templates_PersonalizationFile| and
   |g:Templates_UsePersonalizationFile| to configure the personalization file.
-- Added: Help templates can call a browser using |Browser( <url> )|.
-- Added: User settings |g:Templates_InternetBrowserExec| and
+- Add: Help templates can call a browser using |Browser( <url> )|.
+- Add: User settings |g:Templates_InternetBrowserExec| and
   |g:Templates_InternetBrowserFlags| to configure the browser used by help
   templates.
-- Added: Proper filetype detection for template files, filetype plug-in.
-- Added: Setup wizard.
-- Extended the documentation.
+- Add: Proper filetype detection for template files, filetype plug-in.
+- Add: Setup wizard.
+- Extend the documentation.
 
 API:
-- Changed: Template files can be associated with a symbolic name and a map,
+- Change: Template files can be associated with a symbolic name and a map,
   which are used for the creation of the "edit templates" menu entries and
   maps.
-- Changed: Template files can be optional. Information such as their symbolic
+- Change: Template files can be optional. Information such as their symbolic
   name is kept. They still show up in debug information, ... They can be
   enabled later on, e.g. by the template setup wizard.
-- Added: Extended the API with functionality for adding a personalization file
+- Add: Extended the API with functionality for adding a personalization file
   which can be used by all libraries.
-- Added: Function |mmtemplates#core#EnableTemplateFile()|.
-- Added: Function |mmtemplates#core#FindPersonalizationFile()|.
-- Added: Function |mmtemplates#core#AddCustomTemplateFiles()|.
-- Changed: New options for the function |mmtemplates#core#ReadTemplates()| and
+- Add: Function |mmtemplates#core#EnableTemplateFile()|.
+- Add: Function |mmtemplates#core#FindPersonalizationFile()|.
+- Add: Function |mmtemplates#core#AddCustomTemplateFiles()|.
+- Change: New options for the function |mmtemplates#core#ReadTemplates()| and
   |mmtemplates#core#Resource()|.
 
 Internal Changes:
@@ -3008,19 +3009,19 @@ See also |template-support-lib-interf|.
   INTERFACE VERSION 1.0
 ------------------------------------------------------------------------------
 
-- Added: Templates can be associated with a filetype, and its maps only
-  created for that filetype, using: >
+- Add: Templates can be associated with a filetype, and its maps only created
+  for that filetype, using: >
   == USE FILETYPES : ... ==
-- Added: New jump tags [+NAME+] and [-NAME-] for optional parameters. Can be
+- Add: New jump tags [+NAME+] and [-NAME-] for optional parameters. Can be
   used as targets for jumps.
-- Added: New map <ctrl-d> to delete optional jump tags [+NAME+] and [-NAME-]
+- Add: New map <ctrl-d> to delete optional jump tags [+NAME+] and [-NAME-]
   together with their separator ",".
-- Added: Template options "expandleft" and "expandright". Extended the option
+- Add: Template options "expandleft" and "expandright". Extended the option
   "expandmenu".
-- Changed: During the creation of the submenu for a list-picking template, all
+- Change: During the creation of the submenu for a list-picking template, all
   special characters are escaped correctly. (The characters "\" and "|" were
   not escaped before.)
-- Added: Help templates can call a browser using |Browser( <url> )|.
+- Add: Help templates can call a browser using |Browser( <url> )|.
 
 ------------------------------------------------------------------------------
   INTERFACE VERSION 0.9
