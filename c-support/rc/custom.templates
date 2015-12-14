@@ -1,0 +1,118 @@
+§ =============================================================
+§  Custom Templates
+§ =============================================================
+
+§ set the template style used after loading the library
+SetStyle( 'C' )
+§SetStyle( 'CPP' )
+§SetStyle( 'Doxygen' )
+
+§ -------------------------------------------------------------
+§  A template definition is build like this:
+§    == Menu.some name == <options> ==
+§    <inserted code>
+§    == Menu.other name == <options> ==
+§    <inserted code>
+§    == ENDTEMPLATE ==
+§  A template ends with the line "== ENDTEMPLATE ==" or with
+§  the start of a new template.
+§ -------------------------------------------------------------
+
+§ -------------------------------------------------------------
+§  Statements
+§ -------------------------------------------------------------
+
+§ uncomment and edit to customize, separately for each style
+
+== USE STYLES : C, Doxygen ==
+
+§== Statements.switch == map:ss, shortcut:s  ==
+§switch ( <CURSOR> ) {
+§	case <-LABEL->:	
+§		<SPLIT>break;
+§
+§	case <-LABEL->:	
+§		break;
+§
+§	case <-LABEL->:	
+§		break;
+§
+§	default:	
+§		break;
+§}				/* -----  end switch  ----- */
+§== ENDTEMPLATE ==
+
+== ENDSTYLES ==
+
+== USE STYLES : CPP ==
+
+§== Statements.switch == map:ss, shortcut:s  ==
+§switch ( <CURSOR> ) {
+§	case <-LABEL->:	
+§		<SPLIT>break;
+§
+§	case <-LABEL->:	
+§		break;
+§
+§	case <-LABEL->:	
+§		break;
+§
+§	default:	
+§		break;
+§}				// -----  end switch  -----
+§== ENDTEMPLATE ==
+
+== ENDSTYLES ==
+
+§ -------------------------------------------------------------
+§  Function Definition
+§ -------------------------------------------------------------
+
+§ uncomment and edit to customize, separately for each style
+
+== USE STYLES : C ==
+
+§== Idioms.function == map:if, shortcut:f  ==
+§/*
+§ * ===  FUNCTION  ======================================================================
+§ *         Name:  |?FUNCTION_NAME|
+§ *  Description:  
+§ * =====================================================================================
+§ */
+§void<CURSOR>
+§|FUNCTION_NAME| ( <+argument_list+> )
+§{
+§<SPLIT>	return <+return_value+>;
+§}		/* -----  end of function |FUNCTION_NAME|  ----- */
+§== ENDTEMPLATE ==
+
+== ENDSTYLES ==
+
+== USE STYLES : CPP ==
+
+§== Idioms.function == map:if, shortcut:f  ==
+§// ===  FUNCTION  ======================================================================
+§//         Name:  |?FUNCTION_NAME|
+§//  Description:  
+§// =====================================================================================
+§void<CURSOR>
+§|FUNCTION_NAME| ( <+argument_list+> )
+§{
+§<SPLIT>	return <+return_value+>;
+§}		// -----  end of function |FUNCTION_NAME|  -----
+§== ENDTEMPLATE ==
+
+== ENDSTYLES ==
+
+== USE STYLES : Doxygen ==
+
+§== Idioms.function == map:if, shortcut:f  ==
+§void<CURSOR>
+§|FUNCTION_NAME| ( <+argument_list+> )
+§{
+§<SPLIT>	return <+return_value+>;
+§}		// -----  end of function |FUNCTION_NAME|  -----
+§== ENDTEMPLATE ==
+
+== ENDSTYLES ==
+

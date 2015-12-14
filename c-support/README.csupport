@@ -1,4 +1,4 @@
-README for c.vim (Version 6.1.2pre) / July 06 2014
+README for c.vim (Version 6.2pre) / December 14 2015
 
   *  DESCRIPTION
   *  INSTALLATION
@@ -177,9 +177,12 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ================================================================================
-  RELEASE NOTES FOR VERSION 6.1.2pre
+  RELEASE NOTES FOR VERSION 6.2pre
 ================================================================================
-- Added: submenu 'Preprocessor' -> 'include POSIX header'
+- Added 'g:C_CustomTemplateFile' and 'g:C_AdditionalTemplates'.
+- Added template personalization file and setup wizard.
+- Removed unused 'g:C_GuiTemplateBrowser'.
+- Added submenu 'Preprocessor -> include POSIX header'.
 
   Please see file ./c-support/doc/ChangeLog .
 
