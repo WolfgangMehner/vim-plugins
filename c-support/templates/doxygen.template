@@ -6,19 +6,46 @@
 §    style "default", so that they work for every style
 § =============================================================
 
+§ prefix used for Doxygen commands, '\' or '@'
+SetMacro( 'DOX_CMD', '\' )
+
+§ URL of Doxygen online help
+SetMacro( 'HelpPathDoxygen', 'http://www.stack.nl/~dimitri/doxygen/commands.html' )
+
+§ shortcut used for the Doxygen menu
+MenuShortcut( 'Doxygen', 'd' )
+
+§ menu and map used for "brief, after member":
+SetProperty( 'Doxygen::BriefAM::Menu', 'Doxygen' )
+SetProperty( 'Doxygen::BriefAM::Map',  'dba' )
+
+== USE STYLES: Doxygen ==
+
+§ The template "Comments.end-of-line-comment" is used for the menu entry
+§ "Comments.end-of-line comment", which is created by the plug-in itself.
+§ Do not change the name!
+== Comments.end-of-line-comment == append, nomenu ==
+// <CURSOR>
+== ENDTEMPLATE ==
+
+== ENDSTYLES ==
+
+== USE STYLES: default ==
+
+§ The template "Doxygen.brief, after member" is used for the menu entry
+§ "Doxygen.brief, after member", which is created by the plug-in itself.
+§ Do not change the name!
+== Doxygen.brief, after member == append, nomenu ==
+/*!< |DOX_CMD|brief <CURSOR> */
+== ENDTEMPLATE ==
+
+== ENDSTYLES ==
+
 == USE STYLES: Doxygen ==
 
 § -------------------------------------------------------------
 §  frames, descriptions
 § -------------------------------------------------------------
-
-§ The template "Comments.end-of-line-comment" is used for the menu entry
-§ "Comments.end-of-line comment", which is created by the plug-in itself.
-§ Do not change the name!
-
-== Comments.end-of-line-comment == append, nomenu ==
-// <CURSOR>
-== ENDTEMPLATE ==
 
 == Comments.frame == map:cfr, shortcut:f  ==
 //-----------------------------------------------------------------------------
@@ -27,7 +54,7 @@
 == Comments.function == map:cfu, shortcut:f  ==
 /*!
  *  |DOX_CMD|brief  |DESCRIPTION|<CURSOR>
- *  
+ *
  *  |DOX_CMD|param  <+NAME+> <+DESCRIPTION+>
  *  |DOX_CMD|return <+DESCRIPTION+>
  *  <+DETAILED+>
@@ -35,7 +62,7 @@
 == Comments.method == map:cme, shortcut:m  ==
 /*!
  *  |DOX_CMD|brief  |DESCRIPTION|<CURSOR>
- *  
+ *
  *  |DOX_CMD|param  <+NAME+> <+DESCRIPTION+>
  *  |DOX_CMD|return <+DESCRIPTION+>
  *  <+DETAILED+>
@@ -43,7 +70,7 @@
 == Comments.class == map:ccl, shortcut:c  ==
 /*!
  *  |DOX_CMD|brief  |DESCRIPTION|<CURSOR>
- *  
+ *
  *  <+DETAILED+>
  */
 == ENDTEMPLATE ==
@@ -58,18 +85,18 @@
 /*!
  *    |DOX_CMD|file  |FILENAME|
  *   |DOX_CMD|brief  |DESCRIPTION|<CURSOR>
- *  
+ *
  *  <+DETAILED+>
- *  
+ *
  *  |DOX_CMD|author  |AUTHOR| (|AUTHORREF|), |EMAIL|
- *  
+ *
  *  |DOX_CMD|internal
  *       Created:  |DATE|
  *      Revision:  none
  *      Compiler:  gcc
  *  Organization:  |ORGANIZATION|
  *     Copyright:  |COPYRIGHT|
- *  
+ *
  *  This source code is released for free distribution under the terms of the
  *  GNU General Public License as published by the Free Software Foundation.
  */
@@ -78,18 +105,18 @@
 /*!
  *    |DOX_CMD|file  |FILENAME|
  *   |DOX_CMD|brief  |DESCRIPTION|<CURSOR>
- *  
+ *
  *  <+DETAILED+>
- *  
+ *
  *  |DOX_CMD|author  |AUTHOR| (|AUTHORREF|), |EMAIL|
- *  
+ *
  *  |DOX_CMD|internal
  *       Created:  |DATE|
  *      Revision:  none
  *      Compiler:  gcc
  *  Organization:  |ORGANIZATION|
  *     Copyright:  |COPYRIGHT|
- *  
+ *
  *  This source code is released for free distribution under the terms of the
  *  GNU General Public License as published by the Free Software Foundation.
  */
@@ -130,9 +157,6 @@
 § -------------------------------------------------------------
 
 == USE STYLES: default ==
-
-§ missing:
-§ - name
 
 == LIST: doxygen_command == list, bare ==
 a
@@ -288,6 +312,7 @@ xrefitem
 == LIST: doxygen_esc_char == list ==
 	'$',
 	'@',
+	'\',
 	'&',
 	'~',
 	'<',
@@ -297,6 +322,16 @@ xrefitem
 	'"',
 	'.',
 	'::',
+	'|',
+	'--',
+	'---',
+== ENDLIST ==
+
+== LIST: doxygen_object_cmd == list ==
+	'param',
+	'return',
+	'throw',
+	'tparam',
 == LIST: doxygen_page_cmd == hash ==
 	'mainpage' : '{+TITLE_OPT_+}',
 	'page'     : '{+REF+} {+TITLE+}',
@@ -313,25 +348,13 @@ xrefitem
 	'ref'    : '{+REF+} {+TEXT_OPT_+}',
 == ENDLIST ==
 
-§ The template "Doxygen.brief, after member" is used for the menu entry
-§ "Doxygen.brief, after member", which is created by the plug-in itself.
-§ Do not change the name!
-
-§ menu and map used for "brief, after member":
-SetProperty( 'Doxygen::BriefAM::Menu', 'Doxygen' )
-SetProperty( 'Doxygen::BriefAM::Map',  'dba' )
-
-== Doxygen.brief, after member == append, nomenu ==
-/*!< |DOX_CMD|brief <CURSOR> */
-== ENDTEMPLATE ==
-
 § basic blocks
 
 == Doxygen.frame == below, map:dfr, sc:f ==
 /*!
  *  |DOX_CMD|brief  <CURSOR>
  */
-== Doxygen.overload block == below, map:do, sc:o ==
+== Doxygen.overload block == below, map:dov, sc:o ==
 /*!
  *  |DOX_CMD|overload<CURSOR>
  */
@@ -341,33 +364,27 @@ SetProperty( 'Doxygen::BriefAM::Map',  'dba' )
 
 § basic commands
 
-== Doxygen.commands == below, map:dc, sc:c ==
+== Doxygen.commands == below, map:dco, sc:c ==
 |PickList( 'Doxygen command', 'doxygen_command' )|
  *  |DOX_CMD||KEY| <CURSOR>
-== Doxygen.brief == below, map:dbr, sc:b ==
- *  |DOX_CMD|brief  <CURSOR>
-== Doxygen.parameter == below, map:dpa, sc:p ==
- *  |DOX_CMD|param  <CURSOR>
-== Doxygen.return == below, map:dre, sc:r ==
- *  |DOX_CMD|return <CURSOR>
-== Doxygen.escaped char == expandmenu, insert, map:de, sc:e ==
-|PickList( 'character', 'doxygen_esc_char' )|
-|DOX_CMD||KEY|<CURSOR>
+== Doxygen.objects == expandmenu, below, map:dob, sc:o ==
+|PickList( 'Doxygen object', 'doxygen_object_cmd' )|
+ *  |DOX_CMD||KEY| <CURSOR>
 == ENDTEMPLATE ==
 
 == SEP: Doxygen.sep2 ==
 
 § groups
 
-== Doxygen.defgroup block == below, map:dgd, sc:g ==
+== Doxygen.defgroup block == below, map:ddg, sc:g ==
 /*!
- *  |DOX_CMD|defgroup |?DOXYGEN_GROUP|
- *  
- *  |DOX_CMD|brief    <CURSOR>
- *  
- *  <+DETAILED+>
+ *  |DOX_CMD|defgroup |?DOXYGEN_GROUP| <CURSOR>
+ *
+ *  |DOX_CMD|brief    {+BRIEF+}
+ *
+ *  {+DETAILED+}
  */
-== Doxygen.addtogroup blocks == below, noindent, map:dga, sc:g ==
+== Doxygen.addtogroup blocks == below, noindent, map:dag, sc:g ==
 /*!
  *  |DOX_CMD|addtogroup <CURSOR>|?DOXYGEN_GROUP|
  *  |DOX_CMD|{
@@ -378,10 +395,10 @@ SetProperty( 'Doxygen::BriefAM::Map',  'dba' )
 /*!
  *  |DOX_CMD|}
  */
-== Doxygen.ingroup == below, map:dgi, sc:i ==
+== Doxygen.ingroup == below, map:dig, sc:g ==
  *  |DOX_CMD|ingroup <CURSOR>|?DOXYGEN_GROUP|
- *  
-== Doxygen.member group blocks == below, noindent, map:dgm, sc:m ==
+ *
+== Doxygen.member group blocks == below, noindent, map:dmg, sc:g ==
 /*!
  *  |DOX_CMD|name {+HEADER+}
  */
@@ -412,14 +429,55 @@ SetProperty( 'Doxygen::BriefAM::Map',  'dba' )
 
 § pages
 
-== Doxygen.page command == expandmenu, below, map:dpc, sc:a ==
+== Doxygen.page command == expandmenu, below, map:dpc, sc:p ==
 |PickList( 'Doxygen command', 'doxygen_page_cmd' )|
  *  |DOX_CMD||KEY|<CURSOR> |VALUE|
-== Doxygen.page block == below, map:dpb, sc:a ==
+== Doxygen.page block == below, map:dpb, sc:p ==
 /*!
  *  |DOX_CMD|page<CURSOR> {+REF+} {+TITLE+}
  */
 == ENDTEMPLATE ==
 
+== Doxygen.code, line == insert, map:dcl, sc:c ==
+|DOX_CMD|code <CURSOR><SPLIT> |DOX_CMD|endcode
+== Doxygen.code, block == below, noindent, map:dcb, sc:c ==
+	|DOX_CMD|code
+	<CURSOR><SPLIT>
+	|DOX_CMD|endcode
+== Doxygen.link == insert, map:dli, sc:l ==
+|DOX_CMD|link <CURSOR><SPLIT>{-LINK_OBJECT-} {+LINK_TEXT+} |DOX_CMD|endlink
+== ENDTEMPLATE ==
+
+== SEP: Doxygen.sep5 ==
+
+§ technical stuff
+
+== Doxygen.escaped char == expandmenu, insert, map:des, sc:e ==
+|PickList( 'character', 'doxygen_esc_char' )|
+|DOX_CMD||KEY|<CURSOR>
+== Doxygen.prevent link == insert ==
+%<SPLIT>
+== ENDTEMPLATE ==
+
 == ENDSTYLES ==
 
+§ =============================================================
+§  Help
+§
+§  help Doxygen:
+§   we do some voodoo to
+§   - find all Doxygen commands, preceded by '\' or '@'
+§   - get Doxygen command like \f$ or @f{environment}{ to work
+§   in case we do not find such a command under the cursor,
+§   we open the page anyway, which should put the list of
+§   commands on screen (second argument to |Browser(...)|)
+§ =============================================================
+
+== HELP: Help.Doxygen == map:hd, sc:d ==
+|Pattern( '[\\@]\%(f{\w\+\*\?}{\?\|f[}\$\[\]]\|\w\+\)' )|
+|Substitute( '^[\\@]', '', '' )|
+|Substitute( 'f[\$\[\]]', 'fdollar', '' )|
+|Substitute( 'f{\w\+\*\?}{\?', 'fcurlyopen', '' )|
+|Substitute( 'f}', 'fcurlyclose', '' )|
+|Browser( '|HelpPathDoxygen|#cmd|PICK|', '|HelpPathDoxygen|' )|
+== ENDTEMPLATE ==

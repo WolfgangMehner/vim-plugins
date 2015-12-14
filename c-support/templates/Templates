@@ -1,3 +1,11 @@
+§ =============================================================
+§  Interface Version
+§
+§  enable advanced features
+§ =============================================================
+
+InterfaceVersion ( '1.0' )
+
 § ==========================================================
 §  Settings
 § ==========================================================
@@ -10,22 +18,23 @@ SetMacro( 'COMPANY',      '' )
 SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
 SetMacro( 'LICENSE',      'GNU General Public License' )
 
-SetStyle( 'C' )
+SetFormat( 'DATE', '%x' )
+SetFormat( 'TIME', '%X' )
+SetFormat( 'YEAR', '%Y' )
 
-§ prefix used for Doxygen commands, '\' or '@'
-SetMacro( 'DOX_CMD', '\' )
+SetStyle( 'C' )
 
 § ==========================================================
 §  File Includes and Shortcuts
 § ==========================================================
 
 MenuShortcut( 'Comments',     'c' )
-MenuShortcut( 'Doxygen',      'd' )
 MenuShortcut( 'Statements',   's' )
 MenuShortcut( 'Idioms',       'i' )
 MenuShortcut( 'Preprocessor', 'p' )
 MenuShortcut( 'Snippets',     'n' )
 MenuShortcut( 'C++',          'c' )
+MenuShortcut( 'Help',         'h' )
 
 IncludeFile( 'snippets.template' )
 
@@ -38,9 +47,6 @@ IncludeFile( 'c.comments.template' )
 == USE STYLES : CPP ==
 IncludeFile( 'cpp.comments.template' )
 == ENDSTYLES ==
-
-§sets the style "Doxygen" internally
-§IncludeFile( 'doxygen.template' )
 
 § the rest of the templates are the same for the two styles "C" and "Doxygen";
 § you may also group "Doxygen" and "CPP" if you like this better:
@@ -62,15 +68,6 @@ IncludeFile( 'cpp.cpp.template'          )
 § =============================================================
 §  Help
 § =============================================================
-
-§ browser for help templates (UNIX)
-SetMacro( 'HELP_BROWSER', 'firefox' )
-
-§ browser for help templates (Windows)
-§SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
-
-SetMacro( 'HelpPathEnglish', 'http://en.wiktionary.org/wiki/' )
-SetMacro( 'HelpPathDoxygen', 'http://www.stack.nl/~dimitri/doxygen/commands.html' )
 
 IncludeFile( 'help.template' )
 

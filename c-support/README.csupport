@@ -183,6 +183,8 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
 - Added template personalization file and setup wizard.
 - Removed unused 'g:C_GuiTemplateBrowser'.
 - Added submenu 'Preprocessor -> include POSIX header'.
+- New and reworked templates.
+- Minor changes.
 
   Please see file ./c-support/doc/ChangeLog .
 
