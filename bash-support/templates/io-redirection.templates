@@ -3,26 +3,26 @@
 § =============================================================
 
 == LIST: IORedirection == hash ==
-	'append STDOUT and STDERR   &>>':						 	' &>> <CURSOR>',
-	'close input from file descr n   n<&-':			 	' <CURSOR><&- ',
-	'close output from file descr n   n>&-':			 	' <CURSOR>>&- ',
-	'close STDIN   <&-':													 	' <&- <CURSOR>',
-	'close STDOUT   >&-':												 	' >&- <CURSOR>',
-	'direct file descr n to file, append   n>>' :	' <CURSOR>>> ',
-	'direct file descr n to file   n>'  :					' <CURSOR>> ',
-	'direct STDOUT and STDERR to file   &>' :		 	' &> <CURSOR>',
-	'direct STDOUT to file, append   >>' :				 	' >> <CURSOR>',
-	'direct STDOUT to file   >'  :								 	' > <CURSOR>',
-	'direct STDOUT to STDERR   >&2' :							 	' >&2<CURSOR>',
-	'duplicate STDIN from file descr n   n<&' :		' <<CURSOR>& ',
-	'duplicate STDOUT to file descr n   n>&' :		 	' ><CURSOR>& ',
-	'take file descr n from file   n<'  :					' <CURSOR>< ',
-	'take STDIN from file   <'  :								 	' < <CURSOR>',
+	'append STDOUT and STDERR'            : ' &>> <CURSOR>',
+	'close input from file descr n'       : ' <CURSOR><&- ',
+	'close output from file descr n'      : ' <CURSOR>>&- ',
+	'close STDIN'                         : ' <&- <CURSOR>',
+	'close STDOUT'                        : ' >&- <CURSOR>',
+	'direct file descr n to file, append' : ' <CURSOR>>> ',
+	'direct file descr n to file'         : ' <CURSOR>> ',
+	'direct STDOUT and STDERR to file'    : ' &> <CURSOR>',
+	'direct STDOUT to file, append'       : ' >> <CURSOR>',
+	'direct STDOUT to file'               : ' > <CURSOR>',
+	'direct STDOUT to STDERR'             : ' >&2<CURSOR>',
+	'duplicate STDIN from file descr n'   : ' <<CURSOR>& ',
+	'duplicate STDOUT to file descr n'    : ' ><CURSOR>& ',
+	'take file descr n from file'         : ' <CURSOR>< ',
+	'take STDIN from file'                : ' < <CURSOR>',
 == ENDLIST ==
 
-== IO-Redir.redir == expandmenu, insert, sc:r, map:ior ==
+== IO-Redir.redir == expandmenu, expandright:value-notags, insert, sc:r, map:ior ==
 |PickList( 'IO-Redir', 'IORedirection' )|
-|PICK|
+|VALUE|
 == ENDTEMPLATE ==
 
 == IO-Redir.here-document == insert, sc:h, map:ioh ==

@@ -49,6 +49,9 @@ Bash:
   in perl-support).
 - (FM) Rename function 'g:BASH_RereadTemplates'.
 - (FM) Compl.-func. 'BASH_BuiltinComplete' missing.
+- (WM) Template library, list 'TestsFileTypes': "symbolic link -h" ?
+- (WM) Template library, list 'TestsFileCharacteristics': "file exists -a" ?
+- (WM) Template library, list 'IORedirection': check "duplicate STDIN from file descr n" and "duplicate STDOUT to file descr n"
 
 C/C++:
 - (FM, DONE) Documentation: Change documentation with regard to Make integration.

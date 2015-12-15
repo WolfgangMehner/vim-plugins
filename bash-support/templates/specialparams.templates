@@ -3,19 +3,19 @@
 § =============================================================
 
 == LIST: SpecialParameters == hash ==
-  'number of posit. param., ${#}' :              '${#}',
-  'all posit. param. (quoted spaces), ${*}' :    '${*}',
-  'all posit. param. (unquoted spaces), ${@}' :  '${@}',
-  'number of posit. parameters, ${#@}' :         '${#@}',
-  'return code of last command, ${?}' :          '${?}',
-  'PID of this shell, ${$}' :                    '${$}',
-  'flags set, ${-}' :                            '${-}',
-  'last argument of prev. command, ${_}' :       '${_}',
-  'PID of last background command, ${!}' :       '${!}',
+  'number of posit. param.'             : '${#}',
+  'all posit. param. (quoted spaces)'   : '${*}',
+  'all posit. param. (unquoted spaces)' : '${@}',
+  'number of posit. parameters'         : '${#@}',
+  'return code of last command'         : '${?}',
+  'PID of this shell'                   : '${$}',
+  'flags set'                           : '${-}',
+  'last argument of prev. command'      : '${_}',
+  'PID of last background command'      : '${!}',
 == ENDLIST ==
 
-== SpecParams == expandmenu, insert, sc:p, map:bsp ==
+== SpecParams == expandmenu, expandleft:key, expandright:value, insert, sc:p, map:bsp ==
 |PickList( 'Special Parameters', 'SpecialParameters' )|
-|PICK|<CURSOR>
+|VALUE|<CURSOR>
 == ENDTEMPLATE ==
 

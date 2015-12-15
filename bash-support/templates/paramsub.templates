@@ -3,31 +3,31 @@
 § =============================================================
 
 == LIST: ParameterSubstitution == hash ==
-	'all lower to upper   ${ ^^ }' 				  				:	'${<CURSOR>^^<+pattern+>}',
-	'all upper to lower   ${ ,, }' 									:	'${<CURSOR>,,<+pattern+>}',
-	'assign default value   ${ := }' 								:	'${<CURSOR>:=<+word+>}',
-	'display error   ${ :? }' 											:	'${<CURSOR>:?<+word+>}',
-	'first lower to upper   ${ ^ }'  								:	'${<CURSOR>^<+pattern+>}',
-	'first upper to lower   ${ , }'  								:	'${<CURSOR>,<+pattern+>}',
-	'indirect parameter expansion   ${! }'					:	'${!<CURSOR>}',
-	'names matching prefix   ${! *}' 								:	'${!<CURSOR>*}',
-	'parameter length   ${# }'  										:	'${#<CURSOR>}',
-	'pattern substitution all   ${ // / }'					:	'${<CURSOR>//<+pattern+>/<+string+>}',
-	'pattern substitution begin   ${ /# / }'				:	'${<CURSOR>/#<+pattern+>/<+string+>}',
-	'pattern substitution   ${ / / }' 							:	'${<CURSOR>/<+pattern+>/<+string+>}',
-	'pattern substitution end   ${ /% / }'					:	'${<CURSOR>/%<+pattern+>/<+string+>}',
-	'remove all matching prefix pattern   ${ ## }'	:	'${<CURSOR>##<+word+>}',
-	'remove all matching suffix pattern   ${ %% }' 	:	'${<CURSOR>%%<+word+>}',
-	'remove matching prefix pattern   ${ # }'  			:	'${<CURSOR>#<+word+>}',
-	'remove matching suffix pattern   ${ % }'  			:	'${<CURSOR>%<+word+>}',
-	'substitution   ${ }'   												:	'${<SPLIT><CURSOR>}',
-	'substring expansion   ${ : : }' 								:	'${<CURSOR>:<+offset+>:<+length+>}',
-	'use alternate value   ${ :+ }' 								:	'${<CURSOR>:+<+word+>}',
-	'use default value   ${ :- }' 									:	'${<CURSOR>:-<+word+>}',
+	'all lower to upper'									:	'${<CURSOR>^^<+pattern+>}',
+	'all upper to lower'									:	'${<CURSOR>,,<+pattern+>}',
+	'assign default value'								:	'${<CURSOR>:=<+word+>}',
+	'display error'												:	'${<CURSOR>:?<+word+>}',
+	'first lower to upper'								:	'${<CURSOR>^<+pattern+>}',
+	'first upper to lower'								:	'${<CURSOR>,<+pattern+>}',
+	'indirect parameter expansion'				:	'${!<CURSOR>}',
+	'names matching prefix'								:	'${!<CURSOR>*}',
+	'parameter length'										:	'${#<CURSOR>}',
+	'pattern substitution all'						:	'${<CURSOR>//<+pattern+>/<+string+>}',
+	'pattern substitution begin'					:	'${<CURSOR>/#<+pattern+>/<+string+>}',
+	'pattern substitution'								:	'${<CURSOR>/<+pattern+>/<+string+>}',
+	'pattern substitution end'						:	'${<CURSOR>/%<+pattern+>/<+string+>}',
+	'remove all matching prefix pattern'	:	'${<CURSOR>##<+word+>}',
+	'remove all matching suffix pattern'	:	'${<CURSOR>%%<+word+>}',
+	'remove matching prefix pattern'			:	'${<CURSOR>#<+word+>}',
+	'remove matching suffix pattern'			:	'${<CURSOR>%<+word+>}',
+	'substitution'												:	'${<SPLIT><CURSOR>}',
+	'substring expansion'									:	'${<CURSOR>:<+offset+>:<+length+>}',
+	'use alternate value'									:	'${<CURSOR>:+<+word+>}',
+	'use default value'										:	'${<CURSOR>:-<+word+>}',
 == ENDLIST ==
 
-== ParamSub == expandmenu, insert, sc:p, map:bps ==
+== ParamSub == expandmenu, expandright:value-whitetags, insert, sc:p, map:bps ==
 |PickList( 'Parameter Substitution', 'ParameterSubstitution' )|
-|PICK|
+|VALUE|
 == ENDTEMPLATE ==
 
