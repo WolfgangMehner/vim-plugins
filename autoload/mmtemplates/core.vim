@@ -1304,10 +1304,14 @@ function! s:HandleMenuExpandOptions ( option )
 		return '|KEY|'
 	elseif a:option == 'key-notags'
 		return '|KEY:T|'
+	elseif a:option == 'key-whitetags'
+		return '|KEY:W|'
 	elseif a:option == 'value'
 		return '|VALUE|'
 	elseif a:option == 'value-notags'
 		return '|VALUE:T|'
+	elseif a:option == 'value-whitetags'
+		return '|VALUE:W|'
 	endif
 	"
 	" error
@@ -2083,7 +2087,12 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 		let s:t_runtime.filetypes_stack = []
 		"
 		" read the top-level file
-		call s:IncludeFile ( f, 'abs' )
+		try
+			call s:IncludeFile ( f, 'abs' )
+		catch /Template:Check:.*/
+			let msg = v:exception[ len( 'Template:Check:') : -1 ]
+			call s:ErrorMsg ( 'While loading "'.f.'":', msg )
+		endtry
 		"
 	endfor
 	"
@@ -2194,7 +2203,7 @@ endfunction    " ----------  end of function mmtemplates#core#EnableTemplateFile
 "
 " Flags:
 "   :l :u :c - change the case
-"   :L :T   - modify the text
+"   :L :T :W - modify the text
 " Format:
 "   % [-+*]+ [lcr]?
 "   % [-+*]?\d+ [lcr]?
@@ -2221,6 +2230,10 @@ function! s:ApplyFlag ( text, flag, format, width )
 	elseif a:flag == 'T'                  " T : remove tags
 		let text = substitute( a:text, '<R\?CURSOR>\|{R\?CURSOR}\|<SPLIT>', '', 'g' ) " cursor and split tags
 		let text = substitute(   text, s:library.regex_template.JumpTagAll, '', 'g' ) " jump tags
+		let text = text
+	elseif a:flag == 'W'                  " W : replace tags with whitespaces
+		let text = substitute( a:text, '<R\?CURSOR>\|{R\?CURSOR}\|<SPLIT>', ' ', 'g' ) " cursor and split tags
+		let text = substitute(   text, s:library.regex_template.JumpTagAll, ' ', 'g' ) " jump tags
 		let text = text
 	else                                  " flag not valid
 		" noop
@@ -5033,7 +5046,7 @@ function! mmtemplates#core#AddCustomTemplateFiles ( library, temp_list, list_nam
 		let edit_map = ! empty ( edit_map ) ? edit_map : 'nt'.(i+1)
 		"
 		call mmtemplates#core#ReadTemplates ( t_lib, 'load', file_name,
-					\ 'name', sym_name, 'map', reload_map )
+					\ 'name', sym_name, 'map', edit_map )
 		"
 	endfor
 	"

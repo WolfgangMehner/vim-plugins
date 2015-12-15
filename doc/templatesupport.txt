@@ -1024,20 +1024,24 @@ value on the left.
 
 Values for "expandleft:..." and "expandright:...":
 
-  Value           usage with lists
+  Value            usage with lists
  ----------------------------------------------------------------------------
-  key             the list element
-  key-notags      same as "key", but all tags (cursor, split, jump) removed
-  value           same as "key"
-  value-notags    same as "key-notags"
+  key              the list element
+  key-notags       same as "key", but all tags (cursor, split, jump) removed
+  key-whitetags    same as "key", but all tags replace with a space
+  value            same as "key"
+  value-notags     same as "key-notags"
+  value-whitetags  same as "key-whitetags"
  ----------------------------------------------------------------------------
 
-  Value           usage with dictionaries
+  Value            usage with dictionaries
  ----------------------------------------------------------------------------
-  key             the key
-  key-notags      the key, all tags removed
-  value           the value
-  value-notags    the value, all tags removed
+  key              the key
+  key-notags       the key, but all tags (cursor, split, jump) removed
+  key-whitetags    the key, all tags replace with a space
+  value            the value
+  value-notags     the value, all tags removed
+  value-whitetags  the value, all tags replace with a space
  ----------------------------------------------------------------------------
 
 ==============================================================================
@@ -2768,8 +2772,9 @@ Note: "visual" is the default for templates containing the split tag,
       "novisual" for templates without the split tag.
 
 ------------------------------------------------------------------------------
-                  *template-support-sc*         *template-support-nomenu*
-                  *template-support-shortcut*   *template-support-expandmenu*
+                  *template-support-nomenu*     *template-support-expandmenu*
+                  *template-support-sc*         *template-support-expandleft*
+                  *template-support-shortcut*   *template-support-expandright*
                   *template-support-map*
 Menus and Maps:
 
@@ -2796,7 +2801,7 @@ Submenus for templates using lists (|template-support-PickList()|):
                        (interface 1.0+)
 
 (^1) valid values for <what> are (see |template-support-lists-menu|):
-  key, key-notags, value, value-notags
+  key, key-notags, key-whitetags, value, value-notags, value-whitetags
 
 ------------------------------------------------------------------------------
 C.2  LISTS                                         *template-support-opt-list*
