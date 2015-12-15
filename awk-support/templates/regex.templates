@@ -35,7 +35,7 @@
 	'end of buffer'            : "'", 
 == ENDLIST ==
 
-== Regex.Regexp Operators == expandmenu, insert, sc:o, map:xro ==
+== Regex.Regexp Operators == expandmenu, expandleft:key, expandright:value, insert, sc:o, map:xro ==
 |PickList( 'Regexp Operators', 'regex_operators' )|
 |PICK|<CURSOR>
 == ENDTEMPLATE ==
