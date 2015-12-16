@@ -191,8 +191,8 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
   The jump to the online help is also set up for Lua 5.2.
 - Renamed 'g:Lua_GlbTemplateFile' into 'g:Lua_GlobalTemplateFile'.
 - Renamed 'g:Lua_LclTemplateFile' into 'g:Lua_LocalTemplateFile'.
-- Added optional custom templates (g:Lua_CustomTemplateFile).
 - Added optional additional templates (g:Lua_AdditionalTemplates).
+- Added optional custom templates (g:Lua_CustomTemplateFile).
 - Added template personalization file and setup wizard.
 - Added Lua's reference manual in Vim's help format.
 - Added maps and menu entries to jump to it conveniently.

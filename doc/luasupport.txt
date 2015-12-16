@@ -589,8 +589,8 @@ set in the .vimrc file.
   |g:Lua_SnippetBrowser|      'gui'         browser to select code snippets
   |g:Lua_LocalTemplateFile|   (see below)   the local top-level template file
   |g:Lua_GlobalTemplateFile|  (see below)   the global top-level template file
-  |g:Lua_CustomTemplateFile|  (see below)   the optional custom template file
   |g:Lua_AdditionalTemplates| []            further template files
+  |g:Lua_CustomTemplateFile|  (see below)   the optional custom template file
   |g:Templates_PersonalizationFile|
                             (see below)   the personalization template file
 

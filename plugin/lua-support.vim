@@ -1317,14 +1317,14 @@ function! s:SetupTemplates()
 					\ 'name', 'local', 'map', 'ntl' )
 	endif
 	"
-	" custom templates (optional, existence of file checked by template engine)
-	call mmtemplates#core#ReadTemplates ( g:Lua_Templates, 'load', s:Lua_CustomTemplateFile,
-				\ 'name', 'custom', 'map', 'ntc', 'optional' )
-	"
 	" additional templates (optional)
 	if ! empty ( s:Lua_AdditionalTemplates )
 		call mmtemplates#core#AddCustomTemplateFiles ( g:Lua_Templates, s:Lua_AdditionalTemplates, 'g:Lua_AdditionalTemplates' )
 	endif
+	"
+	" custom templates (optional, existence of file checked by template engine)
+	call mmtemplates#core#ReadTemplates ( g:Lua_Templates, 'load', s:Lua_CustomTemplateFile,
+				\ 'name', 'custom', 'map', 'ntc', 'optional' )
 	"
 	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)
 	call mmtemplates#core#ReadTemplates ( g:Lua_Templates, 'personalization',
