@@ -118,41 +118,37 @@ subparagraph
 § -------------------------------------------------------------
 §  quotes
 § -------------------------------------------------------------
-== Text.quotes.double == insert, map:tqq ==
-''<CURSOR><SPLIT>''
-== Text.quotes.single == insert, map:tq ==
-'<CURSOR><SPLIT>'
-== Text.quotes.French, double == insert, map:tfqq ==
-\flqq <CURSOR><SPLIT>\frqq{}
-== Text.quotes.French, single == insert, map:tfq ==
-\flq <CURSOR><SPLIT>\frq{}
-== Text.quotes.German, double == insert, map:tgqq ==
-\glqq <CURSOR><SPLIT>\grqq{}
-== Text.quotes.German, single == insert, map:tgq ==
-\glq <CURSOR><SPLIT>\grq{}
+== LIST: text_quotes == hash ==
+	'quotes, double' : "''<CURSOR><SPLIT>''",
+	'quotes, single' : "'<CURSOR><SPLIT>'",
+	'French, double' : '\flqq <CURSOR><SPLIT>\frqq{}',
+	'French, single' : '\flq <CURSOR><SPLIT>\frq{}',
+	'German, double' : '\glqq <CURSOR><SPLIT>\grqq{}',
+	'German, single' : '\glq <CURSOR><SPLIT>\grq{}',
+== ENDLIST ==
+
+== Text.quotes == expandmenu, visual, insert, map:tq, sc:q ==
+|PickList( 'choose', 'text_quotes' )|
+|PICK|
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
 §  spacing 
 § -------------------------------------------------------------
-== LIST: spacing == list, bare ==
-newpage
-pagebreak
-newline
-linebreak
-bigskip
-medskip
+== LIST: spacing == hash ==
+	'newpage'   : 'newpage<CURSOR>',
+	'pagebreak' : 'pagebreak<CURSOR>',
+	'newline'   : 'newline<CURSOR>',
+	'linebreak' : 'linebreak<CURSOR>',
+	'bigskip'   : 'bigskip<CURSOR>',
+	'medskip'   : 'medskip<CURSOR>',
+	'hspace'    : 'hspace{<CURSOR>mm}',
+	'vspace'    : 'vspace{<CURSOR>mm}',
 == ENDLIST ==
 
 == Text.spacing == expandmenu, noindent, map:tsp, sc:s ==
 |PickList( 'choose', 'spacing' )|
-\|PICK|<CURSOR>
-== ENDTEMPLATE ==
-
-== Text.spacing.hspace == insert, map:tsh ==
-\hspace{<CURSOR>mm}
-== Text.spacing.vspace == insert, map:tsv ==
-\vspace{<CURSOR>mm}
+\|VALUE|
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
@@ -179,27 +175,27 @@ verbatim
 == ENDTEMPLATE ==
 
 == LIST: textcomp == dict ==
-	'asciiacute ´'  : 'asciiacute',
-	'bullet •'      : 'bullet',
-	'celsius ℃'     : 'celsius',
-	'copyright ©'   : 'copyright',
-	'dagger †'      : 'dagger',
-	'degree °'      : 'degree',
-	'div ÷'         : 'div',
-	'dollar $'      : 'dollar',
-	'euro €'        : 'euro',
-	'onehalf ½'     : 'onehalf',
-	'perthousand ؉' : 'perthousand',
-	'pm ±'          : 'pm',
-	'registered ®'  : 'registered',
-	'section §'     : 'section',
-	'times ⨉'       : 'times',
-	'trademark ™'   : 'trademark ',
+	'asciiacute'  : '´',
+	'bullet'      : '•',
+	'celsius'     : '℃',
+	'copyright'   : '©',
+	'dagger'      : '†',
+	'degree'      : '°',
+	'div'         : '÷',
+	'dollar'      : '$',
+	'euro'        : '€',
+	'onehalf'     : '½',
+	'perthousand' : '؉',
+	'pm'          : '±',
+	'registered'  : '®',
+	'section'     : '§',
+	'times'       : '⨉',
+	'trademark'   : '™',
 == ENDTEMPLATE ==
 
-== Text.textcomp == expandmenu, insert, map:ttc, sc:c ==
+== Text.textcomp == expandmenu, expandleft:key, expandright:value, insert, map:ttc, sc:c ==
 |PickList( 'choose', 'textcomp' )|
-\text|PICK|<CURSOR>
+\text|KEY|<CURSOR>
 == ENDTEMPLATE ==
 
 == SEP: Text.sep1 == 

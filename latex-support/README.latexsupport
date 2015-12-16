@@ -82,6 +82,7 @@ For a system-wide installation please see the help file 'doc/latexsupport.txt'.
 ---------------------------------------------------------------------------------------
 - Add 'g:Latex_CustomTemplateFile' and 'g:Latex_AdditionalTemplates'.
 - Add template personalization file and setup wizard.
+- Change some templates.
 - Add maps to bibtex buffers.
 
 =======================================================================================
