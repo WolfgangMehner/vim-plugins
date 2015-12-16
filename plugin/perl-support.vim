@@ -939,12 +939,12 @@ function! Perl_Settings ( verbose )
 		let txt .= '                    email :  "'.mmtemplates#core#ExpandText( g:Perl_Templates, '|EMAIL|'        )."\"\n"
 		let txt .= '             organization :  "'.mmtemplates#core#ExpandText( g:Perl_Templates, '|ORGANIZATION|' )."\"\n"
 		let txt .= '         copyright holder :  "'.mmtemplates#core#ExpandText( g:Perl_Templates, '|COPYRIGHT|'    )."\"\n"
-		let txt .= '         copyright holder :  "'.mmtemplates#core#ExpandText( g:Perl_Templates, '|LICENSE|'      )."\"\n"
+		let txt .= '                  license :  "'.mmtemplates#core#ExpandText( g:Perl_Templates, '|LICENSE|'      )."\"\n"
 		let txt .= '           template style :  "'.mmtemplates#core#Resource ( g:Perl_Templates, "style" )[0]."\"\n\n"
 	else
-		let txt .= "                templates :  -not loaded- \n\”"
+		let txt .= "                templates :  -not loaded-\n"
 	endif
-	" plug-in installation, template engine
+	" plug-in installation
 	let txt .= '      plugin installation :  '.g:Perl_Installation.' on '.sys_name."\n"
 	" toolbox
 	if s:Perl_UseToolbox == 'yes'
@@ -959,16 +959,23 @@ function! Perl_Settings ( verbose )
 	endif
 	let txt .= "\n"
 	" templates, snippets
-	let [ templist, msg ] = mmtemplates#core#Resource ( g:Perl_Templates, 'template_list' )
-	if empty ( templist )
-		let txt .= "           template files :  -no template files-\n"
-	else
+	if exists ( 'g:Perl_Templates' )
+		let [ templist, msg ] = mmtemplates#core#Resource ( g:Perl_Templates, 'template_list' )
 		let sep  = "\n"."                             "
 		let txt .=      "           template files :  "
 					\ .join ( templist, sep )."\n"
+	else
+		let txt .= "           template files :  -not loaded-\n"
 	endif
 	let txt .=
 				\  '       code snippets dir. :  '.s:Perl_CodeSnippets."\n"
+	" ----- dictionaries ------------------------
+  if !empty(g:Perl_Dictionary_File)
+		let ausgabe= &dictionary
+    let ausgabe = substitute( ausgabe, ",", ",\n                             + ", "g" )
+    let txt     = txt."       dictionary file(s) :  ".ausgabe."\n"
+  endif
+	" ----- map leader, menus, file headers -----
 	if a:verbose >= 1
 		let	txt .= "\n"
 					\ .'                mapleader :  "'.g:Perl_MapLeader."\"\n"
@@ -976,18 +983,13 @@ function! Perl_Settings ( verbose )
 					\ .'       insert file header :  "'.s:Perl_InsertFileHeader."\"\n"
 	endif
 	let txt .= "\n"
-	" ----- xterm ------------------------
+	" ----- output ------------------------------
+  let txt = txt."     current output dest. :  ".g:Perl_OutputGvim."\n"
 	if	!s:MSWIN
 		let txt = txt.'           xterm defaults :  '.s:Perl_XtermDefaults."\n"
 	endif
-	" ----- dictionaries ------------------------
-  if !empty(g:Perl_Dictionary_File)
-		let ausgabe= &dictionary
-    let ausgabe = substitute( ausgabe, ",", ",\n                          + ", "g" )
-    let txt     = txt."       dictionary file(s) :  ".ausgabe."\n"
-  endif
-  let txt = txt."    current output dest.  :  ".g:Perl_OutputGvim."\n"
-  let txt = txt."              perlcritic  :  perlcritic -severity ".s:Perl_PerlcriticSeverity
+	" ----- perlcritic --------------------------
+  let txt = txt."               perlcritic :  perlcritic -severity ".s:Perl_PerlcriticSeverity
 				\				.' ['.s:PCseverityName[s:Perl_PerlcriticSeverity].']'
 				\				."  -verbosity ".s:Perl_PerlcriticVerbosity
 				\				."  ".s:Perl_PerlcriticOptions."\n"
@@ -2006,8 +2008,6 @@ function! s:Perl_RereadTemplates ()
 		call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Mapleader', g:Perl_MapLeader )
 	endif
 	"
-	" map: choose style
-	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::ChooseStyle::Map', 'nts' )
 	" some metainfo
 	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Wizard::PluginName',   'Perl' )
 	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Wizard::FiletypeName', 'Perl' )
@@ -2044,14 +2044,14 @@ function! s:Perl_RereadTemplates ()
 					\ 'name', 'local', 'map', 'ntl' )
 	endif
 	"
-	" custom templates (optional, existence of file checked by template engine)
-	call mmtemplates#core#ReadTemplates ( g:Perl_Templates, 'load', s:Perl_CustomTemplateFile,
-				\ 'name', 'custom', 'map', 'ntc', 'optional' )
-	"
 	" additional templates (optional)
 	if ! empty ( s:Perl_AdditionalTemplates )
 		call mmtemplates#core#AddCustomTemplateFiles ( g:Perl_Templates, s:Perl_AdditionalTemplates, 'g:Perl_AdditionalTemplates' )
 	endif
+	"
+	" custom templates (optional, existence of file checked by template engine)
+	call mmtemplates#core#ReadTemplates ( g:Perl_Templates, 'load', s:Perl_CustomTemplateFile,
+				\ 'name', 'custom', 'map', 'ntc', 'optional' )
 	"
 	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)
 	call mmtemplates#core#ReadTemplates ( g:Perl_Templates, 'personalization',
@@ -2820,7 +2820,7 @@ if has("autocmd")
 	autocmd FileType *
 				\	if ( &filetype == 'perl' || &filetype == 'pod') |
 				\		if ! exists( 'g:Perl_Templates' ) |
-				\			if s:Perl_LoadMenus == 'yes' | call Perl_CreateGuiMenus ()        |
+				\			if s:Perl_LoadMenus == 'yes' | call Perl_CreateGuiMenus ()    |
 				\			else                         | call s:Perl_RereadTemplates () |
 				\			endif |
 				\		endif |

@@ -1736,8 +1736,8 @@ global variable                default value               tag (see below)
 ------------------------------------------------------------------------------
 g:Perl_GlobalTemplateFile      root_dir.'perl-support/templates/Templates'
 g:Perl_LocalTemplateFile       $HOME.'/.vim/perl-support/templates/Templates'
-g:Perl_CustomTemplateFile      $HOME.'/.vim/templates/perl.templates'
 g:Perl_AdditionalTemplates     []
+g:Perl_CustomTemplateFile      $HOME.'/.vim/templates/perl.templates'
 g:Perl_Ctrl_j                  'on'
 
 g:Perl_CodeSnippets            root_dir.'perl-support/codesnippets/'
@@ -1783,8 +1783,8 @@ The variable root_dir will automatically be set to one of the following values:
  1. group: Sets the template directory and the names of the template files (see below).
            g:Perl_GlobalTemplateFile      : sets the global template file  (see|perlsupport-templates|)
            g:Perl_LocalTemplateFile       : sets the local template file  (see|perlsupport-templates|)
-           g:Perl_CustomTemplateFile      : sets the custom template file  (see|perlsupport-templates|)
            g:Perl_AdditionalTemplates     : sets additional template files  (see|perlsupport-templates|)
+           g:Perl_CustomTemplateFile      : sets the custom template file  (see|perlsupport-templates|)
            g:Perl_Ctrl_j                  : hotkey Ctrl-j  'on'/'off' (see|perlsupport-Ctrl-j|)
 
  2. group: g:Perl_CodeSnippets       : The name of the (non-standard) code snippet directory (see below).
@@ -2006,10 +2006,8 @@ The old system (before version 5.4), using a "local" template file, >
   ~/.vim/perl-support/templates
 is still supported for backwards compatibility.
 
-Create your private snippet directory:
-
+Create your private snippet directory: >
   mkdir --parents  ~/.vim/perl-support/codesnippets
-
 You may want to copy the snippets comming with this plug-in (in
 $VIM/vimfiles/perl-support/codesnippets) into the new directory or to set a
 link to the global directory.
