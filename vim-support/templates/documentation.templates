@@ -7,17 +7,17 @@
 § -------------------------------------------------------------
 
 == Documentation.chapter, ToC == below, noindent, map:dcc, sc:c ==
- |CNUMBER|    |CNAME:c|                                   ||CTAG||
+ |CNUMBER%2|    |CNAME:c%++++++++++++++++++++++++++++++| ||CTAG||
 == Documentation.section, ToC == below, noindent, map:dcs, sc:s ==
- |SNUMBER|    |SNAME:c|                                   ||STAG||
+ |SNUMBER%3|    |SNAME:c%+++++++++++++++++++++++++++++| ||STAG||
 == Documentation.subsection, ToC == below, noindent, map:dcu, sc:u ==
- |SSNUMBER|   |SSNAME:c|                                    ||SSTAG||
+ |SSNUMBER%5|   |SSNAME:c%+++++++++++++++++++++++++++| ||SSTAG||
 == ENDTEMPLATE ==
 
 == Documentation.chapter, text == below, noindent, map:dtc, sc:c ==
 |Prompt( 'CNAME', '' )|
 ==============================================================================
-|?CNUMBER|  |CNAME:u|                                *|?CTAG|*
+|?CNUMBER%2|  |CNAME:u|                                       |<<>>| *|?CTAG|*
 ==============================================================================
 
 <CURSOR>
@@ -25,7 +25,7 @@
 == Documentation.section, text == below, noindent, map:dts, sc:s ==
 |Prompt( 'SNAME', '' )|
 ------------------------------------------------------------------------------
-|?SNUMBER|  |SNAME:u|                                *|?STAG|*
+|?SNUMBER%3|  |SNAME:u|                                       |<<>>| *|?STAG|*
 ------------------------------------------------------------------------------
 
 <CURSOR>
@@ -34,7 +34,7 @@
 |Prompt( 'SSNAME', '' )|
 ------------------------------------------------------------------------------
 
-|?SSNUMBER|  |SSNAME|                                  *|?SSTAG|*
+|?SSNUMBER%5|  |SSNAME|                                      |<<>>| *|?SSTAG|*
 
 <CURSOR>
 

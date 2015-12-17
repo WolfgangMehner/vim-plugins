@@ -590,8 +590,8 @@ Global Variable             Default Value
 g:Vim_CreateMapsForHelp     'no'
 g:Vim_GlobalTemplateFile    $VIM.'/vimfiles/vim-support/templates/Templates'
 g:Vim_LocalTemplateFile     $HOME.'/.vim/vim-support/templates/Templates'
-g:Vim_CustomTemplateFile    $HOME.'/.vim/templates/vim.templates'
 g:Vim_AdditionalTemplates   []
+g:Vim_CustomTemplateFile    $HOME.'/.vim/templates/vim.templates'
 g:Vim_CodeSnippets          $HOME.'/.vim/vim-support/codesnippets' (Linux/U**X)
                             $VIM.'\vimfiles\vim-support/codesnippets/'(Windows)
 g:Vim_LoadMenus             'yes'
@@ -609,8 +609,8 @@ Global Variable             Description
 g:Vim_CreateMapsForHelp     Create maps for modifiable help buffers ("yes", "no").
 g:Vim_GlobalTemplateFile    sets the global template file (see|vimsupport-templates|)
 g:Vim_LocalTemplateFile     sets the local template file (see|vimsupport-templates|)
-g:Vim_CustomTemplateFile    sets the custom template file (see|vimsupport-templates|)
 g:Vim_AdditionalTemplates   sets additional template files (see|vimsupport-templates|)
+g:Vim_CustomTemplateFile    sets the custom template file (see|vimsupport-templates|)
 g:Vim_CodeSnippets          set the personal code snippet directory
 g:Vim_LoadMenus             Load menus and mappings ("yes", "no") at start up.
 g:Vim_CreateMenusDelayed    Load menus only with filetype 'vim'
@@ -695,10 +695,8 @@ The old system (before version 2.4), using a "local" template file, >
   ~/.vim/vim-support/templates
 is still supported for backwards compatibility.
 
-Create your private snippet directory:
-
+Create your private snippet directory: >
   mkdir --parents  $HOME/.vim/vim-support/codesnippets
-
 You may want to copy the snippets coming with this plugin (in
 $VIM/vimfiles/vim-support/codesnippets) into the new directory or to set a
 link to the global directory.
