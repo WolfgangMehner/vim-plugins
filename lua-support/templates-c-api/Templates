@@ -1,0 +1,33 @@
+§ ==========================================================
+§  Lua
+§ ==========================================================
+
+SetMacro( 'LUA_STATE', 'L' )
+
+MenuShortcut( 'Lua', 'l' )
+
+IncludeFile ( 'lua.templates' )
+
+§ =============================================================
+§  Help
+§ =============================================================
+
+SetMacro( 'HelpPathLua', 'http://www.lua.org/manual/5.2/' )
+
+== HELP: Help.Lua function, browser == map:hl, sc:l ==
+|Word( '' )|
+|Substitute( '\W', '', 'g' )|
+|Browser( '|HelpPathLua|manual.html#|PICK|', '|HelpPathLua|contents.html#index' )|
+== HELP: Help.Lua 51 function, Vim help == map:h1, sc:1 ==
+|Word( '' )|
+|Substitute( '\W', '', 'g' )|
+|Vim( ':help lua51-|PICK|', ':help lua51' )|
+== HELP: Help.Lua 52 function, Vim help == map:h2, sc:2 ==
+|Word( '' )|
+|Substitute( '\W', '', 'g' )|
+|Vim( ':help lua52-|PICK|', ':help lua52' )|
+== HELP: Help.Lua 53 function, Vim help == map:h3, sc:3 ==
+|Word( '' )|
+|Substitute( '\W', '', 'g' )|
+|Vim( ':help lua53-|PICK|', ':help lua53' )|
+== ENDTEMPLATE ==

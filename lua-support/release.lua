@@ -39,6 +39,7 @@ local filelist = {
 	'lua-support/doc/',
 	'lua-support/rc/',
 	'lua-support/templates/',
+	'lua-support/templates-c-api/',
 	'lua-support/README.md',
 }
 

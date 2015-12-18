@@ -1,0 +1,61 @@
+§ ==========================================================
+§  Lua
+§ ==========================================================
+
+IncludeFile( 'library_5_2.templates' )
+
+== Lua.function == below, map:lf, sc:f ==
+	static int
+|?FUNCTION_NAME| ( lua_State *|LUA_STATE| )
+{
+	{CURSOR}<SPLIT>
+	return 0;
+}		// -----  end of function |FUNCTION_NAME|  -----
+== ENDTEMPLATE ==
+
+== Lua.library list == below, map:lll, sc:l ==
+static const struct luaL_Reg |?LIST_NAME| [] = {
+	{ "<CURSOR>", {+FUNCTION+} },
+
+	{ 0, 0 }
+};
+== Lua.loader function == below, map:llf, sc:f ==
+|Prompt( 'MODULE_NAME', '' )|
+	int
+luaopen_|MODULE_NAME:L| ( lua_State *|LUA_STATE| )
+{
+	{CURSOR}<SPLIT>
+
+	luaL_newlib ( |LUA_STATE|, |?LIST_NAME| );
+
+	return 1;
+}		// -----  end of function luaopen_|MODULE_NAME:L|  -----
+== ENDTEMPLATE ==
+
+== SEP: Lua.sep_lib ==
+
+== Lua.library functions == insert, map:ll, sc:l ==
+|PickList( 'Lua function', 'lua_api_5_2_func' )|
+<CURSOR>|KEY| ( |VALUE| )
+== Lua.operation names == expandmenu, expandright:value, insert, map:lo, sc:o ==
+|PickList( 'Lua op. name', 'lua_api_5_2_op_names' )|
+|VALUE|<CURSOR>
+== Lua.type names == expandmenu, expandright:value, insert, map:lt, sc:t ==
+|PickList( 'Lua type name', 'lua_api_5_2_type_names' )|
+|VALUE|<CURSOR>
+== Lua.buffer functions == expandmenu, insert, map:lb, sc:b ==
+|PickList( 'Lua function', 'lua_api_5_2_buffer' )|
+|Prompt( 'BUFFER', '' )|
+<CURSOR>|KEY| ( |VALUE| )
+== ENDTEMPLATE ==
+
+== SEP: Lua.sep_debug ==
+
+== Lua.debug functions == expandmenu, insert, map:ldf, sc:d ==
+|PickList( 'Lua function', 'lua_api_5_2_debug_func' )|
+<CURSOR>|KEY| ( |VALUE| )
+== Lua.debug constants == expandmenu, insert, map:ldc, sc:d ==
+|PickList( 'Lua function', 'lua_api_5_2_debug_names' )|
+<CURSOR>|VALUE|
+== ENDTEMPLATE ==
+

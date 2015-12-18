@@ -1,0 +1,272 @@
+§ =============================================================
+§  lua_... and luaL_...
+§ =============================================================
+
+§    typedef void * (*lua_Alloc) (void *ud, void *ptr, size_t osize, size_t nsize); FUNCCC
+§    typedef int (*lua_CFunction) (lua_State *L); FUNCCC
+§    typedef ptrdiff_t lua_Integer; FUNCCC
+§    typedef double lua_Number; FUNCCC
+§    typedef const char * (*lua_Reader) (lua_State *L, void *data, size_t *size); FUNCCC
+§    typedef struct lua_State lua_State; FUNCCC
+§    typedef unsigned long lua_Unsigned; FUNCCC
+§    typedef int (*lua_Writer) (lua_State *L, const void* p, size_t sz, void* ud); FUNCCC
+§
+§    typedef struct luaL_Buffer luaL_Buffer; FUNCCC
+§    typedef struct luaL_Reg { const char *name; lua_CFunction func; } luaL_Reg; FUNCCC
+
+== LIST: lua_api_5_2_func == hash ==
+	'lua_absindex'            : '|LUA_STATE|, <+idx+>',
+	'lua_arith'               : '|LUA_STATE|, <+op+>',
+	'lua_atpanic'             : '|LUA_STATE|, <+panicf+>',
+	'lua_call'                : '|LUA_STATE|, <+nargs+>, <+nresults+>',
+	'lua_callk'               : '|LUA_STATE|, <+nargs+>, <+nresults+>, <+ctx+>, <+k+>',
+	'lua_checkstack'          : '|LUA_STATE|, <+extra+>',
+	'lua_close'               : '|LUA_STATE|',
+	'lua_compare'             : '|LUA_STATE|, <+index1+>, <+index2+>, <+op+>',
+	'lua_concat'              : '|LUA_STATE|, <+n+>',
+	'lua_copy'                : '|LUA_STATE|, <+fromidx+>, <+toidx+>',
+	'lua_createtable'         : '|LUA_STATE|, <+narr+>, <+nrec+>',
+	'lua_dump'                : '|LUA_STATE|, <+lua_Writer+>, <+data+>',
+	'lua_error'               : '|LUA_STATE|',
+	'lua_gc'                  : '|LUA_STATE|, <+what+>, <+data+>',
+	'lua_getallocf'           : '|LUA_STATE|, <+pnt_ud+>',
+	'lua_getctx'              : '|LUA_STATE|, <+ctx+>',
+	'lua_getfield'            : '|LUA_STATE|, <+idx+>, <+key+>',
+	'lua_getglobal'           : '|LUA_STATE|, <+name+>',
+	'lua_getmetatable'        : '|LUA_STATE|, <+idx+>',
+	'lua_gettable'            : '|LUA_STATE|, <+idx+>',
+	'lua_gettop'              : '|LUA_STATE|',
+	'lua_getuservalue'        : '|LUA_STATE|, <+idx+>',
+	'lua_insert'              : '|LUA_STATE|, <+idx+>',
+	'lua_isboolean'           : '|LUA_STATE|, <+idx+>',
+	'lua_iscfunction'         : '|LUA_STATE|, <+idx+>',
+	'lua_isfunction'          : '|LUA_STATE|, <+idx+>',
+	'lua_islightuserdata'     : '|LUA_STATE|, <+idx+>',
+	'lua_isnil'               : '|LUA_STATE|, <+idx+>',
+	'lua_isnone'              : '|LUA_STATE|, <+idx+>',
+	'lua_isnoneornil'         : '|LUA_STATE|, <+idx+>',
+	'lua_isnumber'            : '|LUA_STATE|, <+idx+>',
+	'lua_isstring'            : '|LUA_STATE|, <+idx+>',
+	'lua_istable'             : '|LUA_STATE|, <+idx+>',
+	'lua_isthread'            : '|LUA_STATE|, <+idx+>',
+	'lua_isuserdata'          : '|LUA_STATE|, <+idx+>',
+	'lua_len'                 : '|LUA_STATE|, <+idx+>',
+	'lua_load'                : '|LUA_STATE|, <+reader+>, <+data+>, <+source+>, <+mode+>',
+	'lua_newstate'            : '<+lua_Alloc+>, <+ud+>',
+	'lua_newtable'            : '|LUA_STATE|',
+	'lua_newthread'           : '|LUA_STATE|',
+	'lua_newuserdata'         : '|LUA_STATE|, <+size+>',
+	'lua_next'                : '|LUA_STATE|, <+idx+>',
+	'lua_pcall'               : '|LUA_STATE|, <+nargs+>, <+nresults+>, <+msgh+>',
+	'lua_pcallk'              : '|LUA_STATE|, <+nargs+>, <+nresults+>, <+errfunc+>, <+ctx+>, <+k+>',
+	'lua_pop'                 : '|LUA_STATE|, <+n+>',
+	'lua_pushboolean'         : '|LUA_STATE|, <+val+>',
+	'lua_pushcclosure'        : '|LUA_STATE|, <+func+>, <+nup+>',
+	'lua_pushcfunction'       : '|LUA_STATE|, <+func+>',
+	'lua_pushfstring'         : '|LUA_STATE|, <+fmt+>, <+args+>',
+	'lua_pushglobaltable'     : '|LUA_STATE|',
+	'lua_pushinteger'         : '|LUA_STATE|, <+val+>',
+	'lua_pushlightuserdata'   : '|LUA_STATE|, <+pnt+>',
+	'lua_pushliteral'         : '|LUA_STATE|, <+str+>',
+	'lua_pushlstring'         : '|LUA_STATE|, <+str+>, <+len+>',
+	'lua_pushnil'             : '|LUA_STATE|',
+	'lua_pushnumber'          : '|LUA_STATE|, <+val+>',
+	'lua_pushstring'          : '|LUA_STATE|, <+str+>',
+	'lua_pushthread'          : '|LUA_STATE|',
+	'lua_pushunsigned'        : '|LUA_STATE|, <+val+>',
+	'lua_pushvalue'           : '|LUA_STATE|, <+idx+>',
+	'lua_pushvfstring'        : '|LUA_STATE|, <+fmt+>, <+va_list+>',
+	'lua_rawequal'            : '|LUA_STATE|, <+idx1+>, <+idx2+>',
+	'lua_rawget'              : '|LUA_STATE|, <+idx+>',
+	'lua_rawgeti'             : '|LUA_STATE|, <+idx+>, <+n+>',
+	'lua_rawgetp'             : '|LUA_STATE|, <+idx+>, <+pnt+>',
+	'lua_rawlen'              : '|LUA_STATE|, <+idx+>',
+	'lua_rawset'              : '|LUA_STATE|, <+idx+>',
+	'lua_rawseti'             : '|LUA_STATE|, <+idx+>, <+n+>',
+	'lua_rawsetp'             : '|LUA_STATE|, <+idx+>, <+pnt+>',
+	'lua_register'            : '|LUA_STATE|, <+name+>, <+func+>',
+	'lua_remove'              : '|LUA_STATE|, <+idx+>',
+	'lua_replace'             : '|LUA_STATE|, <+idx+>',
+	'lua_resume'              : '|LUA_STATE|, <+lua_State_from+>, <+nargs+>',
+	'lua_setallocf'           : '|LUA_STATE|, <+lua_Alloc+>, <+ud+>',
+	'lua_setfield'            : '|LUA_STATE|, <+idx+>, <+key+>',
+	'lua_setglobal'           : '|LUA_STATE|, <+name+>',
+	'lua_setmetatable'        : '|LUA_STATE|, <+idx+>',
+	'lua_settable'            : '|LUA_STATE|, <+idx+>',
+	'lua_settop'              : '|LUA_STATE|, <+idx+>',
+	'lua_setuservalue'        : '|LUA_STATE|, <+idx+>',
+	'lua_status'              : '|LUA_STATE|',
+	'lua_toboolean'           : '|LUA_STATE|, <+idx+>',
+	'lua_tocfunction'         : '|LUA_STATE|, <+idx+>',
+	'lua_tointeger'           : '|LUA_STATE|, <+idx+>',
+	'lua_tointegerx'          : '|LUA_STATE|, <+idx+>, <+isnum+>',
+	'lua_tolstring'           : '|LUA_STATE|, <+idx+>, <+len+>',
+	'lua_tonumber'            : '|LUA_STATE|, <+idx+>',
+	'lua_tonumberx'           : '|LUA_STATE|, <+idx+>, <+isnum+>',
+	'lua_topointer'           : '|LUA_STATE|, <+idx+>',
+	'lua_tostring'            : '|LUA_STATE|, <+idx+>',
+	'lua_tothread'            : '|LUA_STATE|, <+idx+>',
+	'lua_tounsigned'          : '|LUA_STATE|, <+idx+>',
+	'lua_tounsignedx'         : '|LUA_STATE|, <+idx+>, <+isnum+>',
+	'lua_touserdata'          : '|LUA_STATE|, <+idx+>',
+	'lua_type'                : '|LUA_STATE|, <+idx+>',
+	'lua_typename'            : '|LUA_STATE|, <+type+>',
+	'lua_upvalueindex'        : '<+idx+>',
+	'lua_Number *lua_version' : '|LUA_STATE|',
+	'lua_xmove'               : '<+lua_State_from+>, <+lua_State_to+>, <+n+>',
+	'lua_yield'               : '|LUA_STATE|, <+nresults+>',
+	'lua_yieldk'              : '|LUA_STATE|, <+nresults+>, <+ctx+>, <+k+>',
+	'luaL_argcheck'           : '|LUA_STATE|, <+cond+>, <+arg+>, <+extramsg+>',
+	'luaL_argerror'           : '|LUA_STATE|, <+arg+>, <+extramsg+>',
+	'luaL_buffinit'           : '|LUA_STATE|, <+buffer+>',
+	'luaL_buffinitsize'       : '|LUA_STATE|, <+buffer+>, <+size+>',
+	'luaL_callmeta'           : '|LUA_STATE|, <+obj+>, <+fieldname+>',
+	'luaL_checkany'           : '|LUA_STATE|, <+arg+>',
+	'luaL_checkint'           : '|LUA_STATE|, <+arg+>',
+	'luaL_checkinteger'       : '|LUA_STATE|, <+arg+>',
+	'luaL_checklong'          : '|LUA_STATE|, <+arg+>',
+	'luaL_checklstring'       : '|LUA_STATE|, <+arg+>, <+len_pnt+>',
+	'luaL_checknumber'        : '|LUA_STATE|, <+arg+>',
+	'luaL_checkoption'        : '|LUA_STATE|, <+arg+>, <+def+>, <+list+>',
+	'luaL_checkstack'         : '|LUA_STATE|, <+size+>, <+msg+>',
+	'luaL_checkstring'        : '|LUA_STATE|, <+arg+>',
+	'luaL_checktype'          : '|LUA_STATE|, <+arg+>, <+type+>',
+	'luaL_checkudata'         : '|LUA_STATE|, <+arg+>, <+tname+>',
+	'luaL_checkunsigned'      : '|LUA_STATE|, <+arg+>',
+	'luaL_checkversion'       : '|LUA_STATE|',
+	'luaL_dofile'             : '|LUA_STATE|, <+filename+>',
+	'luaL_dostring'           : '|LUA_STATE|, <+str+>',
+	'luaL_error'              : '|LUA_STATE|, <+fmt+>, <+args+>',
+	'luaL_execresult'         : '|LUA_STATE|, <+stat+>',
+	'luaL_fileresult'         : '|LUA_STATE|, <+stat+>, <+filename+>',
+	'luaL_getmetafield'       : '|LUA_STATE|, <+obj+>, <+fieldname+>',
+	'luaL_getmetatable'       : '|LUA_STATE|, <+tname+>',
+	'luaL_getsubtable'        : '|LUA_STATE|, <+idx+>, <+fieldname+>',
+	'luaL_gsub'               : '|LUA_STATE|, <+str+>, <+pat+>, <+repl+>',
+	'luaL_len'                : '|LUA_STATE|, <+idx+>',
+	'luaL_loadbuffer'         : '|LUA_STATE|, <+buff+>, <+size+>, <+name+>',
+	'luaL_loadbufferx'        : '|LUA_STATE|, <+buff+>, <+size+>, <+name+>, <+mode+>',
+	'luaL_loadfile'           : '|LUA_STATE|, <+filename+>',
+	'luaL_loadfilex'          : '|LUA_STATE|, <+filename+>, <+mode+>',
+	'luaL_loadstring'         : '|LUA_STATE|, <+str+>',
+	'luaL_newlib'             : '|LUA_STATE|, <+luaL_Reg+>',
+	'luaL_newlibtable'        : '|LUA_STATE|, <+luaL_Reg+>',
+	'luaL_newmetatable'       : '|LUA_STATE|, <+tname+>',
+	'luaL_newstate'           : '',
+	'luaL_openlibs'           : '|LUA_STATE|',
+	'luaL_optint'             : '|LUA_STATE|, <+arg+>, <+def+>',
+	'luaL_optinteger'         : '|LUA_STATE|, <+arg+>, <+def+>',
+	'luaL_optlong'            : '|LUA_STATE|, <+arg+>, <+def+>',
+	'luaL_optlstring'         : '|LUA_STATE|, <+arg+>, <+def+>, <+size+>',
+	'luaL_optnumber'          : '|LUA_STATE|, <+arg+>, <+def+>',
+	'luaL_optstring'          : '|LUA_STATE|, <+arg+>, <+def+>',
+	'luaL_optunsigned'        : '|LUA_STATE|, <+arg+>, <+def+>',
+	'luaL_ref'                : '|LUA_STATE|, <+t+>',
+	'luaL_requiref'           : '|LUA_STATE|, <+modname+>, <+openf+>, <+glb+>',
+	'luaL_setfuncs'           : '|LUA_STATE|, <+luaL_Reg+>, <+nup+>',
+	'luaL_setmetatable'       : '|LUA_STATE|, <+tname+>',
+	'luaL_testudata'          : '|LUA_STATE|, <+arg+>, <+tname+>',
+	'luaL_tolstring'          : '|LUA_STATE|, <+idx+>, <+size+>',
+	'luaL_traceback'          : '|LUA_STATE|, <+lua_State_L1+>, <+msg+>, <+level+>',
+	'luaL_typename'           : '|LUA_STATE|, <+idx+>',
+	'luaL_unref'              : '|LUA_STATE|, <+t+>, <+ref+>',
+	'luaL_where'              : '|LUA_STATE|, <+lvl+>',
+== ENDLIST ==
+
+== LIST: lua_api_5_2_type_names  == hash ==
+	'boolean'       : 'LUA_TBOOLEAN',
+	'function'      : 'LUA_TFUNCTION',
+	'lightuserdata' : 'LUA_TLIGHTUSERDATA',
+	'nil'           : 'LUA_TNIL',
+	'none'          : 'LUA_TNONE',
+	'number'        : 'LUA_TNUMBER',
+	'string'        : 'LUA_TSTRING',
+	'table'         : 'LUA_TTABLE',
+	'thread'        : 'LUA_TTHREAD',
+	'userdata'      : 'LUA_TUSERDATA',
+== ENDLIST ==
+
+== LIST: lua_api_5_2_op_names == hash ==
+	'add (+)'            : 'LUA_OPADD',
+	'div (/)'            : 'LUA_OPDIV',
+	'equal (==)'         : 'LUA_OPEQ',
+	'less or equal (<=)' : 'LUA_OPLE',
+	'less than (<)'      : 'LUA_OPLT',
+	'modulo (%)'         : 'LUA_OPMOD',
+	'mul (*)'            : 'LUA_OPMUL',
+	'power (^)'          : 'LUA_OPPOW',
+	'sub (-)'            : 'LUA_OPSUB',
+	'unary minus (-)'    : 'LUA_OPUNM',
+== ENDLIST ==
+
+§ =============================================================
+§  luaL_... (buffer)
+§ =============================================================
+
+== LIST: lua_api_5_2_buffer == hash ==
+	'luaL_addchar'            : '|BUFFER|, <+chr+>',
+	'luaL_addlstring'         : '|BUFFER|, <+str+>, <+size+>',
+	'luaL_addsize'            : '|BUFFER|, <+size+>',
+	'luaL_addstring'          : '|BUFFER|, <+str+>',
+	'luaL_addvalue'           : '|BUFFER|',
+	'luaL_buffinit'           : '|LUA_STATE|, |BUFFER|',
+	'luaL_buffinitsize'       : '|LUA_STATE|, |BUFFER|, <+size+>',
+	'luaL_prepbuffer'         : '|BUFFER|',
+	'luaL_prepbuffsize'       : '|BUFFER|, <+size+>',
+	'luaL_pushresult'         : '|BUFFER|',
+	'luaL_pushresultsize'     : '|BUFFER|, <+size+>',
+== ENDLIST ==
+
+§ =============================================================
+§  lua_... (debug)
+§ =============================================================
+
+§    typedef struct lua_Debug { /* TODO */ } lua_Debug; FUNCCC
+§    typedef void (*lua_Hook) (lua_State *L, lua_Debug *ar); FUNCCC
+
+== LIST: lua_api_5_2_debug_func == hash ==
+    'lua_gethook'      : '|LUA_STATE|',
+    'lua_gethookcount' : '|LUA_STATE|',
+    'lua_gethookmask'  : '|LUA_STATE|',
+    'lua_getinfo'      : '|LUA_STATE|, <+what+>, <+ar+>',
+    'lua_getlocal'     : '|LUA_STATE|, <+ar+>, <+n+>',
+    'lua_getstack'     : '|LUA_STATE|, <+level+>, <+ar+>',
+    'lua_getupvalue'   : '|LUA_STATE|, <+funcindex+>, <+n+>',
+    'lua_sethook'      : '|LUA_STATE|, <+f+>, <+mask+>, <+count+>',
+    'lua_setlocal'     : '|LUA_STATE|, <+ar+>, <+n+>',
+    'lua_setupvalue'   : '|LUA_STATE|, <+funcindex+>, <+n+>',
+    'lua_upvalueid'    : '|LUA_STATE|, <+funcindex+>, <+n+>',
+    'lua_upvaluejoin'  : '|LUA_STATE|, <+funcindex1+>, <+n1+>, <+funcindex2+>, <+n2+>',
+== ENDLIST ==
+
+== LIST: lua_api_5_2_debug_names == list, bare ==
+	LUA_HOOKCALL
+	LUA_HOOKCOUNT
+	LUA_HOOKLINE
+	LUA_HOOKRET
+	LUA_HOOKTAILCALL
+	LUA_MASKCALL
+	LUA_MASKCOUNT
+	LUA_MASKLINE
+	LUA_MASKRET
+== ENDLIST ==
+
+§ Constants:
+§
+§LUA_ERRERR
+§LUA_ERRFILE
+§LUA_ERRGCMM
+§LUA_ERRMEM
+§LUA_ERRRUN
+§LUA_ERRSYNTAX
+§LUA_MINSTACK
+§LUA_MULTRET
+§LUA_NOREF
+§LUA_OK
+§LUA_REFNIL
+§LUA_REGISTRYINDEX
+§LUA_RIDX_GLOBALS
+§LUA_RIDX_MAINTHREAD
+§LUA_USE_APICHECK
+§LUA_YIELD
+§LUAL_BUFFERSIZE

@@ -58,7 +58,7 @@ SetMacro( 'HelpPathLua',     'http://www.lua.org/manual/5.2/' )
 == HELP: Help.English == map:he, sc:e ==
 |Word( '' )|
 |Substitute( '\W', '', 'g' )|
-|Browser( '|HelpPathEnglish||PICK:l|' )|
+|Browser( '|HelpPathEnglish||PICK:l|', '|HelpPathEnglish|' )|
 == HELP: Help.Lua function, browser == map:hl, sc:l ==
 |Pattern( '\<\%(\w\+[.:]\)\?\w\+\>' )|
 |Substitute( '^\i\+:\(close\|flush\|lines\|read\|seek\|setvbuf\|write\)', 'file:\1', '' )|

@@ -197,6 +197,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 - Added Lua's reference manual in Vim's help format.
 - Added maps and menu entries to jump to it conveniently.
 - New and improved templates, add Lua 5.3.
+- Add Lua C-API templates.
 - Minor improvements.
 
   RELEASE NOTES FOR OLDER VERSIONS
