@@ -17,6 +17,31 @@ branch
 	--set-upstream
 	--track
 	--verbose
+commit
+	--all
+	--allow-empty
+	--allow-empty-message
+	--amend
+	--author
+	--cleanup
+	--date
+	--dry-run
+	--edit
+	--file
+	--include
+	--message
+	--no-status
+	--no-verify
+	--only
+	--quiet
+	--reedit-message
+	--reset-author
+	--reuse-message
+	--signoff
+	--status
+	--template
+	--untracked-files
+	--verbose
 diff
 	--abbrev=
 	--binary
@@ -56,6 +81,74 @@ diff
 	--submodule
 	--summary
 	--unified=
+log
+	--abbrev-commit
+	--after
+	--all
+	--all-match
+	--author
+	--before
+	--bisect
+	--boundary
+	--branches
+	--cherry
+	--cherry-mark
+	--cherry-pick
+	--children
+	--committer
+	--date
+	--date-order
+	--decorate
+	--encoding
+	--extended-regexp
+	--first-parent
+	--fixed-strings
+	--follow
+	--full-diff
+	--glob
+	--graph
+	--grep
+	--ignore-missing
+	--left-only
+	--left-right
+	--max-count
+	--max-parents
+	--merge
+	--merges
+	--min-parents
+	--no-abbrev-commit
+	--no-decorate
+	--no-max-parents
+	--no-merges
+	--no-min-parents
+	--no-notes
+	--not
+	--notes
+	--oneline
+	--parents
+	--pretty=email
+	--pretty=format:
+	--pretty=full
+	--pretty=fuller
+	--pretty=medium
+	--pretty=oneline
+	--pretty=raw
+	--pretty=short
+	--regexp-ignore-case
+	--relative-date
+	--remotes
+	--remove-empty
+	--reverse
+	--right-only
+	--show-notes
+	--since
+	--skip
+	--source
+	--stat
+	--tags
+	--topo-order
+	--until
+	--walk-reflogs
 remote
 	add
 	prune
@@ -69,6 +162,23 @@ remote
 	--no-tags
 	--tags
 	--verbose
+show
+	--abbrev-commit
+	--encoding
+	--no-abbrev-commit
+	--no-notes
+	--notes
+	--oneline
+	--pretty=email
+	--pretty=format:
+	--pretty=full
+	--pretty=fuller
+	--pretty=medium
+	--pretty=oneline
+	--pretty=raw
+	--pretty=short
+	--show-notes
+	--stat
 stash
 	apply
 	branch
