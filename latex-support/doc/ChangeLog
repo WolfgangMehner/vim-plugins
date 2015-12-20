@@ -1,4 +1,17 @@
 ---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.1.1
+---------------------------------------------------------------------------------------
+- Added some new templates.
+- Added 'Latex_SetMapLeader' and 'Latex_ResetMapLeader'.
+- Bugfix: Resetting maplocalleader in filetype plug-in after setting it to the value of
+  g:Latex_MapLeader.
+- Bugfix: Better compatibility with custom mappings
+  (use "normal!" and "noremap" consistently).
+- Bugfix: Setup of local templates in case of global installation.
+- Bugfix: Renamed function which were named "g:*".
+- Always load the newest version of the template engine available on 'runtimepath'.
+
+---------------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 1.1
 ---------------------------------------------------------------------------------------
 - Beamer templates and snippets added.

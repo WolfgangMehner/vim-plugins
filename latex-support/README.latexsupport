@@ -1,4 +1,4 @@
-README for latex-support.vim (Version 1.1.1) / August 15 2014
+README for latex-support.vim (Version 1.2pre) / December 20 2015
 
   *  INSTALLATION
   *  RELEASE NOTES 
@@ -78,17 +78,11 @@ For a system-wide installation please see the help file 'doc/latexsupport.txt'.
 =======================================================================================
 
 ---------------------------------------------------------------------------------------
-  RELEASE NOTES FOR VERSION 1.1.1
+  RELEASE NOTES FOR VERSION 1.2pre
 ---------------------------------------------------------------------------------------
-- Added some new templates.
-- Added 'Latex_SetMapLeader' and 'Latex_ResetMapLeader'.
-- Bugfix: Resetting maplocalleader in filetype plug-in after setting it to the value of
-  g:Latex_MapLeader.
-- Bugfix: Better compatibility with custom mappings
-  (use "normal!" and "noremap" consistently).
-- Bugfix: Setup of local templates in case of global installation.
-- Bugfix: Renamed function which were named "g:*".
-- Always load the newest version of the template engine available on 'runtimepath'.
+- Add 'g:Latex_CustomTemplateFile' and 'g:Latex_AdditionalTemplates'.
+- Add template personalization file and setup wizard.
+- Add maps to bibtex buffers.
 
 =======================================================================================
   FILES

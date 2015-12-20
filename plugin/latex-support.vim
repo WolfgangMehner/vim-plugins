@@ -11,7 +11,7 @@
 "        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
 "       Version:  see variable g:LatexSupportVersion below.
 "       Created:  27.12.2012
-"       License:  Copyright (c) 2012-2014, Dr. Fritz Mehner
+"       License:  Copyright (c) 2012-2015, Dr. Fritz Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -34,7 +34,7 @@ if exists("g:LatexSupportVersion") || &cp
  finish
 endif
 "
-let g:LatexSupportVersion= "1.1.1"                  " version number of this script; do not change
+let g:LatexSupportVersion= "1.2pre"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  latex_SetGlobalVariable     {{{1
@@ -73,10 +73,10 @@ endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 let s:MSWIN = has("win16") || has("win32")   || has("win64") || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
-let s:installation							= '*undefined*'
-let s:Latex_GlobalTemplateFile	= ''
-let s:Latex_LocalTemplateFile		= ''
-let s:Latex_FilenameEscChar 		= ''
+let s:installation             = '*undefined*'
+let s:Latex_GlobalTemplateFile = ''
+let s:Latex_LocalTemplateFile  = ''
+let s:Latex_CustomTemplateFile = ''             " the custom templates
 
 let s:Latex_Typesetter	= 'pdflatex'
 
@@ -111,21 +111,21 @@ if	s:MSWIN
 				\		substitute( expand("$HOME"),   '\', '/', 'g' ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
-		let s:installation					= 'local'
-		let s:Latex_LocalTemplateFile	= s:plugin_dir.'/latex-support/templates/Templates'
-		let s:Latex_ToolboxDir			 += [ s:plugin_dir.'/autoload/mmtoolbox/' ]
+		let s:installation             = 'local'
+		let s:Latex_LocalTemplateFile  = s:plugin_dir.'/latex-support/templates/Templates'
+		let s:Latex_CustomTemplateFile = $HOME.'/vimfiles/templates/latex.templates'
+		let s:Latex_ToolboxDir        += [ s:plugin_dir.'/autoload/mmtoolbox/' ]
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
-		let s:installation					= 'system'
-		let s:Latex_GlobalTemplateFile= s:plugin_dir.'/latex-support/templates/Templates'
-		let s:Latex_LocalTemplateFile	= $HOME.'/vimfiles/latex-support/templates/Templates'
-		let s:Latex_ToolboxDir			 += [
+		let s:installation             = 'system'
+		let s:Latex_GlobalTemplateFile = s:plugin_dir.'/latex-support/templates/Templates'
+		let s:Latex_LocalTemplateFile  = $HOME.'/vimfiles/latex-support/templates/Templates'
+		let s:Latex_CustomTemplateFile = $HOME.'/vimfiles/templates/latex.templates'
+		let s:Latex_ToolboxDir        += [
 					\	s:plugin_dir.'/autoload/mmtoolbox/',
 					\	$HOME.'/vimfiles/autoload/mmtoolbox/' ]
 	endif
-	"
-  let s:Latex_FilenameEscChar 		= ''
 	"
 else
   " ==========  Linux/Unix  ======================================================
@@ -154,25 +154,26 @@ else
 	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
-		let s:installation					= 'local'
-		let s:Latex_LocalTemplateFile	= s:plugin_dir.'/latex-support/templates/Templates'
-		let s:Latex_ToolboxDir			 += [ s:plugin_dir.'/autoload/mmtoolbox/' ]
+		let s:installation             = 'local'
+		let s:Latex_LocalTemplateFile  = s:plugin_dir.'/latex-support/templates/Templates'
+		let s:Latex_CustomTemplateFile = $HOME.'/.vim/templates/latex.templates'
+		let s:Latex_ToolboxDir        += [ s:plugin_dir.'/autoload/mmtoolbox/' ]
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
-		let s:installation					= 'system'
-		let s:Latex_GlobalTemplateFile= s:plugin_dir.'/latex-support/templates/Templates'
-		let s:Latex_LocalTemplateFile	= $HOME.'/.vim/latex-support/templates/Templates'
-		let s:Latex_ToolboxDir			 += [
+		let s:installation             = 'system'
+		let s:Latex_GlobalTemplateFile = s:plugin_dir.'/latex-support/templates/Templates'
+		let s:Latex_LocalTemplateFile  = $HOME.'/.vim/latex-support/templates/Templates'
+		let s:Latex_CustomTemplateFile = $HOME.'/.vim/templates/latex.templates'
+		let s:Latex_ToolboxDir        += [
 					\	s:plugin_dir.'/autoload/mmtoolbox/',
 					\	$HOME.'/.vim/autoload/mmtoolbox/' ]
 	endif
 	"
-  let s:Latex_FilenameEscChar 		= ' \%#[]'
-	"
 endif
 "
-let s:Latex_CodeSnippets  				= s:plugin_dir.'/latex-support/codesnippets/'
+let s:Latex_AdditionalTemplates = []
+let s:Latex_CodeSnippets        = s:plugin_dir.'/latex-support/codesnippets/'
 call s:latex_SetGlobalVariable( 'Latex_CodeSnippets', s:Latex_CodeSnippets )
 "
 "
@@ -206,6 +207,8 @@ let s:Latex_InsertFileProlog			= 'yes'
 " overwrite the mapleader, we should not use use "\" in LaTeX
 call s:latex_SetGlobalVariable ( 'Latex_MapLeader', '´' )
 
+call s:GetGlobalSetting( 'Latex_AdditionalTemplates' )
+call s:GetGlobalSetting( 'Latex_CustomTemplateFile' )
 call s:GetGlobalSetting( 'Latex_CreateMenusDelayed' )
 call s:GetGlobalSetting( 'Latex_DviPdf' )
 call s:GetGlobalSetting( 'Latex_DviPng' )
@@ -254,6 +257,7 @@ let s:Latex_ViewerCall = {
 "
 let s:Latex_Printheader  					= escape( s:Latex_Printheader, ' %' )
 let s:Latex_saved_global_option		= {}
+"
 "------------------------------------------------------------------------------
 "  Latex_SaveGlobalOption    {{{1
 "  param 1 : option name
@@ -472,13 +476,100 @@ endfunction    " ----------  end of function Latex_ResetMapLeader  ----------
 " }}}2
 "
 "===  FUNCTION  ================================================================
-"          NAME:  Latex_RereadTemplates     {{{1
+"          NAME:  s:ParseBibtexEntry     {{{1
+"   DESCRIPTION:  parse a BibTeX entry
+"===============================================================================
+function! s:ParseBibtexEntry ( text )
+	"
+	let data = { 'error' : '', 'type' : '', 'key' : '', 'fields' : {} }
+	"
+	" @TYPE { KEY ,
+	let mlist = matchlist ( a:text, '^\_s*@\(\K\k*\)\_s*{\(\K\k*\)\_s*,\(.*\)' )
+	"
+	if empty ( mlist )
+		let data.error = 'Could not parse the type or key.'
+		return data
+	endif
+	"
+	" metadata
+	let data.type = mlist[1]
+	let data.key  = mlist[2]
+	"
+	" is really a comment
+	if tolower( data.type ) == 'comment'
+		let data.error = 'Found a comment.'
+		return data
+	endif
+	"
+	" parse fields
+	let sep  = '}'
+	let text = mlist[3]
+	"
+	while 1
+		"
+		" :TODO:02.02.2014 19:40:WM: nested { }
+		" :TODO:02.02.2014 19:40:WM: concatenated strings #
+		"
+		" IDENTIFIER = ( INTEGER | IDENTIFIER | { ... } | " ... " ) ( ,} | , | } )
+		let mlist = matchlist ( text, '^\_s*\(\I\i*\)\_s*=\_s*\(\d\+\|\I\i*\|{[^{]*}\|"[^{]*"\)\_s*\(,\_s*}\|[,}]\)\(.*\)' )
+		"
+		if empty( mlist )
+			break
+		endif
+		"
+		if ! has_key ( data.fields, mlist[1] )
+			let data.fields[ mlist[1] ] = mlist[2]
+		endif
+		let sep  = mlist[3]
+		let text = mlist[4]
+	endwhile
+	"
+	" parsed full entry?
+	if sep !~ '}$'
+		let data.error = 'Could not parse a full entry.'
+		return data
+	endif
+	"
+	return data
+	"
+endfunction    " ----------  end of function s:ParseBibtexEntry ----------
+"
+"===  FUNCTION  ================================================================
+"          NAME:  Latex_BibtexBeautify     {{{1
+"   DESCRIPTION:  toggle comment
+"===============================================================================
+function! Latex_BibtexBeautify () range
+	"
+	" get lines
+	let linestring = ''
+	for i in range(a:firstline,a:lastline)
+		let linestring .= getline(i)."\n"
+	endfor
+	"
+	let data = s:ParseBibtexEntry ( linestring )
+	"
+	if data.error != ''
+		echo "Did not find an entry:\n".data.error
+		return
+	endif
+	"
+	echo data.type
+	echo data.key
+	"
+	for [ key, val ] in items( data.fields )
+		echo key.' = '.val
+	endfor
+	"
+endfunction    " ----------  end of function Latex_BibtexBeautify ----------
+"
+"===  FUNCTION  ================================================================
+"          NAME:  s:RereadTemplates     {{{1
 "   DESCRIPTION:  Reread the templates. Also set the character which starts
 "                 the comments in the template files.
 "    PARAMETERS:  -
 "       RETURNS:
 "===============================================================================
-function! Latex_RereadTemplates ( displaymsg )
+function! s:RereadTemplates ()
 	"
 	"-------------------------------------------------------------------------------
 	" SETUP TEMPLATE LIBRARY
@@ -492,80 +583,93 @@ function! Latex_RereadTemplates ( displaymsg )
 		call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::Mapleader', g:Latex_MapLeader )
 	endif
 	"
-	" map: choose style
-	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::ChooseStyle::Map', 'nts' )
+	" some metainfo
+	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::Wizard::PluginName',   'LaTeX' )
+	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::Wizard::FiletypeName', 'LaTeX' )
+	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::Wizard::FileCustomNoPersonal',   s:plugin_dir.'/latex-support/rc/custom.templates' )
+	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::Wizard::FileCustomWithPersonal', s:plugin_dir.'/latex-support/rc/custom_with_personal.templates' )
+	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::Wizard::FilePersonal',           s:plugin_dir.'/latex-support/rc/personal.templates' )
+	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::Wizard::CustomFileVariable',     'g:Latex_CustomTemplateFile' )
+	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::Wizard::AddFileListVariable',    'g:Latex_AdditionalTemplates' )
+	"
+	" maps: special operations
+	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::RereadTemplates::Map', 'ntr' )
+	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::ChooseStyle::Map',     'nts' )
+	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::SetupWizard::Map',     'ntw' )
 	"
 	" syntax: comments
 	call mmtemplates#core#ChangeSyntax ( g:Latex_Templates, 'comment', '§' )
+	"
+	"-------------------------------------------------------------------------------
+	" load template library
+	"-------------------------------------------------------------------------------
+	"
+	" global templates (global installation only)
+	if s:installation == 'system'
+		call mmtemplates#core#ReadTemplates ( g:Latex_Templates, 'load', s:Latex_GlobalTemplateFile,
+					\ 'name', 'global', 'map', 'ntg' )
+	endif
+	"
+	" local templates (optional for global installation)
+	if s:installation == 'system'
+		call mmtemplates#core#ReadTemplates ( g:Latex_Templates, 'load', s:Latex_LocalTemplateFile,
+					\ 'name', 'local', 'map', 'ntl', 'optional', 'hidden' )
+	else
+		call mmtemplates#core#ReadTemplates ( g:Latex_Templates, 'load', s:Latex_LocalTemplateFile,
+					\ 'name', 'local', 'map', 'ntl' )
+	endif
+	"
+	" additional templates (optional)
+	if ! empty ( s:Latex_AdditionalTemplates )
+		call mmtemplates#core#AddCustomTemplateFiles ( g:Latex_Templates, s:Latex_AdditionalTemplates, 'g:Latex_AdditionalTemplates' )
+	endif
+	"
+	" custom templates (optional, existence of file checked by template engine)
+	call mmtemplates#core#ReadTemplates ( g:Latex_Templates, 'load', s:Latex_CustomTemplateFile,
+				\ 'name', 'custom', 'map', 'ntc', 'optional' )
+	"
+	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)
+	call mmtemplates#core#ReadTemplates ( g:Latex_Templates, 'personalization',
+				\ 'name', 'personal', 'map', 'ntp' )
+	"
+	"-------------------------------------------------------------------------------
+	" further setup
+	"-------------------------------------------------------------------------------
+	"
+	" get the jump tags
 	let s:Latex_TemplateJumpTarget = mmtemplates#core#Resource ( g:Latex_Templates, "jumptag" )[0]
 	"
-	let	messsage = ''
+endfunction    " ----------  end of function s:RereadTemplates  ----------
+"
+"===  FUNCTION  ================================================================
+"          NAME:  s:CheckTemplatePersonalization     {{{1
+"   DESCRIPTION:  check whether the name, ... has been set
+"    PARAMETERS:  -
+"       RETURNS:
+"===============================================================================
+let s:DoneCheckTemplatePersonalization = 0
+"
+function! s:CheckTemplatePersonalization ()
 	"
-	if s:installation == 'system'
-		"-------------------------------------------------------------------------------
-		" SYSTEM INSTALLATION
-		"-------------------------------------------------------------------------------
-		if filereadable( s:Latex_GlobalTemplateFile )
-			call mmtemplates#core#ReadTemplates ( g:Latex_Templates, 'load', s:Latex_GlobalTemplateFile )
-		else
-			echomsg "Global template file '".s:Latex_GlobalTemplateFile."' not readable."
-			return
-		endif
-		let	messsage	= "Templates read from '".s:Latex_GlobalTemplateFile."'"
+	" check whether the templates are personalized
+	if ! s:DoneCheckTemplatePersonalization
+				\ && mmtemplates#core#ExpandText ( g:Latex_Templates, '|AUTHOR|' ) == 'YOUR NAME'
+		let s:DoneCheckTemplatePersonalization = 1
 		"
-		"-------------------------------------------------------------------------------
-		" handle local template files
-		"-------------------------------------------------------------------------------
-		let templ_dir = fnamemodify( s:Latex_GlobalTemplateFile, ":p:h" ).'/'
+		let maplead = mmtemplates#core#Resource ( g:Latex_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
 		"
-		if finddir( templ_dir ) == ''
-			" try to create a local template directory
-			if exists("*mkdir")
-				try
-					call mkdir( templ_dir, "p" )
-				catch /.*/
-				endtry
-			endif
-		endif
-
-		if isdirectory( templ_dir ) && !filereadable( s:Latex_LocalTemplateFile )
-			" write a default local template file
-			let template	= [	]
-			let sample_template_file	= s:plugin_dir.'/latex-support/rc/sample_template_file'
-			if filereadable( sample_template_file )
-				for line in readfile( sample_template_file )
-					call add( template, line )
-				endfor
-				call writefile( template, s:Latex_LocalTemplateFile )
-			endif
-		endif
-		"
-		if filereadable( s:Latex_LocalTemplateFile )
-			call mmtemplates#core#ReadTemplates ( g:Latex_Templates, 'load', s:Latex_LocalTemplateFile )
-			let messsage	= messsage." and '".s:Latex_LocalTemplateFile."'"
-			if mmtemplates#core#ExpandText( g:Latex_Templates, '|AUTHOR|' ) == 'YOUR NAME'
-				echomsg "Please set your personal details in file '".s:Latex_LocalTemplateFile."'."
-			endif
-		endif
-		"
-	else
-		"-------------------------------------------------------------------------------
-		" LOCAL INSTALLATION
-		"-------------------------------------------------------------------------------
-		if filereadable( s:Latex_LocalTemplateFile )
-			call mmtemplates#core#ReadTemplates ( g:Latex_Templates, 'load', s:Latex_LocalTemplateFile )
-			let	messsage	= "Templates read from '".s:Latex_LocalTemplateFile."'"
-		else
-			echomsg "Local template file '".s:Latex_LocalTemplateFile."' not readable."
-			return
-		endif
-		"
+		redraw
+		echohl Search
+		echo 'The personal details (name, mail, ...) are not set in the template library.'
+		echo 'They are used to generate comments, ...'
+		echo 'To set them, start the setup wizard using:'
+		echo '- use the menu entry "LaTeX -> Snippets -> template setup wizard"'
+		echo '- use the map "'.maplead.'ntw" inside a LaTeX buffer'
+		echo "\n"
+		echohl None
 	endif
-	if a:displaymsg == 'yes'
-		echomsg messsage.'.'
-	endif
-
-endfunction    " ----------  end of function Latex_RereadTemplates  ----------
+	"
+endfunction    " ----------  end of function s:CheckTemplatePersonalization  ----------
 "
 "===  FUNCTION  ================================================================
 "          NAME:  InitMenus     {{{1
@@ -648,18 +752,7 @@ function! s:InitMenus()
 	exe ihead.'&edit\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call Latex_CodeSnippet("edit")<CR>'
 	exe ahead.'-SepSnippets-                       :'
 	"
-	exe ahead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntl       :call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,-1)<CR>'
-	exe ihead.'edit\ &local\ templates<Tab>'.esc_mapl.'ntl  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,-1)<CR>'
-	if s:installation == 'system'
-		exe ahead.'edit\ &global\ templates<Tab>'.esc_mapl.'ntg       :call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,0)<CR>'
-		exe ihead.'edit\ &global\ templates<Tab>'.esc_mapl.'ntg  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,0)<CR>'
-	endif
-	"
-	exe ahead.'reread\ &templates<Tab>'.esc_mapl.'ntr       :call mmtemplates#core#ReadTemplates(g:Latex_Templates,"reload","all")<CR>'
-	exe ihead.'reread\ &templates<Tab>'.esc_mapl.'ntr  <C-C>:call mmtemplates#core#ReadTemplates(g:Latex_Templates,"reload","all")<CR>'
-	"
-	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'do_styles',
-				\ 'specials_menu', 'Snippets'	)
+	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'do_specials', 'specials_menu', 'Snippets'	)
 	"
 	"-------------------------------------------------------------------------------
 	" wizard
@@ -720,7 +813,7 @@ function! s:InitMenus()
 	exe ahead.'-SEP3-                            :'
 	exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh        :call Latex_Hardcopy("n")<CR>'
 	exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call Latex_Hardcopy("v")<CR>'
-	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rse                 :call Latex_Settings()<CR>'
+	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rse                 :call Latex_Settings(0)<CR>'
 	"
 	"-------------------------------------------------------------------------------
 	" toolbox
@@ -876,12 +969,12 @@ function! Latex_CodeSnippet(mode)
 endfunction   " ---------- end of function  Latex_CodeSnippet  ----------
 "
 "===  FUNCTION  ================================================================
-"          NAME:  CreateAdditionalMaps     {{{1
-"   DESCRIPTION:  create additional maps
+"          NAME:  CreateAdditionalLatexMaps     {{{1
+"   DESCRIPTION:  create additional maps for LaTeX
 "    PARAMETERS:  -
 "       RETURNS:
 "===============================================================================
-function! s:CreateAdditionalMaps ()
+function! s:CreateAdditionalLatexMaps ()
 	"
 	" ---------- Latex dictionary -------------------------------------------------
 	" This will enable keyword completion for Latex
@@ -923,7 +1016,6 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------
-	"
 	nnoremap  <buffer>  <silent>  <LocalLeader>nr         :call Latex_CodeSnippet("read")<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>nr    <Esc>:call Latex_CodeSnippet("read")<CR>
 	nnoremap  <buffer>  <silent>  <LocalLeader>nw         :call Latex_CodeSnippet("write")<CR>
@@ -934,32 +1026,17 @@ function! s:CreateAdditionalMaps ()
 	nnoremap  <buffer>  <silent>  <LocalLeader>nv         :call Latex_CodeSnippet("view")<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>nv    <Esc>:call Latex_CodeSnippet("view")<CR>
 	"
-	" ---------- snippet menu : templates ----------------------------------------
-	"
-	nnoremap    <buffer>  <silent> <LocalLeader>ntl       :call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,-1)<CR>
-	inoremap    <buffer>  <silent> <LocalLeader>ntl  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,-1)<CR>
-	if s:installation == 'system'
-		nnoremap  <buffer>  <silent> <LocalLeader>ntg       :call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,0)<CR>
-		inoremap  <buffer>  <silent> <LocalLeader>ntg  <C-C>:call mmtemplates#core#EditTemplateFiles(g:Latex_Templates,0)<CR>
-	endif
-	nnoremap    <buffer>  <silent> <LocalLeader>ntr       :call mmtemplates#core#ReadTemplates(g:Latex_Templates,"reload","all")<CR>
-	inoremap    <buffer>  <silent> <LocalLeader>ntr  <C-C>:call mmtemplates#core#ReadTemplates(g:Latex_Templates,"reload","all")<CR>
-	nnoremap    <buffer>  <silent> <LocalLeader>nts       :call mmtemplates#core#ChooseStyle(g:Latex_Templates,"!pick")<CR>
-	inoremap    <buffer>  <silent> <LocalLeader>nts  <C-C>:call mmtemplates#core#ChooseStyle(g:Latex_Templates,"!pick")<CR>
-	"
 	"-------------------------------------------------------------------------------
-	"  wizard
+	" wizard
 	"-------------------------------------------------------------------------------
-	"
  	nnoremap    <buffer>  <silent> <LocalLeader>wtg       :call Latex_Tabbing()<CR>k0a'
  	inoremap    <buffer>  <silent> <LocalLeader>wtg  <C-C>:call Latex_Tabbing()<CR>k0a'
  	nnoremap    <buffer>  <silent> <LocalLeader>wtr       :call Latex_Tabular()<CR>3k0a'
  	inoremap    <buffer>  <silent> <LocalLeader>wtr  <C-C>:call Latex_Tabular()<CR>3k0a'
 	"
 	"-------------------------------------------------------------------------------
-	"   run
+	" run
 	"-------------------------------------------------------------------------------
-	"
    noremap  <buffer>            <C-F9>                  :call Latex_Compile()<CR><CR>
   inoremap  <buffer>            <C-F9>             <Esc>:call Latex_Compile()<CR><CR>
   vnoremap  <buffer>            <C-F9>             <Esc>:call Latex_Compile()<CR><CR>
@@ -972,7 +1049,7 @@ function! s:CreateAdditionalMaps ()
    noremap  <buffer>  <silent>  <LocalLeader>rla        :call Latex_Lacheck()<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rla   <C-C>:call Latex_Lacheck()<CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>rla   <C-C>:call Latex_Lacheck()<CR>
-
+	"
    noremap  <buffer>  <silent>  <LocalLeader>rdvi       :call Latex_View("dvi")<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rdvi  <C-C>:call Latex_View("dvi")<CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>rdvi  <C-C>:call Latex_View("dvi")<CR>
@@ -990,7 +1067,7 @@ function! s:CreateAdditionalMaps ()
   inoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call Latex_RunBibtex()<CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call Latex_RunBibtex()<CR>
 	"
-	nnoremap  <buffer>  <silent>  <LocalLeader>rse        :call Latex_Settings()<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>rse        :call Latex_Settings(0)<CR>
   "
 	 noremap  <buffer>  <silent>  <LocalLeader>rh         :call Latex_Hardcopy("n")<CR>
 	vnoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call Latex_Hardcopy("v")<CR>
@@ -999,24 +1076,22 @@ function! s:CreateAdditionalMaps ()
 	 noremap  <buffer>  <silent>  <LocalLeader>rc        :call Latex_ConvertInput()<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>rc   <C-C>:call Latex_ConvertInput()<CR>
 	vnoremap  <buffer>  <silent>  <LocalLeader>rc   <C-C>:call Latex_ConvertInput()<CR>
+	"
 	"-------------------------------------------------------------------------------
-	"   tool box
+	" tool box
 	"-------------------------------------------------------------------------------
 	if s:Latex_UseToolbox == 'yes'
 		call mmtoolbox#tools#AddMaps ( s:Latex_Toolbox )
 	endif
 	"
 	"-------------------------------------------------------------------------------
-	"   help
+	" help
 	"-------------------------------------------------------------------------------
 	 noremap  <buffer>  <silent>  <LocalLeader>hp         :call Latex_HelpLatexSupport()<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>hp    <C-C>:call Latex_HelpLatexSupport()<CR>
   "
 	 noremap  <buffer>  <silent>  <LocalLeader>ht         :call Latex_texdoc()<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>ht    <C-C>:call Latex_texdoc()<CR>
-	"
-	nnoremap    <buffer>  <silent>  <C-j>    i<C-R>=Latex_JumpForward()<CR>
-	inoremap    <buffer>  <silent>  <C-j>     <C-R>=Latex_JumpForward()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" settings - reset local leader
@@ -1029,7 +1104,129 @@ function! s:CreateAdditionalMaps ()
 		endif
 	endif
 	"
-endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
+	"-------------------------------------------------------------------------------
+	" templates
+	"-------------------------------------------------------------------------------
+	nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=Latex_JumpForward()<CR>
+	inoremap  <buffer>  <silent>  <C-j>  <C-G>u<C-R>=Latex_JumpForward()<CR>
+	"
+	" ----------------------------------------------------------------------------
+	"
+	call mmtemplates#core#CreateMaps ( 'g:Latex_Templates', g:Latex_MapLeader, 'do_special_maps', 'do_del_opt_map' ) |
+	"
+endfunction    " ----------  end of function s:CreateAdditionalLatexMaps  ----------
+"
+"===  FUNCTION  ================================================================
+"          NAME:  CreateAdditionalBibtexMaps     {{{1
+"   DESCRIPTION:  create additional maps for BibTeX
+"    PARAMETERS:  -
+"       RETURNS:
+"===============================================================================
+function! s:CreateAdditionalBibtexMaps ()
+	"
+	"-------------------------------------------------------------------------------
+	" settings - local leader
+	"-------------------------------------------------------------------------------
+	if ! empty ( g:Latex_MapLeader )
+		if exists ( 'g:maplocalleader' )
+			let ll_save = g:maplocalleader
+		endif
+		let g:maplocalleader = g:Latex_MapLeader
+	endif
+	"
+	"-------------------------------------------------------------------------------
+	" comments
+	"-------------------------------------------------------------------------------
+	nnoremap  <buffer>  <silent>  <LocalLeader>cl         :call Latex_EndOfLineComment()<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>cl    <C-C>:call Latex_EndOfLineComment()<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>cl         :call Latex_EndOfLineComment()<CR>
+	"
+	nnoremap  <buffer>  <silent>  <LocalLeader>cj         :call Latex_AdjustLineEndComm()<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>cj    <C-C>:call Latex_AdjustLineEndComm()<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>cj         :call Latex_AdjustLineEndComm()<CR>
+	"
+	nnoremap  <buffer>  <silent>  <LocalLeader>cs         :call Latex_GetLineEndCommCol()<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>cs    <C-C>:call Latex_GetLineEndCommCol()<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>cs    <C-C>:call Latex_GetLineEndCommCol()<CR>
+	"
+	nnoremap  <buffer>  <silent>  <LocalLeader>cc         :call Latex_CommentToggle()<CR>j
+	inoremap  <buffer>  <silent>  <LocalLeader>cc    <C-C>:call Latex_CommentToggle()<CR>j
+	vnoremap  <buffer>  <silent>  <LocalLeader>cc         :call Latex_CommentToggle()<CR>j
+	"
+	"-------------------------------------------------------------------------------
+	" BibTeX
+	"-------------------------------------------------------------------------------
+	nnoremap  <buffer>  <silent>  <LocalLeader>bb         :call Latex_BibtexBeautify()<CR>j
+	inoremap  <buffer>  <silent>  <LocalLeader>bb    <C-C>:call Latex_BibtexBeautify()<CR>j
+	vnoremap  <buffer>  <silent>  <LocalLeader>bb         :call Latex_BibtexBeautify()<CR>j
+	"
+	"-------------------------------------------------------------------------------
+	" snippets
+	"-------------------------------------------------------------------------------
+	nnoremap  <buffer>  <silent>  <LocalLeader>nr         :call Latex_CodeSnippet("read")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>nr    <Esc>:call Latex_CodeSnippet("read")<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>nw         :call Latex_CodeSnippet("write")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call Latex_CodeSnippet("write")<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call Latex_CodeSnippet("writemarked")<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>ne         :call Latex_CodeSnippet("edit")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>ne    <Esc>:call Latex_CodeSnippet("edit")<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>nv         :call Latex_CodeSnippet("view")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>nv    <Esc>:call Latex_CodeSnippet("view")<CR>
+	"
+	"-------------------------------------------------------------------------------
+	" run
+	"-------------------------------------------------------------------------------
+   noremap  <buffer>  <silent>  <LocalLeader>rmi        :call Latex_Makeindex()<CR>
+  inoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call Latex_Makeindex()<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call Latex_Makeindex()<CR>
+   noremap  <buffer>  <silent>  <LocalLeader>rbi        :call Latex_RunBibtex()<CR>
+  inoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call Latex_RunBibtex()<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call Latex_RunBibtex()<CR>
+	"
+	nnoremap  <buffer>  <silent>  <LocalLeader>rse        :call Latex_Settings(0)<CR>
+  "
+	 noremap  <buffer>  <silent>  <LocalLeader>rh         :call Latex_Hardcopy("n")<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call Latex_Hardcopy("v")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call Latex_Hardcopy("n")<CR>
+	"
+	"-------------------------------------------------------------------------------
+	" tool box
+	"-------------------------------------------------------------------------------
+	if s:Latex_UseToolbox == 'yes'
+		call mmtoolbox#tools#AddMaps ( s:Latex_Toolbox )
+	endif
+	"
+	"-------------------------------------------------------------------------------
+	" help
+	"-------------------------------------------------------------------------------
+	 noremap  <buffer>  <silent>  <LocalLeader>hp         :call Latex_HelpLatexSupport()<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>hp    <C-C>:call Latex_HelpLatexSupport()<CR>
+	"
+	 noremap  <buffer>  <silent>  <LocalLeader>ht         :call Latex_texdoc()<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>ht    <C-C>:call Latex_texdoc()<CR>
+	"
+	"-------------------------------------------------------------------------------
+	" settings - reset local leader
+	"-------------------------------------------------------------------------------
+	if ! empty ( g:Latex_MapLeader )
+		if exists ( 'll_save' )
+			let g:maplocalleader = ll_save
+		else
+			unlet g:maplocalleader
+		endif
+	endif
+	"
+	"-------------------------------------------------------------------------------
+	" templates
+	"-------------------------------------------------------------------------------
+	nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=Latex_JumpForward()<CR>
+	inoremap  <buffer>  <silent>  <C-j>  <C-G>u<C-R>=Latex_JumpForward()<CR>
+	"
+	" ----------------------------------------------------------------------------
+	"
+	call mmtemplates#core#CreateMaps ( 'g:Latex_Templates', g:Latex_MapLeader, 'do_special_maps', 'do_del_opt_map', 'filetype', 'bibtex' ) |
+	"
+endfunction    " ----------  end of function s:CreateAdditionalBibtexMaps  ----------
 "
 "------------------------------------------------------------------------------
 "  Latex_HelpLatexSupport : help latexsupport     {{{1
@@ -1049,49 +1246,73 @@ endfunction    " ----------  end of function Latex_HelpLatexSupport ----------
 "    PARAMETERS:  -
 "       RETURNS:
 "===============================================================================
-function! Latex_Settings ()
-	let	txt =     " latex-Support settings\n\n"
-	let txt = txt.'                   author :  "'.mmtemplates#core#ExpandText( g:Latex_Templates, '|AUTHOR|'      )."\"\n"
-	let txt = txt.'                authorref :  "'.mmtemplates#core#ExpandText( g:Latex_Templates, '|AUTHORREF|'   )."\"\n"
-	let txt = txt.'                  company :  "'.mmtemplates#core#ExpandText( g:Latex_Templates, '|COMPANY|'     )."\"\n"
-	let txt = txt.'         copyright holder :  "'.mmtemplates#core#ExpandText( g:Latex_Templates, '|COPYRIGHT|'   )."\"\n"
-	let txt = txt.'                    email :  "'.mmtemplates#core#ExpandText( g:Latex_Templates, '|EMAIL|'       )."\"\n"
-  let txt = txt.'                  licence :  "'.mmtemplates#core#ExpandText( g:Latex_Templates, '|LICENSE|'     )."\"\n"
-	let txt = txt.'             organization :  "'.mmtemplates#core#ExpandText( g:Latex_Templates, '|ORGANIZATION|')."\"\n"
-	let txt = txt.'                  project :  "'.mmtemplates#core#ExpandText( g:Latex_Templates, '|PROJECT|'     )."\"\n"
-	let txt = txt.'               typesetter :  "'.s:Latex_TypesetterCall[s:Latex_Typesetter]."\"\n"
-	let txt = txt.'      plugin installation :  "'.s:installation."\"\n"
-	let txt = txt.'    using template engine :  version '.g:Templates_Version." by Wolfgang Mehner\n"
- 	let txt = txt.'   code snippet directory :  "'.s:Latex_CodeSnippets."\"\n"
-	if s:installation == 'system'
-		let txt = txt.'     global template file :  "'.s:Latex_GlobalTemplateFile."\"\n"
-		if filereadable( s:Latex_LocalTemplateFile )
-			let txt = txt.'      local template file :  "'.s:Latex_LocalTemplateFile."\"\n"
-		endif
+function! Latex_Settings ( verbose )
+	"
+	if     s:MSWIN | let sys_name = 'Windows'
+	elseif s:UNIX  | let sys_name = 'UN*X'
+	else           | let sys_name = 'unknown' | endif
+	"
+	let	txt = " LaTeX-Support settings\n\n"
+	" template settings: macros, style, ...
+	if exists ( 'g:Latex_Templates' )
+		let txt = txt.'                   author :  "'.mmtemplates#core#ExpandText( g:Latex_Templates, '|AUTHOR|'      )."\"\n"
+		let txt = txt.'                authorref :  "'.mmtemplates#core#ExpandText( g:Latex_Templates, '|AUTHORREF|'   )."\"\n"
+		let txt = txt.'                    email :  "'.mmtemplates#core#ExpandText( g:Latex_Templates, '|EMAIL|'       )."\"\n"
+		let txt = txt.'             organization :  "'.mmtemplates#core#ExpandText( g:Latex_Templates, '|ORGANIZATION|')."\"\n"
+		let txt = txt.'         copyright holder :  "'.mmtemplates#core#ExpandText( g:Latex_Templates, '|COPYRIGHT|'   )."\"\n"
+		let txt = txt.'                  licence :  "'.mmtemplates#core#ExpandText( g:Latex_Templates, '|LICENSE|'     )."\"\n"
+		let txt = txt.'                  project :  "'.mmtemplates#core#ExpandText( g:Latex_Templates, '|PROJECT|'     )."\"\n\n"
 	else
-		let txt = txt.'      local template file :  "'.s:Latex_LocalTemplateFile."\"\n"
+		let txt .= "                templates :  -not loaded-\n\n"
 	endif
+	" plug-in installation
+	let txt .= '      plugin installation :  '.s:installation.' on '.sys_name."\n"
+	" toolbox
+	if s:Latex_UseToolbox == 'yes'
+		let toollist = mmtoolbox#tools#GetList ( s:Latex_Toolbox )
+		if empty ( toollist )
+			let txt .= "            using toolbox :  -no tools-\n"
+		else
+			let sep  = "\n"."                             "
+			let txt .=      "            using toolbox :  "
+						\ .join ( toollist, sep )."\n"
+		endif
+	endif
+	let txt .= "\n"
+	" templates, snippets
+	if exists ( 'g:Latex_Templates' )
+		let [ templist, msg ] = mmtemplates#core#Resource ( g:Latex_Templates, 'template_list' )
+		let sep  = "\n"."                             "
+		let txt .=      "           template files :  "
+					\ .join ( templist, sep )."\n"
+	else
+		let txt .= "           template files :  -not loaded-\n"
+	endif
+	let txt = txt.'   code snippet directory :  "'.s:Latex_CodeSnippets."\"\n"
 	" ----- dictionaries ------------------------
   if !empty(g:Latex_Dictionary_File)
 		let ausgabe= &dictionary
 		let ausgabe= substitute( ausgabe, ",", ",\n                           + ", "g" )
 		let txt = txt."       dictionary file(s) :  ".ausgabe."\n"
 	endif
-	" ----- toolbox -----------------------------
-	if s:Latex_UseToolbox == 'yes'
-		let toollist = mmtoolbox#tools#GetList ( s:Latex_Toolbox )
-		if empty ( toollist )
-			let txt .= "                  toolbox :  -no tools-\n"
-		else
-			let sep  = "\n"."                             "
-			let txt .=      "                  toolbox :  "
-						\ .join ( toollist, sep )."\n"
-		endif
+	" ----- map leader, menus, file headers -----
+	if a:verbose >= 1
+		let	txt .= "\n"
+					\ .'                mapleader :  "'.g:Latex_MapLeader."\"\n"
+					\ .'     load menus / delayed :  "'.s:Latex_LoadMenus.'" / "'.s:Latex_CreateMenusDelayed."\"\n"
+					\ .'       insert file prolog :  "'.s:Latex_InsertFileProlog."\"\n"
 	endif
 	let txt = txt."\n"
+	let txt = txt.'               typesetter :  "'.s:Latex_TypesetterCall[s:Latex_Typesetter]."\"\n"
 	let	txt = txt."__________________________________________________________________________\n"
-	let	txt = txt." latex-Support, Version ".g:LatexSupportVersion." / Dr.-Ing. Fritz Mehner / mehner.fritz@web.de\n\n"
-	echo txt
+	let	txt = txt." LaTeX-Support, Version ".g:LatexSupportVersion." / Dr.-Ing. Fritz Mehner / mehner.fritz@web.de\n\n"
+	"
+	if a:verbose == 2
+		split LatexSupport_Settings.txt
+		put = txt
+	else
+		echo txt
+	endif
 endfunction    " ----------  end of function Latex_Settings ----------
 "
 "------------------------------------------------------------------------------
@@ -1103,7 +1324,7 @@ function! Latex_CreateGuiMenus ()
 		amenu   <silent> 40.1000 &Tools.-SEP100- :
 		amenu   <silent> 40.1110 &Tools.Unload\ Latex\ Support :call Latex_RemoveGuiMenus()<CR>
 		"
-		call Latex_RereadTemplates('no')
+		call s:RereadTemplates()
 		call s:InitMenus ()
 		"
 		let s:Latex_MenuVisible = 'yes'
@@ -1574,12 +1795,23 @@ if has( 'autocmd' )
         \ endif |
         \ if &filetype == 'tex' |
         \   if ! exists( 'g:Latex_Templates' ) |
-        \     if s:Latex_LoadMenus == 'yes' | call Latex_CreateGuiMenus ()      |
-        \     else                          | call Latex_RereadTemplates ('no') |
+        \     if s:Latex_LoadMenus == 'yes' | call Latex_CreateGuiMenus () |
+        \     else                          | call s:RereadTemplates ()    |
         \     endif |
         \   endif |
-        \   call s:CreateAdditionalMaps () |
-        \   call mmtemplates#core#CreateMaps ( 'g:Latex_Templates', g:Latex_MapLeader ) |
+        \   call s:CreateAdditionalLatexMaps () |
+				\		call s:CheckTemplatePersonalization() |
+        \ endif
+
+  autocmd FileType *
+        \ if &filetype == 'bib' |
+        \   if ! exists( 'g:Latex_Templates' ) |
+        \     if s:Latex_LoadMenus == 'yes' | call Latex_CreateGuiMenus () |
+        \     else                          | call s:RereadTemplates ()    |
+        \     endif |
+        \   endif |
+        \   call s:CreateAdditionalBibtexMaps () |
+				\		call s:CheckTemplatePersonalization() |
         \ endif
 
   if s:Latex_TexFlavor == 'latex' && s:Latex_InsertFileProlog == 'yes'

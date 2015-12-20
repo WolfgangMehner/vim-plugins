@@ -1,0 +1,62 @@
+§ =============================================================
+§  Custom Templates
+§ =============================================================
+
+§ set the template style used after loading the library
+SetStyle( 'default' )
+
+§ unit used in Beamer commands, such as \includegraphics[<width>]{<file>}
+§SetMacro( 'BEAMER_UNIT', 'cm' )
+
+§ -------------------------------------------------------------
+§  A template definition is build like this:
+§    == Menu.some name == <options> ==
+§    <inserted code>
+§    == Menu.other name == <options> ==
+§    <inserted code>
+§    == ENDTEMPLATE ==
+§  A template ends with the line "== ENDTEMPLATE ==" or with
+§  the start of a new template.
+§ -------------------------------------------------------------
+
+§ -------------------------------------------------------------
+§  Text
+§ -------------------------------------------------------------
+
+§ uncomment and edit to customize
+
+§== Text.list environment.itemize == map:tli, sc:i ==
+§\begin{itemize}
+§	\item <CURSOR>
+§	\item <+ITEM+>
+§	\item <+ITEM+>
+§\end{itemize}
+§== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Bibtex
+§
+§  - the templates should be defined inside the "USE FILETYPES"
+§    block, then the maps will be generated for the "bib" filetype
+§ -------------------------------------------------------------
+
+§ uncomment and edit to customize
+
+== USE FILETYPES: bibtex ==
+
+§== BibTeX.article == below, noindent ==
+§@article{<CURSOR>,
+§  author        = {},
+§  title         = {},
+§  journal       = {},
+§  year          = ,
+§  volume        = {},
+§  number        = {},
+§  pages         = {},
+§  month         = {},
+§  note          = {},
+§}
+§== ENDTEMPLATE ==
+
+== ENDFILETYPES ==
+

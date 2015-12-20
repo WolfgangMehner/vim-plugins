@@ -1,10 +1,10 @@
-*latexsupport.txt*           LATEX Support                         Aug 15 2014
+*latexsupport.txt*           LaTeX Support                         Dec 20 2015
 
 LaTeX Support                                     *latex-support* *latexsupport*
 
-                             Plugin version 1.1.1
+                              Plugin version 1.2pre
                         for Vim version 7.0 and above
-                    Fritz Mehner  <mehner.fritz@web.de>
+                     Fritz Mehner  <mehner.fritz@web.de>
                    Wolfgang Mehner <wolfgang-mehner@web.de>
 
 LaTeX-IDE for Vim/gVim. It is written to considerably speed up typesetting a
@@ -275,24 +275,23 @@ Nearly all menu items will insert code snippets or comments. All of these are
 contained within template files and can be changed by the users to meet their
 requirements (see|latexsupport-templates|on how to use the template system).
 
-The menu item 'edit local templates' opens the main template file in the
-user's home directory. This is usually the file
-'~/.vim/latex-support/templates/Templates'.  There may be dependent files
-loaded from the main file.  Now change whatever file you want, save it, and
-click on the menu item 'reread templates' to read in the file(s) and to
-rebuild the internal representation of the templates.
+The menu items 'edit ... templates' open various template files. The stock
+templates are usually located in the "local" template file: >
+  ~/.vim/latex-support/templates/Templates
+The template files named "custom" and "personal" can be used for
+customization, which avoids editing the stock templates.
+There may be dependent files loaded from the main files. Change whatever file
+you want, save it, and click on the menu item 'reread templates' to read in
+the file(s) and to rebuild the internal representation of the templates.
 
 Template browser
 ----------------
-Under a GUI a file requester will be put up. Without GUI the filename will be
-read from the command line. You can change this behavior by setting a global
-variable in your ~/.vimrc :
+When editing a template file, it is selected via |:Explore|. You can change
+this behavior by setting a global variable in your ~/.vimrc (see
+|g:Templates_TemplateBrowser|):
 >
- let g:Latex_GuiTemplateBrowser = 'explorer'
+  let g:Templates_TemplateBrowser = 'browse'
 <
-The default value is 'gui'. 'explorer' will start the file explorer
-(see help|:Explore|). To use the command line assign 'commandline'.
-
 Template Style
 --------------
 The template system supports different template styles. If there are more than
@@ -385,25 +384,16 @@ The entry 'texdoc' starts texdoc for the word (package, command) under the
 cursor. If there is no word under the cursor, you will be prompted for the
 name of a package.
 
-The entry 'english' opens an online dictionary for the word under the cursor.
+The entry 'English' opens an online dictionary for the word under the cursor.
 
 ------------------------------------------------------------------------------
 
-Under Windows, the browser for opening the online documentation has to be
-configured. To set the executable, the template library has to be modified.
-In case of a local installation (the default), choose:
-  LaTeX -> Snippets -> edit local templates
-and for a global installation:
-  LaTeX -> Snippets -> edit global templates
-Open the main template file 'Templates' and uncomment the line >
- §SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
-by removing the leading '§' >
- SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
-Then set the right executable. Mind the double quotes which escape the name of
-the executable.
-Finally, reread the template library using:
-  LaTeX -> Snippets -> reread templates
-
+The browser for opening the online documentation, or the English dictionary,
+can be configured by setting a global variable in your ~/.vimrc (see
+|g:Templates_InternetBrowserExec| and |g:Templates_InternetBrowserFlags|):
+>
+  let g:Templates_InternetBrowserExec = 'firefox'
+<
 ==============================================================================
 2.  USAGE WITHOUT GUI  (Vim)                           *latexsupport-mappings*
 ==============================================================================
@@ -500,8 +490,12 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      ´nv       view code snippet                (ni)
      ´nw       write code snippet               (niv)
      ´ne       edit code snippet                (ni)
+     ´ntg      edit global templates            (ni)
      ´ntl      edit local templates             (ni)
+     ´ntc      edit custom templates            (ni)
+     ´ntp      edit personal templates          (ni)
      ´ntr      reread templates                 (ni)
+     ´ntw      template setup wizard            (ni)
      ´nts      choose style                     (ni)
   -----------------------------------------------------------------
   Math
@@ -651,6 +645,11 @@ Several global variables are checked after the plug-in has been loaded to custom
  g:Latex_PdfPng      'convert'
  g:Latex_PsPdf       'ps2pdf'
 
+ g:Latex_AdditionalTemplates    []
+ g:Latex_CustomTemplateFile     $HOME.'/.vim/templates/latex.templates'
+ g:Latex_GlobalTemplateFile     $VIMRUNTIME.'/latex-support/templates/Templates'
+ g:Latex_LocalTemplateFile      $HOME.'/.vim/latex-support/templates/Templates'
+
  -- MS Windows ---------------------------------------------------------------
  g:Latex_Latex       'latex.exe    -src-specials -file-line-error -interaction=nonstopmode'
  g:Latex_Tex         'tex.exe      -src-specials -file-line-error -interaction=nonstopmode'
@@ -668,16 +667,19 @@ Several global variables are checked after the plug-in has been loaded to custom
  g:Latex_PdfPng      ''
  g:Latex_PsPdf       'ps2pdf.exe'
 
+ g:Latex_AdditionalTemplates    []
+ g:Latex_CustomTemplateFile     $HOME.'/vimfiles/templates/latex.templates'
+ g:Latex_GlobalTemplateFile     $VIMRUNTIME.'/latex-support/templates/Templates'
+ g:Latex_LocalTemplateFile      $HOME.'/vimfiles/latex-support/templates/Templates'
+
  -- all ----------------------------------------------------------------------
  g:Latex_CodeSnippets           root_dir.'latex-support/codesnippets/'
  g:Latex_CreateMenusDelayed     'yes'
  g:Latex_Dictionary_File        ''
- g:Latex_GlobalTemplateFile     root_dir.'latex-support/templates/Templates'
  g:Latex_GuiSnippetBrowser      'gui'
  g:Latex_InsertFileProlog       'yes'
  g:Latex_LineEndCommColDefault  49
  g:Latex_LoadMenus              'yes'
- g:Latex_LocalTemplateFile      $HOME.'/.vim/latex-support/templates/Templates'
  g:Latex_MapLeader              '´'
  g:Latex_Printheader            "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
  g:Latex_RootMenu               'LaTe&X'
@@ -730,11 +732,18 @@ The command line used to call a PDF to Png converter.
  *g:Latex_PsPdf*
 The command line used to call a PS to PDF converter.
 
+ *g:Latex_AdditionalTemplates*
+Sets additional template files.
+
  *g:Latex_CodeSnippets*
 The name of the (non-standard) code snippet directory (see below).
 
  *g:Latex_CreateMenusDelayed*
 Delaying the initialization until the first TeX/LaTeX file is opened.
+
+ *g:Latex_CustomTemplateFile*
+Sets the custom template file, path+name, used to overwrite stock templates
+(see|latexsupport-templates|).
 
  *g:Latex_Dictionary_File*
 Path and filename of the LaTeX word list used for dictionary completion.
@@ -858,30 +867,29 @@ the following line in '~/.vimrc':
 
 As *** USER *** :
 
-This plug-in will try to create your private template directory:
+Use the template setup wizard:
+  LaTeX -> Snippets -> template setup wizard
+to create a personalization file and/or a custom template file.
 
-  ~/.vim/latex-support/templates
-
-containing a minimal personal main template file 'Templates'.  You should set
-some macros in this file with your personal information in order to obtain
-personalized comments,  e.g. something like this:
+The personalization file will be read by all plug-ins supporting this feature,
+and should contain only information relevant for all template libraries. You
+can set some macros in this file with your personal information in order to
+obtain personalized comments, e.g. something like this:
 >
  SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
  SetMacro( 'AUTHORREF',   'fgm' )
  SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
  SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 <
-You can also have local templates which override the global ones. To see a
-messages in this case set a global variable in '~/.vimrc' (Windows: '~\_vimrc'):
+Use the custom template file for LaTeX templates which override the global
+templates or to add new ones.
 
-  let g:Templates_MapInUseWarn = 0
-
-The default is '1'.
+The old system (before version 6.2), using a "local" template file, >
+  ~/.vim/latex-support/templates
+is still supported for backwards compatibility.
 >
-Create your private snippet directory:
-
+Create your private snippet directory: >
   mkdir --parents  ~/.vim/latex-support/codesnippets
-
 You may want to copy the snippets comming with this plug-in (in
 $VIM/vimfiles/latex-support/codesnippets) into the new directory or to set a
 link to the global directory.
@@ -889,10 +897,6 @@ link to the global directory.
 ==============================================================================
 5.  TEMPLATE FILES AND TAGS                           *latexsupport-templates*
 ==============================================================================
-
-------------------------------------------------------------------------------
-5.1  TEMPLATE FILES                             *latexsupport-templates-files*
-------------------------------------------------------------------------------
 
 Nearly all menu items insert code snippets or comments. All of these are
 contained within template files and can be changed by the user to meet their
@@ -907,21 +911,38 @@ The master template file is '$HOME/.vim/latex-support/templates/Templates' for
 a user installation and  '$VIM/vimfiles/latex-support/templates/Templates' for
 a system-wide installation (see |latexsupport-system-wide|).
 
-The master template file starts with a macro section followed by templates for
-single menu items or better by including other template files grouping the
+The master template file can be edited itself to adapt the templates/menus to
+the users need.  Alternatively, a custom template file can be added (see
+|g:Latex_CustomTemplateFile|), which eliminates the need to edit stock
+templates. The personalization (name, email, ..., date and time format) can be
+done in a special personalization template file. It will be read by all
+plug-ins which support this feature, so it should only contain basic
+information not pertaining to a specific programming language. It can be set
+up using a wizard, which is run by the map \ntw or the menu entry:
+  LaTeX -> Snippets -> template setup wizard
+
+------------------------------------------------------------------------------
+5.1  TEMPLATE FILES                             *latexsupport-templates-files*
+------------------------------------------------------------------------------
+
+The master template file starts with various settings followed by templates
+for single menu items or better by including other template files grouping the
 templates according to the menu structure of this plug-in. The master file
-usually looks like this (my settings as an example):
+usually looks like this:
 
 Example:
 >
  § ==========================================================
- §  User Macros
+ §  Settings
  § ==========================================================
 
- SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
- SetMacro( 'AUTHORREF',   'fgm' )
- SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
- SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
+ SetMacro( 'AUTHOR',       'YOUR NAME' )
+ SetMacro( 'AUTHORREF',    '' )
+ SetMacro( 'EMAIL',        '' )
+ SetMacro( 'ORGANIZATION', '' )
+ SetMacro( 'COMPANY',      '' )
+ SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
+ SetMacro( 'LICENSE',      'GNU General Public License' )
 
  § =============================================================
  §  File Includes
@@ -944,19 +965,21 @@ Example:
 <
 Lines starting with a section sign (§) are comments. The section starting with
 >
-  SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
+  SetMacro( 'AUTHOR',       'YOUR NAME' )
 <
-assigns values to predefined tags (macros).  Arbitrary user-defined macros are
+assigns values to predefined tags (macros). Arbitrary user-defined macros are
 possible. The macro name must follows the rules for a C language identifier:
-first character letter  or underscore; case matters; digits are allowed
+first character letter or underscore; case matters; digits are allowed
 beginning with the second character.
+Some of the macros assigned here are placeholders, they will be overwritten by
+template files read later on, which contain the user's configuration.
 
 The statement
 >
   IncludeFile( 'comments.templates' )
 <
 includes the templates from the file 'comments.templates' (in the same
-directory). An absolute path would also be possible.  The statement
+directory). An absolute path would also be possible. The statement
 >
   MenuShortcut( 'Comments',      'c' )
 <
@@ -985,6 +1008,7 @@ personalize templates.
  <CURSOR>           The cursor position after insertion of a template.
  <+text+>,<-text->  See |latexsupport-templates-jumptags|.
  {+text+},{-text-}
+ [+text+],[-text-]
 
  <SPLIT>            The split point when inserting in visual mode
                     (see|latexsupport-templates|)
@@ -1038,6 +1062,10 @@ There are four jump tag types which can be used as jump targets in templates:
 
  <-text->   Same as the two above. Will be removed if the template is used
  {-text-}   in visual mode.
+
+ [+text+]   The "optional" tag. Serves as a jump tag, but can be deleted using
+            Ctrl-d.
+ [-text-]   Same as above, removed in visual mode.
 
 The text inside the brackets is userdefined and can be empty. The text can be
 composed from letters (uppercase and lowercase), digits, and underscores.
@@ -1100,4 +1128,4 @@ You can use Vim's dictionary feature CTRL-X, CTRL-K (and CTRL-P, CTRL-N).
 See files README.latexsupport and doc/ChangeLog.
 
 ==============================================================================
-vim:tw=78:noet:ts=2:ft=help:norl:
+vim:tw=78:expandtab:ts=2:ft=help:norl:
