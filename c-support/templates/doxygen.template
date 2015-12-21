@@ -314,7 +314,6 @@ xrefitem
 	'@',
 	'\',
 	'&',
-	'~',
 	'<',
 	'>',
 	'#',
@@ -457,6 +456,20 @@ xrefitem
 |DOX_CMD||KEY|<CURSOR>
 == Doxygen.prevent link == insert ==
 %<SPLIT>
+== ENDTEMPLATE ==
+
+== SEP: Doxygen.sep6 ==
+
+§ technical stuff
+
+== Doxygen.ifdef DOXYGEN_PREPROCESSOR == below, noindent, sc:d ==
+#ifdef DOXYGEN_PREPROCESSOR
+<CURSOR><SPLIT>
+#endif   // -----  is def DOXYGEN_PREPROCESSOR  -----
+== Doxygen.ifndef DOXYGEN_PREPROCESSOR == below, noindent, sc:d ==
+#ifndef DOXYGEN_PREPROCESSOR
+<CURSOR><SPLIT>
+#endif   // -----  not def DOXYGEN_PREPROCESSOR  -----
 == ENDTEMPLATE ==
 
 == ENDSTYLES ==

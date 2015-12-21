@@ -62,7 +62,10 @@ C/C++:
   * (DONE) Templates for "overload".
   * (DONE) Append "short, after member" to several lines.
   * Add escaped characters "\" and "|" once the template engine supports this.
+  * But "|" is included for Qt compatibility only.
+  * What is ".", "--", and "---"?
 - (WM) Documentation: The documentation of "g:Templates_MapInUseWarn" is wrong.
+- (WM) Documentation: Change the description of the Doxygen setup.
 
 Git:
 - (WM, DONE) Add more suggestions for custom menu entries to 's:Git_CustomMenu'.

@@ -2074,7 +2074,7 @@ function! C_Settings ( verbose )
 		let txt .= '                  project :  "'.mmtemplates#core#ExpandText( g:C_Templates, '|PROJECT|'     )."\"\n"
 		let txt .= '           template style :  "'.mmtemplates#core#Resource ( g:C_Templates, "style" )[0]."\"\n\n"
 	else
-		let txt .= "                templates :  -not loaded- \n\”"
+		let txt .= "                templates :  -not loaded-\n\n"
 	endif
 	" plug-in installation
 	let txt .= '      plugin installation :  '.g:C_Installation.' on '.sys_name."\n"
@@ -2091,13 +2091,13 @@ function! C_Settings ( verbose )
 	endif
 	let txt .= "\n"
 	" templates, snippets
-	let [ templist, msg ] = mmtemplates#core#Resource ( g:C_Templates, 'template_list' )
-	if empty ( templist )
-		let txt .= "           template files :  -no template files-\n"
-	else
+	if exists ( 'g:C_Templates' )
+		let [ templist, msg ] = mmtemplates#core#Resource ( g:C_Templates, 'template_list' )
 		let sep  = "\n"."                             "
 		let txt .=      "           template files :  "
 					\ .join ( templist, sep )."\n"
+	else
+		let txt .= "           template files :  -not loaded-\n"
 	endif
 	let txt .=
 				\  '       code snippets dir. :  '.s:C_CodeSnippets."\n"
@@ -2828,7 +2828,6 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" templates
 	"-------------------------------------------------------------------------------
-	"
 	if s:C_Ctrl_j == 'on'
 		nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=C_JumpCtrlJ()<CR>
 		inoremap  <buffer>  <silent>  <C-j>  <C-G>u<C-R>=C_JumpCtrlJ()<CR>
