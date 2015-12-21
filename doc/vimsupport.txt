@@ -393,23 +393,16 @@ The entry 'keyword' looks up Vim help for the word (function name, keyword)
 under the cursor. If there is no word under the cursor the functions list
 will be displayed.
 
-The entry 'english' opens an online dictionary for the word under the cursor.
+The entry 'English' opens an online dictionary for the word under the cursor.
 
 ------------------------------------------------------------------------------
 
-Under Windows, the browser for opening the online documentation has to be
-configured. To set the executable, the template library has to be modified.
-Use the menu entry:
-  Vim -> Snippets -> edit templates
-Open the main template file 'Templates' and uncomment the line >
- §SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
-by removing the leading '§' >
- SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )
-Then set the right executable. Mind the double quotes which escape the name of
-the executable.
-Finally, reread the template library using:
-  Vim -> Snippets -> reread templates
-
+The browser for opening the online documentation, or the English dictionary,
+can be configured by setting a global variable in your ~/.vimrc (see
+|g:Templates_InternetBrowserExec| and |g:Templates_InternetBrowserFlags|):
+>
+  let g:Templates_InternetBrowserExec = 'firefox'
+<
 ==============================================================================
 2.  USAGE without GUI  (Vim)                            *vimsupport-usage-vim*
 ==============================================================================

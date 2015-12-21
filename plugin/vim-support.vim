@@ -1033,19 +1033,19 @@ function! Vim_Settings ( verbose )
 		let txt .= '                  license :  "'.mmtemplates#core#ExpandText( g:Vim_Templates, '|LICENSE|'      )."\"\n"
 		let txt .= '           template style :  "'.mmtemplates#core#Resource ( g:Vim_Templates, "style" )[0]."\"\n\n"
 	else
-		let txt .= "                templates :  -not loaded- \n\”"
+		let txt .= "                templates :  -not loaded-\n\n"
 	endif
 	" plug-in installation
 	let txt .= '      plugin installation :  '.s:installation.' on '.sys_name."\n"
 	let txt .= "\n"
 	" templates, snippets
-	let [ templist, msg ] = mmtemplates#core#Resource ( g:Vim_Templates, 'template_list' )
-	if empty ( templist )
-		let txt .= "           template files :  -no template files-\n"
-	else
+	if exists ( 'g:Vim_Templates' )
+		let [ templist, msg ] = mmtemplates#core#Resource ( g:Vim_Templates, 'template_list' )
 		let sep  = "\n"."                             "
 		let txt .=      "           template files :  "
 					\ .join ( templist, sep )."\n"
+	else
+		let txt .= "           template files :  -not loaded-\n"
 	endif
 	let txt .=
 				\  '       code snippets dir. :  '.s:Vim_CodeSnippets."\n"
