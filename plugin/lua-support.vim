@@ -127,6 +127,19 @@ function! s:ImportantMsg ( ... )
 endfunction    " ----------  end of function s:ImportantMsg  ----------
 "
 "-------------------------------------------------------------------------------
+" s:SID : Return the <SID>.   {{{2
+"
+" Parameters:
+"   -
+" Returns:
+"   SID - the SID of the script (string)
+"-------------------------------------------------------------------------------
+"
+function! s:SID ()
+	return matchstr ( expand('<sfile>'), '<SNR>\zs\d\+\ze_SID$' )
+endfunction    " ----------  end of function s:SID  ----------
+"
+"-------------------------------------------------------------------------------
 " s:UserInput : Input after a highlighted prompt.   {{{2
 "
 " Parameters:
@@ -146,7 +159,7 @@ function! s:UserInput ( prompt, text, ... )
 		let retval = input( a:prompt, a:text )
 	elseif a:1 == 'customlist'
 		let s:UserInputList = a:2
-		let retval = input( a:prompt, a:text, 'customlist,Lua_UserInputEx' )
+		let retval = input( a:prompt, a:text, 'customlist,<SNR>'.s:SID().'_UserInputEx' )
 		let s:UserInputList = []
 	else
 		let retval = input( a:prompt, a:text, a:1 )
@@ -162,15 +175,15 @@ function! s:UserInput ( prompt, text, ... )
 endfunction    " ----------  end of function s:UserInput ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_UserInputEx : ex-command for s:UserInput.   {{{3
+" s:UserInputEx : ex-command for s:UserInput.   {{{3
 "-------------------------------------------------------------------------------
 "
-function! Lua_UserInputEx ( ArgLead, CmdLine, CursorPos )
+function! s:UserInputEx ( ArgLead, CmdLine, CursorPos )
 	if empty( a:ArgLead )
 		return copy( s:UserInputList )
 	endif
 	return filter( copy( s:UserInputList ), 'v:val =~ ''\V\<'.escape(a:ArgLead,'\').'\w\*''' )
-endfunction    " ----------  end of function Lua_UserInputEx  ----------
+endfunction    " ----------  end of function s:UserInputEx  ----------
 " }}}3
 "-------------------------------------------------------------------------------
 "
@@ -1837,50 +1850,48 @@ function! s:ToolMenu( action )
 	"
 	if a:action == 'setup'
 		anoremenu <silent> 40.1000 &Tools.-SEP100- :
-		anoremenu <silent> 40.1122 &Tools.Load\ Lua\ Support   :call Lua_AddMenus()<CR>
-	elseif a:action == 'loading'
+		anoremenu <silent> 40.1122 &Tools.Load\ Lua\ Support   :call <SID>AddMenus()<CR>
+	elseif a:action == 'load'
 		aunmenu   <silent> &Tools.Load\ Lua\ Support
-		anoremenu <silent> 40.1122 &Tools.Unload\ Lua\ Support :call Lua_RemoveMenus()<CR>
-	elseif a:action == 'unloading'
+		anoremenu <silent> 40.1122 &Tools.Unload\ Lua\ Support :call <SID>RemoveMenus()<CR>
+	elseif a:action == 'unload'
 		aunmenu   <silent> &Tools.Unload\ Lua\ Support
-		anoremenu <silent> 40.1122 &Tools.Load\ Lua\ Support   :call Lua_AddMenus()<CR>
+		anoremenu <silent> 40.1122 &Tools.Load\ Lua\ Support   :call <SID>AddMenus()<CR>
+		exe 'aunmenu <silent> '.s:Lua_RootMenu
 	endif
 	"
 endfunction    " ----------  end of function s:ToolMenu  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_AddMenus : Add menus.   {{{1
+" s:AddMenus : Add menus.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_AddMenus()
+function! s:AddMenus()
 	if s:MenuVisible == 0
 		" the menu is becoming visible
 		let s:MenuVisible = 2
 		" make sure the templates are loaded
 		call s:SetupTemplates ()
 		" initialize if not existing
-		call s:ToolMenu ( 'loading' )
+		call s:ToolMenu ( 'load' )
 		call s:InitMenus ()
 		" the menu is now visible
 		let s:MenuVisible = 1
 	endif
-endfunction    " ----------  end of function Lua_AddMenus  ----------
+endfunction    " ----------  end of function s:AddMenus  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_RemoveMenus : Remove menus.   {{{1
+" s:RemoveMenus : Remove menus.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_RemoveMenus()
+function! s:RemoveMenus()
 	if s:MenuVisible == 1
 		" destroy if visible
-		call s:ToolMenu ( 'unloading' )
-		if has ( 'menu' )
-			exe 'aunmenu <silent> '.s:Lua_RootMenu
-		endif
+		call s:ToolMenu ( 'unload' )
 		" the menu is now invisible
 		let s:MenuVisible = 0
 	endif
-endfunction    " ----------  end of function Lua_RemoveMenus  ----------
+endfunction    " ----------  end of function s:RemoveMenus  ----------
 "
 "-------------------------------------------------------------------------------
 " Lua_Settings : Print the settings on the command line.   {{{1
@@ -1911,7 +1922,7 @@ function! Lua_Settings( verbose )
 					\ ."\n"
 	else
 		let txt .=
-					\  "                templates :  -not loaded- \n"
+					\  "                templates :  -not loaded-\n"
 					\ ."\n"
 	endif
 	" plug-in installation, template engine
@@ -1930,13 +1941,13 @@ function! Lua_Settings( verbose )
 	endif
 	let txt .= "\n"
 	" templates, snippets
-	let [ templist, msg ] = mmtemplates#core#Resource ( g:Lua_Templates, 'template_list' )
-	if empty ( templist )
-		let txt .= "           template files :  -no template files-\n"
-	else
+	if exists ( 'g:Lua_Templates' )
+		let [ templist, msg ] = mmtemplates#core#Resource ( g:Lua_Templates, 'template_list' )
 		let sep  = "\n"."                             "
 		let txt .=      "           template files :  "
 					\ .join ( templist, sep )."\n"
+	else
+		let txt .= "           template files :  -not loaded-\n"
 	endif
 	let txt .=
 				\  '       code snippets dir. :  '.s:Lua_SnippetDir."\n"
@@ -1998,7 +2009,7 @@ call s:ToolMenu ( 'setup' )
 "
 " load the menu right now?
 if s:Lua_LoadMenus == 'startup'
-	call Lua_AddMenus ()
+	call s:AddMenus ()
 endif
 "
 " user defined commands (working everywhere)
@@ -2010,7 +2021,7 @@ command! -nargs=? -complete=shellcmd                       LuaCompilerExec   cal
 if has( 'autocmd' )
 	autocmd FileType *
 				\	if &filetype == 'lua' && ! exists( 'g:Lua_Templates' ) |
-				\		if s:Lua_LoadMenus == 'auto' | call Lua_AddMenus () |
+				\		if s:Lua_LoadMenus == 'auto' | call s:AddMenus () |
 				\		else                         | call s:SetupTemplates () |
 				\		endif |
 				\	endif
