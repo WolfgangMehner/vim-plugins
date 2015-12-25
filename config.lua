@@ -38,6 +38,19 @@ template_plugin.order = {
 	'body',
 }
 
+local template_index = {
+	filename = 'template_index.html',
+}
+
+template_index.order = {
+	'head',
+	'HTML_HEAD',
+	'head_body',
+	'TITLE_BAR',
+	'FOOTER',
+	'body',
+}
+
 local config = {}
 
 config.plugin_links = {
@@ -49,6 +62,20 @@ config.plugin_links = {
 	lua   = { id = 4950, name = 'Lua IDE',         doc = 'doc/luasupport.html', },
 	perl  = { id =  556, name = 'Perl IDE',        doc = '',                    },
 	vim   = { id = 3931, name = 'Vim Script IDE',  doc = '',                    },
+}
+
+config.index = {
+	input    = 'template_index.html',
+	output   = 'index.html',
+	template = template_index,
+	fields = {
+		MAINTAINER_NAME = 'Wolfgang Mehner',
+		MAINTAINER_MAIL = 'wolfgang-mehner@web.de',
+	},
+	links_plugins = {
+	},
+	links_others = {
+	},
 }
 
 config.git = {

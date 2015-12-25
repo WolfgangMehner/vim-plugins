@@ -236,6 +236,7 @@ table.features > thead > tr > th
 	padding-top:16px;
 	padding-bottom:16px;
 	color:White;
+	font-family:sans-serif;
 	font-size:1.5em;
 }
 
@@ -244,6 +245,7 @@ table.features > tbody > tr > td
 	padding:7px;
 	padding-top:10px;
 
+	font-family:serif;
 	font-size:1.1em;
 }
 
@@ -293,6 +295,7 @@ table.menu_structure > thead > tr > th
 	padding-top:16px;
 	padding-bottom:16px;
 	color:White;
+	font-family:sans-serif;
 	font-size:1.5em;
 }
 
@@ -312,6 +315,8 @@ table.menu_structure > tbody > tr > td
 	border-bottom-style:solid;
 	border-bottom-width:3px;
 	border-bottom-color:SkyBlue;
+
+	font-family:serif;
 }
 
 table.menu_structure > tbody > tr > td > h3,

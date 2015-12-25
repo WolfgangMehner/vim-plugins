@@ -273,7 +273,9 @@ template_data.body = [[
 ]]
 
 config.plugin.fields.DATE         = os.date ( '%B %d %Y' )
-config.plugin.fields.VIMORG_ID    = config.plugin_links[ options.plugin ].id
+if config.plugin_links[ options.plugin ] then
+	config.plugin.fields.VIMORG_ID    = config.plugin_links[ options.plugin ].id
+end
 if config.plugin.fields.TOOL_VERSION == 'AUTO' then
 	config.plugin.fields.TOOL_VERSION = read_version ( config.plugin.fields.REF_HELP )
 end
