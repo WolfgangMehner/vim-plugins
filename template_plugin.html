@@ -25,7 +25,7 @@
 					<a href="index.html">plug-in<br>overview</a>
 				</td>
 				<td>
-					<a target=_blank href="http://vim.sourceforge.net/scripts/script.php?script_id=%VIMORG_ID%">view on<br>vim.org</a>
+					<a target=_blank href="http://www.vim.org/scripts/script.php?script_id=%VIMORG_ID%">view on<br>vim.org</a>
 				</td>
 				<td>
 					<a target=_blank href="https://github.com/%GITHUB_USER%/%GITHUB_REPO%">view on<br>GitHub</a>
@@ -48,6 +48,10 @@
 						<h2>%TOOL_NAME% - %TOOL_CAT%</h2><h3>( version %TOOL_VERSION% )</h3>
 						View the <a target=_blank href="https://github.com/%GITHUB_USER%/%GITHUB_REPO%/%REF_README%">Readme</a><br>
 						Read the %TOOL_NAME% <a target=_blank href="%REF_HELP%">Help File</a>
+		<!-- ::PAGE_HEADER_MAPPINGS::START:: -->
+						<br><br>
+						<a target=_blank href="%REF_MAPS%">The key mappings</a> of this plugin (PDF)
+		<!-- ::PAGE_HEADER_PART2::START:: -->
 					</td>
 					<td>
 		<!-- ::PAGE_HEADER_OTHERS_PART1::START:: -->
@@ -62,17 +66,18 @@
 		<!-- ::PAGE_HEADER_PLUGIN_HEAD::END:: -->
 		<!-- ::PAGE_HEADER_PLUGIN_LINK::START:: -->
 							<tr><td>
-								<a href="http://vim.sourceforge.net/scripts/script.php?script_id=%LINK_ID%">%LINK_NAME%</a>
+								<!--<a href="http://www.vim.org/scripts/script.php?script_id=%LINK_ID%">%LINK_NAME%</a>-->
+								<a href="%LINK_PAGE%">%LINK_NAME%</a>
 							</td></tr>
 		<!-- ::PAGE_HEADER_PLUGIN_LINK::END:: -->
 							<tr><td>
-								<a href="http://vim.sourceforge.net/scripts/script.php?script_id=365">Bash IDE</a>
+								<a href="http://www.vim.org/scripts/script.php?script_id=365">Bash IDE</a>
 							</td></tr>
 							<tr><td>
-								<a href="http://vim.sourceforge.net/scripts/script.php?script_id=213">C/C++ IDE</a>
+								<a href="http://www.vim.org/scripts/script.php?script_id=213">C/C++ IDE</a>
 							</td></tr>
 							<tr><td>
-								<a href="http://vim.sourceforge.net/scripts/script.php?script_id=556">Perl IDE</a>
+								<a href="http://www.vim.org/scripts/script.php?script_id=556">Perl IDE</a>
 							</td></tr>
 		<!-- ::PAGE_HEADER_PROJECT_HEAD::START:: -->
 							<tr><th>
@@ -81,12 +86,12 @@
 		<!-- ::PAGE_HEADER_PROJECT_HEAD::END:: -->
 		<!-- ::PAGE_HEADER_PROJECT_LINK::START:: -->
 							<tr><td>
-								<a href="%PROJECT_LINK%">%PROJECT_NAME%</a>
+								<a target=_blank href="%PROJECT_LINK%">%PROJECT_NAME%</a>
 							</td></tr>
 		<!-- ::PAGE_HEADER_PROJECT_LINK::END:: -->
 		<!-- ::PAGE_HEADER_OTHERS_PART2::START:: -->
 						</table>
-		<!-- ::PAGE_HEADER_PART2::START:: -->
+		<!-- ::PAGE_HEADER_PART3::START:: -->
 					</td>
 				</tr>
 			</tbody>
@@ -106,7 +111,7 @@
 			<tbody>
 				<tr>
 					<td>
-						MarvelousLang IDE for Vim/gVim:
+						<h3>MarvelousLang IDE for Vim/gVim:</h3>
 						<ul>
 							<li>Superb Feature</li>
 							<li>Splendid Feature</li>

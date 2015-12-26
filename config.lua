@@ -28,10 +28,12 @@ template_plugin.order = {
 	'head_body',
 	'TITLE_BAR',
 	'PAGE_HEADER_PART1',
+	'PAGE_HEADER_MAPPINGS',
+	'PAGE_HEADER_PART2',
 	'PAGE_HEADER_OTHERS_PART1',
 	'PAGE_HEADER_OTHERS',
 	'PAGE_HEADER_OTHERS_PART2',
-	'PAGE_HEADER_PART2',
+	'PAGE_HEADER_PART3',
 	'FEATURES',
 	'MENU_STRUCTURE',
 	'FOOTER',
@@ -58,14 +60,17 @@ template_index.order = {
 local config = {}
 
 config.plugin_links = {
-	awk   = { id = 4415, name = 'AWK IDE',         doc = 'doc/awksupport.html', },
-	bash  = { id =  365, name = 'Bash IDE',        doc = 'doc/bashsupport.html', },
-	c     = { id =  213, name = 'C/C++ IDE',       doc = 'doc/csupport.html', },
-	git   = { id = 4497, name = 'Git Integration', doc = 'doc/gitsupport.html', },
-	latex = { id = 4405, name = 'LaTeX IDE',       doc = 'doc/latexsupport.html', },
-	lua   = { id = 4950, name = 'Lua IDE',         doc = 'doc/luasupport.html', },
-	perl  = { id =  556, name = 'Perl IDE',        doc = 'doc/perlsupport.html', },
-	vim   = { id = 3931, name = 'Vim Script IDE',  doc = 'doc/vimsupport.html', },
+	awk   = { id = 4415, name = 'AWK IDE',         page = 'awksupport.html',   doc = 'doc/awksupport.html',   },
+	bash  = { id =  365, name = 'Bash IDE',        page = 'bashsupport.html',  doc = 'doc/bashsupport.html',  maps = 'bashsupport/bash-hotkeys.pdf',  },
+	c     = { id =  213, name = 'C/C++ IDE',       page = 'csupport.html',     doc = 'doc/csupport.html',     maps = 'csupport/c-hotkeys.pdf',        },
+	git   = { id = 4497, name = 'Git Integration', page = 'gitsupport.html',   doc = 'doc/gitsupport.html',   },
+	latex = { id = 4405, name = 'LaTeX IDE',       page = 'latexsupport.html', doc = 'doc/latexsupport.html', },
+	lua   = { id = 4950, name = 'Lua IDE',         page = 'luasupport.html',   doc = 'doc/luasupport.html',   },
+	perl  = { id =  556, name = 'Perl IDE',        page = 'perlsupport.html',  doc = 'doc/perlsupport.html',  maps = 'perlsupport/perl-hot-keys.pdf', },
+	vim   = { id = 3931, name = 'Vim Script IDE',  page = 'vimsupport.html',   doc = 'doc/vimsupport.html',   },
+}
+
+config.project_links = {
 }
 
 config.index = {
@@ -130,11 +135,14 @@ config.bash = {
 
 		REF_README = 'blob/master/bash-support/README.bashsupport',
 		REF_HELP   = config.plugin_links.bash.doc,
+		REF_MAPS   = config.plugin_links.bash.maps,
 	},
 	links_plugins = {
 		'awk', 'c', 'latex', 'lua', 'perl', 'vim',
 	},
 	links_others = {
+		{ name = 'Bash Style Guide (en)', link = 'https://lug.fh-swf.de/vim/vim-bash/StyleGuideShell.en.pdf' },
+		{ name = 'Bash Style Guide (de)', link = 'https://lug.fh-swf.de/vim/vim-bash/StyleGuideShell.de.pdf' },
 	},
 }
 
@@ -158,6 +166,7 @@ config.c = {
 
 		REF_README = 'blob/master/c-support/README.csupport',
 		REF_HELP   = config.plugin_links.c.doc,
+		REF_MAPS   = config.plugin_links.c.maps,
 	},
 	links_plugins = {
 		'bash', 'git', 'latex', 'lua', 'perl', 'vim',
@@ -270,6 +279,7 @@ config.perl = {
 
 		REF_README = 'blob/master/README.md',
 		REF_HELP   = config.plugin_links.perl.doc,
+		REF_MAPS   = config.plugin_links.perl.maps,
 	},
 	links_plugins = {
 		'awk', 'bash', 'c', 'git', 'latex', 'lua',

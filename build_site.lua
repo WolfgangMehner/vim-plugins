@@ -118,7 +118,6 @@ function generate_link_table ( fout, config, template_data, custom_data )
 
 		if not part then
 			io.stderr:write ( '\nCan not find the part:\n'..name..'\n\n' )
-			os.exit ( 1 )
 		else
 			part = string.gsub ( part, '%%([A-Z0-9_]+)%%', config.plugin.fields )
 
@@ -132,6 +131,7 @@ function generate_link_table ( fout, config, template_data, custom_data )
 	for idx, short_name in ipairs ( config.plugin.links_plugins ) do
 
 		config.plugin.fields.LINK_ID   = config.plugin_links[ short_name ].id
+		config.plugin.fields.LINK_PAGE = config.plugin_links[ short_name ].page
 		config.plugin.fields.LINK_NAME = config.plugin_links[ short_name ].name
 
 		handle_part ( 'PAGE_HEADER_PLUGIN_LINK' )
@@ -140,10 +140,18 @@ function generate_link_table ( fout, config, template_data, custom_data )
 	if #config.plugin.links_others > 1 then
 		handle_part ( 'PAGE_HEADER_PROJECT_HEAD' )
 	end
-	for idx, short_name in ipairs ( config.plugin.links_others ) do
+	for idx, project in ipairs ( config.plugin.links_others ) do
 
-		config.plugin.fields.PROJECT_LINK = config.project_links[ short_name ].link
-		config.plugin.fields.PROJECT_NAME = config.project_links[ short_name ].name
+		local project_data
+
+		if type ( project ) == 'string' then
+			project_data = config.project_links[ short_name ]
+		else
+			project_data = project
+		end
+
+		config.plugin.fields.PROJECT_LINK = project_data.link
+		config.plugin.fields.PROJECT_NAME = project_data.name
 
 		handle_part ( 'PAGE_HEADER_PROJECT_LINK' )
 	end
@@ -165,7 +173,7 @@ function generate_output ( config, template_data, custom_data )
 	local fout, msg = io.open ( config.plugin.output, 'w' )
 
   if not fout then
-    io.stderr:write ( '\nCould not load the data:\n'..msg..'\n\n' )
+    io.stderr:write ( '\nCan not open the output file:\n'..msg..'\n\n' )
     os.exit ( 1 )
   end
 
@@ -173,11 +181,14 @@ function generate_output ( config, template_data, custom_data )
 		
 		local part = custom_data[name] or template_data[name]
 
+		if name == 'PAGE_HEADER_MAPPINGS' and not config.plugin.fields.REF_MAPS then
+			part = ''
+		end
+
 		if name == 'PAGE_HEADER_OTHERS' then
 			generate_link_table ( fout, config, template_data, custom_data )
 		elseif not part then
 			io.stderr:write ( '\nCan not find the part:\n'..name..'\n\n' )
-			os.exit ( 1 )
 		else
 			part = string.gsub ( part, '%%([A-Z0-9_]+)%%', config.plugin.fields )
 
@@ -272,9 +283,9 @@ template_data.body = [[
 </html>
 ]]
 
-config.plugin.fields.DATE         = os.date ( '%B %d %Y' )
+config.plugin.fields.DATE = os.date ( '%B %d %Y' )
 if config.plugin_links[ options.plugin ] then
-	config.plugin.fields.VIMORG_ID    = config.plugin_links[ options.plugin ].id
+	config.plugin.fields.VIMORG_ID = config.plugin_links[ options.plugin ].id
 end
 if config.plugin.fields.TOOL_VERSION == 'AUTO' then
 	config.plugin.fields.TOOL_VERSION = read_version ( config.plugin.fields.REF_HELP )
