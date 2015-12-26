@@ -12,12 +12,13 @@
 "  Configuration:  There are some personal details which should be configured
 "                   (see the files README.md and csupport.txt).
 "
-"         Author:  Dr.-Ing. Fritz Mehner, Germany
-"          Email:  mehner.fritz@web.de
+"         Author:  Wolfgang Mehner <wolfgang-mehner@web.de>
+"                  (formerly Fritz Mehner <mehner.fritz@web.de>)
 "
 "        Version:  see variable  g:C_Version  below
 "        Created:  04.11.2000
-"        License:  Copyright (c) 2000-2015, Fritz Mehner
+"        License:  Copyright (c) 2000-2014, Fritz Mehner
+"                  Copyright (c) 2015-2016, Wolfgang Mehner
 "                  This program is free software; you can redistribute it and/or
 "                  modify it under the terms of the GNU General Public License as
 "                  published by the Free Software Foundation, version 2 of the
@@ -1457,21 +1458,12 @@ endfunction    " ----------  end of function C_CheckForMain  ----------
 "------------------------------------------------------------------------------
 function! C_Link ()
 
-	call	C_Compile()
-	:redraw!
-	if s:LastShellReturnCode != 0
-		let	s:LastShellReturnCode	=  0
-		return
-	endif
-
 	let s:C_HlMessage = ""
 	let	Sou		= expand("%:p")						       		" name of the file (full path)
-	let	Obj		= expand("%:p:r").s:C_ObjExtension	" name of the object file
 	let	Exe		= expand("%:p:r").s:C_ExeExtension	" name of the executable
-	let ObjEsc= escape( Obj, s:C_FilenameEscChar )
+	let SouEsc= escape( Sou, s:C_FilenameEscChar )
 	let ExeEsc= escape( Exe, s:C_FilenameEscChar )
 	if s:MSWIN
-		let	ObjEsc	= '"'.ObjEsc.'"'
 		let	ExeEsc	= '"'.ExeEsc.'"'
 	endif
 
@@ -1480,58 +1472,45 @@ function! C_Link ()
 		return
 	endif
 
-	" no linkage if:
-	"   executable exists
-	"   object exists
-	"   source exists
-	"   executable newer then object
-	"   object newer then source
-
-	if    filereadable(Exe)                &&
-      \ filereadable(Obj)                &&
-      \ filereadable(Sou)                &&
-      \ (getftime(Exe) >= getftime(Obj)) &&
-      \ (getftime(Obj) >= getftime(Sou))
+	" no linkage if: executable exists and source exists and executable newer then source
+	if    filereadable(Exe)      &&
+				\ filereadable(Sou)    &&
+				\ (getftime(Exe)  >= getftime(Sou))
 		let s:C_HlMessage = " '".Exe."' is up to date "
 		return
 	endif
 
-	" linkage if:
-	"   object exists
-	"   source exists
-	"   object newer then source
 	let	linkerflags	= g:C_LFlags 
 
-	if filereadable(Obj) && (getftime(Obj) >= getftime(Sou))
-		call s:C_SaveGlobalOption('makeprg')
-		if expand("%:e") == s:C_CExtension
-			exe		"setlocal makeprg=".g:C_CCompiler
-			let	linkerflags	= g:C_LFlags
-		else
-			exe		"setlocal makeprg=".g:C_CplusCompiler
-			let	linkerflags	= g:C_CplusLFlags 
-		endif
-		let	s:LastShellReturnCode	= 0
-		let v:statusmsg = ''
-		if &filetype == "c" 
-			silent exe "make ".linkerflags." -o ".ExeEsc." ".ObjEsc." ".g:C_Libs
-		else
-			silent exe "make ".linkerflags." -o ".ExeEsc." ".ObjEsc." ".g:C_CplusLibs
-		endif
-		if v:shell_error != 0
-			let	s:LastShellReturnCode	= v:shell_error
-		endif
-		call s:C_RestoreGlobalOption('makeprg')
-		"
-		if empty(v:statusmsg)
-			let s:C_HlMessage = "'".Exe."' : linking successful"
+	call s:C_SaveGlobalOption('makeprg')
+	if expand("%:e") == s:C_CExtension
+		exe		"setlocal makeprg=".g:C_CCompiler
+		let	linkerflags	= g:C_LFlags
+	else
+		exe		"setlocal makeprg=".g:C_CplusCompiler
+		let	linkerflags	= g:C_CplusLFlags 
+	endif
+	let	s:LastShellReturnCode	= 0
+	let v:statusmsg = ''
+	if &filetype == "c" 
+		silent exe "make ".linkerflags." -o ".ExeEsc." ".SouEsc." ".g:C_Libs
+	else
+		silent exe "make ".linkerflags." -o ".ExeEsc." ".SouEsc." ".g:C_CplusLibs
+	endif
+	if v:shell_error != 0
+		let	s:LastShellReturnCode	= v:shell_error
+	endif
+	call s:C_RestoreGlobalOption('makeprg')
+	"
+	if empty(v:statusmsg)
+		let s:C_HlMessage = "'".Exe."' : linking successful"
 		" open error window if necessary
 		:redraw!
 		exe	":botright cwindow"
-		else
-			exe ":botright copen"
-		endif
+	else
+		exe ":botright copen"
 	endif
+	"		
 endfunction    " ----------  end of function C_Link ----------
 "
 "------------------------------------------------------------------------------
@@ -1541,14 +1520,13 @@ endfunction    " ----------  end of function C_Link ----------
 "
 let s:C_OutputBufferName   = "C-Output"
 let s:C_OutputBufferNumber = -1
-let s:C_RunMsg1						 ="' does not exist or is not executable or object/source older then executable"
+let s:C_RunMsg1						 ="' does not exist or is not executable or source older then executable"
 let s:C_RunMsg2						 ="' does not exist or is not executable"
 "
 function! C_Run ()
 "
 	let s:C_HlMessage = ""
 	let Sou  					= expand("%:p")												" name of the source file
-	let Obj  					= expand("%:p:r").s:C_ObjExtension		" name of the object file
 	let Exe  					= expand("%:p:r").s:C_ExeExtension		" name of the executable
 	let ExeEsc  			= escape( Exe, s:C_FilenameEscChar )	" name of the executable, escaped
 	let Quote					= ''
@@ -1577,7 +1555,7 @@ function! C_Run ()
 				call C_HlMessage()
 			endif
 			"
-			if	executable(Exe) && getftime(Exe) >= getftime(Obj) && getftime(Obj) >= getftime(Sou)
+			if	executable(Exe) && getftime(Exe) >=  getftime(Sou)
 				exe		"!".Quote.ExeEsc.Quote." ".l:arguments
 			else
 				echomsg "file '".Exe.s:C_RunMsg1
@@ -1622,7 +1600,7 @@ function! C_Run ()
 			if s:C_ExecutableToRun !~ "^\s*$"
 				call C_HlMessage( "executable : '".s:C_ExecutableToRun."'" )
 				let realexe	= s:C_ExecutableToRun
-			elseif executable(Exe) && getftime(Exe) >= getftime(Obj) && getftime(Obj) >= getftime(Sou)
+			elseif executable(Exe) && getftime(Exe) >= getftime(Sou)
 				let realexe	= ExeEsc
 			else
 				setlocal	nomodifiable
@@ -1661,7 +1639,7 @@ function! C_Run ()
 
 			silent call C_Link()
 			"
-			if	executable(Exe) && getftime(Exe) >= getftime(Obj) && getftime(Obj) >= getftime(Sou)
+			if	executable(Exe) && getftime(Exe) >= getftime(Sou)
 				if s:MSWIN
 					exe		"!".Quote.ExeEsc.Quote." ".l:arguments
 				else

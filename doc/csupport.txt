@@ -1,9 +1,10 @@
-*csupport.txt*                  C/C++ Support                    Dec 14 2015
+*csupport.txt*                  C/C++ Support                    Dec 26 2015
 
 C/C++ Support                                           *c-support* *csupport*
-                              Plugin version 6.2pre
+                            Plugin version 6.2pre
                         for Vim version 7.0 and above
-                        Fritz Mehner  <mehner@web.de>
+                   Wolfgang Mehner <wolfgang-mehner@web.de>
+                (formerly Fritz Mehner <mehner.fritz@web.de>)
 
 C/C++-IDE for Vim/gVim. It is written to considerably speed up writing code in
 a consistent style.  This is done by inserting complete statements,idioms,
@@ -15,7 +16,7 @@ keystroke.
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ++  The plug-in version 6.0+ is a rewriting of version 5.19+.               ++
 ++  The versions 5.0+ are based on a new and more powerful template system  ++
-++  (please see  |template-support| for more information).                    ++
+++  (please see  |template-support| for more information).                  ++
 ++  The template syntax has changed!                                        ++
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -28,7 +29,7 @@ keystroke.
  1.1.4   Comment to code                        |csupport-comm-to-code|
  1.1.5   Toggle non-C comments                  |csupport-comm-non-c|
  1.1.6   Frame comments, file header, ...       |csupport-comm-frame|
- 1.1.7   File section comments         ..       |csupport-comm-sections|
+ 1.1.7   File section comments                  |csupport-comm-sections|
  1.1.8   Keyword comment, special comment       |csupport-comm-keyword|
  1.1.9   Macros                                 |csupport-comm-macros|
  1.1.10  Date and date+time                     |csupport-comm-date|
@@ -831,11 +832,9 @@ The filename extension for an object file can be set in ~.vimrc :
 The default is '.o' ('.obj' for Windows).
 
 LINK
-'link' makes an executable from the current buffer. If the buffer is not
-saved, or no object is available or the object is older then the source step
-'save and compile' is executed first.
-The linkging will only be tried if the current buffer contains a main
-function.
+'link' makes an executable from the current buffer.  The buffer will be saved
+first if necessary.  The linking will only be tried if the current buffer
+contains a main function. No object file will be created.
 
 The behavior of the compiler / linker is determined by the options assigned to
 the variables described in |csupport-custom-glob-vars| (4.group).
@@ -846,9 +845,10 @@ Note: The source is first compiled using the settings g:C_CFlags and then
   only. The same holds for g:C_CplusCFlags and g:C_CplusLFlags.
 
 RUN
-'run' runs the executable with the same name  as the current buffer. If the
-buffer is not saved, or no executable is available or the executable is older
-then the source steps 'save and compile' and 'link' are executed first.
+'run' runs the executable with the same name as the current buffer.  The
+buffer will be saved first if necessary.  'run' makes an executable from the
+current buffer if none is available.  The linking will only be tried if the
+current buffer contains a main function. No object file will be craeted.
 
 The filename extension for an executable can be set in ~.vimrc :
 >
@@ -1618,9 +1618,9 @@ and should contain only information relevant for all template libraries. You
 can set some macros in this file with your personal information in order to
 obtain personalized comments, e.g. something like this:
 >
- SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
- SetMacro( 'AUTHORREF',   'fgm' )
- SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
+ SetMacro( 'AUTHOR',      'Wolfgang Mehner' )
+ SetMacro( 'AUTHORREF',   'wm' )
+ SetMacro( 'EMAIL',       'wolfgang-mehner@web.de' )
  SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 <
 Use the custom template file for C templates which override the global
