@@ -60,14 +60,14 @@ template_index.order = {
 local config = {}
 
 config.plugin_links = {
-	awk   = { id = 4415, name = 'AWK IDE',         page = 'awksupport.html',   doc = 'doc/awksupport.html',   },
-	bash  = { id =  365, name = 'Bash IDE',        page = 'bashsupport.html',  doc = 'doc/bashsupport.html',  maps = 'bashsupport/bash-hotkeys.pdf',  },
-	c     = { id =  213, name = 'C/C++ IDE',       page = 'csupport.html',     doc = 'doc/csupport.html',     maps = 'csupport/c-hotkeys.pdf',        },
+	awk   = { id = 4415, name = 'AWK IDE',         page = 'awksupport.html',   doc = 'doc/awksupport.html',   maps = 'awksupport/awk-hotkeys.pdf',     },
+	bash  = { id =  365, name = 'Bash IDE',        page = 'bashsupport.html',  doc = 'doc/bashsupport.html',  maps = 'bashsupport/bash-hotkeys.pdf',   },
+	c     = { id =  213, name = 'C/C++ IDE',       page = 'csupport.html',     doc = 'doc/csupport.html',     maps = 'csupport/c-hotkeys.pdf',         },
 	git   = { id = 4497, name = 'Git Integration', page = 'gitsupport.html',   doc = 'doc/gitsupport.html',   },
-	latex = { id = 4405, name = 'LaTeX IDE',       page = 'latexsupport.html', doc = 'doc/latexsupport.html', },
+	latex = { id = 4405, name = 'LaTeX IDE',       page = 'latexsupport.html', doc = 'doc/latexsupport.html', maps = 'latexsupport/latex-hotkeys.pdf', },
 	lua   = { id = 4950, name = 'Lua IDE',         page = 'luasupport.html',   doc = 'doc/luasupport.html',   },
-	perl  = { id =  556, name = 'Perl IDE',        page = 'perlsupport.html',  doc = 'doc/perlsupport.html',  maps = 'perlsupport/perl-hot-keys.pdf', },
-	vim   = { id = 3931, name = 'Vim Script IDE',  page = 'vimsupport.html',   doc = 'doc/vimsupport.html',   },
+	perl  = { id =  556, name = 'Perl IDE',        page = 'perlsupport.html',  doc = 'doc/perlsupport.html',  maps = 'perlsupport/perl-hot-keys.pdf',  },
+	vim   = { id = 3931, name = 'Vim Script IDE',  page = 'vimsupport.html',   doc = 'doc/vimsupport.html',   maps = 'vimsupport/vim-hotkeys.pdf',     },
 }
 
 config.project_links = {
@@ -107,6 +107,7 @@ config.awk = {
 
 		REF_README = 'blob/master/awk-support/README.awksupport',
 		REF_HELP   = config.plugin_links.awk.doc,
+		REF_MAPS   = config.plugin_links.awk.maps,
 	},
 	links_plugins = {
 		'bash', 'c', 'latex', 'lua', 'perl', 'vim',
@@ -223,6 +224,7 @@ config.latex = {
 
 		REF_README = 'blob/master/latex-support/README.latexsupport',
 		REF_HELP   = config.plugin_links.latex.doc,
+		REF_MAPS   = config.plugin_links.latex.maps,
 	},
 	links_plugins = {
 		'awk', 'bash', 'c', 'git', 'perl', 'lua',
@@ -308,6 +310,7 @@ config.vim = {
 
 		REF_README = 'blob/master/vim-support/README.vimsupport',
 		REF_HELP   = config.plugin_links.vim.doc,
+		REF_MAPS   = config.plugin_links.vim.maps,
 	},
 	links_plugins = {
 		'awk', 'bash', 'c', 'git', 'latex', 'lua',
