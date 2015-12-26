@@ -1,0 +1,39 @@
+VimWebsite=~/Programme/VimWebsite/VimPlugins/ CD=. in=project/in.vim out=project/out.vim flags=r {
+ .
+ project/in.vim
+ project/out.vim
+ project/commit.txt
+ project/TODO.txt
+ .gitignore
+ root=. CD=. filter="*.lua\|*.css\|template_*.html" {
+  build_site.lua
+  config.lua
+  template_index.html
+  template_plugin.html
+  vimstyle.css
+	Makefile # pragma keep
+ }
+ plugin=. CD=. filter="*/content.html" {
+  awksupport/content.html
+  bashsupport/content.html
+  csupport/content.html
+  gitsupport/content.html
+  luasupport/content.html
+  perlsupport/content.html
+ }
+ doc=doc/ CD=. filter="*.html" {
+  awksupport.html
+  bashsupport.html
+  csupport.html
+  gitsupport.html
+  latexsupport.html
+  luasupport.html
+  perlsupport.html
+  templatesupport.html
+  toolbox.html
+  toolboxcmake.html
+  toolboxdoxygen.html
+  toolboxmake.html
+  vimsupport.html
+ }
+}
