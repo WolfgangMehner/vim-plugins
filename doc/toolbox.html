@@ -1,0 +1,388 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>VIM: toolbox</title>
+<link rel="stylesheet" href="vim-stylesheet.css" type="text/css">
+</head>
+<body>
+<h2>TOOLBOX</h2>
+<pre>
+<b class="vimtag"><a name="toolbox.txt">toolbox.txt</a></b>                   MM Toolbox Support                 Oct 23 2014
+
+MM Toolbox Support                                                  <b class="vimtag"><a name="toolbox">toolbox</a></b>
+
+                             Plug-in version 1.2
+                        for Vim version 7.0 and above
+                 Wolfgang Mehner <code class="special">&lt;wolfgang-mehner at web.de&gt;</code>
+
+     --- The Maps &amp; Menus Toolbox Support ---
+
+Toolboxes are selection of tools, which are made available to a plug-in. Tools
+mostly stand on their own. The purpose of the toolbox is to provide an easy
+interface between a plug-in and the tools, switching tool on and off and
+triggering the creation of maps and menus. The plug-in does not need any prior
+knowledge of what tools are available.
+
+The toolbox support is controlled by an API and thus can be integrated into
+another plug-in. A toolbox is essentially an object, several of which can
+exist in parallel. This makes it easy to integrate a toolbox into your
+plug-in.
+
+Here is a list of high profile plug-ins which use the toolbox support:
+- C-Support (www.vim.org/scripts/script.php?script_id=213)
+- Perl-Support (www.vim.org/scripts/script.php?script_id=556)
+
+</pre><hr><pre>0.  TABLE OF CONTENTS                               <b class="vimtag"><a name="toolbox-support-contents">toolbox-support-contents</a></b>
+</pre><hr><pre>
+ 1.    Introduction                          |<a href="toolbox.html#toolbox-support-intro">toolbox-support-intro</a>|
+ 2.    Integration                           |<a href="toolbox.html#toolbox-support-integration">toolbox-support-integration</a>|
+ 3.    Tool Development                      |<a href="toolbox.html#toolbox-support-tools">toolbox-support-tools</a>|
+ 3.1    Minimal Tool API                     |<a href="toolbox.html#toolbox-support-tools-api">toolbox-support-tools-api</a>|
+ 3.2    Common Tool Functionality            |<a href="toolbox.html#toolbox-support-tools-common">toolbox-support-tools-common</a>|
+ 4.    API                                   |<a href="toolbox.html#toolbox-support-api">toolbox-support-api</a>|
+
+ A.    Change Log                            |<a href="toolbox.html#toolbox-support-change-log">toolbox-support-change-log</a>|
+
+</pre><hr><pre>1.  INTRODUCTION                                       <b class="vimtag"><a name="toolbox-support-intro">toolbox-support-intro</a></b>
+</pre><hr><pre>
+The manual at hand documents the Maps &amp; Menus Toolbox Support. If your are not
+a plug-In developer, this will not be interesting, tools should come with a
+separate documentation.
+
+The next chapter |<a href="toolbox.html#toolbox-support-integration">toolbox-support-integration</a>| describes how to integrate the
+toolbox support into a plug-in. Then the tool development is addressed in
+|<a href="toolbox.html#toolbox-support-tools">toolbox-support-tools</a>|. The whole API of the toolbox support is documented in
+|<a href="toolbox.html#toolbox-support-api">toolbox-support-api</a>|.
+
+</pre><hr><pre>2.  INTEGRATION                                  <b class="vimtag"><a name="toolbox-support-integration">toolbox-support-integration</a></b>
+</pre><hr><pre>
+This chapter explains the basic steps for integrating the toolbox into a
+plug-in. A complete description of all the commands can be found in
+|<a href="toolbox.html#toolbox-support-api">toolbox-support-api</a>|.
+
+</pre><hr><pre>
+Firstly, the toolbox needs to be created using |<a href="toolbox.html#mmtoolbox%23tools%23NewToolbox()">mmtoolbox#tools#NewToolbox()</a>|
+and then loading via |<a href="toolbox.html#mmtoolbox%23tools%23Load()">mmtoolbox#tools#Load()</a>|.
+
+<code class="example">  let s:ToolID     = 'MyPlugin'                          " the toolboxes ID</code>
+<code class="example">  let s:MapLeader  = '\'                                 " configurable mapl.</code>
+<code class="example">  let s:ToolboxDir = [ vim_dir.'/autoload/mmtoolbox/' ]  " list of directories</code>
+<code class="example"></code>
+<code class="example">  let s:Toolbox = mmtoolbox#tools#NewToolbox ( s:ToolID )</code>
+<code class="example">  call mmtoolbox#tools#Property ( s:Toolbox, 'mapleader', s:MapLeader )</code>
+<code class="example"></code>
+<code class="example">  call mmtoolbox#tools#Load ( s:Toolbox, s:ToolboxDir )</code>
+<code class="example"></code>
+<code class="example">  " debugging only:</code>
+<code class="example">  "call mmtoolbox#tools#Info ( s:Toolbox )</code>
+
+The function |<a href="toolbox.html#mmtoolbox%23tools%23Property()">mmtoolbox#tools#Property()</a>| is used for basic configuration.
+During development |<a href="toolbox.html#mmtoolbox%23tools%23Info()">mmtoolbox#tools#Info()</a>| helps with some debug output.
+
+Each tool <code class="special">&lt;name&gt;</code> is only loaded if the following condition holds:
+<code class="example">  g:<code class="special">&lt;plugin-id&gt;</code>_UseTool_<code class="special">&lt;name&gt;</code> == "yes"</code>
+The ID <code class="special">&lt;plugin-id&gt;</code> is the ID set by the call to |<a href="toolbox.html#mmtoolbox%23tools%23NewToolbox()">mmtoolbox#tools#NewToolbox()</a>|.
+If the above toolbox "MyPlugin" should load a tool called "align", then the
+following variable assignment must be made:
+<code class="example">  let g:MyPlugin_UseTool_align == "yes"</code>
+
+</pre><hr><pre>
+Menu creation is done using |<a href="toolbox.html#mmtoolbox%23tools%23AddMenus()">mmtoolbox#tools#AddMenus()</a>|:
+
+<code class="example">  if mmtoolbox#tools#Property ( s:Toolbox, 'empty-menu' ) == 0</code>
+<code class="example">    " create menu header</code>
+<code class="example">    " ...</code>
+<code class="example"></code>
+<code class="example">    call mmtoolbox#tools#AddMenus ( s:Toolbox, 'My\ PlugIn.&amp;Tool\ Box' )</code>
+<code class="example">  endif</code>
+
+</pre><hr><pre>
+For each appropriate buffer, map creation is triggered via
+|<a href="toolbox.html#mmtoolbox%23tools%23AddMaps()">mmtoolbox#tools#AddMaps()</a>|:
+
+<code class="example">  call mmtoolbox#tools#AddMaps ( s:Toolbox )</code>
+
+</pre><hr><pre>3.  TOOL DEVELOPMENT                                   <b class="vimtag"><a name="toolbox-support-tools">toolbox-support-tools</a></b>
+</pre><hr><pre>
+This chapter shows the basic steps to implementing a tool. The tool has to
+fulfill some minimal requirements to work with the toolbox. Other requirements
+are suggestions to provide a common user experience.
+
+</pre><hr><pre>3.1  MINIMAL TOOL API                              <b class="vimtag"><a name="toolbox-support-tools-api">toolbox-support-tools-api</a></b>
+</pre><hr><pre>
+Tools must implement a minimal API in order to work with the toolbox support.
+Initially, the GetInfo() function is called to obtain some basic information
+about the tool. For map creation, AddMaps(...) is called and for menus
+AddMenu().
+
+  Function Call                                   Further Information
+ ----------------------------------------------------------------------------
+  ret_list = mmtoolbox#<code class="special">&lt;name&gt;</code>#GetInfo()           |<a href="toolbox.html#toolbox-support-GetInfo()">toolbox-support-GetInfo()</a>|
+  mmtoolbox#<code class="special">&lt;name&gt;</code>#AddMaps()                      |<a href="toolbox.html#toolbox-support-AddMaps()">toolbox-support-AddMaps()</a>|
+  mmtoolbox#<code class="special">&lt;name&gt;</code>#AddMenu( menu_sub, mleader )   |<a href="toolbox.html#toolbox-support-AddMenu()">toolbox-support-AddMenu()</a>|
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>                                                   <b class="vimtag"><a name="toolbox-support-GetInfo()">toolbox-support-GetInfo()</a></b>
+<code class="section">  ret_list = mmtoolbox#<code class="special">&lt;name&gt;</code>#GetInfo () </code>
+
+No parameters.
+Returns:
+  ret_list - information about the tool, see below (list)
+
+To initialize a tool <code class="special">&lt;name&gt;</code>, the 'GetInfo' function is called:
+<code class="example">  let ret_list = mmtoolbox#<code class="special">&lt;name&gt;</code>#GetInfo()</code>
+The tool must provide some basic information in the return argument:
+  ret_list = [ <code class="special">&lt;prettyname&gt;</code>, <code class="special">&lt;version&gt;</code>, <code class="special">&lt;flag1&gt;</code>, <code class="special">&lt;flag2&gt;</code>, ... ]
+With the first two entries:
+  prettyname - the name of the tool, can be different from <code class="special">&lt;name&gt;</code> (string),
+               for example the pretty name of cmake is "CMake"
+  version    - the version of the tool (string),
+               for debugging purposes
+Followed by a list of optional flags:
+  "nomenu"   - the tool does not have an own menu
+  "disabled" - the tool is disabled, no maps or menus are created
+
+</pre><hr><pre>                                                   <b class="vimtag"><a name="toolbox-support-AddMaps()">toolbox-support-AddMaps()</a></b>
+<code class="section">  mmtoolbox#<code class="special">&lt;name&gt;</code>#AddMaps ( toolbox ) </code>
+
+No parameters:
+No returns.
+
+Creates maps for the tool. A tool should only create buffer-local mappings.
+The function will be called for each appropriate buffer. The settings for
+<code class="special">&lt;maplocalleader&gt;</code> are handled before calling 'mmtoolbox#<code class="special">&lt;name&gt;</code>#AddMaps'.
+
+</pre><hr><pre>                                                   <b class="vimtag"><a name="toolbox-support-AddMenu()">toolbox-support-AddMenu()</a></b>
+<code class="section">  mmtoolbox#<code class="special">&lt;name&gt;</code>#AddMenu ( menu_sub, mapl ) </code>
+
+Parameters:
+  menu_sub - the submenu set up for the toolbox (string)
+  mapl     - the mapleader configured for the toolbox (string)
+No returns.
+
+Creates a menu for the tool. The arguments 'menu_sub' and 'mapl' are provided
+correctly escaped for menu creation, so they can be used for |<code class="badlink">amenu</code>| commands
+without further preparation:
+
+<code class="example">  function! mmtoolbox#cmake#AddMenu ( menu_sub, mapl )</code>
+<code class="example"></code>
+<code class="example">    exe 'amenu '.a:menu_sub.'.&amp;run\ make<code class="special">&lt;Tab&gt;</code>'.a:mapl.'rm    :CMake '</code>
+<code class="example"></code>
+<code class="example">    " ...</code>
+<code class="example">  endfunction</code>
+
+Before calling AddMenu, a menu header is created for the tool's submenu,
+showing the pretty name of the tool.
+
+</pre><hr><pre>3.2  COMMON TOOL FUNCTIONALITY                  <b class="vimtag"><a name="toolbox-support-tools-common">toolbox-support-tools-common</a></b>
+</pre><hr><pre>
+In order to achieve a consistent user experience, it is recommended that tools
+provide a set of common features. It is not strictly necessary to implement
+all of them, but it will help users who already use other tools.
+
+The call:
+<code class="example">  mmtoolbox#<code class="special">&lt;name&gt;</code>#Property( 'get', 'enabled' )</code>
+should return a non-zero integer if the tool is working correctly. This also
+means that |<a href="toolbox.html#mmtoolbox%23tools%23ToolEnabled()">mmtoolbox#tools#ToolEnabled()</a>| will work correctly with the tool.
+
+A tool might not be enabled because some resources are missing. For example,
+the CMake tool will be disabled, if the "cmake" executable is missing. In this
+case the ex-command like
+<code class="example">  :ToolnameHelp</code>
+should show the reason while the tool is not working (see |<a href="toolboxmake.html#:MakeHelp">:MakeHelp</a>|).
+Otherwise, :ToolnameHelp should open the documentation of the tool.
+
+Settings which might change during runtime, like the Makefile used for a
+build, should also be set by a call to:
+<code class="example">  mmtoolbox#<code class="special">&lt;name&gt;</code>#Property( 'set', 'some-setting', 'new-value' )</code>
+This enabled users to change these settings using scripts (see
+|<a href="toolboxmake.html#mmtoolbox%23make%23Property()">mmtoolbox#make#Property()</a>|).
+
+</pre><hr><pre>4.  API                                                  <b class="vimtag"><a name="toolbox-support-api">toolbox-support-api</a></b>
+</pre><hr><pre>
+This describes the usage of the toolbox support from the view of a plug-in
+using it. For a discussion of all the necessary step see the chapter
+|<a href="toolbox.html#toolbox-support-integration">toolbox-support-integration</a>|.
+
+</pre><hr><pre>                                                <b class="vimtag"><a name="mmtoolbox%23tools%23NewToolbox()">mmtoolbox#tools#NewToolbox()</a></b>
+
+<code class="section">  toolbox = mmtoolbox#tools#NewToolbox ( plugin ) </code>
+
+Parameters:
+  plugin - the "id" of the plug-in (string)
+Returns:
+  toolbox - the new toolbox (dict)
+
+Creates a new toolbox object. The plug-in ID is important for the user's
+configuration of the toolbox.
+
+</pre><hr><pre>                                                      <b class="vimtag"><a name="mmtoolbox%23tools%23Load()">mmtoolbox#tools#Load()</a></b>
+<code class="section">  mmtoolbox#tools#Load ( toolbox, directories ) </code>
+
+Parameters:
+  toolbox     - the toolbox (dict)
+  directories - list of directories containing the tools (list of string)
+No returns.
+
+Loads the tools in the given directories. A tool <code class="special">&lt;name&gt;</code> is only loaded if the
+following condition holds:
+<code class="example">  g:<code class="special">&lt;plugin-id&gt;</code>_UseTool_<code class="special">&lt;name&gt;</code> == "yes"</code>
+Here, <code class="special">&lt;plugin-id&gt;</code> is the ID set by |<a href="toolbox.html#mmtoolbox%23tools%23NewToolbox()">mmtoolbox#tools#NewToolbox()</a>|.
+
+For each tool, the 'GetInfo' function is called:
+<code class="example">  let ret_list = mmtoolbox#<code class="special">&lt;name&gt;</code>#GetInfo()</code>
+For a description of the interface, see |<a href="toolbox.html#toolbox-support-GetInfo()">toolbox-support-GetInfo()</a>|.
+
+</pre><hr><pre>                                               <b class="vimtag"><a name="mmtoolbox%23tools%23ToolEnabled()">mmtoolbox#tools#ToolEnabled()</a></b>
+<code class="section">  enabled = mmtoolbox#tools#ToolEnabled ( toolbox, name ) </code>
+
+Parameters:
+  toolbox - the toolbox (dict)
+  name    - the name of the tool (dict)
+Returns:
+  enabled - non-zero if the tool <code class="special">&lt;name&gt;</code> is enabled (integer)
+
+This function can be used to check whether a tool is enabled, regardless of
+whether it exists or is loaded.
+
+</pre><hr><pre>                                                  <b class="vimtag"><a name="mmtoolbox%23tools%23Property()">mmtoolbox#tools#Property()</a></b>
+<code class="section">  [ value = ] mmtoolbox#tools#Property ( toolbox, property [, value] ) </code>
+
+Parameters:
+  toolbox  - the toolbox (dict)
+  property - the name of the property (string)
+  value    - the new value of the property (optional, type depends on
+             'property')
+Returns:
+  value    - the value of the property, only if called with two arguments
+             (type depends on 'property')
+
+Gets (two arguments) or sets (three arguments) a property.
+
+The following properties exists:
+  mapleader  - the map leader used for menu creation (string)
+  empty-menu - non-zero, if no tool that creates a menu is loaded (integer)
+
+<code class="note">Note:</code> The property 'mapleader' is only used for menu creation, see
+|<a href="toolbox.html#mmtoolbox%23tools%23AddMenus()">mmtoolbox#tools#AddMenus()</a>|.
+
+Examples:
+
+Set a mapleader:
+
+<code class="example">  call mmtoolbox#tools#Property ( My_Toolbox, "mapleader", "#" )</code>
+
+
+Check whether any tool creates a menu:
+
+<code class="example">  if mmtoolbox#tools#Property ( My_Toolbox, "empty-menu" ) == 0</code>
+<code class="example">    " ... create a sub menu for the toolbox, then</code>
+<code class="example">    call mmtoolbox#tools#AddMenus ( My_Toolbox, "C/C++.Toolbox." )</code>
+<code class="example">  endif</code>
+
+</pre><hr><pre>                                                   <b class="vimtag"><a name="mmtoolbox%23tools%23GetList()">mmtoolbox#tools#GetList()</a></b>
+<code class="section">  list = mmtoolbox#tools#GetList ( toolbox ) </code>
+
+Parameters:
+  toolbox - the toolbox (dict)
+Returns:
+  list - information about each tool (list of strings)
+
+Produces a list of strings containing some information about each tool. It can
+be used to create nice debug information. The output looks something like
+this:
+<code class="example">  [ 'CMake (1.2)',</code>
+<code class="example">      \ 'Doxygen (2.0, disabled)',</code>
+<code class="example">      \ 'Make (1.1)' ]</code>
+
+</pre><hr><pre>                                                      <b class="vimtag"><a name="mmtoolbox%23tools%23Info()">mmtoolbox#tools#Info()</a></b>
+<code class="section">  mmtoolbox#tools#Info ( toolbox ) </code>
+
+Parameters:
+  toolbox - the toolbox (dict)
+No returns.
+
+Echoes debug information about the loaded tools.
+
+</pre><hr><pre>                                                   <b class="vimtag"><a name="mmtoolbox%23tools%23AddMaps()">mmtoolbox#tools#AddMaps()</a></b>
+<code class="section">  mmtoolbox#tools#AddMaps ( toolbox ) </code>
+
+Parameters:
+  toolbox - the toolbox (dict)
+No returns.
+
+Creates maps. For each tool the 'AddMaps' function is called:
+<code class="example">  call mmtoolbox#<code class="special">&lt;name&gt;</code>#AddMaps()</code>
+A tool should only create buffer-local mappings.
+
+Plug-ins should call mmtoolbox#tools#AddMaps for each appropriate buffer. The
+settings for <code class="special">&lt;maplocalleader&gt;</code> should also be handled by the plug-in, before
+calling 'mmtoolbox#tools#AddMaps'.
+
+See also |<a href="toolbox.html#toolbox-support-AddMaps()">toolbox-support-AddMaps()</a>|.
+
+</pre><hr><pre>                                                  <b class="vimtag"><a name="mmtoolbox%23tools%23AddMenus()">mmtoolbox#tools#AddMenus()</a></b>
+<code class="section">  mmtoolbox#tools#AddMenus ( toolbox, root ) </code>
+
+Parameters:
+  toolbox - the toolbox (dict)
+  root - the root menu used by the toolbox (string)
+No returns.
+
+Creates menus. For each tool the 'AddMenus' function is called:
+<code class="example">  call mmtoolbox#<code class="special">&lt;name&gt;</code>#AddMenus( menu_sub, mapleader )</code>
+The arguments 'menu_sub' and 'mapleader' are provided correctly escaped for
+menu creation.
+The name of the tool's sub menu 'menu_sub' is different for each tool and
+computed using 'root' and the pretty name:
+<code class="example">  let menu_sub = root.".".prettyname</code>
+Before calling AddMenus, a menu header is created for each sub menu, showing
+the name of the tool.
+
+The mapleader is supposed to be the local mapleader the plug-in also uses for
+|<a href="toolbox.html#mmtoolbox%23tools%23AddMaps()">mmtoolbox#tools#AddMaps()</a>|.
+
+See also |<a href="toolbox.html#toolbox-support-AddMenu()">toolbox-support-AddMenu()</a>|.
+
+
+
+<code class="section">  -------------------------------------------------------------------------- </code>
+
+<code class="section">  -------------------------------------------------------------------------- </code>
+
+<code class="section">  -------------------------------------------------------------------------- </code>
+
+
+
+</pre><hr><pre>A.  CHANGE LOG                                    <b class="vimtag"><a name="toolbox-support-change-log">toolbox-support-change-log</a></b>
+</pre><hr><pre>
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 1.2
+</pre><hr><pre>
+- Added sub-menu "load additional tools" to load tools during a session.
+- Minor changes.
+
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 1.1
+</pre><hr><pre>
+- Change: In case several version of autoload/mmtoolbox/tools.vim are
+  available on 'runtimepath', pick out the newest one to load.
+- Minor changes.
+
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 1.0.1
+</pre><hr><pre>
+- Change: Do not load a tool multiple times.
+
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 1.0
+</pre><hr><pre>
+- Added: Extended the API with 'mmtoolbox#tools#ToolEnabled'.
+- Added the documentation.
+- Internal changes.
+
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 1.0pre
+</pre><hr><pre>
+- Initial upload.
+
+</pre><hr><pre>vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
+</pre>
+<p><i>Generated by vim2html (modified) on Sa 26. Dez 15:03:11 CET 2015</i></p>
+</body>
+</html>

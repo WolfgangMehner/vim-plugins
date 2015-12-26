@@ -1,0 +1,852 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>VIM: vimsupport</title>
+<link rel="stylesheet" href="vim-stylesheet.css" type="text/css">
+</head>
+<body>
+<h2>VIMSUPPORT</h2>
+<pre>
+<b class="vimtag"><a name="vimsupport.txt">vimsupport.txt</a></b>                Vim Support                     Aug 15 2014
+
+Vim Support                                         <b class="vimtag"><a name="vim-support">vim-support</a></b> <b class="vimtag"><a name="vimsupport">vimsupport</a></b>
+                              Plugin version 2.3
+                        for Vim version 7.0 and above
+                  Fritz Mehner  <code class="special">&lt;mehner.fritz at fh-swf.de&gt;</code>
+                Wolfgang Mehner  <code class="special">&lt;wolfgang-mehner at web.de&gt;</code>
+
+Vim Support implements a Vim-IDE for Vim/gVim. It is written to considerably
+speed up writing Vim script code in a consistent style.  This is done by
+inserting complete statements, comments, idioms, and code snippets.    There
+are many additional hints and options which can improve speed and comfort when
+writing Vim scripts.
+
+ 1.     Usage with GUI                      |<a href="vimsupport.html#vimsupport-usage-gvim">vimsupport-usage-gvim</a>|
+ 1.1     Menu 'Comments'                    |<a href="vimsupport.html#vimsupport-comments">vimsupport-comments</a>|
+ 1.1.1    Append aligned comments           |<a href="vimsupport.html#vimsupport-comm-aligned">vimsupport-comm-aligned</a>|
+ 1.1.2    Adjust end-of-line comments       |<a href="vimsupport.html#vimsupport-comm-realign">vimsupport-comm-realign</a>|
+ 1.1.3    Comment / uncomment               |<a href="vimsupport.html#vimsupport-comm-uncomm">vimsupport-comm-uncomm</a>|
+ 1.1.4    Frame comments, file header, ...  |<a href="vimsupport.html#vimsupport-comm-templates">vimsupport-comm-templates</a>|
+ 1.1.5    Function description (auto)       |<a href="vimsupport.html#vimsupport-comm-auto">vimsupport-comm-auto</a>|
+ 1.1.6    Keyword comment                   |<a href="vimsupport.html#vimsupport-comm-keywords">vimsupport-comm-keywords</a>|
+ 1.2     Menu 'Statements'                  |<a href="vimsupport.html#vimsupport-statements">vimsupport-statements</a>|
+ 1.2.1    Normal mode, insert mode          |<a href="vimsupport.html#vimsupport-stat-norm-ins">vimsupport-stat-norm-ins</a>|
+ 1.2.2    Visual mode                       |<a href="vimsupport.html#vimsupport-stat-visual">vimsupport-stat-visual</a>|
+ 1.3     Menu 'Idioms'                      |<a href="vimsupport.html#vimsupport-idioms">vimsupport-idioms</a>|
+ 1.4     Menu 'Regex'                       |<a href="vimsupport.html#vimsupport-regex">vimsupport-regex</a>|
+ 1.5     Menu 'Perl'                        |<a href="vimsupport.html#vimsupport-perl">vimsupport-perl</a>|
+ 1.6     Menu 'Documentation'               |<a href="vimsupport.html#vimsupport-documentation">vimsupport-documentation</a>|
+ 1.7     Menu 'Snippets'                    |<a href="vimsupport.html#vimsupport-snippets">vimsupport-snippets</a>|
+ 1.8     Menu 'Run'                         |<a href="vimsupport.html#vimsupport-run">vimsupport-run</a>|
+ 1.8.1    Hardcopy                          |<a href="vimsupport.html#vimsupport-hardcopy">vimsupport-hardcopy</a>|
+ 1.8.2    Settings                          |<a href="vimsupport.html#vimsupport-settings">vimsupport-settings</a>|
+ 1.8.3    Edit templates                    |<a href="vimsupport.html#vimsupport-templates-edit">vimsupport-templates-edit</a>|
+ 1.9     Menu 'Help'                        |<a href="vimsupport.html#vimsupport-help">vimsupport-help</a>|
+ 2.     Usage without GUI                   |<a href="vimsupport.html#vimsupport-usage-vim">vimsupport-usage-vim</a>|
+ 3.     Customization and configuration     |<a href="vimsupport.html#vimsupport-customization">vimsupport-customization</a>|
+ 3.1     Files                              |<a href="vimsupport.html#vimsupport-custom-files">vimsupport-custom-files</a>|
+ 3.2     Global variables                   |<a href="vimsupport.html#vimsupport-custom-variables">vimsupport-custom-variables</a>|
+ 3.3     The root menu                      |<a href="vimsupport.html#vimsupport-custom-root">vimsupport-custom-root</a>|
+ 3.4     System-wide installation           |<a href="vimsupport.html#vimsupport-system-wide">vimsupport-system-wide</a>|
+ 4.      Template files and tags            |<a href="vimsupport.html#vimsupport-templates">vimsupport-templates</a>|
+ 4.1      Template files                    |<a href="vimsupport.html#vimsupport-templates-files">vimsupport-templates-files</a>|
+ 4.2      Macros                            |<a href="vimsupport.html#vimsupport-templates-macros">vimsupport-templates-macros</a>|
+ 4.2.1   Formats for date and time          |<a href="vimsupport.html#vimsupport-templates-date">vimsupport-templates-date</a>|
+ 4.3      Templates                         |<a href="vimsupport.html#vimsupport-templates-names">vimsupport-templates-names</a>|
+ 4.3.1    Template definition               |<a href="vimsupport.html#vimsupport-templates-definition">vimsupport-templates-definition</a>|
+ 4.3.2    The macros <code class="special">&lt;+text+&gt;</code> etc.          |<a href="vimsupport.html#vimsupport-templates-jumptags">vimsupport-templates-jumptags</a>|
+ 4.3.3    Command Ctrl-j                    |<a href="vimsupport.html#vimsupport-Ctrl-j">vimsupport-Ctrl-j</a>|
+ 5.     Windows particularities             |<a href="vimsupport.html#vimsupport-windows">vimsupport-windows</a>|
+ 6.     Troubleshooting                     |<a href="vimsupport.html#vimsupport-troubleshooting">vimsupport-troubleshooting</a>|
+ 7.     Release <code class="note">Note</code>s                       |<a href="vimsupport.html#vimsupport-release-notes">vimsupport-release-notes</a>|
+
+        How to add this help file to Vim's help  |<code class="badlink">add-local-help</code>|
+
+
+</pre><hr><pre>1.  USAGE with GUI  (gVim)                             <b class="vimtag"><a name="vimsupport-usage-gvim">vimsupport-usage-gvim</a></b>
+</pre><hr><pre>
+If the menus are not visible call them with the entry "Load Vim Support"
+in the standard Tools-menu.
+
+</pre><hr><pre>1.1  MENU 'Comments'                                     <b class="vimtag"><a name="vimsupport-comments">vimsupport-comments</a></b>
+</pre><hr><pre>
+1.1.1 APPEND ALIGNED COMMENTS TO CONSECUTIVE LINES   <b class="vimtag"><a name="vimsupport-comm-aligned">vimsupport-comm-aligned</a></b>
+</pre><hr><pre>
+In NORMAL MODE the menu entry 'end-of-line comments' will append a comment to
+the current line.
+In VISUAL MODE, this item will append aligned comments to all marked lines.
+Marking the 4 lines
+  let x = 33
+  let y = 44
+
+  let z = 55
+and choosing 'end-of-line comments' will yield
+  let x = 33                                      " |
+  let y = 44                                      "
+
+  let z = 55                                      "
+The cursor position above is marked by '|'. Empty lines will be ignored.
+
+The default starting column is 49 ( = (multiple of 2,4, or 8) + 1 ).  This can
+be changed by setting a global variable in the file '.vimrc', e.g. :
+
+  let g:Vim_LineEndCommColDefault    = 45
+
+The starting column can also be set by the menu entry 'Comments-&gt;adjust
+end-of-line com.' . Just position the cursor in an arbitrary column (normal
+mode; column number is shown in the Vim status line) and choose this menu
+item.  This setting is buffer related.
+If the cursor was at the end of a line you will be asked for a column number
+because this position is most likely not the desired starting column.  Your
+choice will be confirmed.
+
+1.1.2 ADJUST END-OF-LINE COMMENTS                    <b class="vimtag"><a name="vimsupport-comm-realign">vimsupport-comm-realign</a></b>
+</pre><hr><pre>After some copy/paste/change actions comments may be misaligned:
+
+ let x = 33                             " this is x
+ let y = 44                                      " and y
+ let z = 55                                         " and now z
+
+Realignment can be achieved with the menu item 'adjust end-of-line com.' In
+normal mode the comment (if any) in the current line will be aligned to the
+end-of-line comment column (see above) if possible. In visual mode the
+comments in the marked block will be aligned:
+
+ let x = 33                                     " this is x
+ let y = 44                                     " and y
+ let z = 55                                     " and now z
+
+Another way is to use the hotkey \cj. In normal and insert mode the current
+line will be adjusted. To adjust n lines starting with the current one use
+n\cj.
+
+1.1.3  COMMENT/UNCOMMENT                              <b class="vimtag"><a name="vimsupport-comm-uncomm">vimsupport-comm-uncomm</a></b>
+</pre><hr><pre>The comment sign " can be set or removed at the beginning of the current line
+or for a marked block using the menu items 'comment' (or \cc) and 'uncomment'
+(or \cu).  A single line needs not to be marked (normal mode, insert mode).
+
+A marked block
+
+ let x = 33                                     " this is x
+ let y = 44                                     " and y
+ let z = 55                                     " and now z
+
+will be changed into (and vice versa)
+
+ "let x = 33                                     " this is x
+ "let y = 44                                     " and y
+ "let z = 55                                     " and now z
+
+1.1.4 FRAME COMMENTS, FILE HEADER, ...             <b class="vimtag"><a name="vimsupport-comm-templates">vimsupport-comm-templates</a></b>
+</pre><hr><pre>
+Frame comments, function descriptions and file header comments are read as
+templates from the appropriate files (see |<a href="vimsupport.html#vimsupport-templates">vimsupport-templates</a>|).
+
+1.1.5 FUNCTION DESCRIPTION (AUTO)                       <b class="vimtag"><a name="vimsupport-comm-auto">vimsupport-comm-auto</a></b>
+
+The menu item 'function description (auto)' generates a function description
+from the function head in the current line. The line
+
+ function! s:fct77 ( a, b, c )
+   ...
+
+will be augmented by the following comment
+
+ "===  FUNCTION  =============================================================
+ "          NAME:  s:fct77     {{{1
+ "   DESCRIPTION:
+ "    PARAMETERS:  a - <code class="special">{+DESCRIPTION+}</code>
+ "                 b - <code class="special">{+DESCRIPTION+}</code>
+ "                 c - <code class="special">{+DESCRIPTION+}</code>
+ "       RETURNS:
+ "============================================================================
+ function! s:fct77 ( a, b, c )
+   ...
+
+The template Comments.function will be used.
+
+1.1.6 KEYWORD COMMENT                               <b class="vimtag"><a name="vimsupport-comm-keywords">vimsupport-comm-keywords</a></b>
+</pre><hr><pre>
+Preliminary end-of-line comments to document (and find again!) places where
+work will be resumed shortly, like
+
+ " :BUG:08.02.2012 12:29:: ... your comment
+
+Usually these comments are not meant for the final documentation.
+
+</pre><hr><pre>1.2  MENU 'Statements'                                 <b class="vimtag"><a name="vimsupport-statements">vimsupport-statements</a></b>
+</pre><hr><pre>
+1.2.1  NORMAL MODE, INSERT MODE.                    <b class="vimtag"><a name="vimsupport-stat-norm-ins">vimsupport-stat-norm-ins</a></b>
+</pre><hr><pre>
+An empty statement will be inserted and properly indented. The entry 'if, end'
+will insert an if-statement:
+
+  if |
+    <code class="special">&lt;-IF_PART-&gt;</code>
+  endif
+
+The statement will be indented.
+
+1.2.2  VISUAL MODE                                    <b class="vimtag"><a name="vimsupport-stat-visual">vimsupport-stat-visual</a></b>
+</pre><hr><pre>The highlighted area
+
+  xxxxx
+  xxxxx
+
+can be surrounded by one of the following statements ( '|'
+marks the cursor position after insertion):
+
+  +--------------------------------------------------+
+  |<code class="badlink">  for </code>| in <code class="special">&lt;+LIST+&gt;</code>                               |
+  |<code class="badlink">    xxxxx                                         </code>|
+  |<code class="badlink">    xxxxx                                         </code>|
+  |<code class="badlink">  endfor                                          </code>|
+  +--------------------------------------------------+
+  |<code class="badlink">  if </code>|                                            |
+  |<code class="badlink">    xxxxx                                         </code>|
+  |<code class="badlink">    xxxxx                                         </code>|
+  |<code class="badlink">  endif                                           </code>|
+  +--------------------------------------------------+
+  |<code class="badlink">  if </code>|                                            |
+  |<code class="badlink">    xxxxx                                         </code>|
+  |<code class="badlink">    xxxxx                                         </code>|
+  |<code class="badlink">  else                                            </code>|
+  |<code class="badlink">    &lt;+ELSE_PART+&gt;                                 </code>|
+  |<code class="badlink">  endif                                           </code>|
+  +--------------------------------------------------+
+  |<code class="badlink">  while                                           </code>|
+  |<code class="badlink">    xxxxx                                         </code>|
+  |<code class="badlink">    xxxxx                                         </code>|
+  |<code class="badlink">  endwhile                                        </code>|
+  +--------------------------------------------------+
+  |<code class="badlink">  try                                             </code>|
+  |<code class="badlink">    xxxxx                                         </code>|
+  |<code class="badlink">    xxxxx                                         </code>|
+  |<code class="badlink">  catch //                                        </code>|
+  |<code class="badlink">  catch /.*/                                      </code>|
+  |<code class="badlink">    echo "Internal error (" . v:exception . ")"   </code>|
+  |<code class="badlink">    echo " - occurred at " . v:throwpoint         </code>|
+  |<code class="badlink">  finally                                         </code>|
+  |<code class="badlink">  endtry                                          </code>|
+  +--------------------------------------------------+
+
+The whole statement will be indented after insertion.
+
+</pre><hr><pre>1.3  MENU 'Idioms'                                         <b class="vimtag"><a name="vimsupport-idioms">vimsupport-idioms</a></b>
+</pre><hr><pre>
+Often used programming idioms other than the basic language statements.
+
+</pre><hr><pre>1.4  MENU 'Regex'                                           <b class="vimtag"><a name="vimsupport-regex">vimsupport-regex</a></b>
+</pre><hr><pre>
+This menu can be used to compose regular expressions with a few keystrokes.
+In normal mode the entries insert the shown constructs after the cursor. Some
+of them can enclose a marked text.  The marked text
+  xxxxx
+will be changed into
+  \(xxxxx\|\)
+by the menu item 'branch'.
+
+</pre><hr><pre>1.5  MENU 'Perl'                                             <b class="vimtag"><a name="vimsupport-perl">vimsupport-perl</a></b>
+</pre><hr><pre>
+This submenu supplies support for the Perl interface of Vim.
+For more information please see |<code class="badlink">if_perl</code>|.
+
+</pre><hr><pre>1.6  MENU 'Documentation'                           <b class="vimtag"><a name="vimsupport-documentation">vimsupport-documentation</a></b>
+</pre><hr><pre>
+This submenu supplies support for writing Vim help-files in an easy an
+consistent way. Example: insert a chapter header with 'chapter, text'.
+You will be asked for number, name, and tag:
+
+<code class="example">  ============================================================================</code>
+<code class="example">  3  DOCUMENTATION                                <b class="vimtag"><a name="xxxx">xxxx</a></b></code>
+<code class="example">  ============================================================================</code>
+
+Now generate a line for the content using 'chapter, contents':
+Example:
+
+<code class="example">  3    Documentation                                   |<a href="vimsupport.html#xxxx">xxxx</a>|</code>
+
+The number, name, and tag is taken from the last chapter header inserted.
+
+For using the maps while editing help-files set the variable
+g:Vim_CreateMapsForHelp in ~/.vimrc to 'yes' (default 'no'):
+
+<code class="example">  let g:Vim_CreateMapsForHelp = 'yes'</code>
+
+</pre><hr><pre>1.7  MENU 'SNIPPETS'                                     <b class="vimtag"><a name="vimsupport-snippets">vimsupport-snippets</a></b>
+</pre><hr><pre>
+Code snippets are pieces of code which are kept in separate files in a special
+directory. File names are used to identify the snippets.  The default snippet
+directory is  '$HOME/.vim/vim-support/codesnippets'.  Snippets are managed
+with the 3 entries
+
+   vim -&gt; Snippets -&gt; read  code snippet
+   vim -&gt; Snippets -&gt; write code snippet
+   vim -&gt; Snippets -&gt; edit  code snippet
+
+from the Statements submenu.
+
+Creating a new snippet:
+</pre><hr><pre>When nothing is marked, 'write code snippet' will write the whole buffer
+to a snippet file, otherwise the marked area will be written to a file.
+
+Insert a snippet:
+</pre><hr><pre>Select the appropriate file from the snippet directory ('read  code snippet').
+The inserted lines will be indented.
+
+Indentation / no indentation
+</pre><hr><pre>Code snippets are normally indented after insertion. To suppress indentation
+add the file extension "ni" or "noindent" to the snippet file name, e.g.
+
+  parameter_handling.vim.noindent
+
+Snippet browser
+</pre><hr><pre>Under a GUI a file requester will be put up. Without GUI the filename will be
+read from the command line. You can change this behavior by setting a global
+variable in your $HOME/.vimrc :
+
+ let g:Vim_GuiSnippetBrowser = 'commandline'
+
+The default value is 'gui'.
+
+</pre><hr><pre>1.8  MENU 'Run'                                               <b class="vimtag"><a name="vimsupport-run">vimsupport-run</a></b>
+</pre><hr><pre>
+1.8.1 Hardcopy                                           <b class="vimtag"><a name="vimsupport-hardcopy">vimsupport-hardcopy</a></b>
+
+Generates a PostScript file from the whole buffer or from a marked region.
+The hardcopy goes to the current working directory.  If the buffer contains
+documentation or other material from non-writable directories the hardcopy
+goes to the HOME directory. The output destination will be shown in a message.
+
+The print header contains date and time according the current locale. The
+definition used is
+
+  let s:Vim_Printheader = "%&lt;%f%h%m%&lt;  %=%<code class="special">{strftime('%x %X')}</code>     Page %N"
+
+The current locale can be overwritten by changing the language, e.g.
+
+  :language C
+
+or by setting a global variable in the file '.vimrc', e.g. :
+
+  let g:Vim_Printheader = "%&lt;%f%h%m%&lt;  %=%<code class="special">{strftime('%x %X')}</code>     SEITE %N"
+
+See :h printheader and :h strftime()  for more details.
+
+1.8.2 Settings                                           <b class="vimtag"><a name="vimsupport-settings">vimsupport-settings</a></b>
+
+Displays some Vim Support plugin settings.
+
+
+1.8.3  Edit templates                              <b class="vimtag"><a name="vimsupport-templates-edit">vimsupport-templates-edit</a></b>
+
+Nearly all menu entries insert code snippets or comments. All of these are
+contained within template files and can be changed by the user to meet their
+requirements (see|<a href="vimsupport.html#vimsupport-templates">vimsupport-templates</a>|on how to use the template system).
+
+The menu item 'edit templates' opens the main template file in a local plugin
+installation. This is usually the file
+'$HOME/.vim/vim-support/templates/Templates'.  There may be dependent files
+loaded from the main file.  Now change whatever file you want, save it, and
+click on the menu item 'reread templates' to read in the file(s) and to
+rebuild the internal representation of the templates. If menu items,  hotkeys,
+or shortcuts have been added or changed these changes will be applied with the
+next start of Vim.
+
+</pre><hr><pre>1.9  MENU 'Help'                                             <b class="vimtag"><a name="vimsupport-help">vimsupport-help</a></b>
+</pre><hr><pre>
+This submenu offers convenient access to various documentations.
+
+The entry 'keyword' looks up Vim help for the word (function name, keyword)
+under the cursor. If there is no word under the cursor the functions list
+will be displayed.
+
+The entry 'english' opens an online dictionary for the word under the cursor.
+
+</pre><hr><pre>
+Under Windows, the browser for opening the online documentation has to be
+configured. To set the executable, the template library has to be modified.
+Use the menu entry:
+  Vim -&gt; Snippets -&gt; edit templates
+Open the main template file 'Templates' and uncomment the line
+<code class="example"> &sect;SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )</code>
+by removing the leading '&sect;'
+<code class="example"> SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )</code>
+Then set the right executable. Mind the double quotes which escape the name of
+the executable.
+Finally, reread the template library using:
+  Vim -&gt; Snippets -&gt; reread templates
+
+</pre><hr><pre>2.  USAGE without GUI  (Vim)                            <b class="vimtag"><a name="vimsupport-usage-vim">vimsupport-usage-vim</a></b>
+</pre><hr><pre>
+The frequently used constructs can be inserted via key mappings.  The mappings
+are also described in the document 'vim-hotkeys.pdf' (reference card, part of
+this package).
+
+All mappings are filetype specific: they are only defined for buffers with
+filetype 'vim' to minimize conflicts with mappings from other plugins.
+
+Hint: Typing speed matters. The combination of a leader ('\') and the
+following character(s) will only be recognized for a short time.
+
+Some mappings can be used with range (of lines). In normal mode
+  \cl
+appends a end-of-line comment to the current line,  whereas
+  4\cl
+appends end-of-line comments to the 4 lines starting with the current line.
+
+Legend:  (i) insert mode, (n) normal mode, (v) visual mode
+         [n] range
+
+  -- Help ----------------------------------------------
+
+     \he     open an English dictionary for the   (n, i)
+             word under the cursor
+     \hk     displays help for the function name  (n, i)
+             under the cursor (Vim help)
+     \hp     displays plugin help                 (n, i)
+
+  -- Comments ------------------------------------------
+
+  [n]\cl     end-of-line comment             (n, i, v)
+  [n]\cj     adjust end-of-line comments     (n, i, v)
+     \cs     set end-of-line comment column  (n)
+  [n]\cc     comment code                    (n, i, v)
+  [n]\cu     uncomment code                  (n, i, v)
+     \ca     function description (auto)     (n, i, v)
+     \cfr    frame comment                   (n, i)
+     \cfu    function description            (n, i)
+     \ch     file header                     (n, i)
+     \cd     date                            (n, i)
+     \ct     date &amp; time                     (n, i)
+     \ck     keyword comments                (n, i)
+     \cma    plugin macros                   (n, i)
+
+  -- Statements -----------------------------------------
+
+     \sv     let variable                    (n, i)
+     \sl     let list                        (n, i)
+     \sd     let dictionary                  (n, i)
+     \sf     for                             (n, i, v)
+     \sif    if ... endif                    (n, i, v)
+     \sie    if ... else ... endif           (n, i, v)
+     \sei    elseif                          (n, i)
+     \sel    else                            (n, i)
+     \sw     while                           (n, i, v)
+     \st     try ... catch                   (n, i, v)
+
+  -- Idioms ----------------------------------------------
+
+     \ii     iterators                       (n, i, v )
+     \if     function                        (n, i, v )
+
+  -- Regular Expression ----------------------------------
+
+     \xc     capture                         (n, i, v )
+     \xbc    branch                          (n, i, v )
+     \xbn    branch, no capture              (n, i, v )
+     \xw     word                            (n, i )
+     \xpc    POSIX character classes         (n, i )
+     \xs     switches                        (n, i )
+
+  -- Perl ------------------------------------------------
+
+     \ps     Perl snippet                    (n, i)
+     \pd     Vim::DoCommand()                (n, i)
+     \pe     Vim::Eval()                     (n, i)
+     \pm     Vim::Msg( "" )                  (n, i)
+     \pmc    Vim::Msg( "", "Comment" )       (n, i)
+     \pme    Vim::Msg( "", "Warning" )       (n, i)
+     \pmw    Vim::Msg( "", "ErrorMsg" )      (n, i)
+
+  -- Documentation ---------------------------------------
+
+     \dcc    chapter, contents               (n, i)
+     \dcs    section, contents               (n, i)
+     \dcu    subsection, contents            (n, i)
+     \dtc    chapter, text                   (n, i)
+     \dts    section, text                   (n, i)
+     \dtu    subsection, text                (n, i)
+     \df     function description            (n, i)
+     \de     example                         (n, i, v)
+     \dl     list item                       (n, i)
+
+  -- Snippets --------------------------------------------
+
+     \nr     read code snippet                (n, i)
+     \nw     write code snippet               (n, i, v)
+     \ne     edit code snippet                (n, i)
+
+  -- Run -------------------------------------------------
+
+     \rh     hardcopy buffer to FILENAME.ps   (n, i)
+     \rs     settings and hot keys            (n, i)
+
+File 'vim-hotkeys.pdf' contains a reference card for these key mappings.
+Multiline inserts and code snippets will be indented after insertion.
+
+Changing the default map leader '\'
+</pre><hr><pre>The map leader can be changed by the user by setting a global variable in the
+file .vimrc
+
+ let g:Vim_MapLeader  = ','
+
+The map leader is now a comma. The 'end-of-line comment' command is now
+defined as ',cl'. This setting will be used as a so called local leader and
+influences only files with filetype 'vim'.
+
+</pre><hr><pre>3.0  CUSTOMIZATION                                  <b class="vimtag"><a name="vimsupport-customization">vimsupport-customization</a></b>
+</pre><hr><pre>
+</pre><hr><pre>3.1  FILES (after installation)                      <b class="vimtag"><a name="vimsupport-custom-files">vimsupport-custom-files</a></b>
+</pre><hr><pre>
+README.vimsupport                  Release <code class="note">note</code>s, installation description.
+
+ftplugin/help.vim                  Filetype plugin to extend Vim help.
+
+plugin/vim-support.vim             The vim plugin for Vim/gVim.
+
+doc/vimsupport.txt                 The help file for the local online help.
+
+vim-support/codesnippets/*         Some code snippets as a starting point.
+
+vim-support/templates/*            Vim template files
+                                   (see |<a href="vimsupport.html#vimsupport-comm-templates">vimsupport-comm-templates</a>|).
+
+autoload/mmtemplates/core          The template engine.
+
+The following files and extensions are for convenience only.  vim-support.vim
+will work without them.
+
+vim-support/doc/*                   Hotkey reference card (PDF), changelog.
+
+vim-support/rc/customization.vimrc  Additional settings I use in '.vimrc':
+                                    incremental search, tabstop, hot keys,
+                                    font, use of dictionaries, ...  The file
+                                    is commented. Append it to your '.vimrc'
+                                    if you like.
+
+vim-support/rc/customization.gvimrc Additional settings I use in '.gvimrc':
+                                    hot keys, mouse settings, ...  The file is
+                                    commented.  Append it to your '.gvimrc' if
+                                    you like.
+
+</pre><hr><pre>3.2  GLOBAL VARIABLES                            <b class="vimtag"><a name="vimsupport-custom-variables">vimsupport-custom-variables</a></b>
+</pre><hr><pre>
+Several global variables are checked by the plugin to customize it:
+
+</pre><hr><pre>Global Variable               Default Value
+</pre><hr><pre>g:Vim_CreateMapsForHelp     'no'
+g:Vim_LocalTemplateFile     $HOME.'/.vim/vim-support/templates/Templates'
+g:Vim_GlobalTemplateFile    $VIM.'/vimfiles/vim-support/templates/Templates'
+g:Vim_CodeSnippets          $HOME.'/.vim/vim-support/codesnippets' (Linux/U**X)
+                            $VIM.'\vimfiles\vim-support/codesnippets/'(Windows)
+g:Vim_LoadMenus             'yes'
+g:Vim_CreateMenusDelayed    'no'
+g:Vim_RootMenu              '&amp;Vim'
+g:Vim_GuiSnippetBrowser     'gui'
+g:Vim_LineEndCommColDefault 49
+g:Vim_Printheader           '%&lt;%f%h%m%&lt;  %=%<code class="special">{strftime('%x %X')}</code>     Page %N'
+                             'vim.exe'     (Windows)
+g:Vim_MapLeader             '\'
+
+</pre><hr><pre>Global Variable              Description
+</pre><hr><pre>g:Vim_CreateMapsForHelp     Create maps for modifiable help buffers ("yes", "no").
+g:Vim_LocalTemplateFile     sets the local template file (see|<a href="vimsupport.html#vimsupport-templates">vimsupport-templates</a>|)
+g:Vim_GlobalTemplateFile    sets the global template file (see|<a href="vimsupport.html#vimsupport-templates">vimsupport-templates</a>|)
+g:Vim_CodeSnippets          set the personal code snippet directory
+g:Vim_LoadMenus             Load menus and mappings ("yes", "no") at start up.
+g:Vim_CreateMenusDelayed    Load menus only with filetype 'vim'
+g:Vim_RootMenu              The name of the root menu entry of this plugin
+                             (see |<a href="vimsupport.html#vimsupport-custom-root">vimsupport-custom-root</a>|).
+g:Vim_GuiSnippetBrowser     code snippet browser: 'gui', 'commandline'
+
+g:Vim_LineEndCommColDefault default starting column for line end comments
+g:Vim_Printheader           hardcopy header format
+g:Vim_MapLeader             the map leader for hotkeys (see|<a href="vimsupport.html#vimsupport-usage-vim">vimsupport-usage-vim</a>|)
+
+To override the defaults add appropriate assignments in '.vimrc', e.g.
+ let g:Vim_MapLeader  = ','
+
+</pre><hr><pre>3.3  THE ROOT MENU                                    <b class="vimtag"><a name="vimsupport-custom-root">vimsupport-custom-root</a></b>
+</pre><hr><pre>
+The variable g:Vim_RootMenu, if set (in '.vimrc' or in '.gvimrc'), sets the
+name of the single gVim root menu item in which the Vim submenus will be
+appear.  The default is
+
+                  '&amp;Vim'
+
+If you want to set the plugin root menu into another menu, e.g. 'Plugin',
+this is done by the following line in '.vimrc'
+
+  let g:Vim_RootMenu = "&amp;Plugin"
+
+</pre><hr><pre>3.4  System-wide installation                         <b class="vimtag"><a name="vimsupport-system-wide">vimsupport-system-wide</a></b>
+</pre><hr><pre>
+A system-wide installation (one installation for all users) is done as
+follows.
+
+As ****** SUPERUSER ****** :
+
+(1) Find the Vim installation directory.
+The Vim ex command ':echo $VIM' gives '/usr/local/share/vim' or something like
+that. Beyond this directory you will find the Vim installation,  e.g. in
+'/usr/local/share/vim/vim73' if Vim version 7.3 has been installed.
+
+(2) Create a new subdirectory 'vimfiles', e.g. '/usr/local/share/vim/vimfiles'.
+
+(3) Install Vim Support
+Copy the archive 'vim-support.zip' to this new directory and unpack it:
+  unzip vim-support.zip
+
+(4) Generate the help tags:
+  :helptags $VIM/vimfiles/doc
+
+SPECIAL CASES. Some Linux distributions use non-standard names for Vim
+directories. SUSE has a directory '/usr/share/vim/site' to put plugins in.
+These directories will not be found automatically.  After installing the
+plugin below '/usr/share/vim/site' the use of the templates will be enabled by
+the following line in '$HOME/.vimrc':
+
+  let g:Vim_GlobalTemplateFile = '/usr/share/vim/site/vim-support/templates/Templates'
+
+
+As ****** USER ****** :
+
+The plugin tries to create a minimal template file 'Templates' (and the
+necessary directory '$HOME/.vim/vim-support/templates') when the first buffer
+with filetype 'vim' will be opened. You should edit this file to personalize
+some macros.
+
+You can also have local templates which override the global ones. To see a
+messages in this case set a global variable in '$HOME/.vimrc' (Windows:
+'$HOME\_vimrc'):
+
+  let g:Vim_TemplateOverriddenMsg= 'yes'
+
+The default is 'no'.
+
+Create your private snippet directory:
+
+  mkdir --parents  $HOME/.vim/vim-support/codesnippets
+
+You may want to copy the snippets coming with this plugin (in
+$VIM/vimfiles/vim-support/codesnippets) into the new directory or to set a
+link to the global directory.
+
+</pre><hr><pre>4.  TEMPLATE FILES AND TAGS                            <b class="vimtag"><a name="vimsupport-templates">vimsupport-templates</a></b>
+</pre><hr><pre>
+</pre><hr><pre>4.1  TEMPLATE FILES                               <b class="vimtag"><a name="vimsupport-templates-files">vimsupport-templates-files</a></b>
+</pre><hr><pre>
+Nearly all menu items insert code snippets or comments. All of these are
+contained within template files and can be changed by the user to meet their
+requirements. The menu shortcuts (e.g. 'c' for the Comments menu) and the
+menu item hotkeys (e.g. '\ct' insert date and time) are also defined in the
+templates.
+The template engine comes as a separate plugin contributed by Wolfgang Mehner.
+This section is a short introduction to this template system. Please see
+|<a href="templatesupport.html#templatesupport.txt">templatesupport</a>| for more information.
+
+The master template file is '$HOME/.vim/vim-support/templates/Templates' for
+a user installation and  '$VIM/vimfiles/vim-support/templates/Templates' for
+a system-wide installation (see |<a href="vimsupport.html#vimsupport-system-wide">vimsupport-system-wide</a>|).
+
+The master template file starts with a macro section followed by templates for
+single menu items or better by including other template files grouping the
+templates according to the menu structure of this plugin. The master file
+usually looks like this (my settings as an example):
+
+<code class="example">  &sect; =============================================================</code>
+<code class="example">  &sect;  User Macros</code>
+<code class="example">  &sect; =============================================================</code>
+<code class="example"></code>
+<code class="example">  SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
+<code class="example">  SetMacro( 'AUTHORREF',   'fgm' )</code>
+<code class="example">  SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )</code>
+<code class="example">  SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )</code>
+<code class="example">  SetMacro( 'COPYRIGHT',   'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
+<code class="example"></code>
+<code class="example">  SetFormat( 'DATE', '%x' )</code>
+<code class="example">  SetFormat( 'TIME', '%H:%M' )</code>
+<code class="example">  SetFormat( 'YEAR', '%Y' )</code>
+<code class="example"></code>
+<code class="example">  SetStyle( 'default' )</code>
+<code class="example"></code>
+<code class="example">  &sect; =============================================================</code>
+<code class="example">  &sect;  File Includes and Shortcuts</code>
+<code class="example">  &sect; =============================================================</code>
+<code class="example"></code>
+<code class="example">  MenuShortcut( 'Comments',      'c' )</code>
+<code class="example">  MenuShortcut( 'Statements',    's' )</code>
+<code class="example">  MenuShortcut( 'Idioms',        'i' )</code>
+<code class="example">  MenuShortcut( 'Regex',         'x' )</code>
+<code class="example">  MenuShortcut( 'Perl',          'p' )</code>
+<code class="example">  MenuShortcut( 'Documentation', 'd' )</code>
+<code class="example"></code>
+<code class="example">  IncludeFile( 'comments.templates' )</code>
+<code class="example">  IncludeFile( 'statements.templates' )</code>
+<code class="example">  IncludeFile( 'idioms.templates' )</code>
+<code class="example">  IncludeFile( 'regex.templates' )</code>
+<code class="example">  IncludeFile( 'perl.templates' )</code>
+<code class="example">  IncludeFile( 'docu.templates' )</code>
+
+Lines starting with a paragraph sign are comments. The section starting with
+
+<code class="example">  SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
+
+assigns values to predefined tags (macros).  Arbitrary user-defined macros are
+possible. The macro name must follows the rules for a C language identifier:
+first character letter  or underscore; case matters; digits are allowed
+beginning with the second character.
+
+The statement
+
+<code class="example">  IncludeFile( 'comments.templates' )</code>
+
+includes the templates from the file 'comments.templates' (in the same
+directory). An absolute path would also be possible.  The statement
+
+<code class="example">  MenuShortcut( 'Comments',      'c' )</code>
+
+sets 'c' as the shortcut for the Comments menu.
+
+</pre><hr><pre>4.2  MACROS                                      <b class="vimtag"><a name="vimsupport-templates-macros">vimsupport-templates-macros</a></b>
+</pre><hr><pre>
+The following macro names are predefined. The first group is used to
+personalize templates.
+
+ ----------------------------------------------------------------------------
+ PREDEFINED MACROS  DEFAULT VALUE
+ ----------------------------------------------------------------------------
+
+<b class="vimtag"><a name="|BASENAME|">|BASENAME|</a></b>        filename without path and suffix
+<b class="vimtag"><a name="|DATE|">|DATE|</a></b>            the preferred date representation for the current locale
+                    without the time
+<b class="vimtag"><a name="|FILENAME|">|FILENAME|</a></b>        filename without path
+<b class="vimtag"><a name="|PATH|">|PATH|</a></b>            path without filename
+<b class="vimtag"><a name="|SUFFIX|">|SUFFIX|</a></b>          filename suffix
+<b class="vimtag"><a name="|TIME|">|TIME|</a></b>            the preferred time representation for the current locale
+                    without the date and the time zone or name or abbreviation
+<b class="vimtag"><a name="|YEAR|">|YEAR|</a></b>            the year as a decimal number including the century
+
+ ----------------------------------------------------------------------------
+ PREDEFINED TAGS USED IN TEMPLATES
+ ----------------------------------------------------------------------------
+ <code class="special">&lt;CURSOR&gt;</code>           The cursor position after insertion of a template.
+ <code class="special">&lt;+text+&gt;</code>,<code class="special">&lt;-text-&gt;</code>  See |<a href="vimsupport.html#vimsupport-templates-jumptags">vimsupport-templates-jumptags</a>|.
+ <code class="special">{+text+}</code>,<code class="special">{-text-}</code>
+
+ <code class="special">&lt;SPLIT&gt;</code>            The split point when inserting in visual mode
+                    (see|<a href="vimsupport.html#vimsupport-templates">vimsupport-templates</a>|)
+
+A dependent template file can start with its own command section. There is no
+need to have all user defined macros in the master file.
+
+</pre><hr><pre>4.2.1   USER DEFINED FORMATS FOR DATE AND TIME     <b class="vimtag"><a name="vimsupport-templates-date">vimsupport-templates-date</a></b>
+</pre><hr><pre>The format for <b class="vimtag"><a name="|DATE|">|DATE|</a></b> ,<b class="vimtag"><a name="|TIME|">|TIME|</a></b> , and<b class="vimtag"><a name="|YEAR|">|YEAR|</a></b> can be set by the user. The
+defaults are
+    <b class="vimtag"><a name="|DATE|">|DATE|</a></b>        '%x'
+    <b class="vimtag"><a name="|TIME|">|TIME|</a></b>        '%X'
+    <b class="vimtag"><a name="|YEAR|">|YEAR|</a></b>        '%Y'
+See the manual page of the C function strftime() for the format.  The accepted
+format depends on your system, thus this is not portable!  The maximum length
+of the result is 80 characters.
+
+User defined formats can be set using the following function calls in the
+master template file is '$HOME/.vim/vim-support/templates/Templates',  e.g.
+
+<code class="example">  SetFormat( 'DATE', '%D'      )</code>
+<code class="example">  SetFormat( 'TIME', '%H:%M'   )</code>
+<code class="example">  SetFormat( 'YEAR', 'year %Y' )</code>
+
+</pre><hr><pre>4.3  TEMPLATES                                    <b class="vimtag"><a name="vimsupport-templates-names">vimsupport-templates-names</a></b>
+</pre><hr><pre>
+4.3.1    Template definition                 <b class="vimtag"><a name="vimsupport-templates-definition">vimsupport-templates-definition</a></b>
+The template behind a menu entry is identified by a given name. The first part
+of the name identifies the menu name, the second part identifies the item.
+A template definition starts with a template header with the following syntax:
+
+  == menu_name.template_name == options ==
+
+The options are described here: |<a href="templatesupport.html#template-support-options">template-support-options</a>|.
+
+4.3.2  The jump tags <code class="special">&lt;+text+&gt;</code> etc.             <b class="vimtag"><a name="vimsupport-templates-jumptags">vimsupport-templates-jumptags</a></b>
+
+There are four jump tag types which can be used as jump targets in templates:
+
+ <code class="special">&lt;+text+&gt;</code>   Can be jumped to by hitting Ctrl-j.
+ <code class="special">{+text+}</code>   Same as <code class="special">&lt;+text+&gt;</code>. Used in cases where indentation gives unwanted
+            results with the first one.
+
+ <code class="special">&lt;-text-&gt;</code>   Same as the two above. Will be removed if the template is used
+ <code class="special">{-text-}</code>   in visual mode.
+
+The text inside the brackets is userdefined and can be empty. The text can be
+composed from letters (uppercase and lowercase), digits, and underscores.
+After the insertion of an template these jump targets will be highlighted.
+
+4.3.3  Command Ctrl-j                                      <b class="vimtag"><a name="vimsupport-Ctrl-j">vimsupport-Ctrl-j</a></b>
+
+Use the command Ctrl-j to jump to the next target. The target will be removed
+and the mode will switched to insertion. Ctrl-j works in normal and in insert
+mode.  The template for an if-else-statement can be written as follows:
+
+<code class="example">  == Statements.if, else == map:sie, sc:i ==</code>
+<code class="example">  if <code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">    <code class="special">&lt;SPLIT&gt;</code><code class="special">&lt;-IF_PART-&gt;</code></code>
+<code class="example">  else</code>
+<code class="example">    <code class="special">&lt;+ELSE_PART+&gt;</code></code>
+<code class="example">  endif</code>
+
+The cursor will be set as shown. When the condition is specified a Ctrl-j let
+you jump to the target <code class="special">&lt;-IF PART-&gt;</code> and deletes it.  When the block is written
+a Ctrl-j leads you to the else-part.  The target <code class="special">&lt;+ELSE_PART+&gt;</code> disappears and
+you can type on.
+
+</pre><hr><pre>5.  WINDOWS PARTICULARITIES                               <b class="vimtag"><a name="vimsupport-windows">vimsupport-windows</a></b>
+</pre><hr><pre>
+For a user installation the plugin should go into the directory structure
+below
+  $HOME/vimfiles/
+for a system installation below
+  $VIM/vimfiles/
+
+The values of the two variables can be found from inside Vim:
+   :echo $VIM
+or
+   :echo $HOME
+
+The configuration files for a user are
+
+  $HOME/_vimrc   and  $HOME/_gvimrc
+
+for the system
+
+  $VIM/_vimrc   and  $VIM/_gvimrc
+
+</pre><hr><pre>6.  TROUBLESHOOTING                               <b class="vimtag"><a name="vimsupport-troubleshooting">vimsupport-troubleshooting</a></b>
+</pre><hr><pre>
+* I do not see any new main menu item.
+  - Was the archive extracted into the right directory?
+
+* How can I see what was loaded?
+  - Use ':scriptnames' from the Vim command line.
+
+* No main menu item.
+  - Loading of plugin files must be enabled. If not use
+      :filetype plugin on
+    This is the minimal content of the file '$HOME/.vimrc'. Create one if
+    there is none, or better use customization.vimrc.
+
+* Some hotkeys do not work.
+  - The hotkeys might be in use by your graphical desktop environment. The key
+    settings can usually be redefined.
+
+</pre><hr><pre>7.  Release <code class="note">Note</code>s                                   <b class="vimtag"><a name="vimsupport-release-notes">vimsupport-release-notes</a></b>
+</pre><hr><pre>
+See file 'README.vimsupport'.
+
+</pre><hr><pre>vim:tw=78:noet:ts=2:ft=help:norl:
+</pre>
+<p><i>Generated by vim2html on Fr 22. Aug 20:59:52 CEST 2014</i></p>
+</body>
+</html>

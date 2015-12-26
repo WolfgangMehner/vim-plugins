@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>VIM: toolboxmake</title>
+<link rel="stylesheet" href="vim-stylesheet.css" type="text/css">
+</head>
+<body>
+<h2>TOOLBOXMAKE</h2>
+<pre>
+<b class="vimtag"><a name="toolboxmake.txt">toolboxmake.txt</a></b>                  Make Tool                      July 23 2015
+
+Make Tool                                                       <b class="vimtag"><a name="toolbox-make">toolbox-make</a></b>
+
+                             Plug-in version 1.1
+                        for Vim version 7.0 and above
+                 Wolfgang Mehner <code class="special">&lt;wolfgang-mehner at web.de&gt;</code>
+
+The Make tool offers minimal make functionality, such as running make with the
+makefile located in a different directory. The make command is run by using
+the :Make command, which has command-line completion for make targets.
+
+</pre><hr><pre>0.  TABLE OF CONTENTS                                  <b class="vimtag"><a name="toolbox-make-contents">toolbox-make-contents</a></b>
+</pre><hr><pre>
+ 1.    Introduction                               |<a href="toolboxmake.html#toolbox-make-intro">toolbox-make-intro</a>|
+ 2.    Commands                                   |<a href="toolboxmake.html#toolbox-make-commands">toolbox-make-commands</a>|
+ 2.1    API                                       |<a href="toolboxmake.html#toolbox-make-api">toolbox-make-api</a>|
+ 3.    Configuration                              |<a href="toolboxmake.html#toolbox-make-config">toolbox-make-config</a>|
+
+ A.    Change Log                                 |<a href="toolboxmake.html#toolbox-make-change-log">toolbox-make-change-log</a>|
+
+</pre><hr><pre>1.  INTRODUCTION                                          <b class="vimtag"><a name="toolbox-make-intro">toolbox-make-intro</a></b>
+</pre><hr><pre>
+Make is run using the ex-command |<a href="toolboxmake.html#:Make">:Make</a>|. Command line arguments can either be
+given directly,
+<code class="example">  :Make -j3</code>
+<code class="example">  :Make clean</code>
+or specified by using |<a href="toolboxmake.html#:MakeCmdlineArgs">:MakeCmdlineArgs</a>|. Arguments given to :MakeCmdlineArgs
+are passed on to make every time :Make is called without arguments. This
+feature can be used to "memorize" complicated argument lists which have to be
+passed to make repeatedly. Even if an argument list has been memorized, :Make
+can always be called with other arguments to disregard the memorized list. A
+call to :MakeCmdlineArgs without arguments clears the memorized argument list.
+
+By default, :Make runs in the current working directory and therefore uses the
+local makefile. The command |<a href="toolboxmake.html#:MakeFile">:MakeFile</a>| sets a specific makefile, which is
+used every time, even when :Make is call in a different directory. This makes
+it possible to use the tool for larger projects, which are organized in
+multiple directories. The specified file is used until another is chosen or
+the default behavior is restored by calling :MakeFile without arguments.
+
+Whether or not the makefile is set by :MakeFile, the :Make command has
+command-line completion for the targets.
+
+  Command                       Short Description
+ ----------------------------------------------------------------------------
+  |<a href="toolboxmake.html#:Make">:Make</a>| [<code class="special">&lt;args&gt;</code>]                run make with the given arguments
+
+  |<a href="toolboxmake.html#:MakeCmdlineArgs">:MakeCmdlineArgs</a>| [<code class="special">&lt;args&gt;</code>]     memorize cmd. line arguments for make
+  |<a href="toolboxmake.html#:MakeCmdlineArgs">:MakeCmdlineArgs</a>|!             echo memorized cmd. line arguments
+  |<a href="toolboxmake.html#:MakeFile">:MakeFile</a>| [<code class="special">&lt;file&gt;</code>]            choose a makefile
+  |<a href="toolboxmake.html#:MakeFile">:MakeFile</a>|!                    echo the current makefile
+
+  |<a href="toolboxmake.html#:MakeHelp">:MakeHelp</a>|                     help for the Make tool
+  |<a href="toolboxmake.html#:MakeSettings">:MakeSettings</a>|                 shows the plug-in settings
+ ----------------------------------------------------------------------------
+
+Detailed explanations are given in the next section |<a href="toolboxmake.html#toolbox-make-commands">toolbox-make-commands</a>|.
+
+</pre><hr><pre>2.  COMMANDS                                           <b class="vimtag"><a name="toolbox-make-commands">toolbox-make-commands</a></b>
+</pre><hr><pre>
+This chapter provides detailed explanations of all the commands.
+
+</pre><hr><pre>                                                                       <b class="vimtag"><a name=":Make">:Make</a></b>
+<code class="section">  :Make [<code class="special">&lt;args&gt;</code>] </code>
+
+Runs make with the given arguments.  If no arguments are given, uses the ones
+specified with |<a href="toolboxmake.html#:MakeCmdlineArgs">:MakeCmdlineArgs</a>|, which can be an empty argument list as well.
+
+Uses the local makefile, unless a makefile has been chosen using |<a href="toolboxmake.html#:MakeFile">:MakeFile</a>|.
+The command has command-line completion for the targets of that makefile.
+
+If the tool is not working properly, prints the reason.
+
+</pre><hr><pre>                                                            <b class="vimtag"><a name=":MakeCmdlineArgs">:MakeCmdlineArgs</a></b>
+<code class="section">  :MakeCmdlineArgs [<code class="special">&lt;args&gt;</code>] </code>
+
+Sets command line arguments for :Make. If make is called without arguments,
+these "memorized" arguments are used. The command can be called without
+arguments to delete the memorized argument list.
+
+<code class="section">  :MakeCmdlineArgs! </code>
+
+Echoes the currently memorized arguments on the command line.
+
+</pre><hr><pre>                                                                   <b class="vimtag"><a name=":MakeFile">:MakeFile</a></b>
+<code class="section">  :MakeFile [<code class="special">&lt;file&gt;</code>] </code>
+
+Sets the makefile. If a specific file has been selected, it is always used,
+independent of the current working directory. If the makefile has not been
+chosen, or reset by calling :MakeFile without arguments, the makefile in the
+current working directory is used.
+
+<code class="section">  :MakeFile! </code>
+
+Echoes the current makefile on the command line.
+
+</pre><hr><pre>                                                                   <b class="vimtag"><a name=":MakeHelp">:MakeHelp</a></b>
+<code class="section">  :MakeHelp </code>
+
+Opens the help for the Make tool.
+
+</pre><hr><pre>                                                               <b class="vimtag"><a name=":MakeSettings">:MakeSettings</a></b>
+<code class="section">  :MakeSettings </code>
+<code class="section">  :MakeSettings! </code>
+
+Shows the plug-in settings. The second version is verbose.
+
+</pre><hr><pre>2.1  API                                                    <b class="vimtag"><a name="toolbox-make-api">toolbox-make-api</a></b>
+</pre><hr><pre>
+The Makefile and command-line arguments can be set via an API. This allows for
+setting up the configuration via a script.
+
+</pre><hr><pre>                                                   <b class="vimtag"><a name="mmtoolbox%23make%23Property()">mmtoolbox#make#Property()</a></b>
+The Makefile and command-line arguments can be set using:
+
+<code class="section">  mmtoolbox#make#Property ( mode, key [, value] ) </code>
+
+Parameters:
+  mode  - "echo", "get" or "set" (string)
+  key   - the name of one of the properties (string)
+  value - the new value of the property,
+          only with mode "set" (string, optional)
+Returns:
+  value - the current value of the property,
+          only with mode "get" (various)
+
+The property is one of the following:
+  "enabled"      - non-zero if the tool is enabled (integer, no "set")
+  "cmdline-args" - the memorized command-line arguments (string)
+  "makefile"     - the name and location of the makefile (string)
+
+To set the makefile for a project, use:
+<code class="example">  call mmtoolbox#make#Property ( "set",</code>
+<code class="example">      \ "makefile", "$HOME/Projects/MyProject" )</code>
+
+To always run three jobs in parallel:
+<code class="example">  call mmtoolbox#make#Property ( "set", "cmdline-args", "-j3" )</code>
+
+</pre><hr><pre>3.  CONFIGURATION                                        <b class="vimtag"><a name="toolbox-make-config">toolbox-make-config</a></b>
+</pre><hr><pre>
+The tool is configured via a number of global variables, which can be set in
+the .vimrc file.
+
+  Variable                  Default       Description and further information
+ ----------------------------------------------------------------------------
+  |<a href="toolboxmake.html#g:Make_Executable">g:Make_Executable</a>|         'make'        the make executable
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>                                                           <b class="vimtag"><a name="g:Make_Executable">g:Make_Executable</a></b>
+The executable is set by g:Make_Executable:
+<code class="example">  let g:Make_Executable = 'make'</code>
+
+</pre><hr><pre>A.  CHANGE LOG                                       <b class="vimtag"><a name="toolbox-make-change-log">toolbox-make-change-log</a></b>
+</pre><hr><pre>
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 1.1
+</pre><hr><pre>
+- Add: Command-line completion for Make targets.
+- Minor changes.
+
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 1.0.3
+</pre><hr><pre>
+- Internal changes, less global functions.
+- Minor changes.
+
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 1.0.2
+</pre><hr><pre>
+- Minor changes.
+
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 1.0.1
+</pre><hr><pre>
+- Added: Command :MakeSettings to show the configuration.
+- Minor changes.
+
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 1.0
+</pre><hr><pre>
+- Initial upload.
+
+</pre><hr><pre>vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
+</pre>
+<p><i>Generated by vim2html (modified) on Sa 26. Dez 15:03:11 CET 2015</i></p>
+</body>
+</html>

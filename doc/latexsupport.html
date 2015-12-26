@@ -1,0 +1,1043 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>VIM: latexsupport</title>
+<link rel="stylesheet" href="vim-stylesheet.css" type="text/css">
+</head>
+<body>
+<h2>LATEXSUPPORT</h2>
+<pre>
+<b class="vimtag"><a name="latexsupport.txt">latexsupport.txt</a></b>           LATEX Support                         Aug 15 2014
+
+LaTeX Support                                     <b class="vimtag"><a name="latex-support">latex-support</a></b> <b class="vimtag"><a name="latexsupport">latexsupport</a></b>
+
+                             Plugin version 1.1.1
+                        for Vim version 7.0 and above
+                    Fritz Mehner  <code class="special">&lt;mehner.fritz@fh-swf.de&gt;</code>
+                   Wolfgang Mehner <code class="special">&lt;wolfgang-mehner@web.de&gt;</code>
+
+LaTeX-IDE for Vim/gVim. It is written to considerably speed up typesetting a
+document in a consistent style.  This is done by inserting complete
+statements, idioms, code snippets, templates, and comments.  Compiling and
+viewing a document, format conversion and running make can be done with a few
+keystrokes.
+
+1.     USAGE WITH GUI  (gVim)                       |<a href="latexsupport.html#latexsupport-usage-gvim">latexsupport-usage-gvim</a>|
+1.1    MENU 'Comments'                              |<a href="latexsupport.html#latexsupport-comments">latexsupport-comments</a>|
+1.1.1  Append Aligned Comments To Lines             |<a href="latexsupport.html#latexsupport-aligned-comm">latexsupport-aligned-comm</a>|
+1.1.2  Adjust End-Of-Line Comments                  |<a href="latexsupport.html#latexsupport-comm-realign">latexsupport-comm-realign</a>|
+1.1.3  Toggle Comments                              |<a href="latexsupport.html#latexsupport-comm-toggle">latexsupport-comm-toggle</a>|
+1.1.4  Frame Comments, File Header, ...             |<a href="latexsupport.html#latexsupport-comm-templates">latexsupport-comm-templates</a>|
+1.2    MENU 'Text'                                  |<a href="latexsupport.html#latexsupport-text">latexsupport-text</a>|
+1.2.1  Normal Mode, Insert Mode                     |<a href="latexsupport.html#latexsupport-stat-norm-ins">latexsupport-stat-norm-ins</a>|
+1.2.2  Visual Mode                                  |<a href="latexsupport.html#latexsupport-stat-visual">latexsupport-stat-visual</a>|
+1.3    MENU 'Math'                                  |<a href="latexsupport.html#latexsupport-math">latexsupport-math</a>|
+1.4    MENU 'Document'                              |<a href="latexsupport.html#latexsupport-documents">latexsupport-documents</a>|
+1.5    MENU 'BibTeX'                                |<a href="latexsupport.html#latexsupport-bibtex">latexsupport-bibtex</a>|
+1.6    MENU 'Snippets'                              |<a href="latexsupport.html#latexsupport-snippets">latexsupport-snippets</a>|
+1.6.1  Code Snippets                                |<a href="latexsupport.html#latexsupport-snippets-menu">latexsupport-snippets-menu</a>|
+1.6.2  Code Templates                               |<a href="latexsupport.html#latexsupport-templates-menu">latexsupport-templates-menu</a>|
+1.7    MENU 'Wizard'                                |<a href="latexsupport.html#latexsupport-wizard">latexsupport-wizard</a>|
+1.8    MENU 'Run'                                   |<a href="latexsupport.html#latexsupport-run">latexsupport-run</a>|
+1.8.1  Running A Typesetter                         |<a href="latexsupport.html#latexsupport-run-typesetter">latexsupport-run-typesetter</a>|
+1.9    MENU 'Tool Box'                              |<a href="latexsupport.html#latexsupport-toolbox">latexsupport-toolbox</a>|
+1.9.1  Make                                         |<a href="latexsupport.html#latexsupport-toolbox-make">latexsupport-toolbox-make</a>|
+1.10   MENU 'Help'                                  |<a href="latexsupport.html#latexsupport-help">latexsupport-help</a>|
+
+2.     USAGE WITHOUT GUI  (Vim)                     |<a href="latexsupport.html#latexsupport-mappings">latexsupport-mappings</a>|
+
+3.     FUNCTION KEYS                                |<a href="latexsupport.html#latexsupport-function-keys">latexsupport-function-keys</a>|
+
+4.     CUSTOMIZATION                                |<a href="latexsupport.html#latexsupport-customization">latexsupport-customization</a>|
+4.1    FILES                                        |<a href="latexsupport.html#latexsupport-custom-files">latexsupport-custom-files</a>|
+4.2    GLOBAL VARIABLES                             |<a href="latexsupport.html#latexsupport-custom-variables">latexsupport-custom-variables</a>|
+4.3    THE ROOT MENU                                |<a href="latexsupport.html#latexsupport-custom-root">latexsupport-custom-root</a>|
+4.4    System-wide installation                     |<a href="latexsupport.html#latexsupport-system-wide">latexsupport-system-wide</a>|
+
+5.     TEMPLATE FILES AND TAGS                      |<a href="latexsupport.html#latexsupport-templates">latexsupport-templates</a>|
+5.1    TEMPLATE FILES                               |<a href="latexsupport.html#latexsupport-templates-files">latexsupport-templates-files</a>|
+5.2    MACROS                                       |<a href="latexsupport.html#latexsupport-templates-macros">latexsupport-templates-macros</a>|
+5.2.1  User Defined Formats For Date And Time       |<a href="latexsupport.html#latexsupport-templates-date">latexsupport-templates-date</a>|
+5.3    TEMPLATES                                    |<a href="latexsupport.html#latexsupport-templates-names">latexsupport-templates-names</a>|
+5.3.1  Template definition                          |<a href="latexsupport.html#latexsupport-templates-definition">latexsupport-templates-definition</a>|
+5.3.2  The jump tags <code class="special">&lt;+text+&gt;</code> etc.                  |<a href="latexsupport.html#latexsupport-templates-jumptags">latexsupport-templates-jumptags</a>|
+5.3.3  Command Ctrl-j                               |<a href="latexsupport.html#latexsupport-Ctrl-j">latexsupport-Ctrl-j</a>|
+
+6.     LaTeX Dictionary                             |<a href="latexsupport.html#latexsupport-dictionary">latexsupport-dictionary</a>|
+
+7.     Troubleshooting                              |<a href="latexsupport.html#latexsupport-troubleshooting">latexsupport-troubleshooting</a>|
+8.     Release <code class="note">Note</code>s                                |<a href="latexsupport.html#latexsupport-release-notes">latexsupport-release-notes</a>|
+
+
+</pre><hr><pre>1.  USAGE WITH GUI  (gVim)                           <b class="vimtag"><a name="latexsupport-usage-gvim">latexsupport-usage-gvim</a></b>
+</pre><hr><pre>
+The root menu is not visible by default.  The root menu 'LaTeX' will appears
+after the first file with extension 'tex' with filetype 'tex' has been opened.
+
+If the root menu 'LaTeX' is not visible you also can call it with the item
+"Load LaTeX Support" from the standard Tools-menu.  The item "Unload LaTeX
+Support" can be used to unload the LaTeX root menu.
+See|<a href="latexsupport.html#latexsupport-custom-root">latexsupport-custom-root</a>|.
+
+Nearly all menu items insert code snippets or comments. All of these are
+contained within template files and can be changed by the user to meet their
+requirements (see|<a href="latexsupport.html#latexsupport-templates">latexsupport-templates</a>|).
+
+</pre><hr><pre>1.1 MENU 'Comments'                                    <b class="vimtag"><a name="latexsupport-comments">latexsupport-comments</a></b>
+</pre><hr><pre>
+1.1.1 APPEND ALIGNED COMMENTS TO LINES             <b class="vimtag"><a name="latexsupport-aligned-comm">latexsupport-aligned-comm</a></b>
+</pre><hr><pre>In NORMAL MODE the menu item 'end-of-line comments' will append a comment to
+the current line.
+
+In VISUAL MODE this item will append aligned comments to all marked lines.
+Marking the 3 lines
+
+<code class="example"> \fbox<code class="special">{\begin{minipage}</code>[t][30mm][l]<code class="special">{73mm}</code></code>
+<code class="example"> \begin<code class="special">{flushleft}</code></code>
+<code class="example"> \large<code class="special">{\textbf{Ex Commands}</code>}\\[1.0ex]</code>
+
+and choosing 'end-of-line comments' will yield
+
+<code class="example"> \fbox<code class="special">{\begin{minipage}</code>[t][30mm][l]<code class="special">{73mm}</code>        % |</code>
+<code class="example"> \begin<code class="special">{flushleft}</code>                               %</code>
+<code class="example"> \large<code class="special">{\textbf{Ex Commands}</code>}\\[1.0ex]           %</code>
+
+The cursor position above is marked by '|'. Empty lines will be ignored.
+
+The default starting column is 49 ( = (multiple of 2,4, or 8) + 1 ).  This can
+be changed by setting a global variable in the file .vimrc , e.g. :
+
+<code class="example">  let g:Latex_LineEndCommColDefault    = 65</code>
+
+The starting column can also be set by the menu item 'Comments-&gt;adjust
+end-of-line com.' . Just position the cursor in an arbitrary column (normal
+mode; the column number is shown in the Vim status line) and choose this menu
+item.  This setting is buffer related.
+If the cursor was at the end of a line you will be asked for a column number
+because this position is most likely not the desired starting column.
+Your choice will be confirmed.
+
+1.1.2  ADJUST END-OF-LINE COMMENTS                 <b class="vimtag"><a name="latexsupport-comm-realign">latexsupport-comm-realign</a></b>
+</pre><hr><pre>After some copy/paste/change actions comments may be misaligned:
+
+<code class="example"> \fbox<code class="special">{\begin{minipage}</code>[t][30mm][l]<code class="special">{73mm}</code>        % comment 1</code>
+<code class="example"> \begin<code class="special">{flushleft}</code>                              % comment 2</code>
+<code class="example"> \large<code class="special">{\textbf{Ex Commands}</code>}\\[1.0ex]              % comment 3</code>
+
+Realignment can be achieved with the menu item 'adjust end-of-line com.' In
+normal mode the comment (if any) in the current line will be aligned to the
+end-of-line comment column (see above) if possible. In visual mode the
+comments in the marked block will be aligned:
+
+<code class="example"> \fbox<code class="special">{\begin{minipage}</code>[t][30mm][l]<code class="special">{73mm}</code>        % comment 1</code>
+<code class="example"> \begin<code class="special">{flushleft}</code>                               % comment 2</code>
+<code class="example"> \large<code class="special">{\textbf{Ex Commands}</code>}\\[1.0ex]           % comment 3</code>
+
+
+1.1.3  TOGGLE COMMENTS                              <b class="vimtag"><a name="latexsupport-comm-toggle">latexsupport-comm-toggle</a></b>
+</pre><hr><pre>The comment sign % can be set or removed at the beginning of the current line
+or for a marked block.  A single line needs not to be marked.
+
+For marked block containing only lines with a '%' in the first column (and
+possibly empty lines) all lines will be uncommented.
+
+A marked block containing one or more nonempty lines without a '%' in the
+first column will be changed into a comment block.
+
+Whitespaces in front of the hash sign will be preserved.
+
+1.1.4 FRAME COMMENTS, FILE HEADER, ...           <b class="vimtag"><a name="latexsupport-comm-templates">latexsupport-comm-templates</a></b>
+</pre><hr><pre>
+Frame comments and a file prolog are read as templates from the appropriate
+files (see |<a href="latexsupport.html#latexsupport-templates">latexsupport-templates</a>|).
+
+</pre><hr><pre>1.2 MENU 'Text'                                            <b class="vimtag"><a name="latexsupport-text">latexsupport-text</a></b>
+</pre><hr><pre>
+This is the section containing frequently used text-related statements.
+
+1.2.1  NORMAL MODE, INSERT MODE.                  <b class="vimtag"><a name="latexsupport-stat-norm-ins">latexsupport-stat-norm-ins</a></b>
+</pre><hr><pre>An empty statement will be inserted, e.g.
+
+<code class="example"> \begin<code class="special">{center}</code></code>
+<code class="example"> |</code>
+<code class="example"> \end<code class="special">{center}</code></code>
+
+1.2.2  VISUAL MODE.                                 <b class="vimtag"><a name="latexsupport-stat-visual">latexsupport-stat-visual</a></b>
+</pre><hr><pre>The highlighted area
+
+<code class="example"> xxxxx</code>
+<code class="example"> xxxxx</code>
+
+can be surrounded by many statements, e.g.
+
+<code class="example"> \begin<code class="special">{center}</code></code>
+<code class="example"> xxxxx</code>
+<code class="example"> xxxxx</code>
+<code class="example"> \end<code class="special">{center}</code></code>
+
+</pre><hr><pre>1.3 MENU 'Math'                                            <b class="vimtag"><a name="latexsupport-math">latexsupport-math</a></b>
+</pre><hr><pre>
+This is the section containing frequently used math-related statements.  The
+submenus can also be uses via hotkeys. The hotkey ´msp for instance will start
+an ex-command.  Use tab-expansion to display the choices and the arrow keys to
+select an item:
+
+<code class="example"> large \;  medium \:  qquad  quad  small \,</code>
+<code class="example"> choose : large \\;</code>
+
+Some statements have a visual mode. If 'Length' is selected the hotkey ´mnr
+will surround it with the sqrt-statement in order to obtain the n-th root:
+
+<code class="example"> ... \sqrt[|]<code class="special">{Length}</code> ...</code>
+
+</pre><hr><pre>1.4 MENU 'Document'                                   <b class="vimtag"><a name="latexsupport-documents">latexsupport-documents</a></b>
+</pre><hr><pre>
+This is the section containing frequently used document-related statements.
+
+</pre><hr><pre>1.5 MENU 'BibTeX'                                        <b class="vimtag"><a name="latexsupport-bibtex">latexsupport-bibtex</a></b>
+</pre><hr><pre>
+This is the section containing frequently used BibTeX-related statements.
+Complete BibTeX-entries will be inserted from the corresponding template, e.g.
+
+<code class="example"> @article{,</code>
+<code class="example">   author        = <code class="special">{}</code>,</code>
+<code class="example">   title         = <code class="special">{}</code>,</code>
+<code class="example">   journal       = <code class="special">{}</code>,</code>
+<code class="example">   year          = ,</code>
+<code class="example">   volume        = <code class="special">{}</code>,</code>
+<code class="example">   number        = <code class="special">{}</code>,</code>
+<code class="example">   pages         = <code class="special">{}</code>,</code>
+<code class="example">   month         = <code class="special">{}</code>,</code>
+<code class="example">   <code class="note">note</code>          = <code class="special">{}</code>,</code>
+<code class="example"> }</code>
+
+</pre><hr><pre>1.6 MENU 'Snippets'                                    <b class="vimtag"><a name="latexsupport-snippets">latexsupport-snippets</a></b>
+</pre><hr><pre>
+1.6.1  Code Snippets                              <b class="vimtag"><a name="latexsupport-snippets-menu">latexsupport-snippets-menu</a></b>
+</pre><hr><pre>Code snippets are pieces of code which are kept in separate files in a special
+directory. File names are used to identify the snippets.  The default snippet
+is directory is $HOME/.vim/latex-support/codesnippets.  Snippets are managed
+with the 4 items
+
+   LaTeX -&gt; Snippets -&gt; read  code snippet
+   LaTeX -&gt; Snippets -&gt; write code snippet
+   LaTeX -&gt; Snippets -&gt; view code snippet
+   LaTeX -&gt; Snippets -&gt; edit  code snippet
+
+from the Snippets submenu.
+
+Creating a new snippet:
+</pre><hr><pre>When nothing is marked, "write code snippet" will write the whole buffer
+to a snippet file. Otherwise the marked area will be written to a file.
+
+Insert a snippet:
+</pre><hr><pre>Select the appropriate file from the snippet directory ("read code snippet").
+The inserted lines will be indented.
+
+Indentation / no indentation
+</pre><hr><pre>Code snippets are normally indented after insertion. To suppress indentation
+add the file extension "ni" or "noindent" to the snippet file name, e.g.
+
+<code class="example">  xy.tex.noindent</code>
+
+There may be a few snippets belonging to this plug-in package. These are
+examples.  Add your own.
+
+Snippet browser
+</pre><hr><pre>Under a GUI a file requester will be put up. Without GUI the filename will be
+read from the command line. You can change this behavior by setting a global
+variable in your ~/.vimrc :
+
+<code class="example"> let g:Latex_GuiSnippetBrowser = 'commandline'</code>
+
+The default value is 'gui'.
+
+
+1.6.2  Code Templates                            <b class="vimtag"><a name="latexsupport-templates-menu">latexsupport-templates-menu</a></b>
+</pre><hr><pre>Nearly all menu items will insert code snippets or comments. All of these are
+contained within template files and can be changed by the users to meet their
+requirements (see|<a href="latexsupport.html#latexsupport-templates">latexsupport-templates</a>|on how to use the template system).
+
+The menu item 'edit local templates' opens the main template file in the
+user's home directory. This is usually the file
+'~/.vim/latex-support/templates/Templates'.  There may be dependent files
+loaded from the main file.  Now change whatever file you want, save it, and
+click on the menu item 'reread templates' to read in the file(s) and to
+rebuild the internal representation of the templates.
+
+Template browser
+</pre><hr><pre>Under a GUI a file requester will be put up. Without GUI the filename will be
+read from the command line. You can change this behavior by setting a global
+variable in your ~/.vimrc :
+
+<code class="example"> let g:Latex_GuiTemplateBrowser = 'explorer'</code>
+
+The default value is 'gui'. 'explorer' will start the file explorer
+(see help|<a href="pi_netrw.html#:Explore">:Explore</a>|). To use the command line assign 'commandline'.
+
+Template Style
+</pre><hr><pre>The template system supports different template styles. If there are more than
+one style the menu item 'choose style' let you choose a style on the fly.
+
+Template Jump Tags
+</pre><hr><pre>You can use different jump tags in a template, e.g. <code class="special">{-tagname-}</code>. The allowed
+tags can be chosen from this menu.(see|<a href="latexsupport.html#latexsupport-templates-jumptags">latexsupport-templates-jumptags</a>|)
+
+</pre><hr><pre>1.7 MENU 'Wizard'                                        <b class="vimtag"><a name="latexsupport-wizard">latexsupport-wizard</a></b>
+</pre><hr><pre>
+This is the section containing less frequently statements which have usually
+several lines, e.g. insertion of listings, tables, or figures.
+The menu item 'ligatures' lets you find double and triple ligatures and split
+them if appropriate.
+
+</pre><hr><pre>1.8 MENU 'Run'                                              <b class="vimtag"><a name="latexsupport-run">latexsupport-run</a></b>
+</pre><hr><pre>
+The menu 'Run' let you run the predefined typesetter, call a viewer, run
+makeindex, run bibtex, and run a converter.
+
+1.8.1  RUNNING A TYPESETTER                      <b class="vimtag"><a name="latexsupport-run-typesetter">latexsupport-run-typesetter</a></b>
+</pre><hr><pre>The default typesetter is 'pdflatex'. This can be changed by assigning one of
+the values 'tex', 'latex', and 'pfttex' to the variable g:Latex_Typesetter in
+your  .vimrc file:
+
+<code class="example"> let g:Latex_Typesetter = 'latex'</code>
+
+The predefined call of the typesetters are
+
+<code class="example"> latex    -src-specials -file-line-error -interaction=nonstopmode</code>
+<code class="example"> tex      -src-specials -file-line-error -interaction=nonstopmode</code>
+<code class="example"> pdflatex -src-specials -file-line-error -interaction=nonstopmode</code>
+<code class="example"> pdftex   -src-specials -file-line-error -interaction=nonstopmode</code>
+
+This can be changed in the .vimrc file using one of the variables
+
+<code class="example"> let g:Latex_Latex       = 'latex    ... '</code>
+<code class="example"> let g:Latex_Tex         = 'tex      ... '</code>
+<code class="example"> let g:Latex_Pdflatex    = 'pdflatex ... '</code>
+<code class="example"> let g:Latex_Pdftex      = 'pdftex   ... '</code>
+
+The errors a typesetter run will produce will be shown in a quickfix buffer.
+For convenience consider to use maps like
+
+<code class="example">  noremap  <code class="special">&lt;silent&gt;</code> <code class="special">&lt;F5&gt;</code>    :copen<code class="special">&lt;CR&gt;</code></code>
+<code class="example">  noremap  <code class="special">&lt;silent&gt;</code> <code class="special">&lt;F6&gt;</code>    :cclose<code class="special">&lt;CR&gt;</code></code>
+<code class="example">  noremap  <code class="special">&lt;silent&gt;</code> <code class="special">&lt;F7&gt;</code>    :cp<code class="special">&lt;CR&gt;</code></code>
+<code class="example">  noremap  <code class="special">&lt;silent&gt;</code> <code class="special">&lt;F8&gt;</code>    :cn<code class="special">&lt;CR&gt;</code></code>
+
+in your .vimrc file to jump to the error locations (F7,F8) and to open and
+close the error window (F5,F6). This makes navigation a lot easier (see also
+file 'customization.vimrc', |<a href="latexsupport.html#latexsupport-custom-files">latexsupport-custom-files</a>|).  The error list and
+the error locations in your source buffer will be synchronized.
+
+</pre><hr><pre>1.9 MENU 'Tool Box'                                     <b class="vimtag"><a name="latexsupport-toolbox">latexsupport-toolbox</a></b>
+</pre><hr><pre>
+Tools which can be used by several plugins are located in the Tool Box.
+Examples are tools for make(1) or doxygen.  The Tool Box has its own
+documentation:|<a href="toolbox.html#toolbox">toolbox</a>|.
+To switch the Tool Box off add the following line to the file .vimrc
+
+<code class="example">  let g:Latex_UseToolbox     = 'no'</code>
+
+1.9.1 Make                                         <b class="vimtag"><a name="latexsupport-toolbox-make">latexsupport-toolbox-make</a></b>
+</pre><hr><pre>The tool box for make provides a small set hotkeys, menu items, and ex
+commands for controlling make. Please see|<a href="toolboxmake.html#toolbox-make">toolbox-make</a>|.
+To switch the make tool box off add the following line to the file .vimrc
+
+<code class="example">  let g:Latex_UseTool_make  = 'no'</code>
+
+The hotkeys for the make tool are defined in the file ~/.vim/ftplugin/tex.vim .
+
+</pre><hr><pre>1.10 MENU 'Help'                                           <b class="vimtag"><a name="latexsupport-help">latexsupport-help</a></b>
+</pre><hr><pre>
+This submenu offers convenient access to various documentations.
+
+The entry 'texdoc' starts texdoc for the word (package, command) under the
+cursor. If there is no word under the cursor, you will be prompted for the
+name of a package.
+
+The entry 'english' opens an online dictionary for the word under the cursor.
+
+</pre><hr><pre>
+Under Windows, the browser for opening the online documentation has to be
+configured. To set the executable, the template library has to be modified.
+In case of a local installation (the default), choose:
+  LaTeX -&gt; Snippets -&gt; edit local templates
+and for a global installation:
+  LaTeX -&gt; Snippets -&gt; edit global templates
+Open the main template file 'Templates' and uncomment the line
+<code class="example"> &sect;SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )</code>
+by removing the leading '&sect;'
+<code class="example"> SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )</code>
+Then set the right executable. Mind the double quotes which escape the name of
+the executable.
+Finally, reread the template library using:
+  LaTeX -&gt; Snippets -&gt; reread templates
+
+</pre><hr><pre>2.  USAGE WITHOUT GUI  (Vim)                           <b class="vimtag"><a name="latexsupport-mappings">latexsupport-mappings</a></b>
+</pre><hr><pre>
+The frequently used constructs can be inserted with key mappings.  These
+mappings are also described in the document latex-hotkeys.pdf (reference
+card).
+
+All mappings  are filetype specific: they are only defined for buffers with
+filetype 'tex' to minimize conflicts with mappings from other plug-ins.
+
+Some mappings can be used with range (of lines). In normal mode
+
+<code class="example">  \cl</code>
+
+appends a end-of-line comment to the current line,  whereas
+
+<code class="example">  4\cl</code>
+
+appends end-of-line comments to the 4 lines starting with the current line.
+
+Legend:  (i) insert mode, (n) normal mode, (v) visual mode
+         [n] range
+
+  -----------------------------------------------------------------
+  Help
+  -----------------------------------------------------------------
+     ´he        open an English dictionary for  (ni)
+                the word under the cursor
+     ´ht        start texdoc                    (ni)
+     ´hp        displays plugin help            (ni)
+  -----------------------------------------------------------------
+  Comments
+  -----------------------------------------------------------------
+  [n]´cl        end-of-line comment             (niv)
+  [n]´cj        adjust end-of-line comments     (niv)
+     ´cs        set end-of-line comment col.    (n)
+  [n]´cc        toggle comment                  (niv)
+     ´cfr1      frame comment, type 1           (ni)
+     ´cfr2      frame comment, type 2           (ni)
+     ´cfr3      frame comment, type 3           (ni)
+     ´ch        file prolog                     (ni)
+     ´cm        plug-in macros                  (ni)
+     ´cd        date                            (ni)
+     ´ct        date &amp; time                     (ni)
+  -----------------------------------------------------------------
+  Document
+  -----------------------------------------------------------------
+     ´dc        document class                  (ni)
+     ´di        indices                         (ni)
+     ´dti       title                           (ni)
+     ´dbi       bibliography                    (ni)
+     ´dac       addcontentsline                 (ni)
+  -----------------------------------------------------------------
+  Text
+  -----------------------------------------------------------------
+     ´e         environment                     (niv)
+     ´ts        section                         (ni)
+     ´to        organization                    (ni)
+     ´tld       list environment, description   (ni)
+     ´tle       list environment, enumerate     (ni)
+     ´tli       list environment, itemize       (ni)
+     ´tll       list environment, list          (ni)
+     ´tlit      list environment, item          (ni)
+     ´tlil      list environment, item+labels   (ni)
+     ´tf        font style                      (niv)
+     ´tfs       font size                       (niv)
+     ´tq        quotes, single                  (niv)
+     ´tqq       quotes, double                  (niv)
+     ´tgq       quotes, single, German          (niv)
+     ´tgqq      quotes, double, German          (niv)
+     ´tfq       quotes, single, French          (niv)
+     ´tfqq      quotes, double, French          (niv)
+     ´tsp       spacing                         (ni)
+     ´tsh       hspace                          (ni)
+     ´tsv       vspace                          (ni)
+     ´ta        line alignment + spacing        (niv)
+     ´ttc       textcomp characters             (ni)
+     ´tbi       bibitem                         (ni)
+     ´tci       cite                            (ni)
+     ´tfo       foot<code class="note">note</code>                        (ni)
+     ´tin       index                           (ni)
+     ´tla       label                           (ni)
+     ´tma       marginpar                       (ni)
+     ´tco       newcommand                      (ni)
+     ´tnc       nocite                          (ni)
+     ´tpa       pageref                         (ni)
+     ´tre       ref                             (ni)
+     ´tur       url                             (niv)
+  -----------------------------------------------------------------
+  Snippets
+  -----------------------------------------------------------------
+     ´nr       read code snippet                (ni)
+     ´nv       view code snippet                (ni)
+     ´nw       write code snippet               (niv)
+     ´ne       edit code snippet                (ni)
+     ´ntl      edit local templates             (ni)
+     ´ntr      reread templates                 (ni)
+     ´nts      choose style                     (ni)
+  -----------------------------------------------------------------
+  Math
+  -----------------------------------------------------------------
+     ´msp      spaces                           (ni)
+     ´mac      accents                          (ni)
+     ´mfs      font styles                      (ni)
+     ´md       delimiter                        (ni)
+     ´mf       functions                        (ni)
+     ´mgl      lowercase  greek                 (ni)
+     ´mgu      uppercase greek                  (ni)
+     ´mo       operators                        (ni)
+     ´mr       relations                        (ni)
+     ´mar      arrows                           (ni)
+     ´me       equation+label                   (niv)
+     ´mea      eqnarray+label                   (niv)
+     ´mm       matrix                           (ni)
+     ´mch      choose                           (niv)
+     ´mddt     ddot                             (niv)
+     ´mdt      dot                              (niv)
+     ´mfr      frac                             (niv)
+     ´mnr      nth root                         (niv)
+     ´mpr      prod                             (niv)
+     ´msq      sqrt                             (niv)
+     ´msu      sum                              (niv)
+     ´mve      vec                              (niv)
+     ´mon      operatorname                     (niv)
+  -----------------------------------------------------------------
+  Wizard
+  -----------------------------------------------------------------
+     ´wll       lstlisting                      (niv)
+     ´wlil      lstinputlisting                 (ni)
+     ´nls       lstset                          (ni)
+     ´wtt       table                           (niv)
+     ´wttf      table, floating                 (niv)
+     ´wtg       tabbing                         (ni)
+     ´wtr       tabular                         (ni)
+     ´wf        figure                          (ni)
+     ´wff       floatingfigure                  (ni)
+     ´wwf       wrapfigure                      (ni)
+     ´wbf       fbox                            (niv)
+     ´wbfr      framebox                        (niv)
+     ´wbm       mbox                            (niv)
+     ´wbmb      makebox                         (niv)
+     ´wmp       minipage                        (niv)
+     ´wbp       parbox                          (niv)
+  -----------------------------------------------------------------
+  Run
+  -----------------------------------------------------------------
+     ´rr        save + run typesetter           (ni)
+     ´rla       save + run lacheck              (ni)
+     ´rdvi      view DVI                        (ni)
+     ´rpdf      view PDF                        (ni)
+     ´rps       view PS                         (ni)
+     ´rmi       run makeindex                   (ni)
+     ´rbi       run bibtex                      (ni)
+     ´rc        run a converter                 (ni)
+     ´rse       show plugin settings            (ni)
+
+
+  -----------------------------------------------------------------
+  Tool Box
+  -----------------------------------------------------------------
+     ´rm        run make                        (ni)
+     ´rmc       run make clean                  (ni)
+     ´rma       command line arguments for make (ni)
+     ´rcm       choose make file                (ni)
+
+
+</pre><hr><pre>3.  FUNCTION KEYS                                 <b class="vimtag"><a name="latexsupport-function-keys">latexsupport-function-keys</a></b>
+</pre><hr><pre>
+The following function keys are defined in normal, visual and insert mode:
+
+    Ctrl-F9   run typesetter (see )
+     Alt-F9   run viewer     (see )
+
+
+</pre><hr><pre>4.  CUSTOMIZATION                                 <b class="vimtag"><a name="latexsupport-customization">latexsupport-customization</a></b>
+</pre><hr><pre>
+</pre><hr><pre>4.1  FILES                                         <b class="vimtag"><a name="latexsupport-custom-files">latexsupport-custom-files</a></b>
+</pre><hr><pre>
+README.latexsupport               The starting point.
+
+autoload/mmtemplates/core         The template system plug-in.
+
+doc/latexsupport.txt              The latex-support help file for the local help.
+doc/templatesupport.txt           The template system help file for the local help.
+
+plugin/latex-support.vim          The LaTeX plug-in for Vim/gVim.
+
+latex-support/codesnippets/       The code snippets directory.
+
+latex-support/templates/*         The template files.
+
+
+latex-support/wordlists/latex-keywords.list  A file used as dictionary for
+                                  automatic word completion.  This file is referenced
+                                  in the file customization.vimrc.
+
+---------------   -------------------------------------------------------------
+---------------   The following files and extensions are for convenience only.
+                  latex-support.vim will work without them.
+                  -------------------------------------------------------------
+
+latex-support/rc/vim.tex                Additional filetype plug-in.
+latex-support/rc/customization.ctags    Additional settings I use in ~.ctags.
+latex-support/rc/customization.gvimrc   Additional settings I use in ~.gvimrc.
+latex-support/rc/customization.vimrc    Additional settings I use in ~.vimrc:
+                                        incremental search, tabstop, hot keys, font,
+                                        use of dictionaries, ... The file is commented.
+                                        Append it to your .vimrc if you like.
+latex-support/doc/latex-hotkeys.pdf     Reference card for the key mappings.
+                                        The mappings can also be used with the non-GUI Vim,
+                                        where the menus are not available.
+latex-support/doc/ChangeLog             The change log.
+
+</pre><hr><pre>4.2  GLOBAL VARIABLES                          <b class="vimtag"><a name="latexsupport-custom-variables">latexsupport-custom-variables</a></b>
+</pre><hr><pre>
+Several global variables are checked after the plug-in has been loaded to customize it:
+
+</pre><hr><pre> global variable                default value
+</pre><hr><pre>
+ -- Linux/Unix ---------------------------------------------------------------
+ g:Latex_Latex       'latex    -src-specials -file-line-error -interaction=nonstopmode'
+ g:Latex_Tex         'tex      -src-specials -file-line-error -interaction=nonstopmode'
+ g:Latex_Pdflatex    'pdflatex -src-specials -file-line-error -interaction=nonstopmode'
+ g:Latex_Pdftex      'pdftex   -src-specials -file-line-error -interaction=nonstopmode'
+ g:Latex_Bibtex      "bibtex"
+
+ g:Latex_DviViewer   "xdvi"
+ g:Latex_PsViewer    "gv"
+ g:Latex_PdfViewer   "acroread"
+
+ g:Latex_DviPdf      'dvipdft'
+ g:Latex_DviPng      'dvipng'
+ g:Latex_DviPs       'dvips'
+ g:Latex_PdfPng      'convert'
+ g:Latex_PsPdf       'ps2pdf'
+
+ -- MS Windows ---------------------------------------------------------------
+ g:Latex_Latex       'latex.exe    -src-specials -file-line-error -interaction=nonstopmode'
+ g:Latex_Tex         'tex.exe      -src-specials -file-line-error -interaction=nonstopmode'
+ g:Latex_Pdflatex    'pdflatex.exe -src-specials -file-line-error -interaction=nonstopmode'
+ g:Latex_Bibtex      'bibtex.exe'
+
+ g:Latex_Pdftex      'pdftex.exe   -src-specials -file-line-error -interaction=nonstopmode'
+ g:Latex_DviViewer   'dviout.exe'
+ g:Latex_PsViewer    ''
+ g:Latex_PdfViewer   ''
+
+ g:Latex_DviPdf      'dvipdfm.exe'
+ g:Latex_DviPng      'dvipng.exe'
+ g:Latex_DviPs       'dvips.exe'
+ g:Latex_PdfPng      ''
+ g:Latex_PsPdf       'ps2pdf.exe'
+
+ -- all ----------------------------------------------------------------------
+ g:Latex_CodeSnippets           root_dir.'latex-support/codesnippets/'
+ g:Latex_CreateMenusDelayed     'yes'
+ g:Latex_Dictionary_File        ''
+ g:Latex_GlobalTemplateFile     root_dir.'latex-support/templates/Templates'
+ g:Latex_GuiSnippetBrowser      'gui'
+ g:Latex_InsertFileProlog       'yes'
+ g:Latex_LineEndCommColDefault  49
+ g:Latex_LoadMenus              'yes'
+ g:Latex_LocalTemplateFile      $HOME.'/.vim/latex-support/templates/Templates'
+ g:Latex_MapLeader              '´'
+ g:Latex_Printheader            "%&lt;%f%h%m%&lt;  %=%<code class="special">{strftime('%x %X')}</code>     Page %N"
+ g:Latex_RootMenu               'LaTe&amp;X'
+ g:Latex_TexFlavor              'latex'
+ g:Latex_Typesetter             'pdflatex'
+
+The variable root_dir will automatically be set to one of the following values:
+  $HOME.'/.vim/'        for Linux/Unix
+  $VIM.'/vimfiles/'     for MS-Windows
+
+</pre><hr><pre>  DESCRIPTION
+</pre><hr><pre> <b class="vimtag"><a name="g:Latex_Latex">g:Latex_Latex</a></b>
+The command line used to call the LaTeX typesetter.
+
+ <b class="vimtag"><a name="g:Latex_Tex">g:Latex_Tex</a></b>
+The command line used to call the TeX typesetter.
+
+ <b class="vimtag"><a name="g:Latex_Pdflatex">g:Latex_Pdflatex</a></b>
+The command line used to call the pdfLaTeX typesetter.
+
+ <b class="vimtag"><a name="g:Latex_Pdftex">g:Latex_Pdftex</a></b>
+The command line used to call the pdfTeXtypesetter.
+
+ <b class="vimtag"><a name="g:Latex_Bibtex">g:Latex_Bibtex</a></b>
+The command line used to call bibtex.
+
+ <b class="vimtag"><a name="g:Latex_DviViewer">g:Latex_DviViewer</a></b>
+The command line used to call a DVi viewer.
+
+ <b class="vimtag"><a name="g:Latex_PsViewer">g:Latex_PsViewer</a></b>
+The command line used to call a PS viewer.
+
+ <b class="vimtag"><a name="g:Latex_PdfViewer">g:Latex_PdfViewer</a></b>
+The command line used to call a PDF viewer.
+
+ <b class="vimtag"><a name="g:Latex_DviPdf">g:Latex_DviPdf</a></b>
+The command line used to call a DVI to PDF converter.
+
+ <b class="vimtag"><a name="g:Latex_DviPng">g:Latex_DviPng</a></b>
+The command line used to call a DVI to Png converter.
+
+ <b class="vimtag"><a name="g:Latex_DviPs">g:Latex_DviPs</a></b>
+The command line used to call a DVI to PS converter.
+
+ <b class="vimtag"><a name="g:Latex_PdfPng">g:Latex_PdfPng</a></b>
+The command line used to call a PDF to Png converter.
+
+ <b class="vimtag"><a name="g:Latex_PsPdf">g:Latex_PsPdf</a></b>
+The command line used to call a PS to PDF converter.
+
+ <b class="vimtag"><a name="g:Latex_CodeSnippets">g:Latex_CodeSnippets</a></b>
+The name of the (non-standard) code snippet directory (see below).
+
+ <b class="vimtag"><a name="g:Latex_CreateMenusDelayed">g:Latex_CreateMenusDelayed</a></b>
+Delaying the initialization until the first TeX/LaTeX file is opened.
+
+ <b class="vimtag"><a name="g:Latex_Dictionary_File">g:Latex_Dictionary_File</a></b>
+Path and filename of the LaTeX word list used for dictionary completion.
+
+ <b class="vimtag"><a name="g:Latex_GlobalTemplateFile">g:Latex_GlobalTemplateFile</a></b>
+Sets the global template file, path+name  (see|<a href="latexsupport.html#latexsupport-templates">latexsupport-templates</a>|).
+
+ <b class="vimtag"><a name="g:Latex_GuiSnippetBrowser">g:Latex_GuiSnippetBrowser</a></b>
+Code snippet browser: 'gui', 'commandline'.
+
+ <b class="vimtag"><a name="g:Latex_InsertFileProlog">g:Latex_InsertFileProlog</a></b>
+Insert file description comment in a new file ('yes', 'no').
+
+ <b class="vimtag"><a name="g:Latex_LineEndCommColDefault">g:Latex_LineEndCommColDefault</a></b>
+Default starting column for line-end comments.
+
+ <b class="vimtag"><a name="g:Latex_LoadMenus">g:Latex_LoadMenus</a></b>
+Load menus and mappings ("yes", "no") at startup.
+
+ <b class="vimtag"><a name="g:Latex_LocalTemplateFile">g:Latex_LocalTemplateFile</a></b>
+Sets the local template file, path+name  (see|<a href="latexsupport.html#latexsupport-templates">latexsupport-templates</a>|).
+
+ <b class="vimtag"><a name="g:Latex_MapLeader">g:Latex_MapLeader</a></b>
+Map leader for hotkeys (|<a href="latexsupport.html#latexsupport-mappings">latexsupport-mappings</a>|).
+
+The mapleader can also be used in the ftplugin, by calling the functions
+<b class="vimtag"><a name="Latex_SetMapLeader()">Latex_SetMapLeader()</a></b> and <b class="vimtag"><a name="Latex_ResetMapLeader()">Latex_ResetMapLeader()</a></b> . The maps created between
+the two calls will use |<a href="latexsupport.html#g:Latex_MapLeader">g:Latex_MapLeader</a>| as the |<code class="badlink">&lt;LocalLeader&gt;</code>|:
+
+<code class="example">  call Latex_SetMapLeader ()</code>
+<code class="example"></code>
+<code class="example">  map  <code class="special">&lt;buffer&gt;</code>  <code class="special">&lt;LocalLeader&gt;</code>eg  :echo "Example Map :)"<code class="special">&lt;CR&gt;</code></code>
+<code class="example"></code>
+<code class="example">  call Latex_ResetMapLeader ()</code>
+
+
+ <b class="vimtag"><a name="g:Latex_Printheader">g:Latex_Printheader</a></b>
+Hardcopy header format.
+
+ <b class="vimtag"><a name="g:Latex_RootMenu">g:Latex_RootMenu</a></b>
+The name of the plug-in root menu.
+
+ <b class="vimtag"><a name="g:Latex_TexFlavor">g:Latex_TexFlavor</a></b>
+The filetype when starting with an empty file ('latex', 'plaintex')
+
+ <b class="vimtag"><a name="g:Latex_Typesetter">g:Latex_Typesetter</a></b>
+The typesetter used by the run command ('rr', Ctrl-F9, or menu item):
+'pdflatex', 'pdftex', 'latex', or 'tex'.
+
+</pre><hr><pre>4.3  THE ROOT MENU                                  <b class="vimtag"><a name="latexsupport-custom-root">latexsupport-custom-root</a></b>
+</pre><hr><pre>
+The root menu is not visible by default.  The root menu 'LaTeX' will appear
+after the first file with extension 'tex' has been opened.
+When the root menu is visible all templates have been loaded and the internal
+data structures are built.  On a slow computer this may cause a noticeable
+delay when starting the editor.  Therefor loading the templates is delayed to
+the point where the first TeX/LaTeX file will be loaded.
+To load the menu anyway when the editor starts add the following line to
+~/.vimrc :
+
+<code class="example">  let g:Latex_CreateMenusDelayed = 'no'</code>
+
+The variable g:Latex_RootMenu, if set in .vimrc or in .gvimrc, gives the name of
+the single gVim root menu item in which the LaTeX submenus are contained. The
+default is
+
+<code class="example">                  'LaTe&amp;X'</code>
+
+If you want to set the plug-in root menu as a submenu into another menu, e.g.
+your own with the name 'Plugin', this is done by the following line in
+'.vimrc'
+
+<code class="example">  let g:Latex_RootMenu = '&amp;Plugin.LaTe&amp;X'</code>
+
+The appearance of the root menu item can also be controlled by the global
+variable g:Latex_LoadMenus. The line
+
+<code class="example">  let g:Latex_LoadMenus    = 'no'</code>
+
+prevents the root menu item from appearing when the editor starts. You can
+switch it on (and off again) from the tools menu. The default for this
+variable is 'yes'.
+
+</pre><hr><pre>4.4  System-wide installation                       <b class="vimtag"><a name="latexsupport-system-wide">latexsupport-system-wide</a></b>
+</pre><hr><pre>
+A system-wide installation (one installation for all users) is done as
+follows.
+
+As *** SUPERUSER *** :
+
+(1) Find the Vim installation directory.
+The Vim ex command ':echo $VIM' gives '/usr/local/share/vim' or something like
+that. Beyond this directory you will find the Vim installation,  e.g. in
+'/usr/local/share/vim/vim73' if Vim version 7.3 has been installed (Windows:
+'C:\Program Files\Vim').
+
+(2) Create a new subdirectory 'vimfiles', e.g. '/usr/local/share/vim/vimfiles'
+(Windows: 'C:\Program Files\Vim\vimfiles').
+
+(3) Install LaTeX Support
+Copy the archive latex-support.zip to this new directory and unpack it:
+
+<code class="example">  unzip latex-support.zip</code>
+
+(4) Generate the help tags:
+
+<code class="example">  :helptags $VIM/vimfiles/doc</code>
+
+SPECIAL CASES. Some Linux distributions use non-standard names for Vim
+directories. SUSE has a directory '/usr/share/vim/site' to put plug-ins in.
+These directories will not be found automatically.  After installing the
+plug-in below '/usr/share/vim/site' the use of the templates will be enabled by
+the following line in '~/.vimrc':
+
+<code class="example">  let g:Latex_GlobalTemplateFile = '/usr/share/vim/site/latex-support/templates/Templates'</code>
+
+
+As *** USER *** :
+
+This plug-in will try to create your private template directory:
+
+  ~/.vim/latex-support/templates
+
+containing a minimal personal main template file 'Templates'.  You should set
+some macros in this file with your personal information in order to obtain
+personalized comments,  e.g. something like this:
+
+<code class="example"> SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
+<code class="example"> SetMacro( 'AUTHORREF',   'fgm' )</code>
+<code class="example"> SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )</code>
+<code class="example"> SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )</code>
+<code class="example"> SetMacro( 'COPYRIGHT',   'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
+
+You can also have local templates which override the global ones. To see a
+messages in this case set a global variable in '~/.vimrc' (Windows: '~\_vimrc'):
+
+  let g:Templates_MapInUseWarn = 0
+
+The default is '1'.
+
+Create your private snippet directory:
+
+  mkdir --parents  ~/.vim/latex-support/codesnippets
+
+You may want to copy the snippets comming with this plug-in (in
+$VIM/vimfiles/latex-support/codesnippets) into the new directory or to set a
+link to the global directory.
+
+</pre><hr><pre>5.  TEMPLATE FILES AND TAGS                           <b class="vimtag"><a name="latexsupport-templates">latexsupport-templates</a></b>
+</pre><hr><pre>
+</pre><hr><pre>5.1  TEMPLATE FILES                             <b class="vimtag"><a name="latexsupport-templates-files">latexsupport-templates-files</a></b>
+</pre><hr><pre>
+Nearly all menu items insert code snippets or comments. All of these are
+contained within template files and can be changed by the user to meet their
+requirements. The menu shortcuts (e.g. 'c' for the Comments menu) and the
+menu item hotkeys (e.g. '´ct' insert date and time) are also defined in the
+templates.
+The template engine comes as a separate plug-in contributed by Wolfgang Mehner.
+This section is a short introduction to this template system. Please see
+|<a href="templatesupport.html#templatesupport.txt">templatesupport</a>| for more information.
+
+The master template file is '$HOME/.vim/latex-support/templates/Templates' for
+a user installation and  '$VIM/vimfiles/latex-support/templates/Templates' for
+a system-wide installation (see |<a href="latexsupport.html#latexsupport-system-wide">latexsupport-system-wide</a>|).
+
+The master template file starts with a macro section followed by templates for
+single menu items or better by including other template files grouping the
+templates according to the menu structure of this plug-in. The master file
+usually looks like this (my settings as an example):
+
+Example:
+
+<code class="example"> &sect; ==========================================================</code>
+<code class="example"> &sect;  User Macros</code>
+<code class="example"> &sect; ==========================================================</code>
+<code class="example"></code>
+<code class="example"> SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
+<code class="example"> SetMacro( 'AUTHORREF',   'fgm' )</code>
+<code class="example"> SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )</code>
+<code class="example"> SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )</code>
+<code class="example"> SetMacro( 'COPYRIGHT',   'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
+<code class="example"></code>
+<code class="example"> &sect; =============================================================</code>
+<code class="example"> &sect;  File Includes</code>
+<code class="example"> &sect; =============================================================</code>
+<code class="example"></code>
+<code class="example"> MenuShortcut( 'Comments', 'c' )</code>
+<code class="example"> MenuShortcut( 'Text',     't' )</code>
+<code class="example"> MenuShortcut( 'Math',     'm' )</code>
+<code class="example"> MenuShortcut( 'Document', 'd' )</code>
+<code class="example"> MenuShortcut( 'BibTeX',   'b' )</code>
+<code class="example"> MenuShortcut( 'Wizard',   'w' )</code>
+<code class="example"> MenuShortcut( 'Help',     'h' )</code>
+<code class="example"></code>
+<code class="example"> IncludeFile( 'comments.templates' )</code>
+<code class="example"> IncludeFile( 'text.templates' )</code>
+<code class="example"> IncludeFile( 'math.templates' )</code>
+<code class="example"> IncludeFile( 'document.templates' )</code>
+<code class="example"> IncludeFile( 'bibtex.templates' )</code>
+<code class="example"> IncludeFile( 'wizard.templates' )</code>
+
+Lines starting with a section sign (&sect;) are comments. The section starting with
+
+<code class="example">  SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
+
+assigns values to predefined tags (macros).  Arbitrary user-defined macros are
+possible. The macro name must follows the rules for a C language identifier:
+first character letter  or underscore; case matters; digits are allowed
+beginning with the second character.
+
+The statement
+
+<code class="example">  IncludeFile( 'comments.templates' )</code>
+
+includes the templates from the file 'comments.templates' (in the same
+directory). An absolute path would also be possible.  The statement
+
+<code class="example">  MenuShortcut( 'Comments',      'c' )</code>
+
+sets 'c' as the shortcut for the Comments menu.
+
+</pre><hr><pre>5.2  MACROS                                    <b class="vimtag"><a name="latexsupport-templates-macros">latexsupport-templates-macros</a></b>
+</pre><hr><pre>
+The following macro names are predefined. The first group is used to
+personalize templates.
+
+<code class="example"> |<code class="badlink">BASENAME</code>|        filename without path and suffix</code>
+<code class="example"> |<code class="badlink">DATE</code>|            the preferred date representation for the current locale</code>
+<code class="example">                    without the time</code>
+<code class="example"> |<code class="badlink">FILENAME</code>|        filename without path</code>
+<code class="example"> |<code class="badlink">PATH</code>|            path without filename</code>
+<code class="example"> |<code class="badlink">SUFFIX</code>|          filename suffix</code>
+<code class="example"> |<code class="badlink">TIME</code>|            the preferred time representation for the current locale</code>
+<code class="example">                    without the date and the time zone or name or abbreviation</code>
+<code class="example"> |<code class="badlink">YEAR</code>|            the year as a decimal number including the century</code>
+
+ ----------------------------------------------------------------------------
+ PREDEFINED TAGS USED IN TEMPLATES
+ ----------------------------------------------------------------------------
+ <code class="special">&lt;CURSOR&gt;</code>           The cursor position after insertion of a template.
+ <code class="special">&lt;+text+&gt;</code>,<code class="special">&lt;-text-&gt;</code>  See |<a href="latexsupport.html#latexsupport-templates-jumptags">latexsupport-templates-jumptags</a>|.
+ <code class="special">{+text+}</code>,<code class="special">{-text-}</code>
+
+ <code class="special">&lt;SPLIT&gt;</code>            The split point when inserting in visual mode
+                    (see|<a href="latexsupport.html#latexsupport-templates">latexsupport-templates</a>|)
+
+A dependent template file can start with its own command section. There is no
+need to have all user defined macros in the master file.
+
+
+</pre><hr><pre>5.2.1   USER DEFINED FORMATS FOR DATE AND TIME   <b class="vimtag"><a name="latexsupport-templates-date">latexsupport-templates-date</a></b>
+</pre><hr><pre>The format for <b class="vimtag"><a name="|DATE|">|DATE|</a></b> ,<b class="vimtag"><a name="|TIME|">|TIME|</a></b> , and<b class="vimtag"><a name="|YEAR|">|YEAR|</a></b> can be set by the user. The
+defaults are
+Example:
+
+<code class="example">  |<code class="badlink">DATE</code>|        '%x'</code>
+<code class="example">  |<code class="badlink">TIME</code>|        '%X'</code>
+<code class="example">  |<code class="badlink">YEAR</code>|        '%Y'</code>
+
+See the manual page of the C function strftime() for the format.  The accepted
+format depends on your system, thus this is not portable!  The maximum length
+of the result is 80 characters.
+
+User defined formats can be set using the following function calls in the
+master template file is '$HOME/.vim/latex-support/templates/Templates',  e.g.
+
+<code class="example">  SetFormat( 'DATE', '%D'      )</code>
+<code class="example">  SetFormat( 'TIME', '%H:%M'   )</code>
+<code class="example">  SetFormat( 'YEAR', 'year %Y' )</code>
+<code class="example"></code>
+</pre><hr><pre>5.3  TEMPLATES                                  <b class="vimtag"><a name="latexsupport-templates-names">latexsupport-templates-names</a></b>
+</pre><hr><pre>
+5.3.1    Template definition                <b class="vimtag"><a name="latexsupport-templates-definition">latexsupport-templates-definition</a></b>
+The template behind a menu item is identified by a given name. The first part
+of the name identifies the menu name, the second part identifies the item.
+A template definition starts with a template header with the following syntax:
+
+  == menu_name.template_name == options ==
+
+The options are described here: |<a href="templatesupport.html#template-support-options">template-support-options</a>|.
+
+5.3.2  The jump tags <code class="special">&lt;+text+&gt;</code> etc.           <b class="vimtag"><a name="latexsupport-templates-jumptags">latexsupport-templates-jumptags</a></b>
+
+There are four jump tag types which can be used as jump targets in templates:
+
+ <code class="special">&lt;+text+&gt;</code>   Can be jumped to by hitting Ctrl-j.
+ <code class="special">{+text+}</code>   Same as <code class="special">&lt;+text+&gt;</code>. Used in cases where indentation gives unwanted
+            results with the first one.
+
+ <code class="special">&lt;-text-&gt;</code>   Same as the two above. Will be removed if the template is used
+ <code class="special">{-text-}</code>   in visual mode.
+
+The text inside the brackets is userdefined and can be empty. The text can be
+composed from letters (uppercase and lowercase), digits, and underscores.
+After the insertion of an template these jump targets will be highlighted.
+
+5.3.3  Command Ctrl-j                                    <b class="vimtag"><a name="latexsupport-Ctrl-j">latexsupport-Ctrl-j</a></b>
+
+Use the command Ctrl-j to jump to the next target. The target will be removed
+and the mode will switched to insertion. Ctrl-j works in normal and in insert
+mode.  The template for an if-else-statement can be written as follows:
+
+<code class="example">  == Statements.if, else == map:sie, sc:i ==</code>
+<code class="example">  if <code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">    <code class="special">&lt;SPLIT&gt;</code><code class="special">&lt;-IF_PART-&gt;</code></code>
+<code class="example">  else</code>
+<code class="example">    <code class="special">&lt;+ELSE_PART+&gt;</code></code>
+<code class="example">  endif</code>
+
+The cursor will be set as shown. When the condition is specified a Ctrl-j let
+you jump to the target <code class="special">&lt;-IF PART-&gt;</code> and deletes it.  When the block is written
+a Ctrl-j leads you to the else-part.  The target <code class="special">&lt;+ELSE_PART+&gt;</code> disappears and
+you can type on.
+
+</pre><hr><pre>6.  LATEX DICTIONARY                                 <b class="vimtag"><a name="latexsupport-dictionary">latexsupport-dictionary</a></b>
+</pre><hr><pre>
+The file  latex-keywords.list  contains words used as dictionary for automatic
+word completion.  This feature is enabled by default. The default word list is
+
+<code class="example">  $HOME/.vim/latex-support/wordlists/latex-keywords.list</code>
+
+If you want to use an additional list MyLatex.List put the following line into
+ .vimrc :
+
+<code class="example"> let g:Latex_Dictionary_File = "$HOME/.vim/latex-support/wordlists/latex-keywords.list,".</code>
+<code class="example">                           \   "$HOME/any_of_my_directories/MyLatex.List"</code>
+
+The right side is a comma separated list of files. <code class="note">Note</code> the point at the end
+of the first line (string concatenation) and the backslash in front of the
+second line (continuation line).
+You can use Vim's dictionary feature <code class="keystroke">CTRL-X</code>, <code class="keystroke">CTRL-K</code> (and <code class="keystroke">CTRL-P</code>, <code class="keystroke">CTRL-N</code>).
+
+</pre><hr><pre>7.  TROUBLESHOOTING                             <b class="vimtag"><a name="latexsupport-troubleshooting">latexsupport-troubleshooting</a></b>
+</pre><hr><pre>
+* Some menus, such as "LaTeX -&gt; Math -&gt; greek lowercase" are not displayed
+  correctly.
+  - The character encoding used inside Vim is controlled by the option
+    |<code class="badlink">'encoding'</code>| (the encoding of files can be different, see |<code class="badlink">'fileencoding'</code>|).
+    It can be set by adding this lines to your '$HOME/.vimrc':
+      :set encoding=utf-8
+    Create one if there is none, or better use customization.vimrc.
+
+</pre><hr><pre>8.  RELEASE <code class="note">NOTE</code>S                                 <b class="vimtag"><a name="latexsupport-release-notes">latexsupport-release-notes</a></b>
+</pre><hr><pre>
+See files README.latexsupport and doc/ChangeLog.
+
+</pre><hr><pre>vim:tw=78:noet:ts=2:ft=help:norl:
+</pre>
+<p><i>Generated by vim2html on Fr 22. Aug 20:59:52 CEST 2014</i></p>
+</body>
+</html>

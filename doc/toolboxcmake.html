@@ -1,0 +1,265 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>VIM: toolboxcmake</title>
+<link rel="stylesheet" href="vim-stylesheet.css" type="text/css">
+</head>
+<body>
+<h2>TOOLBOXCMAKE</h2>
+<pre>
+<b class="vimtag"><a name="toolboxcmake.txt">toolboxcmake.txt</a></b>                 CMake Tool                     July 23 2015
+
+CMake Tool                                                     <b class="vimtag"><a name="toolbox-cmake">toolbox-cmake</a></b>
+
+                            Plug-in version 0.9.2
+                        for Vim version 7.0 and above
+                 Wolfgang Mehner <code class="special">&lt;wolfgang-mehner at web.de&gt;</code>
+
+The CMake tool offers an integration of CMake's makefile generator. It also
+helps with calling the make tool in the build location, independently of the
+current working directory. It comes with command-line completion for make
+targets. CMake's help can be quickly accessed within Vim.
+
+</pre><hr><pre>0.  TABLE OF CONTENTS                                 <b class="vimtag"><a name="toolbox-cmake-contents">toolbox-cmake-contents</a></b>
+</pre><hr><pre>
+ 1.    Introduction                               |<a href="toolboxcmake.html#toolbox-cmake-intro">toolbox-cmake-intro</a>|
+ 2.    Commands                                   |<a href="toolboxcmake.html#toolbox-cmake-commands">toolbox-cmake-commands</a>|
+ 2.1    API                                       |<a href="toolboxcmake.html#toolbox-cmake-api">toolbox-cmake-api</a>|
+ 3.    Configuration                              |<a href="toolboxcmake.html#toolbox-cmake-config">toolbox-cmake-config</a>|
+ 4.    Known Issues                               |<a href="toolboxcmake.html#toolbox-cmake-issues">toolbox-cmake-issues</a>|
+
+ A.    Change Log                                 |<a href="toolboxcmake.html#toolbox-cmake-change-log">toolbox-cmake-change-log</a>|
+
+</pre><hr><pre>1.  INTRODUCTION                                         <b class="vimtag"><a name="toolbox-cmake-intro">toolbox-cmake-intro</a></b>
+</pre><hr><pre>
+After configuring the project's top-level directory with |<a href="toolboxcmake.html#:CMakeProjectDir">:CMakeProjectDir</a>|
+and setting the build location using |<a href="toolboxcmake.html#:CMakeBuildLocation">:CMakeBuildLocation</a>|, CMake can be run
+by calling the ex-command |<a href="toolboxcmake.html#:CMake">:CMake</a>|! (with a bang). Command line arguments can
+be given directly, for example:
+<code class="example">  :CMake! -DDO_TESTS=1</code>
+After that, :CMake (without a bang) can be used to execute the make tool in
+the build location:
+<code class="example">  :CMake -j3</code>
+Errors will be listed in the quick-fix buffer.
+
+The :CMake command has command-line completion for the targets of the makefile
+in the build location.
+
+Help for CMake's commands can be accessed using |<a href="toolboxcmake.html#:CMakeHelpCommand">:CMakeHelpCommand</a>|:
+<code class="example">  :CMakeHelpCommand add_library</code>
+This will open a new buffer containing the help. Calling the command without
+parameters will open a buffer showing a list of all commands:
+<code class="example">  :CMakeHelpCommand</code>
+Similar ex-commands exist for modules, policies, properties and variables, see
+below.
+
+  Command                       Short Description
+ ----------------------------------------------------------------------------
+  |<a href="toolboxcmake.html#:CMake">:CMake</a>|! [<code class="special">&lt;args&gt;</code>]              run CMake with the given arguments
+  |<a href="toolboxcmake.html#:CMake">:CMake</a>| [<code class="special">&lt;args&gt;</code>]               run make with the given arguments
+
+  |<a href="toolboxcmake.html#:CMakeProjectDir">:CMakeProjectDir</a>| [<code class="special">&lt;dir&gt;</code>]      set the project directory
+  |<a href="toolboxcmake.html#:CMakeBuildLocation">:CMakeBuildLocation</a>| [<code class="special">&lt;dir&gt;</code>]   set the build location
+
+  |<a href="toolboxcmake.html#:CMakeHelpCommand">:CMakeHelpCommand</a>| [<code class="special">&lt;topic&gt;</code>]   help for commands
+  |<a href="toolboxcmake.html#:CMakeHelpModule">:CMakeHelpModule</a>| [<code class="special">&lt;topic&gt;</code>]    help for modules
+  |<a href="toolboxcmake.html#:CMakeHelpPolicy">:CMakeHelpPolicy</a>| [<code class="special">&lt;topic&gt;</code>]    help for policies
+  |<a href="toolboxcmake.html#:CMakeHelpProperty">:CMakeHelpProperty</a>| [<code class="special">&lt;topic&gt;</code>]  help for properties
+  |<a href="toolboxcmake.html#:CMakeHelpVariable">:CMakeHelpVariable</a>| [<code class="special">&lt;topic&gt;</code>]  help for variables
+
+  |<a href="toolboxcmake.html#:CMakeHelp">:CMakeHelp</a>|                    help for the CMake tool
+  |<a href="toolboxcmake.html#:CMakeSettings">:CMakeSettings</a>|                shows the plug-in settings
+ ----------------------------------------------------------------------------
+
+Detailed explanations are given in the next section |<a href="toolboxcmake.html#toolbox-cmake-commands">toolbox-cmake-commands</a>|.
+
+</pre><hr><pre>2.  COMMANDS                                          <b class="vimtag"><a name="toolbox-cmake-commands">toolbox-cmake-commands</a></b>
+</pre><hr><pre>
+This chapter provides detailed explanations of all the commands.
+
+</pre><hr><pre>                                                                      <b class="vimtag"><a name=":CMake">:CMake</a></b>
+<code class="section">  :CMake! [<code class="special">&lt;args&gt;</code>] </code>
+
+Runs cmake with the given arguments. If no arguments are given, calls cmake
+with the directory set by |<a href="toolboxcmake.html#:CMakeProjectDir">:CMakeProjectDir</a>|.
+
+If the tool is not working properly, prints the reason.
+
+<code class="section">  :CMake [<code class="special">&lt;args&gt;</code>] </code>
+
+Runs make with the given arguments. Beforehand, the working directory is set
+to the directory configured with |<a href="toolboxcmake.html#:CMakeBuildLocation">:CMakeBuildLocation</a>|.
+
+The command has command-line completion for the targets of the makefile in the
+build location. All targets named ".../fast" can be hidden by setting
+|<a href="toolboxcmake.html#g:CMake_FilterFastTargets">g:CMake_FilterFastTargets</a>|.
+
+</pre><hr><pre>                                        <b class="vimtag"><a name=":CMakeProjectDir">:CMakeProjectDir</a></b> <b class="vimtag"><a name=":CMakeBuildLocation">:CMakeBuildLocation</a></b>
+<code class="section">  :CMakeProjectDir [<code class="special">&lt;dir&gt;</code>] </code>
+<code class="section">  :CMakeBuildLocation [<code class="special">&lt;dir&gt;</code>] </code>
+
+Sets the project directory or build location.
+
+<code class="section">  :CMakeProjectDir! </code>
+<code class="section">  :CMakeBuildLocation! </code>
+
+Echoes the current project directory or build location.
+
+</pre><hr><pre>                                        <b class="vimtag"><a name=":CMakeHelpCommand">:CMakeHelpCommand</a></b> <b class="vimtag"><a name=":CMakeHelpModule">:CMakeHelpModule</a></b>
+                                        <b class="vimtag"><a name=":CMakeHelpPolicy">:CMakeHelpPolicy</a></b>  <b class="vimtag"><a name=":CMakeHelpProperty">:CMakeHelpProperty</a></b>
+                                                          <b class="vimtag"><a name=":CMakeHelpVariable">:CMakeHelpVariable</a></b>
+<code class="section">  :CMakeHelpCommand [<code class="special">&lt;topic&gt;</code>] </code>
+<code class="section">  :CMakeHelpModule [<code class="special">&lt;topic&gt;</code>] </code>
+<code class="section">  :CMakeHelpPolicy [<code class="special">&lt;topic&gt;</code>] </code>
+<code class="section">  :CMakeHelpProperty [<code class="special">&lt;topic&gt;</code>] </code>
+<code class="section">  :CMakeHelpVariable [<code class="special">&lt;topic&gt;</code>] </code>
+
+Open a buffer containing the help for the topic in each category. If no topic
+is given, shows a list of all commands, modules, variables, ...
+
+In each of the help buffers, several maps are defined.
+
+  Map           Meaning
+ ----------------------------------------------------------------------------
+  doubleclick   jump to the topic under the cursor/back to the list
+  CTRL-]        jump to the topic under the cursor/back to the list
+  <code class="special">&lt;Enter&gt;</code>       jump to the topic under the cursor/back to the list
+  q             close the buffer
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>                                                                  <b class="vimtag"><a name=":CMakeHelp">:CMakeHelp</a></b>
+<code class="section">  :CMakeHelp </code>
+
+Opens the help for the CMake tool.
+
+</pre><hr><pre>                                                              <b class="vimtag"><a name=":CMakeSettings">:CMakeSettings</a></b>
+<code class="section">  :CMakeSettings </code>
+<code class="section">  :CMakeSettings! </code>
+
+Shows the plug-in settings. The second version is verbose.
+
+</pre><hr><pre>2.1  API                                                   <b class="vimtag"><a name="toolbox-cmake-api">toolbox-cmake-api</a></b>
+</pre><hr><pre>
+The various directories can be set via an API. This allows for setting up the
+configuration via a script.
+
+</pre><hr><pre>                                                  <b class="vimtag"><a name="mmtoolbox%23cmake%23Property()">mmtoolbox#cmake#Property()</a></b>
+The project and build directory can be set using:
+
+<code class="section">  mmtoolbox#cmake#Property ( mode, key [, value] ) </code>
+
+Parameters:
+  mode  - "echo", "get" or "set" (string)
+  key   - the name of one of the properties (string)
+  value - the new value of the property,
+          only with mode "set" (string, optional)
+Returns:
+  value - the current value of the property,
+          only with mode "get" (various)
+
+The property is one of the following:
+  "enabled"     - non-zero if the tool is enabled (integer, no "set")
+  "project-dir" - the project's top-level directory (string)
+  "build-dir"   - the build location (string)
+
+To set the directories for a project, use:
+<code class="example">  call mmtoolbox#cmake#Property ( "set",</code>
+<code class="example">      \ "project-dir", "$HOME/Projects/MyProject" )</code>
+<code class="example">  call mmtoolbox#cmake#Property ( "set",</code>
+<code class="example">      \ "build-dir", "$HOME/Projects/MyProject/build" )</code>
+
+</pre><hr><pre>3.  CONFIGURATION                                       <b class="vimtag"><a name="toolbox-cmake-config">toolbox-cmake-config</a></b>
+</pre><hr><pre>
+The tool is configured via a number of global variables, which can be set in
+the .vimrc file.
+
+  Variable                  Default       Description and further information
+ ----------------------------------------------------------------------------
+  |<a href="toolboxcmake.html#g:CMake_Executable">g:CMake_Executable</a>|        'cmake'       the CMake executable
+  |<a href="toolboxcmake.html#g:CMake_MakeTool">g:CMake_MakeTool</a>|          'make'        the make executable
+  |<a href="toolboxcmake.html#g:CMake_JumpToError">g:CMake_JumpToError</a>|       'cmake'       whether to jump to the first error
+                                            automatically
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>                                                          <b class="vimtag"><a name="g:CMake_Executable">g:CMake_Executable</a></b>
+The executable is set by g:CMake_Executable:
+<code class="example">  let g:CMake_Executable = 'cmake'</code>
+
+</pre><hr><pre>                                                            <b class="vimtag"><a name="g:CMake_MakeTool">g:CMake_MakeTool</a></b>
+The make executable is set by g:CMake_MakeTool:
+<code class="example">  let g:CMake_MakeTool = 'make'</code>
+
+</pre><hr><pre>                                                         <b class="vimtag"><a name="g:CMake_JumpToError">g:CMake_JumpToError</a></b>
+After running cmake or make, quickfix will automatically jump to the location
+of the first error, depending on the setting g:CMake_JumpToError. With
+<code class="example">  let g:CMake_JumpToError = 'both'</code>
+quickfix will jump to the first error for both make and cmake. To only jump to
+the first error automatically after running cmake, use
+<code class="example">  let g:CMake_JumpToError = 'cmake'</code>
+
+The possible settings are listed below:
+
+  Value           Jump automatically after ...
+ ----------------------------------------------------------------------------
+  'both'          cmake and make
+  'cmake'         cmake
+  'make'          make
+  'none'          none of the above
+ ----------------------------------------------------------------------------
+
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
+</pre><hr><pre>                                                   <b class="vimtag"><a name="g:CMake_FilterFastTargets">g:CMake_FilterFastTargets</a></b>
+The command-line completion for the |<a href="toolboxcmake.html#:CMake">:CMake</a>| command shows the targets in the
+makefile in the directories set via |<a href="toolboxcmake.html#:CMakeBuildLocation">:CMakeBuildLocation</a>|. The list of
+possible targets can get quite cluttered if all targets named ".../fast" are
+included. They can be filtered out by setting:
+<code class="example">  let g:CMake_FilterFastTargets = 'yes'</code>
+
+The possible settings are listed below:
+
+  Value           Effect
+ ----------------------------------------------------------------------------
+  'yes'           filter out targets named ".../fast"
+  'no'            show all targets
+ ----------------------------------------------------------------------------
+
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
+</pre><hr><pre>4.  KNOWN ISSUES                                        <b class="vimtag"><a name="toolbox-cmake-issues">toolbox-cmake-issues</a></b>
+</pre><hr><pre>
+* Some of the errors are not recognized by the quickfix mechanism.
+  - Unfortunately, CMake's automatically generated Makefiles seem to output
+    some errors which can not be recognized by Vim's standard error format
+    for C. If you come across any such errors, please send use an example and
+    we will try to extend the error format.
+
+</pre><hr><pre>A.  CHANGE LOG                                      <b class="vimtag"><a name="toolbox-cmake-change-log">toolbox-cmake-change-log</a></b>
+</pre><hr><pre>
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 0.9.2
+</pre><hr><pre>
+- Add: Command-line completion for Make targets.
+- Change: Echo a different message if the build succeeded, but warnings are
+  present.
+- Internal changes, less global functions.
+- Further internal changes.
+- Minor changes and bugfixes.
+
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 0.9.1
+</pre><hr><pre>
+- Change: The commands :CMake and :CMake! only jump to the first error
+  automatically if the setting g:CMake_JumpToError is set accordingly.
+- Change: Improved jumping in help buffers.
+- Minor changes.
+
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 0.9
+</pre><hr><pre>
+- Initial upload.
+
+</pre><hr><pre>vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
+</pre>
+<p><i>Generated by vim2html (modified) on Sa 26. Dez 15:03:11 CET 2015</i></p>
+</body>
+</html>

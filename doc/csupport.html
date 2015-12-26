@@ -1,0 +1,2023 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>VIM: csupport</title>
+<link rel="stylesheet" href="vim-stylesheet.css" type="text/css">
+</head>
+<body>
+<h2>CSUPPORT</h2>
+<pre>
+<b class="vimtag"><a name="csupport.txt">csupport.txt</a></b>                  C/C++ Support                  March 22 2014
+
+C/C++ Support                                           <b class="vimtag"><a name="c-support">c-support</a></b> <b class="vimtag"><a name="csupport">csupport</a></b>
+                             Plugin version 6.1.1
+                        for Vim version 7.0 and above
+                       Fritz Mehner  <code class="special">&lt;mehner@fh-swf.de&gt;</code>
+
+C/C++-IDE for Vim/gVim. It is written to considerably speed up writing code in
+a consistent style.  This is done by inserting complete statements,idioms,
+code snippets, templates, and comments.  Syntax checking, compiling,  running
+a program, running a code checker or a reformatter can be done with a
+keystroke.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++  The plug-in version 6.0+ is a rewriting of version 5.19+.               ++
+++  The versions 5.0+ are based on a new and more powerful template system  ++
+++  (please see  |<a href="templatesupport.html#template-support">template-support</a>| for more information).                    ++
+++  The template syntax has changed!                                        ++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+ 1.    Usage                                    |<a href="csupport.html#csupport-usage-gvim">csupport-usage-gvim</a>|
+ 1.1    Menu 'Comments'                         |<a href="csupport.html#csupport-comm">csupport-comm</a>|
+ 1.1.1   Append aligned comments                |<a href="csupport.html#csupport-comm-aligned">csupport-comm-aligned</a>|
+ 1.1.2   Adjust end-of-line comments            |<a href="csupport.html#csupport-comm-realign">csupport-comm-realign</a>|
+ 1.1.3   Code to comment                        |<a href="csupport.html#csupport-code-to-comm">csupport-code-to-comm</a>|
+ 1.1.4   Comment to code                        |<a href="csupport.html#csupport-comm-to-code">csupport-comm-to-code</a>|
+ 1.1.5   Toggle non-C comments                  |<a href="csupport.html#csupport-comm-non-c">csupport-comm-non-c</a>|
+ 1.1.6   Frame comments, file header, ...       |<a href="csupport.html#csupport-comm-frame">csupport-comm-frame</a>|
+ 1.1.7   File section comments         ..       |<a href="csupport.html#csupport-comm-sections">csupport-comm-sections</a>|
+ 1.1.8   Keyword comment, special comment       |<a href="csupport.html#csupport-comm-keyword">csupport-comm-keyword</a>|
+ 1.1.9   Macros                                 |<a href="csupport.html#csupport-comm-macros">csupport-comm-macros</a>|
+ 1.1.10  Date and date+time                     |<a href="csupport.html#csupport-comm-date">csupport-comm-date</a>|
+ 1.1.11  C to C++ comments and vice versa       |<a href="csupport.html#csupport-comm-c-cpp">csupport-comm-c-cpp</a>|
+ 1.2    Menu 'Statements'                       |<a href="csupport.html#csupport-stat">csupport-stat</a>|
+ 1.2.1   Normal mode, insert mode.              |<a href="csupport.html#csupport-stat-normal-mode">csupport-stat-normal-mode</a>|
+ 1.2.2   Visual mode.                           |<a href="csupport.html#csupport-stat-visual-mode">csupport-stat-visual-mode</a>|
+ 1.3    Menu 'Preprocessor'                     |<a href="csupport.html#csupport-prep">csupport-prep</a>|
+ 1.3.1   Normal mode, insert mode.              |<a href="csupport.html#csupport-prep-normal-mode">csupport-prep-normal-mode</a>|
+ 1.3.2   Visual mode.                           |<a href="csupport.html#csupport-prep-visual-mode">csupport-prep-visual-mode</a>|
+ 1.3.3   Block out code with #if 0 .. #endif    |<a href="csupport.html#csupport-prep-if0">csupport-prep-if0</a>|
+ 1.4    Menu 'Idioms'                           |<a href="csupport.html#csupport-idioms">csupport-idioms</a>|
+ 1.4.1   Item 'function'                        |<a href="csupport.html#csupport-idioms-function">csupport-idioms-function</a>|
+ 1.4.2   for-loop control                       |<a href="csupport.html#csupport-idioms-for-loop">csupport-idioms-for-loop</a>|
+ 1.4.3   Item 'open input file'                 |<a href="csupport.html#csupport-idioms-input">csupport-idioms-input</a>|
+ 1.4.4   Item 'open output file'                |<a href="csupport.html#csupport-idioms-output">csupport-idioms-output</a>|
+ 1.5    Menu 'Snippets'                         |<a href="csupport.html#csupport-snippets">csupport-snippets</a>|
+ 1.5.1   Code snippets                          |<a href="csupport.html#csupport-snippets">csupport-snippets</a>|
+ 1.5.2   Picking up prototypes                  |<a href="csupport.html#csupport-proto">csupport-proto</a>|
+ 1.5.3   Code templates                         |<a href="csupport.html#csupport-templates-menu">csupport-templates-menu</a>|
+ 1.6    Menu 'C++'                              |<a href="csupport.html#csupport-c++">csupport-c++</a>|
+ 1.6.1   Normal mode, insert mode.              |<a href="csupport.html#csupport-c++-normal-mode">csupport-c++-normal-mode</a>|
+ 1.6.2   Visual mode.                           |<a href="csupport.html#csupport-c++-visual-mode">csupport-c++-visual-mode</a>|
+ 1.6.3   Implementation                         |<a href="csupport.html#csupport-c++-impl">csupport-c++-impl</a>|
+ 1.7    Menu 'Run'                              |<a href="csupport.html#csupport-run">csupport-run</a>|
+ 1.7.1   Compile, link, run                     |<a href="csupport.html#csupport-run-buffer">csupport-run-buffer</a>|
+ 1.7.2   Command line arguments                 |<a href="csupport.html#csupport-run-cmdline-args">csupport-run-cmdline-args</a>|
+ 1.7.3   Executable to run                      |<a href="csupport.html#csupport-run-make-run">csupport-run-make-run</a>|
+ 1.7.4   Run debugger                           |<a href="csupport.html#csupport-run-debugger">csupport-run-debugger</a>|
+ 1.7.5   Splint                                 |<a href="csupport.html#csupport-run-splint">csupport-run-splint</a>|
+ 1.7.6   Cppcheck                               |<a href="csupport.html#csupport-run-cppcheck">csupport-run-cppcheck</a>|
+ 1.7.7   CodeCheck                              |<a href="csupport.html#csupport-run-codecheck">csupport-run-codecheck</a>|
+ 1.7.8   Indent                                 |<a href="csupport.html#csupport-run-indent">csupport-run-indent</a>|
+ 1.7.9   Hardcopy                               |<a href="csupport.html#csupport-run-hardcopy">csupport-run-hardcopy</a>|
+ 1.7.10  Xterm size                             |<a href="csupport.html#csupport-run-xterm">csupport-run-xterm</a>|
+ 1.7.11  Output redirection                     |<a href="csupport.html#csupport-run-output">csupport-run-output</a>|
+ 1.8     Tool Box                               |<a href="csupport.html#csupport-toolbox">csupport-toolbox</a>|
+ 1.8.1    Make                                  |<a href="csupport.html#csupport-toolbox-make">csupport-toolbox-make</a>|
+ 1.8.2    Other Tools                           |<a href="csupport.html#csupport-toolbox-others">csupport-toolbox-others</a>|
+ 1.9    Menu 'Help'                             |<a href="csupport.html#csupport-help">csupport-help</a>|
+ 1.10   Menu 'Doxygen'                          |<a href="csupport.html#csupport-doxygen">csupport-doxygen</a>|
+ 1.10.1  Enabling the menu                      |<a href="csupport.html#csupport-doxygen-enable">csupport-doxygen-enable</a>|
+
+ 2.    Usage without GUI                        |<a href="csupport.html#csupport-usage-vim">csupport-usage-vim</a>|
+ 3.    Hotkeys                                  |<a href="csupport.html#csupport-hotkeys">csupport-hotkeys</a>|
+ 4.    Customization and configuration          |<a href="csupport.html#csupport-custom">csupport-custom</a>|
+ 4.1    Global variables                        |<a href="csupport.html#csupport-custom-glob-vars">csupport-custom-glob-vars</a>|
+ 4.2     The root menu                          |<a href="csupport.html#csupport-custom-root">csupport-custom-root</a>|
+ 4.3     System-wide installation               |<a href="csupport.html#csupport-system-wide">csupport-system-wide</a>|
+ 5.    Template files and tags                  |<a href="csupport.html#csupport-templates">csupport-templates</a>|
+ 5.1    Template files                          |<a href="csupport.html#csupport-templates-files">csupport-templates-files</a>|
+ 5.2    Macros                                  |<a href="csupport.html#csupport-templates-macros">csupport-templates-macros</a>|
+ 5.2.1  User defined formats for date and time  |<a href="csupport.html#csupport-templates-date">csupport-templates-date</a>|
+ 5.3    Templates                               |<a href="csupport.html#csupport-templates-names">csupport-templates-names</a>|
+ 5.3.1  Template definition                     |<a href="csupport.html#csupport-templates-definition">csupport-templates-definition</a>|
+ 5.3.2  The jump tags <code class="special">&lt;+text+&gt;</code> etc.             |<a href="csupport.html#csupport-templates-jumptags">csupport-templates-jumptags</a>|
+ 5.3.3  Command Ctrl-j                          |<a href="csupport.html#csupport-Ctrl-j">csupport-Ctrl-j</a>|
+ 5.5    Binding a style to a file extension     |<a href="csupport.html#csupport-templates-bind">csupport-templates-bind</a>|
+ 6.    C/C++ Dictionaries                       |<a href="csupport.html#csupport-dictionary">csupport-dictionary</a>|
+ 7.    Extend ctags                             |<a href="csupport.html#csupport-ctags">csupport-ctags</a>|
+ 7.1   Make and qmake                           |<a href="csupport.html#csupport-ctags-make">csupport-ctags-make</a>|
+ 7.2   Templates                                |<a href="csupport.html#csupport-ctags-templates">csupport-ctags-templates</a>|
+ 8.    Folding                                  |<a href="csupport.html#csupport-folding">csupport-folding</a>|
+ 9     Additional Mappings                      |<a href="csupport.html#csupport-ad-mappings">csupport-ad-mappings</a>|
+ 10.   Windows particularities                  |<a href="csupport.html#csupport-windows">csupport-windows</a>|
+ 11.   Additional tips                          |<a href="csupport.html#csupport-tips">csupport-tips</a>|
+ 12.   Troubleshooting                          |<a href="csupport.html#csupport-troubleshooting">csupport-troubleshooting</a>|
+ 13.   Release <code class="note">Note</code>s /Change Log                |<a href="csupport.html#csupport-release-notes">csupport-release-notes</a>|
+
+      How to add this help file to Vim's help  |<code class="badlink">add-local-help</code>|
+
+
+</pre><hr><pre>1.  USAGE WITH GUI  (gVim)                               <b class="vimtag"><a name="csupport-usage-gvim">csupport-usage-gvim</a></b>
+</pre><hr><pre>
+If the root menu 'C/C++' is not visible call it with the item "Load C Support"
+from the standard Tools-menu.
+The item "Load C Support" can also be used to unload the C/C++-root menu.
+
+Nearly all menu entries insert code snippets or comments. All of these are
+contained within template files and can be changed by the user to meet their
+requirements (see|<a href="csupport.html#csupport-templates">csupport-templates</a>|).
+
+</pre><hr><pre>1.1  MENU 'Comments'                                           <b class="vimtag"><a name="csupport-comm">csupport-comm</a></b>
+</pre><hr><pre>
+1.1.1  APPEND ALIGNED COMMENTS TO CONSECUTIVE LINES    <b class="vimtag"><a name="csupport-comm-aligned">csupport-comm-aligned</a></b>
+
+In NORMAL MODE, the menu item 'end-of-line comment' will append a comment to
+the current line.
+In VISUAL MODE, this item will append aligned comments to all marked lines.
+Marking the first 4 lines
+
+<code class="example">  print_double_array ( double array[],</code>
+<code class="example">                       int    n,</code>
+<code class="example">                       int    columns,</code>
+<code class="example">                       char*  arrayname</code>
+<code class="example">                       )</code>
+
+and choosing 'end-of-line comment' will yield
+
+<code class="example">  print_double_array ( double array[],          /*  */</code>
+<code class="example">                       int    n,                /*  */</code>
+<code class="example">                       int    columns,          /*  */</code>
+<code class="example">                       char*  arrayname         /*  */</code>
+<code class="example">                       )</code>
+
+If one or more lines go beyond the starting column (s.below), the comments
+will start at the second column after the longest line.  The cursor will then
+be positioned inside the first comment.
+
+The default starting column is 49 ( = (multiple of 2,4, or 8) + 1 ).  This can
+be changed by setting a global variable in the file ~/.vimrc , e.g. :
+
+<code class="example">  let g:C_LineEndCommColDefault    = 45</code>
+
+The starting column can also be set by the menu item 'Comments-&gt;set
+end-of-line com. col'.  Just position the cursor in an arbitrary column
+(column number is shown in the Vim status line) and choose this menu item.
+This setting is buffer related.
+If the cursor was at the end of a line you will be asked for a column number
+because this position is most likely not the desired starting column.  Your
+choice will be confirmed.
+
+</pre><hr><pre>
+1.1.2  ADJUST END-OF-LINE COMMENTS                    <b class="vimtag"><a name="csupport-comm-realign">csupport-comm-realign</a></b>
+
+After some changes end-of-line comments may be no longer aligned:
+
+<code class="example">  print_double_array ( double       array[],          /*  */</code>
+<code class="example">                       long int     n,                     /*  */</code>
+<code class="example">                       unsigned int columns,          /*  */</code>
+<code class="example">                       char*        a_name         /*  */</code>
+<code class="example">                       )</code>
+
+Realignment can be achieved with the menu item 'adjust end-of-line com.' In
+normal mode the comment (if any) in the current line will be aligned to the
+end-of-line comment column (see above) if possible. In visual mode the
+comments in the marked block will be aligned:
+
+<code class="example">  print_double_array ( double       array[],    /*  */</code>
+<code class="example">                       long int     n,          /*  */</code>
+<code class="example">                       unsigned int columns,    /*  */</code>
+<code class="example">                       char*        a_name      /*  */</code>
+<code class="example">                       )</code>
+
+The realignment will not be done for comments with nothing else than leading
+whitespaces. These comments are usually captions:
+
+<code class="example">  max = other.max;                    /* the maximum value */</code>
+<code class="example">  len = other.len;                         /* the length        */</code>
+<code class="example">  /* ===== the next section ===== */</code>
+<code class="example">  pos = (x+y+z)/3.0;             /* the next position */</code>
+
+After the alignment we have:
+
+<code class="example">  max = other.max;                              /* the maximum value */</code>
+<code class="example">  len = other.len;                              /* the length        */</code>
+<code class="example">  /* ===== the next section ===== */</code>
+<code class="example">  pos = (x+y+z)/3.0;                            /* the next position */</code>
+
+</pre><hr><pre>
+1.1.3  CODE TO COMMENT                                 <b class="vimtag"><a name="csupport-code-to-comm">csupport-code-to-comm</a></b>
+
+The marked block
+
+<code class="example"> xxxxxxxx</code>
+<code class="example"> xxxxxxxx</code>
+<code class="example"> xxxxxxxx</code>
+
+will be changed by the menu item 'code-&gt;comment /**/' into the multiline
+comment (all (partially) marked lines):
+
+<code class="example"> /* xxxxxxxx</code>
+<code class="example">  * xxxxxxxx</code>
+<code class="example">  * xxxxxxxx</code>
+<code class="example">  */</code>
+
+The marked block will be changed  by the menu item 'code-&gt;comment //' into the
+multiline comment
+
+<code class="example"> //xxxxxxxx</code>
+<code class="example"> //xxxxxxxx</code>
+<code class="example"> //xxxxxxxx</code>
+
+The menu items works also for a single line. A single line needs not to be
+marked.
+
+</pre><hr><pre>
+1.1.4  COMMENT TO CODE                                 <b class="vimtag"><a name="csupport-comm-to-code">csupport-comm-to-code</a></b>
+
+If one (or more) complete comment (i.e. all lines belonging to the comment) is
+marked the item 'comment-&gt;code' will uncomment it.  If the following lines
+are marked
+
+<code class="example">   * printf ("\n");</code>
+<code class="example">   */</code>
+<code class="example"></code>
+<code class="example">  printf ("\n");</code>
+<code class="example"></code>
+<code class="example">  //  printf ("\n");</code>
+<code class="example">  //</code>
+<code class="example"></code>
+<code class="example">  /*</code>
+<code class="example">   *  printf ("\n");</code>
+<code class="example">   */</code>
+
+uncommenting will yield
+
+<code class="example">   * printf ("\n");</code>
+<code class="example">   */</code>
+<code class="example"></code>
+<code class="example">  printf ("\n");</code>
+<code class="example"></code>
+<code class="example">  printf ("\n");</code>
+<code class="example"></code>
+<code class="example"></code>
+<code class="example"></code>
+<code class="example">  printf ("\n");</code>
+
+The first 2 lines are only a part of a C-comment and remain unchanged.
+A C-comment can start with /* , /** or /*! .
+
+The menu item works also for a single line with a leading // . A single line
+needs not to be marked.
+
+</pre><hr><pre>
+1.1.5  TOGGLE NON-C COMMENTS                             <b class="vimtag"><a name="csupport-comm-non-c">csupport-comm-non-c</a></b>
+
+This menu item toggles the non-C comment for a single line or a marked range
+of lines for embedded non-C code. The default comment uses the hash characters
+'#'. The non-C comment can start with any string.  You can change the default
+by setting a global variable in '~/.vimrc':
+
+<code class="example"> let g:C_NonCComment  = '^^'</code>
+<code class="example"></code>
+</pre><hr><pre><code class="example"></code>
+1.1.6  FRAME COMMENTS, FILE HEADER, ...                  <b class="vimtag"><a name="csupport-comm-frame">csupport-comm-frame</a></b>
+
+Frame comments, file header comments and function, methods, class descriptions
+are read as templates from the appropriate files (see |<a href="csupport.html#csupport-templates">csupport-templates</a>|).
+
+There are two file description templates (menu items 'file description impl'
+and  'file description header', see also |<a href="csupport.html#csupport-templates">csupport-templates</a>|):
+
+  implementation  : files <b class="vimtag"><a name=".c ">.c </a></b>.cc <b class="vimtag"><a name=".cp ">.cp </a></b>.cxx <b class="vimtag"><a name=".cpp ">.cpp </a></b>.CPP *.c++
+                                      <b class="vimtag"><a name=".C ">.C </a></b>.i *.ii
+
+  header          : everything else with filetype 'c' or 'cpp'
+
+The appropriate template will also be included into a new file. The plugin
+decides on the basis of the file extension. The default is shown above. You
+can change the list by setting a global variable in '~/.vimrc':
+
+<code class="example">  autocmd BufRead,BufNewFile  *.XYZ  set filetype=c</code>
+<code class="example"></code>
+<code class="example">  let g:C_SourceCodeExtensions  = 'XYZ c cc cp cxx cpp CPP c++ C i ii'</code>
+
+A new file named 'test.XYZ' will now be considered a C implementation file.
+
+</pre><hr><pre>
+1.1.7  FILE SECTION COMMENTS                          <b class="vimtag"><a name="csupport-comm-sections">csupport-comm-sections</a></b>
+
+File section comments can be uses to separate typical C- and H-file sections
+with comments of similar appearance, e.g.
+
+<code class="example"> /* #####   HEADER FILE INCLUDES   ################################################### */</code>
+<code class="example"></code>
+<code class="example"> /* #####   MACROS  -  LOCAL TO THIS SOURCE FILE   ################################### */</code>
+<code class="example"></code>
+<code class="example"> /* #####   TYPE DEFINITIONS  -  LOCAL TO THIS SOURCE FILE   ######################### */</code>
+
+These section comments can also be inserted using the hotkey \ccs for C/C++
+files, or \chs for H-files.
+
+</pre><hr><pre>
+1.1.8  KEYWORD COMMENT, SPECIAL COMMENT                <b class="vimtag"><a name="csupport-comm-keyword">csupport-comm-keyword</a></b>
+
+Keword comments are end-of-line comments:
+
+<code class="example"> /* :<code class="special">&lt;keyword&gt;</code>:<code class="special">&lt;date+time&gt;</code>:<code class="special">&lt;author reference&gt;</code>: <code class="special">&lt;arbitrary comment text&gt;</code> */</code>
+y
+Keywords are
+
+ BUG COMPILER REMARK TODO TRICKY WARNING WORKAROUND user-defined-keyword
+
+These are preliminary comments to document places where work will be resumed
+shortly. They are usually not meant for the final documentation.  These
+comments are easily found by searching for the keyword.
+The keyword comments can also be inserted using the hotkey \ckc .
+
+Special comments are occasionally used to mark special features of a code
+construct (e.g. a fall through cases in a switch statement, an empty loop):
+
+<code class="example"> /* EMPTY */</code>
+<code class="example"> /* NOT REACHED */</code>
+<code class="example"> /* REMAINS TO BE IMPLEMENTED */</code>
+<code class="example">  ....</code>
+
+The special comments can also be inserted using the hotkey \csc .
+
+</pre><hr><pre>
+1.1.9  MACROS (PLUGIN)                                  <b class="vimtag"><a name="csupport-comm-macros">csupport-comm-macros</a></b>
+
+The submenu 'macros' let you insert the predefined macros from the template
+system (see|<a href="csupport.html#csupport-templates-macros">csupport-templates-macros</a>|).
+
+</pre><hr><pre>
+1.1.10  DATE AND DATE+TIME                                <b class="vimtag"><a name="csupport-comm-date">csupport-comm-date</a></b>
+
+The format for 'date' and 'date time' can be defined by the user (see
+|<a href="csupport.html#csupport-templates-date">csupport-templates-date</a>|).
+
+</pre><hr><pre>
+1.1.11 C TO C++ COMMENTS AND VICE VERSA                  <b class="vimtag"><a name="csupport-comm-c-cpp">csupport-comm-c-cpp</a></b>
+
+The menu item '/* xxx */ <code class="special">&lt;-&gt;</code> // xxx' changes a C++ comment into a C comment
+and a C++ comment into a C comment (toggle).
+This is done for the current line in normal or insert mode and for a marked
+area of lines in visual mode.
+The hotkey \cx does the same. It can be used with a range:
+  3\cx
+changes the current line and the next 2 lines.
+
+</pre><hr><pre>1.2  MENU 'Statements'                                         <b class="vimtag"><a name="csupport-stat">csupport-stat</a></b>
+</pre><hr><pre>
+1.2.1  NORMAL MODE, INSERT MODE.                   <b class="vimtag"><a name="csupport-stat-normal-mode">csupport-stat-normal-mode</a></b>
+
+An empty statement will be inserted and properly indented. The item 'if block'
+will insert an if-statement:
+
+<code class="example"> if (  ) {</code>
+<code class="example">   <code class="special">&lt;-IF_PART-&gt;</code></code>
+<code class="example"> }</code>
+
+1.2.2  VISUAL MODE.                                <b class="vimtag"><a name="csupport-stat-visual-mode">csupport-stat-visual-mode</a></b>
+
+STATEMENTS WITH BLOCKS AND CASE LABEL.
+</pre><hr><pre>The highlighted area
+
+<code class="example"> xxxxx</code>
+<code class="example"> xxxxx</code>
+
+can be surrounded by one of the following statements:
+
+<code class="example">  +----------------------------+-----------------------------+</code>
+<code class="example">  |<code class="badlink">     if (  )                </code>|     if (  )                 |</code>
+<code class="example">  |<code class="badlink">     {                      </code>|     {                       |</code>
+<code class="example">  |<code class="badlink">       xxxxx                </code>|       xxxxx                 |</code>
+<code class="example">  |<code class="badlink">       xxxxx                </code>|       xxxxx                 |</code>
+<code class="example">  |<code class="badlink">     }                      </code>|     }                       |</code>
+<code class="example">  |<code class="badlink">                            </code>|     else                    |</code>
+<code class="example">  |<code class="badlink">                            </code>|     {                       |</code>
+<code class="example">  |<code class="badlink">                            </code>|     }                       |</code>
+<code class="example">  +----------------------------+-----------------------------+</code>
+<code class="example">  |<code class="badlink">     for ( ; ;  )           </code>|     while (  )              |</code>
+<code class="example">  |<code class="badlink">     {                      </code>|     {                       |</code>
+<code class="example">  |<code class="badlink">       xxxxx                </code>|       xxxxx                 |</code>
+<code class="example">  |<code class="badlink">       xxxxx                </code>|       xxxxx                 |</code>
+<code class="example">  |<code class="badlink">     }                      </code>|     }                       |</code>
+<code class="example">  +----------------------------+-----------------------------+</code>
+<code class="example">  |<code class="badlink">     do                     </code>|                             |</code>
+<code class="example">  |<code class="badlink">     {                      </code>|     {                       |</code>
+<code class="example">  |<code class="badlink">       xxxxx                </code>|       xxxxx                 |</code>
+<code class="example">  |<code class="badlink">       xxxxx                </code>|       xxxxx                 |</code>
+<code class="example">  |<code class="badlink">     }                      </code>|     }                       |</code>
+<code class="example">  |<code class="badlink">     while (  );            </code>|                             |</code>
+<code class="example">  +----------------------------+-----------------------------+</code>
+<code class="example">  |<code class="badlink">      switch (  ) {                                       </code>|</code>
+<code class="example">  |<code class="badlink">      case :                                              </code>|</code>
+<code class="example">  |<code class="badlink">       break;                                             </code>|</code>
+<code class="example">  |<code class="badlink">                                                          </code>|</code>
+<code class="example">  |<code class="badlink">      case :                                              </code>|</code>
+<code class="example">  |<code class="badlink">       break;                                             </code>|</code>
+<code class="example">  |<code class="badlink">                                                          </code>|</code>
+<code class="example">  |<code class="badlink">      case :                                              </code>|</code>
+<code class="example">  |<code class="badlink">       break;                                             </code>|</code>
+<code class="example">  |<code class="badlink">                                                          </code>|</code>
+<code class="example">  |<code class="badlink">      case :                                              </code>|</code>
+<code class="example">  |<code class="badlink">       break;                                             </code>|</code>
+<code class="example">  |<code class="badlink">                                                          </code>|</code>
+<code class="example">  |<code class="badlink">      default:                                            </code>|</code>
+<code class="example">  |<code class="badlink">       break;                                             </code>|</code>
+<code class="example">  |<code class="badlink">      }                                                   </code>|</code>
+<code class="example">  +----------------------------+-----------------------------+</code>
+
+The whole statement will be indented after insertion.
+
+
+STATEMENTS WITHOUT BLOCKS.
+</pre><hr><pre>One of the following statements can be inserted:
+
+<code class="example">  +-------------------------------+--------------------------+</code>
+<code class="example">  |<code class="badlink">    if (  )                    </code>|    for ( ; ;  )          |</code>
+<code class="example">  +-------------------------------+--------------------------+</code>
+<code class="example">  |<code class="badlink">    if (  )                    </code>|    while (  )            |</code>
+<code class="example">  |<code class="badlink">    else                       </code>|                          |</code>
+<code class="example">  +-------------------------------+--------------------------+</code>
+<code class="example">  |<code class="badlink">    case :                     </code>|                          |</code>
+<code class="example">  |<code class="badlink">      break;                   </code>|                          |</code>
+<code class="example">  +-------------------------------+--------------------------+</code>
+
+
+</pre><hr><pre>1.3  MENU 'Preprocessor'                                       <b class="vimtag"><a name="csupport-prep">csupport-prep</a></b>
+</pre><hr><pre>
+1.3.1  NORMAL MODE, INSERT MODE.                   <b class="vimtag"><a name="csupport-prep-normal-mode">csupport-prep-normal-mode</a></b>
+
+The preprocessor statements will be inserted and properly indented.
+
+1.3.2  VISUAL MODE.                                <b class="vimtag"><a name="csupport-prep-visual-mode">csupport-prep-visual-mode</a></b>
+
+STATEMENTS WITH BLOCKS
+</pre><hr><pre>The highlighted area
+
+<code class="example"> xxxxx</code>
+<code class="example"> xxxxx</code>
+
+can be surrounded by one of the following statements:
+
+<code class="example">  +----------------------------+-----------------------------+</code>
+<code class="example">  |<code class="badlink">    #if  CONDITION                                        </code>|</code>
+<code class="example">  |<code class="badlink">    xxxxx                                                 </code>|</code>
+<code class="example">  |<code class="badlink">    xxxxx                                                 </code>|</code>
+<code class="example">  |<code class="badlink">    #else      /* ----- #if CONDITION  ----- */           </code>|</code>
+<code class="example">  |<code class="badlink">                                                          </code>|</code>
+<code class="example">  |<code class="badlink">    #endif     /* ----- #if CONDITION  ----- */           </code>|</code>
+<code class="example">  +----------------------------------------------------------+</code>
+<code class="example">  |<code class="badlink">    #ifdef  CONDITION                                     </code>|</code>
+<code class="example">  |<code class="badlink">    xxxxx                                                 </code>|</code>
+<code class="example">  |<code class="badlink">    xxxxx                                                 </code>|</code>
+<code class="example">  |<code class="badlink">    #else      /* ----- #ifdef CONDITION  ----- */        </code>|</code>
+<code class="example">  |<code class="badlink">                                                          </code>|</code>
+<code class="example">  |<code class="badlink">    #endif     /* ----- #ifdef CONDITION  ----- */        </code>|</code>
+<code class="example">  +----------------------------------------------------------+</code>
+<code class="example">  |<code class="badlink">    #ifndef  CONDITION                                    </code>|</code>
+<code class="example">  |<code class="badlink">    xxxxx                                                 </code>|</code>
+<code class="example">  |<code class="badlink">    xxxxx                                                 </code>|</code>
+<code class="example">  |<code class="badlink">    #else      /* ----- #ifndef CONDITION  ----- */       </code>|</code>
+<code class="example">  |<code class="badlink">                                                          </code>|</code>
+<code class="example">  |<code class="badlink">    #endif     /* ----- #ifndef CONDITION  ----- */       </code>|</code>
+<code class="example">  +----------------------------------------------------------+</code>
+<code class="example">  |<code class="badlink">    #ifndef  INC_TEST                                     </code>|</code>
+<code class="example">  |<code class="badlink">    #define  INC_TEST                                     </code>|</code>
+<code class="example">  |<code class="badlink">    xxxxx                                                 </code>|</code>
+<code class="example">  |<code class="badlink">    xxxxx                                                 </code>|</code>
+<code class="example">  |<code class="badlink">    #endif   /* ----- #ifndef INC_TEST  ----- */          </code>|</code>
+<code class="example">  +----------------------------------------------------------+</code>
+<code class="example">  |<code class="badlink">    #if  0     /* ----- #if 0 : If0Label_1 ----- */       </code>|</code>
+<code class="example">  |<code class="badlink">                                                          </code>|</code>
+<code class="example">  |<code class="badlink">    #endif     /* ----- #if 0 : If0Label_1 ----- */       </code>|</code>
+<code class="example">  +----------------------------------------------------------+</code>
+
+The macro name for an include guard (e.g. INC_TEST above) will be derived as a
+suggestion from the file name.
+
+1.3.3  BLOCK OUT CODE WITH #if 0 ... #endif                <b class="vimtag"><a name="csupport-prep-if0">csupport-prep-if0</a></b>
+
+The menu item #if 0 #endif  inserts the lines
+
+<code class="example">  #if  0     /* ----- #if 0 : If0Label_1 ----- */</code>
+<code class="example"></code>
+<code class="example">  #endif     /* ----- #if 0 : If0Label_1 ----- */</code>
+
+In visual mode the marked block of lines will be surrounded by these lines.
+
+This is usually done to temporarily block out some code.  The label names like
+If0Label_1 are automatically inserted into the comments.  The trailing numbers
+are automatically incremented.  These numbers can be changed by the user.  The
+next number will be one above the highest number found in the current buffer.
+
+A corresponding label can be found by searching with the vim star command (*).
+All labels can be found with a global search like :g/If0Label_/ or
+:g/If0Label_\d\+/. All corresponding lines can be deleted with :g/If0Label_/d .
+
+
+REMOVE THE ENCLOSING #if 0 ... #endif -CONSTRUCT.
+
+The menu item 'remove #if #endif' removes such a construct if the cursor is
+in the middle of such a section or on one of the two enclosing lines. Nested
+constructs will be untouched.
+
+</pre><hr><pre>1.4  MENU 'Idioms'                                           <b class="vimtag"><a name="csupport-idioms">csupport-idioms</a></b>
+</pre><hr><pre>
+1.4.1  Item 'function'                              <b class="vimtag"><a name="csupport-idioms-function">csupport-idioms-function</a></b>
+
+NORMAL MODE, INSERT MODE:
+The name of the function is asked for and the following lines (for function
+name "f") will be inserted:
+
+<code class="example">   void</code>
+<code class="example"> f ( <code class="special">&lt;+argument_list+&gt;</code> )</code>
+<code class="example"> {</code>
+<code class="example">  return <code class="special">&lt;+return_value+&gt;</code>;</code>
+<code class="example"> }   /* -----  end of function f  ----- */</code>
+<code class="example"> void</code>
+
+VISUAL MODE:
+Main or function: the highlighted lines will go inside the new function or
+main.
+for-loops: the highlighted lines will be set in braces.
+
+1.4.2  for-loop control                             <b class="vimtag"><a name="csupport-idioms-for-loop">csupport-idioms-for-loop</a></b>
+
+The menu items 'for( x=0; ... )' and 'for( x=n-1; ... )' can be used to write
+the control statement for a for-loop counting upward or downward. These items
+start an input dialog
+
+ [TYPE (expand)] VARIABLE [START [END [INCR.]]] :
+
+asking for at least the name of the loop variable. The other parameters are
+optional. The type is restricted to the following integral data types:
+
+<code class="example">  char</code>
+<code class="example">  int</code>
+<code class="example">  long</code>
+<code class="example">  long int</code>
+<code class="example">  long long</code>
+<code class="example">  long long int</code>
+<code class="example">  short</code>
+<code class="example">  short int</code>
+<code class="example">  size_t</code>
+<code class="example">  unsigned</code>
+<code class="example">  unsigned char</code>
+<code class="example">  unsigned int</code>
+<code class="example">  unsigned long</code>
+<code class="example">  unsigned long int</code>
+<code class="example">  unsigned long long</code>
+<code class="example">  unsigned long long int</code>
+<code class="example">  unsigned short</code>
+<code class="example">  unsigned short int</code>
+
+One of these types can be specified by typing it completely or by typing zero
+or more characters of its name and completing them to the full name by using
+the tab key (tab completion). If the start of the type name is ambiguous (e.g.
+'uns') a list of completion candidates is provided to choose from.
+
+1.4.3  Item 'open input file'                          <b class="vimtag"><a name="csupport-idioms-input">csupport-idioms-input</a></b>
+
+The item 'open input file' will create the statements to open and close an
+input file (e.g. with the file pointer 'infile').
+
+1.4.4  Item 'open output file'                        <b class="vimtag"><a name="csupport-idioms-output">csupport-idioms-output</a></b>
+
+The item 'open output file' will create the statements to open and close an
+output file (e.g. with the file pointer 'outfile').
+
+</pre><hr><pre>1.5  MENU 'Snippets'                                       <b class="vimtag"><a name="csupport-snippets">csupport-snippets</a></b>
+</pre><hr><pre>
+1.5.1  CODE SNIPPETS
+
+Code snippets are pieces of code which are kept in separate files in a special
+directory (e.g. a few lines of code or a complete template for a Makefile).
+File names are used to identify the snippets.  The snippet directory will be
+created during the installation  ( $HOME/.vim/codesnippets-c is the default).
+Snippets are managed with the 4 items
+
+   C/C++ -&gt; Snippets -&gt; read  code snippet
+   C/C++ -&gt; Snippets -&gt; view  code snippet
+   C/C++ -&gt; Snippets -&gt; write code snippet
+   C/C++ -&gt; Snippets -&gt; edit  code snippet
+
+from the Snippets submenu.
+
+CREATING A NEW SNIPPET
+When nothing is marked, "write code snippet" will write the whole buffer
+to a snippet file, otherwise the marked area will be written to a file.
+
+INSERT A SNIPPET
+Select the appropriate file from the snippet directory ("read  code snippet").
+The inserted lines will be indented.
+
+EDIT A SNIPPET
+This is a normal edit.
+
+VIEW A SNIPPET
+Show file in a read-only buffer.
+
+INDENTATION / NO INDENTATION
+Code snippets are normally indented after insertion. To suppress indentation
+add the file extension "ni" or "noindent" to the snippet file name, e.g.
+
+  parameter_handling.c.noindent
+
+Snippet browser
+</pre><hr><pre>Under a GUI a file requester will be put up. Without GUI the filename will be
+read from the command line. You can change this behavior by setting a global
+variable in your ~/.vimrc :
+
+<code class="example"> let g:C_GuiSnippetBrowser = 'commandline'</code>
+
+The default value is 'gui'.
+
+
+1.5.2   PICKING UP PROTOTYPES                                 <b class="vimtag"><a name="csupport-proto">csupport-proto</a></b>
+
+PICK UP FUNCTION PROTOTYPES (key mappings \np, \nf).
+
+To make a prototype from a function head mark the function head and choose
+'Snippets -&gt; pick up funct. prototype'. From the first six lines of
+
+<code class="example">   void</code>
+<code class="example">  print_double_array (  double array[],  /* array to print                */</code>
+<code class="example">                        int    n,        /* number of elements to print   */</code>
+<code class="example">                        int    columns,  /* number of elements per column */</code>
+<code class="example">                        char*  arrayname /* array name                    */</code>
+<code class="example">                        )</code>
+<code class="example">  {</code>
+<code class="example">    ...</code>
+<code class="example">  }       /* ----------  end of function print_double_array  ---------- */</code>
+
+the prototype
+
+<code class="example">  void print_double_array ( double array[], int n, int columns, char* arrayname );</code>
+
+is produced and put in an internal buffer.
+- Leading and trailing whitespaces are removed.
+- All inner whitespaces are squeezed.
+- All comments will be discarded.
+- Trailing parts of the function body (e.g a '{' ) will also be removed.
+- The class name and the scope resolution operator will be removed (C++ method
+  implementations).
+Further prototypes can be picked up and gathered in the buffer.
+
+PICK UP METHOD PROTOTYPES (key mapping \nm).
+
+For C++ methods the menu item 'Snippets -&gt; pick up method prototype' should be
+used.  Namespace names and class names will be removed (exception: 'std::' ).
+The first two lines of
+
+<code class="example">  std::string</code>
+<code class="example">  ROBOT::Robot::get_name  ( void )</code>
+<code class="example">  {</code>
+<code class="example">    return type_name;</code>
+<code class="example">  }   /* -----  end of method Robot::get_name  ----- */</code>
+
+result in the prototype
+
+<code class="example">  std::string get_name ( void );</code>
+
+The 3 lines
+
+<code class="example">  template <code class="special">&lt;class T&gt;</code></code>
+<code class="example">  const Stack<code class="special">&lt;T&gt;</code>&amp;</code>
+<code class="example">  Stack<code class="special">&lt;T&gt;</code>::operator = ( const Stack &amp;other )</code>
+
+result in the prototype
+
+<code class="example">  const Stack&amp; operator = ( const Stack &amp;other );</code>
+
+Folding may help picking up prototypes (see |<a href="csupport.html#csupport-folding">csupport-folding</a>|).
+
+
+INSERT PROTOTYPES
+With 'Snippets -&gt; insert prototype(s)' all picked up prototypes currently in
+the buffer will be inserted below the cursor.
+The prototype buffer will be cleared after insertion.
+
+
+DISCARD PROTOTYPES
+The prototype buffer can be cleared with 'Snippets -&gt; clear prototype(s)' .
+
+
+SHOW PROTOTYPES
+The list of gathered prototypes can be shown with
+'Snippets -&gt; show prototype(s)'. The number and the filename are shown, e.g.
+
+<code class="example">  (1) matrix.c #  double** calloc_double_matrix ( int rows, int columns );</code>
+<code class="example">  (2) matrix.c #  void free_double_matrix ( double **m );</code>
+<code class="example">  (3) foomain.c #  void foo ( );</code>
+
+
+REMARK. Generating prototypes this way is nice in a small project. You may
+want to use an extractor like cextract or something else.
+
+
+1.5.3  Code Templates                                <b class="vimtag"><a name="csupport-templates-menu">csupport-templates-menu</a></b>
+</pre><hr><pre>Nearly all menu entries insert code snippets or comments. All these stuff is
+taken from template files and can be changed by the user to meet his
+requirements (see|<a href="csupport.html#csupport-templates">csupport-templates</a>|on how to use the template system).
+
+The menu item 'edit local templates' opens the main template file in a local
+plugin installation. This is usually the file
+'~/.vim/c-support/templates/Templates'.  There may be dependent files
+loaded from the main file.  Now change whatever file you want, save it, and
+click on the menu item 'reread templates' to read in the file(s) and to
+rebuild the internal representation of the templates.
+
+Template browser
+</pre><hr><pre>Under a GUI a file requester will be put up. Without GUI the filename will be
+read from the command line. You can change this behavior by setting a global
+variable in your ~/.vimrc :
+
+<code class="example"> let g:C_GuiTemplateBrowser = 'explorer'</code>
+
+The default value is 'gui'. 'explorer' will start the file explorer
+(see help|<a href="pi_netrw.html#:Explore">:Explore</a>|). To use the commandline asign 'commandline'.
+
+Template Style
+</pre><hr><pre>The template system supports different template styles. If there are more than
+one style the menu item 'choose style' let you choose a style on the fly.
+
+Template Jump Tags
+</pre><hr><pre>You can use different jump tags in a template, e.g. <code class="special">{-tagname-}</code>. The allowed
+tags can be chosen from this menu.(see|<a href="csupport.html#csupport-templates-jumptags">csupport-templates-jumptags</a>|)
+
+</pre><hr><pre>1.6  MENU 'C++'                                                 <b class="vimtag"><a name="csupport-c++">csupport-c++</a></b>
+</pre><hr><pre>
+1.6.1  NORMAL MODE, INSERT MODE.                    <b class="vimtag"><a name="csupport-c++-normal-mode">csupport-c++-normal-mode</a></b>
+
+An empty statement will be inserted and in some cases properly indented. The
+item 'try catch' will insert the following lines:
+
+<code class="example">  try {</code>
+<code class="example">  }</code>
+<code class="example">  catch ( const &amp;ExceptObj ) {    // handle exception:</code>
+<code class="example">  }</code>
+<code class="example">  catch (...) {   // handle exception: unspecified</code>
+<code class="example">  }</code>
+
+The cursor will go into the try block.
+
+1.6.2  VISUAL MODE.                                 <b class="vimtag"><a name="csupport-c++-visual-mode">csupport-c++-visual-mode</a></b>
+
+The highlighted area can be surrounded by one of the following statements:
+
+  try catch
+  catch
+  catch all
+  extern C
+  namespace block xxx
+
+The whole statement will be indented after insertion.
+
+1.6.3   IMPLEMENTATION                              <b class="vimtag"><a name="csupport-c++-impl">csupport-c++-impl</a></b>
+
+The menu item 'method implement.' asks for a method name. If this item is
+called the first time you will see just an scope resolution operator.  If you
+specify the scope this is used the next time you call this item.  If you use
+one of the menu items to generate a class (see |<a href="csupport.html#csupport-templates">csupport-templates</a>|) the
+scope will be extracted and used for the next method.
+
+</pre><hr><pre>1.7  MENU 'Run'                                                 <b class="vimtag"><a name="csupport-run">csupport-run</a></b>
+</pre><hr><pre>
+1.7.1  COMPILE, LINK, RUN                                <b class="vimtag"><a name="csupport-run-buffer">csupport-run-buffer</a></b>
+
+The 'Run' menu provides a minimal make functionality for single file projects
+(e.g. in education) :
+
+SAVE AND COMPILE
+'save and compile' saves the buffer and run the compiler with the given
+options (see |<a href="csupport.html#csupport-custom-glob-vars">csupport-custom-glob-vars</a>|).
+
+An error window will be opened if the compiler reports errors and/or warnings.
+Quickfix commands can now be used to jump to an error location.
+
+Consider using maps like
+
+<code class="example">  map  <code class="special">&lt;silent&gt;</code> <code class="special">&lt;F7&gt;</code>    <code class="special">&lt;Esc&gt;</code>:cprevious<code class="special">&lt;CR&gt;</code></code>
+<code class="example">  map  <code class="special">&lt;silent&gt;</code> <code class="special">&lt;F8&gt;</code>    <code class="special">&lt;Esc&gt;</code>:cnext<code class="special">&lt;CR&gt;</code></code>
+
+in your ~/.vimrc file to jump over the error locations and make navigation
+easier.  The error list and the error locations in your source buffer will be
+synchronized.
+
+The filename extension for an object file can be set in ~.vimrc :
+
+<code class="example">  let g:C_ObjExtension = '.obj'</code>
+
+The default is '.o' ('.obj' for Windows).
+
+LINK
+'link' makes an executable from the current buffer. If the buffer is not
+saved, or no object is available or the object is older then the source step
+'save and compile' is executed first.
+The linkging will only be tried if the current buffer contains a main
+function.
+
+The behavior of the compiler / linker is determined by the options assigned to
+the variables described in |<a href="csupport.html#csupport-custom-glob-vars">csupport-custom-glob-vars</a>| (4.group).
+
+<code class="note">Note:</code> The source is first compiled using the settings g:C_CFlags and then
+  linked using g:C_LFlags. Every time one setting is changed, the other has to
+  be changed accordingly. The flags in g:C_CFlags have to cause compilation
+  only. The same holds for g:C_CplusCFlags and g:C_CplusLFlags.
+
+RUN
+'run' runs the executable with the same name  as the current buffer. If the
+buffer is not saved, or no executable is available or the executable is older
+then the source steps 'save and compile' and 'link' are executed first.
+
+The filename extension for an executable can be set in ~.vimrc :
+
+<code class="example">  let g:C_ExeExtension = '.exe'</code>
+
+The default is the empty string.
+
+
+1.7.2  COMMAND LINE ARGUMENTS                      <b class="vimtag"><a name="csupport-run-cmdline-args">csupport-run-cmdline-args</a></b>
+
+The item 'command line arguments' calls an input dialog which asks for command
+line arguments. These arguments are forwarded to the program which is run by
+the 'run' item. The arguments are kept until you change them.  Tab expansion
+can be used for filenames and directory names. The input will also be kept in
+the internal history. The ex command
+
+<code class="example">  :CCmdlineArgs ...</code>
+
+can also be used to set the command line arguments.
+
+The arguments belong to the current buffer (that is, each buffer can have its
+own arguments).  If the buffer gets a new name with "save as" the arguments
+will now belong to the buffer with the new name.
+
+The command line arguments can be followed by pipes and redirections:
+
+<code class="example">  11 22 |<code class="badlink"> sort -rn </code>| head -10 &gt; out</code>
+
+
+1.7.3  EXECUTABLE TO RUN                               <b class="vimtag"><a name="csupport-run-make-run">csupport-run-make-run</a></b>
+
+The item 'executable to run' asks for the name of the executable built by
+make.  If the name given is nonempty this executable will be run by the menu
+item 'run' (\rr, C-F9).
+To return to the default behavior (see |<a href="csupport.html#csupport-run-buffer">csupport-run-buffer</a>|) remove the name
+with the another 'executable to run'.
+
+
+1.7.4  RUN DEBUGGER                                    <b class="vimtag"><a name="csupport-run-debugger">csupport-run-debugger</a></b>
+
+Start a debugger from the menu item Run-&gt;'run debugger', with hotkey \rd. One of
+three debuggers can be started. The preference can be set with the variable
+g:C_Debugger (possible values: 'gdb', 'kdbg', 'ddd' ). The default is 'gdb').
+
+(1) gdb
+The program will be run as 'gdb  executable arguments' in an xterm.
+
+(2) kdbg
+The debugger kdbg will be started as an independent process.
+
+(3) ddd
+The data display debugger ddd is a graphical front end for gdb. It will be
+started as an independent process.  The debugger ddd is not available under
+MS-Windows.
+
+If the executable to run was specified via Run-&gt;'executable to run' than this
+executable will be used for debugging. If no executable was specified yet you
+will be asked.
+
+
+1.7.5  SPLINT                                            <b class="vimtag"><a name="csupport-run-splint">csupport-run-splint</a></b>
+
+Splint is a tool for statically checking C programs (see http://www.splint.org).
+Of course it has to be installed in order to be used within Vim.  The menu
+item 'Run-&gt;splint' will run the current buffer through splint.
+
+An error window will be opened if splint has something to complain about.
+Quickfix commands can now be used to jump to an error location.  For easier
+navigation see tip under 'SAVE AND COMPILE' |<a href="csupport.html#csupport-run-buffer">csupport-run-buffer</a>|.
+
+Splint has many options. Presumably the best way is to keep the options in an
+option file (~/.splintrc). For a quick try you can use the menu item
+'Run-&gt;cmd. line arg. for splint' to specify some buffer related options.
+
+When vim is started this plugin will check whether splint is executable. If
+not, the menu item will *NOT' be visible.
+
+
+1.7.6  CPPCHECK                                         <b class="vimtag"><a name="csupport-run-cppcheck">csupport-run-cppcheck</a></b>
+
+Cppcheck (http://sourceforge.net/apps/mediawiki/cppcheck/) is tool for static
+C++ code analysis. Cppcheck only detects the types of bugs that the compilers
+normally fail to detect.
+
+An error window will be opened if cppcheck has something to complain about.
+Quickfix commands can now be used to jump to an error location.  For easier
+navigation see tip under 'SAVE AND COMPILE' |<a href="csupport.html#csupport-run-buffer">csupport-run-buffer</a>|.  Cppcheck
+has many options. Predefined groups of checks can be enabled by the menu item
+'cppcheck severity'.  The ex command
+
+<code class="example">  :CppcheckSeverity ...</code>
+
+can also be used to set the severity for cppcheck.  Please see the original
+documentation for more information.
+
+1.7.7  CODECHECK                                      <b class="vimtag"><a name="csupport-run-codecheck">csupport-run-codecheck</a></b>
+
+CodeCheck (TM) is a commercial code analyzing tool produced by Abraxas
+Software, Inc.  (www.abraxas-software.com).
+Of course it has to be installed in order to be used within Vim.  The menu
+item 'Run-&gt;CodeCheck' will run the current buffer through CodeCheck.
+
+An error window will be opened if CodeCheck has something to complain about.
+Quickfix commands can now be used to jump to an error location.  For easier
+navigation see tip under 'SAVE AND COMPILE' |<a href="csupport.html#csupport-run-buffer">csupport-run-buffer</a>|.
+
+CodeCheck has many options.  For a quick try you can use the menu item
+'Run-&gt;cmd. line arg. for CodeCheck' to specify some buffer related options.
+
+CodeCheck will be run with default options (see |<a href="csupport.html#csupport-custom-glob-vars">csupport-custom-glob-vars</a>|).
+The default options can be overwritten by  placing a global variable in
+~/.vimrc , e.g.
+
+<code class="example">  let  g:C_CodeCheckOptions = "-K13 -Rmeyers"</code>
+
+The default name for the executable is 'check'.  There are other names in use
+on different platforms.  The name can be changed by placing a global variable
+in ~/.vimrc , e.g.
+
+<code class="example">  let  g:C_CodeCheckExeName = "chknt.exe"</code>
+
+When vim is started this plugin will check whether CodeCheck is executable. If
+not, the menu item will *NOT' be visible.
+
+
+1.7.8  INDENT                                           <b class="vimtag"><a name="csupport-run-indent">csupport-run-indent</a></b>
+
+The formatter 'indent' can be run over the whole buffer.  Before formatting a
+buffer this buffer will be saved to disk and you will be asked for a
+confirmation.
+
+Indent has many options. These are kept in the file '.indent.pro' in your home
+directory. See the indent manual for more information.
+
+
+1.7.9  HARDCOPY                                       <b class="vimtag"><a name="csupport-run-hardcopy">csupport-run-hardcopy</a></b>
+
+Generates a PostScript file from the whole buffer or from a marked region.
+On a Windows system a printer dialog is displayed.
+The hardcopy goes to the current working directory.  If the buffer contains
+documentation or other material from non-writable directories the hardcopy
+goes to the HOME directory. The output destination will be shown in a message.
+
+The print header contains date and time for the current locale. The definition
+used is
+
+<code class="example">  let s:C_Printheader = "%&lt;%f%h%m%&lt;  %=%<code class="special">{strftime('%x %X')}</code>     Page %N"</code>
+
+The current locale can be overwritten by changing the language, e.g.
+
+<code class="example">  :language C</code>
+
+or by setting a global variable in the file ~/.vimrc , e.g. :
+
+<code class="example">  let g:C_Printheader = "%&lt;%f%h%m%&lt;  %=%<code class="special">{strftime('%x %X')}</code>     SEITE %N"</code>
+
+See :h printheader and :h strftime()  for more details.
+
+
+1.7.10  XTERM SIZE                                        <b class="vimtag"><a name="csupport-run-xterm">csupport-run-xterm</a></b>
+
+The size of the xterm used for  running a program (below) can be set by this
+menu item. The default is 80 columns with 24 lines.
+This feature is not available under Windows.
+
+
+1.7.11  OUTPUT REDIRECTION                               <b class="vimtag"><a name="csupport-run-output">csupport-run-output</a></b>
+
+Running a program can be done in one of three ways:
+(1) Run the program from the gVim command line.
+    This is for interactive programs with little input and output.
+(2) Run the program and direct the output into a window with name "C-Output".
+    The buffer and its content will disappear when the window is closed and
+    reused otherwise.
+    This is for non-interactive programs with little to very much output.
+    You have unlimited line length, regex search, navigation, ...
+    The tabstop value will be set to 8  for "C-Output".
+(3) Run the program in an xterm.
+
+The output method can be chosen from the menu item 'Run-&gt;output: ...'.
+This menu has three states:
+
+  output: VIM-&gt;buffer-&gt;xterm
+  output: BUFFER-&gt;xterm-&gt;vim
+  output: XTERM-&gt;vim-&gt;buffer
+
+The first (uppercase) item shows the current method.  The default is 'vim'.
+This can be changed by setting the variable g:C_OutputGvim to another value.
+Possible values are 'vim', 'buffer' and 'xterm' .
+
+The xterm defaults can be set in ~/.vimrc by the variable g:C_XtermDefaults .
+The default is "-fa courier -fs 12 -geometry 80x24" :
+  font name     : -fa courier
+  font size     : -fs 12
+  terminal size : -geometry 80x24
+See 'xterm -help' for more options. Xterms are not available under Windows.
+
+</pre><hr><pre>1.8  MENU 'Tool Box'                                        <b class="vimtag"><a name="csupport-toolbox">csupport-toolbox</a></b>
+</pre><hr><pre>
+Tools which can be used by several plugins are located in the Tool Box.
+Examples are tools for make(1) or doxygen. The Tool Box has its own
+documentation:|<a href="toolbox.html#toolbox">toolbox</a>|.
+To switch the Tool Box off add the following line to the file .vimrc
+
+<code class="example">  let g:C_UseToolbox     = 'no'</code>
+
+1.8.1 Make                                            <b class="vimtag"><a name="csupport-toolbox-make">csupport-toolbox-make</a></b>
+
+The tool box for make provides a small set hotkeys, menu items, and ex commands
+for controlling make. Please see|<a href="toolboxmake.html#toolbox-make">toolbox-make</a>|.
+To switch the make tool box off add the following line to the file .vimrc
+
+<code class="example">  let g:C_UseTool_make  = 'no'</code>
+
+The hotkeys for the make tool are defined in the file ~/.vim/ftplugin/c.vim .
+
+1.8.2 Other Tools                                   <b class="vimtag"><a name="csupport-toolbox-others">csupport-toolbox-others</a></b>
+
+In general, to enable a tool called <code class="special">&lt;name&gt;</code>, add the following line to your
+.vimrc:
+
+<code class="example">  let g:C_UseTool_<code class="special">&lt;name&gt;</code> = 'yes'</code>
+
+For example:
+
+<code class="example">  let g:C_UseTool_cmake   = 'yes'</code>
+<code class="example">  let g:C_UseTool_doxygen = 'yes'</code>
+
+</pre><hr><pre>1.9  MENU 'Help'                                               <b class="vimtag"><a name="csupport-help">csupport-help</a></b>
+</pre><hr><pre>
+Plugin help
+</pre><hr><pre>The menu item 'help (plugin)' shows this plugin help in a help window. The
+help tags must have been generated with
+
+<code class="example">  :helptags ~/.vim/doc</code>
+
+The hotkey is \hp (for "help plugin").
+
+Displaying a manual
+</pre><hr><pre>The menu item 'show manual' shows the manual for the word under the cursor. If
+there is more than one manual a selection list will be presented. If there is
+no word under the cursor you can type in a name. An interface to the on-line
+reference manuals must be installed (usually man(1) for Linux/Unix, see
+|<a href="csupport.html#csupport-custom-glob-vars">csupport-custom-glob-vars</a>|). The hotkey is \hm (for "help manual").
+
+English dictionary
+</pre><hr><pre>The menu item 'english' opens an online dictionary for the word under the
+cursor.
+
+Doxygen reference
+</pre><hr><pre>The menu item 'doxygen cmd' opens the online reference for the Doxygen command
+under the cursor.
+
+</pre><hr><pre>
+Under Windows, the browser for opening the online documentation has to be
+configured. To set the executable, the template library has to be modified.
+In case of a local installation (the default), choose:
+  C/C++ -&gt; Snippets -&gt; edit local templates
+and for a global installation:
+  C/C++ -&gt; Snippets -&gt; edit global templates
+Open the main template file 'Templates' and uncomment the line
+<code class="example"> &sect;SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )</code>
+by removing the leading '&sect;'
+<code class="example"> SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )</code>
+Then set the right executable. Mind the double quotes which escape the name of
+the executable.
+Finally, reread the template library using:
+  C/C++ -&gt; Snippets -&gt; reread templates
+
+</pre><hr><pre>1.10  MENU 'Doxygen'                                        <b class="vimtag"><a name="csupport-doxygen">csupport-doxygen</a></b>
+</pre><hr><pre>
+A menu 'Doxygen' with templates for writing Doxygen comments can optionally be
+included. It contains two kinds of entries. If the name includes a "block",
+the template inserts a whole Doxygen comment block. Other templates insert a
+line extending an existing block.
+
+The special entry 'brief, after member' can be used to append a brief
+description after a member. Similarly to 'Comments-&gt;end-of-line comment', it
+will append the comment to several lines when in visual mode. When marking the
+four lines within the enum
+
+<code class="example">  enum Color</code>
+<code class="example">  {</code>
+<code class="example">    Background,</code>
+<code class="example">    Transparent,</code>
+<code class="example">    Black,</code>
+<code class="example">    White</code>
+<code class="example">  };   // -----  end of enum Color  -----</code>
+
+and then choosing 'brief, after member', the result will look like this
+
+<code class="example">  enum Color</code>
+<code class="example">  {</code>
+<code class="example">    Background,                                 /<b class="vimtag"><a name="!%3C \brief  ">!&lt; \brief  </a></b>/</code>
+<code class="example">    Transparent,                                /<b class="vimtag"><a name="!%3C \brief  ">!&lt; \brief  </a></b>/</code>
+<code class="example">    Black,                                      /<b class="vimtag"><a name="!%3C \brief  ">!&lt; \brief  </a></b>/</code>
+<code class="example">    White,                                      /<b class="vimtag"><a name="!%3C \brief  ">!&lt; \brief  </a></b>/</code>
+<code class="example">  };   // -----  end of enum Color  -----</code>
+
+Now the elements can be documented one by one.
+This feature works like 'Comments-&gt;end-of-line comment' in every other aspect.
+The comments can be aligned using 'Comments-&gt;adjust end-of-line com.' and
+respect the column set by 'Comments-&gt;set end-of-line com. col' (see
+|<a href="csupport.html#csupport-comm-aligned">csupport-comm-aligned</a>|).
+
+
+1.10.1  ENABLING THE MENU                            <b class="vimtag"><a name="csupport-doxygen-enable">csupport-doxygen-enable</a></b>
+
+The 'Doxygen' submenu is disabled by default. To enable it, the template
+library has to be modified. In case of a local installation (the default),
+choose:
+  C/C++ -&gt; Snippets -&gt; edit local templates
+and for a global installation:
+  C/C++ -&gt; Snippets -&gt; edit global templates
+Open the main template file 'Templates' and uncomment the line
+<code class="example">  &sect;IncludeFile( 'doxygen.template' )</code>
+by removing the leading '&sect;'
+<code class="example">  IncludeFile( 'doxygen.template' )</code>
+After a restart of the editor, the 'Doxygen' menu will appear.
+
+</pre><hr><pre>2.  USAGE WITHOUT GUI  (Vim)                              <b class="vimtag"><a name="csupport-usage-vim">csupport-usage-vim</a></b>
+</pre><hr><pre>
+The frequently used constructs can be inserted with key mappings.  The
+mappings are also described in the document c-hot-keys.pdf (reference card,
+part of this package).
+Hint: Typing speed matters. The combination of a leader ('\') and the
+following character(s) will only be recognized for a short time.
+Some mappings can be used with range (of lines). In normal mode
+
+<code class="example">  \cl</code>
+
+appends a end-of-line comment to the current line,  whereas
+
+<code class="example">  4\cl</code>
+
+appends end-of-line comments to the 4 lines starting with the current line.
+
+Legend:  (i) insert mode, (n) normal mode, (v) visual mode
+         [n] range
+
+  -- Help ---------------------------------------------------------------
+
+     \he       open an English dictionary for the    (n,i)
+               word under the cursor
+     \hd       open the reference for the Doxygen    (n,i)
+               command under the cursor
+     \hm       show manual for word under the cursor (n,i)
+     \hp       show plugin help                      (n,i)
+
+  -- Comments -----------------------------------------------------------
+
+  [n]\cl       end-of-line comment                 (n,v,i)
+  [n]\cj       adjust end-of-line comment(s)       (n,v,i)
+     \cs       set end-of-line comment column      (n)
+  [n]\c*       code -&gt; comment /* */               (n,v,i)
+  [n]\cc       code -&gt; comment //                  (n,v,i)
+  [n]\co       comment -&gt; code                     (n,v,i)
+  [n]\cn       toggle non-C comment                (n,v,i)
+     \cfr      frame comment                       (n,i)
+     \cfu      function comment                    (n,i)
+     \cme      method description                  (n,i)
+     \ccl      class description                   (n,i)
+     \cfdi     file description (implementation)   (n,i)
+     \cfdh     file description (header)           (n,i)
+     \ccs      C/C++-file section  (tab. compl.)   (n,i)
+     \chs      H-file section      (tab. compl.)   (n,i)
+     \ckc      keyword comment     (tab. compl.)   (n,i)
+     \csc      special comment     (tab. compl.)   (n,i)
+     \cma      plugin macros       (tab. compl.)   (n,i)
+     \cd       date                                (n,v,i)
+     \ct       date \&amp; time                        (n,v,i)
+  [n]\cx       toggle comments: C <code class="special">&lt;--&gt;</code> C++         (n,v,i)
+
+  -- Statements ---------------------------------------------------------
+
+     \sd       do <code class="special">{ }</code> while                        (n,v,i)
+     \sf       for                                 (n,i)
+     \sfo      for <code class="special">{ }</code>                             (n,v,i)
+     \si       if                                  (n,i)
+     \sif      if <code class="special">{ }</code>                              (n,v,i)
+     \sie      if else                             (n,v,i)
+     \sife     if <code class="special">{ }</code> else <code class="special">{ }</code>                     (n,v,i)
+     \se       else <code class="special">{ }</code>                            (n,v,i)
+     \sw       while                               (n,i)
+     \swh      while <code class="special">{ }</code>                           (n,v,i)
+     \ss       switch                              (n,v,i)
+     \sc       case                                (n,i)
+     \sb       <code class="special">{}</code>                                  (n,v,i)
+
+  -- Idioms -------------------------------------------------------------
+
+     \if       function                            (n,v,i)
+     \isf      function static                     (n,v,i)
+     \im       main()                              (n,v,i)
+     \ie       enum   + typedef                    (n,i)
+     \is       struct + typedef                    (n,i)
+     \iu       union  + typedef                    (n,i)
+     \isc      scanf()                             (n,i)
+     \ipr      printf()                            (n,i)
+     \ica      p=calloc()                          (n,i)
+     \ima      p=malloc()                          (n,i)
+     \ire      p=realloc()                         (n,i)
+     \isi      sizeof()                            (n,v,i)
+     \ias      assert()                            (n,v)
+     \ii       open input file                     (n,i)
+     \io       open output file                    (n,i)
+     \ifsc     fscanf                              (n,i)
+     \ifpr     fprintf                             (n,i)
+  [n]\i0       for( x=0; x&lt;n; x+=1 )               (n,v,i)
+  [n]\in       for( x=n-1; x&gt;=0; x-=1 )            (n,v,i)
+
+  -- Preprocessor -------------------------------------------------------
+
+     \pih      include standard library header     (n,i)
+     \pg       #include <code class="special">&lt;&gt;</code>  (global)               (n,i)
+     \pl       #include ""  (local)                (n,i)
+     \pd       #define                             (n,i)
+     \pu       #undef                              (n,i)
+     \pif      #if  #endif                         (n,v,i)
+     \pie      #if  #else #endif                   (n,v,i)
+     \pid      #ifdef #else #endif                 (n,v,i)
+     \pin      #ifndef #else #endif                (n,v,i)
+     \pind     #ifndef #def #endif                 (n,v,i)
+     \pe       #error                              (n,i)
+     \pl       #line                               (n,i)
+     \pp       #pragma                             (n,i)
+     \pw       #warning                            (n,i)
+     \pi0      #if 0 #endif                        (n,v,i)
+     \pr0      remove #if 0 #endif                 (n,i)
+
+  -- Snippets -----------------------------------------------------------
+
+     \nr       read code snippet                   (n,i)
+     \nv       view code snippet (read-only)       (n,i)
+     \nw       write code snippet                  (n,v,i)
+     \ne       edit code snippet                   (n,i)
+
+  [n]\nf       pick up function prototype          (n,v,i)
+  [n]\np       pick up function prototype          (n,v,i)
+  [n]\nm       pick up method prototype            (n,v,i)
+     \ni       insert prototype(s)                 (n,i)
+     \nc       clear  prototype(s)                 (n,i)
+     \ns       show   prototype(s)                 (n,i)
+
+     \ntl      edit local templates                (n,i)
+     \ntr      reread templates                    (n,i)
+     \njt      include jump tags                   (n,i)
+
+  -- C++ ----------------------------------------------------------------
+
+     \+ih      include C++ standard library header (n,i)
+     \+ich     include C standard library header   (n,i)
+     \+om      output manipulators                 (n,i)
+     \+fb      ios flag bits                       (n,i)
+     \+c       class                               (n,i)
+     \+cn      class (using new)                   (n,i)
+     \+tc      template class                      (n,i)
+     \+tcn     template class (using new)          (n,i)
+     \+ec      error class                         (n,i)
+     \+tf      template function                   (n,i)
+     \+tr      try ... catch                       (n,v,i)
+     \+ca      catch                               (n,v,i)
+     \+caa     catch(...)                          (n,v,i)
+     \+ex      extern "C" <code class="special">{  }</code>                     (n,v,i)
+     \+oif     open input file                     (n,v,i)
+     \+oof     open output file                    (n,v,i)
+     \+uns     using namespace std;                (n,v,i)
+     \+un      using namespace xxx;                (n,v,i)
+     \+unb     namespace xxx <code class="special">{  }</code>                  (n,v,i)
+     \+na      namespace alias                     (n,v,i)
+     \+rt      RTTI                                (n,v,i)
+
+     \+ic      class implementation                (n,i)
+     \+icn     class (using new) implementation    (n,i)
+     \+im      method implementation               (n,i)
+     \+ia      accessor implementation             (n,i)
+     \+itc     template class implementation       (n,i)
+     \+itcn    template class (using new) impl.    (n,i)
+     \+itm     template method implementation      (n,i)
+     \+ita     template accessor implementation    (n,i)
+     \+ioi     operator &gt;&gt;                         (n,i)
+     \+ioo     operator &lt;&lt;                         (n,i)
+
+  -- Run ----------------------------------------------------------------
+
+    \rc       save and compile                    (n,i)
+    \rl       link                                (n,i)
+    \rr       run                                 (n,i)
+    \ra       set comand line arguments           (n,i)
+    \rd       run debugger                        (n,i)
+
+    \re       executable to run                   (n,i)
+
+    \rp       run splint                          (n,i)
+    \rpa      cmd. line arg. for splint           (n,i)
+    \rcc      run cppcheck                        (n,i)
+    \rccs     severity for cppcheck               (n,i)
+    \rk       run CodeCheck (TM)                  (n,i)
+    \rka      cmd. line arg. for CodeCheck (TM)   (n,i)
+    \ri       run indent                          (n,v,i)
+ [n]\rh       hardcopy buffer                     (n,v,i)
+    \rs       show plugin settings                (n,i)
+    \rx       set xterm size                      (n, only Linux/UNIX &amp; GUI)
+    \ro       change output destination           (n,i)
+
+The file c-hotkeys.pdf contains a reference card for these key mappings.
+Multi-line inserts and code snippets will be indented after insertion.
+
+The hotkeys are defined in the template files (part of this csupport
+plugin package) and described in the document c-hotkeys.pdf
+
+Changing the default map leader '\'
+</pre><hr><pre>The map leader can be changed by the user by setting a global variable in the
+file .vimrc
+
+<code class="example"> let g:C_MapLeader  = ','</code>
+
+The map leader is now a comma. The 'line end comment' command is now defined
+as ',cl'. This setting will be used as a so called local leader and influences
+only files with filetype 'c' and 'cpp'.
+
+The configured mapleader can also be used in the ftplugin, by calling the
+functions <b class="vimtag"><a name="C_SetMapLeader()">C_SetMapLeader()</a></b> and <b class="vimtag"><a name="C_ResetMapLeader()">C_ResetMapLeader()</a></b> . The maps created
+between the two calls will use |<code class="badlink">g:C_MapLeader</code>| as the |<code class="badlink">&lt;LocalLeader&gt;</code>|:
+
+<code class="example">  call C_SetMapLeader ()</code>
+<code class="example"></code>
+<code class="example">  map  <code class="special">&lt;buffer&gt;</code>  <code class="special">&lt;LocalLeader&gt;</code>eg  :echo "Example Map :)"<code class="special">&lt;CR&gt;</code></code>
+<code class="example"></code>
+<code class="example">  call C_ResetMapLeader ()</code>
+
+
+</pre><hr><pre>3.  HOTKEYS                                                 <b class="vimtag"><a name="csupport-hotkeys">csupport-hotkeys</a></b>
+</pre><hr><pre>
+The following hotkeys are defined in normal, visual and insert mode:
+
+       F9   compile and link
+   Alt-F9   write buffer and compile
+  Ctrl-F9   run executable
+ Shift-F9   set command line arguments
+
+ Shift-F2   switch between source files and header files
+
+The hotkeys are defined in the file type plugin  c.vim.  All hotkeys from the
+non-GUI mode also work for gVim (see |<a href="csupport.html#csupport-usage-vim">csupport-usage-vim</a>|).
+
+Shift-F2 can be used to switch between source files and header files if the
+plugin a.vim (http://vim.sourceforge.net/scripts/script.php?script_id=31) is
+present.  To suppress the creation of a new header file when switching from a
+source file the file ~/.vimrc should contain a line
+
+<code class="example">  let g:alternateNoDefaultAlternate = 1</code>
+
+A header file will only be opened if it already exists.
+
+The Shift-key is dead when you are working with Vim in a console terminal
+(non-Gui). You could add
+
+<code class="example">  noremap   \a        :A<code class="special">&lt;CR&gt;</code></code>
+<code class="example"> inoremap   \a   <code class="special">&lt;C-C&gt;</code>:A<code class="special">&lt;CR&gt;</code></code>
+
+to get a hot key for this case.
+
+</pre><hr><pre>4.  CUSTOMIZATION                                            <b class="vimtag"><a name="csupport-custom">csupport-custom</a></b>
+</pre><hr><pre>
+</pre><hr><pre>4.1  GLOBAL VARIABLES                              <b class="vimtag"><a name="csupport-custom-glob-vars">csupport-custom-glob-vars</a></b>
+</pre><hr><pre>
+Several global variables are checked by the script to customize it:
+
+ ----------------------------------------------------------------------------
+ GLOBAL VARIABLE           DEFAULT VALUE                    TAG (see below)
+ ----------------------------------------------------------------------------
+ g:C_CExtension             'c'
+ g:C_CFlags                 '-Wall -g -O0 -c'
+ g:C_CodeCheckExeName       'check'
+ g:C_CodeCheckOptions       '-K13'
+ g:C_CodeSnippets           plugin_dir.'/c-support/codesnippets/'
+ g:C_Ctrl_j                 'on'
+ g:C_Debugger               'gdb'
+ g:C_Dictionary_File        ''
+ g:C_GlobalTemplateFile     plugin_dir.'c-support/templates/Templates'
+ g:C_GuiSnippetBrowser      'gui'
+ g:C_GuiTemplateBrowser     'gui'
+ g:C_InsertFileHeader       'yes'
+ g:C_LFlags                 '-Wall -g -O0'
+ g:C_Libs                   '-lm'
+ g:C_LineEndCommColDefault  49
+ g:C_LoadMenus              'yes'
+ g:C_CreateMenusDelayed     'no'
+ g:C_LocalTemplateFile      $HOME.'/.vim/c-support/templates/Templates'
+ g:C_MapLeader              '\'
+ g:C_MenuHeader             'yes'
+ g:C_NonCComment            '#'
+ g:C_OutputGvim             'vim'
+ g:C_Printheader            "%&lt;%f%h%m%&lt;  %=%<code class="special">{strftime('%x %X')}</code>     Page %N"
+ g:C_RootMenu               '&amp;C\/C\+\+.'
+ g:C_SourceCodeExtensions   'c cc cp cxx cpp CPP c++ C i ii'
+ g:C_TypeOfH                'cpp'
+ g:C_VimCompilerName        gcc
+ g:C_XtermDefaults          '-fa courier -fs 12 -geometry 80x24'
+
+ Linux/UNIX:
+  g:C_CCompiler             'gcc'
+  g:C_CplusCompiler         'g++'
+  g:C_ExeExtension          ''
+  g:C_Man                   'man'
+  g:C_ObjExtension          '.o'
+ Windows:
+  g:C_CCompiler             'gcc.exe'
+  g:C_CplusCompiler         'g++.exe'
+  g:C_ExeExtension          '.exe'
+  g:C_Man                   'man.exe'
+  g:C_ObjExtension          '.obj'
+
+The variable plugin_dir will automatically be set to one of the following values:
+  $HOME.'/.vim/'        for Linux/Unix
+  $VIM.'/vimfiles/'     for Windows
+
+
+ ----------------------------------------------------------------------------
+ GLOBAL VARIABLE           SHORT EXPLANATION
+ ----------------------------------------------------------------------------
+ g:C_CCompiler             : The name of the C compiler.
+ g:C_CExtension            : Extension of C files. Everything else is C++.
+ g:C_CFlags                : Compiler flags used for a compilation.
+ g:C_CodeCheckExeName      : The name of the CodeCheck (TM) executable (the
+                             default is 'check')
+ g:C_CodeCheckOptions      : Default options for CodeCheck (TM) (see
+                             |<a href="csupport.html#csupport-run-codecheck">csupport-run-codecheck</a>|).
+ g:C_CodeSnippets          : The name of the code snippet directory (see
+                             |<a href="csupport.html#csupport-snippets">csupport-snippets</a>|).
+ g:C_CplusCompiler         : The name of the C++ compiler.
+ g:C_Ctrl_j                : hotkey Ctrl-j  'on'/'off' (see |<a href="csupport.html#csupport-Ctrl-j">csupport-Ctrl-j</a>|)
+ g:C_Debugger              : the default debugging: 'gdb', 'kdbg', or 'ddd'
+ g:C_Dictionary_File       : The name(s) of the dictionary file(s) used for
+                             word completion (see also |<a href="csupport.html#csupport-dictionary">csupport-dictionary</a>|)
+ g:C_ExeExtension          : C/C+ file extension for executables (leading
+                             point required if not empty)
+ g:C_GlobalTemplateFile    : sets the global template file (see |<a href="csupport.html#csupport-templates">csupport-templates</a>|)
+ g:C_GuiSnippetBrowser     : code snippet browser: 'gui', 'commandline'
+ g:C_GuiTemplateBrowser    : code template browser: 'gui', 'explorer', 'commandline'
+ g:C_InsertFileHeader      : insert file prolog in a new file ('yes', 'no')
+ g:C_LFlags                : Compiler flags used for linkage.
+ g:C_Libs                  : Libraries to link with.
+ g:C_LineEndCommColDefault : Default starting column for end-of-line comments.
+ g:C_LoadMenus             : Load menus and mappings ("yes", "no") at startup.
+ g:C_CreateMenusDelayed    : Load menus only with filetypes 'c' or 'cpp'
+ g:C_LocalTemplateFile     : sets the local template file  (see |<a href="csupport.html#csupport-templates">csupport-templates</a>|)
+ g:C_Man                   : The name of the man utility.
+ g:C_MapLeader             : the map leader for hotkeys (see ||<a href="csupport.html#csupport-usage-vim">csupport-usage-vim</a>|)
+ g:C_MenuHeader            : Switch the submenu header on/off.
+ g:C_NonCComment           : comment leader string for a non-C comment
+ g:C_ObjExtension          : C/C+ file extension for objects (leading point
+                             required if not empty)
+ g:C_OutputGvim            : when program is running output goes to the vim command
+                             line ("vim"), to a buffer ("buffer") or to an xterm ("xterm").
+ g:C_Printheader           : hardcopy: definition of the page header
+ g:C_RootMenu              : The name of the root menu entry of this plugin
+                             (see |<a href="csupport.html#csupport-custom-root">csupport-custom-root</a>|).
+ g:C_SourceCodeExtensions  : filename extensions for C/C++ implementation files
+ g:C_TypeOfH               : filetype of header files with extension 'h' (c,cpp)
+ g:C_VimCompilerName       : the compiler name used by :compiler
+ g:C_XtermDefaults         : the xterm defaults
+
+To override the default add appropriate assignments to ~/.vimrc .
+The following global variables can be changed on the fly from the Vim command
+line, i.e. without restarting the editor:
+
+<code class="example">  C_CCompiler</code>
+<code class="example">  C_CFlags</code>
+<code class="example">  C_LFlags</code>
+<code class="example">  C_Libs</code>
+<code class="example">  C_CplusCFlags</code>
+<code class="example">  C_CplusCompiler</code>
+<code class="example">  C_CplusLFlags</code>
+<code class="example">  C_CplusLibs</code>
+<code class="example">  C_Debugger</code>
+
+If you change g:C_CFlags or g:C_LFlags, you have change to change the other
+accordingly. The same holds for g:C_CplusCFlags and g:C_CplusLFlags (see also
+|<a href="csupport.html#csupport-run-buffer">csupport-run-buffer</a>|).
+
+</pre><hr><pre>4.2  THE ROOT MENU                                      <b class="vimtag"><a name="csupport-custom-root">csupport-custom-root</a></b>
+</pre><hr><pre>
+The variable g:C_RootMenu, if set (in '.vimrc' or in '.gvimrc'), gives the
+name of the single gVim root menu entry in which the C/C++ submenus will be
+put.  The default is
+
+<code class="example">  '&amp;C\/C\+\+.'</code>
+                 ''
+<code class="note">Note</code> the terminating dot.
+
+If you want to set the plugin root menu into another menu, e.g. 'Plugin',
+this is done by the following line in '.vimrc'
+
+<code class="example">  let g:C_RootMenu = '&amp;Plugin.&amp;C\/C\+\+.'</code>
+
+</pre><hr><pre>4.3  SYSTEM-WIDE INSTALLATION                           <b class="vimtag"><a name="csupport-system-wide">csupport-system-wide</a></b>
+</pre><hr><pre>
+A system-wide installation (one installation for all users) of the plug-in can
+be done. This will mean however, that a user can not edit the template
+library, for example to set his own name. So in case of a system-wide
+installation, every user can have an own set of templates (called local
+templates), which are localed in each users' home directory.
+<code class="note">Note:</code> As you might have guessed, this behavior is much more inspired by Linux
+than Windows.
+
+A system-wide installation is done as follows.
+
+As *** SUPERUSER *** :
+
+(1) Find the Vim installation directory.
+The Vim Ex command ':echo $VIM' gives '/usr/local/share/vim' or something like
+that. Beyond this directory you will find the Vim installation,  e.g. in
+'/usr/local/share/vim/vim73' if Vim version 7.3 has been installed
+(Windows: 'C:\Program Files\Vim').
+
+(2) Create a new subdirectory 'vimfiles', e.g. '/usr/local/share/vim/vimfiles'
+(Windows: 'C:\Program Files\Vim\vimfiles').
+
+(3) Install C/C++ Support
+Copy the archive cvim.zip to this new directory and unpack it:
+  unzip cvim.zip
+
+(4) Generate the help tags:
+  :helptags $VIM/vimfiles/doc
+
+SPECIAL CASES. Some Linux distributions use non-standard names for Vim
+directories. SUSE has a directory '/usr/share/vim/site' to put plugins in.
+These directories will not be found automatically.  After installing the
+plugin below '/usr/share/vim/site' the use of the templates will be enabled by
+the following line in '~/.vimrc':
+
+<code class="example">  let g:C_GlobalTemplateFile = '/usr/share/vim/site/c-support/templates/Templates'</code>
+
+As *** USER *** :
+
+Create your private snippet directory:
+
+<code class="example">  mkdir --parents  ~/.vim/c-support/codesnippets</code>
+
+You may want to copy the snippets coming with this plugin (in
+$VIM/vimfiles/c-support/codesnippets) into the new directory or to set a
+link to the global directory.
+
+Create your private template directory:
+
+<code class="example">  mkdir --parents  ~/.vim/c-support/templates</code>
+
+Create a private template file 'Templates' (compulsory) in this directory to
+overwrite some macros, e.g.
+
+<code class="example"> SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
+<code class="example"> SetMacro( 'AUTHORREF',   'fgm' )</code>
+<code class="example"> SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )</code>
+<code class="example"> SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )</code>
+<code class="example"> SetMacro( 'COPYRIGHT',   'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
+
+You can also have local templates which override the global ones. To see a
+messages in this case set a global variable in '~/.vimrc' (Windows: '~\_vimrc'):
+
+<code class="example">  let g:Templates_MapInUseWarn = 0</code>
+
+The default is '1'.
+
+</pre><hr><pre>5.  TEMPLATE FILES AND TAGS                               <b class="vimtag"><a name="csupport-templates">csupport-templates</a></b>
+</pre><hr><pre>
+</pre><hr><pre>5.1  TEMPLATE FILES                                 <b class="vimtag"><a name="csupport-templates-files">csupport-templates-files</a></b>
+</pre><hr><pre>
+Nearly all menu items insert code snippets or comments. All of these are
+contained within template files and can be changed by the user to meet their
+requirements. The menu shortcuts (e.g. 'c' for the Comments menu) and the
+menu item hotkeys (e.g. '\ct' insert date and time) are also defined in the
+templates.
+The template engine comes as a separate plug-in contributed by Wolfgang Mehner.
+This section is a short introduction to this template system. Please see
+|<a href="templatesupport.html#templatesupport.txt">templatesupport</a>| for more information.
+
+The master template file is '$HOME/.vim/c-support/templates/Templates' for
+a user installation and  '$VIM/vimfiles/c-support/templates/Templates' for
+a system-wide installation (see |<a href="csupport.html#csupport-system-wide">csupport-system-wide</a>|).
+
+The master template file starts with a macro section followed by templates for
+single menu items or better by including other template files grouping the
+templates according to the menu structure of this plug-in. The master file
+usually looks like this (my settings as an example):
+
+<code class="example"> &sect; ==========================================================</code>
+<code class="example"> &sect;  User Macros</code>
+<code class="example"> &sect; ==========================================================</code>
+<code class="example"></code>
+<code class="example"> SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
+<code class="example"> SetMacro( 'AUTHORREF',   'fgm' )</code>
+<code class="example"> SetMacro( 'COMPANY',     '' )</code>
+<code class="example"> SetMacro( 'COPYRIGHT',   'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
+<code class="example"> SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )</code>
+<code class="example"> SetMacro( 'LICENSE',     'GNU General Public License' )</code>
+<code class="example"> SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )</code>
+<code class="example"></code>
+<code class="example"> SetStyle( 'C' )</code>
+<code class="example"></code>
+<code class="example"> &sect; ==========================================================</code>
+<code class="example"> &sect;  File Includes and Shortcuts</code>
+<code class="example"> &sect; ==========================================================</code>
+<code class="example"></code>
+<code class="example"> MenuShortcut( 'Comments',     'c' )</code>
+<code class="example"> MenuShortcut( 'Statements',   's' )</code>
+<code class="example"> MenuShortcut( 'Idioms',       'i' )</code>
+<code class="example"> MenuShortcut( 'Preprocessor', 'p' )</code>
+<code class="example"> MenuShortcut( 'Snippets',     'n' )</code>
+<code class="example"> MenuShortcut( 'C++',          'c' )</code>
+<code class="example"> &sect;</code>
+<code class="example"> IncludeFile( 'snippets.template'     )</code>
+<code class="example"> &sect;</code>
+<code class="example"> == USE STYLES : C ==</code>
+<code class="example"> IncludeFile( 'c.comments.template'     )</code>
+<code class="example"> IncludeFile( 'c.cpp.template'          )</code>
+<code class="example"> IncludeFile( 'c.idioms.template'       )</code>
+<code class="example"> IncludeFile( 'c.preprocessor.template' )</code>
+<code class="example"> IncludeFile( 'c.statements.template'   )</code>
+<code class="example"> == ENDSTYLES ==</code>
+<code class="example"> &sect;</code>
+<code class="example"> == USE STYLES : CPP ==</code>
+<code class="example"> IncludeFile( 'cpp.comments.template'     )</code>
+<code class="example"> IncludeFile( 'cpp.cpp.template'          )</code>
+<code class="example"> IncludeFile( 'cpp.idioms.template'       )</code>
+<code class="example"> IncludeFile( 'cpp.preprocessor.template' )</code>
+<code class="example"> IncludeFile( 'cpp.statements.template'   )</code>
+<code class="example"> == ENDSTYLES ==</code>
+<code class="example"></code>
+Lines starting with a section sign (&sect;) are comments. The section starting with
+
+<code class="example">  SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
+
+assigns values to predefined tags (macros).  Arbitrary user-defined macros are
+possible. The macro name must follows the rules for a C language identifier:
+first character letter  or underscore; case matters; digits are allowed
+beginning with the second character.
+
+The statement
+
+<code class="example">  IncludeFile( 'c.comments.templates' )</code>
+
+includes the templates from the file 'c.comments.templates' (in the same
+directory). An absolute path would also be possible.  The statement
+
+<code class="example">  MenuShortcut( 'Comments',      'c' )</code>
+
+sets 'c' as the shortcut for the Comments menu.
+
+</pre><hr><pre>5.2  MACROS                                        <b class="vimtag"><a name="csupport-templates-macros">csupport-templates-macros</a></b>
+</pre><hr><pre>
+The following macro names are predefined. The first group is used to
+personalize templates.
+
+<code class="example"> |<code class="badlink">BASENAME</code>|        filename without path and suffix</code>
+<code class="example"> |<code class="badlink">DATE</code>|            the preferred date representation for the current locale</code>
+<code class="example">                    without the time</code>
+<code class="example"> |<code class="badlink">FILENAME</code>|        filename without path</code>
+<code class="example"> |<code class="badlink">PATH</code>|            path without filename</code>
+<code class="example"> |<code class="badlink">SUFFIX</code>|          filename suffix</code>
+<code class="example"> |<code class="badlink">TIME</code>|            the preferred time representation for the current locale</code>
+<code class="example">                    without the date and the time zone or name or abbreviation</code>
+<code class="example"> |<code class="badlink">YEAR</code>|            the year as a decimal number including the century</code>
+
+ ----------------------------------------------------------------------------
+ PREDEFINED TAGS USED IN TEMPLATES
+ ----------------------------------------------------------------------------
+ <code class="special">&lt;CURSOR&gt;</code>           The cursor position after insertion of a template.
+ <code class="special">&lt;+text+&gt;</code>,<code class="special">&lt;-text-&gt;</code>  See |<a href="csupport.html#csupport-templates-jumptags">csupport-templates-jumptags</a>|.
+ <code class="special">{+text+}</code>,<code class="special">{-text-}</code>
+
+ <code class="special">&lt;SPLIT&gt;</code>            The split point when inserting in visual mode
+                    (see|<a href="csupport.html#csupport-templates">csupport-templates</a>|)
+
+A dependent template file can start with its own command section. There is no
+need to have all user defined macros in the master file.
+
+
+</pre><hr><pre>5.2.1   USER DEFINED FORMATS FOR DATE AND TIME    <b class="vimtag"><a name="csupport-templates-date">csupport-templates-date</a></b>
+</pre><hr><pre>The format for <b class="vimtag"><a name="|DATE|">|DATE|</a></b> ,<b class="vimtag"><a name="|TIME|">|TIME|</a></b> , and<b class="vimtag"><a name="|YEAR|">|YEAR|</a></b> can be set by the user. The
+defaults are
+Example:
+
+<code class="example">  |<code class="badlink">DATE</code>|        '%x'</code>
+<code class="example">  |<code class="badlink">TIME</code>|        '%X'</code>
+<code class="example">  |<code class="badlink">YEAR</code>|        '%Y'</code>
+
+See the manual page of the C function strftime() for the format.  The accepted
+format depends on your system, thus this is not portable!  The maximum length
+of the result is 80 characters.
+
+User defined formats can be set using the following function calls in the
+master template file is '$HOME/.vim/c-support/templates/Templates',  e.g.
+
+<code class="example">  SetFormat( 'DATE', '%D'      )</code>
+<code class="example">  SetFormat( 'TIME', '%H:%M'   )</code>
+<code class="example">  SetFormat( 'YEAR', 'year %Y' )</code>
+<code class="example"></code>
+</pre><hr><pre>5.3  TEMPLATES                                      <b class="vimtag"><a name="csupport-templates-names">csupport-templates-names</a></b>
+</pre><hr><pre>
+5.3.1    Template definition                <b class="vimtag"><a name="csupport-templates-definition">csupport-templates-definition</a></b>
+The template behind a menu entry is identified by a given name. The first part
+of the name identifies the menu name, the second part identifies the item.
+A template definition starts with a template header with the following syntax:
+
+  == menu_name.template_name == options ==
+
+The options are described here: |<a href="templatesupport.html#template-support-options">template-support-options</a>|.
+
+5.3.2  The jump tags <code class="special">&lt;+text+&gt;</code> etc.                <b class="vimtag"><a name="csupport-templates-jumptags">csupport-templates-jumptags</a></b>
+
+There are four jump tag types which can be used as jump targets in templates:
+
+ <code class="special">&lt;+text+&gt;</code>   Can be jumped to by hitting Ctrl-j.
+ <code class="special">{+text+}</code>   Same as <code class="special">&lt;+text+&gt;</code>. Used in cases where indentation gives unwanted
+            results with the first one.
+
+ <code class="special">&lt;-text-&gt;</code>   Same as the two above. Will be removed if the template is used
+ <code class="special">{-text-}</code>   in visual mode.
+
+The text inside the brackets is userdefined and can be empty. The text can be
+composed from letters (uppercase and lowercase), digits, and underscores.
+After the insertion of an template these jump targets will be highlighted.
+
+5.3.3  Command Ctrl-j                                        <b class="vimtag"><a name="csupport-Ctrl-j">csupport-Ctrl-j</a></b>
+
+Use the command Ctrl-j to jump to the next target. The target will be removed
+and the mode will switched to insertion. Ctrl-j works in normal and in insert
+mode.  The template for an if-else-statement can be written as follows:
+
+<code class="example">  == Statements.if, else == map:sie, sc:i ==</code>
+<code class="example">  if <code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">    <code class="special">&lt;SPLIT&gt;</code><code class="special">&lt;-IF_PART-&gt;</code></code>
+<code class="example">  else</code>
+<code class="example">    <code class="special">&lt;+ELSE_PART+&gt;</code></code>
+<code class="example">  endif</code>
+
+The cursor will be set as shown. When the condition is specified a Ctrl-j let
+you jump to the target <code class="special">&lt;-IF PART-&gt;</code> and deletes it.  When the block is written
+a Ctrl-j leads you to the else-part.  The target <code class="special">&lt;+ELSE_PART+&gt;</code> disappears and
+you can type on.
+
+</pre><hr><pre>5.5  BINDING A STYLE TO A FILE EXTENSION             <b class="vimtag"><a name="csupport-templates-bind">csupport-templates-bind</a></b>
+</pre><hr><pre>
+You can bind the existing styles to one or more filename extensions. To do so
+assign a Dictionary to the global variable g:C_Styles in '~/.vimrc' :
+
+<code class="example"> let g:C_Styles = { '<b class="vimtag"><a name=".c,">.c,</a></b>.h' : 'C', '<b class="vimtag"><a name=".cc,">.cc,</a></b>.cpp,<b class="vimtag"><a name=".c++,">.c++,</a></b>.C,<b class="vimtag"><a name=".hh,">.hh,</a></b>.h++,*.H' : 'CPP' }</code>
+
+A Dictionary is created with a comma separated list of entries in curly
+braces.  Each entry has a key and a value, separated by a colon.  Each key can
+only appear once. The keys are themselves a comma separated list of filename
+pattern. The values are existing styles defined in the template files.
+The given style will be set automatically when switching to a buffer or
+opening a new buffer with the associated filename pattern and supersedes the
+macro <b class="vimtag"><a name="|STYLE|">|STYLE|</a></b> .
+
+</pre><hr><pre>6.  C/C++ DICTIONARY                                     <b class="vimtag"><a name="csupport-dictionary">csupport-dictionary</a></b>
+</pre><hr><pre>
+The files
+
+ c-c++-keywords.list
+ k+r.list
+ stl_index.list
+
+are a part of this plugin and can be used (together with your own lists) as
+dictionaries for automatic word completion.  This feature is enabled by
+default. The default word lists are
+
+  plugin_dir/c-support/wordlists/c-c++-keywords.list
+  plugin_dir/c-support/wordlists/k+r.list
+  plugin_dir/c-support/wordlists/stl_index.list
+
+The variable plugin_dir will automatically be set by the plugin to one of the
+following values:
+  $HOME.'/.vim/'        for Linux/Unix
+  $VIM.'/vimfiles/'     for Windows
+If you want to use an additional list MyC.list put the following lines into
+ ~/.vimrc :
+
+<code class="example"> let g:C_Dictionary_File = PLUGIN_DIR.'/c-support/wordlists/c-c++-keywords.list,'.</code>
+<code class="example">       \                   PLUGIN_DIR.'/c-support/wordlists/k+r.list,'.</code>
+<code class="example">       \                   PLUGIN_DIR.'/c-support/wordlists/stl_index.list,'.</code>
+<code class="example">       \                   PLUGIN_DIR.'/c-support/wordlists/MyC.list'</code>
+
+When in file ~/.vimrc the name PLUGIN_DIR has to be replaced by $HOME or
+$VIM (see above). Whitespaces in the pathnames have to be escaped with a
+backslash.
+The right side is a comma separated list of files. <code class="note">Note</code> the point at the end
+of the first line (string concatenation) and the backslash in front of the
+second line (continuation line).
+You can use Vim's dictionary feature <code class="keystroke">CTRL-X</code>, <code class="keystroke">CTRL-K</code> (and <code class="keystroke">CTRL-P</code>, <code class="keystroke">CTRL-N</code>).
+
+</pre><hr><pre>7.  EXTENDING  ctags                                          <b class="vimtag"><a name="csupport-ctags">csupport-ctags</a></b>
+</pre><hr><pre>
+</pre><hr><pre>7.1  make AND qmake                                      <b class="vimtag"><a name="csupport-ctags-make">csupport-ctags-make</a></b>
+</pre><hr><pre>
+The use of the Vim plugin taglist.vim (Author: Yegappan Lakshmanan) is highly
+recommended. It uses the program ctags which generates tag files for 3 dozen
+languages (Exuberant Ctags, Darren Hiebert, http://ctags.sourceforge.net).
+With the following extensions the list of targets in a makefile can be shown
+in the taglist window.
+
+ 1) Append the file customization.ctags to the file $HOME/.ctags .
+
+ 2) Add the following lines (from customization.vimrc) to $HOME/.vimrc :
+
+<code class="example">  "</code>
+<code class="example">  "-------------------------------------------------------------------</code>
+<code class="example">  " taglist.vim : toggle the taglist window</code>
+<code class="example">  " taglist.vim : define the title texts for make</code>
+<code class="example">  " taglist.vim : define the title texts for qmake</code>
+<code class="example">  "-------------------------------------------------------------------</code>
+<code class="example">   noremap <code class="special">&lt;silent&gt;</code> <code class="special">&lt;F11&gt;</code>  <code class="special">&lt;Esc&gt;</code><code class="special">&lt;Esc&gt;</code>:Tlist<code class="special">&lt;CR&gt;</code></code>
+<code class="example">  inoremap <code class="special">&lt;silent&gt;</code> <code class="special">&lt;F11&gt;</code>  <code class="special">&lt;Esc&gt;</code><code class="special">&lt;Esc&gt;</code>:Tlist<code class="special">&lt;CR&gt;</code></code>
+<code class="example"></code>
+<code class="example">  let tlist_make_settings  = 'make;m:makros;t:targets;i:includes'</code>
+<code class="example">  let tlist_qmake_settings = 'qmake;t:SystemVariables'</code>
+<code class="example"></code>
+<code class="example">  if has("autocmd")</code>
+<code class="example">    " ----------  qmake : set file type for *.pro  ----------</code>
+<code class="example">    autocmd BufNewFile,BufRead *.pro  set filetype=qmake</code>
+<code class="example">  endif " has("autocmd")</code>
+
+ 3) restart vim/gvim
+
+The two maps will toggle the taglist window (hotkey F11) in all editing modes.
+The two assignments define the headings for the (q)make sections in the
+taglist window.  The autocmd set the file type 'qmake' for the filename
+extension 'pro' (ctags needs this).
+
+</pre><hr><pre>7.2  TEMPLATES                                      <b class="vimtag"><a name="csupport-ctags-templates">csupport-ctags-templates</a></b>
+</pre><hr><pre>
+If you frequently change the plugin  templates and you are using the taglist
+plugin (section above) you may want to use this plugin for navigation. This is
+achieved in two steps. First add a new language definition to  the file
+$HOME/.ctags :
+
+<code class="example">  --langdef=template</code>
+<code class="example">  --langmap=template:.template,TEMPLATE</code>
+<code class="example">  --regex-template=/^==\s+([^=]+)\s+==\s*(\s+==\s+([^=]+)\s+==)?/\1/t,template/</code>
+
+Now add the following lines to the file $HOME/.vimrc :
+
+<code class="example">  let tlist_template_settings  = 'template;t:template'</code>
+<code class="example">  "---------------------------------------------------------------</code>
+<code class="example">  " plugin templates : set filetype for *.template</code>
+<code class="example">  "---------------------------------------------------------------</code>
+<code class="example">  if has("autocmd")</code>
+<code class="example">    autocmd BufNewFile,BufRead Templates  set filetype=template</code>
+<code class="example">    autocmd BufNewFile,BufRead *.template  set filetype=template</code>
+<code class="example">  endif " has("autocmd")</code>
+
+The assignment defines the heading for the template section in the taglist
+window.  The autocmds set the file type 'template' for the main template file
+'Templates' and the includefiles '*.template' (if any).
+
+</pre><hr><pre>8.  FOLDING                                                 <b class="vimtag"><a name="csupport-folding">csupport-folding</a></b>
+</pre><hr><pre>
+This plugin can be used together with folding.
+
+There are a few peculiarities when the cursor is on a closed fold before
+inserting a template:
+
+Normal mode
+</pre><hr><pre>Inserting blocks of complete lines below and above a fold (e.g. frame
+comments) and inserting at the top of a buffer (e.g. file description) works
+as usual.
+Insertions which go to the end of a line (e.g. end-of-line comments) and
+insertions which go to the cursor position (e.g. 'sizeof()') will be suppressed
+and a warning will be shown.
+
+Visual mode
+</pre><hr><pre>A range of lines containing closed folds can be surrounded by constructs which
+have a visual mode, e.g. a for-loop:
+
+<code class="example">    for ( ; ; ) {</code>
+<code class="example">  +---  4 lines: {------------------------------------------------------------</code>
+<code class="example">    }</code>
+
+See |<code class="badlink">folding</code>| for more information on folding.
+
+</pre><hr><pre>9.  Additional Mappings                                 <b class="vimtag"><a name="csupport-ad-mappings">csupport-ad-mappings</a></b>
+</pre><hr><pre>
+There are a few additional filetype specific key mappings defined in
+'~/.vim/ftplugin/c.vim'.
+
+Complete a classical C comment: '/<b class="vimtag"><a name="' %20%3E '%2F">' =&gt; '/</a></b> | */' (modes: i,v).
+
+Complete a classical C multi-line comment (mode: i):
+  '/<b class="vimtag"><a name="%3CCR%3E' %20%3E  %2F">&lt;CR&gt;' =&gt;  /</a></b>
+                * |
+                */
+
+Open a block (modes: i,v):
+  '{<code class="special">&lt;CR&gt;</code>' =&gt;  {
+                |
+              }
+In visual mode the content of the new block will be indented.
+
+The file customization.cpp.vim provides additional insert mode mappings to
+facilitate writting cin and cout statements, e.g.
+
+<code class="example">  '<code class="special">&lt;&lt;'    -&gt;</code> ' &lt;&lt; |'</code>
+<code class="example">  '<code class="special">&lt;&lt;"'   -&gt;</code> ' &lt;&lt; "|" '</code>
+<code class="example">  '<code class="special">&lt;&lt;;'   -&gt;</code> ' &lt;&lt; "|\n";'</code>
+<code class="example">  '&gt;&gt;'    -&gt; ' &gt;&gt; |'</code>
+
+Copy this file to ~/.vim/ftplugin and rename it to 'cpp.vim'.
+
+</pre><hr><pre>10.  WINDOWS PARTICULARITIES                                <b class="vimtag"><a name="csupport-windows">csupport-windows</a></b>
+</pre><hr><pre>
+For a user installation the plugin should go into the directory structure below
+  $HOME/vimfiles/
+for a system installation below
+  $VIM/vimfiles/
+
+The values of the two variables can be found from inside Vim:
+   :echo $VIM
+or
+   :echo $HOME
+
+The configuration files for a user are
+
+  $HOME/_vimrc   and  $HOME/_gvimrc
+
+for the system
+
+  $VIM/_vimrc   and  $VIM/_gvimrc
+
+Compiler settings:
+
+It could be necessary to add further settings for your compiler.  To compile
+C++-programs using a Dev-C++ installation (http://www.bloodshed.net) the
+following item in $VIM/_vimrc is needed (depends on the Dev-C++ install
+directory):
+
+  let g:C_CFlags  = '-Wall -g -o0 -c -I c:\programs\dev-c++\include\g++'
+
+</pre><hr><pre>11.  ADDITIONAL TIPS                                           <b class="vimtag"><a name="csupport-tips">csupport-tips</a></b>
+</pre><hr><pre>
+(1) gVim. Toggle 'insert mode' <code class="special">&lt;--&gt;</code> 'normal mode' with the right mouse button
+    (see mapping in file costumization.gvimrc).
+
+(2) gVim. Use tear off menus.
+
+(3) Try 'Focus under mouse' as window behavior (No mouse click when the mouse
+    pointer is back from the menu item).
+
+(4) Use Emulate3Buttons "on" (X11) even for a 3-button mouse. Pressing left
+    and right button at the same time without moving your fingers is faster
+    then moving a finger to the middle button (often a wheel).
+
+</pre><hr><pre>12.  TROUBLESHOOTING                                <b class="vimtag"><a name="csupport-troubleshooting">csupport-troubleshooting</a></b>
+</pre><hr><pre>
+* I do not see any new main menu item.
+  - Was the archive extracted into the right directory?
+
+* How can I see what was loaded?
+  - Use ':scriptnames' from the Vim command line.
+
+* Some hotkeys do not work.
+  - The hotkeys might be in use by your graphical desktop environment. Under
+    KDE Ctrl-F9 is the hotkey which let you switch to the 9. desktop. The key
+    settings can usually be redefined.
+
+* The plug-in loads slowly.
+  - By default, the template library is read while the plug-in is loading,
+    since the templates also define most of the menu structure. To not slow
+    down the startup of Vim, you can choose to only create the C/C++-menu when
+    opening the first C/C++-file. For that, add this line to your ~/.vimrc:
+      let g:C_CreateMenusDelayed = 'yes'
+    The only downside is that you won't see the C/C++-menu before you start
+    working on a C-file, or use the menu entry "Tools-&gt;Load C Support".
+
+* After changing g:C_LFlags / g:C_CplusLFlags my source can not be linked or
+  run.
+  - The settings g:C_CFlags / g:C_CplusCFlags have to be changed accordingly
+    (see |<a href="csupport.html#csupport-run-buffer">csupport-run-buffer</a>|)
+
+* Splint and/or CodeCheck menu item not visible.
+  - The program is not installed or not found (path not set) or not executable.
+
+* Code incorrectly indented after template insertion. The indentation may be
+  incorrect inside blocks,  if the <code class="special">&lt;CURSOR&gt;</code> tag also appears inside the block.
+  See |<a href="templatesupport.html#template-support-templ-tags">template-support-templ-tags</a>| for a detailed explanation.
+
+</pre><hr><pre>13.  RELEASE <code class="note">NOTE</code>S                                    <b class="vimtag"><a name="csupport-release-notes">csupport-release-notes</a></b>
+</pre><hr><pre>See file c-support/doc/ChangeLog .
+
+</pre><hr><pre>vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
+</pre>
+<p><i>Generated by vim2html on Mo 21. Apr 18:16:15 CEST 2014</i></p>
+</body>
+</html>

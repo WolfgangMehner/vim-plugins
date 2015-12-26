@@ -1,0 +1,2925 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>VIM: templatesupport</title>
+<link rel="stylesheet" href="vim-stylesheet.css" type="text/css">
+</head>
+<body>
+<h2>TEMPLATESUPPORT</h2>
+<pre>
+<b class="vimtag"><a name="templatesupport.txt">templatesupport.txt</a></b>         MM Template Support                 July 19 2015
+
+MM Template Support                                        <b class="vimtag"><a name="template-support">template-support</a></b>
+
+                            Plug-in version 1.0alpha
+                        for Vim version 7.0 and above
+                 Wolfgang Mehner <code class="special">&lt;wolfgang-mehner at web.de&gt;</code>
+
+
+     --- The Maps &amp; Menus Template Support ... ---
+
+-- ... for Vim Users --
+
+This plug-in aims at providing extendible template libraries. A template
+library can assist in speeding up the writing of code, while at the same time
+ensuring a consistent style. The templates are written in an easy to use
+markup language, which enables the user to customize templates without much
+hassle.
+
+Menus and maps to access the templates are created automatically. While maps
+might or might not be the preferred way of inserting templates (as well as
+using Vim in general), the menus always provide an overview of the templates
+and the associated maps. This makes it quite easy to use the templates and
+learn their maps at the same time.
+
+-- ... for Plug-Ins --
+
+The template support is controlled by an API and thus can be integrated into
+another plug-in. A template library is essentially an object, several of which
+can exist in parallel. This makes it relatively easy to write a plug-in for
+the programming language of your choice.
+
+Here is a list of high profile plug-ins which use the template support:
+- Bash-Support (www.vim.org/scripts/script.php?script_id=365)
+- C-Support (www.vim.org/scripts/script.php?script_id=213)
+- Perl-Support (www.vim.org/scripts/script.php?script_id=556)
+
+</pre><hr><pre>0.  TABLE OF CONTENTS                              <b class="vimtag"><a name="template-support-contents">template-support-contents</a></b>
+</pre><hr><pre>
+   --- Part I - User Documentation ---
+
+ 1.    Introduction                          |<a href="templatesupport.html#template-support-intro">template-support-intro</a>|
+ 2.    Basic Usage                           |<a href="templatesupport.html#template-support-basics">template-support-basics</a>|
+ 3.    Template Library                      |<a href="templatesupport.html#template-support-library">template-support-library</a>|
+ 3.1    Personalization                      |<a href="templatesupport.html#template-support-lib-person">template-support-lib-person</a>|
+ 3.2    Interface Version                    |<a href="templatesupport.html#template-support-lib-interf">template-support-lib-interf</a>|
+ 4.    Templates                             |<a href="templatesupport.html#template-support-templates">template-support-templates</a>|
+ 4.1    Macros                               |<a href="templatesupport.html#template-support-templ-macro">template-support-templ-macro</a>|
+ 4.1.1   Predefined Macros                   |<a href="templatesupport.html#template-support-templ-predef">template-support-templ-predef</a>|
+ 4.1.2   Flags                               |<a href="templatesupport.html#template-support-templ-flag">template-support-templ-flag</a>|
+ 4.1.3   Format Specifiers                   |<a href="templatesupport.html#template-support-templ-format">template-support-templ-format</a>|
+ 4.2    Tags                                 |<a href="templatesupport.html#template-support-templ-tags">template-support-templ-tags</a>|
+ 4.3    Placement                            |<a href="templatesupport.html#template-support-templ-place">template-support-templ-place</a>|
+ 4.3.1   Visual Mode                         |<a href="templatesupport.html#template-support-templ-visual">template-support-templ-visual</a>|
+ 4.4    Maps &amp; Menus                         |<a href="templatesupport.html#template-support-templ-maps">template-support-templ-maps</a>|
+ 5.    Lists                                 |<a href="templatesupport.html#template-support-lists">template-support-lists</a>|
+ 5.1    Formats                              |<a href="templatesupport.html#template-support-lists-format">template-support-lists-format</a>|
+ 5.2    Hashes                               |<a href="templatesupport.html#template-support-lists-hash">template-support-lists-hash</a>|
+ 5.3    Menu Customization                   |<a href="templatesupport.html#template-support-lists-menu">template-support-lists-menu</a>|
+ 6.    Advanced Features                     |<a href="templatesupport.html#template-support-advanced">template-support-advanced</a>|
+ 6.1    Coding Styles                        |<a href="templatesupport.html#template-support-adv-styles">template-support-adv-styles</a>|
+ 6.2    File Pickers                         |<a href="templatesupport.html#template-support-adv-files">template-support-adv-files</a>|
+ 7.    Menus                                 |<a href="templatesupport.html#template-support-menus">template-support-menus</a>|
+ 8.    Help Templates                        |<a href="templatesupport.html#template-support-help-templ">template-support-help-templ</a>|
+ 9.    Configuration                         |<a href="templatesupport.html#template-support-config">template-support-config</a>|
+
+   --- Part II - API Documentation ---
+
+ 1.    API                                   |<a href="templatesupport.html#template-support-api">template-support-api</a>|
+ 1.1    Basic Usage                          |<a href="templatesupport.html#template-support-api-basic">template-support-api-basic</a>|
+ 1.2    Creating Maps and Menus              |<a href="templatesupport.html#template-support-api-maps">template-support-api-maps</a>|
+ 1.3    Access                               |<a href="templatesupport.html#template-support-api-access">template-support-api-access</a>|
+ 1.4    Miscellany                           |<a href="templatesupport.html#template-support-api-misc">template-support-api-misc</a>|
+ 2.    Backwards Compatibility               |<a href="templatesupport.html#template-support-backwards">template-support-backwards</a>|
+
+   --- Part III - Appendices ---
+
+ A.    Syntax                                |<a href="templatesupport.html#template-support-syntax">template-support-syntax</a>|
+ A.1    Command Section                      |<a href="templatesupport.html#template-support-syntax-cmd">template-support-syntax-cmd</a>|
+ A.2    Templates                            |<a href="templatesupport.html#template-support-syntax-templ">template-support-syntax-templ</a>|
+ A.3    Lists                                |<a href="templatesupport.html#template-support-syntax-list">template-support-syntax-list</a>|
+ B.    Commands                              |<a href="templatesupport.html#template-support-commands">template-support-commands</a>|
+ B.1    Command Section                      |<a href="templatesupport.html#template-support-cmd-cmd-sct">template-support-cmd-cmd-sct</a>|
+ B.2    Templates                            |<a href="templatesupport.html#template-support-cmd-templates">template-support-cmd-templates</a>|
+ C.    Options                               |<a href="templatesupport.html#template-support-options">template-support-options</a>|
+ C.1    Templates                            |<a href="templatesupport.html#template-support-opt-templ">template-support-opt-templ</a>|
+ C.2    List                                 |<a href="templatesupport.html#template-support-opt-list">template-support-opt-list</a>|
+ D.    Change Log                            |<a href="templatesupport.html#template-support-change-log">template-support-change-log</a>|
+ D.1    Interface Versions                   |<a href="templatesupport.html#template-support-change-interf">template-support-change-interf</a>|
+ E.    Credits                               |<a href="templatesupport.html#template-support-credits">template-support-credits</a>|
+
+</pre><hr><pre>
+
+
+<code class="section">  -------------------------------------------------------------------------- </code>
+<code class="section">  -------------------------------------------------------------------------- </code>
+
+<code class="section">   --------- PART I --- USER DOCUMENTATION --------- </code>
+
+<code class="section">  -------------------------------------------------------------------------- </code>
+<code class="section">  -------------------------------------------------------------------------- </code>
+
+
+
+</pre><hr><pre>1.  INTRODUCTION                                      <b class="vimtag"><a name="template-support-intro">template-support-intro</a></b>
+</pre><hr><pre>
+The manual at hand documents the Maps &amp; Menus Template Support. The next
+chapter |<a href="templatesupport.html#template-support-basics">template-support-basics</a>|, gives a short preview of the capabilities of
+the template support. Templates are listed, together with further
+configuration, in a so-called template library. Template libraries are
+explained in |<a href="templatesupport.html#template-support-library">template-support-library</a>|, followed by the description of
+templates in |<a href="templatesupport.html#template-support-templates">template-support-templates</a>|. These chapters will enable the
+average user to configure his or her templates.
+
+Advanced topics are addressed in the following chapters. Lists are explained
+in |<a href="templatesupport.html#template-support-lists">template-support-lists</a>|, followed in |<a href="templatesupport.html#template-support-advanced">template-support-advanced</a>| by more
+advanced features. The customization of the automatic menu creation is
+explained in |<a href="templatesupport.html#template-support-menus">template-support-menus</a>|. Help templates offer a mechanism to
+quickly access different documentations, they are documented in
+|<a href="templatesupport.html#template-support-help-templ">template-support-help-templ</a>|.
+
+Plug-In developers will find information on the API in |<a href="templatesupport.html#template-support-api">template-support-api</a>|.
+
+</pre><hr><pre>2.  BASIC USAGE                                      <b class="vimtag"><a name="template-support-basics">template-support-basics</a></b>
+</pre><hr><pre>
+Templates are short pieces of text which can be included into source code or
+text of any other kind. But they are not just plain text, they can be extended
+with macros and tags to provide further convenience. Macros can be
+automatically replaced with the date or the filename, or they can be replaced
+with input from the user, for example the name of a new function.
+
+The following example shows two templates, as they appear in a so-called
+template library. A template library is a text file which lists several
+templates, along with their maps and menu shortcuts.
+
+<code class="example">	== file description == start ==</code>
+<code class="example">	// ==================================================</code>
+<code class="example">	//          File:  |<code class="badlink">FILENAME</code>|</code>
+<code class="example">	//   Description:  <code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">	//</code>
+<code class="example">	//        Author:  |<code class="badlink">AUTHOR</code>|</code>
+<code class="example">	//       Version:  1.0</code>
+<code class="example">	//       Created:  |<code class="badlink">DATE</code>|</code>
+<code class="example">	// ==================================================</code>
+<code class="example"></code>
+<code class="example">	== function == below ==</code>
+<code class="example">	void |<code class="badlink">?FUNCTION_NAME</code>| ( <code class="special">&lt;CURSOR&gt;</code> )</code>
+<code class="example">	{</code>
+<code class="example">		<code class="special">&lt;SPLIT&gt;</code></code>
+<code class="example">	}   /* end of function |FUNCTION_NAME| */</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+Each line (the so-called header)
+<code class="example">	== <code class="special">&lt;name&gt;</code> == <code class="special">&lt;options&gt;</code> ==</code>
+starts a new template,
+<code class="example">	== ENDTEMPLATE ==</code>
+marks the end of the template "function".
+
+When the template "file description" is inserted, it is placed at the start of
+the file (option "start"). The filename and the date are inserted where the
+macros <b class="vimtag"><a name="|FILENAME|">|FILENAME|</a></b> and <b class="vimtag"><a name="|DATE|">|DATE|</a></b> appear, the name of the user is also inserted.
+After insertion, the cursor is placed where the <code class="special">&lt;CURSOR&gt;</code> tag appears (the
+cursor is represented by "|"):
+
+<code class="example">	// ==================================================</code>
+<code class="example">	//          File:  helloworld.cc</code>
+<code class="example">	//   Description:  |</code>
+<code class="example">	//</code>
+<code class="example">	//        Author:  Me!</code>
+<code class="example">	//       Version:  1.0</code>
+<code class="example">	//       Created:  29.2.2000</code>
+<code class="example">	// ==================================================</code>
+
+The template "function" is inserted below the current line (option "below").
+The user is asked to provide a replacement for the macro <b class="vimtag"><a name="|FUNCTION_NAME|">|FUNCTION_NAME|</a></b> (it
+is marked with "?"), which is then inserted into the text:
+
+<code class="example">	void say_hello ( | )</code>
+<code class="example">	{</code>
+<code class="example"></code>
+<code class="example">	}   /* end of function say_hello */</code>
+
+The macro can also be used in visual mode (it contains the tag <code class="special">&lt;SPLIT&gt;</code>). The
+template is then inserted surrounding the selected lines, which appear at the
+position of the split tag.
+
+Assume the line "printf(...)" is selected:
+
+<code class="example">	// ...</code>
+
+<code class="section">	printf ( "Hello world!" ); </code>
+
+<code class="example">	// ...</code>
+
+After inserting the template, the code looks like this:
+
+<code class="example">	// ...</code>
+<code class="example"></code>
+<code class="example">	void say_hello ( | )</code>
+<code class="example">	{</code>
+<code class="example">		printf ( "Hello world!" );</code>
+<code class="example">	}   /* end of function say_hello */</code>
+<code class="example"></code>
+<code class="example">	// ...</code>
+
+</pre><hr><pre>3.  TEMPLATE LIBRARY                                <b class="vimtag"><a name="template-support-library">template-support-library</a></b>
+</pre><hr><pre>
+A template library is a text file which lists several templates, along with
+other objects, and commands to configure the behavior of the templates. This
+file must be given to the template support in order to be loaded. If you are
+working with a plug-in which uses the template support, the plug-in itself
+will take care of that.
+
+Along with templates, a library file can contain comments. Comments always
+start at the beginning of a line. The standard is for comments to start with
+the character '&sect;'. This may vary, depending on which plug-in uses the template
+support.
+Comment lines end the current template, so comments should only be used
+outside of templates.
+
+Outside of templates, the library can contain commands. Among other things,
+they configure the behavior of the templates and the menus the template
+support creates.
+Commands always start at the beginning of the line and, as all other names in
+the library, are case sensitive.
+
+A template library can be organized in several files. The command:
+<code class="example">	IncludeFile ( "<code class="special">&lt;path&gt;</code>/<code class="special">&lt;file&gt;</code>" )</code>
+loads templates from another file (|<code class="badlink">template-support-IncludeFile</code>|). The path
+is given relative to the including file. The call:
+<code class="example">	IncludeFile ( "<code class="special">&lt;path&gt;</code>/<code class="special">&lt;file&gt;</code>", "abs" )</code>
+interprets the path as a absolute path instead.
+
+The names of the templates also define the menu structure which the template
+support creates. Dots appearing in the names place the templates into
+submenus. The following library will create two menus and a submenu "special".
+
+<code class="example">	== Comments.special.GNU license == below ==</code>
+<code class="example">	//       License:  Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|</code>
+<code class="example">	//</code>
+<code class="example">	//   This program is free software; you can redistribute it and/or</code>
+<code class="example">	//   modify it under the terms of the GNU General Public License as</code>
+<code class="example">	//   published by the Free Software Foundation, version 2 of the</code>
+<code class="example">	//   License.</code>
+<code class="example">	//   This program is distributed in the hope that it will be</code>
+<code class="example">	//   useful, but WITHOUT ANY WARRANTY; without even the implied</code>
+<code class="example">	//   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</code>
+<code class="example">	//   PURPOSE.</code>
+<code class="example">	//   See the GNU General Public License version 2 for more details.</code>
+<code class="example">	== Comments.file description == start ==</code>
+<code class="example">	// ==================================================</code>
+<code class="example">	//          File:  |<code class="badlink">FILENAME</code>|</code>
+<code class="example">	//   Description:  <code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">	//</code>
+<code class="example">	//        Author:  |<code class="badlink">AUTHOR</code>|</code>
+<code class="example">	//       Version:  1.0</code>
+<code class="example">	//       Created:  |<code class="badlink">DATE</code>|</code>
+<code class="example">	// ==================================================</code>
+<code class="example"></code>
+<code class="example">	== Idioms.function definition == below ==</code>
+<code class="example">	void |<code class="badlink">?FUNCTION_NAME</code>| ( <code class="special">&lt;CURSOR&gt;</code> )</code>
+<code class="example">	{</code>
+<code class="example">		<code class="special">&lt;SPLIT&gt;</code></code>
+<code class="example">	}   /* end of function |FUNCTION_NAME| */</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+Menus and entries are generated in the order in which the corresponding
+templates are encountered in the library. The above example will generate this
+menu structure:
+
+<code class="example">	Plug-In Menu</code>
+<code class="example">	&gt;-+ Comments</code>
+<code class="example">	|	&gt;-+ Special</code>
+<code class="example">	|<code class="badlink">	</code>|	&gt;--- GNU license</code>
+<code class="example">	|	&gt;-- file description</code>
+<code class="example">	&gt;-+ Idioms</code>
+<code class="example">	|	&gt;-- function definition</code>
+
+This also means that a new menu entry can be added by simply putting a new
+template at that position in the library. Details on the menu creation can be
+found in |<a href="templatesupport.html#template-support-menus">template-support-menus</a>|.
+
+</pre><hr><pre>3.1  PERSONALIZATION                              <b class="vimtag"><a name="template-support-lib-person">template-support-lib-person</a></b>
+</pre><hr><pre>
+A personalization of the template library can be achieved by using macros. The
+command 'SetMacro' (|<code class="badlink">template-support-SetMacro</code>|) is used to set replacements
+for various macros (my settings as an example):
+
+<code class="example">	SetMacro( 'AUTHOR',       'Wolfgang Mehner' )</code>
+<code class="example">	SetMacro( 'AUTHORREF',    'wm' )</code>
+<code class="example">	SetMacro( 'EMAIL',        'wolfgang-mehner@web.de' )</code>
+<code class="example">	SetMacro( 'ORGANIZATION', '' )</code>
+<code class="example">	SetMacro( 'COPYRIGHT',    'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
+
+The replacements may contain other macros. When a template is inserted all
+macros will be substituted by the respective replacements.
+
+Other macros and replacements can be added at will, e.g. the following could
+be used in a template library for Bash:
+<code class="example">	SetMacro( 'INTERPRETER', '/bin/sh' )</code>
+Then the template for the file description may look as follows:
+
+<code class="example">	== file description == start ==</code>
+<code class="example">	#! |<code class="badlink">INTERPRETER</code>|</code>
+<code class="example">	# ==================================================</code>
+<code class="example">	#          File:  |<code class="badlink">FILENAME</code>|</code>
+<code class="example">	#   Description:  <code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">	#</code>
+<code class="example">	#        Author:  |<code class="badlink">AUTHOR</code>|</code>
+<code class="example">	#       Version:  1.0</code>
+<code class="example">	#       Created:  |<code class="badlink">DATE</code>|</code>
+<code class="example">	# ==================================================</code>
+<code class="example"></code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+The format of the included dates and times can be set in a similar fashion,
+using 'SetFormat' (|<code class="badlink">template-support-SetFormat</code>|):
+
+<code class="example">  SetFormat( 'DATE', '%D'      )</code>
+<code class="example">  SetFormat( 'TIME', '%H:%M'   )</code>
+<code class="example">  SetFormat( 'YEAR', 'year %Y' )</code>
+
+These special macros can never be set by 'SetMacro'. The following call will
+have no effect and produce a warning:
+<code class="example">  SetMacro( 'DATE', "April Fools' Day" )</code>
+
+During template insertion, the macros <b class="vimtag"><a name="|DATE|">|DATE|</a></b> , <b class="vimtag"><a name="|TIME|">|TIME|</a></b> and <b class="vimtag"><a name="|YEAR|">|YEAR|</a></b> will be
+replaced with the current date and time.
+
+</pre><hr><pre>3.2  INTERFACE VERSION                           <b class="vimtag"><a name="template-support-lib-interf">template-support-lib-interf</a></b>
+</pre><hr><pre>
+Further extension of the template engine might introduce minor
+incompatibilities with previous versions. While this will generally be
+avoided, not all features can be added (and bugs fixes) in a way that is
+backwards compatible.
+
+To avoid breaking existing template libraries, by default, all libraries will
+use the interface introduced prior to version "1.0". Newer versions can be
+unlocked by calling InterfaceVersion() (|<a href="templatesupport.html#template-support-InterfaceVersion()">template-support-InterfaceVersion()</a>|)
+from within the template library:
+<code class="example">	InterfaceVersion ( "1.0" )</code>
+This will enable advanced feature for this library. Other libraries loaded
+with the same core can use other versions.
+When this call is inserted into a library, it has to be checked for constructs
+which can not be used anymore. However, existing libraries must not be changed
+immediately once a new version comes along.
+
+See |<a href="templatesupport.html#template-support-change-interf">template-support-change-interf</a>| for a change log limited to changes in
+the interface.
+
+</pre><hr><pre>4.  TEMPLATES                                     <b class="vimtag"><a name="template-support-templates">template-support-templates</a></b>
+</pre><hr><pre>
+Templates are short pieces of text which are enhanced by so-called macros and
+tags. They define a simple markup language which determines the preparation of
+the text before it is inserted and control is handed back to the user.
+Beyond that, every template has a name which also determines its place in the
+menu structure the template support creates. Together with the template, its
+menu shortcut and map are defined. The whole accessibility of the template is
+specified in this one place.
+
+Each template starts with a header:
+<code class="example">	== <code class="special">&lt;name&gt;</code> == [ <code class="special">&lt;options&gt;</code> == ]</code>
+For consistency with other constructs, the following format is also supported:
+<code class="example">	== TEMPLATE: <code class="special">&lt;name&gt;</code> == [ <code class="special">&lt;options&gt;</code> == ]</code>
+The list of options can be omitted.
+
+The name of the template starts with a letter or underscore, and can not end
+with a whitespace. Whitespaces in between the name and "==" will be ignored.
+The name can contain these characters:
+	a-z, A-Z, 0-9
+	_ + - . , <code class="special">&lt;Space&gt;</code>
+Dots have a special meaning. They determine the menu structure the template
+support will create (see |<a href="templatesupport.html#template-support-library">template-support-library</a>| for a short introduction).
+
+The list of option defines the map and menu shortcut of the template, and some
+aspects of its behavior during insertion into a text, such as its placement
+relative to the position of the cursor.
+
+The following example shows a possible template for the C statement "if":
+
+<code class="example">	== Statements.if == below, map:si, sc:i ==</code>
+<code class="example">	if ( <code class="special">&lt;CURSOR&gt;</code> )</code>
+<code class="example">	{</code>
+<code class="example"></code>
+<code class="example">	}</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+The option "below" specifies that the template should always be inserted in
+the lines below the current cursor position. The map is set by the option
+"map", it will be |<code class="badlink">&lt;LocalLeader&gt;</code>|si. The option "sc" sets the shortcut of the
+entry within the menu "Statements".
+
+</pre><hr><pre>4.1  MACROS                                     <b class="vimtag"><a name="template-support-templ-macro">template-support-templ-macro</a></b>
+</pre><hr><pre>
+Templates are useful because in source code, certain structures are repeated
+regularly. Within this structures however, certain parts are variable.
+Templates represent those via macros. Macros have a name, which has to follow
+the same rules as C identifiers. They start with a letter or underscore, and
+can contain numbers after that. Within a template, macros are written as their
+names, surrounded by two bars:
+	<b class="vimtag"><a name="|AUTHOR|">|AUTHOR|</a></b>
+Replacement for macros can be given in the template library itself:
+<code class="example">	SetMacro( 'AUTHOR', 'Wolfgang Mehner' )</code>
+These macros are replaced when inserting the template:
+
+<code class="example">	== Comments.file description == start ==</code>
+<code class="example">	# ==================================================</code>
+<code class="example">	#          File:  |<code class="badlink">FILENAME</code>|</code>
+<code class="example">	#   Description:  <code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">	#</code>
+<code class="example">	#        Author:  |<code class="badlink">AUTHOR</code>|</code>
+<code class="example">	#       Version:  1.0</code>
+<code class="example">	#       Created:  |<code class="badlink">DATE</code>|</code>
+<code class="example">	# ==================================================</code>
+<code class="example"></code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+The template library will appropriately replace <b class="vimtag"><a name="|FILENAME|">|FILENAME|</a></b> and <b class="vimtag"><a name="|DATE|">|DATE|</a></b> and
+take the replacement for <b class="vimtag"><a name="|AUTHOR|">|AUTHOR|</a></b> from the template library.
+
+Another option is to ask the user for a replacement every time the template is
+inserted:
+
+<code class="example">	== Idioms.function == below ==</code>
+<code class="example">	void |<code class="badlink">?FUNCTION_NAME</code>| ( <code class="special">&lt;CURSOR&gt;</code> )</code>
+<code class="example">	{</code>
+<code class="example">		<code class="special">&lt;SPLIT&gt;</code></code>
+<code class="example">	}   /* end of function |FUNCTION_NAME| */</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+The question mark in front of the name means the user will be prompted for a
+replacement for "FUNCTION_NAME". This replacement is then inserted twice. This
+becomes particularly useful if this name appears in another template. If a
+replacement for a certain macro has been given before, this replacement will
+be suggested the next time the user has to replace this macro:
+
+<code class="example">	== Comments.function description == below ==</code>
+<code class="example">	# ==================================================</code>
+<code class="example">	#      Function:  |<code class="badlink">?FUNCTION_NAME</code>|</code>
+<code class="example">	#       Purpose:  <code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">	#   Description:  TODO</code>
+<code class="example">	# ==================================================</code>
+<code class="example"></code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+</pre><hr><pre>
+4.1.1  Predefined Macros                       <b class="vimtag"><a name="template-support-templ-predef">template-support-templ-predef</a></b>
+
+The replacements for various macros are handled automatically by the template
+support. Mostly, they will help with the basic documentation of the file: What
+was edited and when?
+
+	<b class="vimtag"><a name="|PATH|">|PATH|</a></b>     : the path of the current file
+	<b class="vimtag"><a name="|FILENAME|">|FILENAME|</a></b> : the name of the file
+	<b class="vimtag"><a name="|BASENAME|">|BASENAME|</a></b> : the name of the file without the suffix
+	<b class="vimtag"><a name="|SUFFIX|">|SUFFIX|</a></b>   : the suffix of the file
+
+Except for using flags, the user has no further influence on the replacements
+of these macros, they can not be set via SetMacro().
+
+	<b class="vimtag"><a name="|TIME|">|TIME|</a></b>     : the current time
+	<b class="vimtag"><a name="|DATE|">|DATE|</a></b>     : the current date
+	<b class="vimtag"><a name="|YEAR|">|YEAR|</a></b>     : the current year
+
+The format of the inserted dates and times can be set via SetFormat (see
+|<code class="badlink">template-support-SetFormat</code>|).
+
+</pre><hr><pre>
+4.1.2  Flags                                     <b class="vimtag"><a name="template-support-templ-flag">template-support-templ-flag</a></b>
+
+Certain uses come with special requirements on the replacement text. Consider
+an include guard, where usually an upper case version of the files name is
+used to name the guard, such as "_THISFILE_INC":
+
+<code class="example">	== Preprocessor.include guard == below, noindent ==</code>
+<code class="example">	#ifndef _|<code class="badlink">BASENAME:u</code>|_INC</code>
+<code class="example">	#define _|<code class="badlink">BASENAME:u</code>|_INC</code>
+<code class="example">	<code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">	#endif   // -----  #ifndef _|<code class="badlink">BASENAME:u</code>|_INC  -----</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+The macro <b class="vimtag"><a name="|BASENAME|">|BASENAME|</a></b> is automatically replaced with the name of the current
+file, not including the extension. The flag ":u" means the replacement will be
+inserted with all letters in uppercase. So a file named "string.h" will have
+an include guard named "_STRING_INC".
+
+The possible flags are listed below:
+	:l - change replacement text to lowercase
+	:u - change replacement text to uppercase
+	:c - capitalize text (change first letter to uppercase)
+	:L - legalize name (replace all non-word characters with underscores)
+	:T - remove tags (remove all cursor, split, and jump tags)
+
+</pre><hr><pre>
+4.1.3  Format Specifiers                       <b class="vimtag"><a name="template-support-templ-format">template-support-templ-format</a></b>
+
+A format specifier can be added to change the way the macro is replaced. E.g.,
+in some comment boxes the formatting should not be broken. Consider this
+example:
+
+<code class="example">	== Comments.file description == start ==</code>
+<code class="example">	# ################################################## #</code>
+<code class="example">	#          File:  |<code class="badlink">FILENAME</code>|                         #</code>
+<code class="example">	#   Description:  <code class="special">&lt;CURSOR&gt;</code>                           #</code>
+<code class="example">	#                                                    #</code>
+<code class="example">	#        Author:  |<code class="badlink">AUTHOR</code>|                           #</code>
+<code class="example">	#       Version:  1.0                                #</code>
+<code class="example">	#       Created:  |<code class="badlink">DATE</code>|                             #</code>
+<code class="example">	# ################################################## #</code>
+<code class="example"></code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+Inserting this template into a file would result in a broken formatting:
+
+<code class="example">	# ################################################## #</code>
+<code class="example">	#          File:  test.sh                         #</code>
+<code class="example">	#   Description:  |                          #</code>
+<code class="example">	#                                                    #</code>
+<code class="example">	#        Author:  Wolfgang Mehner                           #</code>
+<code class="example">	#       Version:  1.0                                #</code>
+<code class="example">	#       Created:  11.11.2015                             #</code>
+<code class="example">	# ################################################## #</code>
+
+Therefore macros can be specified to be inserted with fixed width, for
+example:
+
+<code class="example">	== Comments.file description == start ==</code>
+<code class="example">	# ################################################## #</code>
+<code class="example">	#          File:  |<code class="badlink">FILENAME%++++++++++++++++++++++l</code>| #</code>
+<code class="example">	#   Description:  <code class="special">&lt;RCURSOR&gt;</code>                          #</code>
+<code class="example">	#                                                    #</code>
+<code class="example">	#        Author:  |<code class="badlink">AUTHOR%++++++++++++++++++++++++l</code>| #</code>
+<code class="example">	#       Version:  1.0                                #</code>
+<code class="example">	#       Created:  |<code class="badlink">DATE%++++++++++++++++++++++++++l</code>| #</code>
+<code class="example">	# ################################################## #</code>
+<code class="example"></code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+The format specifier causes the replacement text to be padded with spaces,
+such that a text of the desired width is inserted. The special cursor tag
+<code class="special">&lt;RCURSOR&gt;</code> is replaced with the right amount of spaces as well, and after the
+template insertion replacement mode is started:
+
+<code class="example">	# ################################################## #</code>
+<code class="example">	#          File:  test.sh                            #</code>
+<code class="example">	#   Description:  |                                  #</code>
+<code class="example">	#                                                    #</code>
+<code class="example">	#        Author:  Wolfgang Mehner                    #</code>
+<code class="example">	#       Version:  1.0                                #</code>
+<code class="example">	#       Created:  11.11.2015                         #</code>
+<code class="example">	# ################################################## #</code>
+
+The format specifier is a '%' followed by several plus characters '+', which
+are used to extend the macro to the desired width. The format specifier ends
+with an (optional) character 'l', 'c', or 'r' to indicate the alignment (left,
+center, or right, respectively).
+
+If the replacement text is longer than the macro in the template, the
+formatting will be broken. Instead of the plus character, several dashes can
+be used. In this case the replacement text will be cut off if it is longer
+than the macro:
+
+<code class="example">	== Comments.file description == start ==</code>
+<code class="example">	# ################################################## #</code>
+<code class="example">	#          File:  |<code class="badlink">FILENAME%----------------------l</code>| #</code>
+<code class="example">  ...</code>
+
+The width can also be specified by a number. To insert a text which is always
+at least 4 characters long:
+<code class="example">  |<code class="badlink">AUTHORREF%+4</code>|</code>
+To insert it such that the text is never longer than 4 characters:
+<code class="example">  |<code class="badlink">AUTHORREF%-4</code>|</code>
+<code class="example"></code>
+The following format specifiers are possible, the alignment is always optional:
+
+  %++++++l - pad the replacement text
+  %------l - pad the replacement text, cut off if it is to long
+
+  %+10l    - the width is given by the number
+  %-10l    - the width is given by the number, cut off if the text is to long
+  %10l     - the width is given by the number, do not cut off
+
+  %+l %-l  - align left
+  %+c %-c  - align center
+  %+r %-r  - align right
+
+</pre><hr><pre>4.2  TAGS                                        <b class="vimtag"><a name="template-support-templ-tags">template-support-templ-tags</a></b>
+</pre><hr><pre>
+Templates can contain tags, which influence the behavior after the template
+has been inserted into the current buffer. The simplest one is <code class="special">&lt;CURSOR&gt;</code>,
+which specifies the position of the cursor after the template has been
+inserted. Consider the following example:
+
+<code class="example">	== Statements.if == below ==</code>
+<code class="example">	if ( <code class="special">&lt;CURSOR&gt;</code> )</code>
+<code class="example">	{</code>
+<code class="example"></code>
+<code class="example">	}</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+After template insertion the cursor is placed between the round brackets and
+the user can write down the condition.
+
+The cursor tag may cause the indentation to be slightly off after template
+insertion. Therefore a second version of the cursor tag exists: <code class="special">{CURSOR}</code>. You
+should always choose the one which is more naturally compatible with the
+languages syntax, and in extension its automatic indentation:
+
+<code class="example">	== Statements.block == below ==</code>
+<code class="example">	{</code>
+<code class="example">		<code class="special">{CURSOR}</code></code>
+<code class="example">	}</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+Further convenience is introduced by jump tags. Instead of moving into the
+block using arrow keys, the user can be given the possibility to jump to the
+next position where editing is required:
+
+<code class="example">	== Statements.if == below ==</code>
+<code class="example">	if ( <code class="special">&lt;CURSOR&gt;</code> )</code>
+<code class="example">	{</code>
+<code class="example">		<code class="special">&lt;+IF_PART+&gt;</code></code>
+<code class="example">	}</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+The standard map for jumping is <code class="special">&lt;ctrl+j&gt;</code>, but it may vary with each plug-in
+using the template support.
+Jump tags have one of the following formats:
+  <code class="special">&lt;+NAME+&gt;</code>     <code class="special">&lt;-NAME-&gt;</code>
+  <code class="special">{+NAME+}</code>     <code class="special">{-NAME-}</code>
+And with interface version 1.0+ (see |<a href="templatesupport.html#template-support-lib-interf">template-support-lib-interf</a>|) "optional"
+jump tags have been introduced:
+  [+NAME+]     [-NAME-]
+The text will be indented automatically with the jump tags still appearing in
+it, so for every language the appropriate version has to be chosen. The name
+consists of arbitrary word characters (letters, digits and underscores) and
+can even be empty. The name has no other function than "documenting" the
+inserted code:
+
+<code class="example">	== Statements.if, else == below ==</code>
+<code class="example">	if ( <code class="special">&lt;CURSOR&gt;</code> )</code>
+<code class="example">	{</code>
+<code class="example">		<code class="special">&lt;+IF_PART+&gt;</code></code>
+<code class="example">	}</code>
+<code class="example">	else</code>
+<code class="example">	{</code>
+<code class="example">		<code class="special">&lt;+ELSE_PART+&gt;</code></code>
+<code class="example">	}</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+                                               ** Interface Version 1.0+ **
+The "optional" jumps tags [+NAME+] and [-NAME-] can be used in templates for
+argument lists:
+
+<code class="example">  == Idiom.open file == insert ==</code>
+<code class="example">  fid = openfile ( <code class="special">&lt;+FILENAME+&gt;</code>, [+MODE+] )</code>
+<code class="example">  == ENDTEMPLATE ==</code>
+
+The user can either jump to both tags and write down the arguments or only
+jump to FILENAME and then use the map <code class="special">&lt;ctrl+d&gt;</code> to delete the optional jump tag
+MODE, together with the separator "," and whitespaces.
+
+</pre><hr><pre>4.3  PLACEMENT                                  <b class="vimtag"><a name="template-support-templ-place">template-support-templ-place</a></b>
+</pre><hr><pre>
+Templates can be placed at different positions relative to the cursor. In most
+examples above the option "below" has been used. It means the template is
+inserted below the current line. The opposite can be achieved using "above",
+while "start" places the template at the beginning of the file, which makes
+sense for example for file descriptions:
+
+<code class="example">	== Comments.file description == start ==</code>
+<code class="example">	...</code>
+<code class="example">	== Idioms.function definition == below ==</code>
+<code class="example">	...</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+These options cause whole lines to be inserted. Two other options exist:
+
+<code class="example">	== Comments.end-of-line comment == append ==</code>
+<code class="example">	   /* <code class="special">&lt;CURSOR&gt;</code> */</code>
+<code class="example">	== Comments.date and time == insert ==</code>
+<code class="example">	|<code class="badlink">DATE</code>|, |<code class="badlink">TIME</code>|<code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+The template "Comments.end-of-line comment" will be inserted at the end of the
+current line, while "Comments.date and time" will insert a timestamp at the
+cursor position.
+
+These placement modes are available:
+	start  - the text is placed above the first line
+	above  - the text is placed above the current line
+	below  - the text is placed below the current line (default)
+	append - the text is appended to the current line
+	insert - the text is inserted at the cursor position
+
+By default, the lines containing a newly inserted template are automatically
+indented. To suppress this behavior use the option "noindent". This can be
+used for code fragments which contain constructs the indentation program does
+not handle correctly.
+
+</pre><hr><pre>
+4.3.1  Visual Mode                             <b class="vimtag"><a name="template-support-templ-visual">template-support-templ-visual</a></b>
+
+Oftentimes, existing code needs to be rearranged, for example some lines of
+code must be surrounded with an if-statement. For this reason, the <code class="special">&lt;SPLIT&gt;</code>
+tag exists:
+
+<code class="example">	== Statements.if == below ==</code>
+<code class="example">	if ( <code class="special">&lt;CURSOR&gt;</code> )</code>
+<code class="example">	{</code>
+<code class="example">		<code class="special">&lt;SPLIT&gt;</code></code>
+<code class="example">	}</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+If the template is inserted in normal or insert mode, nothing changes. The tag
+will be removed automatically. In visual mode however, the selected line will
+be surrounded with the template. Consider these lines of code, where the lines
+containing "printf" are selected:
+
+<code class="example">	// ...</code>
+
+<code class="section">	printf ( "Loading the file ..." ); </code>
+<code class="section">	printf ( "... reading %d bytes.", n ) </code>
+
+<code class="example">	// ...</code>
+
+After inserting the template "Statements.if", the code looks like this:
+
+<code class="example">	// ...</code>
+<code class="example"></code>
+<code class="example">	if ( | )</code>
+<code class="example">	{</code>
+<code class="example"><code class="section">		printf ( "Loading the file ..." ); </code></code>
+<code class="example"><code class="section">		printf ( "... reading %d bytes.", n ) </code></code>
+<code class="example">	}</code>
+<code class="example"></code>
+<code class="example">	// ...</code>
+
+Now the user can type in the condition.
+
+Jump and split tags might be in conflict. Consider the following example:
+
+<code class="example">	== Statements.if, else == below ==</code>
+<code class="example">	if ( <code class="special">&lt;CURSOR&gt;</code> )</code>
+<code class="example">	{</code>
+<code class="example">		<code class="special">&lt;SPLIT&gt;</code><code class="special">&lt;+IF_PART+&gt;</code></code>
+<code class="example">	}</code>
+<code class="example">	else</code>
+<code class="example">	{</code>
+<code class="example">		<code class="special">&lt;+ELSE_PART+&gt;</code></code>
+<code class="example">	}</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+When using the template in visual mode, the jump tag <code class="special">&lt;+IF_PART+&gt;</code> should not
+appear, since the if block already contains the selected line. This is why
+jump tag exist in different versions. The two version <code class="special">&lt;-NAME-&gt;</code> and <code class="special">{-NAME-}</code>
+are removed in visual mode. They behave opposite to the <code class="special">&lt;SPLIT&gt;</code> tag, which is
+removed in every other mode. A better version of the above example looks like
+this:
+
+<code class="example">	== Statements.if, else == below ==</code>
+<code class="example">	if ( <code class="special">&lt;CURSOR&gt;</code> )</code>
+<code class="example">	{</code>
+<code class="example">		<code class="special">&lt;SPLIT&gt;</code><code class="special">&lt;-IF_PART-&gt;</code></code>
+<code class="example">	}</code>
+<code class="example">	else</code>
+<code class="example">	{</code>
+<code class="example">		<code class="special">&lt;+ELSE_PART+&gt;</code></code>
+<code class="example">	}</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+For templates containing a split tag, the option "noindent" is particularly
+useful, since it can prevent large sections of code from being indented
+unnecessarily. The following example shows a template for an include guard,
+using a C-macro "_THISFILE_INC":
+
+<code class="example">	== Preprocessor.include guard == below, noindent ==</code>
+<code class="example">	#ifndef _|<code class="badlink">BASENAME:u</code>|_INC</code>
+<code class="example">	#define _|<code class="badlink">BASENAME:u</code>|_INC</code>
+<code class="example">	<code class="special">&lt;CURSOR&gt;</code><code class="special">&lt;SPLIT&gt;</code></code>
+<code class="example">	#endif   // -----  #ifndef _|<code class="badlink">BASENAME:u</code>|_INC  -----</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+Here, running the indentation program after insertion is an unnecessary effort
+and may potentially destroy hand-crafted indentation in a large piece of code.
+
+</pre><hr><pre>4.4  MAPS &amp; MENUS                                <b class="vimtag"><a name="template-support-templ-maps">template-support-templ-maps</a></b>
+</pre><hr><pre>
+The template support automatically creates maps and menu entries for the
+templates in the library. The menu entries appear in the order the templates
+have been read. Including a file via
+<code class="example">	IncludeFile ( "<code class="special">&lt;path&gt;</code>/<code class="special">&lt;file&gt;</code>" )</code>
+will cause this file to be processed first, then the rest of the including
+file is read.
+
+The map and menu shortcut of a template are defined together with the
+template:
+
+<code class="example">	== Statements.if == below, map:si, sc:i ==</code>
+<code class="example">	if ( <code class="special">&lt;CURSOR&gt;</code> )</code>
+<code class="example">	{</code>
+<code class="example">		<code class="special">&lt;+IF_PART+&gt;</code></code>
+<code class="example">	}</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+The templates will have the map |<code class="badlink">&lt;LocalLeader&gt;</code>|si and the shortcut "i".
+
+Menu entries are created by default. The option "nomenu" suppresses this
+behavior:
+
+<code class="example">	== Comments.fix this == nomenu, append, map:cfx ==</code>
+<code class="example">	// TODO: fix this</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+This template will not clutter the menu and can only be inserted via its map.
+
+An overview of all the options:
+	nomenu        - no menu entry is created
+	sc:<code class="special">&lt;sc&gt;</code>       - a shortcut is created for the menu entry of this template
+	shortcut:<code class="special">&lt;sc&gt;</code> - long version of sc:<code class="special">&lt;sc&gt;</code>
+	map:<code class="special">&lt;map&gt;</code>     - a map is created for this template
+
+</pre><hr><pre>5.  LISTS                                             <b class="vimtag"><a name="template-support-lists">template-support-lists</a></b>
+</pre><hr><pre>
+Template libraries would regularly contain a huge number of templates with a
+repetitive structure. Consider these templates for a C template library:
+
+<code class="example">	== Preprocessor.include math, map: pim ==</code>
+<code class="example">	#include <code class="special">&lt;math.h&gt;</code></code>
+<code class="example">	== Preprocessor.include stdlib, map:pisl ==</code>
+<code class="example">	#include <code class="special">&lt;stdlib.h&gt;</code></code>
+<code class="example">	== Preprocessor.include stdio, map:pisio ==</code>
+<code class="example">	#include <code class="special">&lt;stdio.h&gt;</code></code>
+<code class="example">	== Preprocessor.include string, map:pistr ==</code>
+<code class="example">	#include <code class="special">&lt;string.h&gt;</code></code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+This has several disadvantages. Besides being difficult to write and maintain,
+these templates would not be well accessible. The user would have to memorize
+a map for each and every one of them.
+
+This is why lists exist. They appear as objects in the template library. The
+header of a list starts with "LIST:" and then contains a name, which has to
+follow the same rules as C identifiers. They start with a letter or
+underscore, and can contain numbers after that.
+
+<code class="example">	== LIST: C_StandardLibs ==</code>
+<code class="example">	'math',</code>
+<code class="example">	'stdlib',</code>
+<code class="example">	'stdio',</code>
+<code class="example">	'string',</code>
+<code class="example">	== ENDLIST ==</code>
+<code class="example"></code>
+<code class="example">	== Preprocessor.c libs == below, map:pcl ==</code>
+<code class="example">	|<code class="badlink">PickList( '#include &lt;~.h&gt;', 'C_StandardLibs' )</code>|</code>
+<code class="example">	#include &lt;|<code class="badlink">PICK</code>|.h&gt;<code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+The template "Preprocessor.c libs" uses this list. The command:
+<code class="example">	"|<code class="badlink">PickList( '&lt;prompt&gt;', '&lt;list&gt;' )</code>|"</code>
+determines which list is used. During template insertion the user is prompted
+to choose an entry from the list, but can also type another name. The prompt
+supports tab-completion and navigation with arrow keys. The first argument is
+a string which is displayed on the command line, to clarify the meaning of the
+choice. After the users makes the choice, the macro <b class="vimtag"><a name="|PICK|">|PICK|</a></b> is created, which
+contains the chosen item.
+Lists can be used again in another context, for example to support C++
+programming:
+
+<code class="example">	== Preprocessor.c++, c libs == below, map:ppc ==</code>
+<code class="example">	|<code class="badlink">PickList( '#include &lt;c~&gt;', 'C_StandardLibs' )</code>|</code>
+<code class="example">	#include &lt;c|<code class="badlink">PICK</code>|&gt;<code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+When the template is inserted via a map, the user is prompted to choose an
+entry from the list, thus only one map is required to choose from a huge
+number of options. When the template is accessed via the menu, two
+possibilities exists. Without further changes, the same prompt opens as when
+the template is used via a map. But whenever the template includes the
+"expandmenu" option, a submenu is created which lists all the entries, which
+allows the user to choose in the menu, rather than on the command line:
+<code class="example">	== Preprocessor.c libs == below, expandmenu, map:pcl ==</code>
+Further options for customizing the look of the submenu are explained in
+|<a href="templatesupport.html#template-support-lists-menu">template-support-lists-menu</a>|.
+
+</pre><hr><pre>5.1  FORMATS                                <b class="vimtag"><a name="template-support-lists-format">template-support-lists-format</a></b>
+</pre><hr><pre>
+Lists also support options. The standard format for lists is named "list":
+
+<code class="example">	== LIST: C_StandardLibs == list ==</code>
+<code class="example">	'math', 'stdlib',</code>
+<code class="example">	'stdio', 'string',</code>
+<code class="example">	== ENDLIST ==</code>
+
+The text contained between "== LIST: name ==" and "== ENDLIST ==" is a
+comma-separated list of strings, which come as |<code class="badlink">expr-string</code>| in double quotes
+or |<code class="badlink">literal-string</code>| in single quotes.
+
+An easier way of writing lists are bare lists, defined with the option "bare":
+
+<code class="example">	== LIST: C_StandardLibs == list, bare ==</code>
+<code class="example">	math</code>
+<code class="example">	stdlib</code>
+<code class="example">	stdio</code>
+<code class="example">	string</code>
+<code class="example">	== ENDLIST ==</code>
+
+They contain each entry on a new line, leading and trailing whitespaces are
+ignored.
+
+</pre><hr><pre>5.2  HASHES                                <b class="vimtag"><a name="template-support-lists-hash">template-support-lists-hash</a></b>
+</pre><hr><pre>
+Hashes, or dictionaries, are another type of lists. They associate a key with
+a value:
+
+<code class="example">	== LIST: String_Functions == hash ==</code>
+<code class="example">		"strcpy"  : "<code class="special">{+DEST+}</code>, <code class="special">{+SRC+}</code>",</code>
+<code class="example">		"strncpy" : "<code class="special">{+DEST+}</code>, <code class="special">{+SRC+}</code>, <code class="special">{+N+}</code>",</code>
+<code class="example">		"strcmp"  : "<code class="special">{+STR1+}</code>, <code class="special">{+STR2+}</code>",</code>
+<code class="example">		"strncmp" : "<code class="special">{+STR1+}</code>, <code class="special">{+STR2+}</code>, <code class="special">{+N+}</code>",</code>
+<code class="example">		"strlen"  : "<code class="special">{+STR+}</code>",</code>
+<code class="example">	== ENDLIST ==</code>
+
+A hash is a comma-separated list of entries. Each entry contains a key and a
+value, separated by a colon.
+
+During template insertion, the user has to choose one of the keys. Then two
+macros <b class="vimtag"><a name="|KEY|">|KEY|</a></b> and <b class="vimtag"><a name="|VALUE|">|VALUE|</a></b> are created, containing the chosen key and its
+associated value. Both can be used in the template.
+In this example, a function call is inserted, with jump tags named for the
+parameters:
+
+<code class="example">	== Idioms.string function == insert, expandmenu ==</code>
+<code class="example">	|<code class="badlink">PickList( "function: ", "String_Functions" )</code>|</code>
+<code class="example">	|<code class="badlink">KEY</code>|<code class="special">&lt;CURSOR&gt;</code> ( |<code class="badlink">VALUE</code>| )</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+These templates also support the option "expandmenu". The menu will list all
+the keys.
+
+</pre><hr><pre>5.3  MENU CUSTOMIZATION                          <b class="vimtag"><a name="template-support-lists-menu">template-support-lists-menu</a></b>
+</pre><hr><pre>
+                                               ** Interface Version 1.0+ **
+With interface version 1.0+, the look of the submenu created for a template
+can be modified.
+
+A list can be given explicitly with "expandmenu", which is then used to create
+the menu entries:
+<code class="example">  == Idioms.string function == insert, expandmenu:String_Functions ==</code>
+It is up to the user to ensure that the entries in this list are suitable to
+select entries from the list used inside the template. The only purpose of the
+list given with "expandmenu" is to change the look of the menu.
+
+The created menu entries can use both the left- and the right-aligned text of
+the entry. By default, the list element or the dictionary key are shown in the
+menu. The right-aligned text can be set using "expandright:...":
+<code class="example"></code>
+<code class="example">  == LIST: regex_char_class == hash ==</code>
+<code class="example">    'digit'        : '\d',</code>
+<code class="example">    'whitespace'   : '\s',</code>
+<code class="example">    'word char.'   : '\w',</code>
+<code class="example">  == ENDLIST ==</code>
+<code class="example"></code>
+<code class="example">  == Regex.Character Class == insert, expandmenu, expandright:value, map:xc ==</code>
+<code class="example">  |<code class="badlink">PickList( 'Char Class', 'regex_char_class' )</code>|</code>
+<code class="example">  |<code class="badlink">PICK</code>|<code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">  == ENDTEMPLATE ==</code>
+
+The created menu will use the values from the dictionary to create the menu
+entries' right-aligned text:
+<code class="example"></code>
+<code class="example">  Character Class            \xc</code>
+<code class="example">  ------------------------------</code>
+<code class="example">  digit                       \d</code>
+<code class="example">  whitespace                  \s</code>
+<code class="example">  word char.                  \w</code>
+
+This way the template becomes self documenting. Additionally, the user can go
+to the menu for an overview of the character classes and their associated
+expressions.
+In the same way "expandleft:..." can be used to define the left-aligned text
+of the menu entry. Among the allowed values for "expandleft:..." and
+"expandright:..." are "key" and "value". With lists, both refer to the list
+element, with dictionaries, they refer to the key and value, respectively. The
+following would thus be possible:
+<code class="example">  == ... == expandmenu, expandleft:value, expandright:key ==</code>
+The submenu would show each dictionary key on the right, and each associated
+value on the left.
+
+Values for "expandleft:..." and "expandright:...":
+
+  Value            usage with lists
+ ----------------------------------------------------------------------------
+  key              the list element
+  key-notags       same as "key", but all tags (cursor, split, jump) removed
+  key-whitetags    same as "key", but all tags replace with a space
+  value            same as "key"
+  value-notags     same as "key-notags"
+  value-whitetags  same as "key-whitetags"
+ ----------------------------------------------------------------------------
+
+  Value            usage with dictionaries
+ ----------------------------------------------------------------------------
+  key              the key
+  key-notags       the key, but all tags (cursor, split, jump) removed
+  key-whitetags    the key, all tags replace with a space
+  value            the value
+  value-notags     the value, all tags removed
+  value-whitetags  the value, all tags replace with a space
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>6.  ADVANCED FEATURES                              <b class="vimtag"><a name="template-support-advanced">template-support-advanced</a></b>
+</pre><hr><pre>
+Editing source code comes with challenges common to many different languages
+and systems.
+
+Different projects may require different coding styles. Template libraries can
+be written to support multiple styles (|<a href="templatesupport.html#template-support-adv-styles">template-support-adv-styles</a>|).
+
+Many languages deal with files placed in one or more significant directory,
+such as C's include directories or modules in other languages. File pickers
+assist in working with these directories (|<a href="templatesupport.html#template-support-adv-files">template-support-adv-files</a>|).
+
+</pre><hr><pre>6.1  CODING STYLES                                <b class="vimtag"><a name="template-support-adv-styles">template-support-adv-styles</a></b>
+</pre><hr><pre>
+Different software projects may require different styles for comments and
+code. In the case of C/C++, different kinds of comments can be chosen, with
+Doxygen introducing even more possibilities. The template engine assists with
+these problems by offering so called styles. Styles are named using the same
+rules as macros (see |<a href="templatesupport.html#template-support-templ-macro">template-support-templ-macro</a>|).
+
+Every template is assigned to one or more styles. By default, all templates are
+assigned to the style "default". Templates can be associated with different
+styles by placing them inside a "USE STYLES" statement:
+
+<code class="example">  == USE STYLES : CPP ==</code>
+<code class="example"></code>
+<code class="example">  == Comments.function description ==  ==</code>
+<code class="example">	# ==================================================</code>
+<code class="example">	#      Function:  |<code class="badlink">?FUNCTION_NAME</code>|</code>
+<code class="example">	#       Purpose:  <code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">	#   Description:  TODO</code>
+<code class="example">	# ==================================================</code>
+<code class="example"></code>
+<code class="example">  == ENDTEMPLATE ==</code>
+<code class="example"></code>
+<code class="example">  == ENDSTYLES ==</code>
+<code class="example"></code>
+<code class="example">  == USE STYLES : Doxygen ==</code>
+<code class="example"></code>
+<code class="example">  == Comments.function description ==  ==</code>
+<code class="example">  /*!</code>
+<code class="example">   *  \brief  <code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">   *</code>
+<code class="example">   *  TODO</code>
+<code class="example">   */</code>
+<code class="example"></code>
+<code class="example">  == ENDTEMPLATE ==</code>
+<code class="example"></code>
+<code class="example">  == ENDSTYLES ==</code>
+
+Now the "function description" template inserts different code, depending on
+whether the style "CPP" or "Doxygen" is chosen (see the documentation of your
+plug-in for how to change the style).
+
+The "USE STYLES" statement can contain the names of several styles. Templates
+inside are associated with all the styles appearing in the list. This makes
+reuse of templates for different styles possible.
+
+<code class="example">  == USE STYLES : CPP, Doxygen ==</code>
+<code class="example"></code>
+<code class="example">  == Comments.end-of-line command ==  ==</code>
+<code class="example">  // <code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">  == ENDTEMPLATE ==</code>
+<code class="example"></code>
+<code class="example">  == USE STYLES : CPP ==</code>
+<code class="example"></code>
+<code class="example">  == Comments.function description ==  ==</code>
+<code class="example">  ...</code>
+<code class="example">  == ENDTEMPLATE ==</code>
+<code class="example"></code>
+<code class="example">  == ENDSTYLES ==</code>
+<code class="example"></code>
+<code class="example">  == USE STYLES : Doxygen ==</code>
+<code class="example"></code>
+<code class="example">  == Comments.function description ==  ==</code>
+<code class="example">  ...</code>
+<code class="example">  == ENDTEMPLATE ==</code>
+<code class="example"></code>
+<code class="example">  == ENDSTYLES ==</code>
+<code class="example"></code>
+<code class="example">  == ENDSTYLES ==</code>
+
+The template "end-of-line comment" inserts the same text for both styles,
+while "function description" is different. If a template is not associated
+with a given style it can be inserted anyway, using the version of the
+template associated with the "default" style as a fallback. Only if a template
+does not exist for the current style or the default style, an error message is
+displayed and nothing inserted.
+
+Using nested "USE STYLES" statement is also possible. The styles listed in a
+nested statement have to be a subset of the styles listed in the one
+surrounding it.
+Templates inside nested statements are only associated with the styles
+listed in the innermost "USE STYLES" statement.
+
+When files are included inside a "USE STYLES" statement (see
+|<code class="badlink">template-support-IncludeFile</code>|), the templates inside the file are associated
+with the style, as they would if they appeared in the including file itself.
+The rules for nested "USE STYLES" statements also hold across included files.
+
+</pre><hr><pre>6.2  FILE PICKERS                                 <b class="vimtag"><a name="template-support-adv-files">template-support-adv-files</a></b>
+</pre><hr><pre>
+In many languages files are addressed in relation to some significant
+directory, such the include mechanism of the C preprocessor or LaTeX's
+\graphicspath<code class="special">{}</code> command. To assist in dealing with those files, the template
+support offers so-called file pickers.
+
+File pickers are templates which use the command PickFile( <code class="special">&lt;prompt&gt;</code>, <code class="special">&lt;path&gt;</code> )
+(|<code class="badlink">template-support-PickFile</code>|), which asks the user to interactively select a
+file:
+
+<code class="example">	SetPath( 'global_include', '/usr/include/' )</code>
+<code class="example"></code>
+<code class="example">	== Include.global include == below ==</code>
+<code class="example">	|<code class="badlink">PickFile( 'global include directory', 'global_include' )</code>|</code>
+<code class="example">	#include "|<code class="badlink">PICK</code>|"<code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">	== Include.global, filename only == below ==</code>
+<code class="example">	|<code class="badlink">PickFile( 'global include directory', 'global_include' )</code>|</code>
+<code class="example">	#include &lt;|<code class="badlink">FILENAME</code>|&gt;<code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+The first argument to the function is a prompt which is being displayed while
+the user selects the file. The second argument is the name of a path set
+beforehand, such as "global_include". After the user selects a file, several
+macros are created which can be used in the template. <b class="vimtag"><a name="|PICK|">|PICK|</a></b> is the path and
+name of the file, relative to the path given as the second argument.
+<b class="vimtag"><a name="|FILENAME|">|FILENAME|</a></b> is only the name of the file. For a list of all macros, see
+|<code class="badlink">template-support-PickFile</code>|.
+
+Names for paths are created using the function SetPath( <code class="special">&lt;name&gt;</code>, <code class="special">&lt;path&gt;</code> )
+(see |<code class="badlink">template-support-SetPath</code>|), which is a lot like SetMacro.
+
+For example, if the user picks "/usr/include/GL/gl.h", the first template
+would result in the line
+<code class="example">	#include "GL/gl.h"</code>
+being inserted, while the second template would insert
+<code class="example">	#include <code class="special">&lt;gl.h&gt;</code></code>
+The paths "/usr/include" or "/usr/include/GL" would have to be in the include
+path, of course.
+
+The second argument can also be a path. In fact, if it does not match an
+identifier, it is always assumed to be a path:
+
+<code class="example">	== Include.local include == below ==</code>
+<code class="example">	|<code class="badlink">PickFile( 'local include directory', './' )</code>|</code>
+<code class="example">	#include "|<code class="badlink">PICK</code>|"<code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+This template lets the user pick a file relative to the current working
+directory.
+
+</pre><hr><pre>7.  MENUS                                             <b class="vimtag"><a name="template-support-menus">template-support-menus</a></b>
+</pre><hr><pre>
+The template support automatically creates menus for every template. The user
+has a measure of influence on the result. Some of these options where already
+explained in |<code class="badlink">templates-support-templ-maps</code>|, this chapter will introduce further
+capabilities.
+
+The menu entries appear in the order the templates have been read. Including a
+file via
+<code class="example">	IncludeFile ( "<code class="special">&lt;path&gt;</code>/<code class="special">&lt;file&gt;</code>" )</code>
+will cause this file to be processed first, then the rest of the including
+file is read.
+
+The menu structure is defined by the names of the menus. Dots appearing in the
+names place the templates into submenus:
+
+<code class="example">	== Comments.file description == start, sc:f ==</code>
+<code class="example">	...</code>
+<code class="example">	== Statements.if == below, sc:i ==</code>
+<code class="example">	...</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+The shortcut for the menu entry is defined in the header. The automatic
+creation of a menu entry for a template can be suppressed using the option
+"nomenu".
+
+The maps of submenus are set via the command 'MenuShortcut'
+(see |<a href="templatesupport.html#template-support-MenuShortcut()">template-support-MenuShortcut()</a>|):
+
+<code class="example">	MenuShortcut ( "Comments.Special", "p" )</code>
+<code class="example">	MenuShortcut ( "Comments", "c" )</code>
+<code class="example">	MenuShortcut ( "Statements", "s" )</code>
+
+Each call sets the shortcut for the last submenu mentioned. So the above
+example sets the shortcut "c" for the menu "Comments", "s" for "Statements"
+and "p" for the submenu "Special" within "Comments". The placement of these
+calls has no influence on the order of menu creation, only the appearance of
+their names in template headers.
+
+The template library can also contain menu separators, a solid line appearing
+between two menu entries. They can help to provide a better overview in a menu
+with lots of entries. Menu separators are defined outside of templates using
+the syntax:
+<code class="example">	== SEP: Statements.sep1 ==</code>
+The header start with "SEP:" and then contains the name of the separator. The
+dots in the name again define which submenu the separator will appear in,
+while the relative position in relation to the other templates defines the
+placement. The last part of the name following the last dot has no influence,
+but must be unique.
+Unlike templates and lists, separators do not have to be ended with a line
+like "== ENDTEMPLATE ==". Separators only span one line. Separators could
+utilize the syntax of function calls, such as "SetMacro()". However, they have
+been designed in this way to visually be on the same level as templates.
+
+</pre><hr><pre>
+<code class="note">Note:</code> A short remark for plug-in developers.
+
+Each menu entry also displays the map of the template, if it has one. By
+default, it is prefixes with the standard mapleader, a backslash. Using the
+API, this can be changed to the mapleader the user has set:
+<code class="example">	call mmtemplates#core#Resource (</code>
+<code class="example">		\ <code class="special">&lt;template-library&gt;</code>, "set", "Templates::Mapleader", "<code class="special">&lt;mapleader&gt;</code>" )</code>
+(see |<a href="templatesupport.html#mmtemplates%23core%23Resource()">mmtemplates#core#Resource()</a>|). This mapleader may also appear in menu
+entries the plug-in itself creates. As a convenience, the mapleader is
+provided by the API, already correctly escaped for menu creation:
+<code class="example">	let [ esc_mapleader, msg ] = mmtemplates#core#Resource (</code>
+<code class="example">		\ g:My_C_Templates, "escaped_mapleader" )</code>
+
+</pre><hr><pre>8.  HELP TEMPLATES                                <b class="vimtag"><a name="template-support-help-templ">template-support-help-templ</a></b>
+</pre><hr><pre>
+A quick access to the documentation is important for every language. Help
+templates offer a mechanism to pick up a word under the cursor and make a
+system call using this text. For example, a browser could be opened with help
+for a certain command.
+
+Help templates look a lot like templates in the library, but do not insert
+text. They share a lot of other features with regular templates though, they
+will create a menu entry and can have shortcuts and maps.
+
+The syntax of help templates is very close to that of regular templates,
+except that their name is prefixed by "HELP:"
+
+<code class="example">	SetMacro( 'HelpPathEnglish', 'http://en.wiktionary.org/wiki/' )</code>
+<code class="example"></code>
+<code class="example">	== HELP: Help.english == map:he, sc:e ==</code>
+<code class="example">	|<code class="badlink">Word( '' )</code>|</code>
+<code class="example">	|<code class="badlink">Substitute( '\W', '', 'g' )</code>|</code>
+<code class="example">	|<code class="badlink">Browser( '</code>|HelpPathEnglish||<code class="badlink">PICK:l</code>|' )|</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+The help template "Help.english" picks up the word under the cursor, removes
+every non-word character from that string and then calls
+<code class="example">	firefox http://en.wiktionary.org/wiki/...</code>
+This will open a new tab containing the article about the word under the
+cursor, which is very helpful while writing documentation. The browser can be
+configured by setting |<a href="templatesupport.html#g:Templates_InternetBrowserExec">g:Templates_InternetBrowserExec</a>|.
+
+A help template always performs three steps:
+1. Pick up text under the cursor.
+2. Change the text (optional).
+3. Make a system call or a call on the Vim command line.
+
+1. Picking Text
+
+To pick up text under the cursor, the function Word(<code class="special">&lt;flag&gt;</code>) is used. If the
+flag is 'W', the |<code class="badlink">WORD</code>| under the cursor is picked up:
+<code class="example">	|<code class="badlink">Word('W')</code>|</code>
+Otherwise the |<code class="badlink">word</code>| under the cursor is picked:
+<code class="example">	|<code class="badlink">Word('')</code>|</code>
+Lastly, the word can be picked using a regular expression (see |<code class="badlink">regex</code>|):
+<code class="example">	|<code class="badlink">Pattern( '[\\@]\w\+' )</code>|</code>
+This call picks a word prefix by "\" or "@", which in a C comment could be a
+Doxygen command.
+The text which has just been picked up is then stored in a sort of register,
+which for the purpose of the further explanation shall be called "acc".
+
+2. Editing the Text
+
+After picking up text, the register "acc" can be changed by one or more calls
+to the function Substitute( <code class="special">&lt;pattern&gt;</code>, <code class="special">&lt;sub&gt;</code>, <code class="special">&lt;flag&gt;</code> ). For example, to remove
+every non-word character:
+<code class="example">	|<code class="badlink">Substitute( '\W', '', 'g' )</code>|</code>
+Substitute replaces the contents of "acc" using Vim's |<code class="badlink">substitute()</code>| function:
+	acc = substitute( acc, <code class="special">&lt;pattern&gt;</code>, <code class="special">&lt;sub&gt;</code>, <code class="special">&lt;flag&gt;</code> )
+If the flag is an empty string, the first occurrence of <code class="special">&lt;pattern&gt;</code> is replaced
+with <code class="special">&lt;sub&gt;</code>. If flag equals "g", all occurrences are replaced. The function
+LiteralSub(<code class="special">&lt;string&gt;</code>,<code class="special">&lt;sub&gt;</code>,<code class="special">&lt;flag&gt;</code>) works similarly, except that the first
+argument is not interpreted as a regular expression. To replace all points
+with the text "-point-", use:
+<code class="example">	|<code class="badlink">LiteralSub( '.', '-point-', 'g' )</code>|</code>
+This would have to be written differently with regular expressions.
+
+3. Calling Help
+
+After picking up and changing the text, a call is made using Browser(<code class="special">&lt;call&gt;</code>),
+System(<code class="special">&lt;call&gt;</code>) or Vim(<code class="special">&lt;call&gt;</code>). The argument is a string and it can contain
+macros, which are replaced before the call. The macro <b class="vimtag"><a name="|PICK|">|PICK|</a></b> is replaced with
+"acc", the picked and changed text.
+All three commands can have an optional second argument. If either nothing
+could be picked up in step 1, or the string is empty after step 2, the call is
+made using the command given as the second argument. If no such argument is
+given, no action is performed for an empty string.
+
+The following help template shows help for Doxygen commands:
+
+<code class="example">	SetMacro( 'HelpPathDoxygen', 'http://www.stack.nl/~dimitri/doxygen/commands.html' )</code>
+<code class="example"></code>
+<code class="example">	== HELP: Help.doxygen cmd == map:hd, sc:d ==</code>
+<code class="example">	|<code class="badlink">Pattern( '[\\@]\w\+' )</code>|</code>
+<code class="example">	|<code class="badlink">Substitute( '[\\@]', '', '' )</code>|</code>
+<code class="example">	|<code class="badlink">Browser( '</code>|HelpPathDoxygen|<code class="badlink">#cmd</code>|PICK|<code class="badlink">', '</code>|HelpPathDoxygen|<code class="badlink">' )</code>|</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+First, a Doxygen command is picked up under the cursor, then the leading "\"
+or "@" is removed. Then the browser is called, similar to:
+<code class="example">	firefox http://www.stack.nl/~dimitri/doxygen/commands.html#cmdparam</code>
+If there was no Doxygen command under the cursor, the following call is made
+instead, which will show a table of all Doxygen commands:
+<code class="example">	firefox http://www.stack.nl/~dimitri/doxygen/commands.html</code>
+
+<code class="note">Note:</code> The URL still worked as of November, 2013.
+
+</pre><hr><pre>9.  CONFIGURATION                                    <b class="vimtag"><a name="template-support-config">template-support-config</a></b>
+</pre><hr><pre>
+Some behavior can be defined globally for all template libraries in a Vim
+session. The variables can be set in the .vimrc file.
+
+  Variable                    Default     Description and further information
+ ----------------------------------------------------------------------------
+  |<a href="templatesupport.html#g:Templates_MapInUseWarn">g:Templates_MapInUseWarn</a>|    'yes'       whether to print a warning when
+                                          maps would overwrite existing maps
+  |<a href="templatesupport.html#g:Templates_TemplateBrowser">g:Templates_TemplateBrowser</a>| 'explore'   how to browse template files
+
+  |<a href="templatesupport.html#g:Templates_PersonalizationFile">g:Templates_PersonalizationFile</a>|
+                              'templates/personal.template*'
+                                          name of the personalization file
+  |<a href="templatesupport.html#g:Templates_UsePersonalizationFile">g:Templates_UsePersonalizationFile</a>|
+                              'yes'       whether to use the personal. file
+
+  |<a href="templatesupport.html#g:Templates_InternetBrowserExec">g:Templates_InternetBrowserExec</a>|
+                              'firefox'   the browser for help templates (^1)
+  |<a href="templatesupport.html#g:Templates_InternetBrowserFlags">g:Templates_InternetBrowserFlags</a>|
+                              ''          additional flags for the browser
+ ----------------------------------------------------------------------------
+
+(^1) the Unix defaults are as follows:
+  |<a href="templatesupport.html#g:Templates_InternetBrowserExec">g:Templates_InternetBrowserExec</a>|    - firefox
+the Windows defaults are as follows:
+  |<a href="templatesupport.html#g:Templates_InternetBrowserExec">g:Templates_InternetBrowserExec</a>|    - C:\Program Files\Mozilla Firefox\
+                                       firefox.exe
+
+</pre><hr><pre>                                                    <b class="vimtag"><a name="g:Templates_MapInUseWarn">g:Templates_MapInUseWarn</a></b>
+Whenever a map configured in a template library would overwrite a map which is
+already set for a buffer, a warning is printed. This warning is printed once
+per session and filetype.
+If this is not desired, the warnings can be switched of entirely by adding
+this setting to the ".vimrc":
+<code class="example">  let g:Templates_MapInUseWarn = 'no'</code>
+
+</pre><hr><pre>                                                 <b class="vimtag"><a name="g:Templates_TemplateBrowser">g:Templates_TemplateBrowser</a></b>
+When using a map or menu entry for editing templates, the template file can be
+chosen by different means, which are configured in the ".vimrc" file:
+<code class="example">  let g:Templates_TemplateBrowser = 'browse'</code>
+
+The possible settings are listed below. If one method is not available, the
+next lower one is used:
+
+  Value                 Meaning
+ ----------------------------------------------------------------------------
+  'browse'              select using a GUI file browser (gvim only)
+  'explore' (default)   select using Vim's :Explore command
+  'edit'                open the top-level template file via :edit
+ ----------------------------------------------------------------------------
+
+</pre><hr><pre>                                             <b class="vimtag"><a name="g:Templates_PersonalizationFile">g:Templates_PersonalizationFile</a></b>
+                                          <b class="vimtag"><a name="g:Templates_UsePersonalizationFile">g:Templates_UsePersonalizationFile</a></b>
+The name and directory (relative to |<code class="badlink">runtimepath</code>|) of the personalization
+file:
+<code class="example">  let g:Templates_PersonalizationFile = 'templates/personal.template*'</code>
+The first file which matches g:Templates_PersonalizationFile on runtimepath
+will be used (uses |<code class="badlink">globpath</code>|, with 'runtimepath' as the list of paths and
+g:Templates_PersonalizationFile as the expressions).
+
+The file "templates/personal.template" or "templates/personal.templates" will
+be loaded by every template library that uses this feature. Since it is loaded
+by every library, it should not contain anything that is specific to a
+language. It can however be used to set the users name, and the date and time
+format.
+
+The usage of this feature can be disabled entirely by adding this setting to
+the ".vimrc":
+<code class="example">  let g:Templates_UsePersonalizationFile = 'no'</code>
+It can also be disabled for individual libraries by setting the property
+"Templates::UsePersonalizationFile" inside the library:
+<code class="example">  SetProperty ( "Templates::UsePersonalizationFile", "no" )</code>
+
+</pre><hr><pre>                                             <b class="vimtag"><a name="g:Templates_InternetBrowserExec">g:Templates_InternetBrowserExec</a></b>
+                                            <b class="vimtag"><a name="g:Templates_InternetBrowserFlags">g:Templates_InternetBrowserFlags</a></b>
+Some help templates (see |<a href="templatesupport.html#template-support-help-templ">template-support-help-templ</a>|) require the executable
+of an internet browser, to open websites with documentation. It is set in the
+.vimrc file:
+<code class="example">  let g:Templates_InternetBrowserExec = 'firefox'</code>
+
+Additional flags can be set via:
+<code class="example">  let g:Templates_InternetBrowserFlags = '--new-window'</code>
+
+</pre><hr><pre>
+
+
+<code class="section">  -------------------------------------------------------------------------- </code>
+<code class="section">  -------------------------------------------------------------------------- </code>
+
+<code class="section">   --------- PART II --- API DOCUMENTATION --------- </code>
+
+<code class="section">  -------------------------------------------------------------------------- </code>
+<code class="section">  -------------------------------------------------------------------------- </code>
+
+
+
+</pre><hr><pre>1.  API                                                 <b class="vimtag"><a name="template-support-api">template-support-api</a></b>
+</pre><hr><pre>
+This chapter is only relevant if you want to use the template system with your
+own plug-in!
+
+The API enables other plug-ins to use the template system.
+
+Each template library is stored in a dictionary (|<code class="badlink">Dictionary</code>|).
+-	This dictionary must be a global variable, because it it used for purposes
+	such as callback functions for menu entries and maps.
+-	Do not change the entries of the dictionary directly, since the internal
+	structure may change. The API provides access to the stored information.
+
+</pre><hr><pre>1.1  BASIC USAGE                                  <b class="vimtag"><a name="template-support-api-basic">template-support-api-basic</a></b>
+</pre><hr><pre>
+These functions provide the basic functionality to load template libraries and
+insert templates into a buffer. A further function expands macros in a text.
+
+</pre><hr><pre>                                               <b class="vimtag"><a name="mmtemplates%23core%23NewLibrary()">mmtemplates#core#NewLibrary()</a></b>
+To create a new template library call:
+
+<code class="section">	library = mmtemplates#core#NewLibrary ( ... ) </code>
+
+Optional parameters:
+	"debug", level      - View debug information with the given level of detail.
+	                      (integer, default: show no debug information)
+Returns:
+	library - The template library. (dict)
+
+Example:
+
+Create a new library and store it in the variable 'g:My_C_Templates':
+<code class="example">	let g:My_C_Templates = mmtemplates#core#NewLibrary ()</code>
+
+</pre><hr><pre>                                            <b class="vimtag"><a name="mmtemplates%23core%23ReadTemplates()">mmtemplates#core#ReadTemplates()</a></b>
+Templates are loaded using the function:
+
+<code class="section">  mmtemplates#core#ReadTemplates ( library, ... ) </code>
+
+Parameters:
+  library - The template library. (string or dict)
+Optional parameters:
+  "load", file        - Load templates from 'file'. (string)
+  "personalization"   - Load the template personalization file.
+  "reload", what      - Reload templates according to 'what', see below.
+                        (string or integer)
+  "name", name        - Associated symbolic name of the file. (string)
+  "shortcut", sc      - Associated shortcut for editing the file. (string)
+  "map", map          - Associated map for editing the file. (string)
+  "optional"          - If non-zero, this is an optional template file.
+                        (integer)
+  "hidden"            - If non-zero, this is an optional and hidden template
+                        file. (integer)
+  "overwrite_warning" - Print a warning each time a template is overwritten.
+  "debug", level      - View debug information with the given level of detail.
+                        (integer, default: show no debug information)
+No returns.
+
+The library can either be given directly, or as the name of the global
+variable containing the library.
+
+When loading a new file, it must be given with a path and filename.
+<code class="example">  mmtemplates#core#ReadTemplates ( library, "load", "path/file.templates" )</code>
+The template file can be associated with a symbolic name. Furthermore a map
+and a shortcut can be set. This information will be used to create the special
+maps and menu entries for editing the templates
+(see |<code class="badlink">mmtemplates#core#CreateMaps</code>| and |<code class="badlink">mmtemplates#core#CreateMenus</code>|).
+The menu entry will read "edit <code class="special">&lt;name&gt;</code> templates" and have the associated
+shortcut. The map will be created by prefixing the given characters with the
+mapleader. The call
+<code class="example">  mmtemplates#core#ReadTemplates ( library, "load", "additional.templates",</code>
+<code class="example">    \ "name", "additional", "map", "nta" )</code>
+will cause the creation of a menu entry "edit additional templates" and a map
+"\nta", depending on the mapleader. The default shortcut is the first letter
+of the name. If no map is associated, none is created.
+
+Optional template files will not cause warnings if they are not readable.
+Hidden template files do not show up in menus, debug output, ... if they are
+not available.
+
+To load the template personalization file into the library, call:
+<code class="example">  mmtemplates#core#ReadTemplates ( library, "personalization",</code>
+<code class="example">    \ "name", "personal", "map", "ntp" )</code>
+The personalization file will only be added if it is available and should be
+used, i.e. if calling |<a href="templatesupport.html#mmtemplates%23core%23FindPersonalizationFile()">mmtemplates#core#FindPersonalizationFile()</a>| returns a
+non-empty string. The personalization file can also be associated with a
+symbolic name, shortcut, and map.
+
+The entire library can be reloaded by calling:
+<code class="example">  mmtemplates#core#ReadTemplates ( library, "reload", "all" )</code>
+A file can be reloaded, but only if it has been loaded before:
+<code class="example">  mmtemplates#core#ReadTemplates ( library, "reload", "path/file.templates" )</code>
+The i'th file which has been loaded can be reloaded via:
+<code class="example">  mmtemplates#core#ReadTemplates ( library, "reload", i )</code>
+
+With the switch "overwrite_warning", a warning is displayed whenever a
+template is encountered which already has been set for the current style.
+
+
+Example 1:
+
+Load a file:
+<code class="example">  call mmtemplates#core#ReadTemplates ( g:My_C_Templates,</code>
+<code class="example">    \ "load", "$HOME/.vim/c-support/templates/lib.templates",</code>
+<code class="example">    \ "debug", 1, "overwrite_warning" )</code>
+Load the templates in the given file and print very little debug information.
+Print a warning whenever a template is overwritten.
+
+
+Example 2.1:
+
+Load several files:
+<code class="example">  call mmtemplates#core#ReadTemplates ( g:My_C_Templates,</code>
+<code class="example">    \ "load", "/usr/share/vim/.../global.templates" )</code>
+<code class="example"></code>
+<code class="example">  call mmtemplates#core#ReadTemplates ( g:My_C_Templates,</code>
+<code class="example">    \ "load", "$HOME/.vim/.../local.templates" )</code>
+Loads the templates in the two files.
+
+
+Example 2.2:
+
+Reload specific templates:
+<code class="example">  call mmtemplates#core#ReadTemplates ( g:My_C_Templates, "reload", -1 )</code>
+Reload the last template which has been loaded.
+(would be ".../local.templates" in the above example)
+
+
+Example 2.3:
+
+Reload templates by name:
+<code class="example">  call mmtemplates#core#ReadTemplates ( g:My_C_Templates,</code>
+<code class="example">    \ "reload", "$HOME/.vim/.../local.templates" )</code>
+
+</pre><hr><pre>                                       <b class="vimtag"><a name="mmtemplates%23core%23EnableTemplateFile()">mmtemplates#core#EnableTemplateFile()</a></b>
+Previously unreadable template files can be enabled by using:
+
+<code class="section">  mmtemplates#core#EnableTemplateFile ( library, sym_name ) </code>
+
+Parameters:
+  library  - The template library. (string or dict)
+  sym_name - The symbolic name of the file. (string)
+No returns.
+
+Checks whether the template file named 'sym_name' is now available. If so, it
+will be loaded the next time the library is reloaded.
+
+</pre><hr><pre>                                           <b class="vimtag"><a name="mmtemplates%23core%23InsertTemplate()">mmtemplates#core#InsertTemplate()</a></b>
+To insert templates into the current buffer use:
+
+<code class="section">	mmtemplates#core#InsertTemplate ( library, name, ... ) </code>
+
+Parameters:
+	library - The template library. (string or dict)
+	name    - The name of the template. (string)
+Optional parameters:
+	"i"                - &gt; "insert"
+	"insert"           - Insert mode, special treatment of placement 'insert'.
+	"v"                - &gt; "visual"
+	"visual"           - Visual mode, use the <code class="special">&lt;SPLIT&gt;</code> tag.
+	"placement", place - Overwrite the template's placement. (string)
+	"range", a, b      - Use the range from lines 'a' to 'b'. (integers)
+	"<code class="special">&lt;macro&gt;</code>", replace - Set the replacement for the given macro. The string
+	                     <code class="special">&lt;macro&gt;</code> must match a macro, e.g. <b class="vimtag"><a name="|FUNCTION_NAME|">|FUNCTION_NAME|</a></b> .
+	                     (string)
+	"pick", choice     - When inserting a list use 'choice', do not ask the user
+	                     to pick an entry. (string)
+	"debug", level     - View debug information with the given level of detail.
+	                     (integer, default: show no debug information)
+No returns.
+
+The library can either be given directly, or as the name of the global
+variable containing the library.
+It the template 'name' does not exist, an error message is displayed.
+
+Examples:
+
+Include "Statement.If", surround the selected lines:
+<code class="example">	call mmtemplates#core#InsertTemplate ( g:My_C_Templates,</code>
+<code class="example">		\ "Statement.If", "v" )</code>
+<code class="example"></code>
+</pre><hr><pre><code class="example">                                               <b class="vimtag"><a name="mmtemplates%23core%23ExpandText()">mmtemplates#core#ExpandText()</a></b></code>
+To perform macro expansion in a text use:
+
+<code class="section">	rtext = mmtemplates#core#ExpandText ( library, text ) </code>
+
+Parameters:
+	library - The template library. (string or dict)
+	text    - A text. (string)
+Returns:
+	rtext   - The text after the macro expansion (string).
+
+The library can either be given directly, or as the name of the global
+variable containing the library.
+The expansion is done using all the settings in the library, as well as the
+global macro replacements such as <b class="vimtag"><a name="|AUTHOR|">|AUTHOR|</a></b> .
+
+Examples:
+
+Calling the function:
+<code class="example">	let text = mmtemplates#core#ExpandText ( g:My_C_Templates, "|<code class="badlink">DATE</code>| |<code class="badlink">TIME</code>|" )</code>
+returns "29.2.2000 12:00", depending on the format set in the library.
+
+This can be used for special menu entries such as:
+<code class="example">	exe 'amenu Comments.Special.Date\ Time '</code>
+<code class="example">		\ .':exe "normal! a".mmtemplates#core#ExpandText ( '</code>
+<code class="example">		\ .'g:My_C_Templates, "\|<code class="badlink">DATE\</code>| \|<code class="badlink">TIME\</code>|" )<code class="special">&lt;CR&gt;</code>'</code>
+
+</pre><hr><pre>                                        <b class="vimtag"><a name="mmtemplates%23core%23EditTemplateFiles()">mmtemplates#core#EditTemplateFiles()</a></b>
+Open the library for editing:
+
+<code class="section">	mmtemplates#core#EditTemplateFiles ( library, file ) </code>
+
+Parameters:
+	library - The template library. (string or dict)
+	file  - A file. (string or integer)
+No returns.
+
+The library can either be given directly, or as the name of the global
+variable containing the library.
+
+The argument 'file' can be given as a filename, in which case it must have
+been loaded before via |<a href="templatesupport.html#mmtemplates%23core%23ReadTemplates()">mmtemplates#core#ReadTemplates()</a>|.
+'file' can also be an integer i, which refers to the i'th file that has been
+loaded.
+
+A file browser is then opened for the directory containing the file.
+
+Example:
+
+Open a file browser in the directory "$HOME/.vim/.../templates/":
+
+<code class="example">	" load the last template file:</code>
+<code class="example">	call mmtemplates#core#ReadTemplates ( g:My_C_Templates,</code>
+<code class="example">		\ "load", "$HOME/.vim/.../templates/local.templates" )</code>
+<code class="example"></code>
+<code class="example">	" ...</code>
+<code class="example"></code>
+<code class="example">	" edit the library</code>
+<code class="example">	call mmtemplates#core#EditTemplateFiles ( g:My_C_Templates, -1 )</code>
+
+</pre><hr><pre>                                                <b class="vimtag"><a name="mmtemplates%23core%23JumpToTag()">mmtemplates#core#JumpToTag()</a></b>
+The jump to the next tag is performed by:
+
+<code class="section">	e = mmtemplates#core#JumpToTag ( regex ) </code>
+
+Parameters:
+	regex - The regex to jump to. (string)
+Returns:
+	e - An empty string.
+
+Jumps to the next occurrence of 'regex' and removes it from the buffer. Then
+the function returns an empty string.
+The regular expression can be obtained from the template library via the
+function |<a href="templatesupport.html#mmtemplates%23core%23Resource()">mmtemplates#core#Resource()</a>|.
+
+Example:
+
+This function is best used in maps such as this:
+
+<code class="example">	let regex = mmtemplates#core#Resource ( g:My_C_Templates, "jumptag" )[0]</code>
+<code class="example"></code>
+<code class="example">	" ...</code>
+<code class="example"></code>
+<code class="example">	nnoremap <code class="special">&lt;buffer&gt;</code> <code class="special">&lt;C-j&gt;</code> i<code class="special">&lt;C-R&gt;</code>=mmtemplates#core#JumpToTag ( regex )<code class="special">&lt;CR&gt;</code></code>
+<code class="example">	inoremap <code class="special">&lt;buffer&gt;</code> <code class="special">&lt;C-j&gt;</code>  <code class="special">&lt;C-R&gt;</code>=mmtemplates#core#JumpToTag ( regex )<code class="special">&lt;CR&gt;</code></code>
+
+This maps can be created automatically using |<a href="templatesupport.html#mmtemplates%23core%23CreateMaps()">mmtemplates#core#CreateMaps()</a>|.
+
+</pre><hr><pre>                                             <b class="vimtag"><a name="mmtemplates%23core%23DeleteOptTag()">mmtemplates#core#DeleteOptTag()</a></b>
+Deleting an "optional" jump tag is performed by:
+
+<code class="section">	e = mmtemplates#core#DeleteOptTag ( jmp_regex, sep_regex, mode ) </code>
+
+Parameters:
+	jmp_regex - The regex of the optional jump tag. (string)
+	sep_regex - The regex of the separator. (string)
+	mode      - "i" for insert mode, "n" for normal. (string)
+
+Deletes the next occurrence of an optional jump tag [+NAME+] or [-NAME-] and
+its accompanying separator. If the function is called in normal mode ('mode'
+is "n") and nothing can be deleted on the current line, the normal behavior of
+<code class="special">&lt;ctrl-d&gt;</code> is invoked.
+
+This maps can be created automatically using |<a href="templatesupport.html#mmtemplates%23core%23CreateMaps()">mmtemplates#core#CreateMaps()</a>|.
+
+</pre><hr><pre>1.2  CREATING MENUS AND MAPS                       <b class="vimtag"><a name="template-support-api-maps">template-support-api-maps</a></b>
+</pre><hr><pre>
+The automated generation of maps and menus is carried out by these functions.
+
+</pre><hr><pre>                                               <b class="vimtag"><a name="mmtemplates%23core%23CreateMaps()">mmtemplates#core#CreateMaps()</a></b>
+The automatic creation of maps is carried out by the function:
+
+<code class="section">	mmtemplates#core#CreateMaps ( library, localleader, ... ) </code>
+
+Parameters:
+	library     - The name of the variable containing the library. (string)
+	localleader - The local mapleader. (string)
+Optional parameters:
+	"do_jump_map"     - Create a map for |<a href="templatesupport.html#mmtemplates%23core%23JumpToTag()">mmtemplates#core#JumpToTag()</a>|.
+	"do_del_opt_map"  - Create a map for |<a href="templatesupport.html#mmtemplates%23core%23DeleteOptTag()">mmtemplates#core#DeleteOptTag()</a>|.
+	                    (interface 1.0+)
+	"do_special_maps" - Create maps for the special operations.
+	"filetype", ftype - Create maps for the filetype ftype.
+	                    (interface 1.0+, string, default: "default")
+No returns.
+
+If 'localleader' is an empty string, the standard mapleader is used.
+Otherwise
+<code class="example">	let maplocalleader = localleader</code>
+is executed before the maps are created. (see |<code class="badlink">mapleader</code>|)
+
+The maps for the jump and the special operations (edit/reread the library,
+choose a style) are not created unless the corresponding options are given.
+The maps for editing templates can be customized for each file by passing
+additional information while loading a file using
+|<a href="templatesupport.html#mmtemplates%23core%23ReadTemplates()">mmtemplates#core#ReadTemplates()</a>|.
+
+This function creates maps which are local to the buffer, so it must be called
+in the appropriate filetype-plugin, or by an autocommand.
+An error message is displayed whenever a mapping already exists. The existing
+mapping will not be overwritten.
+
+Example:
+
+Create maps using the standard mapleader:
+<code class="example">	call mmtemplates#core#CreateMaps ( "g:My_C_Templates", "", "do_jump_map" )</code>
+A map to jump to the next tag is also created.
+
+Technical Details:
+-	The library must be given as the name of the global variable, since this
+	name is required to create the maps.
+-	The function creates maps of the following types:
+		noremap, inoremap, vnoremap
+
+</pre><hr><pre>                                              <b class="vimtag"><a name="mmtemplates%23core%23CreateMenus()">mmtemplates#core#CreateMenus()</a></b>
+The automatic creation of menus is carried out by the function:
+
+<code class="section">	mmtemplates#core#CreateMenus ( library, rootmenu, ... ) </code>
+
+Parameters:
+	library        - The name of the variable containing the library. (string)
+	rootmenu       - The name of the root menu. (string)
+Optional parameters:
+	"global_name", name    - The name used in the menu headers.
+	                         (string, default: the value of 'rootmenu')
+	"existing_menu", names - The menus which already exist.
+	                         (string or list of strings)
+	"sub_menu", names      - Additional sub-menus which should be created.
+	                         (string or list of strings)
+	"specials_menu", name  - The name of the menu containing the special
+	                         operations. (string, default: "Run")
+	"priority", p          - Create the sub-menu with priority p.
+	                         (integer, default: 500)
+	"do_all"               - Action: Reset and create all menus.
+	"do_reset"             - Action: Reset.
+	"do_templates"         - Action: Create menus for all the templates.
+	"do_specials"          - Action: Create a menu with the special entries.
+	"do_styles"            - Action: Create a menu for selecting the style.
+No returns.
+
+"do_all", "do_templates", "do_specials" and "do_styles" starts the automatic
+creation of menu entries. Sub-menus are created automatically as needed.
+The special operations are: edit/reread the library, choose a style. The
+corresponding menu entries are put in the sub-menus given by the option
+"specials_menu". The name of this sub-menu must already be correctly escaped.
+The menu entries for editing templates can be customized for each file by
+passing additional information while loading a file using
+|<a href="templatesupport.html#mmtemplates%23core%23ReadTemplates()">mmtemplates#core#ReadTemplates()</a>|.
+
+Each sub-menu looks like this, starting with a header:
+
+<code class="example">	<code class="special">&lt;menu name&gt;</code>     <code class="special">&lt;global name&gt;</code></code>
+<code class="example">	--- <code class="special">&lt;separator&gt;</code> -------------</code>
+<code class="example">	<code class="special">&lt;entry1&gt;</code>                <code class="special">&lt;map&gt;</code></code>
+<code class="example">	<code class="special">&lt;entry2&gt;</code></code>
+<code class="example">	...                       ...</code>
+
+The global name (option "global_name") helps to keep track of tear-off menus.
+"sub_menu" can be used to create additional menus, which have the same header.
+When a sub-menu is created through use of the API like this, an optional
+priority can be specified. The menu names given must already be correctly
+escaped.
+
+The library keeps track of all created sub-menus, to be able to add the
+headers correctly. "existing_menu" adds menus to this list. The names of the
+menus must be correctly escaped.
+"do_reset" resets this list and allows for the menus to be created once more.
+"do_all" also reset the list before it carries out further operations.
+
+The "&amp;" and the trailing points in 'rootmenu' and "existing_menus" are
+ignored. "sub_menus" and "specials_menu" also ignore trailing points, but use
+the "&amp;" to create shortcuts. However, if a shortcut for the menu has been set
+in the library, that one is preferred.
+
+
+Example 1: Basic usage.
+
+Suppose a plug-in creates the following menus:
+
+<code class="example">	C-Support</code>
+<code class="example">	&gt;-+ Comments</code>
+<code class="example">	|	&gt;-- code-&gt;comment</code>
+<code class="example">	|	&gt;-- comment-&gt;code</code>
+<code class="example">	|	&gt;-+ Special</code>
+<code class="example">	|<code class="badlink">	</code>|	&gt;--- ...</code>
+<code class="example">	&gt;-+ Run</code>
+<code class="example">	|	&gt;-- run</code>
+<code class="example">	|	&gt;-- ...</code>
+
+Then the call has to look like this:
+<code class="example">	call mmtemplates#core#CreateMenus ( "g:My_C_Templates", "&amp;C-Support",</code>
+<code class="example">		\  "do_all", "existing_menu", [ "&amp;Comments","Comments.&amp;Special.","&amp;Run." ] )</code>
+
+To create headers for each sub-menu, similar to those the template support
+creates, use code like this:
+
+<code class="example">	let root_menu   = "&amp;C-Support"</code>
+<code class="example">	let global_name = "C/C++"</code>
+<code class="example">	exe 'amenu '.root_menu.'.'.root_menu.'                <code class="special">&lt;Nop&gt;</code>'</code>
+<code class="example">	exe 'amenu '.root_menu.'.-Sep0-                       <code class="special">&lt;Nop&gt;</code>'</code>
+<code class="example">	exe 'amenu '.root_menu.'.&amp;Run.Run<code class="special">&lt;TAB&gt;</code>'.global_name.' <code class="special">&lt;Nop&gt;</code>'</code>
+<code class="example">	exe 'amenu '.root_menu.'.Run.-Sep00-                  <code class="special">&lt;Nop&gt;</code>'</code>
+
+
+Example 2: Advanced usage.
+
+This facility can be used to create all the menu headers.
+It also gives more control over the order of the menu entries.
+
+First, reset the list of created menus:
+<code class="example">	call mmtemplates#core#CreateMenus ( "g:My_C_Templates", "C-Support",</code>
+<code class="example">		\ "do_reset" )</code>
+Then create a sub-menu (shortcut "c"):
+<code class="example">	call mmtemplates#core#CreateMenus ( "g:My_C_Templates", "C-Support",</code>
+<code class="example">		\ "sub_menu", "&amp;Comments" )</code>
+<code class="example">	" entries: comment/uncomment/... :</code>
+<code class="example">	...</code>
+Create entries for the templates:
+<code class="example">	call mmtemplates#core#CreateMenus ( "g:My_C_Templates", "C-Support",</code>
+<code class="example">		\ "do_templates" )</code>
+Create a run menu (shortcut "r"):
+<code class="example">	call mmtemplates#core#CreateMenus ( "g:My_C_Templates", "C-Support",</code>
+<code class="example">		\ "sub_menu", "&amp;Run" )</code>
+<code class="example">	" entries: compile/run/test/... :</code>
+<code class="example">	...</code>
+Create the special entries at the end of the run menu:
+<code class="example">	call mmtemplates#core#CreateMenus ( "g:My_C_Templates", "C-Support",</code>
+<code class="example">		\ "do_specials", "specials_menu", "Run." )</code>
+
+<code class="example"></code>
+Technical Details:
+-	The library must be given as the name of the global variable, since this
+	name is required to create the menus.
+-	The function creates menus of the following types:
+		amenu, imenu and vmenu (where appropriate)
+
+</pre><hr><pre>1.3  ACCESS                                      <b class="vimtag"><a name="template-support-api-access">template-support-api-access</a></b>
+</pre><hr><pre>
+The following functions are used to query and change the resources of a
+template library. For example, they are used to change the style or to change
+the format of the date and time.
+
+</pre><hr><pre>                                              <b class="vimtag"><a name="mmtemplates%23core%23ChooseStyle()">mmtemplates#core#ChooseStyle()</a></b>
+The style is changed using the function:
+
+<code class="section">	mmtemplates#core#ChooseStyle ( library, style ) </code>
+
+Parameters:
+	library - The template library. (string or dict)
+	style   - The name of the style or "!pick". (string)
+No returns.
+
+The library can either be given directly, or as the name of the global
+variable containing the library.
+If 'style' is "!pick", the user is presented with a list of all styles, and
+can choose one.
+It the style 'style' does not exist, an error message is displayed and the
+style remains unchanged.
+
+Example:
+
+Prompt the user for a new style:
+<code class="example">	call mmtemplates#core#ChooseStyle ( g:My_C_Templates, "!pick" )</code>
+<code class="example"></code>
+</pre><hr><pre><code class="example">                                                 <b class="vimtag"><a name="mmtemplates%23core%23Resource()">mmtemplates#core#Resource()</a></b></code>
+Access to a number of resources is provided by:
+
+<code class="section">	[ rval, msg ] = mmtemplates#core#Resource ( library, mode, ... ) </code>
+
+<code class="section">	[ rval, msg ] </code>
+<code class="section">		= mmtemplates#core#Resource ( library, "get", resource, key ) </code>
+<code class="section">	[ rval, msg ] </code>
+<code class="section">		= mmtemplates#core#Resource ( library, "set", resource, key, val ) </code>
+
+Parameters:
+	library - The template library. (string or dict)
+	mode    - The operation which should be executed. (string)
+Optional parameters:
+	... - Depending on 'mode'.
+Returns:
+	rval - Content and type depending on 'mode'.
+	msg  - In case of success: An empty string. (string)
+	       In case of failure: An error message. (string)
+
+The library can either be given directly, or as the name of the global
+variable containing the library.
+
+Special resources:
+
+- "escaped_mapleader" : Return the mapleader, escaped for use in a menu.
+- "jumptag"           : Return the regex used to find jump tags.
+- "style"             : Return the name of the current style.
+- "template_list"     : Return a list of the template files and their symbolic
+                        names, for debugging purposes.
+
+More special resources, mostly for internal usage:
+
+- "settings_table"    : Return a dict of all the settings. Has one key
+                        "Templates_SomeSetting" for every configuration
+                        variable "g:Templates_SomeSetting" listed in the
+                        section |<a href="templatesupport.html#template-support-config">template-support-config</a>|.
+
+Regular resources:
+
+- "add" : Add the property with the given key and set it to 'val'.
+- "get" : Return the resource with the given key or 0.
+- "set" : Change the resource with the given key to 'val'.
+
+The mode "get" supports the following resources:
+- "list",          "l" : The list as generated by: == List: l == ... ==
+- "macro",         "m" : A macro as set by: SetMacro( "m", ... )
+- "path",          "p" : A path as set by: SetPath( "p", ... )
+- "property",      "p" : An existing resource named "p".
+- "template_file", "s" : Information about the template file with the symbolic
+                         name "s".
+It returns the integer 0, if the resource 'key' does not exist.
+The mode "set" can be used to overwrite these resources.
+The resource "list" is returned as a reference, use it responsibly.
+
+For "add" and "set" 'rval' is undefined.
+
+Macros:
+
+Setting the special macros "DATE", "TIME", and "YEAR" changes the format of
+the date and time. they use the same format as the function |<code class="badlink">strftime()</code>|.
+Setting "BASENAME", "FILENAME", "PATH" and "SUFFIX" has no effect.
+
+Properties:
+
+The mode "get" returns the property named 'key', but only if it already
+exists. Only an existing property can be set in the mode "set". To create and
+set a new property, the mode "add" must be used.
+
+Template Files:
+
+Returns a dict with information about the template file with the specified
+symbolic name. It contains the fields:
+  "filename"  : the path and filename
+  "sym_name"  : the symbolic name
+  "available" : whether the file is readable
+  "optional"  : whether this is an optional template file
+  "hidden"    : whether this is a hidden template file
+For "optional" and "hidden", see also |<a href="templatesupport.html#mmtemplates%23core%23ReadTemplates()">mmtemplates#core#ReadTemplates()</a>|.
+These properties cannot be set.
+
+Example 1:
+
+The format of the macro <b class="vimtag"><a name="|TIME|">|TIME|</a></b> can be changed by calling:
+<code class="example">	call mmtemplates#core#Resource (</code>
+<code class="example">		\ g:My_C_Templates, "set", "macro", "TIME", "%H:%M" )</code>
+
+
+Example 2:
+
+Suppose there is a template like this:
+
+<code class="example">	== Include.project include == insert, pick-file ==</code>
+<code class="example">	|<code class="badlink">Prompt( "project include directory" )</code>|</code>
+<code class="example">	|<code class="badlink">GetPath( "project_include" )</code>|</code>
+<code class="example">	#include "|<code class="badlink">PICK</code>|"</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+When switching to a new project, execute:
+<code class="example">	call mmtemplates#core#Resource (</code>
+<code class="example">		\ g:My_C_Templates, "set", "path", "project_include", project_incl_dir )</code>
+
+The next time the template "Include.project include" is inserted, the file
+browser will already be set to the project include directory.
+
+
+Example 3:
+
+Set the property "Templates::Mapleader":
+<code class="example">	call mmtemplates#core#Resource (</code>
+<code class="example">		\ g:My_C_Templates, "set", "Templates::Mapleader", "." )</code>
+
+Create a new property "C::RunCompiler::Map":
+<code class="example">	call mmtemplates#core#Resource (</code>
+<code class="example">		\  g:My_C_Templates, "add","C::RunCompiler::Map", "rc" )</code>
+
+Get the mapleader (already escaped):
+<code class="example">	let [ esc_mapleader, msg ] = mmtemplates#core#Resource (</code>
+<code class="example">		\ g:My_C_Templates, "escaped_mapleader" )</code>
+
+Get the map (not escaped!):
+<code class="example">	let [ map_run, msg ] = mmtemplates#core#Resource (</code>
+<code class="example">		\ g:My_C_Templates, "get", "C::RunCompiler::Map" )</code>
+<code class="example"></code>
+Create the menu entry:
+<code class="example">	if empty ( msg )</code>
+<code class="example">		exe 'amenu '.root_menu</code>
+<code class="example">			\ .'.Run.run\ &amp;compiler<code class="special">&lt;TAB&gt;</code>'.esc_mapleader.map_run.'   :call Run()<code class="special">&lt;CR&gt;</code>'</code>
+<code class="example">	else</code>
+<code class="example">		" handle error ...</code>
+<code class="example">	endif</code>
+
+
+Example 4:
+
+Get the current style:
+<code class="example">	let [ current_style, msg ] = mmtemplates#core#Resource (</code>
+<code class="example">		\ g:My_C_Templates, "style" )</code>
+
+</pre><hr><pre>1.4  MISCELLANY                                    <b class="vimtag"><a name="template-support-api-misc">template-support-api-misc</a></b>
+</pre><hr><pre>
+This section describes various functions, provided for convenience.
+
+</pre><hr><pre>                                             <b class="vimtag"><a name="mmtemplates%23core%23SetMapleader()">mmtemplates#core#SetMapleader()</a></b>
+                                           <b class="vimtag"><a name="mmtemplates%23core%23ResetMapleader()">mmtemplates#core#ResetMapleader()</a></b>
+Set and reset |<code class="badlink">maplocalleader</code>|:
+
+<code class="section">  mmtemplates#core#SetMapleader ( localleader ) </code>
+<code class="section">  mmtemplates#core#ResetMapleader () </code>
+
+Parameters:
+  localleader - The new value for |<code class="badlink">maplocalleader</code>|. (string)
+No returns.
+
+A call to mmtemplates#core#SetMapleader sets maplocalleader to the given
+value. A subsequent call to mmtemplates#core#ResetMapleader restores the
+previous setting, which can also mean that maplocalleader is undefined again.
+Calls to SetMapleader and ResetMapleader can be nested.
+If the argument 'localleader' is an empty string, maplocalleader remains
+unchanged.
+
+</pre><hr><pre>                                               <b class="vimtag"><a name="mmtemplates%23core%23EscapeMenu()">mmtemplates#core#EscapeMenu()</a></b>
+Escape a string to be used as a menu entry:
+
+<code class="section">  str = mmtemplates#core#EscapeMenu ( str, ... ) </code>
+
+Parameters:
+  str - The menu item. (string)
+Optional parameters:
+  mode - How to escape the string. (string, default "entry")
+Returns:
+  str - The same string with appropriately escaped characters. (string)
+
+The following modes are supported:
+- "menu"  : A menu name with possible submenus, escapes <code class="special">&lt;space&gt;</code> \ | &amp;
+- "entry" : A menu entry, dots are escaped as well, escapes <code class="special">&lt;space&gt;</code> . \ | &amp;
+- "right" : The right-aligned side of a menu entry, escapes <code class="special">&lt;space&gt;</code> . \ |
+
+In mode "entry" the function even escapes '.', so the menu and the entry must
+be escaped separately, otherwise the entry 'frame comment' in the menu
+'Comments':
+<code class="example">  "Comments.frame comment"</code>
+would turn into the entry:
+<code class="example">  "Comments\.frame\ comment"</code>
+<code class="example"></code>
+</pre><hr><pre><code class="example">                                  <b class="vimtag"><a name="mmtemplates%23core%23FindPersonalizationFile()">mmtemplates#core#FindPersonalizationFile()</a></b></code>
+Search for the template personalization file:
+
+<code class="section">  file = mmtemplates#core#FindPersonalizationFile ( library ) </code>
+
+Parameters:
+	library - The template library. (string or dict)
+Returns:
+  file - The template personalization file. (string)
+
+Searches |<code class="badlink">runtimepath</code>| for the template personalization file and returns it.
+Respects the setting |<a href="templatesupport.html#g:Templates_PersonalizationFile">g:Templates_PersonalizationFile</a>|. An empty string is
+returned if:
+- the file can not be found
+- |<a href="templatesupport.html#g:Templates_UsePersonalizationFile">g:Templates_UsePersonalizationFile</a>| is set to "no"
+- the property "Templates::UsePersonalizationFile" is set to "no" for the
+  library
+
+</pre><hr><pre>                                   <b class="vimtag"><a name="mmtemplates%23core%23AddCustomTemplateFiles()">mmtemplates#core#AddCustomTemplateFiles()</a></b>
+Add additional template files:
+
+<code class="section">  mmtemplates#core#AddCustomTemplateFiles  ( library, list, list_name ) </code>
+
+Parameters:
+	library   - The template library. (string or dict)
+	list      - The list of files. (list of lists of strings)
+	list_name - Name of the list variable, used for error reporting. (string)
+No returns.
+
+Loads additional template files given in 'list'. The files are given as a list
+of lists, each of which describes a custom template file:
+<code class="example">  [ filename, symbolic_name, edit_map ]</code>
+The file 'filename' will be loaded. It is associated with the name
+'symbolic_name'. The map 'edit_map' can be used to open the file for editing.
+The second and third list entry are optional and will be replaced by default
+values if missing.
+
+A plug-in might offer a configuration variable, which can be used for adding
+custom templates. This list can then be passed on to the template engine.
+
+User's .vimrc:
+
+<code class="example">  let g:C_AdditionalTemplates = []</code>
+<code class="example">  call add ( g:C_AdditionalTemplates,</code>
+<code class="example">    \ [ $HOME.'/.vim/.../doxygen.templates', 'Doxygen', 'ntd' ] )</code>
+<code class="example">  call add ( g:C_AdditionalTemplates,</code>
+<code class="example">    \ [ $HOME.'/.vim/.../lua_capi.templates', 'Lua', 'ntlc' ] )</code>
+
+Plug-in script:
+
+<code class="example">  call mmtemplates#core#AddCustomTemplateFiles (</code>
+<code class="example">    \ g:My_C_Templates, g:C_AdditionalTemplates, 'g:C_AdditionalTemplates' )</code>
+
+The third argument 'list_name' is used to print debug messages which refer to
+the name of the variable the user assigned in the .vimrc.
+
+</pre><hr><pre>2. BACKWARDS COMPATIBILITY                        <b class="vimtag"><a name="template-support-backwards">template-support-backwards</a></b>
+</pre><hr><pre>
+The following behavior is not compatible with the old template systems of
+various plug-ins. This list does not include new features which are now
+supported.
+
+c-support:
+doxygen-support:
+perl-support:
+-	No automatic uppercase for <b class="vimtag"><a name="|BASENAME|">|BASENAME|</a></b> .
+-	The format for <b class="vimtag"><a name="|DATE|">|DATE|</a></b> , <b class="vimtag"><a name="|TIME|">|TIME|</a></b> and <b class="vimtag"><a name="|YEAR|">|YEAR|</a></b> is now configured via the
+	template library. Plug-ins may provide other ways to do the configuration.
+
+perl-support:
+-	The template header can not have the format
+<code class="example">		== templatename == [ position == ] [ indentation == ]</code>
+	anymore, since the last part would be ignored. Use the list of template
+	options instead:
+<code class="example">		== templatename == [ position, indentation == ]</code>
+	Both 'position' and 'indentation' are optional, of course.
+
+</pre><hr><pre>
+
+
+<code class="section">  -------------------------------------------------------------------------- </code>
+<code class="section">  -------------------------------------------------------------------------- </code>
+
+<code class="section">   --------- PART III --- APPENDICES --------- </code>
+
+<code class="section">  -------------------------------------------------------------------------- </code>
+<code class="section">  -------------------------------------------------------------------------- </code>
+
+
+
+</pre><hr><pre>A.  SYNTAX                                           <b class="vimtag"><a name="template-support-syntax">template-support-syntax</a></b>
+</pre><hr><pre>
+The standards for the idioms are as follows, but may be changed via the API:
+
+Idiom						Changeable?		Standard
+
+CommentStart		yes						$
+BlockDelimiter	no						==
+
+CommandName			no						same as MacroName
+MacroName				no						a-z, A-Z, 0-9 and _
+															starting with a letter or underscore
+OptionName			no						same as MacroName
+ResourceName		no						same as MacroName
+SeparatorName		no						same as MacroName
+StyleName				no						same as MacroName
+TemplateName		no						a-z, A-Z, 0-9 and _ + - . , <code class="special">&lt;Space&gt;</code>
+															starting with a letter or underscore,
+															not ending with a whitespace
+Mapping					no						a-z, A-Z, 0-9 and _ + -
+
+The rules in the next sections use the following notation:
+
+-	Syntax category: StartsWithCapitalLetters
+-	Keyword:         ALLCAPS
+-	Various items:   -something-
+-	Square brackets [ ] mark an optional part of the rule.
+-	All other characters are as printed.
+-	Whitespaces are ignored, except where <code class="special">&lt;start&gt;</code> marks the start of the line.
+	Whitespaces can not appear there.
+
+</pre><hr><pre>A.1  COMMAND SECTION                             <b class="vimtag"><a name="template-support-syntax-cmd">template-support-syntax-cmd</a></b>
+</pre><hr><pre>
+MacroAssignment (one of):
+	-text-
+	' -text- '
+	" -text- "
+
+<code class="note">Note:</code> Trailing whitespaces are ignored, even with the first rule.
+
+
+Statement (one of):
+	-empty line-
+	<code class="special">&lt;start&gt;</code> CommentStart -anything-
+	<code class="special">&lt;start&gt;</code> CommandName ( ParameterList )
+	<code class="special">&lt;start&gt;</code> <b class="vimtag"><a name="|MacroName|">|MacroName|</a></b> = MacroAssignment
+	StyleBlock1
+	StyleBlock2
+	Template
+	HelpTemplate
+	MenuSeparator
+	List
+
+
+StyleBlock1 (sequence):
+	<code class="special">&lt;start&gt;</code> == IF <b class="vimtag"><a name="|STYLE|">|STYLE|</a></b> IS MacroName ==
+	StatementList
+	<code class="special">&lt;start&gt;</code> == ENDIF ==
+
+
+StyleBlock2 (sequence):
+	<code class="special">&lt;start&gt;</code> == USE STYLES : MacroNameList ==
+	StatementList
+	<code class="special">&lt;start&gt;</code> == ENDSTYLES ==
+
+                                               ** Interface Version 1.0+ **
+FiletypeBlock (sequence):
+	<code class="special">&lt;start&gt;</code> == USE FILETYPES : MacroNameList ==
+	StatementList
+	<code class="special">&lt;start&gt;</code> == ENDSTYLES ==
+
+
+Template (sequence):
+	<code class="special">&lt;start&gt;</code> == [ TEMPLATE : ] TemplateName == [ OptionList == ]
+	-several lines-
+	<code class="special">&lt;start&gt;</code> == ENDTEMPLATE ==
+
+<code class="note">Note:</code> The " TEMPLATE : " in the first line is optional, as opposed to the
+      structure of the next three rules.
+
+
+HelpTemplate (sequence):
+	<code class="special">&lt;start&gt;</code> == HELP : TemplateName == [ OptionList == ]
+	-several lines-
+	<code class="special">&lt;start&gt;</code> == ENDTEMPLATE ==
+
+
+MenuSeparator (one line):
+	<code class="special">&lt;start&gt;</code> == SEP : SeparatorName ==
+
+
+List (sequence):
+	<code class="special">&lt;start&gt;</code> == LIST : MacroName == [ OptionList == ]
+	-several lines-
+	<code class="special">&lt;start&gt;</code> == ENDLIST ==
+
+
+MacroNameList (one of):
+	MacroName
+	MacroName , MacroNameList
+
+
+OptionList (one of):
+	-empty-
+	Option
+	Option , OptionList
+
+
+Option (one of):
+	OptionName
+	OptionName : MacroName
+	OptionName : Mapping
+
+</pre><hr><pre>A.2  TEMPLATES                                 <b class="vimtag"><a name="template-support-syntax-templ">template-support-syntax-templ</a></b>
+</pre><hr><pre>
+	*Todo		syntax templates
+
+</pre><hr><pre>A.3  LISTS                                      <b class="vimtag"><a name="template-support-syntax-list">template-support-syntax-list</a></b>
+</pre><hr><pre>
+Lists can either be lists or dictionaries. (Corresponding to the types Vim
+uses: |<code class="badlink">List</code>| and  |<code class="badlink">Dictionary</code>|.)
+
+Lists are a comma separated list of strings:
+
+<code class="example">	== LIST: Options == list ==</code>
+<code class="example">		"tabstop", "shiftwidth",</code>
+<code class="example">		"wrap", "nowrap",</code>
+<code class="example">		"filetype"</code>
+<code class="example">	== ENDLIST ==</code>
+
+Bare lists do not require quotes, each line is interpreted as an entry.
+Leading and trailing whitespaces are ignored:
+
+<code class="example">	== LIST: Options == list, bare ==</code>
+<code class="example">		tabstop</code>
+<code class="example">		shiftwidth</code>
+<code class="example">		wrap</code>
+<code class="example">		nowrap</code>
+<code class="example">		filetype</code>
+<code class="example">	== ENDLIST ==</code>
+
+Dictionaries associate a key with a value. Key and value are separated by a
+colon, different entries by a comma.
+
+<code class="example">	== LIST: FileEndings == dict ==</code>
+<code class="example">		"C"         : ".c" ,</code>
+<code class="example">		"C++"       : ".cc" ,</code>
+<code class="example">		"Perl"      : ".pl" ,</code>
+<code class="example">		"Shell"     : ".sh" ,</code>
+<code class="example">		"Vimscript" : ".vim" ,</code>
+<code class="example">	== ENDLIST ==</code>
+
+</pre><hr><pre>B.  COMMANDS                                       <b class="vimtag"><a name="template-support-commands">template-support-commands</a></b>
+</pre><hr><pre>
+This sections list the commands supported by the template system.
+
+</pre><hr><pre>B.1  COMMAND SECTION                            <b class="vimtag"><a name="template-support-cmd-cmd-sct">template-support-cmd-cmd-sct</a></b>
+</pre><hr><pre>
+The following commands can be used outside of templates, in the so-called
+command section.
+
+</pre><hr><pre>                                              <b class="vimtag"><a name="template-support-IncludeFile()">template-support-IncludeFile()</a></b>
+Include the file 'filename':
+
+<code class="section">	IncludeFile ( filename [, "abs"] ) </code>
+
+'filename' can contain a path which can be absolute or relative. Relative
+paths are interpreted in relation to the directory of the file containing the
+command. The path is always understood to be relative, except when the
+optional second argument "abs" is given.
+
+</pre><hr><pre>                                         <b class="vimtag"><a name="template-support-InterfaceVersion()">template-support-InterfaceVersion()</a></b>
+Use the interface version 'version':
+
+<code class="section">	InterfaceVersion ( version ) </code>
+
+Template libraries use the interface version "0.9" by default. To enable newer
+features, this function must be called from inside a template library. The
+called must be made before defining any templates, lists, or any other
+features are used.
+This call might cause minor problems with an existing library, the library
+must be changed accordingly, see |<a href="templatesupport.html#template-support-lib-interf">template-support-lib-interf</a>|.
+
+Example:
+<code class="example">	InterfaceVersion ( "1.0" )</code>
+Use interface version "1.0".
+
+</pre><hr><pre>                                             <b class="vimtag"><a name="template-support-MenuShortcut()">template-support-MenuShortcut()</a></b>
+Set the shortcut for the submenu 'menu' to 'shortcut':
+
+<code class="section">	MenuShortcut ( menu, shortcut ) </code>
+
+The shortcut is set for the menu named by the last component of 'menu', which
+can consist of several parts, separated by points. Trailing points are
+ignored.
+
+Example:
+<code class="example">	MenuShortcut ( "Comments.Frames.", "r" )</code>
+Sets the shortcut for the submenu "Frames", not "Comments".
+
+</pre><hr><pre>                                                <b class="vimtag"><a name="template-support-SetFormat()">template-support-SetFormat()</a></b>
+Set the format of 'item' to 'format':
+
+<code class="section">	SetFormat ( item, format ) </code>
+
+This changes the way the macros "TIME", "DATE" and "YEAR" are replaced. It
+sets the format of the date and time. They use the same format as the function
+|<code class="badlink">strftime()</code>|.
+
+Example:
+<code class="example">	SetFormat ( "TIME", "%H:%M" )</code>
+The macro <b class="vimtag"><a name="|TIME|">|TIME|</a></b> will now be replaced by something like 10:24.
+
+</pre><hr><pre>                                                 <b class="vimtag"><a name="template-support-SetMacro()">template-support-SetMacro()</a></b>
+Set the macro 'name' to 'text':
+
+<code class="section">	SetMacro ( name, text ) </code>
+
+This is used to set replacements for macros.
+
+Setting the macros "TIME", "DATE", "YEAR", "BASENAME", "FILENAME" , "PATH" and
+"SUFFIX" is not allowed. They are set to the appropriate values before
+insertion of a template.
+
+Example:
+<code class="example">	SetMacro ( "AUTHOR", "My cat." )</code>
+<code class="example"></code>
+</pre><hr><pre><code class="example">                                                   <b class="vimtag"><a name="template-support-SetMap()">template-support-SetMap()</a></b></code>
+Set the map of the template 'name' to 'map':
+
+<code class="section">	SetMap ( name, map ) </code>
+
+This changes the map of the template named 'name'. The map has to follow the
+rules as the "map:<code class="special">&lt;map&gt;</code>" option (see |<a href="templatesupport.html#template-support-map">template-support-map</a>|). The name of the
+template appears in the template definition between the first pair of == , the
+menu is part of the name, also whitespaces contained within the name.
+
+Example:
+<code class="example"></code>
+Consider this template definition:
+
+<code class="example">	== Include.global include == below, map:igi ==</code>
+<code class="example">     ^                    ^</code>
+<code class="example">     |<code class="badlink">----- the name -----</code>|</code>
+
+Then you can set a different map using:
+<code class="example">  SetMap ( "Include.global include", "igl" )</code>
+
+</pre><hr><pre>                                                  <b class="vimtag"><a name="template-support-SetPath()">template-support-SetPath()</a></b>
+Set the resource 'name' to the given path.
+
+<code class="section">	SetPath ( name, path ) </code>
+
+Subsequently the path can be used in templates.
+
+</pre><hr><pre>                                              <b class="vimtag"><a name="template-support-SetProperty()">template-support-SetProperty()</a></b>
+Set the property 'name' to the given value.
+
+<code class="section">	SetProperty ( name, value ) </code>
+
+Only existing properties can be set. If 'name' does not refer to an existing
+property, an error will be printed.
+
+</pre><hr><pre>                                              <b class="vimtag"><a name="template-support-SetShortcut()">template-support-SetShortcut()</a></b>
+Set the shortcut of the template 'name' to 'sc':
+
+<code class="section">	SetShortcut ( name, sc ) </code>
+
+This changes the shortcut of the template named 'name'. The shortcut has to
+follow the rules as the "shortcut:<code class="special">&lt;sc&gt;</code>" option (see |<a href="templatesupport.html#template-support-sc">template-support-sc</a>|).
+The name of the template appears in the template definition between the first
+pair of == , the menu is part of the name, also whitespaces contained within
+the name.
+
+Example:
+<code class="example"></code>
+Consider this template definition:
+
+<code class="example">	== Include.global include == below, sc:g ==</code>
+<code class="example">     ^                    ^</code>
+<code class="example">     |<code class="badlink">----- the name -----</code>|</code>
+
+Then you can set a different shortcut using:
+<code class="example">  SetShortcut ( "Include.global include", "l" )</code>
+
+</pre><hr><pre>                                                 <b class="vimtag"><a name="template-support-SetStyle()">template-support-SetStyle()</a></b>
+Set the active style to 'name':
+
+<code class="section">	SetStyle ( name ) </code>
+
+This style will be used after the library has been loaded.
+
+</pre><hr><pre>B.2  TEMPLATES                                <b class="vimtag"><a name="template-support-cmd-templates">template-support-cmd-templates</a></b>
+</pre><hr><pre>
+Templates themselves support various commands, either in the command block at
+the beginning of the template, or in the text itself.
+
+</pre><hr><pre>                                                 <b class="vimtag"><a name="template-support-PickFile()">template-support-PickFile()</a></b>
+Open a prompt and let the user select a file:
+
+	|<code class="badlink">PickFile ( prompt, path )</code>|<code class="section"> </code>
+
+Displays 'prompt' and lets the user select a file. The file browser starts out
+in the directory named by 'path'. If 'path' matches an identifier, the path
+resource by this name serves as the path. Otherwise the string path is used as
+the path directly.
+
+After the user selected a file, several replacements for macros are created,
+which can be inserted into the template:
+-	<b class="vimtag"><a name="|PICK_COMPL|">|PICK_COMPL|</a></b>  : the complete path and name of the selected file
+-	<b class="vimtag"><a name="|PATH_COMPL|">|PATH_COMPL|</a></b>  : the complete path of the selected file
+-	<b class="vimtag"><a name="|PICK|">|PICK|</a></b>        : the selected path and file relative to the directory given
+                  in 'path'
+-	<b class="vimtag"><a name="|PATH|">|PATH|</a></b>        : the path in <b class="vimtag"><a name="|PICK|">|PICK|</a></b>
+-	<b class="vimtag"><a name="|FILENAME|">|FILENAME|</a></b>    : the name of the file
+-	<b class="vimtag"><a name="|BASENAME|">|BASENAME|</a></b>    : the name of the file without the suffix
+-	<b class="vimtag"><a name="|SUFFIX|">|SUFFIX|</a></b>      : the suffix of the file
+
+Example:
+<code class="example"></code>
+<code class="example">	SetPath ( "global", "/usr/include/" )</code>
+<code class="example"></code>
+<code class="example">	== global include == below ==</code>
+<code class="example">	|<code class="badlink">PickFile( "select a file: ", "global" )</code>|</code>
+<code class="example">	#include &lt;|<code class="badlink">PICK</code>|&gt;</code>
+<code class="example">	== local include == below ==</code>
+<code class="example">	|<code class="badlink">PickFile( "select a file: ", "global/" )</code>|</code>
+<code class="example">	#include "|<code class="badlink">PICK</code>|"</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+The path in the first template is the resource "global", which in turn is
+"/usr/include/". The path in the second template will be "global/", since the
+string does not match an identifier.
+
+If the user inserts the template "global include", he will be asked to select
+a file, starting in the directory "/usr/include/". If we selects the file:
+<code class="example">	/usr/include/QtGui/QPushButton</code>
+the macro <b class="vimtag"><a name="|PICK|">|PICK|</a></b> will be set to "QtGui/QPushButton", and <b class="vimtag"><a name="|PATH|">|PATH|</a></b> to
+"QtGui".
+
+</pre><hr><pre>                                                 <b class="vimtag"><a name="template-support-PickList()">template-support-PickList()</a></b>
+Open a prompt and let the user select an entry from a list:
+
+	|<code class="badlink">PickList ( prompt, list )</code>|<code class="section"> </code>
+
+Displays 'prompt' and lets the user select an entry from a list. If 'list' is
+a string and matches an identifier, the list resource by this name is used.
+If 'list' is a list or a dictionary, it is used directly.
+
+In case of lists, the user has to choose an entry from the list. In case of
+dictionaries, the user has to choose one of the keys.
+
+After the user selected an entry, several replacements for macros are created,
+which can be inserted in the template:
+- <b class="vimtag"><a name="|VALUE|">|VALUE|</a></b> : the selected entry from the list or dictionary
+- <b class="vimtag"><a name="|KEY|">|KEY|</a></b>   : for dictionaries: the selected key, for lists: same as <b class="vimtag"><a name="|VALUE|">|VALUE|</a></b>
+- <b class="vimtag"><a name="|PICK|">|PICK|</a></b>  : same as <b class="vimtag"><a name="|VALUE|">|VALUE|</a></b>
+
+Example:
+
+<code class="example">	== LIST: headers == list ==</code>
+<code class="example">		"stdlib",</code>
+<code class="example">		"stdio",</code>
+<code class="example">		"string",</code>
+<code class="example">	== LIST: functions == hash ==</code>
+<code class="example">		"strcpy"  : "<code class="special">{+DEST+}</code>, <code class="special">{+SRC+}</code>",</code>
+<code class="example">		"strncpy" : "<code class="special">{+DEST+}</code>, <code class="special">{+SRC+}</code>, <code class="special">{+N+}</code>",</code>
+<code class="example">		"strcmp"  : "<code class="special">{+STR1+}</code>, <code class="special">{+STR2+}</code>",</code>
+<code class="example">		"strncmp" : "<code class="special">{+STR1+}</code>, <code class="special">{+STR2+}</code>, <code class="special">{+N+}</code>",</code>
+<code class="example">		"strlen"  : "<code class="special">{+STR+}</code>",</code>
+<code class="example">	== ENDLIST ==</code>
+<code class="example"></code>
+<code class="example">	== header include == below ==</code>
+<code class="example">	|<code class="badlink">PickList( "header file: ", "headers" )</code>|</code>
+<code class="example">	#include &lt;|<code class="badlink">PICK</code>|.h&gt;</code>
+<code class="example">	== function call == insert ==</code>
+<code class="example">	|<code class="badlink">PickList( "function: ", "functions" )</code>|</code>
+<code class="example">	|<code class="badlink">KEY</code>|<code class="special">&lt;CURSOR&gt;</code> ( |<code class="badlink">VALUE</code>| )</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+The first template is quite simple. The user selects a header from the list,
+then the preprocessor directive is inserted.
+
+The second template uses a dictionary. The user has to pick an entry from the
+list of function names. The template is inserted using both the selected key
+and value. Each value is a list of jump tags, named for the arguments of the
+corresponding function.
+
+Inserting the template "function call" and selecting "strcpy" will results in
+the following text to be inserted:
+<code class="example">	strcpy | ( <code class="special">{+DEST+}</code>, <code class="special">{+SRC+}</code> )</code>
+The position of the cursor is marked by "|". The jump key can be used to jump
+ahead and replace the tags.
+
+</pre><hr><pre>                                                   <b class="vimtag"><a name="template-support-Prompt()">template-support-Prompt()</a></b>
+Prompt the user for a replacement of the macro:
+
+	|<code class="badlink">Prompt ( macro, flag )</code>|<code class="section"> </code>
+
+The user is prompted for a replacement of 'macro'. After the user has entered
+a text, the flag is applied. The replacement is saved to be reused later.
+
+Flags:
+-	""  : no change to the text
+-	"l" : change text to lowercase
+-	"u" : change text to uppercase
+-	"c" : capitalize text (change first letter to uppercase)
+-	"L" : legalize name (replace all non-word characters with underscores)
+
+Example:
+
+<code class="example">	== chapter, alt1 == below ==</code>
+<code class="example">	============================================================================</code>
+<code class="example">	|<code class="badlink">?NUMBER</code>|  |<code class="badlink">?NAME:u</code>|</code>
+<code class="example">	============================================================================</code>
+<code class="example"></code>
+<code class="example">	<code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example"></code>
+<code class="example">	== chapter, alt2 == below ==</code>
+<code class="example">	|<code class="badlink">Prompt( 'NAME', '' )</code>|</code>
+<code class="example">	|<code class="badlink">Prompt( 'NUMBER', '' )</code>|</code>
+<code class="example">	============================================================================</code>
+<code class="example">	|<code class="badlink">NUMBER</code>|  |<code class="badlink">NAME:u</code>|</code>
+<code class="example">	============================================================================</code>
+<code class="example"></code>
+<code class="example">	<code class="special">&lt;CURSOR&gt;</code></code>
+<code class="example"></code>
+<code class="example">	== chapter, toc == below ==</code>
+<code class="example">	|<code class="badlink">NUMBER</code>|    |<code class="badlink">NAME:c</code>|</code>
+<code class="example">	== ENDTEMPLATE ==</code>
+
+This inserts captions for chapters as used in this document. With the first
+alternative, the user is first prompted for a replacement of <b class="vimtag"><a name="|NUMBER|">|NUMBER|</a></b> ,
+because of the order both macros appear in the text. The name is saved in
+uppercase.
+Using the second alternative, the user is prompted for the name first. The
+name is saved as entered and only inserted in uppercase. Now it can be
+inserted into the table of contents as entered by the user.
+
+</pre><hr><pre>C.  OPTIONS                                         <b class="vimtag"><a name="template-support-options">template-support-options</a></b>
+</pre><hr><pre>
+The following sections list the options for templates and lists.
+
+</pre><hr><pre>C.1  TEMPLATES                                    <b class="vimtag"><a name="template-support-opt-templ">template-support-opt-templ</a></b>
+</pre><hr><pre>
+The template options appear in the header of the template:
+<code class="section">	== <code class="special">&lt;name&gt;</code> == <code class="special">&lt;options&gt;</code> == </code>
+
+It is not required to specify any options. The defaults are given below.
+Help templates use the same options as normal templates.
+
+</pre><hr><pre>                  <b class="vimtag"><a name="template-support-start">template-support-start</a></b>      <b class="vimtag"><a name="template-support-append">template-support-append</a></b>
+                  <b class="vimtag"><a name="template-support-above">template-support-above</a></b>      <b class="vimtag"><a name="template-support-insert">template-support-insert</a></b>
+                  <b class="vimtag"><a name="template-support-below">template-support-below</a></b>
+Placement:
+
+	start  - The text is placed above the first line.
+	above  - The text is placed above the current line.
+	below  - The text is placed below the current line (default).
+	append - The text is appended to the current line.
+	insert - The text is inserted at the cursor position.
+
+<code class="note">Note:</code> "below" and "insert" support split tag in visual mode.
+
+</pre><hr><pre>                  <b class="vimtag"><a name="template-support-visual">template-support-visual</a></b>     <b class="vimtag"><a name="template-support-indent">template-support-indent</a></b>
+                  <b class="vimtag"><a name="template-support-novisual">template-support-novisual</a></b>   <b class="vimtag"><a name="template-support-noindent">template-support-noindent</a></b>
+Insertion:
+
+	visual   - Use the split tag in visual mode (default?).
+	novisual - No special behavior in visual mode (default?).
+
+	indent   - The inserted text is indented (default).
+	noindent - No automatic indentation.
+
+<code class="note">Note:</code> "visual" is the default for templates containing the split tag,
+      "novisual" for templates without the split tag.
+
+</pre><hr><pre>                  <b class="vimtag"><a name="template-support-nomenu">template-support-nomenu</a></b>     <b class="vimtag"><a name="template-support-expandmenu">template-support-expandmenu</a></b>
+                  <b class="vimtag"><a name="template-support-sc">template-support-sc</a></b>         <b class="vimtag"><a name="template-support-expandleft">template-support-expandleft</a></b>
+                  <b class="vimtag"><a name="template-support-shortcut">template-support-shortcut</a></b>   <b class="vimtag"><a name="template-support-expandright">template-support-expandright</a></b>
+                  <b class="vimtag"><a name="template-support-map">template-support-map</a></b>
+Menus and Maps:
+
+  nomenu        - No menu entry is created.
+  sc:<code class="special">&lt;sc&gt;</code>       - A shortcut is created for the menu entry of this template.
+  shortcut:<code class="special">&lt;sc&gt;</code> - Long version of sc:<code class="special">&lt;sc&gt;</code>.
+  map:<code class="special">&lt;map&gt;</code>     - A map is created for this template.
+
+<code class="note">Note:</code> The default is for a menu entry to be created.
+<code class="note">Note:</code> A shortcut can only be one character long. A map can be several
+      characters long. It is always preceded by the local mapleader.
+
+Submenus for templates using lists (|<a href="templatesupport.html#template-support-PickList()">template-support-PickList()</a>|):
+
+  expandmenu         - A submenu is created with entries matching those of the
+                       list used in the templates.
+  expandmenu:<code class="special">&lt;list&gt;</code>  - A submenu is created with entries matching those of the
+                       list <code class="special">&lt;list&gt;</code>. (interface 1.0+)
+  expandleft:<code class="special">&lt;what&gt;</code>  - When creating the submenu, use the element <code class="special">&lt;what&gt;</code> for
+                       the left-aligned side of the menu entry. (^1)
+                       (interface 1.0+)
+  expandright:<code class="special">&lt;what&gt;</code> - When creating the submenu, use the element <code class="special">&lt;what&gt;</code> for
+                       the right-aligned side of the menu entry. (^1)
+                       (interface 1.0+)
+
+(^1) valid values for <code class="special">&lt;what&gt;</code> are (see |<a href="templatesupport.html#template-support-lists-menu">template-support-lists-menu</a>|):
+  key, key-notags, key-whitetags, value, value-notags, value-whitetags
+
+</pre><hr><pre>C.2  LISTS                                         <b class="vimtag"><a name="template-support-opt-list">template-support-opt-list</a></b>
+</pre><hr><pre>
+The list options appear in the header of the list:
+<code class="section">	== List: OutputModifiers == <code class="special">&lt;options&gt;</code> == </code>
+
+It is not required to specify any options. The defaults are given below.
+
+</pre><hr><pre>                  <b class="vimtag"><a name="template-support-list">template-support-list</a></b>       <b class="vimtag"><a name="template-support-dict">template-support-dict</a></b>
+                  <b class="vimtag"><a name="template-support-hash">template-support-hash</a></b>       <b class="vimtag"><a name="template-support-dictionary">template-support-dictionary</a></b>
+Type:
+
+	list       - The object is given as a list. (default)
+	hash       - The object is a hash, or dictionary.
+	dict       - Same as hash.
+	dictionary - Same as hash.
+
+For a description see |<a href="templatesupport.html#template-support-syntax-list">template-support-syntax-list</a>|.
+
+</pre><hr><pre>                                                       <b class="vimtag"><a name="template-support-bare">template-support-bare</a></b>
+Interpretation:
+
+	bare - The list is interpreted as a bare list. Each line is considered to be
+	       a new entry.
+
+<code class="note">Note:</code> Bare lists are not the default.
+
+</pre><hr><pre>D.  CHANGE LOG                                   <b class="vimtag"><a name="template-support-change-log">template-support-change-log</a></b>
+</pre><hr><pre>
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 1.0alpha
+</pre><hr><pre>
+  **  Added a system for introducing changes to the template library.     **
+  **  By default, all template libraries will be limited to the features  **
+  **  introduced prior to 1.0 .                                           **
+  **  Calling InterfaceVersion() will enable newer features.              **
+
+- Add: 'InterfaceVersion' to enable newer features in the template library.
+  (This feature is considered to be part of the old interface.)
+- Add: Templates can be associated with a filetype, and its maps only created
+  for that filetype.
+- Add: Format specifiers for macros.
+- Add: New "replacement cursor" tags <code class="special">&lt;RCURSOR&gt;</code> and <code class="special">{RCURSOR}</code>.
+- Add: Left-right separators <b class="vimtag"><a name="|%3C%3C%3E%3E|">|&lt;&lt;&gt;&gt;|</a></b> .
+- Add: New jump tags [+NAME+] and [-NAME-] for optional parameters.
+- Add: New map <code class="special">&lt;ctrl-d&gt;</code> to delete optional jump tags [+NAME+] and [-NAME-].
+- Change: Insert a breakpoint into the undo sequence before inserting
+  templates or jumping via <code class="special">&lt;ctrl+j&gt;</code>.
+- Add: Template options "expandleft" and "expandright". Extended the option
+  "expandmenu".
+- Add: Functions 'SetMap', 'SetShortcut', and 'SetMenuEntry'.
+- Change: If a template is redefined, the options are read again.
+- Change: During the creation of the submenu for a list-picking template, all
+  special characters are escaped correctly. (The characters "\" and "|" were
+  not escaped before.)
+- Change: Inserting templates in visual mode does not overwrite the unnamed
+  register anymore.
+- Fix: Map creation could fail after reloading the template library.
+- Add: User setting |<a href="templatesupport.html#g:Templates_TemplateBrowser">g:Templates_TemplateBrowser</a>| to configure the browser
+  used for editing templates.
+- Add: User settings |<a href="templatesupport.html#g:Templates_PersonalizationFile">g:Templates_PersonalizationFile</a>| and
+  |<a href="templatesupport.html#g:Templates_UsePersonalizationFile">g:Templates_UsePersonalizationFile</a>| to configure the personalization file.
+- Add: Help templates can call a browser using |<code class="badlink">Browser( &lt;url&gt; )</code>|.
+- Add: User settings |<a href="templatesupport.html#g:Templates_InternetBrowserExec">g:Templates_InternetBrowserExec</a>| and
+  |<a href="templatesupport.html#g:Templates_InternetBrowserFlags">g:Templates_InternetBrowserFlags</a>| to configure the browser used by help
+  templates.
+- Add: Proper filetype detection for template files, filetype plug-in.
+- Add: Setup wizard.
+- Extend the documentation.
+
+API:
+- Change: Template files can be associated with a symbolic name and a map,
+  which are used for the creation of the "edit templates" menu entries and
+  maps.
+- Change: Template files can be optional. Information such as their symbolic
+  name is kept. They still show up in debug information, ... They can be
+  enabled later on, e.g. by the template setup wizard.
+- Add: Extended the API with functionality for adding a personalization file
+  which can be used by all libraries.
+- Add: Function |<a href="templatesupport.html#mmtemplates%23core%23EnableTemplateFile()">mmtemplates#core#EnableTemplateFile()</a>|.
+- Add: Function |<a href="templatesupport.html#mmtemplates%23core%23FindPersonalizationFile()">mmtemplates#core#FindPersonalizationFile()</a>|.
+- Add: Function |<a href="templatesupport.html#mmtemplates%23core%23AddCustomTemplateFiles()">mmtemplates#core#AddCustomTemplateFiles()</a>|.
+- Change: New options for the function |<a href="templatesupport.html#mmtemplates%23core%23ReadTemplates()">mmtemplates#core#ReadTemplates()</a>| and
+  |<a href="templatesupport.html#mmtemplates%23core%23Resource()">mmtemplates#core#Resource()</a>|.
+
+Internal Changes:
+- Major internal changes and code cleanup.
+
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 0.9.3
+</pre><hr><pre>
+- Change: In case several version of autoload/mmtemplates/core.vim are
+  available on 'runtimepath', pick out the newest one to load.
+
+Includes the patches 0.9.2-1 to 0.9.2-2:
+- Change: More checks when rereading templates.
+- Change: Better compatibility with custom mappings
+  (use "normal!", "noremap" and "noremenu" consistently).
+- Change: During template insertion, find <code class="special">&lt;CURSOR&gt;</code> tag independent of the
+  settings 'magic' and 'startofline'.
+- Added: API functions "mmtemplates#core#SetMapleader" and
+  "mmtemplates#core#ResetMapleader".
+- Extended the documentation.
+
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 0.9.2
+</pre><hr><pre>
+- Added: 'SetProperty' to set properties using a template library.
+- Change: Improved list picker.
+
+API:
+- Change: Extended 'mmtemplates#core#EscapeMenu'.
+
+Includes the patches 0.9.1-1 to 0.9.1-3:
+- Bugfix: Problem with macro replacements containing macros with flags.
+- Change: Syntax highlighting.
+- Change: Warnings about overwritten maps are only printed once for every
+  filetype.
+- Bugfix: Inserting templates in visual mode with placement "insert" could
+  cause rare problems interacting with the indent program.
+- Extended the documentation.
+
+</pre><hr><pre>
+PATCH 0.9.2-1:
+- Released with slight changes in the core functionality.
+- Change: More checks when rereading templates.
+- Extended the documentation.
+
+</pre><hr><pre>
+PATCH 0.9.2-2:
+- Released with slight changes in the core functionality.
+- Change: Better compatibility with custom mappings
+  (use "normal!", "noremap" and "noremenu" consistently).
+- Change: During template insertion, find <code class="special">&lt;CURSOR&gt;</code> tag independent of the
+  settings 'magic' and 'startofline'.
+- Added: API functions "mmtemplates#core#SetMapleader" and
+  "mmtemplates#core#ResetMapleader".
+
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 0.9.1
+</pre><hr><pre>
+- Change: When checking for already existing maps: Check each mode individually.
+- Added: Menu separators can be inserted via the template library.
+- Bugfix: Changing the mapleader now works.
+- Bugfix: Inserting templates with placement "insert" did not work in some
+  cases.
+- Minor improvements and bugfixes.
+
+API:
+- Added: Sub-menus can be created with priorities.
+- Added: Properties.
+- Added: The mapleader shown in the menu is configurable.
+- Added: The maps for "edit templates", "reread templates" and "choose style"
+  are configurable.
+
+Internal Changes:
+- Changes to the template data structure.
+- Major code cleanup.
+
+</pre><hr><pre>
+PATCH 0.9.1-1:
+- Released with no changes in the core functionality.
+- Change: Some commands are now executed silently.
+- Bugfix: Syntax highlighting.
+- Extended the documentation.
+
+PATCH 0.9.1-2:
+- Released with slight changes in the core functionality.
+- Bugfix: Problem with macro replacements containing macros with flags.
+- Change: Syntax highlighting.
+- Slightly extended the documentation.
+
+PATCH 0.9.1-3:
+- Released with slight changes in the core functionality.
+- Change: Warnings about overwritten maps are only printed once for every
+  filetype.
+- Bugfix: Inserting templates in visual mode with placement "insert" could
+  cause rare problems interacting with the indent program.
+- Extended the documentation.
+
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 0.9
+</pre><hr><pre>
+- Initial upload.
+
+</pre><hr><pre>D.1  INTERFACE VERSIONS                       <b class="vimtag"><a name="template-support-change-interf">template-support-change-interf</a></b>
+</pre><hr><pre>
+This section lists the changes to the template interface. By default, the
+interface "0.9" is used. Newer features can be enabled using the function
+InterfaceVersion (|<a href="templatesupport.html#template-support-InterfaceVersion()">template-support-InterfaceVersion()</a>|).
+See also |<a href="templatesupport.html#template-support-lib-interf">template-support-lib-interf</a>|.
+
+</pre><hr><pre>  INTERFACE VERSION 1.0
+</pre><hr><pre>
+- Add: Templates can be associated with a filetype, and its maps only created
+  for that filetype, using:
+<code class="example">  == USE FILETYPES : ... ==</code>
+- Add: New jump tags [+NAME+] and [-NAME-] for optional parameters. Can be
+  used as targets for jumps.
+- Add: New map <code class="special">&lt;ctrl-d&gt;</code> to delete optional jump tags [+NAME+] and [-NAME-]
+  together with their separator ",".
+- Add: Template options "expandleft" and "expandright". Extended the option
+  "expandmenu".
+- Change: During the creation of the submenu for a list-picking template, all
+  special characters are escaped correctly. (The characters "\" and "|" were
+  not escaped before.)
+- Add: Help templates can call a browser using |<code class="badlink">Browser( &lt;url&gt; )</code>|.
+
+</pre><hr><pre>  INTERFACE VERSION 0.9
+</pre><hr><pre>
+- Initial version of the interface with all changes introduced prior to
+  version "1.0".
+
+</pre><hr><pre>E.  CREDITS                                         <b class="vimtag"><a name="template-support-credits">template-support-credits</a></b>
+</pre><hr><pre>
+Fritz Mehner (vim.org user name: mehner):
+- his plug-ins (bash-support, c-support, perl-support, ...) provided the
+  inspiration for the template engine
+
+Jeremy Cantrell (jmcantrell):
+- the solution for getting the visual area is take from his plug-in
+  "opener.vim", which is distributed under the same licence as Vim itself
+  ( http://www.vim.org/scripts/script.php?script_id=3543 )
+
+Andrew L:
+- suggested to insert a breakpoint into the undo sequence before inserting
+  templates and provided the outline for the solution
+
+</pre><hr><pre>vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
+</pre>
+<p><i>Generated by vim2html (modified) on Sa 26. Dez 15:03:11 CET 2015</i></p>
+</body>
+</html>
