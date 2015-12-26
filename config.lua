@@ -47,7 +47,11 @@ template_index.order = {
 	'HTML_HEAD',
 	'head_body',
 	'TITLE_BAR',
+	'FEATURES',
+	'PLUGIN_LIST',
+	'TOOLBOX_LIST',
 	'FOOTER',
+	'FOOTNOTE',
 	'body',
 }
 

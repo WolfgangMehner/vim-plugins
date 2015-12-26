@@ -31,6 +31,18 @@ a:hover
 	text-decoration:none;
 }
 
+p.footnote
+{
+  font-size:0.5em;
+}
+
+hr.footnote
+{
+	color:SkyBlue;
+	border-style:solid;
+	border-width:1px;
+}
+
 /*
  * table for the title bar
  *
@@ -244,9 +256,16 @@ table.features > tbody > tr > td
 {
 	padding:7px;
 	padding-top:10px;
+	vertical-align:top;
 
 	font-family:serif;
-	font-size:1.1em;
+}
+
+table.features > tbody > tr > td > h3
+{
+	margin-top:5px;
+	margin-bottom:5px;
+	font-size:1.2em;
 }
 
 table.features > tbody > tr > td > ul
@@ -259,8 +278,14 @@ table.features > tbody > tr > td > ul
 
 table.features > tbody > tr > td > ul > li
 {
+	font-size:1em;
+}
+
+table.features > tbody > tr > td > ul > li > ul > li
+{
 	font-size:0.95em;
 }
+
 
 table.features > tbody > tr > td > ul > li > code
 {
@@ -433,4 +458,71 @@ span.type
 {
 	color:SeaGreen;
 	font-weight:bold;
+}
+
+/*
+ * table for the plug-in list on the main page
+ *
+ * defines:
+ * - the table
+ * - table heads and data
+ * - 'pre' as replacement for logos
+ */
+table.index_plugin_list
+{
+	border-spacing:4px;
+}
+
+table.index_plugin_list > thead > tr > th
+{
+	background-color:pink;
+	background-color:#84d3e3;
+	background-image:url("blue_box.png");
+	background-position:bottom;
+	background-repeat:repeat-x;
+	border-radius:5px;
+	border-top-left-radius:11px;
+	border-bottom-right-radius:11px;
+
+	padding-top:16px;
+	padding-bottom:16px;
+	color:White;
+	font-family:sans-serif;
+	font-size:1.5em;
+}
+
+table.index_plugin_list > tbody > tr > td
+{
+	padding:7px;
+	height:64px;
+}
+
+table.index_plugin_list > tbody > tr > td:nth-child(1),
+table.index_plugin_list > tbody > tr > td:nth-child(3)
+{
+	width:20%;
+	text-align:center;
+
+	font-family:sans-serif;
+	font-weight:bold;
+}
+
+table.index_plugin_list > tbody > tr > td pre
+{
+  margin-top:3px;
+  margin-bottom:3px;
+  font-size:1.5em;
+}
+
+table.index_plugin_list > tbody > tr > td:nth-child(2),
+table.index_plugin_list > tbody > tr > td:nth-child(4)
+{
+	width:30%;
+	text-align:center;
+
+	font-family:sans-serif;
+}
+
+table.index_plugin_list > tbody > tr > td img
+{
 }
