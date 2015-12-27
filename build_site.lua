@@ -125,7 +125,7 @@ function generate_link_table ( fout, config, template_data, custom_data )
 		end
 	end  -----  end of function handle_part  -----
 
-	if #config.plugin.links_plugins > 1 then
+	if #config.plugin.links_plugins >= 1 then
 		handle_part ( 'PAGE_HEADER_PLUGIN_HEAD' )
 	end
 	for idx, short_name in ipairs ( config.plugin.links_plugins ) do
@@ -137,7 +137,7 @@ function generate_link_table ( fout, config, template_data, custom_data )
 		handle_part ( 'PAGE_HEADER_PLUGIN_LINK' )
 	end
 	
-	if #config.plugin.links_others > 1 then
+	if #config.plugin.links_others >= 1 then
 		handle_part ( 'PAGE_HEADER_PROJECT_HEAD' )
 	end
 	for idx, project in ipairs ( config.plugin.links_others ) do
@@ -157,6 +157,50 @@ function generate_link_table ( fout, config, template_data, custom_data )
 	end
 
 end  -----  end of function generate_link_table  -----
+
+------------------------------------------------------------------------
+--         Name:  generate_media_links   {{{1
+--      Purpose:  {+PURPOSE+}
+--  Description:  {+DESCRIPTION+}
+--   Parameters:  fout - {+DESCRIPTION+} ({+TYPE+})
+--                config - {+DESCRIPTION+} ({+TYPE+})
+--                template_data - {+DESCRIPTION+} ({+TYPE+})
+--                custom_data - {+DESCRIPTION+} ({+TYPE+})
+--      Returns:  {+RETURNS+}
+------------------------------------------------------------------------
+
+function generate_media_links ( fout, config, template_data, custom_data )
+
+	function handle_part ( name )
+		local part = custom_data[name] or template_data[name]
+
+		if not part then
+			io.stderr:write ( '\nCan not find the part:\n'..name..'\n\n' )
+		else
+			part = string.gsub ( part, '%%([A-Z0-9_]+)%%', config.plugin.fields )
+
+			fout:write ( part )
+		end
+	end  -----  end of function handle_part  -----
+
+	if not config.plugin.links_media then
+		return
+	end
+
+	if #config.plugin.links_media >= 1 then
+		handle_part ( 'PAGE_HEADER_MEDIA_HEAD' )
+	end
+	for idx, media_link in ipairs ( config.plugin.links_media ) do
+
+		config.plugin.fields.MEDIA_LINK = media_link
+
+		handle_part ( 'PAGE_HEADER_MEDIA_LINK' )
+	end
+	if #config.plugin.links_media >= 1 then
+		handle_part ( 'PAGE_HEADER_MEDIA_TAIL' )
+	end
+
+end  -----  end of function generate_media_links  -----
 
 ------------------------------------------------------------------------
 --         Name:  generate_output   {{{1
@@ -187,6 +231,8 @@ function generate_output ( config, template_data, custom_data )
 
 		if name == 'PAGE_HEADER_OTHERS' then
 			generate_link_table ( fout, config, template_data, custom_data )
+		elseif name == 'PAGE_HEADER_MEDIA' then
+			generate_media_links ( fout, config, template_data, custom_data )
 		elseif not part then
 			io.stderr:write ( '\nCan not find the part:\n'..name..'\n\n' )
 		else

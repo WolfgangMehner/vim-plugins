@@ -29,6 +29,7 @@ template_plugin.order = {
 	'TITLE_BAR',
 	'PAGE_HEADER_PART1',
 	'PAGE_HEADER_MAPPINGS',
+	'PAGE_HEADER_MEDIA',
 	'PAGE_HEADER_PART2',
 	'PAGE_HEADER_OTHERS_PART1',
 	'PAGE_HEADER_OTHERS',
@@ -145,6 +146,13 @@ config.bash = {
 		{ name = 'Bash Style Guide (en)', link = 'https://lug.fh-swf.de/vim/vim-bash/StyleGuideShell.en.pdf' },
 		{ name = 'Bash Style Guide (de)', link = 'https://lug.fh-swf.de/vim/vim-bash/StyleGuideShell.de.pdf' },
 	},
+	links_media = {
+		[[Plugin featured in the <a target=_blank href="http://hackerpublicradio.org">Hacker Public Radio</a> episode <a target=_blank href="http://hackerpublicradio.org/eps.php?id=1091">Useful Vim Plugins</a>]],
+		[[The installation explained: <a target=_blank href="http://www.thegeekstuff.com">The Geek Stuff</a> article<br>
+		<a target=_blank href="http://www.thegeekstuff.com/2009/02/make-vim-as-your-bash-ide-using-bash-support-plugin/">Make Vim as Your Bash-IDE Using bash-support Plugin</a>]],
+		[[Plugin featured in the <a target=_blank href="http://www.linux.com">Linux.com</a> article <a target=_blank href="http://www.linux.com/articles/114359">Turn Vim into a bash IDE</a>]],
+		[[Covered in the Oct./Nov. 2007 issue of <a target=_blank href="http://www.cul.de/freex.html">freeX</a>, "Vim als Bash-IDE" (German)]],
+	},
 }
 
 config.c = {
@@ -173,6 +181,10 @@ config.c = {
 		'bash', 'git', 'latex', 'lua', 'perl', 'vim',
 	},
 	links_others = {
+	},
+	links_media = {
+		[[Plugin featured in the <a target=_blank href="http://www.thegeekstuff.com">The Geek Stuff</a> tutorial<br>
+		<a target=_blank href="http://www.thegeekstuff.com/2009/01/tutorial-make-vim-as-your-cc-ide-using-cvim-plugin/">Make Vim as Your C/C++ IDE Using c.vim Plugin</a>]],
 	},
 }
 
@@ -287,6 +299,15 @@ config.perl = {
 		'awk', 'bash', 'c', 'git', 'latex', 'lua',
 	},
 	links_others = {
+	},
+	links_media = {
+		[[Covered in the 01/2016 issue of <a target=_blank href="http://www.linux-magazin.de/">Linux-Magazin</a>,<br>
+		<a target=_blank href="http://www.linux-magazin.de/Ausgaben/2016/01/Bitparade">Entwicklungsumgebungen für Perl</a> (in German)]],
+		[[Plugin featured in the <a target=_blank href="http://hackerpublicradio.org">Hacker Public Radio</a> episode <a target=_blank href="http://hackerpublicradio.org/eps.php?id=1091">Useful Vim Plugins</a>]],
+		[[Plugin presented at the <a target=_blank href="http://www.perl-workshop.de/de/2009/index.html">11. Deutscher Perl-Workshop</a> in Frankfurt, 2009<br>
+		and mentioned on <a target=_blank href="http://www.heise.de/developer/artikel/11-Deutscher-Perl-Workshop-in-Frankfurt-849271.html">heise online</a>]],
+		[[Plugin featured in the <a target=_blank href="http://www.thegeekstuff.com">The Geek Stuff</a> article<br>
+		<a target=_blank href="http://www.thegeekstuff.com/2009/01/make-vim-as-your-perl-ide-using-perl-supportvim-plugin/">Make Vim as Your Perl IDE Using perl-support.vim Plugin</a>]],
 	},
 }
 
