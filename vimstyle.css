@@ -31,6 +31,13 @@ a:hover
 	text-decoration:none;
 }
 
+code
+{
+	font-size:1.2em;
+	font-weight:600;
+	color:#555555;
+}
+
 p.footnote
 {
   font-size:0.5em;
@@ -41,6 +48,12 @@ hr.footnote
 	color:SkyBlue;
 	border-style:solid;
 	border-width:1px;
+}
+
+img.preview_image
+{
+	max-width:256px;
+	max-height:192px;
 }
 
 /*
@@ -179,7 +192,6 @@ table.other_plugins
 {
 	margin:0 auto;
 	border-spacing:4px;
-	padding-right:5px;
 }
 
 table.other_plugins > tbody > tr > th
@@ -299,12 +311,13 @@ table.features > tbody > tr > td > ul > li > ul > li
 	font-size:0.95em;
 }
 
-
+/*
 table.features > tbody > tr > td > ul > li > code
 {
 	font-size:1.1em;
 	color:#666666;
 }
+*/
 
 /*
  * table for menu structure
@@ -353,8 +366,21 @@ table.menu_structure > tbody > tr > td
 	border-bottom-style:solid;
 	border-bottom-width:3px;
 	border-bottom-color:SkyBlue;
+	vertical-align:top;
 
 	font-family:serif;
+}
+
+table.menu_structure > tbody > tr > td:first-child img
+{
+	margin-top:8px;
+	margin-bottom:16px;
+}
+
+table.menu_structure > tbody > tr > td > h3:first-of-type,
+table.img_float_table > tbody > tr > td > h3:first-of-type
+{
+	margin-top:8px;
 }
 
 table.menu_structure > tbody > tr > td > h3,
@@ -387,28 +413,27 @@ table.menu_structure pre
  */
 table.img_float_table
 {
-	width:95%;
+	width:100%;
 	border-spacing:0px;
 }
 
 table.img_float_table > tbody > tr > td:first-child
 {
-	width:85%;
+	width:80%;
 	padding:0px;
 	padding-right:5px;
+	vertical-align:top;
 }
 
 table.img_float_table > tbody > tr > td:last-child
 {
-	width:15%;
+	width:20%;
 	padding:0px;
 	padding-left:5px;
 }
 
 table.img_float_table > tbody > tr > td img
 {
-	max-width: 100%;
-	max-height: 100%;
 }
 
 /*
@@ -466,6 +491,11 @@ span.keyword
 span.visual
 {
 	background-color:LightGray;
+}
+span.tag
+{
+	color:SlateBlue;
+	background-color:#e8e8e8;
 }
 span.type
 {

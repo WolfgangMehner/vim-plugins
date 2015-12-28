@@ -18,8 +18,10 @@ VimWebsite=~/Programme/VimWebsite/VimPlugins/ CD=. in=project/in.vim out=project
   bashsupport/content.html
   csupport/content.html
   gitsupport/content.html
+  latexsupport/content.html
   luasupport/content.html
   perlsupport/content.html
+  vimsupport/content.html
  }
  doc=doc/ CD=. filter="*.html" {
   awksupport.html

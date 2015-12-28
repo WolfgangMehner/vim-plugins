@@ -37,7 +37,7 @@
 			<tbody>
 				<tr>
 					<td>
-						<img src="luasupport/lua_menu_main.png"><br>
+						<img src="luasupport/lua_menu_main.png" alt="root menu"><br>
 						<b>root menu</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					</td>
 					<td>
@@ -135,7 +135,7 @@
 						The library defines the menu entries, maps and the inserted text.
 						The personal information can also be configured there.</p>
 						<hr>
-						<p>A file header is automatically inserted into each new file (can be switched off):
+						<p>A file header is automatically inserted into each new file (can be switched off, see <a target=_blank href="doc/luasupport.html#g:Lua_InsertFileHeader">:help g:Lua_InsertFileHeader</a>)
 						<pre>
 <span class="comment">--
 --------------------------------------------------------------------------------
@@ -155,7 +155,7 @@
 --      Created:  29.05.14
 --     Revision:  ---
 --------------------------------------------------------------------------------
---</span> </pre>
+--</span></pre>
 						</p>
 						<hr>
 						<p>Append end-of-line comments to several lines at once:
@@ -303,7 +303,7 @@ op1, op2 = <span class="identifier">string.match</span> ( expr, '(%d+)%<span cla
 				<tr>
 					<td><img src="luasupport/lua_menu_snippets.png"> </td>
 					<td>
-						<h3>Menu <i>Snippets</i> : insert code snippets</h3>
+						<h3>Menu <i>Snippets</i> : insert code snippets and manage templates</h3>
 						<p>The plug-in comes with a facility to extract, manage and insert often used code snippets.
 						Visually select a few lines and use the menu entry <b>create code snippet</b> to write these lines into a file.
 						The code snippet can then be edited and inserted again using <b>insert code snippet</b>.<br>
@@ -315,10 +315,13 @@ op1, op2 = <span class="identifier">string.match</span> ( expr, '(%d+)%<span cla
 	<span class="identifier">print</span> ( idx, val )
 <span class="keyword">end</span> </pre>
 						</p>
+						<p>(See <a target=_blank href="doc/luasupport.html#luasupport-usage-snippets">:help luasupport-usage-snippets</a>)</p>
 						<hr>
 						<p>The templates which define the behavior of most of the menu entries are also manage here.
-						The templates support different coding styles, which are used here to support Lua 5.1, 5.2 and 5.3.
+						Use <b>templates setup wizard</b> to create a personalization file with your personal details for the comments.</p>
+						<p>The templates support different coding styles, which are used here to support Lua 5.1, 5.2 and 5.3.
 						Use the entry <b>choose style</b> to switch between them.</p>
+						<p>(See <a target=_blank href="doc/luasupport.html#luasupport-templates">:help luasupport-templates</a>)</p>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -347,9 +350,10 @@ op1, op2 = <span class="identifier">string.match</span> ( expr, '(%d+)%<span cla
 									</p>
 									<hr>
 									<p>The script can be made executable via a keystroke (map <b>\re</b>). It can be printed into a file (map <b>\rh</b>). ...</p>
+								</td>
 								<td>
-									<a href="lua_window_run.png"><img src="luasupport/s_lua_window_run.png"></a><br>
-									&nbsp;&nbsp;&nbsp;Lua output and quickfix
+									<a href="luasupport/lua_window_run.png"><img src="luasupport/s_lua_window_run.png"></a><br>
+									Lua output and quickfix
 								</td>
 							</tr>
 						</tbody></table>
@@ -396,7 +400,7 @@ op1, op2 = <span class="identifier">string.match</span> ( expr, '(%d+)%<span cla
 		<!-- ###################################################################################-->
 		<!-- ################################## FOOTER #########################################-->
 		<!-- ###################################################################################-->
-		<p>Page updated: December 27 2015 &nbsp;&nbsp;/&nbsp;&nbsp;
+		<p>Page updated: December 28 2015 &nbsp;&nbsp;/&nbsp;&nbsp;
 		Mail to: <a href="mailto:wolfgang-mehner@web.de">Wolfgang Mehner</a></p>
 	</body>
 </html>
