@@ -33,10 +33,11 @@ a:hover
 
 code
 {
-	font-size:1.2em;
-	font-weight:600;
-	color:#555555;
+	font-family:monospace;
+	font-size:inherit;
+	color:#444444;
 }
+/*	font-weight:600; */
 
 p.footnote
 {
@@ -68,7 +69,7 @@ img.preview_image
  */
 table.title_bar
 {
-	width:95%;
+	width:100%;
 	border-spacing:4px;
 	text-align:center;
 
@@ -146,7 +147,7 @@ table.title_bar a:hover
  */
 table.page_header
 {
-	width:95%;
+	width:100%;
 	border-spacing:4px;
 	text-align:center;
 }
@@ -205,7 +206,7 @@ table.other_plugins > tbody > tr > th
 	background-color:pink;
 	background-color:#84d3e3;
 	background-image:url("blue_box_small.png");
-	background-position:center;
+	background-position:top;
 	background-repeat:repeat-x;
 	border-radius:3px;
 	border-top-left-radius:5px;
@@ -330,7 +331,7 @@ table.features > tbody > tr > td > ul > li > code
  */
 table.menu_structure
 {
-	width:95%;
+	width:100%;
 	border-spacing:4px;
 }
 

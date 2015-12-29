@@ -61,7 +61,7 @@
 						The library defines the menu entries, maps and the inserted text.
 						The personal information can also be configured there.</p>
 						<hr>
-						<p>A file header is automatically inserted into each new file (can be switched off, see <a target=_blank href="%REF_HELP%#g:Lua_InsertFileHeader">:help g:Lua_InsertFileHeader</a>)
+						<p>A file header is automatically inserted into each new file (can be switched off, see <a target=_blank href="%REF_HELP%#g:Lua_InsertFileHeader">:help g:Lua_InsertFileHeader</a>)</p>
 						<pre>
 <span class="comment">--
 --------------------------------------------------------------------------------
@@ -82,27 +82,25 @@
 --     Revision:  ---
 --------------------------------------------------------------------------------
 --</span></pre>
-						</p>
 						<hr>
-						<p>Append end-of-line comments to several lines at once:
+						<p>Append end-of-line comments to several lines at once:</p>
 						<pre>
 record = <span class="type">{</span>
 	name    = '',
 	address = '',
 	mail    = '',
 <span class="type">}</span> </pre>
-						Visually select the three lines in the table and use the entry <b>end-of-line comment</b> or the map <b>\cl</b>
-						and get aligned comments, that can also be realigned:
+						<p>Visually select the three lines in the table and use the entry <b>end-of-line comment</b> or the map <b>\cl</b>
+						and get aligned comments, that can also be realigned:</p>
 						<pre>
 record = <span class="type">{</span>
 	name    = '',                                 <span class="comment">--</span> <span class="cursor_ins">|</span>
 	address = '',                                 <span class="comment">--</span>
 	mail    = '',                                 <span class="comment">--</span>
 <span class="type">}</span> </pre>
-						</p>
 						<hr>
 						<p>Automatically generate a comment documenting a function. The name and parameters are read from the buffer.
-						Place the cursor on the function header and hit <b>\ca</b>:
+						Place the cursor on the function header and hit <b>\ca</b>:</p>
 						<pre>
 <span class="comment">------------------------------------------------------------------------
 --         Name:  compare
@@ -116,7 +114,6 @@ record = <span class="type">{</span>
 <span class="identifier">function</span> com<span class="cursor_nrm">p</span>are ( thee, summers_day )
 	<span class="comment">-- something</span>
 <span class="identifier">end</span>  <span class="comment">-----  end of function compare  -----</span> </pre>
-						</p>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -126,21 +123,21 @@ record = <span class="type">{</span>
 					<td><img src="luasupport/lua_menu_statements.png"> </td>
 					<td>
 						<h3>Menu <i>Statements</i> : insert statements</h3>
-						<p>Insert statements with jump tags for convinient editing, using the entry <b>if, else</b> or via the map <b>\sie</b>:<br>
+						<p>Insert statements with jump tags for convinient editing, using the entry <b>if, else</b> or via the map <b>\sie</b>:<br></p>
 						<pre>
 <span class="keyword"><b>if</b></span> <span class="cursor_ins">|</span> <span class="keyword"><b>then</b></span>
 	<span class="jumptag">{-IF_PART-}</span>
 <span class="keyword"><b>else</b></span>
 	<span class="jumptag">{+ELSE_PART+}</span>
 <span class="keyword">end</span> </pre>
-						The cursor is positioned after the "if". Use <b>CTRL+J</b> to jump to the tags and start editing.</p>
+						<p>The cursor is positioned after the "if". Use <b>CTRL+J</b> to jump to the tags and start editing.</p>
 						<hr>
 						<p>A lot of menu entires have a special behavior in visual mode. Select some lines in visual mode ...</p>
 						<pre>
 <span class="visual">x = <span class="identifier">math.sqrt</span> ( y )</span>
 
 <span class="identifier">print</span> ( x ) </pre>
-						then use the entry <b>if, else</b>. The text is inserted around the selected lines and they are indented:
+						<p>then use the entry <b>if, else</b>. The text is inserted around the selected lines and they are indented:</p>
 						<pre>
 <span class="keyword"><b>if</b></span> <span class="cursor_ins">|</span> <span class="keyword"><b>then</b></span>
 	x = <span class="identifier">math.sqrt</span> ( y )
@@ -161,23 +158,21 @@ record = <span class="type">{</span>
 							<tr>
 								<td>
 									<h3>Menu <i>Idioms</i> : insert frequently used statements</h3>
-									<p>Insert an empty function using <b>function definition</b>:<br>
+									<p>Insert an empty function using <b>function definition</b>:<br></p>
 									<pre>
 <span class="identifier">function</span> brain_function ( <span class="cursor_ins">|</span> )
 	<span class="jumptag">{-FUNCTION_BODY-}</span>
 <span class="identifier">end</span>  <span class="comment">-----  end of function brain_function  -----</span> </pre>
-									</p>
 									<hr>
 									<p>Choose the standard <b>library functions</b> from a list.
-									They are inserted with jumps tags named for the functions parameters:
+									They are inserted with jumps tags named for the functions parameters:</p>
 									<pre>
 <span class="identifier">string.gsub</span> ( <span class="jumptag">{+str+}</span>, <span class="jumptag">{+pattern+}</span>, <span class="jumptag">{+repl+}</span> ) </pre>
-									Often used iterators are available in <b>iterators</b>:
+									<p>Often used iterators are available in <b>iterators</b>:</p>
 									<pre>
 <span class="keyword"><b>for</b></span> line <span class="keyword"><b>in</b></span> <span class="identifier">io.lines</span> ( <span class="jumptag">{+FILENAME+}</span> ) <span class="keyword"><b>do</b></span>
 	<span class="jumptag">{-LOOP_BODY-}</span>
 <span class="keyword"><b>end</b></span> </pre>
-									</p>
 									<hr>
 									<p>Insert function skeletons for <b>metamethods:</b></p>
 									<pre>
@@ -202,19 +197,17 @@ record = <span class="type">{</span>
 							<tr>
 								<td>
 									<h3>Menu <i>Regex</i> : assemble regular expressions</h3>
-									<p>Insert <b>character classes</b> and other constructs:
+									<p>Insert <b>character classes</b> and other constructs:</p>
 									<pre>
 res = <span class="identifier">string.match</span> ( str, '%s*(%w+)' ) </pre>
-									</p>
 									<hr>
 									<p>Use <b>esc. magic char.</b> or <b>\xe</b> to escape the character under the cursor,
-									if it is a magic character:
+									if it is a magic character:</p>
 									<pre>
 op1, op2 = <span class="identifier">string.match</span> ( expr, '(%d+)<span class="cursor_nrm">+</span>(%d+)' ) </pre>
-									Place the cursor on the "+" and hit <b>\xe</b>:
+									<p>Place the cursor on the "+" and hit <b>\xe</b>:</p>
 									<pre>
 op1, op2 = <span class="identifier">string.match</span> ( expr, '(%d+)%<span class="cursor_nrm">+</span>(%d+)' ) </pre>
-									</p>
 								</td>
 								<td>
 									<img src="luasupport/lua_menu_regex_classes.png">
@@ -233,14 +226,13 @@ op1, op2 = <span class="identifier">string.match</span> ( expr, '(%d+)%<span cla
 						<p>The plug-in comes with a facility to extract, manage and insert often used code snippets.
 						Visually select a few lines and use the menu entry <b>create code snippet</b> to write these lines into a file.
 						The code snippet can then be edited and inserted again using <b>insert code snippet</b>.<br>
-						A few snippets are shipped with Lua Support, for example "print_cmdline_arguments":
+						A few snippets are shipped with Lua Support, for example "print_cmdline_arguments":</p>
 						<pre>
 <span class="comment">-- echo command line arguments</span>
 
 <span class="keyword">for</span> idx, val <span class="keyword">in</span> <span class="identifier">ipairs</span> ( { ... } ) <span class="keyword">do</span>
 	<span class="identifier">print</span> ( idx, val )
 <span class="keyword">end</span> </pre>
-						</p>
 						<p>(See <a target=_blank href="%REF_HELP%#luasupport-usage-snippets">:help luasupport-usage-snippets</a>)</p>
 						<hr>
 						<p>The templates which define the behavior of most of the menu entries are also manage here.
@@ -260,20 +252,19 @@ op1, op2 = <span class="identifier">string.match</span> ( expr, '(%d+)%<span cla
 							<tr>
 								<td>
 									<h3>Menu <i>Run</i> : run/compile/check the code</h3>
-									<p>A script can be run from inside Vim. The executable can be configured in your <i>.vimrc</i>:
+									<p>A script can be run from inside Vim. The executable can be configured in your <i>.vimrc</i>:</p>
 									<pre>let g:Lua_Executable = "/usr/local/bin/lua"</pre>
-									It can also be changed on the fly using the entry <b>set executable</b> or the ex-command:
+									<p>It can also be changed on the fly using the entry <b>set executable</b> or the ex-command:</p>
 									<pre>:LuaExecutable lua5.1</pre>
-									Then Lua can be run using the menu entry, the map <b>\rr</b> or the ex-command, which also supports cmd.-line arguments:
+									<p>Then Lua can be run using the menu entry, the map <b>\rr</b> or the ex-command, which also supports cmd.-line arguments:</p>
 									<pre>:Lua arg1 arg2</pre>
-									Alternatively, "direct run" can be used:
+									<p>Alternatively, "direct run" can be used:</p>
 									<pre>:LuaDirectRun yes</pre>
-									Now executable scripts are run as the executable, which results in the interpreter given in the shebang being used.</p>
+									<p>Now executable scripts are run as the executable, which results in the interpreter given in the shebang being used.</p>
 									<hr>
 									<p>The output of the script can be viewed in several ways. Depending on the method quickfix is supported, both for syntax and runtime errors.
-									The output method can be changed using the menu entry or the ex-command:
+									The output method can be changed using the menu entry or the ex-command:</p>
 									<pre>:LuaOutputMethod buffer</pre>
-									</p>
 									<hr>
 									<p>The script can be made executable via a keystroke (map <b>\re</b>). It can be printed into a file (map <b>\rh</b>). ...</p>
 								</td>
@@ -292,13 +283,11 @@ op1, op2 = <span class="identifier">string.match</span> ( expr, '(%d+)%<span cla
 					<td><img src="luasupport/lua_menu_help.png"> </td>
 					<td>
 						<h3>Menu <i>Help</i> : call help</h3>
-						<p>Help is quickly accessible through the <b>Help</b> menu. Place the cursor on the name of a standard funcion ...
+						<p>Help is quickly accessible through the <b>Help</b> menu. Place the cursor on the name of a standard funcion ...</p>
 						<pre>
 <span class="identifier">str<span class="cursor_nrm">i</span>ng.gsub</span> ( str, "%d+", repl_f ) </pre>
-						</pre>
-						then use the entry or the map <b>\hl</b> and the browser will open with a URL like:
+						<p>then use the entry or the map <b>\hl</b> and the browser will open with a URL like:</p>
 						<pre>http://www.lua.org/manual/5.2/manual.html#pdf-string.gsub</pre>
-						</p>
 						<hr>
 						<p>The same works for any word in the English language. Placing the cursor on a word and hitting <b>\he</b> opens a dictionary for the word.</p>
 					</td>
@@ -310,15 +299,14 @@ op1, op2 = <span class="identifier">string.match</span> ( expr, '(%d+)%<span cla
 					<td><img src="maketool/menu_main.png"> </td>
 					<td>
 						<h3>Toolbox <i>Make</i> : make integration</h3>
-						<p>Run make in the current directory, passing cmd.-line arguments:
+						<p>Run make in the current directory, passing cmd.-line arguments:</p>
 						<pre>:Make -j3</pre>
-						</p>
 						<hr>
-						<p>In larger projects a specific makefile can be chosen:
+						<p>In larger projects a specific makefile can be chosen:</p>
 						<pre>:MakeFile ../Makefile</pre>
-						... and run from anywhere:
+						<p>... and run from anywhere:</p>
 						<pre>:Make doc</pre>
-						The tool will change the directory and execute the previously chosen makefile, independently of the current working directory.</p>
+						<p>The tool will change the directory and execute the previously chosen makefile, independently of the current working directory.</p>
 					</td>
 				</tr>
 			</tbody>
