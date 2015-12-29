@@ -37,7 +37,7 @@
 			<tbody>
 				<tr>
 					<td>
-						<img src="latexsupport/root.png" alt="root menu"><br>
+						<img src="latexsupport/menu_main.png" alt="root menu"><br>
 						<b>root menu</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					</td>
 					<td>
@@ -122,14 +122,14 @@
 				<!-- ################################## MENU COMMENTS ##################################-->
 				<!-- ###################################################################################-->
 				<tr>
-					<td><img src="latexsupport/someimage.png"> </td>
+					<td><img src="latexsupport/menu_comments.png"> </td>
 					<td>
 						<h3>Menu <i>Comments</i> : insert comments</h3>
 						<p>A lot of the menu entries are defined in a so-called template library.
 						The library defines the menu entries, maps and the inserted text.
 						The personal information can also be configured there.</p>
 						<hr>
-						<p>A file prolog is automatically inserted into each new file (can be switched off):
+						<p>A file prolog is automatically inserted into each new file (can be switched off):</p>
 						<pre>
 <span class="comment">%%=====================================================================================
 %%
@@ -149,9 +149,8 @@
 %%
 %%=====================================================================================
 </span></pre>
-						</p>
 						<p>This prolog is generated from the template shown below. This template file can easily be changed by the user.
-						Tags (like <code >|FILENAME|</code>) are replaced when the template is inserted.
+						Tags (like <code >|FILENAME|</code>) are replaced when the template is inserted.</p>
 						<pre>
 <span class="type">== Comments.file prolog == noindent, start, map:cp, sc:p ==</span>
 %%=====================================================================================
@@ -173,14 +172,45 @@
 %%=====================================================================================
 <span class="type">== ENDTEMPLATE ==</span>
 </pre>
-						</p>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU TEXT ######################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="latexsupport/menu_text.png"> </td>
+					<td>
+						<table class="img_float_table"><tbody>
+							<tr>
+								<td>
+									<h3>Menu <i>Text</i> : insert text-oriented items</h3>
+									<p></p>
+								</td>
+								<td>
+									<img class="preview_image" src="latexsupport/menu_text_list.png">
+								</td>
+							</tr>
+						</tbody></table>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU MATH ######################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="latexsupport/menu_math.png"> </td>
+					<td>
+						<h3>Menu <i>Math</i> : insert frequently used math-related statements</h3>
+						<p></p>
+						<img class="preview_image" src="latexsupport/menu_math_delimiter.png">&nbsp;
+						<img class="preview_image" src="latexsupport/menu_math_greek.png">&nbsp;
+						<img class="preview_image" src="latexsupport/menu_math_relations.png">
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
 				<!-- ################################## MENU SNIPPETS ##################################-->
 				<!-- ###################################################################################-->
 				<tr>
-					<td><img src="luasupport/menu_snippets.png"> </td>
+					<td><img src="latexsupport/menu_snippets.png"> </td>
 					<td>
 						<h3>Menu <i>Snippets</i> : insert code snippets and manage templates</h3>
 						<p>The plug-in comes with a facility to extract, manage and insert often used code snippets.
@@ -204,7 +234,7 @@
 							<tr>
 								<td>
 									<h3>Menu <i>Wizard</i> : code generation wizards</h3>
-									<p>Use the menu entry <b>table &#10142; tabular</b> or the map <b>\wtr</b> and enter the number of rows and columns (e.g. 3 and 2) to insert a skeleton for a table:
+									<p>Use the menu entry <b>table &#10142; tabular</b> or the map <b>\wtr</b> and enter the number of rows and columns (e.g. 3 and 2) to insert a skeleton for a table:</p>
 									<pre>
 <span class="comment">%%----- TABULAR : begin ----------</span>
 <span class="keyword">\begin</span>{tabular}[]{p{60mm}p{60mm}}
@@ -216,10 +246,9 @@
 <span class="keyword">\hline</span>
 <span class="keyword">\end</span>{tabular}\\
 <span class="comment">%%----- TABULAR :  end  ----------</span></pre>
-									</p>
 								</td>
 								<td>
-									<img class="preview_image" src="latexsupport/menu_wizard_table.png">
+									<img class="preview_image" src="latexsupport/menu_wizard_tables.png">
 								</td>
 							</tr>
 						</tbody></table>
@@ -238,8 +267,10 @@
 									<p>Run the typesetter or check or syntax. In case of errors the quickfix window will open to show the list of errors.</p>
 								</td>
 								<td>
-									<a href="latexsupport/latex_window_run_error.png"><img class="preview_image" src="latexsupport/latex_window_run_error.png"></a><br>
-									quickfix window after running the typesetter
+									<a href="latexsupport/window_run_error.png"><img class="preview_image" src="latexsupport/window_run_error.png"></a><br>
+									quickfix window after running the typesetter<br><br>
+									<img class="preview_image" src="latexsupport/menu_run_convert.png"><br>
+									convert the generated documents
 								</td>
 							</tr>
 						</tbody></table>
@@ -252,10 +283,9 @@
 					<td><img src="latexsupport/menu_help.png"> </td>
 					<td>
 						<h3>Menu <i>Help</i> : call help</h3>
-						<p>Help is quickly accessible through the <b>Help</b> menu. Place the cursor on the name of a package or LaTeX command, such as <code>hyperref</code>, ...
+						<p>Help is quickly accessible through the <b>Help</b> menu. Place the cursor on the name of a package or LaTeX command, such as <code>hyperref</code>, ...</p>
 						<pre><span class="keyword">\usepackage</span>[ps2pdf]{hyperref}</pre>
-						then use the entry <b>textdoc</b> or the map <b>\ht</b>. Then the plug-in will execute <code>$texdoc hyperref</code> and open the documentation in a browser or PDF viewer.
-						</p>
+						<p>then use the entry <b>textdoc</b> or the map <b>\ht</b>. Then the plug-in will execute <code>$texdoc hyperref</code> and open the documentation in a browser or PDF viewer.</p>
 						<hr>
 						<p>The same works for any word in the English language. Placing the cursor on a word and hitting <b>\he</b> opens a dictionary for the word.</p>
 					</td>
@@ -265,7 +295,7 @@
 		<!-- ###################################################################################-->
 		<!-- ################################## FOOTER #########################################-->
 		<!-- ###################################################################################-->
-		<p>Page updated: December 28 2015 &nbsp;&nbsp;/&nbsp;&nbsp;
+		<p>Page updated: December 29 2015 &nbsp;&nbsp;/&nbsp;&nbsp;
 		Mail to: <a href="mailto:wolfgang-mehner@web.de">Wolfgang Mehner</a></p>
 	</body>
 </html>

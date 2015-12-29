@@ -54,7 +54,6 @@ hr.footnote
 img.preview_image
 {
 	max-width:256px;
-	max-height:192px;
 }
 
 /*
@@ -364,6 +363,7 @@ table.menu_structure > thead > tr > th:last-child
 table.menu_structure > tbody > tr > td
 {
 	padding:5px;
+	padding-top:15px;
 	border-bottom-style:solid;
 	border-bottom-width:3px;
 	border-bottom-color:SkyBlue;
@@ -374,14 +374,13 @@ table.menu_structure > tbody > tr > td
 
 table.menu_structure > tbody > tr > td:first-child img
 {
-	margin-top:8px;
 	margin-bottom:16px;
 }
 
 table.menu_structure > tbody > tr > td > h3:first-of-type,
 table.img_float_table > tbody > tr > td > h3:first-of-type
 {
-	margin-top:8px;
+	margin-top:0px;
 }
 
 table.menu_structure > tbody > tr > td > h3,
@@ -431,6 +430,7 @@ table.img_float_table > tbody > tr > td:last-child
 	width:20%;
 	padding:0px;
 	padding-left:5px;
+	text-align:left;
 }
 
 table.img_float_table > tbody > tr > td img

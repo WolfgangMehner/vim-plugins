@@ -231,7 +231,7 @@ config.latex = {
 		GITHUB_USER = 'WolfgangMehner',
 		GITHUB_REPO = 'vim-plugins',
 
-		IMG_MAIN_FILE    = 'latexsupport/root.png',
+		IMG_MAIN_FILE    = 'latexsupport/menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
 
 		REF_README = 'blob/master/latex-support/README.latexsupport',
@@ -326,7 +326,7 @@ config.vim = {
 		GITHUB_USER = 'WolfgangMehner',
 		GITHUB_REPO = 'vim-plugins',
 
-		IMG_MAIN_FILE    = 'vimsupport/main.png',
+		IMG_MAIN_FILE    = 'vimsupport/menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
 
 		REF_README = 'blob/master/vim-support/README.vimsupport',
