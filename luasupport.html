@@ -197,7 +197,7 @@ record = <span class="type">{</span>
 					<td><img src="luasupport/lua_menu_statements.png"> </td>
 					<td>
 						<h3>Menu <i>Statements</i> : insert statements</h3>
-						<p>Insert statements with jump tags for convinient editing, using the entry <b>if, else</b> or via the map <b>\sie</b>:<br></p>
+						<p>Insert statements with jump tags for convenient editing, using the entry <b>if, else</b> or via the map <b>\sie</b>:<br></p>
 						<pre>
 <span class="keyword"><b>if</b></span> <span class="cursor_ins">|</span> <span class="keyword"><b>then</b></span>
 	<span class="jumptag">{-IF_PART-}</span>
@@ -238,15 +238,20 @@ record = <span class="type">{</span>
 	<span class="jumptag">{-FUNCTION_BODY-}</span>
 <span class="identifier">end</span>  <span class="comment">-----  end of function brain_function  -----</span> </pre>
 									<hr>
-									<p>Choose the standard <b>library functions</b> from a list.
+									<p>Choose the standard <b>library functions</b> from a list (tab completion!).
 									They are inserted with jumps tags named for the functions parameters:</p>
 									<pre>
-<span class="identifier">string.gsub</span> ( <span class="jumptag">{+str+}</span>, <span class="jumptag">{+pattern+}</span>, <span class="jumptag">{+repl+}</span> ) </pre>
+<span class="identifier">string.gmatch</span> ( <span class="jumptag">&lt;+str+></span>, <span class="jumptag">&lt;+pattern+></span> ) </pre>
+									<p>Optional parameters have their own kins of jump tag <code><span class="jumptag">[+start+]</span></code>,
+									which can be used as a jump target via <b>CTRL+J</b> or quickly removed via <b>CTRL+D</b>:</p>
+									<pre>
+<span class="identifier">string.match</span> ( <span class="jumptag">&lt;+str+></span>, <span class="jumptag">&lt;+pattern+></span>, <span class="jumptag">[+init+]</span> ) </pre>
 									<p>Often used iterators are available in <b>iterators</b>:</p>
 									<pre>
 <span class="keyword"><b>for</b></span> line <span class="keyword"><b>in</b></span> <span class="identifier">io.lines</span> ( <span class="jumptag">{+FILENAME+}</span> ) <span class="keyword"><b>do</b></span>
 	<span class="jumptag">{-LOOP_BODY-}</span>
 <span class="keyword"><b>end</b></span> </pre>
+									<p>The iterators can be used to surround existing lines just as in the example above.</p>
 									<hr>
 									<p>Insert function skeletons for <b>metamethods:</b></p>
 									<pre>
@@ -357,7 +362,7 @@ op1, op2 = <span class="identifier">string.match</span> ( expr, '(%d+)%<span cla
 					<td><img src="luasupport/lua_menu_help.png"> </td>
 					<td>
 						<h3>Menu <i>Help</i> : call help</h3>
-						<p>Help is quickly accessible through the <b>Help</b> menu. Place the cursor on the name of a standard funcion ...</p>
+						<p>Help is quickly accessible through the <b>Help</b> menu. Place the cursor on the name of a standard function ...</p>
 						<pre>
 <span class="identifier">str<span class="cursor_nrm">i</span>ng.gsub</span> ( str, "%d+", repl_f ) </pre>
 						<p>then use the entry or the map <b>\hl</b> and the browser will open with a URL like:</p>
@@ -388,7 +393,7 @@ op1, op2 = <span class="identifier">string.match</span> ( expr, '(%d+)%<span cla
 		<!-- ###################################################################################-->
 		<!-- ################################## FOOTER #########################################-->
 		<!-- ###################################################################################-->
-		<p>Page updated: December 29 2015 &nbsp;&nbsp;/&nbsp;&nbsp;
+		<p>Page updated: December 30 2015 &nbsp;&nbsp;/&nbsp;&nbsp;
 		Mail to: <a href="mailto:wolfgang-mehner@web.de">Wolfgang Mehner</a></p>
 	</body>
 </html>

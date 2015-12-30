@@ -143,8 +143,10 @@ config.bash = {
 		'awk', 'c', 'latex', 'lua', 'perl', 'vim',
 	},
 	links_others = {
-		{ name = 'Bash Style Guide (en)', link = 'https://lug.fh-swf.de/vim/vim-bash/StyleGuideShell.en.pdf' },
-		{ name = 'Bash Style Guide (de)', link = 'https://lug.fh-swf.de/vim/vim-bash/StyleGuideShell.de.pdf' },
+		{ name = 'Bash Style Guide<br>(English)', link = 'https://lug.fh-swf.de/vim/vim-bash/StyleGuideShell.en.pdf' },
+		{ name = 'Bash Style Guide<br>(German)', link = 'https://lug.fh-swf.de/vim/vim-bash/StyleGuideShell.de.pdf' },
+--		{ name = 'Bash Bookmarks', link = 'https://github.com/FritzMehner' },
+--		{ name = 'Bash Parallel<br>Processing', link = 'https://github.com/FritzMehner' },
 	},
 	links_media = {
 		[[Plugin featured in the <a target=_blank href="http://hackerpublicradio.org">Hacker Public Radio</a> episode <a target=_blank href="http://hackerpublicradio.org/eps.php?id=1091">Useful Vim Plugins</a>]],
@@ -299,6 +301,7 @@ config.perl = {
 		'awk', 'bash', 'c', 'git', 'latex', 'lua',
 	},
 	links_others = {
+		{ name = 'Perl Gnuplot<br>Interface', link = 'http://search.cpan.org/~mehner/Graphics-GnuplotIF-1.7/' },
 	},
 	links_media = {
 		[[Covered in the 01/2016 issue of <a target=_blank href="http://www.linux-magazin.de/">Linux-Magazin</a>,<br>
