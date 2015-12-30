@@ -98,9 +98,15 @@
 			<tbody>
 				<tr>
 					<td>
-						<h3>Speed-up the development of Vim Scripts:</h3>
+						<h3>Speed-up the development of Vim scripts:</h3>
 						<ul>
-							<li>FEATURES !!!</li>
+							<li>insert code snippets: comments, statements, functions, regular expressions, ...</li>
+							<li>... which come in an extendible template library</li>
+							<li>quickly comment the code by automatically generating function descriptions</li>
+						</ul>
+						<ul>
+							<li>manage code snippets</li>
+							<li>quickly access the documentation</li>
 						</ul>
 					</td>
 				</tr>
@@ -125,6 +131,68 @@
 					<td><img src="vimsupport/menu_comments.png"> </td>
 					<td>
 						<h3>Menu <i>Comments</i> : insert comments</h3>
+						<p>A lot of the menu entries are defined in a so-called template library.
+						The library defines the menu entries, maps and the inserted text.
+						The personal information can also be configured there.</p>
+						<hr>
+						<p>A file header can be inserted into each new file:</p>
+            <pre>
+<span class="comment">"===============================================================================
+"
+"          File:  somescript.vim
+"
+"   Description:  
+"
+"   VIM Version:  7.0+
+"        Author:  Wolfgang Mehner (WM), &lt;thisguy@doggymail.de>
+"  Organization:  
+"       Version:  1.0
+"       Created:  29.02.2015
+"      Revision:  ---
+"       License:  Copyright (c) 2015, Wolfgang Mehner
+"===============================================================================</span></pre>
+						<p>This prolog is generated from the template shown below. This template file can easily be changed by the user.
+						Tags (like <code >|FILENAME|</code>) are replaced when the template is inserted.</p>
+						<pre>
+<span class="type">== Comments.file description == start, map:ch ==</span>
+"===============================================================================
+"
+"          File:  <span class="tag">|FILENAME|</span>
+" 
+"   Description:  <span class="tag">&lt;CURSOR></span>
+" 
+"   VIM Version:  7.0+
+"        Author:  <span class="tag">|AUTHOR|</span> (<span class="tag">|AUTHORREF|</span>), <span class="tag">|EMAIL|</span>
+"  Organization:  <span class="tag">|ORGANIZATION|</span>
+"       Version:  1.0
+"       Created:  <span class="tag">|DATE|</span>
+"      Revision:  ---
+"       License:  <span class="tag">|COPYRIGHT|</span>
+"===============================================================================
+<span class="type">== ENDTEMPLATE ==</span></pre>
+						<hr>
+						<p>Automatically generate a comment documenting a function. The name and parameters are read from the buffer.
+						Place the cursor on the function header and hit <b>\ca</b>:</p>
+						<pre>
+<span class="comment">"===  FUNCTION  ================================================================
+"          NAME:  compare
+"   DESCRIPTION:  <span class="jumptag">&lt;+DESC+></span>
+"    PARAMETERS:  thee - <span class="jumptag">&lt;+DESCRIPTION+></span>
+"                 summers_day - <span class="jumptag">&lt;+DESCRIPTION+></span>
+"       RETURNS:  
+"===============================================================================</span>
+
+<span class="keyword">function</span>! com<span class="cursor_nrm">p</span>are ( thee, summers_day )
+	<span class="comment">" something</span>
+<span class="keyword">endfunction</span>    <span class="comment">" ----------  end of function compare  ----------</span>
+</pre>
+						<hr>
+						<p>The entry <b>keyword comments &#10142; todo</b> generates a special end-of-line comment.
+						These comments are easily locatable by their keywords (e.g. <b>:TODO:</b>).
+						Date and author reference name are inserted by the editor.</p>
+						<pre>
+<span class="comment">" :TODO:29.02.2015 12:34:WM:</span></pre>
+						<p>These comments are not for the final version of a script, of course.</p>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -133,7 +201,30 @@
 				<tr>
 					<td><img src="vimsupport/menu_statements.png"> </td>
 					<td>
-						<h3>Menu <i>Comments</i> : insert statements</h3>
+						<h3>Menu <i>Statements</i> : insert statements</h3>
+						<p>Insert statements with jump tags for convenient editing, using the entry <b>if, else</b> or via the map <b>\sie</b>:<br></p>
+						<pre>
+<span class="keyword"><b>if</b></span> <span class="cursor_ins">|</span>
+  <span class="jumptag">&lt;-IF_PART-></span>
+<span class="keyword"><b>else</b></span>
+  <span class="jumptag">&lt;+ELSE_PART+></span>
+<span class="keyword">endif</span> </pre>
+						<p>The cursor is positioned after the "if". Use <b>CTRL+J</b> to jump to the tags and start editing.</p>
+						<hr>
+						<p>A lot of menu entires have a special behavior in visual mode. Select some lines in visual mode ...</p>
+						<pre>
+<span class="visual"><span class="keyword">let</span> x = <span class="identifier">sqrt</span> ( y )</span>
+
+<span class="keyword">echo</span> x </pre>
+						<p>then use the entry <b>if, else</b>. The text is inserted around the selected lines and they are indented:</p>
+						<pre>
+<span class="keyword"><b>if</b></span> <span class="cursor_ins">|</span>
+  <span class="keyword">let</span> x = <span class="identifier">sqrt</span> ( y )
+<span class="keyword"><b>else</b></span>
+  <span class="jumptag">&lt;+ELSE_PART+></span>
+<span class="keyword">endif</span>
+
+<span class="keyword">echo</span> x </pre>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -145,7 +236,28 @@
 						<table class="img_float_table"><tbody>
 							<tr>
 								<td>
-									<h3>Menu <i>Comments</i> : insert frequently used statements</h3>
+									<h3>Menu <i>Idioms</i> : insert frequently used statements</h3>
+									<p>Insert an empty function using <b>function definition</b>:<br></p>
+									<pre>
+<span class="keyword">function</span>! brain_function (<span class="cursor_ins">|</span>)
+  <span class="jumptag">&lt;-FUNCTION_BODY-></span>
+  <span class="keyword">return</span>
+<span class="keyword">endfunction</span>    <span class="comment">" ----------  end of function brain_function  ----------</span> </pre>
+									<hr>
+									<p>Choose the <b>builtin functions</b> from a list (tab completion!).
+									They are inserted with jumps tags named for the functions parameters:</p>
+									<pre>
+<span class="identifier">substitute</span> ( <span class="jumptag">&lt;+expr+></span>, <span class="jumptag">&lt;+pat+></span>, <span class="jumptag">&lt;+sub+></span>, <span class="jumptag">&lt;+flags+></span> ) </pre>
+									<p>Optional parameters have their own kins of jump tag <code><span class="jumptag">[+start+]</span></code>,
+									which can be used as a jump target via <b>CTRL+J</b> or quickly removed via <b>CTRL+D</b>:</p>
+									<pre>
+<span class="identifier">match</span> ( <span class="jumptag">&lt;+expr+></span>, <span class="jumptag">&lt;+pat+></span>, <span class="jumptag">[+start+]</span>, <span class="jumptag">[+count+]</span> ) </pre>
+									<p>Often used iterators are available in <b>iterators</b>:</p>
+									<pre>
+<span class="keyword">for</span> val <span class="keyword">in</span> &lt;+LIST+>
+  <span class="jumptag">&lt;-LOOP_BODY-></span>
+<span class="keyword">endfor</span> </pre>
+									<p>The iterators can be used to surround existing lines just as in the example above.</p>
 								</td>
 								<td>
 									<img class="preview_image" src="vimsupport/menu_idioms_iterators.png">
@@ -164,6 +276,9 @@
 							<tr>
 								<td>
 									<h3>Menu <i>Regex</i> : assemble regular expressions</h3>
+									<p>Insert <b>character classes</b> and other constructs:</p>
+									<pre>
+<span class="keyword">let</span> pos = <span class="identifier">match</span> ( str, '\s*(\w+)' ) </pre>
 								</td>
 								<td>
 									<img class="preview_image" src="vimsupport/menu_regex_char_class.png">
@@ -179,6 +294,15 @@
 					<td><img src="vimsupport/menu_snippets.png"> </td>
 					<td>
 						<h3>Menu <i>Snippets</i> : insert code snippets and manage templates</h3>
+						<p>The plug-in comes with a facility to extract, manage and insert often used code snippets.
+						Visually select a few lines and use the menu entry <b>write code snippet</b> to write these lines into a file.
+						The code snippet can then be edited and inserted again using <b>read code snippet</b>.</p>
+						<p>(See <a target=_blank href="doc/vimsupport.html#vimsupport-snippets">:help vimsupport-snippets</a>)</p>
+						<hr>
+						<p>The templates which define the behavior of most of the menu entries are also manage here.
+						Use <b>templates setup wizard</b> to create a personalization file with your personal details for the comments.</p>
+						<p>The templates support different coding styles. Use the entry <b>choose style</b> to switch between them.</p>
+						<p>(See <a target=_blank href="doc/vimsupport.html#vimsupport-templates">:help vimsupport-templates</a>)</p>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -188,6 +312,14 @@
 					<td><img src="vimsupport/menu_help.png"> </td>
 					<td>
 						<h3>Menu <i>Help</i> : call help</h3>
+						<p>Help is quickly accessible through the <b>Help</b> menu. Place the cursor on the name of a Vim command, function, option, ...</p>
+						<pre>
+<span class="keyword">au<span class="cursor_nrm">t</span>ocmd</span> <span class="type">FileType</span> *.vim <span class="keyword">exe</span> something</pre>
+						<p>then use the entry or the map <code>&lt;SHIFT+F1></code> to automatically bring up the Vim help for:</p>
+						<pre>:help autocmd</pre>
+						<p>You can jump to the help for <code>FileType</code> and <code>exe</code> in the same way.</p>
+						<hr>
+						<p>The same works for any word in the English language. Placing the cursor on a word and hitting <b>\he</b> opens a dictionary for the word.</p>
 					</td>
 				</tr>
 			</tbody>
@@ -195,7 +327,7 @@
 		<!-- ###################################################################################-->
 		<!-- ################################## FOOTER #########################################-->
 		<!-- ###################################################################################-->
-		<p>Page updated: December 29 2015 &nbsp;&nbsp;/&nbsp;&nbsp;
+		<p>Page updated: December 30 2015 &nbsp;&nbsp;/&nbsp;&nbsp;
 		Mail to: <a href="mailto:wolfgang-mehner@web.de">Wolfgang Mehner</a></p>
 	</body>
 </html>
