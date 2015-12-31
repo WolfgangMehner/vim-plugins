@@ -1,0 +1,30 @@
+§ =============================================================
+§  Functions
+§ =============================================================
+
+== LIST: functions_commands == hash ==
+	'IncludeFile'  : "'<+path+>'",
+	'MenuShortcut' : "'<+menu+>', '<+shortcut+>'",
+	'SetFormat'    : "'<+name+>', '<+format+>'",
+	'SetMacro'     : "'<+name+>', '<+text+>'",
+	'SetMap'       : "'<+templ+>', '<+map+>'",
+	'SetMenuEntry' : "'<+templ+>', '<+entry+>'",
+	'SetPath'      : "'<+name+>', '<+path+>'",
+	'SetProperty'  : "'<+name+>', '<+value+>'",
+	'SetShortcut'  : "'<+templ+>', '<+sc+>'",
+	'SetStyle'     : "'<+style+>'",
+== LIST: functions_template == hash ==
+	'DefaultMacro' : "'<+name+>', '<+text+>'",
+	'PickFile'     : "'<+prompt+>', '<+path+>'",
+	'PickList'     : "'<+prompt+>', '<+list+>'",
+	'Prompt'       : "'<+name+>', '<+flag+>'",
+== ENDLIST ==
+
+== Functions.command function == expandmenu, below, map:fc, sc:c ==
+|PickList( 'function', 'functions_commands' )|
+|KEY|( <CURSOR>|VALUE| )
+== Functions.template function == expandmenu, below, map:ft, sc:t ==
+|PickList( 'function', 'functions_template' )|
+|M_S||KEY|( <CURSOR>|VALUE| )|M_E|
+== ENDTEMPLATE ==
+

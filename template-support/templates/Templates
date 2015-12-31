@@ -1,0 +1,69 @@
+§ =============================================================
+§  Interface Version
+§ =============================================================
+
+InterfaceVersion ( '1.0' )
+
+§ =============================================================
+§  Settings
+§ =============================================================
+
+SetMacro( 'AUTHOR',       'YOUR NAME' )
+SetMacro( 'AUTHORREF',    '' )
+SetMacro( 'EMAIL',        '' )
+SetMacro( 'ORGANIZATION', '' )
+SetMacro( 'COMPANY',      '' )
+SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
+SetMacro( 'LICENSE',      'GNU General Public License' )
+
+SetFormat( 'DATE', '%x' )
+SetFormat( 'TIME', '%X' )
+SetFormat( 'YEAR', '%Y' )
+
+§ set a comment prefix, so the maps \cc, ... are created
+
+SetProperty ( 'Comments::LinePrefix',  '§' )
+
+§ we use these macros, so the templates can be loaded correctly, without confusing the parser:
+§  CMT   : comment      : § COMMENT!
+§  DELIM : delimiter    : == <template-name> == <options> ==
+§  M_S   : macro, start
+§  M_E   : macro, end   : |AUTHOR|
+§  M_S   : tag, start
+§  M_E   : tag, end     : <CURSOR>
+
+SetMacro( 'CMT', '§' )
+SetMacro( 'DELIM', '==' )
+SetMacro( 'M_S', '|' )
+SetMacro( 'M_E', '|' )
+SetMacro( 'T_S', '<' )
+SetMacro( 'T_E', '>' )
+
+§ =============================================================
+§  File Includes and Shortcuts
+§ =============================================================
+
+MenuShortcut( 'Comments',  'c' )
+MenuShortcut( 'Templates', 't' )
+MenuShortcut( 'Lists',     'l' )
+MenuShortcut( 'Functions', 'f' )
+MenuShortcut( 'Help',      'h' )
+
+IncludeFile( 'comments.templates' )
+IncludeFile( 'templ.templates' )
+IncludeFile( 'list.templates' )
+IncludeFile( 'functions.templates' )
+
+§ =============================================================
+§  Help
+§ =============================================================
+
+== HELP: Help.English == map:he, sc:e ==
+|Word( '' )|
+|Substitute( '\W', '', 'g' )|
+|Browser( '|HelpPathEnglish||PICK:l|', '|HelpPathEnglish|' )|
+== HELP: Help.templates == map:ht, sc:h ==
+|Pattern( '\w\+\%(\s*(\)\?' )|
+|Substitute( '\s*(', '()', '' )|
+|Vim( ':help template-support-|PICK|', ':help template-support' )|
+== ENDTEMPLATE ==

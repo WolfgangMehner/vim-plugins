@@ -1,0 +1,20 @@
+§ =============================================================
+§  Lists
+§ =============================================================
+
+== Lists.hash == below, noindent, map:lha, sc:h ==
+|DELIM| LIST: <CURSOR> |DELIM| hash |DELIM|
+	'{+KEY+}' : '{+VALUE+}',
+|DELIM| ENDLIST |DELIM|
+== Lists.list == below, noindent, map:lli, sc:l ==
+|DELIM| LIST: <CURSOR> |DELIM| list |DELIM|
+	'{+ENTRY+}',
+|DELIM| ENDLIST |DELIM|
+== ENDTEMPLATE ==
+
+== Lists.hash entry == below, noindent, map:lhe ==
+	'<CURSOR>' : '{+VALUE+}',
+== Lists.list entry == below, noindent, map:lle ==
+	'<CURSOR>',
+== ENDTEMPLATE ==
+

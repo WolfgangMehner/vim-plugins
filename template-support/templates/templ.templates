@@ -1,0 +1,69 @@
+§ =============================================================
+§  Templates
+§ =============================================================
+
+§ -------------------------------------------------------------
+§  Options
+§ -------------------------------------------------------------
+
+== LIST: template_options == list ==
+	'start',
+	'above',
+	'below',
+	'insert',
+	'append',
+
+	'visual',
+	'novisual',
+	'indent',
+	'noindent',
+
+	'nomenu',
+	'map:',
+	'shortcut:',
+	'sc:',
+	'expandmenu',
+	'expandleft:',
+	'expandright:',
+== ENDLIST ==
+
+== Templates.option == expandmenu, insert, map:to, sc:o ==
+|PickList( 'template option', 'template_options' )|
+|PICK|<CURSOR>
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Templates
+§ -------------------------------------------------------------
+
+== Templates.template == below, noindent, map:tt, sc:t ==
+|DELIM| <CURSOR> |DELIM| {+OPTIONS+} |DELIM|
+<SPLIT>{-TEXT-}
+|DELIM| ENDTEMPLATE |DELIM|
+== ENDTEMPLATE ==
+
+== Templates.file picker == below, noindent, map:tf, sc:f ==
+|DELIM| <CURSOR> |DELIM| {+OPTIONS+} |DELIM|
+|M_S|PickFile( '{+PROMPT+}', '{+PATH+}' )|M_E|
+<SPLIT>{-TEXT-}
+|DELIM| ENDTEMPLATE |DELIM|
+== ENDTEMPLATE ==
+
+== Templates.list picker == below, noindent, map:tl, sc:l ==
+|DELIM| <CURSOR> |DELIM| {+OPTIONS+} |DELIM|
+|M_S|PickList( '{+PROMPT+}', '{+LIST+}' )|M_E|
+<SPLIT>{-TEXT-}
+|DELIM| ENDTEMPLATE |DELIM|
+== ENDTEMPLATE ==
+
+== Templates.help template == below, noindent, map:th, sc:h ==
+|PickList( 'help call method', [ 'Browser', 'System', 'Vim' ] )|
+|DELIM| HELP: <CURSOR> |DELIM| {+OPTIONS+} |DELIM|
+|M_S|Word( '' )|M_E|
+|M_S||PICK|( '{+PATH+}|M_S|PICK|M_E|', '{+DEFAULT+}' )|M_E|
+|DELIM| ENDTEMPLATE |DELIM|
+== ENDTEMPLATE ==
+
+== Templates.menu separator == below, noindent, map:ts, sc:s ==
+|DELIM| SEP: <CURSOR> |DELIM|
+== ENDTEMPLATE ==

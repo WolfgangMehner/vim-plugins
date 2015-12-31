@@ -1,0 +1,61 @@
+§ =============================================================
+§  Comments
+§ =============================================================
+
+== Comments.frame comment, big == below, map:cfb, sc:b ==
+|CMT| =============================================================
+|CMT|  <CURSOR>
+|CMT| =============================================================
+== Comments.frame comment, small == below, map:cfs, sc:s ==
+|CMT| -------------------------------------------------------------
+|CMT|  <CURSOR>
+|CMT| -------------------------------------------------------------
+== Comments.separator == below, map:cs ==
+|CMT| -------------------------------------------------------------
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+
+== Comments.date == append, map:cd, sc:d ==
+|DATE|
+== Comments.date, time == append, sc:t ==
+|DATE| |TIME|
+== ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Keywords, Special and Macros
+§ -------------------------------------------------------------
+
+== LIST: comments_keywords == hash ==
+	'bug'         : ':BUG:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'todo'        : ':TODO:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'tricky'      : ':TRICKY:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'warning'     : ':WARNING:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'workaround'  : ':WORKAROUND:|DATE| |TIME|:|AUTHORREF|: <CURSOR>',
+	'new keyword' : ':<CURSOR>:|DATE| |TIME|:|AUTHORREF|: {+COMMENT+}',
+== LIST: comments_macros == hash ==
+	'author'       : '|AUTHOR|',
+	'author ref'   : '|AUTHORREF|',
+	'organization' : '|ORGANIZATION|',
+	'copyright'    : '|COPYRIGHT|',
+	'email'        : '|EMAIL|',
+
+	'path'       : '|PATH|',
+	'filename'   : '|FILENAME|',
+	'basename'   : '|BASENAME|',
+	'basename:u' : '|BASENAME:u|',
+	'suffix'     : '|SUFFIX|',
+
+	'date' : '|DATE|',
+	'time' : '|TIME|',
+	'year' : '|YEAR|',
+== ENDLIST ==
+
+== Comments.keyword comment == expandmenu, below, map:ck, sc:k ==
+|PickList( 'keyword', 'comments_keywords' )|
+|CMT| |PICK|
+== Comments.macros == expandmenu, insert, map:cm, sc:m ==
+|PickList( 'macro', 'comments_macros' )|
+|PICK|<CURSOR>
+== ENDTEMPLATE ==
+
