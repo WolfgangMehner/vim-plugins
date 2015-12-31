@@ -1,4 +1,4 @@
-README for perl-support.vim (Version 5.4pre) / March 08 2015
+README for perl-support.vim (Version 5.4pre) / December 26 2015
 ================================================================================
 
   *  INSTALLATION
@@ -176,7 +176,7 @@ For a system-wide installation please see the help file 'doc/perlsupport.txt'.
 ----------------------------------------------------------------------
 - Added 'g:Perl_CustomTemplateFile' and 'g:Perl_AdditionalTemplates'.
 - Added template personalization file and setup wizard.
-- Removed unused 'g:Perl_GuiTemplateBrowser'.
+- Removed unused 'g:Perl_GuiTemplateBrowser' and 'g:Perl_MenuHeader'.
 - New and reworked templates.
 - Changed map "\vs" -> "\vps", in favor of a more consistent naming scheme.
 - Minor changes.

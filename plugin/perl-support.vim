@@ -248,7 +248,6 @@ call s:perl_SetLocalVariable('Perl_XtermDefaults          ')
 "
 "  Initialize global variables, if they do not already exist.
 "
-call s:perl_SetGlobalVariable( "Perl_MenuHeader",'yes' )
 call s:perl_SetGlobalVariable( "Perl_OutputGvim",'vim' )
 call s:perl_SetGlobalVariable( "Perl_PerlRegexSubstitution",'$~' )
 "
@@ -942,7 +941,7 @@ function! Perl_Settings ( verbose )
 		let txt .= '                  license :  "'.mmtemplates#core#ExpandText( g:Perl_Templates, '|LICENSE|'      )."\"\n"
 		let txt .= '           template style :  "'.mmtemplates#core#Resource ( g:Perl_Templates, "style" )[0]."\"\n\n"
 	else
-		let txt .= "                templates :  -not loaded-\n"
+		let txt .= "                templates :  -not loaded-\n\n"
 	endif
 	" plug-in installation
 	let txt .= '      plugin installation :  '.g:Perl_Installation.' on '.sys_name."\n"
@@ -2152,16 +2151,6 @@ function! Perl_ModuleListFold (lnum)
 endfunction    " ----------  end of function Perl_ModuleListFold  ----------
 "
 "===  FUNCTION  ================================================================
-"          NAME:  Perl_MenuTitle     {{{1
-"   DESCRIPTION:  display warning
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! Perl_MenuTitle ()
-		echohl WarningMsg | echo "This is a menu header." | echohl None
-endfunction    " ----------  end of function Perl_MenuTitle  ----------
-"
-"===  FUNCTION  ================================================================
 "          NAME:  Perl_InitMenus     {{{1
 "   DESCRIPTION:  initialize the hardcoded menu items
 "    PARAMETERS:  -
@@ -2276,63 +2265,61 @@ function! s:Perl_InitMenus ()
   "----- Menu : Run                             {{{2
   "===============================================================================================
 	"
-  "   run the script from the local directory
-  "   ( the one which is being edited; other versions may exist elsewhere ! )
-  "
 	let	ahead	= 'amenu <silent> '.s:Perl_RootMenu.'.&Run.'
 	let	vhead	= 'vmenu <silent> '.s:Perl_RootMenu.'.&Run.'
-	"
+
+	" ----- run, syntax check -----
   exe ahead.'update,\ &run\ script<Tab>'.esc_mapl.'rr\ \ <C-F9>         :call Perl_Run()<CR>'
   exe ahead.'update,\ check\ &syntax<Tab>'.esc_mapl.'rs\ \ <A-F9>       :call Perl_SyntaxCheck()<CR>'
   exe 'amenu '.s:Perl_RootMenu.'.&Run.cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra\ \ <S-F9>  :PerlScriptArguments<Space>'
   exe 'amenu .'s:Perl_RootMenu.'.&Run.perl\ s&witches<Tab>'.esc_mapl.'rw                :PerlSwitches<Space>'
-  "
-  " set execution rights for user only ( user may be root ! )
+
+  " ----- set execution rights for user only ( user may be root ! ) -----
   if !s:MSWIN
     exe ahead.'make\ script\ &exe\./not\ exec\.<Tab>'.esc_mapl.'re              :call Perl_MakeScriptExecutable()<CR>'
   endif
   exe ahead.'start\ &debugger<Tab>'.esc_mapl.'rd\ \ <F9>                :call Perl_Debugger()<CR>'
-	"
+
+	" ----- module list -----
   exe ahead.'-SEP2-                     :'
   exe ahead.'show\ &installed\ Perl\ modules<Tab>'.esc_mapl.'ri  :call Perl_perldoc_show_module_list()<CR>'
   exe ahead.'&generate\ Perl\ module\ list<Tab>'.esc_mapl.'rg    :call Perl_perldoc_generate_module_list()<CR><CR>'
-  "
+
+	" ----- perltidy -----
   exe ahead.'-SEP4-                     :'
   exe ahead.'run\ perltid&y<Tab>'.esc_mapl.'ry                        :call Perl_Perltidy("n")<CR>'
   exe vhead.'run\ perltid&y<Tab>'.esc_mapl.'ry                   <C-C>:call Perl_Perltidy("v")<CR>'
-	"
-	"
+
+	" ----- perlcritic -----
   exe ahead.'-SEP3-                     :'
   exe ahead.'run\ perl&critic<Tab>'.esc_mapl.'rpc                     :call Perl_Perlcritic()<CR>'
-  "
-  if g:Perl_MenuHeader == "yes"
-    exe ahead.'perlcritic\ severity<Tab>'.esc_mapl.'rpcs.severity     :call Perl_MenuTitle()<CR>'
-    exe ahead.'perlcritic\ severity<Tab>'.esc_mapl.'rpcs.-Sep5-       :'
-  endif
+
+  " ----- submenu : perlcritic severity -----
+	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', 'Run.perl&critic\ severity' )
 
   let levelnumber = 1
   for level in s:PCseverityName[1:]
     exe ahead.'perlcritic\ severity<Tab>'.esc_mapl.'rpcs.&'.level.'<Tab>(='.levelnumber.')    :call Perl_GetPerlcriticSeverity("'.level.'")<CR>'
     let levelnumber = levelnumber+1
   endfor
-  "
-  if g:Perl_MenuHeader == "yes"
-    exe ahead.'perlcritic\ &verbosity<Tab>'.esc_mapl.'rpcv.verbosity     :call Perl_MenuTitle()<CR>'
-    exe ahead.'perlcritic\ &verbosity<Tab>'.esc_mapl.'rpcv.-Sep6-            :'
-  endif
+
+  " ----- submenu : perlcritic verbosity -----
+	call mmtemplates#core#CreateMenus ( 'g:Perl_Templates', s:Perl_RootMenu, 'sub_menu', 'Run.perlcritic\ &verbosity' )
 
   for level in s:PCverbosityName
     exe ahead.'perlcritic\ &verbosity<Tab>'.esc_mapl.'rpcv.&'.level.'   :call Perl_GetPerlcriticVerbosity('.level.')<CR>'
   endfor
   exe ahead.'perlcritic\ &options<Tab>'.esc_mapl.'rpco                :call Perl_PerlcriticOptionsInput()<CR>'
 
+  " ----- hardcopy, settings -----
   exe ahead.'-SEP5-                     :'
   exe ahead.'save\ buffer\ with\ &timestamp<Tab>'.esc_mapl.'rt        :call Perl_SaveWithTimestamp()<CR>'
   exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh           :call Perl_Hardcopy("n")<CR>'
   exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh      <C-C>:call Perl_Hardcopy("v")<CR>'
   exe ahead.'-SEP6-                     :'
   exe ahead.'settings\ and\ hot\ &keys<Tab>'.esc_mapl.'rk             :call Perl_Settings(0)<CR>'
-  "
+
+  " ----- xterm -----
   if  !s:MSWIN
     exe ahead.'&xterm\ size<Tab>'.esc_mapl.'rx                          :call Perl_XtermSize()<CR>'
   endif

@@ -1,4 +1,4 @@
-*perlsupport.txt*                Perl Support                    Mar 08 2015
+*perlsupport.txt*                Perl Support                    Dec 26 2015
 Perl Support                                      *perl-support* *perlsupport*
 
                              Plug-in version 5.4pre
@@ -1364,13 +1364,30 @@ To switch the make tool box off add the following line to the file .vimrc
 The hotkeys for the make tool are defined in the file ~/.vim/ftplugin/perl.vim .
 
 ------------------------------------------------------------------------------
-1.11  Menu 'help'                                           *perlsupport-help*
+1.11  Menu 'Help'                                           *perlsupport-help*
 ------------------------------------------------------------------------------
 
-The root menu item 'help' (hotkey \hp ) shows this plug-in help in a help
-window.  The help tags must have been generated with
+This submenu offers convenient access to various documentations.
+
+The entry 'read perldoc' (hotkey "\h") looks up documentation for the word
+under the cursor. If there is no word under the cursor you will be asked for
+the name of a module or function.
+
+The entry 'English' (hotkey "\he") opens an online dictionary for the word
+under the cursor.
+
+The menu item 'help (Perl-Support)' (hotkey "\hp") shows this plug-in's help
+in a help window. The help tags must have been generated with
 >
   :helptags ~/.vim/doc
+<
+------------------------------------------------------------------------------
+
+The browser for opening the online documentation, or the English dictionary,
+can be configured by setting a global variable in your ~/.vimrc (see
+|g:Templates_InternetBrowserExec| and |g:Templates_InternetBrowserFlags|):
+>
+  let g:Templates_InternetBrowserExec = 'firefox'
 <
 ==============================================================================
 2.  USAGE WITHOUT GUI  (Vim)                            *perlsupport-mappings*
@@ -1743,7 +1760,6 @@ g:Perl_Ctrl_j                  'on'
 g:Perl_CodeSnippets            root_dir.'perl-support/codesnippets/'
 g:Perl_LoadMenus               'yes'
 g:Perl_Dictionary_File         ''
-g:Perl_MenuHeader              'yes'
 g:Perl_GuiSnippetBrowser       'gui'
 g:Perl_InsertFileHeader        'yes'
 g:Perl_CreateMenusDelayed      'yes'
@@ -1791,7 +1807,6 @@ The variable root_dir will automatically be set to one of the following values:
            g:Perl_LoadMenus          : Load menus and mappings ("yes", "no") at startup.
            g:Perl_Dictionary_File    : Path and filename of the Perl word list used for
                                        dictionary completion (see below).
-           g:Perl_MenuHeader         : Switch submenu titles on/off.
            g:Perl_GuiSnippetBrowser  : code snippet browser: 'gui', 'commandline'
            g:Perl_InsertFileHeader   : insert file description comment in a new file ('yes', 'no')
            g:Perl_CreateMenusDelayed : Delaying the initialization until the first file is opened.
