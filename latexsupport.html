@@ -98,9 +98,17 @@
 			<tbody>
 				<tr>
 					<td>
-						<h3>Speed-up the development of LaTeX document:</h3>
+						<h3>Speed-up the development of LaTeX documents:</h3>
 						<ul>
-							<li>FEATURES !!!</li>
+							<li>insert code snippets: comments, commands, environments, ...</li>
+							<li>... which come in an extendible template library</li>
+							<li>manage code snippets</li>
+						</ul>
+						<ul>
+							<li>run the typesetter from within Vim</li>
+							<li>run MakeIndex and BibTeX</li>
+							<li>open the generated documents from within Vim</li>
+							<li>quick access to texdoc and an online dictionary</li>
 						</ul>
 					</td>
 				</tr>
@@ -300,7 +308,20 @@
 							<tr>
 								<td>
 									<h3>Menu <i>Run</i> : call typesetter, view document, check document, ...</h3>
-									<p>Run the typesetter or check or syntax. In case of errors the quickfix window will open to show the list of errors.</p>
+									<p>Run the typesetter using <b>save + run typesetter</b> or the map &nbsp;<b>&#769;rr</b>.
+									In case of errors the quickfix window will open to show the list of errors.</p>
+									<p>The created documents can then be display, for example using <b>view PDF</b>.</p>
+									<p>Similarly, MakeIndex and BibTeX can be run from inside Vim.
+									A combination of map invocations like &nbsp;<b>&#769;rr</b> &nbsp;<b>&#769;rbi</b> &nbsp;<b>&#769;rr</b> &nbsp;<b>&#769;rr</b> &nbsp;<b>&#769;rpdf</b>
+									will run the typesetter, then BibTeX, then compile the entire document and open the resulting PDF.</p>
+									<hr>
+									<p>All the executable can be configured in your <i>.vimrc</i>, for example:</p>
+									<pre>
+<span class="keyword">let</span> g:Latex_Pdflatex   = 'pdflatex -src-specials -file-line-error -interaction=nonstopmode'
+<span class="keyword">let</span> g:Latex_PdfViewer  = 'evince'
+<span class="keyword">let</span> g:Latex_Typesetter = 'pdflatex'   <span class="comment">" is one of 'pdflatex', 'pdftex', 'latex', or 'tex'</span> </pre>
+									<p>They are set to sensible defaults, but you might want to choose your favorite typesetter,
+									see <a target=_blank href="doc/latexsupport.html#latexsupport-custom-variables">:help latexsupport-custom-variables</a> for more details.</p>
 								</td>
 								<td>
 									<a href="latexsupport/window_run_error.png"><img class="preview_image" src="latexsupport/window_run_error.png"></a><br>
@@ -331,7 +352,7 @@
 		<!-- ###################################################################################-->
 		<!-- ################################## FOOTER #########################################-->
 		<!-- ###################################################################################-->
-		<p>Page updated: December 30 2015 &nbsp;&nbsp;/&nbsp;&nbsp;
+		<p>Page updated: December 31 2015 &nbsp;&nbsp;/&nbsp;&nbsp;
 		Mail to: <a href="mailto:wolfgang-mehner@web.de">Wolfgang Mehner</a></p>
 	</body>
 </html>
