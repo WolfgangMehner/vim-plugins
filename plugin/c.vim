@@ -149,7 +149,7 @@ else
 	"
 endif
 "
-let s:C_AdditionalTemplates   = []
+let s:C_AdditionalTemplates   = mmtemplates#config#GetFt ( 'c' )
 let s:C_CodeSnippets  				= s:plugin_dir.'/c-support/codesnippets/'
 let s:C_IndentErrorLog				= $HOME.'/.indent.errorlog'
 "
@@ -223,7 +223,6 @@ let s:C_MenusVisible          = 'no'		" state variable controlling the C-menus
 "
 "  Look for global variables (if any), to override the defaults.
 "
-call s:C_CheckGlobal('C_AdditionalTemplates  ')
 call s:C_CheckGlobal('C_CodeCheckExeName     ')
 call s:C_CheckGlobal('C_CodeCheckOptions     ')
 call s:C_CheckGlobal('C_CodeSnippets         ')
@@ -2399,7 +2398,6 @@ function! s:C_RereadTemplates ()
 	call mmtemplates#core#Resource ( g:C_Templates, 'set', 'property', 'Templates::Wizard::FileCustomWithPersonal', s:plugin_dir.'/c-support/rc/custom_with_personal.templates' )
 	call mmtemplates#core#Resource ( g:C_Templates, 'set', 'property', 'Templates::Wizard::FilePersonal',           s:plugin_dir.'/c-support/rc/personal.templates' )
 	call mmtemplates#core#Resource ( g:C_Templates, 'set', 'property', 'Templates::Wizard::CustomFileVariable',     'g:C_CustomTemplateFile' )
-	call mmtemplates#core#Resource ( g:C_Templates, 'set', 'property', 'Templates::Wizard::AddFileListVariable',    'g:C_AdditionalTemplates' )
 	"
 	" maps: special operations
 	call mmtemplates#core#Resource ( g:C_Templates, 'set', 'property', 'Templates::RereadTemplates::Map', 'ntr' )

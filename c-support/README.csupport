@@ -1,4 +1,4 @@
-README for c.vim (Version 6.2pre) / December 14 2015
+README for c.vim (Version 6.2pre) / January 02 2016
 
   *  DESCRIPTION
   *  INSTALLATION
@@ -179,7 +179,7 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
 ================================================================================
   RELEASE NOTES FOR VERSION 6.2pre
 ================================================================================
-- Added 'g:C_CustomTemplateFile' and 'g:C_AdditionalTemplates'.
+- Added 'g:C_CustomTemplateFile'.
 - Added template personalization file and setup wizard.
 - Removed unused 'g:C_GuiTemplateBrowser'.
 - Change 'Run -> link' and 'Run -> run', do not produce object file anymore.

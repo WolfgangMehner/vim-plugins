@@ -1,4 +1,4 @@
-*csupport.txt*                  C/C++ Support                    Dec 26 2015
+*csupport.txt*                  C/C++ Support                    Jan 02 2016
 
 C/C++ Support                                           *c-support* *csupport*
                             Plugin version 6.2pre
@@ -1159,17 +1159,14 @@ respect the column set by 'Comments->set end-of-line com. col' (see
 
 1.10.1  ENABLING THE MENU                            *csupport-doxygen-enable*
 
-The 'Doxygen' submenu is disabled by default. To enable it, the template
-library has to be modified. In case of a local installation (the default),
-choose:
-  C/C++ -> Snippets -> edit local templates
-and for a global installation:
-  C/C++ -> Snippets -> edit global templates
-Open the main template file 'Templates' and uncomment the line >
-  §IncludeFile( 'doxygen.template' )
-by removing the leading '§' >
-  IncludeFile( 'doxygen.template' )
-After a restart of the editor, the 'Doxygen' menu will appear.
+The 'Doxygen' submenu is disabled by default. To enable it, the Doxygen
+templates have to be added to the template library. Find out the path where
+the plug-in is installed (<PATH_TO_PLUG>/plugin/c.vim) and add this line to
+the .vimrc: >
+  call mmtemplates#config#Add ( 'C', '<PATH_TO_PLUG>/c-support/templates/doxygen.templates', 'Doxygen', 'ntd' )
+The first parameter adds the file to your C templates, the second is the path.
+The remaining two optional parameters specify the symbolic name for these
+templates and the map to edit them. The map is '\ntd' in this example.
 
 ==============================================================================
 2.  USAGE WITHOUT GUI  (Vim)                              *csupport-usage-vim*
@@ -1438,7 +1435,6 @@ Several global variables are checked by the script to customize it:
  ----------------------------------------------------------------------------
  GLOBAL VARIABLE           DEFAULT VALUE                    TAG (see below)
  ----------------------------------------------------------------------------
- g:C_AdditionalTemplates    []
  g:C_CExtension             'c'
  g:C_CFlags                 '-Wall -g -O0 -c'
  g:C_CodeCheckExeName       'check'
@@ -1489,7 +1485,6 @@ The variable plugin_dir will automatically be set to one of the following values
  ----------------------------------------------------------------------------
  GLOBAL VARIABLE           SHORT EXPLANATION
  ----------------------------------------------------------------------------
- g:C_AdditionalTemplates   : sets additional template files (see|csupport-templates|)
  g:C_CCompiler             : The name of the C compiler.
  g:C_CExtension            : Extension of C files. Everything else is C++.
  g:C_CFlags                : Compiler flags used for a compilation.
