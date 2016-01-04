@@ -12,7 +12,7 @@
 "       Version:  see variable g:Templates_Version below
 "       Created:  30.08.2011
 "      Revision:  30.09.2015
-"       License:  Copyright (c) 2012-2015, Wolfgang Mehner
+"       License:  Copyright (c) 2012-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -219,14 +219,16 @@ else
 endif
 "
 " user configurable settings
-let s:Templates_MapInUseWarn = 'yes'
-let s:Templates_TemplateBrowser = 'explore'
+let s:Templates_OverwriteWarning = 'no'
+let s:Templates_MapInUseWarn     = 'yes'
+let s:Templates_TemplateBrowser  = 'explore'
 "
 let s:Templates_PersonalizationFile = 'templates/personal.template*'
 let s:Templates_UsePersonalizationFile = 'yes'
 "
 let s:Templates_AllSettings = {}
 "
+call s:GetGlobalSetting ( 'Templates_OverwriteWarning', 'bin' )
 call s:GetGlobalSetting ( 'Templates_MapInUseWarn', 'bin' )
 call s:GetGlobalSetting ( 'Templates_TemplateBrowser' )
 call s:GetGlobalSetting ( 'Templates_PersonalizationFile' )
@@ -1905,7 +1907,7 @@ function! mmtemplates#core#ReadTemplates ( library, ... )
 				\ 'filetypes_stack' : [],
 				\ 'files_visited'   : {},
 				\
-				\ 'overwrite_warning' : 0,
+				\ 'overwrite_warning' : s:Templates_OverwriteWarning == 'yes',
 				\ }
 	"
 	if s:library.interface >= 1000000

@@ -1,4 +1,4 @@
-*templatesupport.txt*         MM Template Support                 July 19 2015
+*templatesupport.txt*         MM Template Support                  Jan 04 2016
 
 MM Template Support                                        *template-support*
 
@@ -1377,6 +1377,8 @@ session. The variables can be set in the .vimrc file.
 
   Variable                    Default     Description and further information
  ----------------------------------------------------------------------------
+  |g:Templates_OverwriteWarning|'no'        whether to print a warning when
+                                          a template is overwritten
   |g:Templates_MapInUseWarn|    'yes'       whether to print a warning when
                                           maps would overwrite existing maps
   |g:Templates_TemplateBrowser| 'explore'   how to browse template files
@@ -1399,6 +1401,12 @@ the Windows defaults are as follows:
   |g:Templates_InternetBrowserExec|    - C:\Program Files\Mozilla Firefox\
                                        firefox.exe
 
+------------------------------------------------------------------------------
+                                                *g:Templates_OverwriteWarning*
+Whenever a template is overwritten, a warning can be printed. This warning is
+disable by default. It can be enabled by adding this setting to the ".vimrc": >
+  let g:Templates_OverwriteWarning = 'yes'
+<
 ------------------------------------------------------------------------------
                                                     *g:Templates_MapInUseWarn*
 Whenever a map configured in a template library would overwrite a map which is
@@ -2867,6 +2875,8 @@ D.  CHANGE LOG                                   *template-support-change-log*
 - Change: Inserting templates in visual mode does not overwrite the unnamed
   register anymore.
 - Fix: Map creation could fail after reloading the template library.
+- Add: User setting |g:Templates_OverwriteWarning| to configure warnings in
+  case a template is overwritten.
 - Add: User setting |g:Templates_TemplateBrowser| to configure the browser
   used for editing templates.
 - Add: User settings |g:Templates_PersonalizationFile| and
