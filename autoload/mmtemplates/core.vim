@@ -42,7 +42,7 @@ if &cp || ( exists('g:Templates_Version') && g:Templates_Version != 'searching' 
 	finish
 endif
 "
-let s:Templates_Version = '1.0alpha'     " version number of this script; do not change
+let s:Templates_Version = '1.0beta'     " version number of this script; do not change
 "
 "----------------------------------------------------------------------
 "  --- Find Newest Version ---   {{{2
@@ -258,12 +258,20 @@ let g:CheckedFiletypes = {}
 "
 let s:StandardMacros = {
 			\ 'BASENAME'       : '',
-			\ 'DATE'           : '%x',
 			\ 'FILENAME'       : '',
 			\ 'PATH'           : '',
 			\ 'SUFFIX'         : '',
+			\
+			\ 'DATE'           : '%x',
+			\ 'DATE_PRETTY'    : '%B %d %Y',
+			\ 'DATE_PRETTY1'   : '%B %d %Y',
+			\ 'DATE_PRETTY2'   : '%b %d %Y',
+			\ 'DATE_PRETTY3'   : '%x',
 			\ 'TIME'           : '%X',
+			\ 'TIME_PRETTY'    : '%X',
 			\ 'YEAR'           : '%Y',
+			\ 'YEAR_PRETTY'    : '%Y',
+			\ 'TIME_LOCALE'    : '',
 			\ }
 "
 "----------------------------------------------------------------------
@@ -1421,7 +1429,7 @@ endfunction    " ----------  end of function s:InterfaceVersion  ----------
 function! s:SetFormat ( name, replacement )
 	"
 	" check for valid name
-	if a:name !~ 'TIME\|DATE\|YEAR'
+	if a:name !~ '^\%(TIME.*\|DATE.*\|YEAR.*\)'
 		call s:ErrorMsg ( 'Can not set the format of: '.a:name )
 		return
 	endif
@@ -3314,7 +3322,45 @@ endfunction    " ----------  end of function s:PrepareTemplate  ----------
 "----------------------------------------------------------------------
 " === Insert Templates: Auxiliary Functions ===   {{{1
 "----------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:RenewStdMacros : Renew the standard macros.   {{{2
 "
+" Parameters:
+"   to_list - <+DESCRIPTION+> (<+TYPE+>)
+"   from_list - <+DESCRIPTION+> (<+TYPE+>)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:RenewStdMacros ( to_list, from_list )
+
+	let a:to_list[ 'BASENAME' ] = expand( '%:t:r' )
+	let a:to_list[ 'FILENAME' ] = expand( '%:t'   )
+	let a:to_list[ 'PATH'     ] = expand( '%:p:h' )
+	let a:to_list[ 'SUFFIX'   ] = expand( '%:e'   )
+
+	if a:from_list[ 'TIME_LOCALE' ] != ''
+		let save_time_lang = v:lc_time
+		silent exe 'language time '.a:from_list[ 'TIME_LOCALE' ]
+	endif
+
+	let a:to_list[ 'DATE' ]          = strftime( a:from_list[ 'DATE' ] )
+	let a:to_list[ 'DATE_PRETTY' ]   = strftime( a:from_list[ 'DATE_PRETTY' ] )
+	let a:to_list[ 'DATE_PRETTY1' ]  = strftime( a:from_list[ 'DATE_PRETTY1' ] )
+	let a:to_list[ 'DATE_PRETTY2' ]  = strftime( a:from_list[ 'DATE_PRETTY2' ] )
+	let a:to_list[ 'DATE_PRETTY3' ]  = strftime( a:from_list[ 'DATE_PRETTY3' ] )
+	let a:to_list[ 'TIME' ]          = strftime( a:from_list[ 'TIME' ] )
+	let a:to_list[ 'TIME_PRETTY' ]   = strftime( a:from_list[ 'TIME_PRETTY' ] )
+	let a:to_list[ 'YEAR' ]          = strftime( a:from_list[ 'YEAR' ] )
+	let a:to_list[ 'YEAR_PRETTY' ]   = strftime( a:from_list[ 'YEAR_PRETTY' ] )
+
+	if a:from_list[ 'TIME_LOCALE' ] != ''
+		silent exe 'language time '.save_time_lang
+	endif
+
+endfunction    " ----------  end of function s:RenewStdMacros  ----------
+
 "----------------------------------------------------------------------
 " s:InsertIntoBuffer : Insert a text into the buffer.   {{{2
 " (thanks to Fritz Mehner)
@@ -3371,6 +3417,12 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 				:join!
 				let indentation = 0
 			elseif placement == 'insert'
+
+				" set textwidth to zero to disable auto-wrapping of lines,
+				" compare 'formatoptions'
+				let save_textwidth = &l:textwidth
+				let &l:textwidth = 0
+
 				let text = text[ 0: -2 ]  " remove trailing '\n'
 				let currentline = getline( "." )
 				let pos1 = line(".")
@@ -3380,10 +3432,13 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 				else
 					exe 'normal! a'.text
 				endif
+
 				" reformat only multi-line inserts and previously empty lines
 				if pos1 == pos2 && currentline != ''
 					let indentation = 0
 				endif
+
+				let &l:textwidth = save_textwidth
 			endif
 			"
 		else
@@ -3423,14 +3478,15 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 		" part0 and part1 can consist of several lines
 		"
 		if placement == 'insert'
-			" windows:  register @* does not work
-			" solution: recover area of the visual mode and yank,
-			"           puts the selected area into the buffer @"
 			let pos1 = line("'<")
 			let pos2 = line("'>") + len(split( text, '\n' )) - 1
-			let repl = escape ( part[0].s:GetVisualArea().part[1], '\&~' )
 			" substitute the selected area (using the '< and '> marks)
-			exe ':s/\%''<.*\%''>./'.repl.'/'
+			" - insert the second part first, such that the line numbers are still
+			"   correct
+			" - the mark '> is positioned strangely, so we have to include one
+			"   character from the buffer in the pattern
+			exe ':'.pos2.'s/\%''>.\?/&'.escape ( part[1], '/\&~' ).'/'
+			exe ':'.pos1.'s/\%''</'.    escape ( part[0], '/\&~' ).'/'
 			let indentation = 0
 		elseif placement == 'below'
 			silent '<put! = part[0]
@@ -3510,6 +3566,8 @@ endfunction    " ----------  end of function s:PositionCursor  ----------
 function! s:HighlightJumpTargets ( regex )
 	exe 'match Search /'.a:regex.'/'
 endfunction    " ----------  end of function s:HighlightJumpTargets  ----------
+" }}}2
+"----------------------------------------------------------------------
 "
 "----------------------------------------------------------------------
 " mmtemplates#core#InsertTemplate : Insert a template.   {{{1
@@ -3551,14 +3609,7 @@ function! mmtemplates#core#InsertTemplate ( library, t_name, ... ) range
 	let regex = s:library.regex_template
 	"
 	" renew the predefined macros
-	let s:t_runtime.macros[ 'BASENAME' ] = expand( '%:t:r' )
-	let s:t_runtime.macros[ 'FILENAME' ] = expand( '%:t'   )
-	let s:t_runtime.macros[ 'PATH'     ] = expand( '%:p:h' )
-	let s:t_runtime.macros[ 'SUFFIX'   ] = expand( '%:e'   )
-	"
-	let s:t_runtime.macros[ 'DATE' ]     = strftime( s:library.macros[ 'DATE' ] )
-	let s:t_runtime.macros[ 'TIME' ]     = strftime( s:library.macros[ 'TIME' ] )
-	let s:t_runtime.macros[ 'YEAR' ]     = strftime( s:library.macros[ 'YEAR' ] )
+	call s:RenewStdMacros ( s:t_runtime.macros, s:library.macros )
 	"
 	" handle folds internally (and save the state)
 	if &foldenable
@@ -4548,7 +4599,7 @@ endfunction    " ----------  end of function mmtemplates#core#ChooseStyle  -----
 "
 function! mmtemplates#core#Resource ( library, mode, ... )
 	"
-	" TODO mode 'special' for |DATE|, |TIME| and |year|
+	" TODO mode 'special' for |DATE|, |TIME| and |YEAR|
 	"
 	" ==================================================
 	"  parameters
@@ -4794,14 +4845,7 @@ function! mmtemplates#core#ExpandText ( library, text )
 	"
 	" renew the predefined macros
 	let m_local = {}
-	let m_local[ 'BASENAME' ] = expand( '%:t:r' )
-	let m_local[ 'FILENAME' ] = expand( '%:t'   )
-	let m_local[ 'PATH'     ] = expand( '%:p:h' )
-	let m_local[ 'SUFFIX'   ] = expand( '%:e'   )
-	"
-	let m_local[ 'DATE' ]     = strftime( t_lib.macros[ 'DATE' ] )
-	let m_local[ 'TIME' ]     = strftime( t_lib.macros[ 'TIME' ] )
-	let m_local[ 'YEAR' ]     = strftime( t_lib.macros[ 'YEAR' ] )
+	call s:RenewStdMacros ( m_local, t_lib.macros )
 	"
 	" ==================================================
 	"  do the job

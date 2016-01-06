@@ -1,8 +1,8 @@
-*templatesupport.txt*         MM Template Support                  Jan 04 2016
+*templatesupport.txt*         MM Template Support                  Jan 06 2016
 
 MM Template Support                                        *template-support*
 
-                            Plug-in version 1.0alpha
+                            Plug-in version 1.0beta
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -468,17 +468,24 @@ The replacements for various macros are handled automatically by the template
 support. Mostly, they will help with the basic documentation of the file: What
 was edited and when?
 
-	*|PATH|*     : the path of the current file
-	*|FILENAME|* : the name of the file
-	*|BASENAME|* : the name of the file without the suffix
-	*|SUFFIX|*   : the suffix of the file
+  *|PATH|*     : the path of the current file
+  *|FILENAME|* : the name of the file
+  *|BASENAME|* : the name of the file without the suffix
+  *|SUFFIX|*   : the suffix of the file
 
 Except for using flags, the user has no further influence on the replacements
 of these macros, they can not be set via SetMacro().
 
-	*|TIME|*     : the current time
-	*|DATE|*     : the current date
-	*|YEAR|*     : the current year
+  *|TIME|*     : the current time
+  *|DATE|*     : the current date
+  *|YEAR|*     : the current year
+
+Further macros can be used to print "pretty" dates in READMEs and other
+documentation.
+
+  *|DATE_PRETTY|*  *|DATE_PRETTY1|*
+  *|DATE_PRETTY2|* *|DATE_PRETTY3|*
+  *|TIME_PRETTY|*  *|YEAR_PRETTY|*
 
 The format of the inserted dates and times can be set via SetFormat (see
 |template-support-SetFormat|).
@@ -2045,7 +2052,7 @@ For "add" and "set" 'rval' is undefined.
 Macros:
 
 Setting the special macros "DATE", "TIME", and "YEAR" changes the format of
-the date and time. they use the same format as the function |strftime()|.
+the date and time. They use the same format as the function |strftime()|.
 Setting "BASENAME", "FILENAME", "PATH" and "SUFFIX" has no effect.
 
 Properties:
@@ -2490,13 +2497,27 @@ Set the format of 'item' to 'format':
 
 	SetFormat ( item, format ) ~
 
-This changes the way the macros "TIME", "DATE" and "YEAR" are replaced. It
-sets the format of the date and time. They use the same format as the function
-|strftime()|.
+This changes the way the time and date macros are formatted:
+  DATE  DATE_PRETTY  DATE_PRETTY1
+  TIME  TIME_PRETTY  DATE_PRETTY2
+  YEAR  YEAR_PRETTY  DATE_PRETTY3
+They use the same format as the function |strftime()|, also see the manpage of
+strftime(3).
+
+The locale can be set by calling the function with "TIME_LOCALE": >
+	SetFormat ( "TIME_LOCALE", "fr_FR" )
+Under Linux, run 'locale -a' to see all locales your system supports, compare
+the manpage of locale(1) and |:language|.
 
 Example: >
+
+Change the format of *|TIME|* to only hours and minutes: >
 	SetFormat ( "TIME", "%H:%M" )
 The macro *|TIME|* will now be replaced by something like 10:24.
+
+Change the locale to Spanish: >
+	SetFormat ( "TIME_LOCALE", "es_ES" )
+The names of the days, month, ... will now be in Spanish.
 
 ------------------------------------------------------------------------------
                                                  *template-support-SetMacro()*
@@ -2846,7 +2867,7 @@ D.  CHANGE LOG                                   *template-support-change-log*
 ==============================================================================
 
 ------------------------------------------------------------------------------
-  RELEASE NOTES FOR VERSION 1.0alpha
+  RELEASE NOTES FOR VERSION 1.0beta
 ------------------------------------------------------------------------------
 
   **  Added a system for introducing changes to the template library.     **
@@ -2860,6 +2881,7 @@ D.  CHANGE LOG                                   *template-support-change-log*
   for that filetype.
 - Add: Format specifiers for macros.
 - Add: New "replacement cursor" tags <RCURSOR> and {RCURSOR}.
+- Add: New date and time macros *|DATE_PRETTY|* , *|TIME_PRETTY|* , ...
 - Add: Left-right separators *|<<>>|* .
 - Add: New jump tags [+NAME+] and [-NAME-] for optional parameters.
 - Add: New map <ctrl-d> to delete optional jump tags [+NAME+] and [-NAME-].
