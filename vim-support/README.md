@@ -23,7 +23,7 @@ This plugin can be used with Vim version 7.x.
 
 INSTALLATION
 ================================================================================
-  [sec_install]: #INSTALLATION
+  [sec_install]: #installation
 
 A system-wide installation for all users can also be done. This will have
 further effects on how the plug-in works. For a step-by-step instruction, as
@@ -33,7 +33,7 @@ well as an explanation of the other consequences, please see the help file
       :help vimsupport-system-wide
 
 
-(1)  LINUX
+(1) LINUX
 ----------------------------------------------------------------------
 
 The subdirectories in the zip archive vim-support.zip mirror the directory
@@ -41,7 +41,7 @@ structure which is needed below the local installation directory $HOME/.vim/
 (find the value of $HOME with `:echo $HOME` from inside Vim).
 
 (1.0) Save the template files in '$HOME/.vim/vim-support/templates/Templates' if
-    you have changed any of them.
+   you have changed any of them.
 
 (1.1) Copy the zip archive vim-support.zip to $HOME/.vim and run
 
@@ -69,10 +69,10 @@ structure which is needed below the local installation directory $HOME/.vim/
    The file is read by all plug-ins supporting this feature to get your personal
    details. Here is the minimal personalization (my settings as an example):
 
-       SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
-       SetMacro( 'AUTHORREF',   'fgm' )
-       SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
-       SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
+      SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
+      SetMacro( 'AUTHORREF',   'fgm' )
+      SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
+      SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 
    Use the file $HOME/.vim/templates/vim.templates to customize or add to your
    Vim template library. It can also be set up via the wizard.
@@ -90,12 +90,12 @@ structure which is needed below the local installation directory $HOME/.vim/
    are documented.
 
 
-(2)  WINDOWS
+(2) WINDOWS
 ----------------------------------------------------------------------
 
 The subdirectories in the zip archive vim-support.zip mirror the directory
-structure which is needed below the local installation directory
-$HOME/vimfiles/ (find the value of $HOME with `:echo $HOME` from inside Vim).
+structure which is needed below the local installation directory $HOME/vimfiles/
+(find the value of $HOME with `:echo $HOME` from inside Vim).
 
 (2.0) Save the template files in '$HOME/vimfiles/vim-support/templates/Templates'
    if you have changed any of them.
@@ -126,10 +126,10 @@ $HOME/vimfiles/ (find the value of $HOME with `:echo $HOME` from inside Vim).
    The file is read by all plug-ins supporting this feature to get your personal
    details. Here is the minimal personalization (my settings as an example):
 
-       SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
-       SetMacro( 'AUTHORREF',   'fgm' )
-       SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
-       SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
+      SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
+      SetMacro( 'AUTHORREF',   'fgm' )
+      SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
+      SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 
    Use the file $HOME/vimfiles/templates/vim.templates to customize or add to
    your Vim template library. It can also be set up via the wizard.
@@ -156,7 +156,7 @@ There are a lot of features and options which can be used and influenced:
   *  using and managing personal code snippets
   *  using additional plugins
 
-Look at the VimScript Support help with
+Look at the VimScript Support help with:
 
       :help vimsupport
 
@@ -167,7 +167,7 @@ Look at the VimScript Support help with
                | +-------------------------------------------+ |
                +-----------------------------------------------+
 
-Any problems ? See the TROUBLESHOOTING section at the end of the help file
+Any problems? See the TROUBLESHOOTING section at the end of the help file
 'doc/vimsupport.txt'.
 
 
@@ -175,7 +175,7 @@ Any problems ? See the TROUBLESHOOTING section at the end of the help file
 
 RELEASE NOTES
 ================================================================================
-  [sec_release]: #RELEASE.NOTES
+  [sec_release]: #release-notes
 
 RELEASE NOTES FOR VERSION 2.4pre
 ----------------------------------------------------------------------
@@ -194,7 +194,7 @@ RELEASE NOTES FOR OLDER VERSIONS
 
 FILES
 ================================================================================
-  [sec_files]: #FILES
+  [sec_files]: #files
 
     README.md
                         This file.
@@ -203,7 +203,7 @@ FILES
                         The template system.
 
     doc/vimsupport.txt
-                        The help file for the vim support.
+                        The help file for the Vim Support.
     doc/templatesupport.txt
                         The help file for the template system.
 
@@ -219,7 +219,8 @@ FILES
                         Several dependent template files.
 
 ___The following files and extensions are for convenience only.___
-___vim-support.vim will work without them:___
+___vim-support.vim will work without them.___
+___The settings are explained in the files themselves.___
 
     ftdetect/template.vim
     ftplugin/template.vim
@@ -228,18 +229,18 @@ ___vim-support.vim will work without them:___
 
     vim-support/doc/vim-hotkeys.pdf
                         Reference card for the key mappings. The mappings can
-                        also be used with the non-GUI Vim, where the menus are
-                        not available.
+                        be used with the non-GUI Vim, where the menus are not
+                        available.
     vim-support/doc/ChangeLog
                         The change log.
 
     vim-support/rc/customization.gvimrc
-                        Additional settings I use in  .gvimrc:
-                          hot keys, mouse settings, ...
+                        Additional settings for use in .gvimrc:
+                          hot keys, mouse settings, fonts, ...
                         The file is commented. Append it to your .gvimrc if you
                         like.
     vim-support/rc/customization.vimrc
-                        Additional settings I use in  .vimrc:
+                        Additional settings for use in .vimrc:
                           incremental search, tabstop, hot keys,
                           font, use of dictionaries, ...
                         The file is commented. Append it to your .vimrc if you
@@ -254,7 +255,7 @@ ___vim-support.vim will work without them:___
 
 CREDITS
 ================================================================================
-  [sec_credits]: #CREDITS
+  [sec_credits]: #credits
 
 Fritz Mehner thanks:
 ----------------------------------------------------------------------
