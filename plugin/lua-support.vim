@@ -12,7 +12,7 @@
 "       Version:  see variable g:Lua_Version below
 "       Created:  26.03.2014
 "      Revision:  30.12.2014
-"       License:  Copyright (c) 2014-2015, Wolfgang Mehner
+"       License:  Copyright (c) 2014-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -283,7 +283,7 @@ let s:Lua_CommentLabel          = "BlockCommentNo_"
 let s:Lua_SnippetDir            = s:plugin_dir.'/lua-support/codesnippets/'
 let s:Lua_SnippetBrowser        = 'gui'
 let s:Lua_UseToolbox            = 'yes'
-let s:Lua_AdditionalTemplates   = []
+let s:Lua_AdditionalTemplates   = mmtemplates#config#GetFt ( 'lua' )
 "
 let s:Xterm_Executable          = 'xterm'
 "
@@ -316,7 +316,6 @@ call s:GetGlobalSetting ( 'Lua_LocalTemplateFile',  'Lua_LclTemplateFile' )
 call s:GetGlobalSetting ( 'Lua_GlobalTemplateFile' )
 call s:GetGlobalSetting ( 'Lua_LocalTemplateFile' )
 call s:GetGlobalSetting ( 'Lua_CustomTemplateFile' )
-call s:GetGlobalSetting ( 'Lua_AdditionalTemplates' )
 call s:GetGlobalSetting ( 'Lua_LoadMenus' )
 call s:GetGlobalSetting ( 'Lua_RootMenu' )
 call s:GetGlobalSetting ( 'Lua_OutputMethod' )
@@ -1301,7 +1300,6 @@ function! s:SetupTemplates()
 	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::Wizard::FileCustomWithPersonal', s:plugin_dir.'/lua-support/rc/custom_with_personal.templates' )
 	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::Wizard::FilePersonal',           s:plugin_dir.'/lua-support/rc/personal.templates' )
 	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::Wizard::CustomFileVariable',     'g:Lua_CustomTemplateFile' )
-	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::Wizard::AddFileListVariable',    'g:Lua_AdditionalTemplates' )
 	"
 	" maps: special operations
 	call mmtemplates#core#Resource ( g:Lua_Templates, 'set', 'property', 'Templates::RereadTemplates::Map', 'ntr' )
@@ -1335,13 +1333,13 @@ function! s:SetupTemplates()
 		call mmtemplates#core#AddCustomTemplateFiles ( g:Lua_Templates, s:Lua_AdditionalTemplates, 'g:Lua_AdditionalTemplates' )
 	endif
 	"
-	" custom templates (optional, existence of file checked by template engine)
-	call mmtemplates#core#ReadTemplates ( g:Lua_Templates, 'load', s:Lua_CustomTemplateFile,
-				\ 'name', 'custom', 'map', 'ntc', 'optional' )
-	"
 	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)
 	call mmtemplates#core#ReadTemplates ( g:Lua_Templates, 'personalization',
 				\ 'name', 'personal', 'map', 'ntp' )
+	"
+	" custom templates (optional, existence of file checked by template engine)
+	call mmtemplates#core#ReadTemplates ( g:Lua_Templates, 'load', s:Lua_CustomTemplateFile,
+				\ 'name', 'custom', 'map', 'ntc', 'optional' )
 	"
 endfunction    " ----------  end of function s:SetupTemplates  ----------
 "

@@ -1,8 +1,8 @@
-*luasupport.txt*                 Lua Support                       Apr 25 2015
+*luasupport.txt*                 Lua Support                       Jan 08 2016
 
 Lua Support                                          *lua-support* *luasupport*
 
-                            Plug-in version 1.0pre
+                             Plug-in version 1.0pre
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -589,7 +589,6 @@ set in the .vimrc file.
   |g:Lua_SnippetBrowser|      'gui'         browser to select code snippets
   |g:Lua_LocalTemplateFile|   (see below)   the local top-level template file
   |g:Lua_GlobalTemplateFile|  (see below)   the global top-level template file
-  |g:Lua_AdditionalTemplates| []            further template files
   |g:Lua_CustomTemplateFile|  (see below)   the optional custom template file
   |g:Templates_PersonalizationFile|
                             (see below)   the personalization template file
@@ -836,7 +835,7 @@ or on the command line by setting: >
 ------------------------------------------------------------------------------
                         *g:Lua_LclTemplateFile*    *g:Lua_GlbTemplateFile*
                         *g:Lua_LocalTemplateFile*  *g:Lua_GlobalTemplateFile*
-                        *g:Lua_CustomTemplateFile* *g:Lua_AdditionalTemplates*
+                        *g:Lua_CustomTemplateFile*
 The variables g:Lua_LocalTemplateFile and g:Lua_GlobalTemplateFile set the
 locations and names of the local and global template files, respectively.
 The default for the local and global template files depend on the type of the
@@ -876,16 +875,13 @@ For configuring the personalization file, see |g:Templates_PersonalizationFile|.
 
 Using the custom and personalization template files will give the average
 user sufficient options for customization. Adding even more template files is
-possible though, using the setting "g:Lua_AdditionalTemplates". Additional
-template files are given as a list of lists, each of which describes a custom
-template file: >
-  g:Lua_AdditionalTemplates = []
-  call add ( g:Lua_AdditionalTemplates,
-      \ [ filename, symbolic_name, edit_map ] )
-The file 'filename' will be loaded. It is associated with the name
-'symbolic_name'. The map 'edit_map' can be used to open the file for editing.
-The second and third list entry are optional and will be replaced by default
-values if missing.
+possible though, using the function "mmtemplates#config#Add". Each call to the
+function configures an additional template file: >
+  call mmtemplates#config#Add ( "lua", filename, symbolic_name, edit_map )
+For the filetype "lua", the file 'filename' will be loaded. It is associated
+with the name 'symbolic_name'. The map 'edit_map' can be used to open the file
+for editing. The third and fourth argument are optional and will be replaced
+by default values if missing.
 
 
 Example:
