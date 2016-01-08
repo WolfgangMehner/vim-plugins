@@ -40,6 +40,10 @@
 |DATE|<CURSOR>
 == Comments.date+time == insert, map:ct, sc:t ==
 |DATE| |TIME|<CURSOR>
+== Comments.date, pretty == insert, map:cpd, sc:p ==
+|DATE_PRETTY1|<CURSOR>
+== Comments.date, pretty short == insert, map:cps, sc:p ==
+|DATE_PRETTY2|<CURSOR>
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------

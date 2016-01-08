@@ -22,6 +22,12 @@ SetFormat( 'DATE', '%x' )
 SetFormat( 'TIME', '%X' )
 SetFormat( 'YEAR', '%Y' )
 
+§ pretty dates:
+§ - DATE_PRETTY1 is a nicer date formatting, such as "January 06 2016"
+§ - DATE_PRETTY2 is a shorter version, such as "Jan 06 2016"
+SetFormat( 'DATE_PRETTY1', '%B %d %Y' )
+SetFormat( 'DATE_PRETTY2', '%b %d %Y' )
+
 SetStyle( 'default' )
 
 § =============================================================

@@ -8,10 +8,14 @@
 "                  variables and builtins.
 " 
 "   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
+"
+"        Author:  Wolfgang Mehner <wolfgang-mehner@web.de>
+"                 (formerly Fritz Mehner <mehner.fritz@web.de>)
+"
 "       Version:  see variable g:VimSupportVersion below
-"       Created:  14.01.2012 10:49
-"       License:  Copyright (c) 2012-2015, Dr. Fritz Mehner
+"       Created:  14.01.2012
+"       License:  Copyright (c) 2012-2015, Fritz Mehner
+"                 Copyright (c) 2016-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -122,7 +126,7 @@ else
 	"
 endif
 "
-let s:Vim_AdditionalTemplates   = []
+let s:Vim_AdditionalTemplates   = mmtemplates#config#GetFt ( 'vim' )
 let s:Vim_CodeSnippets  				= s:plugin_dir.'/vim-support/codesnippets/'
 "
 "----------------------------------------------------------------------
@@ -150,7 +154,6 @@ call s:GetGlobalSetting ( 'Vim_Printheader' )
 call s:GetGlobalSetting ( 'Vim_LocalTemplateFile' )
 call s:GetGlobalSetting ( 'Vim_GlobalTemplateFile' )
 call s:GetGlobalSetting ( 'Vim_CustomTemplateFile' )
-call s:GetGlobalSetting ( 'Vim_AdditionalTemplates' )
 call s:GetGlobalSetting ( 'Vim_CodeSnippets' )
 call s:GetGlobalSetting ( 'Vim_CreateMenusDelayed' )
 call s:GetGlobalSetting ( 'Vim_LineEndCommColDefault' )
@@ -582,7 +585,6 @@ function! Vim_RereadTemplates ()
 	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Wizard::FileCustomWithPersonal', s:plugin_dir.'/vim-support/rc/custom_with_personal.templates' )
 	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Wizard::FilePersonal',           s:plugin_dir.'/vim-support/rc/personal.templates' )
 	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Wizard::CustomFileVariable',     'g:Vim_CustomTemplateFile' )
-	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Wizard::AddFileListVariable',    'g:Vim_AdditionalTemplates' )
 	"
 	" maps: special operations
 	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::RereadTemplates::Map', 'ntr' )
@@ -595,13 +597,13 @@ function! Vim_RereadTemplates ()
 	"-------------------------------------------------------------------------------
 	" load template library
 	"-------------------------------------------------------------------------------
-	"
+
 	" global templates (global installation only)
 	if s:installation == 'system'
 		call mmtemplates#core#ReadTemplates ( g:Vim_Templates, 'load', s:Vim_GlobalTemplateFile,
 					\ 'name', 'global', 'map', 'ntg' )
 	endif
-	"
+
 	" local templates (optional for global installation)
 	if s:installation == 'system'
 		call mmtemplates#core#ReadTemplates ( g:Vim_Templates, 'load', s:Vim_LocalTemplateFile,
@@ -610,20 +612,20 @@ function! Vim_RereadTemplates ()
 		call mmtemplates#core#ReadTemplates ( g:Vim_Templates, 'load', s:Vim_LocalTemplateFile,
 					\ 'name', 'local', 'map', 'ntl' )
 	endif
-	"
+
 	" additional templates (optional)
 	if ! empty ( s:Vim_AdditionalTemplates )
 		call mmtemplates#core#AddCustomTemplateFiles ( g:Vim_Templates, s:Vim_AdditionalTemplates, 'g:Vim_AdditionalTemplates' )
 	endif
-	"
-	" custom templates (optional, existence of file checked by template engine)
-	call mmtemplates#core#ReadTemplates ( g:Vim_Templates, 'load', s:Vim_CustomTemplateFile,
-				\ 'name', 'custom', 'map', 'ntc', 'optional' )
-	"
+
 	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)
 	call mmtemplates#core#ReadTemplates ( g:Vim_Templates, 'personalization',
 				\ 'name', 'personal', 'map', 'ntp' )
-	"
+
+	" custom templates (optional, existence of file checked by template engine)
+	call mmtemplates#core#ReadTemplates ( g:Vim_Templates, 'load', s:Vim_CustomTemplateFile,
+				\ 'name', 'custom', 'map', 'ntc', 'optional' )
+
 	"-------------------------------------------------------------------------------
 	" further setup
 	"-------------------------------------------------------------------------------
@@ -1055,7 +1057,7 @@ function! Vim_Settings ( verbose )
 					\ .'     load menus / delayed :  "'.s:Vim_LoadMenus.'" / "'.s:Vim_CreateMenusDelayed."\"\n"
 	endif
 	let	txt .= "__________________________________________________________________________\n"
-	let	txt .= " Vim-Support, Version ".g:VimSupportVersion." / Dr.-Ing. Fritz Mehner / mehner@web.de\n\n"
+	let	txt .= " Vim-Support, Version ".g:VimSupportVersion." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
 	"
 	if a:verbose == 2
 		split VimSupport_Settings.txt
