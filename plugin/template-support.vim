@@ -7,10 +7,10 @@
 "   VIM Version:  7.0+
 "        Author:  Wolfgang Mehner, wolfgang-mehner@web.de
 "  Organization:  
-"       Version:  1.0
+"       Version:  see variable g:TemplateSupport_Version below
 "       Created:  27.12.2015
 "      Revision:  ---
-"       License:  Copyright (c) 2015, Wolfgang Mehner
+"       License:  Copyright (c) 2015-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -48,7 +48,7 @@ let g:TemplateSupport_Version= '1.0pre'     " version number of this script; do 
 let s:MSWIN = has("win16") || has("win32")   || has("win64")    || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 
-let s:Templates_RootMenu = '&Tempaltes'         " name of the root menu
+let s:Templates_RootMenu = '&Templates'         " name of the root menu
 
 if ! exists ( 's:MenuVisible' )
 	let s:MenuVisible = 0                         " menus are not visible at the moment
@@ -219,7 +219,10 @@ function! s:CreateMenus ( rec )
 
 	" get the mapleader (correctly escaped)
 	let [ esc_mapl, err ] = mmtemplates#core#Resource ( rec.templates, 'escaped_mapleader' )
-	call mmtemplates#core#CreateMenus ( my_var, my_root, 'sub_menu', '&Comments', 'priority', 500 )
+
+	call mmtemplates#core#CreateMenus ( my_var, my_root, 'sub_menu', '&Comments',          'priority', 500 )
+	call mmtemplates#core#CreateMenus ( my_var, my_root, 'sub_menu', 'Manage\ &Templates', 'priority', 600 )
+	call mmtemplates#core#CreateMenus ( my_var, my_root, 'sub_menu', '&Help',              'priority', 700 )
 
 	"-------------------------------------------------------------------------------
 	" Comments
