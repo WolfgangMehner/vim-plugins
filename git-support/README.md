@@ -13,15 +13,16 @@ like "git status" is written into buffers, and the commit can be manipulated
 from right there. Further commands allow to quickly add the file in the
 current buffer or show its diff.
 Please read the documentation.
-This plug-in can be used with Vim version 7.x .
+
+This plug-in can be used with Vim version 7.x.
 
 
 --------------------------------------------------------------------------------
 
-  INSTALLATION
+INSTALLATION
 ================================================================================
 
-  (1) LINUX
+(1) LINUX
 ----------------------------------------------------------------------
 
 The subdirectories in the zip archive git-support.zip mirror the directory
@@ -29,7 +30,7 @@ structure which is needed below the local installation directory
 
       $HOME/.vim/
 
-(find the value of $HOME with ":echo $HOME" from inside Vim).
+(find the value of $HOME with `:echo $HOME` from inside Vim).
 
 (1.1) Copy the zip archive git-support.zip to $HOME/.vim and run
 
@@ -56,7 +57,7 @@ structure which is needed below the local installation directory
    for your .vimrc and .gvimrc. You may want to use parts of them. The files
    are documented.
 
-  (2) WINDOWS
+(2) WINDOWS
 ----------------------------------------------------------------------
 
 The subdirectories in the zip archive git-support.zip mirror the directory
@@ -64,7 +65,7 @@ structure which is needed below the local installation directory
 
       $HOME/vimfiles/
 
-(find the value of $HOME with ":echo $HOME" from inside Vim).
+(find the value of $HOME with `:echo $HOME` from inside Vim).
 
 (2.1) Copy the zip archive git-support.zip to $HOME/vimfiles and run
 
@@ -75,8 +76,7 @@ structure which is needed below the local installation directory
       :filetype plugin on
 
    This is the minimal content of the file '$HOME/_vimrc'. Create one if there
-   is none or use the file in $HOME/vimfiles/git-support/rc as a starting
-   point.
+   is none or use the file in $HOME/vimfiles/git-support/rc as a starting point.
 
 (2.3) Make the plug-in help accessible by typing the following command on the
    Vim command line:
@@ -95,7 +95,8 @@ structure which is needed below the local installation directory
    for your _vimrc and _gvimrc. You may want to use parts of them. The files
    are documented.
 
-  (3) ADDITIONAL REMARKS
+
+(3) ADDITIONAL REMARKS
 ----------------------------------------------------------------------
 
 There are a lot of features and options which can be used and influenced:
@@ -121,27 +122,28 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 
 --------------------------------------------------------------------------------
 
-  RELEASE NOTES
+RELEASE NOTES
 ================================================================================
 
-  RELEASE NOTES FOR VERSION 0.9.3pre
---------------------------------------------------------------------------------
-- Added: The diff buffer can be use to add/reset chunks, added new maps.
-- Added: Extended command-line completion to handle options for Git commands.
-- Added: New maps for the buffer: log
-- Added: Command :GitEdit to quickly jump to configuration files.
-- Changed: The status buffer can handle renamed files.
-- Improved syntax highlighting.
+RELEASE NOTES FOR VERSION 0.9.3pre
+----------------------------------------------------------------------
+- Add: The diff buffer can be use to add/reset chunks, added new maps.
+- Add: Extended command-line completion to handle options for Git commands.
+- Add: New maps for the buffer: log
+- Add: Command :GitEdit to quickly jump to configuration files.
+- Change: The status buffer can handle renamed files.
+- Improve syntax highlighting.
 - Minor changes.
 
-  RELEASE NOTES FOR OLDER VERSIONS
---------------------------------------------------------------------------------
+
+RELEASE NOTES FOR OLDER VERSIONS
+----------------------------------------------------------------------
 -> see file 'git-support/doc/ChangeLog'
 
 
 --------------------------------------------------------------------------------
 
-  KNOWN ISSUES
+KNOWN ISSUES
 ================================================================================
 
 * Windows: When entered on the Vim command line, commands containing filenames
@@ -157,7 +159,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 
 --------------------------------------------------------------------------------
 
-  FILES
+FILES
 ================================================================================
 
     README.md
@@ -206,7 +208,7 @@ ___The settings are explained in the files themselves.___
 
 --------------------------------------------------------------------------------
 
-  CREDITS
+CREDITS
 ================================================================================
 
 For a complete list of people who made contributions to this plug-in,

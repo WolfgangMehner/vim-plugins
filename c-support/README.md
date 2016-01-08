@@ -38,7 +38,7 @@ The subdirectories in the zip archive c-support.zip mirror the directory
 structure which is needed below the local installation directory $HOME/.vim/
 (find the value of $HOME with `:echo $HOME` from inside Vim).
 
-__1.0__ Save the template files in '$HOME/.vim/c-support/templates/Templates' if
+(1.0) Save the template files in '$HOME/.vim/c-support/templates/Templates' if
    you have changed any of them.
 
 (1.1) Copy the zip archive c-support.zip to $HOME/.vim and run
@@ -103,7 +103,7 @@ __1.0__ Save the template files in '$HOME/.vim/c-support/templates/Templates' if
 
 The subdirectories in the zip archive c-support.zip mirror the directory
 structure which is needed below the local installation directory $HOME/vimfiles/
-(find the value of $HOME with ":echo $HOME" from inside Vim).
+(find the value of $HOME with `:echo $HOME` from inside Vim).
 
 (2.0) Save the template files in '$HOME/vimfiles/c-support/templates/Templates' if
    you have changed any of them.
@@ -280,7 +280,7 @@ ___The settings are explained in the files themselves.___
                         Additional mappings for C++.
     c-support/rc/customization.ctags
                         Additional settings for use in .ctags to enable
-                        navigation through makefiles ans qmake files with the
+                        navigation through makefiles and qmake files with the
                         plug-in taglist.vim.
     c-support/rc/customization.gvimrc
                         Additional settings for use in .gvimrc:
