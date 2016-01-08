@@ -8,10 +8,14 @@
 "                  variables and builtins.
 "
 "   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
+"
+"        Author:  Wolfgang Mehner <wolfgang-mehner@web.de>
+"                 (formerly Fritz Mehner <mehner.fritz@web.de>)
+"
 "       Version:  see variable g:LatexSupportVersion below.
 "       Created:  27.12.2012
-"       License:  Copyright (c) 2012-2015, Dr. Fritz Mehner
+"       License:  Copyright (c) 2012-2015, Fritz Mehner
+"                 Copyright (c) 2016-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -172,7 +176,7 @@ else
 	"
 endif
 "
-let s:Latex_AdditionalTemplates = []
+let s:Latex_AdditionalTemplates = mmtemplates#config#GetFt ( 'latex' )
 let s:Latex_CodeSnippets        = s:plugin_dir.'/latex-support/codesnippets/'
 call s:latex_SetGlobalVariable( 'Latex_CodeSnippets', s:Latex_CodeSnippets )
 "
@@ -207,7 +211,6 @@ let s:Latex_InsertFileProlog			= 'yes'
 " overwrite the mapleader, we should not use use "\" in LaTeX
 call s:latex_SetGlobalVariable ( 'Latex_MapLeader', '´' )
 
-call s:GetGlobalSetting( 'Latex_AdditionalTemplates' )
 call s:GetGlobalSetting( 'Latex_CustomTemplateFile' )
 call s:GetGlobalSetting( 'Latex_CreateMenusDelayed' )
 call s:GetGlobalSetting( 'Latex_DviPdf' )
@@ -590,7 +593,6 @@ function! s:RereadTemplates ()
 	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::Wizard::FileCustomWithPersonal', s:plugin_dir.'/latex-support/rc/custom_with_personal.templates' )
 	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::Wizard::FilePersonal',           s:plugin_dir.'/latex-support/rc/personal.templates' )
 	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::Wizard::CustomFileVariable',     'g:Latex_CustomTemplateFile' )
-	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::Wizard::AddFileListVariable',    'g:Latex_AdditionalTemplates' )
 	"
 	" maps: special operations
 	call mmtemplates#core#Resource ( g:Latex_Templates, 'set', 'property', 'Templates::RereadTemplates::Map', 'ntr' )
@@ -603,13 +605,13 @@ function! s:RereadTemplates ()
 	"-------------------------------------------------------------------------------
 	" load template library
 	"-------------------------------------------------------------------------------
-	"
+
 	" global templates (global installation only)
 	if s:installation == 'system'
 		call mmtemplates#core#ReadTemplates ( g:Latex_Templates, 'load', s:Latex_GlobalTemplateFile,
 					\ 'name', 'global', 'map', 'ntg' )
 	endif
-	"
+
 	" local templates (optional for global installation)
 	if s:installation == 'system'
 		call mmtemplates#core#ReadTemplates ( g:Latex_Templates, 'load', s:Latex_LocalTemplateFile,
@@ -618,20 +620,20 @@ function! s:RereadTemplates ()
 		call mmtemplates#core#ReadTemplates ( g:Latex_Templates, 'load', s:Latex_LocalTemplateFile,
 					\ 'name', 'local', 'map', 'ntl' )
 	endif
-	"
+
 	" additional templates (optional)
 	if ! empty ( s:Latex_AdditionalTemplates )
 		call mmtemplates#core#AddCustomTemplateFiles ( g:Latex_Templates, s:Latex_AdditionalTemplates, 'g:Latex_AdditionalTemplates' )
 	endif
-	"
-	" custom templates (optional, existence of file checked by template engine)
-	call mmtemplates#core#ReadTemplates ( g:Latex_Templates, 'load', s:Latex_CustomTemplateFile,
-				\ 'name', 'custom', 'map', 'ntc', 'optional' )
-	"
+
 	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)
 	call mmtemplates#core#ReadTemplates ( g:Latex_Templates, 'personalization',
 				\ 'name', 'personal', 'map', 'ntp' )
-	"
+
+	" custom templates (optional, existence of file checked by template engine)
+	call mmtemplates#core#ReadTemplates ( g:Latex_Templates, 'load', s:Latex_CustomTemplateFile,
+				\ 'name', 'custom', 'map', 'ntc', 'optional' )
+
 	"-------------------------------------------------------------------------------
 	" further setup
 	"-------------------------------------------------------------------------------
@@ -1305,7 +1307,7 @@ function! Latex_Settings ( verbose )
 	let txt = txt."\n"
 	let txt = txt.'               typesetter :  "'.s:Latex_TypesetterCall[s:Latex_Typesetter]."\"\n"
 	let	txt = txt."__________________________________________________________________________\n"
-	let	txt = txt." LaTeX-Support, Version ".g:LatexSupportVersion." / Dr.-Ing. Fritz Mehner / mehner.fritz@web.de\n\n"
+	let	txt = txt." LaTeX-Support, Version ".g:LatexSupportVersion." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
 	"
 	if a:verbose == 2
 		split LatexSupport_Settings.txt

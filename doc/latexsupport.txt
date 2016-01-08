@@ -1,11 +1,11 @@
-*latexsupport.txt*           LaTeX Support                         Dec 20 2015
+*latexsupport.txt*              LaTeX Support                      Jan 08 2016
 
 LaTeX Support                                     *latex-support* *latexsupport*
 
-                              Plugin version 1.2pre
+                             Plug-in version 1.2pre
                         for Vim version 7.0 and above
-                     Fritz Mehner  <mehner.fritz@web.de>
                    Wolfgang Mehner <wolfgang-mehner@web.de>
+                      Fritz Mehner <mehner.fritz@web.de>
 
 LaTeX-IDE for Vim/gVim. It is written to considerably speed up typesetting a
 document in a consistent style.  This is done by inserting complete
@@ -638,7 +638,6 @@ Several global variables are checked after the plug-in has been loaded to custom
  g:Latex_PdfPng      'convert'
  g:Latex_PsPdf       'ps2pdf'
 
- g:Latex_AdditionalTemplates    []
  g:Latex_CustomTemplateFile     $HOME.'/.vim/templates/latex.templates'
  g:Latex_GlobalTemplateFile     $VIMRUNTIME.'/latex-support/templates/Templates'
  g:Latex_LocalTemplateFile      $HOME.'/.vim/latex-support/templates/Templates'
@@ -660,7 +659,6 @@ Several global variables are checked after the plug-in has been loaded to custom
  g:Latex_PdfPng      ''
  g:Latex_PsPdf       'ps2pdf.exe'
 
- g:Latex_AdditionalTemplates    []
  g:Latex_CustomTemplateFile     $HOME.'/vimfiles/templates/latex.templates'
  g:Latex_GlobalTemplateFile     $VIMRUNTIME.'/latex-support/templates/Templates'
  g:Latex_LocalTemplateFile      $HOME.'/vimfiles/latex-support/templates/Templates'
@@ -724,9 +722,6 @@ The command line used to call a PDF to Png converter.
 
  *g:Latex_PsPdf*
 The command line used to call a PS to PDF converter.
-
- *g:Latex_AdditionalTemplates*
-Sets additional template files.
 
  *g:Latex_CodeSnippets*
 The name of the (non-standard) code snippet directory (see below).
