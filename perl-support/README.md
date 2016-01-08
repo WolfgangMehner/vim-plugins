@@ -1,4 +1,4 @@
-README for perl-support.vim (Version 5.4pre) / December 26 2015
+README for perl-support.vim (Version 5.4pre) / January 05 2016
 ================================================================================
 
   *  INSTALLATION
@@ -15,16 +15,24 @@ script, running perltidy,  running perlcritics, starting a debugger and a
 profiler can be done with a keystroke.  There are many additional hints and
 options which can improve speed and comfort when writing Perl. Please read the
 documentation.
-This plugin can be used with Vim version 7.x . Most features should work with
-Vim version 6.x.
+
+This plugin can be used with Vim version 7.x.
 
 
 --------------------------------------------------------------------------------
 
-  INSTALLATION
+INSTALLATION
 ================================================================================
 
-  (1)  LINUX
+A system-wide installation for all users can also be done. This will have
+further effects on how the plug-in works. For a step-by-step instruction, as
+well as an explanation of the other consequences, please see the help file
+'doc/csupport.txt' or look up the documentation via:
+
+      :help perlsupport-system-wide
+
+
+(1) LINUX
 ----------------------------------------------------------------------
 
 The subdirectories in the zip archive  perl-support.zip  mirror the directory
@@ -56,14 +64,14 @@ structure which is needed below the local installation directory $HOME/.vim/
 
       Perl -> Snippets -> template setup wizard
 
-   It will help you set up the file <runtimepath>/templates/personal.templates .
+   It will help you set up the file _runtimepath_/templates/personal.templates .
    The file is read by all plug-ins supporting this feature to get your personal
    details. Here is the minimal personalization (my settings as an example):
 
-       SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
-       SetMacro( 'AUTHORREF',   'fgm' )
-       SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
-       SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
+      SetMacro( 'AUTHOR',      'Wolfgang Mehner' )
+      SetMacro( 'AUTHORREF',   'wm' )
+      SetMacro( 'EMAIL',       'wolfgang-mehner@web.de' )
+      SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 
    Use the file $HOME/.vim/templates/perl.templates to customize or add to your
    Perl template library. It can also be set up via the wizard.
@@ -75,13 +83,13 @@ structure which is needed below the local installation directory $HOME/.vim/
 
       :helptags $HOME/.vim/doc/
 
-(1.5) Consider additional settings in the file '$HOME/.vimrc'.  The files
+(1.5) Consider additional settings in the file '$HOME/.vimrc'. The files
    customization.vimrc and customization.gvimrc are replacements or extensions
-   for your .vimrc and .gvimrc.  You may want to use parts of them. The files
+   for your .vimrc and .gvimrc. You may want to use parts of them. The files
    are documented.
 
 
-  (2)  WINDOWS
+(2) WINDOWS
 ----------------------------------------------------------------------
 
 The subdirectories in the zip archive  perl-support.zip  mirror the directory
@@ -113,14 +121,14 @@ $HOME/vimfiles/ (find the value of $HOME with ":echo $HOME" from inside Vim).
 
       Perl -> Snippets -> template setup wizard
 
-   It will help you set up the file <runtimepath>/templates/personal.templates .
+   It will help you set up the file _runtimepath_/templates/personal.templates .
    The file is read by all plug-ins supporting this feature to get your personal
    details. Here is the minimal personalization (my settings as an example):
 
-       SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
-       SetMacro( 'AUTHORREF',   'fgm' )
-       SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
-       SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
+      SetMacro( 'AUTHOR',      'Wolfgang Mehner' )
+      SetMacro( 'AUTHORREF',   'wm' )
+      SetMacro( 'EMAIL',       'wolfgang-mehner@web.de' )
+      SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 
    Use the file $HOME/vimfiles/templates/perl.templates to customize or add to
    your Perl template library. It can also be set up via the wizard.
@@ -132,12 +140,13 @@ $HOME/vimfiles/ (find the value of $HOME with ":echo $HOME" from inside Vim).
 
       :helptags $HOME\vimfiles\doc\
 
-(2.5) Consider additional settings in the file '$HOME/_vimrc'.  The files
+(2.5) Consider additional settings in the file '$HOME/_vimrc'. The files
    customization.vimrc and customization.gvimrc are replacements or extensions
-   for your _vimrc and _gvimrc. You may want to use parts of them.  The files
+   for your _vimrc and _gvimrc. You may want to use parts of them. The files
    are documented.
 
-  (3) ADDITIONAL REMARKS
+
+(3) ADDITIONAL REMARKS
 ----------------------------------------------------------------------
 
 There are a lot of features and options which can be used and influenced:
@@ -150,7 +159,7 @@ There are a lot of features and options which can be used and influenced:
   *  removing the root menu
   *  using additional plugins
 
-Look at the perlsupport help with
+Look at the perlsupport help with:
 
       :help perlsupport
 
@@ -161,34 +170,33 @@ Look at the perlsupport help with
                | +-------------------------------------------+ |
                +-----------------------------------------------+
 
-Any problems ? See the TROUBLESHOOTING section at the end of the help file
+Any problems? See the TROUBLESHOOTING section at the end of the help file
 'doc/perlsupport.txt'.
-
-For a system-wide installation please see the help file 'doc/perlsupport.txt'.
 
 
 --------------------------------------------------------------------------------
 
-  RELEASE NOTES
+RELEASE NOTES
 ================================================================================
 
-  RELEASE NOTES FOR VERSION 5.4pre
+RELEASE NOTES FOR VERSION 5.4pre
 ----------------------------------------------------------------------
-- Added 'g:Perl_CustomTemplateFile' and 'g:Perl_AdditionalTemplates'.
-- Added template personalization file and setup wizard.
-- Removed unused 'g:Perl_GuiTemplateBrowser' and 'g:Perl_MenuHeader'.
+- Add 'g:Perl_CustomTemplateFile'.
+- Add template personalization file and setup wizard.
+- Remove unused 'g:Perl_GuiTemplateBrowser' and 'g:Perl_MenuHeader'.
 - New and reworked templates.
-- Changed map "\vs" -> "\vps", in favor of a more consistent naming scheme.
+- Change map "\vs" -> "\vps", in favor of a more consistent naming scheme.
 - Minor changes.
 
-  RELEASE NOTES FOR OLDER VERSIONS
+
+RELEASE NOTES FOR OLDER VERSIONS
 ----------------------------------------------------------------------
 -> see file 'perl-support/doc/ChangeLog'
 
 
 --------------------------------------------------------------------------------
 
-  FILES
+FILES
 ================================================================================
 
     README.md
@@ -209,16 +217,6 @@ For a system-wide installation please see the help file 'doc/perlsupport.txt'.
                         The help file for the template system.
     doc/toolbox*.txt
                         The help files for the toolbox.
-
-    ftplugin/make.vim
-                        Access hotkeys for make(1) in makefiles.
-    ftplugin/perl.vim
-                        A filetype plugin. Define hotkeys, create a local
-                        dictionary for each Perl file.
-    ftplugin/pod.vim
-                        A filetype plugin. Define hotkeys for filetype 'pod'.
-    ftplugin/qf.vim
-                        A filetype plugin used by the profilers.
 
     plugin/perl-support.vim
                         The Perl plugin for Vim/gVim.
@@ -241,28 +239,41 @@ For a system-wide installation please see the help file 'doc/perlsupport.txt'.
                         A file used as dictionary for automatic word completion.
                         This file is referenced in the file customization.vimrc.
 
-    syntax/template.vim
-                        Template syntax file.
-
 ___The following files and extensions are for convenience only.___
-___perl-support.vim will work without them:___
+___perl-support.vim will work without them.___
+___The settings are explained in the files themselves.___
+
+    ftplugin/make.vim
+                        Access hotkeys for make(1) in makefiles.
+    ftplugin/perl.vim
+                        A filetype plugin. Define hotkeys, create a local
+                        dictionary for each Perl file.
+    ftplugin/pod.vim
+                        A filetype plugin. Define hotkeys for filetype 'pod'.
+    ftplugin/qf.vim
+                        A filetype plugin used by the profilers.
+
+    ftdetect/template.vim
+    ftplugin/template.vim
+    syntax/template.vim
+                        Additional files for working with templates.
 
     perl-support/rc/customization.ctags
-                        Additional settings I use in .ctags to enable navigation
-                        through POD with the plugin taglist.vim.
+                        Additional settings for use in .ctags to enable
+                        navigation through POD with the plugin taglist.vim.
     perl-support/rc/customization.gvimrc
-                        Additional settings I use in  .gvimrc:
+                        Additional settings for use in  .gvimrc:
                           hot keys, mouse settings, ...
                         The file is commented. Append it to your .gvimrc if you
                         like.
     perl-support/rc/customization.perltidyrc
-                        Additional settings I use in .perltidyrc to customize
+                        Additional settings for use in .perltidyrc to customize
                         perltidy.
     perl-support/rc/customization.smallprof
-                        Additional settings I use to control the profiler
+                        Additional settings for use to control the profiler
                         Devel::SmallProf
     perl-support/rc/customization.vimrc
-                        Additional settings I use in  .vimrc:
+                        Additional settings for use in  .vimrc:
                           incremental search, tabstop, hot keys,
                           font, use of dictionaries, ...
                         The file is commented. Append it to your .vimrc if you
@@ -284,7 +295,7 @@ ___perl-support.vim will work without them:___
 
 --------------------------------------------------------------------------------
 
-  ADDITIONAL TIPS
+ADDITIONAL TIPS
 ================================================================================
 
 (1) You may want to use a central hidden directory for all your backup files (see also
@@ -319,8 +330,11 @@ ___perl-support.vim will work without them:___
 
 --------------------------------------------------------------------------------
 
-  CREDITS
+CREDITS
 ================================================================================
+
+Fritz Mehner thanks:
+----------------------------------------------------------------------
 
 Wolfgang Mehner (wolfgang-mehner AT web.de) for the implementation of the
   powerful template system templatesupport.
@@ -339,4 +353,9 @@ David Fishburn contributed changes for the Windows platform and suggested to not
 
 The two files pod-template-application.pl and pod-template-module.pl are taken
   from Damian Conway's book "Perl Best Practices".
+
+Wolfgang Mehner thanks:
+----------------------------------------------------------------------
+
+This plug-in has been developed by Fritz Mehner, who maintained it until 2015.
 

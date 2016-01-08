@@ -1,9 +1,11 @@
-*perlsupport.txt*                Perl Support                    Dec 26 2015
+*perlsupport.txt*                Perl Support                      Jan 08 2016
+
 Perl Support                                      *perl-support* *perlsupport*
 
                              Plug-in version 5.4pre
                         for Vim version 7.0 and above
-                       Fritz Mehner  <mehner@web.de>
+                   Wolfgang Mehner <wolfgang-mehner@web.de>
+                      Fritz Mehner <mehner.fritz@web.de>
 
 Perl Support implements a Perl-IDE for Vim/gVim. It is written to considerably
 speed up writing code in a consistent style.  This is done by inserting
@@ -1753,7 +1755,6 @@ global variable                default value               tag (see below)
 ------------------------------------------------------------------------------
 g:Perl_GlobalTemplateFile      root_dir.'perl-support/templates/Templates'
 g:Perl_LocalTemplateFile       $HOME.'/.vim/perl-support/templates/Templates'
-g:Perl_AdditionalTemplates     []
 g:Perl_CustomTemplateFile      $HOME.'/.vim/templates/perl.templates'
 g:Perl_Ctrl_j                  'on'
 
@@ -1799,7 +1800,6 @@ The variable root_dir will automatically be set to one of the following values:
  1. group: Sets the template directory and the names of the template files (see below).
            g:Perl_GlobalTemplateFile      : sets the global template file  (see|perlsupport-templates|)
            g:Perl_LocalTemplateFile       : sets the local template file  (see|perlsupport-templates|)
-           g:Perl_AdditionalTemplates     : sets additional template files  (see|perlsupport-templates|)
            g:Perl_CustomTemplateFile      : sets the custom template file  (see|perlsupport-templates|)
            g:Perl_Ctrl_j                  : hotkey Ctrl-j  'on'/'off' (see|perlsupport-Ctrl-j|)
 

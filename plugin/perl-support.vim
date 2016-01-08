@@ -34,11 +34,13 @@
 "                  ddd                  (debugger frontend)
 "                  sort(1)              (rearrange profiler statistics)
 "
-"         Author:  Dr.-Ing. Fritz Mehner <mehner.fritz@web.de>
+"         Author:  Wolfgang Mehner <wolfgang-mehner@web.de>
+"                  Fritz Mehner <mehner.fritz@web.de>
 "
 "        Version:  see variable  g:Perl_PluginVersion  below
 "        Created:  09.07.2001
 "        License:  Copyright (c) 2001-2014, Fritz Mehner
+"                  Copyright (c) 2015-2016, Wolfgang Mehner
 "                  This program is free software; you can redistribute it
 "                  and/or modify it under the terms of the GNU General Public
 "                  License as published by the Free Software Foundation,
@@ -209,7 +211,7 @@ let s:Perl_PerltidyBackup			     = "no"
 call s:perl_SetGlobalVariable ( 'Perl_MapLeader', '' )
 let s:Perl_RootMenu								= '&Perl'
 "
-let s:Perl_AdditionalTemplates    = []
+let s:Perl_AdditionalTemplates    = mmtemplates#config#GetFt ( 'perl' )
 let s:Perl_UseToolbox             = 'yes'
 call s:perl_SetGlobalVariable ( 'Perl_UseTool_make',    'yes' )
 "
@@ -226,7 +228,6 @@ call s:perl_SetLocalVariable('Perl_Debugger               ')
 call s:perl_SetLocalVariable('Perl_GlobalTemplateFile     ')
 call s:perl_SetLocalVariable('Perl_LocalTemplateFile      ')
 call s:perl_SetLocalVariable('Perl_CustomTemplateFile     ')
-call s:perl_SetLocalVariable('Perl_AdditionalTemplates    ')
 call s:perl_SetLocalVariable('Perl_GuiSnippetBrowser      ')
 call s:perl_SetLocalVariable('Perl_LineEndCommColDefault  ')
 call s:perl_SetLocalVariable('Perl_LoadMenus              ')
@@ -1003,7 +1004,7 @@ function! Perl_Settings ( verbose )
   let txt = txt."                 Ctrl-F9  :  run script                \n"
   let txt = txt."                Shift-F9  :  set command line arguments\n"
   let txt = txt."_________________________________________________________________________\n"
-  let txt = txt."  Perl-Support, Version ".g:Perl_PluginVersion." / Dr.-Ing. Fritz Mehner / mehner.fritz@web.de\n\n"
+  let txt = txt."  Perl-Support, Version ".g:Perl_PluginVersion." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
 	"
 	if a:verbose == 2
 		split PerlSupport_Settings.txt
@@ -2014,7 +2015,6 @@ function! s:Perl_RereadTemplates ()
 	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Wizard::FileCustomWithPersonal', g:Perl_PluginDir.'/perl-support/rc/custom_with_personal.templates' )
 	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Wizard::FilePersonal',           g:Perl_PluginDir.'/perl-support/rc/personal.templates' )
 	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Wizard::CustomFileVariable',     'g:Perl_CustomTemplateFile' )
-	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::Wizard::AddFileListVariable',    'g:Perl_AdditionalTemplates' )
 	"
 	" maps: special operations
 	call mmtemplates#core#Resource ( g:Perl_Templates, 'set', 'property', 'Templates::RereadTemplates::Map', 'ntr' )
@@ -2027,13 +2027,13 @@ function! s:Perl_RereadTemplates ()
 	"-------------------------------------------------------------------------------
 	" load template library
 	"-------------------------------------------------------------------------------
-	"
+
 	" global templates (global installation only)
 	if g:Perl_Installation == 'system'
 		call mmtemplates#core#ReadTemplates ( g:Perl_Templates, 'load', s:Perl_GlobalTemplateFile,
 					\ 'name', 'global', 'map', 'ntg' )
 	endif
-	"
+
 	" local templates (optional for global installation)
 	if g:Perl_Installation == 'system'
 		call mmtemplates#core#ReadTemplates ( g:Perl_Templates, 'load', s:Perl_LocalTemplateFile,
@@ -2042,20 +2042,20 @@ function! s:Perl_RereadTemplates ()
 		call mmtemplates#core#ReadTemplates ( g:Perl_Templates, 'load', s:Perl_LocalTemplateFile,
 					\ 'name', 'local', 'map', 'ntl' )
 	endif
-	"
+
 	" additional templates (optional)
 	if ! empty ( s:Perl_AdditionalTemplates )
 		call mmtemplates#core#AddCustomTemplateFiles ( g:Perl_Templates, s:Perl_AdditionalTemplates, 'g:Perl_AdditionalTemplates' )
 	endif
-	"
-	" custom templates (optional, existence of file checked by template engine)
-	call mmtemplates#core#ReadTemplates ( g:Perl_Templates, 'load', s:Perl_CustomTemplateFile,
-				\ 'name', 'custom', 'map', 'ntc', 'optional' )
-	"
+
 	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)
 	call mmtemplates#core#ReadTemplates ( g:Perl_Templates, 'personalization',
 				\ 'name', 'personal', 'map', 'ntp' )
-	"
+
+	" custom templates (optional, existence of file checked by template engine)
+	call mmtemplates#core#ReadTemplates ( g:Perl_Templates, 'load', s:Perl_CustomTemplateFile,
+				\ 'name', 'custom', 'map', 'ntc', 'optional' )
+
 	"-------------------------------------------------------------------------------
 	" further setup
 	"-------------------------------------------------------------------------------
