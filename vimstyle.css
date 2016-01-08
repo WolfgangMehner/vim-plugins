@@ -97,21 +97,18 @@ table.title_bar > tbody > tr:nth-child(1) > td:nth-child(1)
 	font-weight:bold;
 }
 
-table.title_bar > tbody > tr:nth-child(2) > td:nth-child(1)
-{
-}
-
 table.title_bar > tbody > tr:nth-child(2) > td:nth-child(2),
 table.title_bar > tbody > tr:nth-child(2) > td:nth-child(3),
 table.title_bar > tbody > tr:nth-child(2) > td:nth-child(4),
 table.title_bar > tbody > tr:nth-child(2) > td:nth-child(5)
 {
 	color:White;
-	width:120px;
+	width:130px;
 	padding:0px;
 	border-style:solid;
 	border-width:1px;
 	border-radius:5px;
+	vertical-align:middle;
 }
 
 table.title_bar > tbody > tr:nth-child(2) > td:last-child
@@ -135,6 +132,34 @@ table.title_bar a:hover
 	color:#dddddd;
 	font-weight:normal;
 	text-decoration:none;
+}
+
+/*
+ * table for a link with icon
+ *
+ * defines:
+ * - the table
+ * - table data
+ */
+table.icon_link_table
+{
+	width:90%;
+	border-spacing:0px;
+
+	margin-left:5%;
+	margin-right:5%;
+}
+
+table.icon_link_table > tbody > tr > td
+{
+	text-align:center;
+	vertical-align:middle;
+}
+
+table.icon_link_table > tbody > tr > td img
+{
+	vertical-align:middle;
+	width:32px;
 }
 
 /*
