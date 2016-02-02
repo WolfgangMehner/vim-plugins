@@ -14,7 +14,7 @@
 "       Version:  see variable g:Doxygen_Version below
 "       Created:  10.06.2012
 "      Revision:  30.06.2014
-"       License:  Copyright (c) 2012-2015, Wolfgang Mehner
+"       License:  Copyright (c) 2012-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -223,31 +223,41 @@ else
 endif
 "
 " settings   {{{2
-"
+
 let s:ConfigFile  = 'Doxyfile' 	 				" doxygen configuration file
 let s:LogFile     = '.doxygen.log'
 let s:WarningFile = '.doxygen.warn'
-"
+
 if s:MSWIN
+	" :TODO:17.01.2016 23:29:WM: check Windows Doxygen executable
 	let s:Doxygen_Executable = 'C:\Program Files\Doxygen\bin\doxygen.exe'
+	let s:Doxygen_WizardExec = 'C:\Program Files\Doxygen\bin\doxywizard.exe'
 else
 	let s:Doxygen_Executable = 'doxygen'
+	let s:Doxygen_WizardExec = 'doxywizard'
 endif
-"
+
 call s:GetGlobalSetting ( 'Doxygen_Executable' )
-"
+call s:GetGlobalSetting ( 'Doxygen_WizardExec' )
+
 let s:ErrorFormat = '%f:%l: %m'
-"
+
 let s:Enabled = 1
-"
+
 " check Doxygen executable   {{{2
-"
+
 if ! executable ( s:Doxygen_Executable )
 	let s:Enabled = 0
 endif
-"
+
+if executable ( s:Doxygen_WizardExec )
+	let s:EnabledWizard = 1
+else
+	let s:EnabledWizard = 0
+endif
+
 " custom commands {{{2
-"
+
 if s:Enabled == 1
 	command! -bang -nargs=? -complete=file DoxygenConfigFile     :call mmtoolbox#doxygen#Property('<bang>'=='!'?'echo':'set','config-file',<q-args>)
 	command! -bang -nargs=? -complete=file DoxygenLogFile        :call mmtoolbox#doxygen#Property('<bang>'=='!'?'echo':'set','log-file',<q-args>)
@@ -259,8 +269,13 @@ if s:Enabled == 1
 	command!       -nargs=0                DoxygenWarnings       :call <SID>Warnings()
 	command!       -nargs=0                DoxygenHelp           :call <SID>Help()
 	command! -bang -nargs=?                DoxygenSettings       :call <SID>Settings(('<bang>'=='!')+str2nr(<q-args>))
+	command!       -nargs=0                DoxygenRuntime        :call <SID>RuntimeInfo()
+
+	if s:EnabledWizard
+		command!       -nargs=* -complete=file DoxygenWizard         :call <SID>StartWizard(<q-args>)
+	endif
 else
-	"
+
 	" s:Disabled : Print why the script is disabled.   {{{3
 	function! s:Disabled ()
 		let txt = "Doxygen tool not working:\n"
@@ -275,15 +290,16 @@ else
 		return
 	endfunction    " ----------  end of function s:Disabled  ----------
 	" }}}3
-	"
+
 	command! -bang -nargs=* Doxygen          :call <SID>Disabled()
 	command!       -nargs=0 DoxygenHelp      :call <SID>Help()
 	command! -bang -nargs=? DoxygenSettings  :call <SID>Settings(('<bang>'=='!')+str2nr(<q-args>))
-	"
+	command! -bang -nargs=? DoxygenRuntime   :call <SID>Settings(('<bang>'=='!')+str2nr(<q-args>))
+
 endif
-"
+
 " }}}2
-"
+
 "-------------------------------------------------------------------------------
 " GetInfo : Initialize the script.   {{{1
 "-------------------------------------------------------------------------------
@@ -305,27 +321,31 @@ endfunction    " ----------  end of function mmtoolbox#doxygen#AddMaps  --------
 " AddMenu : Add menus.   {{{1
 "-------------------------------------------------------------------------------
 function! mmtoolbox#doxygen#AddMenu ( root, esc_mapl )
-	"
+
 	exe 'amenu '.a:root.'.&run\ Doxygen<Tab>:Doxygen            :Doxygen<CR>'
 	exe 'amenu '.a:root.'.view\ &log<Tab>:DoxygenViewLog        :DoxygenViewLog<CR>'
 	exe 'amenu '.a:root.'.view\ &warnings<Tab>:DoxygenWarnings  :DoxygenWarnings<CR>'
-	"
+
 	exe 'amenu '.a:root.'.-SEP01- <Nop>'
-	"
+
 	exe 'amenu '.a:root.'.&generate\ config\.<Tab>:DoxygenGenerateConfig  :DoxygenGenerateConfig<CR>'
 	exe 'amenu '.a:root.'.edit\ &config\.<Tab>:DoxygenEditConfig          :DoxygenEditConfig<CR>'
-	"
+	if s:EnabledWizard
+		exe 'amenu '.a:root.'.&run\ doxywizard<Tab>:DoxygenWizard             :DoxygenWizard '
+	endif
+
 	exe 'amenu '.a:root.'.-SEP02- <Nop>'
-	"
+
 	exe 'amenu '.a:root.'.select\ config\.\ &file<Tab>:DoxygenConfigFile  :DoxygenConfigFile '
 	exe 'amenu '.a:root.'.select\ log\ &file<Tab>:DoxygenLogFile          :DoxygenLogFile '
 	exe 'amenu '.a:root.'.select\ warning\ &file<Tab>:DoxygenWarningFile  :DoxygenWarningFile '
-	"
+
 	exe 'amenu '.a:root.'.-SEP03- <Nop>'
-	"
-	exe 'amenu '.a:root.'.&help<Tab>:DoxygenHelp          :DoxygenHelp<CR>'
-	exe 'amenu '.a:root.'.&settings<Tab>:DoxygenSettings  :DoxygenSettings<CR>'
-	"
+
+	exe 'amenu '.a:root.'.runtime\ &info<Tab>:DoxygenRuntime  :DoxygenRuntime<CR>'
+	exe 'amenu '.a:root.'.&settings<Tab>:DoxygenSettings      :DoxygenSettings<CR>'
+	exe 'amenu '.a:root.'.&help<Tab>:DoxygenHelp              :DoxygenHelp<CR>'
+
 endfunction    " ----------  end of function mmtoolbox#doxygen#AddMenu  ----------
 "
 "-------------------------------------------------------------------------------
@@ -415,10 +435,12 @@ function! s:Settings ( verbose )
 	else           | let sys_name = 'unknown' | endif
 	"
 	let doxygen_status = executable( s:Doxygen_Executable ) ? '' : ' (not executable)'
+	let doxywiz_status = executable( s:Doxygen_WizardExec ) ? '' : ' (not executable)'
 	"
 	let	txt = " Doxygen-Support settings\n\n"
 				\ .'     plug-in installation :  toolbox on '.sys_name."\n"
 				\ .'       doxygen executable :  '.s:Doxygen_Executable.doxygen_status."\n"
+				\ .'    doxywizard executable :  '.s:Doxygen_WizardExec.doxywiz_status."\n"
 				\ .'            using toolbox :  version '.g:Toolbox_Version." by Wolfgang Mehner\n"
 	if a:verbose
 		let	txt .= "\n"
@@ -437,7 +459,18 @@ function! s:Settings ( verbose )
 		echo txt
 	endif
 endfunction    " ----------  end of function s:Settings  ----------
-"
+
+"-------------------------------------------------------------------------------
+" s:RuntimeInfo : Display everything that's important during work.   {{{1
+"-------------------------------------------------------------------------------
+function! s:RuntimeInfo ()
+	let	txt = " Doxygen-Support runtime information\n\n"
+				\ .'       configuration file :  '.s:ConfigFile."\n"
+				\ .'                 log file :  '.s:LogFile."\n"
+				\ .'            warnings file :  '.s:WarningFile."\n"
+	echo txt
+endfunction    " ----------  end of function s:RuntimeInfo  ----------
+
 "-------------------------------------------------------------------------------
 " Modul setup (abort early?).   {{{1
 "-------------------------------------------------------------------------------
@@ -594,8 +627,32 @@ function! s:Warnings ()
 	lchdir -
 	"
 endfunction    " ----------  end of function s:Warnings  ----------
+
+"-------------------------------------------------------------------------------
+" s:StartWizard : Start 'doxywizard' in the background.   {{{1
+"-------------------------------------------------------------------------------
+function! s:StartWizard ( args )
+
+	if ! s:EnabledWizard
+		return
+	endif
+
+	if a:args == '' && filereadable ( s:ConfigFile )
+		let param = shellescape ( s:ConfigFile )
+	else
+		let param = escape ( a:args, '%#' )
+	endif
+
+	if s:MSWIN
+		silent exe '!start '.shellescape( s:Doxygen_WizardExec ).' '.param
+	else
+		silent exe '!'.shellescape( s:Doxygen_WizardExec ).' '.param.' &'
+	endif
+
+endfunction    " ----------  end of function s:StartWizard  ----------
+
 " }}}1
 "-------------------------------------------------------------------------------
-"
+
 " =====================================================================================
 "  vim: foldmethod=marker
