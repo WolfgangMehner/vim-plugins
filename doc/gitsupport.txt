@@ -730,6 +730,7 @@ Use tab-completion for convenience.
   ignore-global    -> value of "core.excludesfile"
   ignore-local     .gitignore
   ignore-private   .git/info/exclude
+  modules          .gitmodules
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -1101,7 +1102,7 @@ in the .vimrc file.
   |g:Git_GitBashExecutable| - g:Git_BinPath + sh.exe
 (^2) under UNIX, the default for g:Git_GitBashExecutable is the value of
   g:Xterm_Executable, which in turn is "xterm"
-(^3) UNIX only
+(^3) UNIX only, see |gitsupport-config-xterm|
 
 ------------------------------------------------------------------------------
 6.1  EXECUTABLE                                 *gitsupport-config-executable*
@@ -1323,4 +1324,4 @@ Jinhu Lu (vim.org user name: KingTiger):
   ( http://www.vim.org/scripts/script.php?script_id=3531 )
 
 ==============================================================================
-vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
+vim:tw=78:expandtab:ts=2:ft=help:norl:

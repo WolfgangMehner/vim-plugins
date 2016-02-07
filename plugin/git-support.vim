@@ -12,7 +12,7 @@
 "       Version:  see variable g:GitSupport_Version below
 "       Created:  06.10.2012
 "      Revision:  18.07.2015
-"       License:  Copyright (c) 2012-2015, Wolfgang Mehner
+"       License:  Copyright (c) 2012-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -675,6 +675,7 @@ let s:EditFileIDs = [
 			\ 'description',
 			\ 'hooks',
 			\ 'ignore-global', 'ignore-local', 'ignore-private',
+			\ 'modules',
 			\ ]
 "
 function! GitS_EditFilesComplete ( ArgLead, CmdLine, CursorPos )
@@ -2391,11 +2392,13 @@ function! GitS_Help( action, ... )
 		echoerr 'Unknown action "'.a:action.'".'
 		return
 	endif
-	"
+
 	if s:GitHelpFormat == 'html'
 		return s:StandardRun ( 'help', helpcmd, '' )
 	endif
-	"
+
+	let ts_save = &g:tabstop
+
 	if s:OpenGitBuffer ( 'Git - help' )
 		"
 		let b:GitSupport_HelpFlag = 1
@@ -2413,9 +2416,11 @@ function! GitS_Help( action, ... )
 	if s:UNIX && winwidth( winnr() ) > 0
 		let cmd = 'MANWIDTH='.winwidth( winnr() ).' '.cmd
 	endif
-	"
+
 	call s:UpdateGitBuffer ( cmd )
-	"
+
+	let &g:tabstop = ts_save
+
 	" :TODO:19.01.2014 18:26:WM: own toc or via ctags?
 " 	let b:GitSupport_TOC = []
 " 	"
@@ -4038,6 +4043,8 @@ function! GitS_GitEdit( fileid )
 		let filename = s:GitRepoDir ( 'top/.gitignore' )
 	elseif a:fileid == 'ignore-private'
 		let filename = s:GitRepoDir ( 'git/info/exclude' )
+	elseif a:fileid == 'modules'
+		let filename = s:GitRepoDir ( 'top/.gitmodules' )
 	endif
 	"
 	if filename == ''
