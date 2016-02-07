@@ -592,7 +592,10 @@ function! s:UserInputEx ( ArgLead, CmdLine, CursorPos )
 	if empty( a:ArgLead )
 		return copy( s:UserInputList )
 	endif
-	return filter( copy( s:UserInputList ), 'v:val =~ ''\V\<'.escape(a:ArgLead,'\').'\w\*''' )
+	" The obvious choice here would be '\<' followed by the regular expression
+	" which matches the argument lead. We use '\[0-9a-zA-Z]\@<!' as an
+	" alternative, which means that underscores can also break up words.
+	return filter( copy( s:UserInputList ), 'v:val =~ ''\V\[0-9a-zA-Z]\@<!'.escape(a:ArgLead,'\').'\w\*''' )
 endfunction    " ----------  end of function s:UserInputEx  ----------
 "
 " s:UserInputList : list for s:UserInput   {{{3
@@ -1427,15 +1430,30 @@ endfunction    " ----------  end of function s:InterfaceVersion  ----------
 "----------------------------------------------------------------------
 "
 function! s:SetFormat ( name, replacement )
-	"
+
 	" check for valid name
-	if a:name !~ '^\%(TIME.*\|DATE.*\|YEAR.*\)'
+	if a:name !~ s:library.regex_file.MacroName
+		call s:ErrorMsg ( 'Macro name must be a valid identifier: '.a:name )
+		return
+	elseif a:name !~ '^\%(TIME.*\|DATE.*\|YEAR.*\)'
 		call s:ErrorMsg ( 'Can not set the format of: '.a:name )
 		return
+	elseif a:name == 'TIME_LOCALE'
+
+		let save_time_lang = v:lc_time
+
+		try
+			silent exe 'language time '.a:replacement
+		catch /E197:.*/
+			call s:ErrorMsg ( 'Can not set the time locale to "'.a:replacement.'".' )
+			return
+		finally
+			silent exe 'language time '.save_time_lang
+		endtry
 	endif
-	"
+
 	let s:library.macros[ a:name ] = a:replacement
-	"
+
 endfunction    " ----------  end of function s:SetFormat  ----------
 "
 "----------------------------------------------------------------------
@@ -3760,26 +3778,32 @@ endfunction    " ----------  end of function mmtemplates#core#InsertTemplate  --
 "----------------------------------------------------------------------
 " === Create Maps: Auxiliary Functions ===   {{{1
 "----------------------------------------------------------------------
-"
+
 "-------------------------------------------------------------------------------
 " s:DoCreateMap : Check whether a map already exists.   {{{2
 "-------------------------------------------------------------------------------
-"
+
 function! s:DoCreateMap ( map, mode, report )
-	"
+
 	let mapinfo = maparg ( a:map, a:mode )
-	if ! empty ( mapinfo ) && mapinfo !~ 'mmtemplates#core#'
-		if a:report
+
+	if ! empty ( mapinfo ) && a:report
+		if mapinfo !~ 'mmtemplates#core#'
 			call s:ErrorMsg ( 'Mapping already in use: "'.a:map.'", mode "'.a:mode.'", command:', '  '.mapinfo )
+		elseif 0
+			" :TODO:15.12.2015 11:47:WM: the template maps are not existing at this
+			" point, since the commands are serialized as a string before they are
+			" executed; find another way to obtain the template name
+			let temp_name = 'TODO - not implemented yet -'
+			call s:ErrorMsg ( 'Mapping already in use: "'.a:map.'", mode "'.a:mode.'", template:', '  '.temp_name )
 		endif
-		return 0
 	endif
-	"
-	return 1
+
+	return empty ( mapinfo )
 endfunction    " ----------  end of function s:DoCreateMap  ----------
 " }}}2
 "----------------------------------------------------------------------
-"
+
 "----------------------------------------------------------------------
 " mmtemplates#core#CreateMaps : Create maps for a template library.   {{{1
 "----------------------------------------------------------------------
