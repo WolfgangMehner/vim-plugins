@@ -1,4 +1,4 @@
-*toolboxcmake.txt*                 CMake Tool                     July 23 2015
+*toolboxcmake.txt*                 CMake Tool                      Feb 05 2016
 
 CMake Tool                                                     *toolbox-cmake*
 
@@ -40,6 +40,10 @@ Errors will be listed in the quick-fix buffer.
 The :CMake command has command-line completion for the targets of the makefile
 in the build location.
 
+The configured directories and other important information immediately
+influencing the behavior at runtime can be displayed via |:CMakeRuntime|,
+which provides a short overview of the current state of the tool.
+
 Help for CMake's commands can be accessed using |:CMakeHelpCommand|: >
   :CMakeHelpCommand add_library
 This will open a new buffer containing the help. Calling the command without
@@ -53,6 +57,9 @@ below.
   |:CMake|! [<args>]              run CMake with the given arguments
   |:CMake| [<args>]               run make with the given arguments
 
+  |:CMakeCurses| [<args>]         run ccmake with the given arguments
+  |:CMakeGui| [<args>]            run cmake-gui with the given arguments
+
   |:CMakeProjectDir| [<dir>]      set the project directory
   |:CMakeBuildLocation| [<dir>]   set the build location
 
@@ -62,8 +69,9 @@ below.
   |:CMakeHelpProperty| [<topic>]  help for properties
   |:CMakeHelpVariable| [<topic>]  help for variables
 
-  |:CMakeHelp|                    help for the CMake tool
+  |:CMakeRuntime|                 shows the runtime information
   |:CMakeSettings|                shows the plug-in settings
+  |:CMakeHelp|                    help for the CMake tool
  ----------------------------------------------------------------------------
 
 Detailed explanations are given in the next section |toolbox-cmake-commands|.
@@ -91,6 +99,21 @@ to the directory configured with |:CMakeBuildLocation|.
 The command has command-line completion for the targets of the makefile in the
 build location. All targets named ".../fast" can be hidden by setting
 |g:CMake_FilterFastTargets|.
+
+------------------------------------------------------------------------------
+                                                      *:CMakeCurses* *:CMakeGui*
+  :CMakeCurses [<args>] ~
+  :CMakeGui [<args>] ~
+
+Runs ccmake (in xterm) or cmake-gui with arguments as follows, using the first
+rule which applies:
+- if there are arguments given on the Vim command line, pass those
+- if the build location (|:CMakeBuildLocation|) is a valid directory, pass it
+  as the only argument
+- if the project base directory (|:CMakeProjectDir|) is a valid directory,
+  pass it as the only argument
+
+For ccmake you need a working xterm (see |toolbox-cmake-xterm|).
 
 ------------------------------------------------------------------------------
                                         *:CMakeProjectDir* *:CMakeBuildLocation*
@@ -132,6 +155,15 @@ In each of the help buffers, several maps are defined.
   :CMakeHelp ~
 
 Opens the help for the CMake tool.
+
+------------------------------------------------------------------------------
+                                                               *:CMakeRuntime*
+  :CMakeRuntime ~
+
+Shows important runtime information:
+- the quickfix jump setting (|g:CMake_JumpToError|)
+- the "fast" make target filter (|g:CMake_FilterFastTargets|)
+- the configured directories (project and build)
 
 ------------------------------------------------------------------------------
                                                               *:CMakeSettings*
@@ -184,9 +216,21 @@ the .vimrc file.
  ----------------------------------------------------------------------------
   |g:CMake_Executable|        'cmake'       the CMake executable
   |g:CMake_MakeTool|          'make'        the make executable
+  |g:CMake_CCMakeExec|        'ccmake'      the ccmake executable (^1)
+  |g:CMake_GuiExec|           'cmake-gui'   the cmake-gui executable (^1)
+
   |g:CMake_JumpToError|       'cmake'       whether to jump to the first error
                                             automatically
+  |g:CMake_FilterFastTargets| 'no'          whether to filter the ".../fast"
+                                            targets when tab-completing make
+                                            targets
+
+  g:Xterm_Executable        'xterm'       the xterm executable (^2)
+  g:Xterm_Options           '...'         the xterm default settings (^2)
  ----------------------------------------------------------------------------
+
+(^1) UNIX only
+(^2) UNIX only, see |toolbox-cmake-xterm|
 
 ------------------------------------------------------------------------------
                                                           *g:CMake_Executable*
@@ -197,6 +241,16 @@ The executable is set by g:CMake_Executable: >
                                                             *g:CMake_MakeTool*
 The make executable is set by g:CMake_MakeTool: >
   let g:CMake_MakeTool = 'make'
+<
+------------------------------------------------------------------------------
+                                                          *g:CMake_CCMakeExec*
+The make executable is set by g:CMake_CCMakeExec: >
+  let g:CMake_CCMakeExec = 'ccmake'
+<
+------------------------------------------------------------------------------
+                                                             *g:CMake_GuiExec*
+The cmake-gui executable is set by g:CMake_GuiExec: >
+  let g:CMake_GuiExec = 'cmake-gui'
 <
 ------------------------------------------------------------------------------
                                                          *g:CMake_JumpToError*
@@ -212,7 +266,7 @@ The possible settings are listed below:
   Value           Jump automatically after ...
  ----------------------------------------------------------------------------
   'both'          cmake and make
-  'cmake'         cmake
+  'cmake'         cmake (default)
   'make'          make
   'none'          none of the above
  ----------------------------------------------------------------------------
@@ -233,8 +287,29 @@ The possible settings are listed below:
   Value           Effect
  ----------------------------------------------------------------------------
   'yes'           filter out targets named ".../fast"
-  'no'            show all targets
+  'no'            show all targets (default)
  ----------------------------------------------------------------------------
+
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
+------------------------------------------------------------------------------
+                                                         *toolbox-cmake-xterm*
+The xterm related functionality is only available under UNIX. It is used to
+run interactive commands.
+
+                                                          g:Xterm_Executable
+The xterm executable is set by g:Xterm_Executable, for example: >
+  let g:Xterm_Executable = '/usr/local/bin/xterm'
+<
+                                                             g:Xterm_Options
+Set additional options for xterm. The default is: >
+  let g:Xterm_Options = '-fa courier -fs 12 -geometry 80x24'
+<
+For example, use these arguments for black letters on a white background: >
+  let g:Xterm_Options = '-fg black -bg white -fs 12 -geometry 80x24'
+<
+See the man-page of xterm for the possible options.
 
 The behavior can be changed on the fly by settings the variable to a different
 value on the command line.
@@ -257,7 +332,11 @@ A.  CHANGE LOG                                      *toolbox-cmake-change-log*
   RELEASE NOTES FOR VERSION 0.9.2
 ------------------------------------------------------------------------------
 
-- Add: Command-line completion for Make targets.
+- Add: Command-line completion for Make targets and configuration
+  g:CMake_FilterFastTargets.
+- Add: Command :CMakeCurses and configuration g:CMake_CCMakeExec.
+- Add: Command :CMakeGui and configuration g:CMake_GuiExec.
+- Add: Command :CMakeRuntime.
 - Change: Echo a different message if the build succeeded, but warnings are
   present.
 - Internal changes, less global functions.
@@ -280,4 +359,4 @@ A.  CHANGE LOG                                      *toolbox-cmake-change-log*
 - Initial upload.
 
 ==============================================================================
-vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
+vim:tw=78:expandtab:ts=2:ft=help:norl:

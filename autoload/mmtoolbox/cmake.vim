@@ -14,7 +14,7 @@
 "       Version:  see variable g:CMake_Version below
 "       Created:  28.12.2011
 "      Revision:  23.07.2015
-"       License:  Copyright (c) 2012-2015, Wolfgang Mehner
+"       License:  Copyright (c) 2012-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -215,32 +215,52 @@ else
 endif
 "
 " settings   {{{2
-"
+
 let s:makelib = mmtoolbox#make#Interface ()
-"
+
 let s:ProjectDir    = '.'
 let s:BuildLocation = '.'
-"
+
 if s:MSWIN
 	let s:CMake_Executable = 'C:\Program Files\CMake\bin\cmake.exe'
 else
 	let s:CMake_Executable = 'cmake'
+	let s:CMake_CCMakeExec = 'ccmake'
+	let s:CMake_GuiExec    = 'cmake-gui'
 endif
 let s:CMake_MakeTool   = 'make'
-"
+
+let s:Xterm_Executable = 'xterm'
+
 call s:GetGlobalSetting ( 'CMake_Executable' )
 call s:GetGlobalSetting ( 'CMake_MakeTool' )
+call s:GetGlobalSetting ( 'CMake_GuiExec' )
+call s:GetGlobalSetting ( 'CMake_CCMakeExec' )
+call s:GetGlobalSetting ( 'Xterm_Executable' )
 call s:ApplyDefaultSetting ( 'CMake_JumpToError',       'cmake' )
 call s:ApplyDefaultSetting ( 'CMake_FilterFastTargets', 'no' )
-"
+call s:ApplyDefaultSetting ( 'Xterm_Options', '-fa courier -fs 12 -geometry 80x24' )
+
 let s:Enabled = 1
-"
+
 " check executables   {{{2
-"
+
 if ! executable ( s:CMake_Executable ) || ! executable ( s:CMake_MakeTool )
 	let s:Enabled = 0
 endif
-"
+
+if executable ( s:CMake_CCMakeExec )
+	let s:EnabledCCMake = 1
+else
+	let s:EnabledCCMake = 0
+endif
+
+if executable ( s:CMake_GuiExec )
+	let s:EnabledCMakeGui = 1
+else
+	let s:EnabledCMakeGui = 0
+endif
+
 " error formats {{{2
 "
 " error format for CMake
@@ -334,8 +354,16 @@ if s:Enabled == 1
 	command!       -nargs=? -complete=file CMakeHelpVariable  :call <SID>Help('variable',<q-args>)
 	command!       -nargs=0                CMakeHelp          :call <SID>HelpPlugin()
 	command! -bang -nargs=?                CMakeSettings      :call <SID>Settings(('<bang>'=='!')+str2nr(<q-args>))
+	command!       -nargs=0                CMakeRuntime       :call <SID>RuntimeInfo()
+
+	if s:UNIX && s:EnabledCCMake
+		command!       -nargs=* -complete=file CMakeCurses      :call <SID>StartCCMake(<q-args>)
+	endif
+	if s:UNIX && s:EnabledCMakeGui
+		command!       -nargs=* -complete=file CMakeGui         :call <SID>StartGui(<q-args>)
+	endif
 else
-	"
+
 	" s:Disabled : Print why the script is disabled.   {{{3
 	function! s:Disabled ()
 		let txt = "CMake tool not working:\n"
@@ -353,15 +381,16 @@ else
 		return
 	endfunction    " ----------  end of function s:Disabled  ----------
 	" }}}3
-	"
+
 	command! -bang -nargs=* CMake          :call <SID>Disabled()
 	command!       -nargs=0 CMakeHelp      :call <SID>HelpPlugin()
 	command! -bang -nargs=? CMakeSettings  :call <SID>Settings(('<bang>'=='!')+str2nr(<q-args>))
-	"
+	command! -bang -nargs=? CMakeRuntime   :call <SID>Settings(('<bang>'=='!')+str2nr(<q-args>))
+
 endif
-"
+
 " }}}2
-"
+
 "-------------------------------------------------------------------------------
 " GetInfo : Initialize the script.   {{{1
 "-------------------------------------------------------------------------------
@@ -383,28 +412,34 @@ endfunction    " ----------  end of function mmtoolbox#cmake#AddMaps  ----------
 " AddMenu : Add menus.   {{{1
 "-------------------------------------------------------------------------------
 function! mmtoolbox#cmake#AddMenu ( root, esc_mapl )
-	"
+
 	exe 'amenu '.a:root.'.run\ CMake<Tab>:CMake!   :CMake! '
 	exe 'amenu '.a:root.'.&run\ make<Tab>:CMake    :CMake '
-	"
+
+	if s:UNIX
+		exe 'amenu '.a:root.'.run\ &ccmake<Tab>:CMakeCurses    :CMakeCurses '
+		exe 'amenu '.a:root.'.run\ cmake-&gui<Tab>:CMakeGui    :CMakeGui '
+	endif
+
 	exe 'amenu '.a:root.'.-Sep01- <Nop>'
-	"
+
 	exe 'amenu '.a:root.'.project\ &directory<Tab>:CMakeProjectDir     :CMakeProjectDir '
 	exe 'amenu '.a:root.'.build\ &location<Tab>:CMakeBuildLocation     :CMakeBuildLocation '
-	"
+
 	exe 'amenu '.a:root.'.-Sep02- <Nop>'
-	"
+
 	exe 'amenu '.a:root.'.help\ &commands<Tab>:CMakeHelpCommand    :CMakeHelpCommand<CR>'
 	exe 'amenu '.a:root.'.help\ &modules<Tab>:CMakeHelpModule      :CMakeHelpModule<CR>'
 	exe 'amenu '.a:root.'.help\ &policies<Tab>:CMakeHelpPolicy     :CMakeHelpPolicy<CR>'
 	exe 'amenu '.a:root.'.help\ &property<Tab>:CMakeHelpProperty   :CMakeHelpProperty<CR>'
 	exe 'amenu '.a:root.'.help\ &variables<Tab>:CMakeHelpVariable  :CMakeHelpVariable<CR>'
-	"
+
 	exe 'amenu '.a:root.'.-SEP03- <Nop>'
-	"
-	exe 'amenu '.a:root.'.&help<Tab>:CMakeHelp          :CMakeHelp<CR>'
-	exe 'amenu '.a:root.'.&settings<Tab>:CMakeSettings  :CMakeSettings<CR>'
-	"
+
+	exe 'amenu '.a:root.'.runtime\ &info<Tab>:CMakeRuntime  :CMakeRuntime<CR>'
+	exe 'amenu '.a:root.'.&settings<Tab>:CMakeSettings      :CMakeSettings<CR>'
+	exe 'amenu '.a:root.'.&help<Tab>:CMakeHelp              :CMakeHelp<CR>'
+
 endfunction    " ----------  end of function mmtoolbox#cmake#AddMenu  ----------
 "
 "-------------------------------------------------------------------------------
@@ -479,22 +514,32 @@ endfunction    " ----------  end of function s:HelpPlugin  ----------
 " s:Settings : Plugin settings.   {{{1
 "-------------------------------------------------------------------------------
 function! s:Settings ( verbose )
-	"
+
 	if     s:MSWIN | let sys_name = 'Windows'
 	elseif s:UNIX  | let sys_name = 'UNIX'
 	else           | let sys_name = 'unknown' | endif
-	"
+
 	let cmake_status = executable( s:CMake_Executable ) ? '' : ' (not executable)'
 	let make_status  = executable( s:CMake_MakeTool   ) ? '' : ' (not executable)'
-	"
+
+	let ccmake_status = executable( s:CMake_CCMakeExec ) ? '' : ' (not executable)'
+	let gui_status    = executable( s:CMake_GuiExec    ) ? '' : ' (not executable)'
+
 	let	txt = " CMake-Support settings\n\n"
 				\ .'     plug-in installation :  toolbox on '.sys_name."\n"
 				\ .'         cmake executable :  '.s:CMake_Executable.cmake_status."\n"
 				\ .'                make tool :  '.s:CMake_MakeTool.make_status."\n"
-				\ .'            using toolbox :  version '.g:Toolbox_Version." by Wolfgang Mehner\n"
+	if s:UNIX
+		let txt .=
+					\  '        ccmake executable :  '.s:CMake_CCMakeExec.ccmake_status."\n"
+					\ .'     cmake-gui executable :  '.s:CMake_GuiExec.gui_status."\n"
+	endif
+	let txt .=
+				\  '            using toolbox :  version '.g:Toolbox_Version." by Wolfgang Mehner\n"
 	if a:verbose
 		let	txt .= "\n"
 					\ .'            jump to error :  '.g:CMake_JumpToError."\n"
+					\ .'      filter fast targets :  '.g:CMake_FilterFastTargets."\n"
 					\ ."\n"
 					\ .'        project directory :  '.s:ProjectDir."\n"
 					\ .'           build location :  '.s:BuildLocation."\n"
@@ -502,7 +547,7 @@ function! s:Settings ( verbose )
 	let txt .=
 				\  "________________________________________________________________________________\n"
 				\ ." CMake-Tool, Version ".g:CMake_Version." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
-	"
+
 	if a:verbose == 2
 		split CMake_Settings.txt
 		put = txt
@@ -510,7 +555,23 @@ function! s:Settings ( verbose )
 		echo txt
 	endif
 endfunction    " ----------  end of function s:Settings  ----------
-"
+
+"-------------------------------------------------------------------------------
+" s:RuntimeInfo : Display everything that's important during work.   {{{1
+"-------------------------------------------------------------------------------
+function! s:RuntimeInfo ()
+	let jump_cmake = g:CMake_JumpToError == 'cmake' || g:CMake_JumpToError == 'both' ? 'x' : ' '
+	let jump_make  = g:CMake_JumpToError == 'make'  || g:CMake_JumpToError == 'both' ? 'x' : ' '
+
+	let	txt = " CMake-Support runtime information\n\n"
+				\ .'            jump to error :  cmake ('.jump_cmake.') , make ('.jump_make.")\n"
+				\ .'      filter fast targets :  '.g:CMake_FilterFastTargets."\n"
+				\ ."\n"
+				\ .'        project directory :  '.s:ProjectDir."\n"
+				\ .'           build location :  '.s:BuildLocation."\n"
+	echo txt
+endfunction    " ----------  end of function s:RuntimeInfo  ----------
+
 "-------------------------------------------------------------------------------
 " Modul setup (abort early?).   {{{1
 "-------------------------------------------------------------------------------
@@ -823,8 +884,58 @@ function! s:HelpJump ( type )
 	call s:Help ( a:type, line )
   "
 endfunction    " ----------  end of function s:HelpJump  ----------
+
+"-------------------------------------------------------------------------------
+" s:StartCCMake : Start 'ccmake' in using xterm in the background.   {{{1
+"-------------------------------------------------------------------------------
+function! s:StartCCMake ( args )
+
+	if ! s:UNIX || ! s:EnabledCCMake || ! executable ( s:Xterm_Executable )
+		return
+	endif
+
+	if a:args == '' && isdirectory ( s:BuildLocation )
+		let param = shellescape ( s:BuildLocation )
+	elseif a:args == '' && isdirectory ( s:ProjectDir )
+		let param = shellescape ( s:ProjectDir )
+	else
+		let param = escape ( a:args, '%#' )
+	endif
+
+	let title = 'CCMake'
+	if param != ''
+		let title .= ' : '.fnamemodify( param, ':p' )
+	endif
+
+	silent exe '!'.s:Xterm_Executable.' '.g:Xterm_Options
+				\ .' -title '.shellescape( title )
+				\ .' -e '.shellescape( s:CMake_CCMakeExec.' '.param ).' &'
+
+endfunction    " ----------  end of function s:StartCCMake  ----------
+
+"-------------------------------------------------------------------------------
+" s:StartGui : Start 'cmake-gui' in the background.   {{{1
+"-------------------------------------------------------------------------------
+function! s:StartGui ( args )
+
+	if ! s:UNIX || ! s:EnabledCMakeGui
+		return
+	endif
+
+	if a:args == '' && isdirectory ( s:BuildLocation )
+		let param = shellescape ( s:BuildLocation )
+	elseif a:args == '' && isdirectory ( s:ProjectDir )
+		let param = shellescape ( s:ProjectDir )
+	else
+		let param = escape ( a:args, '%#' )
+	endif
+
+	silent exe '!'.shellescape( s:CMake_GuiExec ).' '.param.' &'
+
+endfunction    " ----------  end of function s:StartGui  ----------
+
 " }}}1
 "-------------------------------------------------------------------------------
-"
+
 " =====================================================================================
 "  vim: foldmethod=marker
