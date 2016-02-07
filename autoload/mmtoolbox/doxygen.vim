@@ -396,7 +396,7 @@ function! mmtoolbox#doxygen#Property ( mode, key, ... )
 		" expand replaces the escape sequences from the cmdline
 		if val =~ '\S'
 			let s:LogFile = fnamemodify( expand( val ), ":p" )
-		elseif s:Question ( 'set local file to an empty string?' ) == 1
+		elseif s:Question ( 'set log file to an empty string?' ) == 1
 			let s:LogFile = ''
 		endif
 	elseif a:key == 'warning-file'

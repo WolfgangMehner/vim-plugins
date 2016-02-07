@@ -206,4 +206,4 @@ A.  CHANGE LOG                                       *toolbox-make-change-log*
 - Initial upload.
 
 ==============================================================================
-vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
+vim:tw=78:expandtab:ts=2:ft=help:norl:

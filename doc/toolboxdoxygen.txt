@@ -242,6 +242,11 @@ the .vimrc file.
 The executable is set by g:Doxygen_Executable: >
   let g:Doxygen_Executable = 'doxygen'
 <
+------------------------------------------------------------------------------
+                                                        *g:Doxygen_WizardExec*
+The executable of doxywizard is set by g:Doxygen_WizardExec: >
+  let g:Doxygen_Executable = 'doxywizard'
+<
 ==============================================================================
 A.  CHANGE LOG                                    *toolbox-doxygen-change-log*
 ==============================================================================
@@ -272,4 +277,4 @@ A.  CHANGE LOG                                    *toolbox-doxygen-change-log*
 - Initial upload.
 
 ==============================================================================
-vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
+vim:tw=78:expandtab:ts=2:ft=help:norl:

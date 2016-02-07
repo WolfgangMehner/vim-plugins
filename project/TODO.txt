@@ -126,8 +126,9 @@ Toolbox:
 - CMake: Does the help work at all under Windows?
 - CMake: Names of help buffers, can we use brackets, other characters (Windows)?
 - CMake: Run CMakeSetup.exe (Windows)
-- CMake: Run ccmake (in xterm), cmake-gui (UNIX)
-- Doxygen: Run doxywizard (UNIX, Windows?)
+- (DONE) CMake: Run ccmake (in xterm), cmake-gui (UNIX)
+- (DONE) Doxygen: Run doxywizard (UNIX)
+- Doxygen: Find doxywizard executable for Windows
 - Make: Use option 'Make_Executable'.
 
 Snippets:
