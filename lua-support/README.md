@@ -1,4 +1,4 @@
-README for lua-support.vim (Version 1.0pre) / January 08 2016
+README for lua-support.vim (Version 1.0) / February 08 2016
 ================================================================================
 
   *  INSTALLATION
@@ -156,6 +156,10 @@ structure which is needed below the local installation directory
    for your _vimrc and _gvimrc. You may want to use parts of them. The files
    are documented.
 
+(2.6) Make sure the shell is set up correctly. The options 'shell',
+   'shellcmdflag', 'shellquote', and 'shellxquote' must be set accordingly.
+   Compare `:help luasupport-troubleshooting`.
+
 
 (3) ADDITIONAL REMARKS
 ----------------------------------------------------------------------
@@ -188,7 +192,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 RELEASE NOTES
 ================================================================================
 
-RELEASE NOTES FOR VERSION 1.0pre
+RELEASE NOTES FOR VERSION 1.0
 ----------------------------------------------------------------------
 - The default style used by the template library is now 'Lua_52'.
   You can change it in the template customization file (see below).
@@ -201,6 +205,7 @@ RELEASE NOTES FOR VERSION 1.0pre
 - Add maps and menu entries to jump to it conveniently.
 - New and improved templates, add Lua 5.3.
 - Add Lua C-API templates.
+- Fix running and compiling scripts under Windows.
 - Minor improvements.
 
 

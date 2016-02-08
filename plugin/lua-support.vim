@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:Lua_Version') && ! exists('g:Lua_DevelopmentOverwrite') )
 	finish
 endif
-let g:Lua_Version= '1.0pre'     " version number of this script; do not change
+let g:Lua_Version= '1.0'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
@@ -125,7 +125,28 @@ function! s:ImportantMsg ( ... )
 	echo join ( a:000, "\n" )
 	echohl None
 endfunction    " ----------  end of function s:ImportantMsg  ----------
+
+"-------------------------------------------------------------------------------
+" s:ShellEscExec : Escape an executable for the shell   {{{2
 "
+" Parameters:
+"   exec - the name of the executable (string)
+" Returns:
+"   exec - the escaped version (string)
+"
+" Uses 'shellescape', except under Windows if the shell is "cmd.exe". In that
+" case, all spaces are escaped with "^^".
+"-------------------------------------------------------------------------------
+
+function! s:ShellEscExec ( exec )
+	if s:MSWIN && &shell =~ 'cmd.exe'
+		"return substitute ( a:exec, ' ', '^^&', 'g' )
+		return shellescape ( a:exec )
+	else
+		return shellescape ( a:exec )
+	endif
+endfunction    " ----------  end of function s:ShellEscExec  ----------
+
 "-------------------------------------------------------------------------------
 " s:SID : Return the <SID>.   {{{2
 "
@@ -275,7 +296,11 @@ let s:CmdLineEscChar = ' |"\'
 let s:Lua_LoadMenus             = 'auto'       " load the menus?
 let s:Lua_RootMenu              = '&Lua'       " name of the root menu
 "
-let s:Lua_OutputMethodList      = [ 'vim-io', 'vim-qf', 'buffer', 'xterm' ]
+if s:MSWIN
+	let s:Lua_OutputMethodList = [ 'vim-io', 'vim-qf', 'buffer' ]
+else
+	let s:Lua_OutputMethodList = [ 'vim-io', 'vim-qf', 'buffer', 'xterm' ]
+endif
 let s:Lua_OutputMethod          = 'vim-io'     " 'vim-io', 'vim-qf', 'buffer' or 'xterm'
 let s:Lua_DirectRun             = 'no'         " 'yes' or 'no'
 let s:Lua_LineEndCommColDefault = 49
@@ -973,13 +998,15 @@ function! Lua_Run ( args )
 				\ .'%f:%l: %m'
 	"
 	if s:Lua_DirectRun == 'yes' && executable ( expand ( '%:p' ) )
-		let exec   = shellescape ( expand ( '%:p' ) )
+		let exec   = expand ( '%:p' )
 		let script = ''
 	else
-		let exec   = shellescape ( s:Lua_Executable )
+		let exec   = s:Lua_Executable
 		let script = shellescape ( expand ( '%' ) )
 	endif
-	"
+
+	let exec = s:ShellEscExec ( exec )
+
 	if s:Lua_OutputMethod == 'vim-io'
 		"
 		" method : "vim - interactive"
@@ -1050,7 +1077,7 @@ function! Lua_Run ( args )
 		setlocal modifiable
 		"
 		silent exe '%delete _'
-		exe '0r!'.exec.' '.script.' '.a:args
+		silent exe '0r!'.exec.' '.script.' '.a:args
 		silent exe '$delete _'
 		"
 		if v:shell_error == 0
@@ -1131,7 +1158,7 @@ function! Lua_Compile( mode ) range
 	"
 	" run code checker
 	" :TODO:26.03.2014 20:54:WM: check escaping of errorformat
-	let &l:makeprg = shellescape( s:Lua_CompilerExec )
+	let &l:makeprg = s:ShellEscExec( s:Lua_CompilerExec )
 	let &l:errorformat = substitute( s:Lua_CompilerExec, '%\\%\\', '%\', 'g' ).': %f:%l: %m,'.substitute( s:Lua_CompilerExec, '%\\%\\', '%\', 'g' ).': %m'
 	"
 	let v:statusmsg = ''                               " reset, so we are able to check it below
@@ -1320,7 +1347,7 @@ function! s:SetupTemplates()
 	endif
 	"
 	" local templates (optional for global installation)
-	if s:installation == 'global'
+	if s:installation == 'system'
 		call mmtemplates#core#ReadTemplates ( g:Lua_Templates, 'load', s:Lua_LocalTemplateFile,
 					\ 'name', 'local', 'map', 'ntl', 'optional', 'hidden' )
 	else
@@ -1804,7 +1831,9 @@ function! s:InitMenus()
 	exe shead.'output\ method.vim\ &io<TAB>interactive   :call Lua_SetOutputMethod("vim-io")<CR>'
 	exe shead.'output\ method.vim\ &qf<TAB>quickfix      :call Lua_SetOutputMethod("vim-qf")<CR>'
 	exe shead.'output\ method.&buffer<TAB>quickfix       :call Lua_SetOutputMethod("buffer")<CR>'
-	exe shead.'output\ method.&xterm<TAB>interactive     :call Lua_SetOutputMethod("xterm")<CR>'
+	if ! s:MSWIN
+		exe shead.'output\ method.&xterm<TAB>interactive     :call Lua_SetOutputMethod("xterm")<CR>'
+	endif
 	"
 	" run -> direct run
 	"

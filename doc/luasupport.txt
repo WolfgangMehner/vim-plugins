@@ -1,8 +1,8 @@
-*luasupport.txt*                 Lua Support                       Jan 08 2016
+*luasupport.txt*                 Lua Support                       Feb 08 2016
 
 Lua Support                                          *lua-support* *luasupport*
 
-                             Plug-in version 1.0pre
+                             Plug-in version 1.0
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -43,6 +43,7 @@ Lua is: Copyright 1994-2015 Lua.org, PUC-Rio.
  4.1    Executables                     |luasupport-config-executable|
  4.1.1   Direct Run                     |luasupport-config-direct-run|
  4.1.2   Output Redirection             |luasupport-config-output|
+ 4.1.3   Xterm                          |luasupport-config-xterm|
  4.2    Menus                           |luasupport-config-menus|
  4.3    Maps                            |luasupport-config-maps|
  4.4    Comments                        |luasupport-config-comments|
@@ -615,7 +616,7 @@ Further customization is carried out in the template library:
   |g:Lua_BinPath|           - -empty-
   |g:Lua_Executable|        - g:Lua_BinPath + lua
   |g:Lua_CompilerExec|      - g:Lua_BinPath + luac
-(^2) UNIX only
+(^2) UNIX only, see |luasupport-config-xterm|
 
 ------------------------------------------------------------------------------
 4.1  EXECUTABLES                                *luasupport-config-executable*
@@ -704,10 +705,13 @@ The possible settings are listed below:
   'vim-io' (default)  run on the Vim command-line (supports input operations)
   'vim-qf'            print output on the Vim cmd.-line (supports quickfix)
   'buffer'            redirect the output into a buffer (supports quickfix)
-  'xterm'             run in a separate xterm (supports input operations)
+  'xterm'             run in a separate xterm (supports input operations;
+                       UNIX only, see |luasupport-config-xterm|)
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
+
+4.1.3  Xterm                                         *luasupport-config-xterm*
 
 The xterm related functionality is only available under UNIX. It is used to
 run interactive commands.
@@ -1039,6 +1043,10 @@ A.  TROUBLESHOOTING - KNOWN ISSUES                *luasupport-troubleshooting*
   - Is the $PATH variable set correctly?
   - Are the settings correct? See:
       :help luasupport-config-executable
+  - Under Windows, make sure the options 'shell', 'shellcmdflag',
+    'shellquote', and 'shellxquote' are set correctly. If "cmd.exe" is used as
+    the 'shell', 'shellxquote' must be set to a double quote:
+      :set shellxquote=\"
 
 ==============================================================================
 B.  RELEASE NOTES - CHANGE LOG                      *luasupport-release-notes*
