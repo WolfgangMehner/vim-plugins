@@ -19,7 +19,7 @@ targets. CMake's help can be quickly accessed within Vim.
  2.    Commands                                   |toolbox-cmake-commands|
  2.1    API                                       |toolbox-cmake-api|
  3.    Configuration                              |toolbox-cmake-config|
- 4.    Known Issues                               |toolbox-cmake-issues|
+ 4.    Troubleshooting - Known Issues             |toolbox-cmake-issues|
 
  A.    Change Log                                 |toolbox-cmake-change-log|
 
@@ -35,7 +35,8 @@ be given directly, for example: >
 After that, :CMake (without a bang) can be used to execute the make tool in
 the build location: >
   :CMake -j3
-Errors will be listed in the quick-fix buffer.
+Errors will be listed in the quick-fix buffer. You can view the cached
+variables using |:CMakeCache|.
 
 The :CMake command has command-line completion for the targets of the makefile
 in the build location.
@@ -56,6 +57,8 @@ below.
  ----------------------------------------------------------------------------
   |:CMake|! [<args>]              run CMake with the given arguments
   |:CMake| [<args>]               run make with the given arguments
+
+  |:CMakeCache| [<arg>]           show the cached variables
 
   |:CMakeCurses| [<args>]         run ccmake with the given arguments
   |:CMakeGui| [<args>]            run cmake-gui with the given arguments
@@ -99,6 +102,28 @@ to the directory configured with |:CMakeBuildLocation|.
 The command has command-line completion for the targets of the makefile in the
 build location. All targets named ".../fast" can be hidden by setting
 |g:CMake_FilterFastTargets|.
+
+------------------------------------------------------------------------------
+                                                                 *:CMakeCache*
+  :CMakeCache [<arg>] ~
+
+Open a buffer which lists the cached variables of the current build (see
+|:CMakeBuildLocation|). The optional argument can be used to include advanced
+variables and/or help for each variable.
+
+The argument 'arg' can be one of the following (use tab-completion):
+
+  -L    - list non-advanced cached variables (default)
+  -LA   - ... include advanced variables
+  -LH   - include the help for each variable
+  -LAH  - ... include advanced variables
+
+In the cache buffer, several maps are defined.
+
+  Map           Meaning
+ ----------------------------------------------------------------------------
+  q             close the buffer
+ ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
                                                       *:CMakeCurses* *:CMakeGui*
@@ -214,10 +239,11 @@ the .vimrc file.
 
   Variable                  Default       Description and further information
  ----------------------------------------------------------------------------
+  |g:CMake_BinPath|           ''            the path to the CMake binaries (^1)
   |g:CMake_Executable|        'cmake'       the CMake executable
   |g:CMake_MakeTool|          'make'        the make executable
-  |g:CMake_CCMakeExec|        'ccmake'      the ccmake executable (^1)
-  |g:CMake_GuiExec|           'cmake-gui'   the cmake-gui executable (^1)
+  |g:CMake_CCMakeExec|        'ccmake'      the ccmake executable (^2)
+  |g:CMake_GuiExec|           'cmake-gui'   the cmake-gui executable
 
   |g:CMake_JumpToError|       'cmake'       whether to jump to the first error
                                             automatically
@@ -225,29 +251,50 @@ the .vimrc file.
                                             targets when tab-completing make
                                             targets
 
-  g:Xterm_Executable        'xterm'       the xterm executable (^2)
-  g:Xterm_Options           '...'         the xterm default settings (^2)
+  g:Xterm_Executable        'xterm'       the xterm executable (^3)
+  g:Xterm_Options           '...'         the xterm default settings (^3)
  ----------------------------------------------------------------------------
 
-(^1) UNIX only
-(^2) UNIX only, see |toolbox-cmake-xterm|
+(^1)
+  The Unix defaults are as follows:
+  |g:CMake_BinPath|           - -empty-
+  |g:CMake_Executable|        - g:CMake_BinPath + cmake
+  |g:CMake_CCMakeExec|        - g:CMake_BinPath + ccmake
+  |g:CMake_GuiExec|           - g:CMake_BinPath + cmake-gui
+  the Windows defaults are as follows:
+  |g:CMake_BinPath|           - -empty-
+  |g:CMake_Executable|        - g:CMake_BinPath + cmake.exe
+  |g:CMake_GuiExec|           - g:CMake_BinPath + cmake-gui.exe
+(^2) UNIX only
+(^3) UNIX only, see |toolbox-cmake-xterm|
 
 ------------------------------------------------------------------------------
+                                                             *g:CMake_BinPath*
+The path to the executables is set by g:CMake_BinPath: >
+  let g:CMake_BinPath = '/usr/local/bin/'
+Since cmake and cmake-gui will be on the path, this will not be necessary on
+most UNIX systems.
+
+For Windows, set up the binary path similar to this: >
+  let g:CMake_BinPath = 'C:\Program Files\CMake\bin\'
+<
+The defaults for |g:CMake_Executable|, |g:CMake_CCMakeExec| and
+|g:CMake_GuiExec| are derived from g:CMake_BinPath. However, the setting
+g:CMake_BinPath is only used to derive the defaults. If one of the executables
+is set explicitly, it has to be set with the whole path.
+
                                                           *g:CMake_Executable*
 The executable is set by g:CMake_Executable: >
   let g:CMake_Executable = 'cmake'
 <
-------------------------------------------------------------------------------
                                                             *g:CMake_MakeTool*
 The make executable is set by g:CMake_MakeTool: >
   let g:CMake_MakeTool = 'make'
 <
-------------------------------------------------------------------------------
                                                           *g:CMake_CCMakeExec*
 The make executable is set by g:CMake_CCMakeExec: >
   let g:CMake_CCMakeExec = 'ccmake'
 <
-------------------------------------------------------------------------------
                                                              *g:CMake_GuiExec*
 The cmake-gui executable is set by g:CMake_GuiExec: >
   let g:CMake_GuiExec = 'cmake-gui'
@@ -315,8 +362,18 @@ The behavior can be changed on the fly by settings the variable to a different
 value on the command line.
 
 ==============================================================================
-4.  KNOWN ISSUES                                        *toolbox-cmake-issues*
+4.  TROUBLESHOOTING - KNOWN ISSUES                      *toolbox-cmake-issues*
 ==============================================================================
+
+* cmake, ccmake, or cmake-gui are not running.
+  - Are they executable from the command line?
+  - Is the $PATH variable set correctly?
+  - Are the settings correct? See:
+      :help |toolbox-cmake-config|
+  - Under Windows, make sure the options 'shell', 'shellcmdflag',
+    'shellquote', and 'shellxquote' are set correctly. If "cmd.exe" is used as
+    the 'shell', 'shellxquote' must be set to a double quote:
+      :set shellxquote=\"
 
 * Some of the errors are not recognized by the quickfix mechanism.
   - Unfortunately, CMake's automatically generated Makefiles seem to output
@@ -333,10 +390,13 @@ A.  CHANGE LOG                                      *toolbox-cmake-change-log*
 ------------------------------------------------------------------------------
 
 - Add: Command-line completion for Make targets and configuration
-  g:CMake_FilterFastTargets.
-- Add: Command :CMakeCurses and configuration g:CMake_CCMakeExec.
-- Add: Command :CMakeGui and configuration g:CMake_GuiExec.
-- Add: Command :CMakeRuntime.
+  |g:CMake_FilterFastTargets|.
+- Add: Command |:CMakeCache|.
+- Add: Command |:CMakeCurses| and configuration |g:CMake_CCMakeExec|. (UNIX only)
+- Add: Command |:CMakeGui| and configuration |g:CMake_GuiExec|.
+- Add: Command |:CMakeRuntime|.
+- Add: Configuration |g:CMake_BinPath|.
+- Change: Enable the cmake help under Windows.
 - Change: Echo a different message if the build succeeded, but warnings are
   present.
 - Internal changes, less global functions.
@@ -348,7 +408,7 @@ A.  CHANGE LOG                                      *toolbox-cmake-change-log*
 ------------------------------------------------------------------------------
 
 - Change: The commands :CMake and :CMake! only jump to the first error
-  automatically if the setting g:CMake_JumpToError is set accordingly.
+  automatically if the setting |g:CMake_JumpToError| is set accordingly.
 - Change: Improved jumping in help buffers.
 - Minor changes.
 
