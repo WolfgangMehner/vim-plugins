@@ -120,12 +120,11 @@ Vim:
 - (WM, DONE) 'code->comment' should not insert a space following the quote.
 
 Toolbox:
-- CMake: Does the help work at all under Windows?
-- CMake: Names of help buffers, can we use brackets, other characters (Windows)?
-- CMake: Run CMakeSetup.exe (Windows)
-- (DONE) CMake: Run ccmake (in xterm), cmake-gui (UNIX)
+- (DONE) CMake: Does the help work at all under Windows? -> Yes.
+- (DONE) CMake: Names of help buffers, can we use brackets, other characters (Windows)?
+- (DONE) CMake: Run ccmake (in xterm), cmake-gui (UNIX and Windows)
 - (DONE) Doxygen: Run doxywizard (UNIX)
-- Doxygen: Find doxywizard executable for Windows
+- (DONE) Doxygen: Find doxywizard executable for Windows
 - Make: Use option 'Make_Executable'.
 
 Snippets:

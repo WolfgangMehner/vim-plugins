@@ -1,4 +1,4 @@
-*toolboxdoxygen.txt*              Doxygen Tool                     Feb 01 2016
+*toolboxdoxygen.txt*              Doxygen Tool                     Feb 14 2016
 
 Doxygen Tool                                                 *toolbox-doxygen*
 
@@ -19,6 +19,7 @@ related files.
  2.    Commands                                   |toolbox-doxygen-commands|
  2.1    API                                       |toolbox-doxygen-api|
  3.    Configuration                              |toolbox-doxygen-config|
+ 4.    Troubleshooting - Known Issues             |toolbox-doxygen-issues|
 
  A.    Change Log                                 |toolbox-doxygen-change-log|
 
@@ -233,20 +234,58 @@ the .vimrc file.
 
   Variable                  Default       Description and further information
  ----------------------------------------------------------------------------
+  |g:Doxygen_BinPath|         ''            the path to the binaries (^1)
   |g:Doxygen_Executable|      'doxygen'     the Doxygen executable
   |g:Doxygen_WizardExec|      'doxywizard'  the doxywizard executable
  ----------------------------------------------------------------------------
 
+(^1)
+  The Unix defaults are as follows:
+  |g:Doxygen_BinPath|         - -empty-
+  |g:Doxygen_Executable|      - g:Doxygen_BinPath + doxygen
+  |g:Doxygen_WizardExec|      - g:Doxygen_BinPath + doxywizard
+  the Windows defaults are as follows:
+  |g:Doxygen_BinPath|         - -empty-
+  |g:Doxygen_Executable|      - g:Doxygen_BinPath + doxygen.exe
+  |g:Doxygen_WizardExec|      - g:Doxygen_BinPath + doxywizard.exe
+
 ------------------------------------------------------------------------------
+                                                           *g:Doxygen_BinPath*
+The path to the executables is set by g:Doxygen_BinPath: >
+  let g:Doxygen_BinPath = '/usr/local/bin/'
+Since doxygen and doxywizard will be on the path, this will not be necessary
+on most UNIX systems.
+
+For Windows, set up the binary path similar to this: >
+  let g:Doxygen_BinPath = 'C:\Program Files\doxygen\bin\'
+<
+The defaults for |g:Doxygen_Executable| and |g:Doxygen_WizardExec| are derived
+from g:Doxygen_BinPath. However, the setting g:Doxygen_BinPath is only used to
+derive the defaults. If one of the executables is set explicitly, it has to be
+set with the whole path.
+
                                                         *g:Doxygen_Executable*
 The executable is set by g:Doxygen_Executable: >
   let g:Doxygen_Executable = 'doxygen'
 <
-------------------------------------------------------------------------------
                                                         *g:Doxygen_WizardExec*
 The executable of doxywizard is set by g:Doxygen_WizardExec: >
   let g:Doxygen_Executable = 'doxywizard'
 <
+==============================================================================
+4.  TROUBLESHOOTING - KNOWN ISSUES                    *toolbox-doxygen-issues*
+==============================================================================
+
+* doxygen or doxywizard are not running.
+  - Are they executable from the command line?
+  - Is the $PATH variable set correctly?
+  - Are the settings correct? See:
+      :help |toolbox-doxygen-config|
+  - Under Windows, make sure the options 'shell', 'shellcmdflag',
+    'shellquote', and 'shellxquote' are set correctly. If "cmd.exe" is used as
+    the 'shell', 'shellxquote' must be set to a double quote:
+      :set shellxquote=\"
+
 ==============================================================================
 A.  CHANGE LOG                                    *toolbox-doxygen-change-log*
 ==============================================================================
@@ -255,8 +294,9 @@ A.  CHANGE LOG                                    *toolbox-doxygen-change-log*
   RELEASE NOTES FOR VERSION 0.9.2
 ------------------------------------------------------------------------------
 
-- Add: Command :DoxygenWizard and configuration g:Doxygen_WizardExec.
-- Add: Command :DoxygenRuntime.
+- Add: Command |:DoxygenWizard| and configuration |g:Doxygen_WizardExec|.
+- Add: Command |:DoxygenRuntime|.
+- Add: Configuration |g:Doxygen_BinPath|.
 - Internal changes, less global functions.
 - Further internal changes.
 - Minor changes.

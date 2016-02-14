@@ -229,12 +229,23 @@ let s:LogFile     = '.doxygen.log'
 let s:WarningFile = '.doxygen.warn'
 
 if s:MSWIN
-	" :TODO:17.01.2016 23:29:WM: check Windows Doxygen executable
-	let s:Doxygen_Executable = 'C:\Program Files\Doxygen\bin\doxygen.exe'
-	let s:Doxygen_WizardExec = 'C:\Program Files\Doxygen\bin\doxywizard.exe'
+	let s:Doxygen_BinPath = ''
 else
-	let s:Doxygen_Executable = 'doxygen'
-	let s:Doxygen_WizardExec = 'doxywizard'
+	let s:Doxygen_BinPath = ''
+endif
+
+call s:GetGlobalSetting ( 'Doxygen_BinPath' )
+
+if s:MSWIN
+	let s:Doxygen_BinPath = substitute ( s:Doxygen_BinPath, '[^\\/]$', '&\\', '' )
+
+	let s:Doxygen_Executable = s:Doxygen_BinPath.'doxygen.exe'
+	let s:Doxygen_WizardExec = s:Doxygen_BinPath.'doxywizard.exe'
+else
+	let s:Doxygen_BinPath = substitute ( s:Doxygen_BinPath, '[^\\/]$', '&/', '' )
+
+	let s:Doxygen_Executable = s:Doxygen_BinPath.'doxygen'
+	let s:Doxygen_WizardExec = s:Doxygen_BinPath.'doxywizard'
 endif
 
 call s:GetGlobalSetting ( 'Doxygen_Executable' )
