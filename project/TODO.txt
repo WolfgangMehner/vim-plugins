@@ -1,6 +1,7 @@
 Interesting:
 - Documentation of Windows idiosyncrasies:
     :help win32
+- Dictionary API: http://dictionaryapi.net/
 
 Project:
 - (FM,WM, DONE?) Use normal!, noremap and noremenu consistently.
@@ -9,6 +10,11 @@ Project:
 - (WM, DONE?) Improve 'adjust end-of-line comment' to change the line if the comment
   itself contains ignored sections?
 - (WM) Remove old ".../rc/sample_template_file".
+- Do not always jump to errors automatically from the quickfix list. Make this
+  configurable.
+- Configure the template which is inserted automatically when a new file is
+  created.
+- Use 'Xterm_Executable' and 'Xterm_Options' everywhere.
 
 vim.org:
 - (FM, DONE?) Reference github on plug-in pages.

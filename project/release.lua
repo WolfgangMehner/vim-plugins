@@ -22,6 +22,7 @@
 --                - list
 --                - check
 --                - zip
+--                - archive
 --                - cp-repo
 --                - help
 --
@@ -397,6 +398,20 @@ elseif args[2] == 'zip' then
 		print ( '\n=== failed: '..res_reason..' '..res_status..' ===\n' )
 	end
 
+elseif args[2] == 'archive' then
+
+	local cmd = 'git archive --prefix='..plugin_name..'-support/'..' --output='..outfile..' HEAD'
+
+	print ( '\n=== executing: '..outfile..' ===\n' )
+
+	local success, res_reason, res_status = os.execute ( cmd )
+
+	if success then
+		print ( '\n=== successful ===\n' )
+	else
+		print ( '\n=== failed: '..res_reason..' '..res_status..' ===\n' )
+	end
+
 elseif args[2] == 'cp-repo' then
 
 	if #args >= 3 then
@@ -476,7 +491,8 @@ if print_help then
 	print ( 'Modes:' )
 	print ( '\tlist           - list all files' )
 	print ( '\tcheck          - check the release' )
-	print ( '\tzip            - create archive' )
+	print ( '\tzip            - create archive via "zip"' )
+	print ( '\tarchive        - create archive via "git archive"' )
 	print ( '\tcp-repo <dest> - copy the repository' )
 	print ( '\thelp           - print help' )
 	print ( '' )
