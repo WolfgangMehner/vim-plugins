@@ -61,14 +61,15 @@ C/C++:
     anymore, since the Make integration moves to the toolbox. It is to be
     documented as configuration for 'Run->run', similar to 'Run->cmdline arg.'.
     Shortcut changes to '\re'.
-- (WM) Doxygen:
-  * (DONE) Templates for "overload".
-  * (DONE) Append "short, after member" to several lines.
+- (DONE) Doxygen:
+  * Templates for "overload".
+  * Append "short, after member" to several lines.
   * Add escaped characters "\" and "|" once the template engine supports this.
-  * But "|" is included for Qt compatibility only.
-  * What is ".", "--", and "---"?
-- (WM) Documentation: The documentation of "g:Templates_MapInUseWarn" is wrong.
-- (WM) Documentation: Change the description of the Doxygen setup.
+- (DONE) Documentation: Change the description of the Doxygen setup.
+- README: Change the description of the Doxygen setup.
+- Documentation: Adding additional template files.
+- Configure the template which is inserted automatically when a new file is
+  created.
 
 Git:
 - (WM, DONE) Add more suggestions for custom menu entries to 's:Git_CustomMenu'.

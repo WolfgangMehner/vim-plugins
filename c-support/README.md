@@ -1,4 +1,4 @@
-README for c.vim (Version 6.2pre) / January 02 2016
+README for c.vim (Version 6.2) / February 16 2016
 ================================================================================
 
   *  INSTALLATION
@@ -164,6 +164,10 @@ structure which is needed below the local installation directory $HOME/vimfiles/
 
       :help csupport-doxygen-enable
 
+(2.7) Make sure the shell is set up correctly. The options 'shell',
+   'shellcmdflag', 'shellquote', and 'shellxquote' must be set consistently.
+   Compare `:help csupport-troubleshooting`.
+
 
 (3) ADDITIONAL REMARKS
 ----------------------------------------------------------------------
@@ -198,7 +202,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 RELEASE NOTES
 ================================================================================
 
-RELEASE NOTES FOR VERSION 6.2pre
+RELEASE NOTES FOR VERSION 6.2
 ----------------------------------------------------------------------
 - Add 'g:C_CustomTemplateFile'.
 - Add template personalization file and setup wizard.

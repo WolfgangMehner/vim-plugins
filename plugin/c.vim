@@ -41,7 +41,7 @@ endif
 if exists("g:C_Version") || &cp
  finish
 endif
-let g:C_Version= "6.2pre"								" version number of this script; do not change
+let g:C_Version= "6.2"								" version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  C_CheckGlobal   {{{1
@@ -2136,7 +2136,7 @@ function! C_Settings ( verbose )
 		let txt = txt."CodeCheck (TM) options(s) :  ".ausgabe."\n"
 	endif
 	let	txt = txt."__________________________________________________________________________\n"
-	let	txt = txt." C/C++-Support, Version ".g:C_Version." / Dr.-Ing. Fritz Mehner / mehner.fritz@web.de\n\n"
+	let	txt = txt." C/C++-Support, Version ".g:C_Version." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
 	"
 	if a:verbose == 2
 		split CSupport_Settings.txt
@@ -2414,13 +2414,13 @@ function! s:C_RereadTemplates ()
 	"-------------------------------------------------------------------------------
 	" load template library
 	"-------------------------------------------------------------------------------
-	"
+
 	" global templates (global installation only)
 	if g:C_Installation == 'system'
 		call mmtemplates#core#ReadTemplates ( g:C_Templates, 'load', s:C_GlobalTemplateFile,
 					\ 'name', 'global', 'map', 'ntg' )
 	endif
-	"
+
 	" local templates (optional for global installation)
 	if g:C_Installation == 'system'
 		call mmtemplates#core#ReadTemplates ( g:C_Templates, 'load', s:C_LocalTemplateFile,
@@ -2429,20 +2429,20 @@ function! s:C_RereadTemplates ()
 		call mmtemplates#core#ReadTemplates ( g:C_Templates, 'load', s:C_LocalTemplateFile,
 					\ 'name', 'local', 'map', 'ntl' )
 	endif
-	"
+
 	" additional templates (optional)
 	if ! empty ( s:C_AdditionalTemplates )
 		call mmtemplates#core#AddCustomTemplateFiles ( g:C_Templates, s:C_AdditionalTemplates, 'g:C_AdditionalTemplates' )
 	endif
-	"
-	" custom templates (optional, existence of file checked by template engine)
-	call mmtemplates#core#ReadTemplates ( g:C_Templates, 'load', s:C_CustomTemplateFile,
-				\ 'name', 'custom', 'map', 'ntc', 'optional' )
-	"
+
 	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)
 	call mmtemplates#core#ReadTemplates ( g:C_Templates, 'personalization',
 				\ 'name', 'personal', 'map', 'ntp' )
-	"
+
+	" custom templates (optional, existence of file checked by template engine)
+	call mmtemplates#core#ReadTemplates ( g:C_Templates, 'load', s:C_CustomTemplateFile,
+				\ 'name', 'custom', 'map', 'ntc', 'optional' )
+
 	"-------------------------------------------------------------------------------
 	" further setup
 	"-------------------------------------------------------------------------------

@@ -1,7 +1,8 @@
-*csupport.txt*                  C/C++ Support                    Jan 02 2016
+*csupport.txt*                  C/C++ Support                      Jan 02 2016
 
-C/C++ Support                                           *c-support* *csupport*
-                            Plugin version 6.2pre
+C/C++ Support                                            *c-support* *csupport*
+
+                             Plug-in version 6.2
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                 (formerly Fritz Mehner <mehner.fritz@web.de>)
@@ -1658,6 +1659,13 @@ pertaining to a specific programming language. It can be set up using a
 wizard, which is run by the map \ntw or the menu entry:
   C/C++ -> Snippets -> template setup wizard
 
+Further template files can be added using the call: >
+  call mmtemplates#config#Add ( 'C', '<PATH>/some.templates', 'example', 'nte' )
+The first parameter adds the file to your C templates, the second is the path.
+The remaining two optional parameters specify the symbolic name for these
+templates and the map to edit them. The map is '\nte' in this example, if the
+standard mapleader is set.
+
 ------------------------------------------------------------------------------
 5.1  TEMPLATE FILES                                 *csupport-templates-files*
 ------------------------------------------------------------------------------
@@ -2099,6 +2107,18 @@ directory):
 
 * Splint and/or CodeCheck menu item not visible.
   - The program is not installed or not found (path not set) or not executable.
+
+* External programs (compiler, make, cmake, ...) are not running.
+  - Are they executable from the command line?
+  - Is the $PATH variable set correctly?
+  - Are the settings correct? See:
+      :help |csupport-custom-glob-vars|
+    Compare the documentation of the toolbox, such as |toolbox-cmake-issues|,
+    |toolbox-doxygen-issues|
+  - Under Windows, make sure the options 'shell', 'shellcmdflag',
+    'shellquote', and 'shellxquote' are set correctly. If "cmd.exe" is used as
+    the 'shell', 'shellxquote' must be set to a double quote:
+      :set shellxquote=\"
 
 * Code incorrectly indented after template insertion. The indentation may be
   incorrect inside blocks,  if the <CURSOR> tag also appears inside the block.
