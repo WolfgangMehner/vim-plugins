@@ -33,7 +33,8 @@ Lua is: Copyright 1994-2015 Lua.org, PUC-Rio.
  2.4.1   Using QuickFix                 |luasupport-usage-qf|
  2.5    Hardcopy                        |luasupport-usage-hardcopy|
  2.6    Help                            |luasupport-usage-help|
- 2.7    Toolbox                         |luasupport-usage-toolbox|
+ 2.7    C-API Templates                 |luasupport-usage-capi|
+ 2.8    Toolbox                         |luasupport-usage-toolbox|
  3.    Templates                        |luasupport-templates|
  3.1    Introduction                    |luasupport-templates-introduction|
  3.2    Jump Tags                       |luasupport-templates-jump-tags|
@@ -433,7 +434,31 @@ or the following help topic will be shown (using "\h2"): >
   :help lua52-math.sin
 <
 ------------------------------------------------------------------------------
-2.7  TOOLBOX                                        *luasupport-usage-toolbox*
+2.7  C-API TEMPLATES                                   *luasupport-usage-capi*
+------------------------------------------------------------------------------
+
+This plug-in is shipped with templates for Lua's C-API. They can be used with
+the C-Support plug-in (www.vim.org/scripts/script.php?script_id=213).
+
+The templates have to be added to C-Support's (!) template library, so they
+can be used when editing C code. Find out the path where the plug-in is
+installed (<PATH_TO_PLUG>/plugin/lua-support.vim) and add this line to the
+.vimrc: >
+  call mmtemplates#config#Add ( 'C', '<PATH_TO_PLUG>/lua-support/templates-c-api/Templates', 'Lua', 'ntL' )
+The first parameter adds the file to your C templates, the second is the path.
+The remaining two optional parameters specify the symbolic name for these
+templates and the map to edit them. The map is '\ntL' in this example.
+
+The name of the pointer to the Lua state is set to "L" in all the templates,
+just as it is named in the Lua reference manual. It can be changed in your
+C-Support template customization file (see |csupport-templates|), by setting
+the macro *|LUA_STATE|* : >
+  SetMacro( 'LUA_STATE', '<name>' )
+Use this menu entry to set up the file:
+  C/C++ -> Snippets -> template setup wizard
+
+------------------------------------------------------------------------------
+2.8  TOOLBOX                                        *luasupport-usage-toolbox*
 ------------------------------------------------------------------------------
 
 More functionality, not directly related to Lua, is provided in the so-called
@@ -1042,7 +1067,7 @@ A.  TROUBLESHOOTING - KNOWN ISSUES                *luasupport-troubleshooting*
   - Is "lua" executable from the command line?
   - Is the $PATH variable set correctly?
   - Are the settings correct? See:
-      :help luasupport-config-executable
+      :help |luasupport-config-executable|
   - Under Windows, make sure the options 'shell', 'shellcmdflag',
     'shellquote', and 'shellxquote' are set correctly. If "cmd.exe" is used as
     the 'shell', 'shellxquote' must be set to a double quote:

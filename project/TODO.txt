@@ -108,7 +108,7 @@ LaTeX:
 - (WM) Documentation: The documentation of "g:Templates_MapInUseWarn" is wrong.
 
 Lua:
-- (WM) Documentation: Add setup of C API templates.
+- (DONE) Documentation: Add setup of C API templates.
 
 Perl:
 - (FM, DONE) Documentation: Change documentation with regard to Make integration.

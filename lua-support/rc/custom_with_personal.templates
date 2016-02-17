@@ -2,11 +2,6 @@
 §  Template Customization
 § =============================================================
 
-§ prevent the loading of the personal file,
-§ since we configure the personalization here
-§ (see :help g:Templates_UsePersonalizationFile)
-SetProperty( 'Templates::UsePersonalizationFile', 'no' )
-
 § =============================================================
 §  Personal Information
 § =============================================================

@@ -64,7 +64,12 @@ structure which is needed below the local installation directory
    This is the minimal content of the file '$HOME/.vimrc'. Create one if there
    is none or use the file in $HOME/.vim/lua-support/rc as a starting point.
 
-(1.3) Set at least some personal details. Use the map \ntw inside a Lua buffer
+(1.3) Make the plug-in help accessible by typing the following command on the
+   Vim command line:
+
+      :helptags $HOME/.vim/doc/
+
+(1.4) Set at least some personal details. Use the map \ntw inside a Lua buffer
    or the menu entry:
 
       Lua -> Snippets -> template setup wizard
@@ -82,12 +87,10 @@ structure which is needed below the local installation directory
    Use the file $HOME/.vim/templates/lua.templates to customize or add to your
    Lua template library. It can also be set up via the wizard.
 
-   (Read more about the template system in the plug-in documentation)
+   This plug-in ships with templates for Lua's C-API. If you want to use them,
+   please consult the help file `:help luasupport-usage-capi`.
 
-(1.4) Make the plug-in help accessible by typing the following command on the
-   Vim command line:
-
-      :helptags $HOME/.vim/doc/
+   (Read more about the template system in the plug-in documentation.)
 
 (1.5) Consider additional settings in the file '$HOME/.vimrc'. The files
    customization.vimrc and customization.gvimrc are replacements or extensions
@@ -126,7 +129,12 @@ structure which is needed below the local installation directory
    is none or use the file in $HOME/vimfiles/lua-support/rc as a starting
    point.
 
-(2.3) Set at least some personal details. Use the map \ntw inside a Lua buffer
+(2.3) Make the plug-in help accessible by typing the following command on the
+   Vim command line:
+
+      :helptags $HOME\vimfiles\doc\
+
+(2.4) Set at least some personal details. Use the map \ntw inside a Lua buffer
    or the menu entry:
 
       Lua -> Snippets -> template setup wizard
@@ -144,12 +152,10 @@ structure which is needed below the local installation directory
    Use the file $HOME/vimfiles/templates/lua.templates to customize or add to
    your Lua template library. It can also be set up via the wizard.
 
-   (Read more about the template system in the plug-in documentation)
+   This plug-in ships with templates for Lua's C-API. If you want to use them,
+   please consult the help file `:help luasupport-usage-capi`.
 
-(2.4) Make the plug-in help accessible by typing the following command on the
-   Vim command line:
-
-      :helptags $HOME\vimfiles\doc\
+   (Read more about the template system in the plug-in documentation.)
 
 (2.5) Consider additional settings in the file '$HOME/_vimrc'. The files
    customization.vimrc and customization.gvimrc are replacements or extensions
@@ -157,7 +163,7 @@ structure which is needed below the local installation directory
    are documented.
 
 (2.6) Make sure the shell is set up correctly. The options 'shell',
-   'shellcmdflag', 'shellquote', and 'shellxquote' must be set accordingly.
+   'shellcmdflag', 'shellquote', and 'shellxquote' must be set consistently.
    Compare `:help luasupport-troubleshooting`.
 
 
