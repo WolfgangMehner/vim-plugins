@@ -13,11 +13,11 @@
    height="297mm"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.5 r10040"
+   inkscape:version="0.48.3.1 r9886"
    inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
    inkscape:export-xdpi="178.44696"
    inkscape:export-ydpi="178.44696"
-   sodipodi:docname="download.svg">
+   sodipodi:docname="icons.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -28,16 +28,16 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.959798"
-     inkscape:cx="156.74859"
-     inkscape:cy="898.07569"
+     inkscape:cx="438.00367"
+     inkscape:cy="896.99961"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1004"
-     inkscape:window-height="1026"
-     inkscape:window-x="-2"
-     inkscape:window-y="0"
-     inkscape:window-maximized="0" />
+     inkscape:window-width="1920"
+     inkscape:window-height="1176"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -210,6 +210,166 @@
        style="fill:none;stroke:#00ffff;stroke-width:7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="m 187.84723,151.68494 -39.14232,0"
        id="path3003-5-8-3-6-3"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
+       inkscape:export-xdpi="178.77649"
+       inkscape:export-ydpi="178.77649" />
+    <path
+       style="fill:none;stroke:#00ffff;stroke-width:7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="M 349.63805,145.88448 318.24486,177.2777"
+       id="path3023-5-3-2"
+       inkscape:connector-curvature="0"
+       inkscape:export-xdpi="178.77649"
+       inkscape:export-ydpi="178.77649"
+       inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png" />
+    <path
+       style="fill:none;stroke:#00ffff;stroke-width:7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 344.64765,145.86789 31.39319,31.39322"
+       id="path3023-5-3-3-5"
+       inkscape:connector-curvature="0"
+       inkscape:export-xdpi="178.77649"
+       inkscape:export-ydpi="178.77649"
+       inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png" />
+    <path
+       style="fill:none;stroke:#00ffff;stroke-width:11;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 350.24099,183.73256 0,18.32418"
+       id="path3003-5-8-4"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
+       inkscape:export-xdpi="178.77649"
+       inkscape:export-ydpi="178.77649" />
+    <path
+       style="fill:none;stroke:#00ffff;stroke-width:7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 364.88568,167.50844 0,39.14232"
+       id="path3003-5-8-3-8"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
+       inkscape:export-xdpi="178.77649"
+       inkscape:export-ydpi="178.77649" />
+    <path
+       style="fill:none;stroke:#00ffff;stroke-width:7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 328.64838,167.5713 0,39.14232"
+       id="path3003-5-8-3-6-1"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
+       inkscape:export-xdpi="178.77649"
+       inkscape:export-ydpi="178.77649" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#00ffff;stroke:none"
+       id="path3140"
+       sodipodi:cx="431.42856"
+       sodipodi:cy="180.75505"
+       sodipodi:rx="12.142857"
+       sodipodi:ry="12.321428"
+       d="m 443.57141,180.75505 a 12.142857,12.321428 0 1 1 -24.28571,0 12.142857,12.321428 0 1 1 24.28571,0 z"
+       transform="matrix(0.69117646,0,0,0.69565217,252.88314,-83.246326)" />
+    <path
+       style="fill:none;stroke:#00ffff;stroke-width:5.73465061;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 551.0764,11.146901 0,26.27026"
+       id="path3003-5-8-3-6-1-0-4"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
+       inkscape:export-xdpi="178.77649"
+       inkscape:export-ydpi="178.77649" />
+    <path
+       style="fill:none;stroke:#00ffff;stroke-width:5.73500013;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 554.33858,45.405711 15.92186,20.89548"
+       id="path3003-5-8-3-6-1-0-4-7"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
+       inkscape:export-xdpi="178.77649"
+       inkscape:export-ydpi="178.77649" />
+    <path
+       style="fill:none;stroke:#00ffff;stroke-width:5.73465061;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 379.89621,30.485874 15.92186,20.895478"
+       id="path3003-5-8-3-6-1-0-4-7-9"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
+       inkscape:export-xdpi="178.77649"
+       inkscape:export-ydpi="178.77649" />
+    <path
+       style="fill:none;stroke:#00ffff;stroke-width:5.73500013;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 430.07478,63.309922 15.92186,-20.89548"
+       id="path3003-5-8-3-6-1-0-4-7-98"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
+       inkscape:export-xdpi="178.77649"
+       inkscape:export-ydpi="178.77649" />
+    <g
+       id="g4018"
+       transform="translate(124.44236,-119.50873)">
+      <path
+         inkscape:export-ydpi="178.77649"
+         inkscape:export-xdpi="178.77649"
+         inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
+         inkscape:connector-curvature="0"
+         id="path3003-5-8-3-6-1-0-4-7-9-8"
+         d="m 424.84405,127.72985 16.6537,16.09685"
+         style="fill:none;stroke:#00ffff;stroke-width:5.14766216;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:export-ydpi="178.77649"
+         inkscape:export-xdpi="178.77649"
+         inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
+         inkscape:connector-curvature="0"
+         id="path3003-5-8-3-6-1-0-4-7-9-8-1"
+         d="m 411.77034,143.82345 16.6537,-16.09685"
+         style="fill:none;stroke:#00ffff;stroke-width:5.14766216;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    </g>
+    <path
+       style="fill:none;stroke:#00ffff;stroke-width:5.73465061;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 551.0764,48.646891 0,26.27026"
+       id="path3003-5-8-3-6-1-0-4-6"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
+       inkscape:export-xdpi="178.77649"
+       inkscape:export-ydpi="178.77649" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#00ffff;stroke:none"
+       id="path3140-6"
+       sodipodi:cx="431.42856"
+       sodipodi:cy="180.75505"
+       sodipodi:rx="12.142857"
+       sodipodi:ry="12.321428"
+       d="m 443.57141,180.75505 a 12.142857,12.321428 0 1 1 -24.28571,0 12.142857,12.321428 0 1 1 24.28571,0 z"
+       transform="matrix(0.52651788,0.44777654,-0.45067611,0.52992734,280.83112,-116.47554)" />
+    <path
+       style="fill:none;stroke:#00ffff;stroke-width:5.73465061;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 446.78279,148.57114 -17.0191,20.01191"
+       id="path3003-5-8-3-6-1-0-4-8"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
+       inkscape:export-xdpi="178.77649"
+       inkscape:export-ydpi="178.77649" />
+    <path
+       style="fill:none;stroke:#00ffff;stroke-width:5.73500013;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 426.97043,174.96777 0.0648,26.2702"
+       id="path3003-5-8-3-6-1-0-4-7-1"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
+       inkscape:export-xdpi="178.77649"
+       inkscape:export-ydpi="178.77649" />
+    <path
+       style="fill:none;stroke:#00ffff;stroke-width:5.14766216;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 447.3655,145.22559 2.258,23.05115"
+       id="path3003-5-8-3-6-1-0-4-7-9-8-4"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
+       inkscape:export-xdpi="178.77649"
+       inkscape:export-ydpi="178.77649" />
+    <path
+       style="fill:none;stroke:#00ffff;stroke-width:5.14766216;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 426.98014,149.01546 23.11459,-1.47306"
+       id="path3003-5-8-3-6-1-0-4-7-9-8-1-9"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
+       inkscape:export-xdpi="178.77649"
+       inkscape:export-ydpi="178.77649" />
+    <path
+       style="fill:none;stroke:#00ffff;stroke-width:5.73465061;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 422.59315,177.22583 -17.0191,20.01191"
+       id="path3003-5-8-3-6-1-0-4-6-4"
        inkscape:connector-curvature="0"
        inkscape:export-filename="/home/wolfgang/Programme/VimWebsite/VimPlugins/data/icon_download.png"
        inkscape:export-xdpi="178.77649"
