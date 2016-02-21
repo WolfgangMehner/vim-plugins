@@ -79,13 +79,30 @@ filelists_repo.TODO = {
 }
 
 ------------------------------------------------------------------------
---  TODO   {{{1
+--  Bash   {{{1
 ------------------------------------------------------------------------
 
-filelists.TODO = {
+filelists.bash = {
+	'autoload/mmtemplates/',
+	'doc/bashsupport.txt',
+	'doc/templatesupport.txt',
+	'ftdetect/template.vim',
+	'ftplugin/sh.vim',
+	'ftplugin/template.vim',
+	'plugin/bash-support.vim',
+	'syntax/template.vim',
+	'bash-support/codesnippets/',
+	'bash-support/doc/ChangeLog',
+	'bash-support/doc/bash-hotkeys.pdf',
+	'bash-support/doc/bash-hotkeys.tex',
+	'bash-support/rc/',
+	'bash-support/scripts/',
+	'bash-support/templates/',
+	'bash-support/wordlists/',
+	'bash-support/README.md',
 }
 
-filelists_repo.TODO = {
+filelists_repo.bash = {
 	'project/release.lua',
 }
 

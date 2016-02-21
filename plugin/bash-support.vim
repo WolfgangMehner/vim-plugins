@@ -8,10 +8,13 @@
 "                  variables and builtins.
 "
 "   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
+"        Author:  Wolfgang Mehner <wolfgang-mehner@web.de>
+"                 Fritz Mehner <mehner.fritz@web.de>
 "       Version:  see g:BASH_Version below
 "       Created:  26.02.2001
-"       License:  Copyright (c) 2001-2014, Dr. Fritz Mehner
+"      Revision:  21.02.2016
+"       License:  Copyright (c) 2001-2015, Dr. Fritz Mehner
+"                 Copyright (c) 2016-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -73,10 +76,11 @@ endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 let s:MSWIN = has("win16") || has("win32")   || has("win64") || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
-let s:installation						= '*undefined*'
-let s:BASH_GlobalTemplateFile	= ''
-let s:BASH_LocalTemplateFile	= ''
-let s:BASH_FilenameEscChar 		= ''
+let s:installation            = '*undefined*'
+let s:BASH_GlobalTemplateFile = ''
+let s:BASH_LocalTemplateFile  = ''
+let s:BASH_CustomTemplateFile = ''                " the custom templates
+let s:BASH_FilenameEscChar    = ''
 let s:BASH_XtermDefaults      = '-fa courier -fs 12 -geometry 80x24'
 
 
@@ -88,16 +92,18 @@ if	s:MSWIN
 				\		substitute( expand("$HOME"),   '\', '/', 'g' ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
-		let s:installation						= 'local'
-		let s:BASH_PluginDir  				= substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
-		let s:BASH_LocalTemplateFile	= s:BASH_PluginDir.'/bash-support/templates/Templates'
+		let s:installation            = 'local'
+		let s:BASH_PluginDir          = substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
+		let s:BASH_LocalTemplateFile  = s:BASH_PluginDir.'/bash-support/templates/Templates'
+		let s:BASH_CustomTemplateFile = $HOME.'/vimfiles/templates/bash.templates'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
-		let s:installation						= 'system'
-		let s:BASH_PluginDir					= $VIM.'/vimfiles'
-		let s:BASH_GlobalTemplateFile	= s:BASH_PluginDir.'/bash-support/templates/Templates'
-		let s:BASH_LocalTemplateFile	= $HOME.'/vimfiles/bash-support/templates/Templates'
+		let s:installation            = 'system'
+		let s:BASH_PluginDir          = $VIM.'/vimfiles'
+		let s:BASH_GlobalTemplateFile = s:BASH_PluginDir.'/bash-support/templates/Templates'
+		let s:BASH_LocalTemplateFile  = $HOME.'/vimfiles/bash-support/templates/Templates'
+		let s:BASH_CustomTemplateFile = $HOME.'/vimfiles/templates/bash.templates'
 	endif
 	"
   let s:BASH_FilenameEscChar 		= ''
@@ -112,16 +118,18 @@ else
 	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
-		let s:installation						= 'local'
-		let s:BASH_PluginDir 					= expand('<sfile>:p:h:h')
-		let s:BASH_LocalTemplateFile	= s:BASH_PluginDir.'/bash-support/templates/Templates'
+		let s:installation            = 'local'
+		let s:BASH_PluginDir          = expand('<sfile>:p:h:h')
+		let s:BASH_LocalTemplateFile  = s:BASH_PluginDir.'/bash-support/templates/Templates'
+		let s:BASH_CustomTemplateFile = $HOME.'/.vim/templates/bash.templates'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
-		let s:installation						= 'system'
-		let s:BASH_PluginDir					= $VIM.'/vimfiles'
-		let s:BASH_GlobalTemplateFile	= s:BASH_PluginDir.'/bash-support/templates/Templates'
-		let s:BASH_LocalTemplateFile	= $HOME.'/.vim/bash-support/templates/Templates'
+		let s:installation            = 'system'
+		let s:BASH_PluginDir          = $VIM.'/vimfiles'
+		let s:BASH_GlobalTemplateFile = s:BASH_PluginDir.'/bash-support/templates/Templates'
+		let s:BASH_LocalTemplateFile  = $HOME.'/.vim/bash-support/templates/Templates'
+		let s:BASH_CustomTemplateFile = $HOME.'/.vim/templates/bash.templates'
 	endif
 	"
 	let s:BASH_Executable					= $SHELL
@@ -131,17 +139,16 @@ else
 	let s:BASH_OutputGvim					= 'vim'
 	"
 endif
-"
+
+let s:BASH_AdditionalTemplates  = mmtemplates#config#GetFt ( 'bash' )
 let s:BASH_CodeSnippets  				= s:BASH_PluginDir.'/bash-support/codesnippets/'
 call s:BASH_SetGlobalVariable( 'BASH_CodeSnippets', s:BASH_CodeSnippets )
-"
-"
+
 "  g:BASH_Dictionary_File  must be global
-"
 if !exists("g:BASH_Dictionary_File")
 	let g:BASH_Dictionary_File     = s:BASH_PluginDir.'/bash-support/wordlists/bash-keywords.list'
 endif
-"
+
 "----------------------------------------------------------------------
 "  *** MODUL GLOBAL VARIABLES *** {{{1
 "----------------------------------------------------------------------
@@ -174,8 +181,9 @@ call s:GetGlobalSetting ( 'BASH_Printheader' )
 call s:GetGlobalSetting ( 'BASH_ManualReader' )
 call s:GetGlobalSetting ( 'BASH_OutputGvim' )
 call s:GetGlobalSetting ( 'BASH_XtermDefaults' )
-call s:GetGlobalSetting ( 'BASH_LocalTemplateFile' )
 call s:GetGlobalSetting ( 'BASH_GlobalTemplateFile' )
+call s:GetGlobalSetting ( 'BASH_LocalTemplateFile' )
+call s:GetGlobalSetting ( 'BASH_CustomTemplateFile' )
 call s:GetGlobalSetting ( 'BASH_CreateMenusDelayed' )
 call s:GetGlobalSetting ( 'BASH_LineEndCommColDefault' )
 
@@ -490,96 +498,107 @@ endfunction    " ----------  end of function Bash_ResetMapLeader  ----------
 "    PARAMETERS:  -
 "       RETURNS:
 "===============================================================================
-function! BASH_RereadTemplates ( displaymsg )
-	"
+function! BASH_RereadTemplates ()
+
 	"-------------------------------------------------------------------------------
-	" SETUP TEMPLATE LIBRARY
+	" setup template library
 	"-------------------------------------------------------------------------------
 	let g:BASH_Templates = mmtemplates#core#NewLibrary ()
-	"
+
 	" mapleader
 	if empty ( g:BASH_MapLeader )
 		call mmtemplates#core#Resource ( g:BASH_Templates, 'set', 'property', 'Templates::Mapleader', '\' )
 	else
 		call mmtemplates#core#Resource ( g:BASH_Templates, 'set', 'property', 'Templates::Mapleader', g:BASH_MapLeader )
 	endif
-	"
-	" map: choose style
-	call mmtemplates#core#Resource ( g:BASH_Templates, 'set', 'property', 'Templates::EditTemplates::Map',   'ntl' )
+
+	" some metainfo
+	call mmtemplates#core#Resource ( g:BASH_Templates, 'set', 'property', 'Templates::Wizard::PluginName',   'Bash' )
+	call mmtemplates#core#Resource ( g:BASH_Templates, 'set', 'property', 'Templates::Wizard::FiletypeName', 'Bash' )
+	call mmtemplates#core#Resource ( g:BASH_Templates, 'set', 'property', 'Templates::Wizard::FileCustomNoPersonal',   s:BASH_PluginDir.'/bash-support/rc/custom.templates' )
+	call mmtemplates#core#Resource ( g:BASH_Templates, 'set', 'property', 'Templates::Wizard::FileCustomWithPersonal', s:BASH_PluginDir.'/bash-support/rc/custom_with_personal.templates' )
+	call mmtemplates#core#Resource ( g:BASH_Templates, 'set', 'property', 'Templates::Wizard::FilePersonal',           s:BASH_PluginDir.'/bash-support/rc/personal.templates' )
+	call mmtemplates#core#Resource ( g:BASH_Templates, 'set', 'property', 'Templates::Wizard::CustomFileVariable',     'g:BASH_CustomTemplateFile' )
+
+	" maps: special operations
 	call mmtemplates#core#Resource ( g:BASH_Templates, 'set', 'property', 'Templates::RereadTemplates::Map', 'ntr' )
 	call mmtemplates#core#Resource ( g:BASH_Templates, 'set', 'property', 'Templates::ChooseStyle::Map',     'nts' )
-	"
+	call mmtemplates#core#Resource ( g:BASH_Templates, 'set', 'property', 'Templates::SetupWizard::Map',     'ntw' )
+
 	" syntax: comments
 	call mmtemplates#core#ChangeSyntax ( g:BASH_Templates, 'comment', '§' )
-	let s:BASH_TemplateJumpTarget = mmtemplates#core#Resource ( g:BASH_Templates, "jumptag" )[0]
-	"
-	let	messsage = ''
-	"
-	if s:installation == 'system'
-		"-------------------------------------------------------------------------------
-		" SYSTEM INSTALLATION
-		"-------------------------------------------------------------------------------
-		if filereadable( s:BASH_GlobalTemplateFile )
-			call mmtemplates#core#ReadTemplates ( g:BASH_Templates, 'load', s:BASH_GlobalTemplateFile )
-		else
-			echomsg "Global template file '".s:BASH_GlobalTemplateFile."' not readable."
-			return
-		endif
-		let	messsage	= "Templates read from '".s:BASH_GlobalTemplateFile."'"
-		"
-		"-------------------------------------------------------------------------------
-		" handle local template files
-		"-------------------------------------------------------------------------------
-		let templ_dir = fnamemodify( s:BASH_LocalTemplateFile, ":p:h" ).'/'
-		if finddir( templ_dir ) == ''
-			" try to create a local template directory
-			if exists("*mkdir")
-				try
-					call mkdir( templ_dir, "p" )
-				catch /.*/
-				endtry
-			endif
-		endif
 
-		if isdirectory( templ_dir ) && !filereadable( s:BASH_LocalTemplateFile )
-			" write a default local template file
-			let template	= [	]
-			let sample_template_file	= s:BASH_PluginDir.'/bash-support/rc/sample_template_file'
-			if filereadable( sample_template_file )
-				for line in readfile( sample_template_file )
-					call add( template, line )
-				endfor
-				call writefile( template, s:BASH_LocalTemplateFile )
-			endif
-		endif
-		"
-		if filereadable( s:BASH_LocalTemplateFile )
-			call mmtemplates#core#ReadTemplates ( g:BASH_Templates, 'load', s:BASH_LocalTemplateFile )
-			let messsage	= messsage." and '".s:BASH_LocalTemplateFile."'"
-			if mmtemplates#core#ExpandText( g:BASH_Templates, '|AUTHOR|' ) == 'YOUR NAME'
-				echomsg "Please set your personal details in file '".s:BASH_LocalTemplateFile."'."
-			endif
-		endif
-		"
+	"-------------------------------------------------------------------------------
+	" load template library
+	"-------------------------------------------------------------------------------
+
+	" global templates (global installation only)
+	if s:installation == 'system'
+		call mmtemplates#core#ReadTemplates ( g:BASH_Templates, 'load', s:BASH_GlobalTemplateFile,
+					\ 'name', 'global', 'map', 'ntg' )
+	endif
+
+	" local templates (optional for global installation)
+	if s:installation == 'system'
+		call mmtemplates#core#ReadTemplates ( g:BASH_Templates, 'load', s:BASH_LocalTemplateFile,
+					\ 'name', 'local', 'map', 'ntl', 'optional', 'hidden' )
 	else
-		"-------------------------------------------------------------------------------
-		" LOCAL INSTALLATION
-		"-------------------------------------------------------------------------------
-		if filereadable( s:BASH_LocalTemplateFile )
-			call mmtemplates#core#ReadTemplates ( g:BASH_Templates, 'load', s:BASH_LocalTemplateFile )
-			let	messsage	= "Templates read from '".s:BASH_LocalTemplateFile."'"
-		else
-			echomsg "Local template file '".s:BASH_LocalTemplateFile."' not readable."
-			return
-		endif
-		"
+		call mmtemplates#core#ReadTemplates ( g:BASH_Templates, 'load', s:BASH_LocalTemplateFile,
+					\ 'name', 'local', 'map', 'ntl' )
 	endif
-	if a:displaymsg == 'yes'
-		echomsg messsage.'.'
+
+	" additional templates (optional)
+	if ! empty ( s:BASH_AdditionalTemplates )
+		call mmtemplates#core#AddCustomTemplateFiles ( g:BASH_Templates, s:BASH_AdditionalTemplates, "Bash's additional templates" )
 	endif
+
+	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)
+	call mmtemplates#core#ReadTemplates ( g:BASH_Templates, 'personalization',
+				\ 'name', 'personal', 'map', 'ntp' )
+
+	" custom templates (optional, existence of file checked by template engine)
+	call mmtemplates#core#ReadTemplates ( g:BASH_Templates, 'load', s:BASH_CustomTemplateFile,
+				\ 'name', 'custom', 'map', 'ntc', 'optional' )
+
+	"-------------------------------------------------------------------------------
+	" further setup
+	"-------------------------------------------------------------------------------
+
+	" get the jump tags
+	let s:BASH_TemplateJumpTarget = mmtemplates#core#Resource ( g:BASH_Templates, "jumptag" )[0]
 
 endfunction    " ----------  end of function BASH_RereadTemplates  ----------
-"
+
+"===  FUNCTION  ================================================================
+"          NAME:  s:CheckTemplatePersonalization     {{{1
+"   DESCRIPTION:  check whether the name, .. has been set
+"    PARAMETERS:  -
+"       RETURNS:
+"===============================================================================
+let s:DoneCheckTemplatePersonalization = 0
+
+function! s:CheckTemplatePersonalization ()
+
+	" check whether the templates are personalized
+	if ! s:DoneCheckTemplatePersonalization
+				\ && mmtemplates#core#ExpandText ( g:BASH_Templates, '|AUTHOR|' ) == 'YOUR NAME'
+		let s:DoneCheckTemplatePersonalization = 1
+
+		let maplead = mmtemplates#core#Resource ( g:BASH_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
+
+		redraw
+		echohl Search
+		echo 'The personal details (name, mail, ...) are not set in the template library.'
+		echo 'They are used to generate comments, ...'
+		echo 'To set them, start the setup wizard using:'
+		echo '- use the menu entry "Bash -> Snippets -> template setup wizard"'
+		echo '- use the map "'.maplead.'ntw" inside a Bash buffer'
+		echo "\n"
+		echohl None
+	endif
+
+endfunction    " ----------  end of function s:CheckTemplatePersonalization  ----------
+
 "===  FUNCTION  ================================================================
 "          NAME:  InitMenus     {{{1
 "   DESCRIPTION:  Initialize menus.
@@ -702,7 +721,7 @@ function! s:InitMenus()
 	endif
 	"
 	exe ahead.'-SEP2-                                                 :'
-	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rs                   :call BASH_Settings()<CR>'
+	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rs                   :call BASH_Settings(0)<CR>'
 	"
 	if	!s:MSWIN
 		exe " menu  <silent>  ".s:BASH_RootMenu.'.&Run.x&term\ size<Tab>'.esc_mapl.'rx                       :call BASH_XtermSize()<CR>'
@@ -1030,7 +1049,7 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	"   help
 	"-------------------------------------------------------------------------------
-	nnoremap  <buffer>  <silent>  <LocalLeader>rs         :call BASH_Settings()<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>rs         :call BASH_Settings(0)<CR>
   "
    noremap  <buffer>  <silent>  <LocalLeader>hb         :call BASH_help('bash')<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>hb    <Esc>:call BASH_help('bash')<CR>
@@ -1040,10 +1059,7 @@ function! s:CreateAdditionalMaps ()
   inoremap  <buffer>  <silent>  <LocalLeader>hm    <Esc>:call BASH_help('man')<CR>
 	 noremap  <buffer>  <silent>  <LocalLeader>hbs        :call BASH_HelpBashSupport()<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>hbs   <C-C>:call BASH_HelpBashSupport()<CR>
-	"
-	nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=BASH_JumpForward()<CR>
-	inoremap  <buffer>  <silent>  <C-j>  <C-g>u<C-R>=BASH_JumpForward()<CR>
-	"
+
 	"-------------------------------------------------------------------------------
 	" settings - reset local leader
 	"-------------------------------------------------------------------------------
@@ -1054,7 +1070,15 @@ function! s:CreateAdditionalMaps ()
 			unlet g:maplocalleader
 		endif
 	endif
-	"
+
+	"-------------------------------------------------------------------------------
+	" templates
+	"-------------------------------------------------------------------------------
+	nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=BASH_JumpForward()<CR>
+	inoremap  <buffer>  <silent>  <C-j>  <C-g>u<C-R>=BASH_JumpForward()<CR>
+
+	call mmtemplates#core#CreateMaps ( 'g:BASH_Templates', g:BASH_MapLeader, 'do_special_maps', 'do_del_opt_map' )
+
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 "
 "===  FUNCTION  ================================================================
@@ -1301,53 +1325,86 @@ endfunction		" ---------- end of function  BASH_SyntaxCheckOptionsLocal  -------
 "    PARAMETERS:  -
 "       RETURNS:
 "===============================================================================
-function! BASH_Settings ()
-	let	txt =     " Bash-Support settings\n\n"
-	let txt = txt.'                    author :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|AUTHOR|'      )."\"\n"
-	let txt = txt.'                 authorref :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|AUTHORREF|'   )."\"\n"
-	let txt = txt.'                   company :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|COMPANY|'     )."\"\n"
-	let txt = txt.'          copyright holder :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|COPYRIGHT|'   )."\"\n"
-	let txt = txt.'                     email :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|EMAIL|'       )."\"\n"
-  let txt = txt.'                   licence :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|LICENSE|'     )."\"\n"
-	let txt = txt.'              organization :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|ORGANIZATION|')."\"\n"
-	let txt = txt.'                   project :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|PROJECT|'     )."\"\n"
-	let txt = txt.'           Bash executable :  "'.s:BASH_Executable."\"\n"
-	if exists( "b:BASH_BashCmdLineArgs" )
-		let txt = txt.'  Bash cmd. line arguments :  '.b:BASH_BashCmdLineArgs."\n"
-	endif
-	let txt = txt.'       plugin installation :  "'.s:installation."\"\n"
- 	let txt = txt.'    code snippet directory :  "'.s:BASH_CodeSnippets."\"\n"
-	if s:installation == 'system'
-		let txt = txt.'      global template file :  "'.s:BASH_GlobalTemplateFile."\"\n"
-		if filereadable( s:BASH_LocalTemplateFile )
-			let txt = txt.'       local template file :  "'.s:BASH_LocalTemplateFile."\"\n"
-		endif
+function! BASH_Settings ( verbose )
+
+	if     s:MSWIN | let sys_name = 'Windows'
+	elseif s:UNIX  | let sys_name = 'UN*X'
+	else           | let sys_name = 'unknown' | endif
+
+	let	txt = " Bash-Support settings\n\n"
+	" template settings: macros, style, ...
+	if exists ( 'g:BASH_Templates' )
+		let txt .= '                   author :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|AUTHOR|'       )."\"\n"
+		let txt .= '                authorref :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|AUTHORREF|'    )."\"\n"
+		let txt .= '                    email :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|EMAIL|'        )."\"\n"
+		let txt .= '             organization :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|ORGANIZATION|' )."\"\n"
+		let txt .= '         copyright holder :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|COPYRIGHT|'    )."\"\n"
+		let txt .= '                  license :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|LICENSE|'      )."\"\n"
+		let txt .= '                  project :  "'.mmtemplates#core#ExpandText( g:BASH_Templates, '|PROJECT|'     )."\"\n"
+		let txt .= '           template style :  "'.mmtemplates#core#Resource ( g:BASH_Templates, "style" )[0]."\"\n\n"
 	else
-		let txt = txt.'       local template file :  "'.s:BASH_LocalTemplateFile."\"\n"
+		let txt .= "                templates :  -not loaded-\n\n"
 	endif
-	let txt = txt.'glob. syntax check options :  "'.s:BASH_SyntaxCheckOptionsGlob."\"\n"
-	if exists("b:BASH_SyntaxCheckOptionsLocal")
-		let txt = txt.' buf. syntax check options :  "'.b:BASH_SyntaxCheckOptionsLocal."\"\n"
+	" plug-in installation
+	let txt .= '      plugin installation :  '.s:installation.' on '.sys_name."\n"
+	let txt .= "\n"
+	" templates, snippets
+	if exists ( 'g:BASH_Templates' )
+		let [ templist, msg ] = mmtemplates#core#Resource ( g:BASH_Templates, 'template_list' )
+		let sep  = "\n"."                             "
+		let txt .=      "           template files :  "
+					\ .join ( templist, sep )."\n"
+	else
+		let txt .= "           template files :  -not loaded-\n"
 	endif
+	let txt .=
+				\  '       code snippets dir. :  '.s:BASH_CodeSnippets."\n"
 	" ----- dictionaries ------------------------
-  if !empty(g:BASH_Dictionary_File)
+	if !empty(g:BASH_Dictionary_File)
 		let ausgabe= &dictionary
-		let ausgabe= substitute( ausgabe, ",", "\",\n                            + \"", "g" )
-		let txt = txt."        dictionary file(s) :  \"".ausgabe."\"\n"
+		let ausgabe= substitute( ausgabe, ",", ",\n                             ", "g" )
+		let txt = txt."       dictionary file(s) :  ".ausgabe."\n"
 	endif
-	" ----- Bash commandline arguments ------------------------
-	if exists("b:BASH_BashCmdLineArgs")
-		let ausgabe = b:BASH_BashCmdLineArgs
+	" ----- map leader, menus, file headers -----
+	if a:verbose >= 1
+		let	txt .= "\n"
+					\ .'                mapleader :  "'.g:BASH_MapLeader."\"\n"
+					\ .'     load menus / delayed :  "'.s:BASH_LoadMenus.'" / "'.s:BASH_CreateMenusDelayed."\"\n"
+					\ .'       insert file header :  "'.s:BASH_InsertFileHeader."\"\n"
+	endif
+	let txt .= "\n"
+	" ----- executables, cmd.-line args, ... -------
+	if exists( "b:BASH_BashCmdLineArgs" )
+		let cmd_line_args = b:BASH_BashCmdLineArgs
 	else
-		let ausgabe = ""
+		let cmd_line_args = ''
 	endif
-	let txt = txt." Bash cmd.line argument(s) :  ".ausgabe."\n"
+	if exists("b:BASH_SyntaxCheckOptionsLocal")
+		let syn_check_args = b:BASH_SyntaxCheckOptionsLocal
+	else
+		let syn_check_args = ''
+	endif
+	let txt .= '          Bash executable :  "'.s:BASH_Executable."\"\n"
+	let txt .= ' Bash cmd. line arguments :  "'.cmd_line_args."\"\n"
+	let txt .= 'glb. syntax check options :  "'.s:BASH_SyntaxCheckOptionsGlob."\"\n"
+	let txt .= 'buf. syntax check options :  "'.syn_check_args."\"\n"
 	let txt = txt."\n"
+	" ----- output ------------------------------
+	let txt = txt.'     current output dest. :  '.s:BASH_OutputGvim."\n"
+	if !s:MSWIN
+		let txt = txt.'           xterm defaults :  '.s:BASH_XtermDefaults."\n"
+	endif
 	let	txt = txt."__________________________________________________________________________\n"
-	let	txt = txt." bash-support, version ".g:BASH_Version." / Dr.-Ing. Fritz Mehner / mehner.fritz@web.de\n\n"
-	echo txt
+	let	txt = txt." Bash-Support, Version ".g:BASH_Version." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
+
+	if a:verbose == 2
+		split BashSupport_Settings.txt
+		put = txt
+	else
+		echo txt
+	endif
 endfunction    " ----------  end of function BASH_Settings ----------
-"
+
 "===  FUNCTION  ================================================================
 "          NAME:  BASH_CreateGuiMenus     {{{1
 "   DESCRIPTION:
@@ -1360,7 +1417,7 @@ function! BASH_CreateGuiMenus ()
 		amenu   <silent> 40.1000 &Tools.-SEP100- :
 		amenu   <silent> 40.1020 &Tools.Unload\ Bash\ Support :call BASH_RemoveGuiMenus()<CR>
 		"
-		call BASH_RereadTemplates('no')
+		call BASH_RereadTemplates()
 		call s:InitMenus ()
 		"
 		let s:BASH_MenuVisible = 'yes'
@@ -1863,12 +1920,12 @@ if has( 'autocmd' )
   autocmd FileType *
         \ if &filetype == 'sh' |
         \   if ! exists( 'g:BASH_Templates' ) |
-        \     if s:BASH_LoadMenus == 'yes' | call BASH_CreateGuiMenus ()      |
-        \     else                         | call BASH_RereadTemplates ('no') |
+        \     if s:BASH_LoadMenus == 'yes' | call BASH_CreateGuiMenus ()  |
+        \     else                         | call BASH_RereadTemplates () |
         \     endif |
         \   endif |
         \   call s:CreateAdditionalMaps () |
-        \   call mmtemplates#core#CreateMaps ( 'g:BASH_Templates', g:BASH_MapLeader, 'do_special_maps' ) |
+				\		call s:CheckTemplatePersonalization() |
         \ endif
 
 	"-------------------------------------------------------------------------------

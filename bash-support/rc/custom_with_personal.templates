@@ -1,0 +1,72 @@
+§ =============================================================
+§  Template Customization
+§ =============================================================
+
+§ =============================================================
+§  Personal Information
+§
+§  - overwrites the information in the template personalization
+§    file, because these commands are read later
+§ =============================================================
+
+SetMacro( 'AUTHOR',       'YOUR NAME' )
+SetMacro( 'AUTHORREF',    '' )
+SetMacro( 'EMAIL',        '' )
+SetMacro( 'ORGANIZATION', '' )
+SetMacro( 'COMPANY',      '' )
+SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
+SetMacro( 'LICENSE',      'GNU General Public License' )
+
+§ =============================================================
+§  Date and Time Format
+§ =============================================================
+
+§SetFormat( 'DATE', '%x' )
+§SetFormat( 'TIME', '%H:%M' )
+§SetFormat( 'YEAR', '%Y' )
+
+§ =============================================================
+§  Custom Templates
+§ =============================================================
+
+§ set the template style used after loading the library
+SetStyle( 'default' )
+
+§ -------------------------------------------------------------
+§  A template definition is build like this:
+§    == Menu.some name == <options> ==
+§    <inserted code>
+§    == Menu.other name == <options> ==
+§    <inserted code>
+§    == ENDTEMPLATE ==
+§  A template ends with the line "== ENDTEMPLATE ==" or with
+§  the start of a new template.
+§ -------------------------------------------------------------
+
+§ -------------------------------------------------------------
+§  Statements
+§ -------------------------------------------------------------
+
+§ uncomment and edit to customize
+
+§== Statements.case == map:sc, shortcut:c  ==
+§case <CURSOR> in
+§	)
+§	;;
+§
+§	)
+§	;;
+§
+§	*)
+§	;;
+§
+§esac    # --- end of case ---
+§== ENDTEMPLATE ==
+
+§== Statements.function == map:sfu, shortcut:f  ==
+§|?FUNCTION_NAME| ()
+§{
+§<CURSOR><SPLIT>
+§}	# ----------  end of function |FUNCTION_NAME|  ----------
+§== ENDTEMPLATE ==
+

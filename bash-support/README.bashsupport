@@ -125,6 +125,8 @@ Look at the bashsupport help with
 =======================================================================================
   RELEASE NOTES FOR VERSION 4.3pre
 =======================================================================================
+- Add 'g:BASH_CustomTemplateFile'.
+- Add template personalization file and setup wizard.
 - Minor corrections and improvements.
 
   OLDER RELEASE NOTES : see file 'ChangeLog'

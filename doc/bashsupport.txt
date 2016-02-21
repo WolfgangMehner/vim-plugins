@@ -1,9 +1,11 @@
-*bashsupport.txt*                Bash Support                 March 16 2015
+*bashsupport.txt*                Bash Support                      Feb 21 2016
 
 Bash Support                                      *bash-support* *bashsupport*
-                             Plugin version 4.3pre
+
+                             Plug-in version 4.3pre
                         for Vim version 7.0 and above
-                       Fritz Mehner  <mehner@web.de>
+                   Wolfgang Mehner <wolfgang-mehner@web.de>
+                      Fritz Mehner <mehner.fritz@web.de>
 
 Bash Support implements a bash-IDE for Vim/gVim. It is written to considerably
 speed up writing code in a consistent style.  This is done by inserting
@@ -350,19 +352,28 @@ The default value is 'gui'.
 
 1.6.2  Edit Templates                             *bashsupport-templates-edit*
 ---------------------
+
 Nearly all menu items insert code snippets or comments. All of these are
 contained within template files and can be changed by the user to meet their
 requirements (see|bashsupport-templates|on how to use the template system).
 
-The menu item 'edit templates' opens the main template file in a local plug-in
-installation. This is usually the file
-'$HOME/.vim/bash-support/templates/Templates'.  There may be dependent files
-loaded from the main file.  Now change whatever file you want, save it, and
-click on the menu item 'reread templates' to read in the file(s) and to
-rebuild the internal representation of the templates. If menu items,  hotkeys,
-or shortcuts have been added or changed these changes will be applied with the
-next start of Vim.
+The menu items 'edit ... templates' open various template files. The stock
+templates are usually located in the "local" template file: >
+  ~/.vim/bash-support/templates/Templates
+The template files named "custom" and "personal" can be used for
+customization, which avoids editing the stock templates.
+There may be dependent files loaded from the main files. Change whatever file
+you want, save it, and click on the menu item 'reread templates' to read in
+the file(s) and to rebuild the internal representation of the templates.
 
+Template browser
+----------------
+When editing a template file, it is selected via |:Explore|. You can change
+this behavior by setting a global variable in your ~/.vimrc (see
+|g:Templates_TemplateBrowser|):
+>
+  let g:Templates_TemplateBrowser = 'browse'
+<
 ------------------------------------------------------------------------------
 1.7  MENU 'Run'                                              *bashsupport-run*
 ------------------------------------------------------------------------------
@@ -714,8 +725,12 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \nw     write code snippet                  (n, v, i)
      \ne     edit code snippet                   (n, i)
 
-     \ntl    edit templates                      (n, i)
+     \ntg    edit global template file           (n, i)
+     \ntl    edit local templates                (n, i)
+     \ntc    edit custom template file           (n, i)
+     \ntp    edit personal template file         (n, i)
      \ntr    reread the templates                (n, i)
+     \ntw    template setup wizard               (n, i)
      \nts    switch template style               (n, i)
 
   -- Run ----------------------------------------------------
@@ -838,6 +853,7 @@ global variable                default value
 ------------------------------------------------------------------------------
 g:BASH_GlobalTemplateFile      root_dir.'bash-support/templates/Templates'
 g:BASH_LocalTemplateFile       $HOME.'/.vim/bash-support/templates/Templates'
+g:BASH_CustomTemplateFile      $HOME.'/.vim/templates/bash.templates'
 
 g:BASH_CodeSnippets            $HOME.'/.vim/bash-support/codesnippets'     (Linux/U**X)
                                $VIM.'\vimfiles\bash-support/codesnippets/' (Windows)
@@ -872,6 +888,8 @@ g:BASH_AlsoBash                ''
                                            (see|bashsupport-templates|)
            g:BASH_LocalTemplateFile      : sets the local template file  
                                            (see|bashsupport-templates|)
+           g:BASH_CustomTemplateFile     : sets the custom template file
+					                                 (see|bashsupport-templates|)
  
  2. group: g:BASH_CodeSnippets           : The name of the code snippet directory
                                            (see |bashsupport-snippets|).
@@ -954,15 +972,29 @@ the following line in '~/.vimrc':
 
 As ****** USER ****** :
 
-The plug-in tries to create a minimal template file 'Templates' (and the
-necessary directory '$HOME/.vim/bash-support/templates') when the first buffer
-with filetype 'vim' will be opened. You should edit this file to personalize
-some macros.
+Use the template setup wizard:
+  Bash -> Snippets -> template setup wizard
+to create a personalization file and/or a custom template file.
 
-Create your private snippet directory:
+The personalization file will be read by all plug-ins supporting this feature,
+and should contain only information relevant for all template libraries. You
+can set some macros in this file with your personal information in order to
+obtain personalized comments, e.g. something like this:
 >
-  mkdir --parents  $HOME/.vim/bash-support/codesnippets
+ SetMacro( 'AUTHOR',      'Wolfgang Mehner' )
+ SetMacro( 'AUTHORREF',   'wm' )
+ SetMacro( 'EMAIL',       'wolfgang-mehner@web.de' )
+ SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 <
+Use the custom template file for Bash templates which override the global
+templates or to add new ones.
+
+The old system (before version 4.3), using a "local" template file, >
+  ~/.vim/bash-support/templates
+is still supported for backwards compatibility.
+
+Create your private snippet directory: >
+  mkdir --parents  $HOME/.vim/bash-support/codesnippets
 You may want to copy the snippets coming with this plug-in (in
 $VIM/vimfiles/bash-support/codesnippets) into the new directory or to set a
 link to the global directory.
@@ -971,10 +1003,6 @@ link to the global directory.
 ==============================================================================
 5.  TEMPLATE FILES AND TAGS                            *bashsupport-templates*
 ==============================================================================
-
-------------------------------------------------------------------------------
-5.1  TEMPLATE FILES                              *bashsupport-templates-files*
-------------------------------------------------------------------------------
 
 Nearly all menu items insert code snippets or comments. All of these are
 contained within template files and can be changed by the user to meet their
@@ -989,26 +1017,43 @@ The master template file is '$HOME/.vim/bash-support/templates/Templates' for
 a user installation and  '$VIM/vimfiles/bash-support/templates/Templates' for
 a system-wide installation (see |bashsupport-system-wide|).
 
-The master template file starts with a macro section followed by templates for
-single menu items or better by including other template files grouping the
+The master template file can be edited itself to adapt the templates/menus to
+the users need.  Alternatively, a custom template file can be added (see
+g:BASH_CustomTemplateFile), which eliminates the need to edit stock templates.
+The personalization (name, email, ..., date and time format) can be done in a
+special personalization template file. It will be read by all plug-ins which
+support this feature, so it should only contain basic information not
+pertaining to a specific programming language. It can be set up using a
+wizard, which is run by the map \ntw or the menu entry:
+  Bash -> Snippets -> template setup wizard
+
+Further template files can be added using the call: >
+  call mmtemplates#config#Add ( 'bash', '<PATH>/some.templates', 'example', 'nte' )
+The first parameter adds the file to your Bash templates, the second is the
+path. The remaining two optional parameters specify the symbolic name for
+these templates and the map to edit them. The map is '\nte' in this example,
+if the standard mapleader is set.
+
+------------------------------------------------------------------------------
+5.1  TEMPLATE FILES                              *bashsupport-templates-files*
+------------------------------------------------------------------------------
+
+The master template file starts with various settings followed by templates
+for single menu items or better by including other template files grouping the
 templates according to the menu structure of this plug-in. The master file
-usually looks like this (my settings as an example):
+usually looks like this:
 >
  § =============================================================
  §  User Macros
  § =============================================================
 
- SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
- SetMacro( 'AUTHORREF',   'fgm' )
- SetMacro( 'COMPANY',     '' )
- SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
- SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
- SetMacro( 'LICENSE',     'GNU General Public License' )
- SetMacro( 'ORGANIZATION','' )
-
- SetFormat( 'DATE', '%x' )
- SetFormat( 'TIME', '%H:%M' )
- SetFormat( 'YEAR', '%Y' )
+ SetMacro( 'AUTHOR',       'YOUR NAME' )
+ SetMacro( 'AUTHORREF',    '' )
+ SetMacro( 'EMAIL',        '' )
+ SetMacro( 'ORGANIZATION', '' )
+ SetMacro( 'COMPANY',      '' )
+ SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
+ SetMacro( 'LICENSE',      'GNU General Public License' )
 
  SetStyle( 'default' )
 
@@ -1037,19 +1082,21 @@ usually looks like this (my settings as an example):
 <
 Lines starting with a paragraph sign are comments. The section starting with
 >
-  SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
+  SetMacro( 'AUTHOR',       'YOUR NAME' )
 <
-assigns values to predefined tags (macros).  Arbitrary user-defined macros are
+assigns values to predefined tags (macros). Arbitrary user-defined macros are
 possible. The macro name must follows the rules for a C language identifier:
-first character letter  or underscore; case matters; digits are allowed
+first character letter or underscore; case matters; digits are allowed
 beginning with the second character.
+Some of the macros assigned here are placeholders, they will be overwritten by
+template files read later on, which contain the user's configuration.
 
 The statement
 >
   IncludeFile( 'comments.templates' )
 <
 includes the templates from the file 'comments.templates' (in the same
-directory). An absolute path would also be possible.  The statement
+directory). An absolute path would also be possible. The statement
 >
   MenuShortcut( 'Comments',      'c' )
 <
@@ -1092,6 +1139,7 @@ personalize templates.
  <CURSOR>           The cursor position after insertion of a template.
  <+text+>,<-text->  See |bashsupport-templates-jumptags|.
  {+text+},{-text-}
+ [+text+],[-text-]
 
  <SPLIT>            The split point when inserting in visual mode
                     (see|bashsupport-templates|)
@@ -1141,6 +1189,10 @@ There are four jump tag types which can be used as jump targets in templates:
 
  <-text->   Same as the two above. Will be removed if the template is used
  {-text-}   in visual mode.
+
+ [+text+]   The "optional" tag. Serves as a jump tag, but can be deleted using
+            Ctrl-d.
+ [-text-]   Same as above, removed in visual mode.
 
 The text inside the brackets is userdefined and can be empty. The text can be
 composed from letters (uppercase and lowercase), digits, and underscores.
@@ -1295,4 +1347,4 @@ CYGWIN with the value "nodosfilewarning".
 See file 'README.bashsupport'.
 
 ==============================================================================
-vim:tw=78:noet:ts=2:ft=help:norl:
+vim:tw=78:expandtab:ts=2:ft=help:norl:
