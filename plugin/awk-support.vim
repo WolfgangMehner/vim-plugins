@@ -8,11 +8,13 @@
 "                  variables and builtins.
 "
 "   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
+"        Author:  Wolfgang Mehner <wolfgang-mehner@web.de>
+"                 Fritz Mehner <mehner.fritz@web.de>
 "       Version:  see variable g:AwkSupportVersion below
-"       Created:  14.01.2012 10:49
-"      Revision:  0.1
-"       License:  Copyright (c) 2012-2014, Dr. Fritz Mehner
+"       Created:  14.01.2012
+"      Revision:  21.02.2016
+"       License:  Copyright (c) 2001-2015, Dr. Fritz Mehner
+"                 Copyright (c) 2016-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -38,13 +40,13 @@ endif
 let g:AwkSupportVersion= "1.3pre"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
-"          NAME:  awk_SetGlobalVariable     {{{1
+"          NAME:  SetGlobalVariable     {{{1
 "   DESCRIPTION:  Define a global variable and assign a default value if nor
 "                 already defined
 "    PARAMETERS:  name - global variable
 "                 default - default value
 "===============================================================================
-function! s:awk_SetGlobalVariable ( name, default )
+function! s:SetGlobalVariable ( name, default )
   if !exists('g:'.a:name)
     exe 'let g:'.a:name."  = '".a:default."'"
 	else
@@ -54,7 +56,7 @@ function! s:awk_SetGlobalVariable ( name, default )
 			exe 'let g:'.a:name."  = '".a:default."'"
 		endif
   endif
-endfunction   " ---------- end of function  s:awk_SetGlobalVariable  ----------
+endfunction   " ---------- end of function  s:SetGlobalVariable  ----------
 "
 "===  FUNCTION  ================================================================
 "          NAME:  GetGlobalSetting     {{{1
@@ -90,6 +92,7 @@ let s:installation						= '*undefined*'
 let g:Awk_PluginDir						= ''
 let s:Awk_GlobalTemplateFile	= ''
 let s:Awk_LocalTemplateFile		= ''
+let s:Awk_CustomTemplateFile  = ''                " the custom templates
 let s:Awk_FilenameEscChar 		= ''
 let s:Awk_XtermDefaults       = '-fa courier -fs 12 -geometry 80x24'
 
@@ -104,14 +107,16 @@ if	s:MSWIN
 				\		substitute( expand("$HOME"),   '\', '/', 'g' ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
-		let s:installation					= 'local'
-		let s:Awk_LocalTemplateFile	= s:Awk_PluginDir.'/awk-support/templates/Templates'
+		let s:installation           = 'local'
+		let s:Awk_LocalTemplateFile  = s:Awk_PluginDir.'/awk-support/templates/Templates'
+		let s:Awk_CustomTemplateFile = $HOME.'/vimfiles/templates/awk.templates'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
-		let s:installation					= 'system'
-		let s:Awk_GlobalTemplateFile= s:Awk_PluginDir.'/awk-support/templates/Templates'
-		let s:Awk_LocalTemplateFile	= $HOME.'/vimfiles/awk-support/templates/Templates'
+		let s:installation           = 'system'
+		let s:Awk_GlobalTemplateFile = s:Awk_PluginDir.'/awk-support/templates/Templates'
+		let s:Awk_LocalTemplateFile  = $HOME.'/vimfiles/awk-support/templates/Templates'
+		let s:Awk_CustomTemplateFile = $HOME.'/vimfiles/templates/awk.templates'
 	endif
 	"
   let s:Awk_FilenameEscChar 		= ''
@@ -128,15 +133,17 @@ else
 	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
-		let s:installation					= 'local'
-		let s:Awk_LocalTemplateFile	= s:Awk_PluginDir.'/awk-support/templates/Templates'
+		let s:installation           = 'local'
+		let s:Awk_LocalTemplateFile  = s:Awk_PluginDir.'/awk-support/templates/Templates'
+		let s:Awk_CustomTemplateFile = $HOME.'/vimfiles/templates/awk.templates'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
-		let s:installation					= 'system'
-		let s:Awk_PluginDir					= $VIM.'/vimfiles'
-		let s:Awk_GlobalTemplateFile= s:Awk_PluginDir.'/awk-support/templates/Templates'
-		let s:Awk_LocalTemplateFile	= $HOME.'/.vim/awk-support/templates/Templates'
+		let s:installation           = 'system'
+		let s:Awk_PluginDir          = $VIM.'/vimfiles'
+		let s:Awk_GlobalTemplateFile = s:Awk_PluginDir.'/awk-support/templates/Templates'
+		let s:Awk_LocalTemplateFile  = $HOME.'/.vim/awk-support/templates/Templates'
+		let s:Awk_CustomTemplateFile = $HOME.'/vimfiles/templates/awk.templates'
 	endif
 	"
 	let s:Awk_Awk									= '/usr/bin/awk'
@@ -146,17 +153,16 @@ else
 	let s:Awk_OutputGvim					= 'vim'
 	"
 endif
-"
-let s:Awk_CodeSnippets  				= s:Awk_PluginDir.'/awk-support/codesnippets/'
-call s:awk_SetGlobalVariable( 'Awk_CodeSnippets', s:Awk_CodeSnippets )
-"
-"
+
+let s:Awk_AdditionalTemplates = mmtemplates#config#GetFt ( 'awk' )
+let s:Awk_CodeSnippets        = s:Awk_PluginDir.'/awk-support/codesnippets/'
+call s:SetGlobalVariable ( 'Awk_CodeSnippets', s:Awk_CodeSnippets )
+
 "  g:Awk_Dictionary_File  must be global
-"
 if !exists("g:Awk_Dictionary_File")
 	let g:Awk_Dictionary_File     = s:Awk_PluginDir.'/awk-support/wordlists/awk-keywords.list'
 endif
-"
+
 "----------------------------------------------------------------------
 "  *** MODUL GLOBAL VARIABLES *** {{{1
 "----------------------------------------------------------------------
@@ -185,8 +191,9 @@ call s:GetGlobalSetting ( 'Awk_Printheader' )
 call s:GetGlobalSetting ( 'Awk_ManualReader' )
 call s:GetGlobalSetting ( 'Awk_OutputGvim' )
 call s:GetGlobalSetting ( 'Awk_XtermDefaults' )
-call s:GetGlobalSetting ( 'Awk_LocalTemplateFile' )
 call s:GetGlobalSetting ( 'Awk_GlobalTemplateFile' )
+call s:GetGlobalSetting ( 'Awk_LocalTemplateFile' )
+call s:GetGlobalSetting ( 'Awk_CustomTemplateFile' )
 call s:GetGlobalSetting ( 'Awk_CreateMenusDelayed' )
 call s:GetGlobalSetting ( 'Awk_LineEndCommColDefault' )
 
@@ -438,97 +445,107 @@ endfunction    " ----------  end of function Awk_CommentCode  ----------
 "    PARAMETERS:  -
 "       RETURNS:
 "===============================================================================
-function! Awk_RereadTemplates ( displaymsg )
-	"
+function! Awk_RereadTemplates ()
+
 	"-------------------------------------------------------------------------------
-	" SETUP TEMPLATE LIBRARY
+	" setup template library
 	"-------------------------------------------------------------------------------
 	let g:Awk_Templates = mmtemplates#core#NewLibrary ()
-	"
+
 	" mapleader
 	if empty ( g:Awk_MapLeader )
 		call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Mapleader', '\' )
 	else
 		call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Mapleader', g:Awk_MapLeader )
 	endif
-	"
-	" map: choose style
-	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::EditTemplates::Map',   'ntl' )
+
+	" some metainfo
+	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Wizard::PluginName',   'Awk' )
+	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Wizard::FiletypeName', 'Awk' )
+	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Wizard::FileCustomNoPersonal',   s:Awk_PluginDir.'/awk-support/rc/custom.templates' )
+	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Wizard::FileCustomWithPersonal', s:Awk_PluginDir.'/awk-support/rc/custom_with_personal.templates' )
+	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Wizard::FilePersonal',           s:Awk_PluginDir.'/awk-support/rc/personal.templates' )
+	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Wizard::CustomFileVariable',     'g:Awk_CustomTemplateFile' )
+
+	" maps: special operations
 	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::RereadTemplates::Map', 'ntr' )
 	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::ChooseStyle::Map',     'nts' )
-	"
+	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::SetupWizard::Map',     'ntw' )
+
 	" syntax: comments
 	call mmtemplates#core#ChangeSyntax ( g:Awk_Templates, 'comment', '§' )
-	let s:Awk_TemplateJumpTarget = mmtemplates#core#Resource ( g:Awk_Templates, "jumptag" )[0]
-	"
-	let	messsage = ''
-	"
-	if s:installation == 'system'
-		"-------------------------------------------------------------------------------
-		" SYSTEM INSTALLATION
-		"-------------------------------------------------------------------------------
-		if filereadable( s:Awk_GlobalTemplateFile )
-			call mmtemplates#core#ReadTemplates ( g:Awk_Templates, 'load', s:Awk_GlobalTemplateFile )
-		else
-			echomsg "Global template file '".s:Awk_GlobalTemplateFile."' not readable."
-			return
-		endif
-		let	messsage	= "Templates read from '".s:Awk_GlobalTemplateFile."'"
-		"
-		"-------------------------------------------------------------------------------
-		" handle local template files
-		"-------------------------------------------------------------------------------
-		let templ_dir = fnamemodify( s:Awk_LocalTemplateFile, ":p:h" ).'/'
-		"
-		if finddir( templ_dir ) == ''
-			" try to create a local template directory
-			if exists("*mkdir")
-				try
-					call mkdir( templ_dir, "p" )
-				catch /.*/
-				endtry
-			endif
-		endif
 
-		if isdirectory( templ_dir ) && !filereadable( s:Awk_LocalTemplateFile )
-			" write a default local template file
-			let template	= [	]
-			let sample_template_file	= s:Awk_PluginDir.'/awk-support/rc/sample_template_file'
-			if filereadable( sample_template_file )
-				for line in readfile( sample_template_file )
-					call add( template, line )
-				endfor
-				call writefile( template, s:Awk_LocalTemplateFile )
-			endif
-		endif
-		"
-		if filereadable( s:Awk_LocalTemplateFile )
-			call mmtemplates#core#ReadTemplates ( g:Awk_Templates, 'load', s:Awk_LocalTemplateFile )
-			let messsage	= messsage." and '".s:Awk_LocalTemplateFile."'"
-			if mmtemplates#core#ExpandText( g:Awk_Templates, '|AUTHOR|' ) == 'YOUR NAME'
-				echomsg "Please set your personal details in file '".s:Awk_LocalTemplateFile."'."
-			endif
-		endif
-		"
+	"-------------------------------------------------------------------------------
+	" load template library
+	"-------------------------------------------------------------------------------
+
+	" global templates (global installation only)
+	if s:installation == 'system'
+		call mmtemplates#core#ReadTemplates ( g:Awk_Templates, 'load', s:Awk_GlobalTemplateFile,
+					\ 'name', 'global', 'map', 'ntg' )
+	endif
+
+	" local templates (optional for global installation)
+	if s:installation == 'system'
+		call mmtemplates#core#ReadTemplates ( g:Awk_Templates, 'load', s:Awk_LocalTemplateFile,
+					\ 'name', 'local', 'map', 'ntl', 'optional', 'hidden' )
 	else
-		"-------------------------------------------------------------------------------
-		" LOCAL INSTALLATION
-		"-------------------------------------------------------------------------------
-		if filereadable( s:Awk_LocalTemplateFile )
-			call mmtemplates#core#ReadTemplates ( g:Awk_Templates, 'load', s:Awk_LocalTemplateFile )
-			let	messsage	= "Templates read from '".s:Awk_LocalTemplateFile."'"
-		else
-			echomsg "Local template file '".s:Awk_LocalTemplateFile."' not readable."
-			return
-		endif
-		"
+		call mmtemplates#core#ReadTemplates ( g:Awk_Templates, 'load', s:Awk_LocalTemplateFile,
+					\ 'name', 'local', 'map', 'ntl' )
 	endif
-	if a:displaymsg == 'yes'
-		echomsg messsage.'.'
+
+	" additional templates (optional)
+	if ! empty ( s:Awk_AdditionalTemplates )
+		call mmtemplates#core#AddCustomTemplateFiles ( g:Awk_Templates, s:Awk_AdditionalTemplates, "Awk's additional templates" )
 	endif
+
+	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)
+	call mmtemplates#core#ReadTemplates ( g:Awk_Templates, 'personalization',
+				\ 'name', 'personal', 'map', 'ntp' )
+
+	" custom templates (optional, existence of file checked by template engine)
+	call mmtemplates#core#ReadTemplates ( g:Awk_Templates, 'load', s:Awk_CustomTemplateFile,
+				\ 'name', 'custom', 'map', 'ntc', 'optional' )
+
+	"-------------------------------------------------------------------------------
+	" further setup
+	"-------------------------------------------------------------------------------
+
+	" get the jump tags
+	let s:Awk_TemplateJumpTarget = mmtemplates#core#Resource ( g:Awk_Templates, "jumptag" )[0]
 
 endfunction    " ----------  end of function Awk_RereadTemplates  ----------
-"
+
+"===  FUNCTION  ================================================================
+"          NAME:  s:CheckTemplatePersonalization     {{{1
+"   DESCRIPTION:  check whether the name, .. has been set
+"    PARAMETERS:  -
+"       RETURNS:
+"===============================================================================
+let s:DoneCheckTemplatePersonalization = 0
+
+function! s:CheckTemplatePersonalization ()
+
+	" check whether the templates are personalized
+	if ! s:DoneCheckTemplatePersonalization
+				\ && mmtemplates#core#ExpandText ( g:Awk_Templates, '|AUTHOR|' ) == 'YOUR NAME'
+		let s:DoneCheckTemplatePersonalization = 1
+
+		let maplead = mmtemplates#core#Resource ( g:Awk_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
+
+		redraw
+		echohl Search
+		echo 'The personal details (name, mail, ...) are not set in the template library.'
+		echo 'They are used to generate comments, ...'
+		echo 'To set them, start the setup wizard using:'
+		echo '- use the menu entry "Awk -> Snippets -> template setup wizard"'
+		echo '- use the map "'.maplead.'ntw" inside an Awk buffer'
+		echo "\n"
+		echohl None
+	endif
+
+endfunction    " ----------  end of function s:CheckTemplatePersonalization  ----------
+
 "===  FUNCTION  ================================================================
 "          NAME:  InitMenus     {{{1
 "   DESCRIPTION:  Initialize menus.
@@ -645,7 +662,7 @@ function! s:InitMenus()
 	endif
 	"
 	exe ahead.'-SEP2-                                                :'
-	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rse                 :call Awk_Settings()<CR>'
+	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rse                 :call Awk_Settings(0)<CR>'
 	"
 	if	!s:MSWIN
 		exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.x&term\ size<Tab>'.esc_mapl.'rx                       :call Awk_XtermSize()<CR>'
@@ -836,7 +853,7 @@ function! Awk_Hardcopy (mode)
 endfunction   " ---------- end of function  Awk_Hardcopy  ----------
 "
 "===  FUNCTION  ================================================================
-"          NAME:  CreateAdditionalMaps     {{{1
+"          NAME:  s:CreateAdditionalMaps     {{{1
 "   DESCRIPTION:  create additional maps
 "    PARAMETERS:  -
 "       RETURNS:
@@ -946,16 +963,13 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	"   help
 	"-------------------------------------------------------------------------------
-	nnoremap    <buffer>  <silent>  <LocalLeader>rse         :call Awk_Settings()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>rse         :call Awk_Settings(0)<CR>
   "
    noremap  <buffer>  <silent>  <LocalLeader>hm            :call Awk_help('awk')<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>hm       <Esc>:call Awk_help('awk')<CR>
 	 noremap  <buffer>  <silent>  <LocalLeader>hp         :call Awk_HelpAwkSupport()<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>hp    <C-C>:call Awk_HelpAwkSupport()<CR>
-	"
-	nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=Awk_JumpForward()<CR>
-	inoremap  <buffer>  <silent>  <C-j>  <C-g>u<C-R>=Awk_JumpForward()<CR>
-	"
+
 	"-------------------------------------------------------------------------------
 	" settings - reset local leader
 	"-------------------------------------------------------------------------------
@@ -966,7 +980,15 @@ function! s:CreateAdditionalMaps ()
 			unlet g:maplocalleader
 		endif
 	endif
-	"
+
+	"-------------------------------------------------------------------------------
+	" templates
+	"-------------------------------------------------------------------------------
+	nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=Awk_JumpForward()<CR>
+	inoremap  <buffer>  <silent>  <C-j>  <C-g>u<C-R>=Awk_JumpForward()<CR>
+
+	call mmtemplates#core#CreateMaps ( 'g:Awk_Templates', g:Awk_MapLeader, 'do_special_maps', 'do_del_opt_map' )
+
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 "
 "------------------------------------------------------------------------------
@@ -1030,7 +1052,7 @@ endfunction		" ---------- end of function  Awk_help  ----------
 "
 "------------------------------------------------------------------------------
 "  remove <backspace><any character> in CYGWIN man(1) output   {{{1
-"  remove           _<any character> in CYGWIN man(1) output   {{{1
+"  remove           _<any character> in CYGWIN man(1) output
 "------------------------------------------------------------------------------
 "
 function! s:awk_RemoveSpecialCharacters ( )
@@ -1053,40 +1075,77 @@ endfunction		" ---------- end of function  s:awk_RemoveSpecialCharacters   -----
 "    PARAMETERS:  -
 "       RETURNS:
 "===============================================================================
-function! Awk_Settings ()
-	let	txt =     " awk-Support settings\n\n"
-	let txt = txt.'                   author :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|AUTHOR|'      )."\"\n"
-	let txt = txt.'                authorref :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|AUTHORREF|'   )."\"\n"
-	let txt = txt.'                  company :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|COMPANY|'     )."\"\n"
-	let txt = txt.'         copyright holder :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|COPYRIGHT|'   )."\"\n"
-	let txt = txt.'                    email :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|EMAIL|'       )."\"\n"
-  let txt = txt.'                  licence :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|LICENSE|'     )."\"\n"
-	let txt = txt.'             organization :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|ORGANIZATION|')."\"\n"
-	let txt = txt.'                  project :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|PROJECT|'     )."\"\n"
-	let txt = txt.'           AWK executable :  "'.s:Awk_Awk."\"\n"
-	if exists( "b:Awk_AwkCmdLineArgs" )
-		let txt = txt.'  AWK cmd. line arguments :  '.b:Awk_AwkCmdLineArgs."\n"
-	endif
-	let txt = txt.'      plugin installation :  "'.s:installation."\"\n"
- 	let txt = txt.'   code snippet directory :  "'.s:Awk_CodeSnippets."\"\n"
-	if s:installation == 'system'
-		let txt = txt.'     global template file :  "'.s:Awk_GlobalTemplateFile."\"\n"
-		if filereadable( s:Awk_LocalTemplateFile )
-			let txt = txt.'      local template file :  "'.s:Awk_LocalTemplateFile."\"\n"
-		endif
+function! Awk_Settings ( verbose )
+
+	if     s:MSWIN | let sys_name = 'Windows'
+	elseif s:UNIX  | let sys_name = 'UN*X'
+	else           | let sys_name = 'unknown' | endif
+
+	let	txt = " Awk-Support settings\n\n"
+	" template settings: macros, style, ...
+	if exists ( 'g:Awk_Templates' )
+		let txt .= '                   author :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|AUTHOR|'       )."\"\n"
+		let txt .= '                authorref :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|AUTHORREF|'    )."\"\n"
+		let txt .= '                    email :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|EMAIL|'        )."\"\n"
+		let txt .= '             organization :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|ORGANIZATION|' )."\"\n"
+		let txt .= '         copyright holder :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|COPYRIGHT|'    )."\"\n"
+		let txt .= '                  license :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|LICENSE|'      )."\"\n"
+		let txt .= '                  project :  "'.mmtemplates#core#ExpandText( g:Awk_Templates, '|PROJECT|'     )."\"\n"
+		let txt .= '           template style :  "'.mmtemplates#core#Resource ( g:Awk_Templates, "style" )[0]."\"\n\n"
 	else
-		let txt = txt.'      local template file :  "'.s:Awk_LocalTemplateFile."\"\n"
+		let txt .= "                templates :  -not loaded-\n\n"
 	endif
+	" plug-in installation
+	let txt .= '      plugin installation :  '.s:installation.' on '.sys_name."\n"
+	let txt .= "\n"
+	" templates, snippets
+	if exists ( 'g:Awk_Templates' )
+		let [ templist, msg ] = mmtemplates#core#Resource ( g:Awk_Templates, 'template_list' )
+		let sep  = "\n"."                             "
+		let txt .=      "           template files :  "
+					\ .join ( templist, sep )."\n"
+	else
+		let txt .= "           template files :  -not loaded-\n"
+	endif
+	let txt .=
+				\  '       code snippets dir. :  '.s:Awk_CodeSnippets."\n"
 	" ----- dictionaries ------------------------
-  if !empty(g:Awk_Dictionary_File)
+	if !empty(g:Awk_Dictionary_File)
 		let ausgabe= &dictionary
-		let ausgabe= substitute( ausgabe, ",", "\",\n                            +\"", "g" )
-		let txt = txt."       dictionary file(s) :  \"".ausgabe."\"\n"
+		let ausgabe= substitute( ausgabe, ",", ",\n                             ", "g" )
+		let txt = txt."       dictionary file(s) :  ".ausgabe."\n"
 	endif
+	" ----- map leader, menus, file headers -----
+	if a:verbose >= 1
+		let	txt .= "\n"
+					\ .'                mapleader :  "'.g:Awk_MapLeader."\"\n"
+					\ .'     load menus / delayed :  "'.s:Awk_LoadMenus.'" / "'.s:Awk_CreateMenusDelayed."\"\n"
+					\ .'       insert file header :  "'.s:Awk_InsertFileHeader."\"\n"
+	endif
+	let txt .= "\n"
+	" ----- executables, cmd.-line args, ... -------
+	if exists( "b:Awk_AwkCmdLineArgs" )
+		let cmd_line_args = b:Awk_AwkCmdLineArgs
+	else
+		let cmd_line_args = ''
+	endif
+	let txt .= '           Awk executable :  "'.s:Awk_Awk."\"\n"
+	let txt .= '  Awk cmd. line arguments :  "'.cmd_line_args."\"\n"
 	let txt = txt."\n"
+	" ----- output ------------------------------
+	let txt = txt.'     current output dest. :  '.s:Awk_OutputGvim."\n"
+	if !s:MSWIN
+		let txt = txt.'           xterm defaults :  '.s:Awk_XtermDefaults."\n"
+	endif
 	let	txt = txt."__________________________________________________________________________\n"
-	let	txt = txt." awk-Support, Version ".g:AwkSupportVersion." / Dr.-Ing. Fritz Mehner / mehner@web.de\n\n"
-	echo txt
+	let	txt = txt." Awk-Support, Version ".g:AwkSupportVersion." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
+
+	if a:verbose == 2
+		split AwkSupport_Settings.txt
+		put = txt
+	else
+		echo txt
+	endif
 endfunction    " ----------  end of function Awk_Settings ----------
 "
 "------------------------------------------------------------------------------
@@ -1098,7 +1157,7 @@ function! Awk_CreateGuiMenus ()
 		amenu   <silent> 40.1000 &Tools.-SEP100- :
 		amenu   <silent> 40.1010 &Tools.Unload\ Awk\ Support :call Awk_RemoveGuiMenus()<CR>
 		"
-		call Awk_RereadTemplates('no')
+		call Awk_RereadTemplates()
 		call s:InitMenus ()
 		"
 		let s:Awk_MenuVisible = 'yes'
@@ -1522,12 +1581,12 @@ if has( 'autocmd' )
   autocmd FileType *
         \ if &filetype == 'awk' |
         \   if ! exists( 'g:Awk_Templates' ) |
-        \     if s:Awk_LoadMenus == 'yes' | call Awk_CreateGuiMenus ()      |
-        \     else                        | call Awk_RereadTemplates ('no') |
+        \     if s:Awk_LoadMenus == 'yes' | call Awk_CreateGuiMenus ()  |
+        \     else                        | call Awk_RereadTemplates () |
         \     endif |
         \   endif |
         \   call s:CreateAdditionalMaps () |
-        \   call mmtemplates#core#CreateMaps ( 'g:Awk_Templates', g:Awk_MapLeader, 'do_special_maps' ) |
+				\		call s:CheckTemplatePersonalization() |
         \ endif
 
   if s:Awk_InsertFileHeader == 'yes'

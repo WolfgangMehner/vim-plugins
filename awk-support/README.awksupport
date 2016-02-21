@@ -80,6 +80,8 @@ For a system-wide installation please see the help file 'doc/awksupport.txt'.
 ---------------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 1.3pre
 ---------------------------------------------------------------------------------------
+- Add 'g:Awk_CustomTemplateFile'.
+- Add template personalization file and setup wizard.
 - Minor corrections and improvements.
 
 

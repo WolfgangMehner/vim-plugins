@@ -4,10 +4,9 @@
 %%
 %%  Description:  awk-support.vim : Key mappings for Awk without GUI.
 %%                
-%%                
-%%       Author:  Dr.-Ing. Fritz Mehner
-%%        Email:  mehner.fritz@web.de
-%%    Copyright:  Copyright (C)  2012-2014  Dr.-Ing. Fritz Mehner  (mehner.fritz@web.de)
+%%       Author:  Wolfgang Mehner, wolfgang-mehner@web.de
+%%                (formerly Dr. Fritz Mehner (fgm), mehner.fritz@web.de)
+%%    Copyright:  Copyright (c) 2012-2016, Wolfgang Mehner
 %%      Version:  see \Pluginversion
 %%      Created:  20.12.2012
 %%                
@@ -28,7 +27,7 @@
 
 \setlength\parindent{0pt}
 
-\newcommand{\Pluginversion}{1.2}
+\newcommand{\Pluginversion}{1.3pre}
 \newcommand{\ReleaseDate}{\today}
 \newcommand{\Rep}{{\scriptsize{[n]}}}
 
@@ -52,7 +51,7 @@
 %%  hyperref
 %%----------------------------------------------------------------------
 \usepackage[ps2pdf]{hyperref}
-\hypersetup{pdfauthor={Dr.-Ing. Fritz Mehner, Germany, mehner.fritz@web.de}}
+\hypersetup{pdfauthor={Wolfgang Mehner, Germany, wolfgang-mehner@web.de}}
 \hypersetup{pdfkeywords={Vim, Perl}}
 \hypersetup{pdfsubject={Vim-plug-in,  awk-support.vim, hot keys}}
 \hypersetup{pdftitle={Vim-plug-in,  awk-support.vim, hot keys}}
@@ -73,16 +72,15 @@
 \textbf{\textsc{\small{Vim-Plug-in}}}\\
 \textbf{\LARGE{awk-support.vim}}\\
 \textbf{\textsc{\small{Version \Pluginversion}}}\\
-\vspace{5mm}%
+\vspace{1mm}%
 \textbf{\textsc{\Huge{Hot keys}}}\\ 
-\vspace{5mm}%
+\vspace{1mm}%
 Key mappings for Vim and gVim.\\
-Plug-in: http://vim.sourceforge.net\\
-Fritz Mehner (mehner.fritz@web.de)\\
+{\tiny  \texttt{http://www.vim.org}\hspace{1.5mm}---\hspace{1.5mm}\textbf{Wolfgang Mehner},  \texttt{wolfgang-mehner@web.de}}\\
 \vspace{1.0mm}
 {\normalsize (i)} insert mode, {\normalsize (n)} normal mode, {\normalsize (v)} visual mode\\
-\vspace{4.0mm}
-
+\vspace{1.0mm}
+%
 %%======================================================================
 %%  table, left part				[[[1
 %%======================================================================
@@ -175,6 +173,13 @@ Fritz Mehner (mehner.fritz@web.de)\\
 \hline \verb'\nv'  & view code snippet         \hfill (n, i)   \\
 \hline \verb'\nw'  & write code snippet        \hfill (n, i, v)\\
 \hline \verb'\ne'  & edit code snippet         \hfill (n, i)   \\
+%
+\hline     \verb'\ntl' & edit local templates      \hfill (n, i)\\
+\hline     \verb'\ntc' & edit custom templates     \hfill (n, i)\\
+\hline     \verb'\ntp' & edit personal templates   \hfill (n, i)\\
+\hline     \verb'\ntr' & reread the templates      \hfill (n, i)\\
+\hline     \verb'\ntw' & template setup wizard     \hfill (n, i)\\
+\hline     \verb'\nts' & choose template style     \hfill (n, i)\\
 \hline
 %
 \end{tabular}\\
