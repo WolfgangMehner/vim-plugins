@@ -1,0 +1,52 @@
+================================================================================
+===== summary
+================================================================================
+Vim Script IDE for Vim/gVim
+================================================================================
+===== detailed description
+================================================================================
+Vim-Support implements a Vim Script-IDE for Vim/gVim. It has been written to
+considerably speed up writing code in a consistent style. This is done by
+inserting complete statements, comments, idioms, and code snippets.
+
+Some screen shots :  http://lug.fh-swf.de/vim/vim-vimsupport/index.html
+
+For plug-in managers :  https://github.com/WolfgangMehner/vim-support
+
+The help file online :  http://lug.fh-swf.de/vim/vim-vimsupport/vimsupport.html
+
+The key mappings of this plug-in :  http://lug.fh-swf.de/vim/vim-vimsupport/vim-hotkeys.pdf
+
+DOCUMENTATION
+--------------------------------------------------------
+This plug-in comes with a help file (vimsupport.txt). Read it with
+
+    :help vimsupport
+
+** PLEASE READ THE DOCUMENTATION **
+
+Editing actions differ for different modes! There are a lot of features which
+can be configured or customized to match your needs.
+
+MAILING LIST
+--------------------------------------------------------
+You can subscribe to the vim-plugins-list mailing list to post your questions or
+suggestions for improvement or to report bugs. The list will also be used to
+announce new releases ( c.vim / bash-support / perl-support / vim-support ).
+Visit the following page for subscribing to the mailing list:
+
+    http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list
+
+The vim-plugins-list list is very low on traffic.
+
+================================================================================
+===== install details
+================================================================================
+Copy the zip archive vim-support.zip to $HOME/.vim/ and run
+    unzip vim-support.zip
+If you have already an older version of this plug-in and you have modified the
+template files you may want to save your templates first or copy the files from
+the archive by hand. See also the file README.md within the zip file.
+================================================================================
+===== end
+================================================================================
