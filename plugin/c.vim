@@ -2382,7 +2382,7 @@ function! s:C_RereadTemplates ()
 	"-------------------------------------------------------------------------------
 	" SETUP TEMPLATE LIBRARY
 	"-------------------------------------------------------------------------------
-	let g:C_Templates = mmtemplates#core#NewLibrary ()
+	let g:C_Templates = mmtemplates#core#NewLibrary ( 'api_version', '1.0' )
 	"
 	" mapleader
 	if empty ( g:C_MapLeader )
@@ -2432,7 +2432,7 @@ function! s:C_RereadTemplates ()
 
 	" additional templates (optional)
 	if ! empty ( s:C_AdditionalTemplates )
-		call mmtemplates#core#AddCustomTemplateFiles ( g:C_Templates, s:C_AdditionalTemplates, 'g:C_AdditionalTemplates' )
+		call mmtemplates#core#AddCustomTemplateFiles ( g:C_Templates, s:C_AdditionalTemplates, "C's additional templates" )
 	endif
 
 	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)
@@ -2811,7 +2811,7 @@ function! s:CreateAdditionalMaps ()
 	"
 	" ----------------------------------------------------------------------------
 	"
-	call mmtemplates#core#CreateMaps ( 'g:C_Templates', g:C_MapLeader, 'do_special_maps', 'do_del_opt_map' ) |
+	call mmtemplates#core#CreateMaps ( 'g:C_Templates', g:C_MapLeader, 'do_special_maps', 'do_del_opt_map' )
 	"
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 "
@@ -2905,9 +2905,6 @@ if has("autocmd")
 	"
 	exe 'autocmd BufRead *.'.join( s:C_SourceCodeExtensionsList, '\|*.' )
 				\     .' call C_HighlightJumpTargets()'
-	"
-" 	autocmd BufNewFile,BufRead * if &filetype =~ '^\(c\|cpp\)$' |
-" 							\     call s:CreateAdditionalMaps() | endif
 endif " has("autocmd")
 "
 "=====================================================================================
