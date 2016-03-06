@@ -37,7 +37,7 @@
 	'named pipe (FIFO)'      : '-p',
 	'regular file'           : '-f',
 	'socket'                 : '-S',
-	'symboloc link'          : '-L',
+	'symbolic link'          : '-L',
 == ENDLIST ==
 
 == Tests.file types == expandmenu, expandright:value, insert, sc:t, map:tft ==

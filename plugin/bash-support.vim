@@ -503,7 +503,7 @@ function! BASH_RereadTemplates ()
 	"-------------------------------------------------------------------------------
 	" setup template library
 	"-------------------------------------------------------------------------------
-	let g:BASH_Templates = mmtemplates#core#NewLibrary ()
+	let g:BASH_Templates = mmtemplates#core#NewLibrary ( 'api_version', '1.0' )
 
 	" mapleader
 	if empty ( g:BASH_MapLeader )

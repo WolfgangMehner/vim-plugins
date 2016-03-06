@@ -14,8 +14,8 @@
 	'direct STDOUT to file, append'       : ' >> <CURSOR>',
 	'direct STDOUT to file'               : ' > <CURSOR>',
 	'direct STDOUT to STDERR'             : ' >&2<CURSOR>',
-	'duplicate STDIN from file descr n'   : ' <<CURSOR>& ',
-	'duplicate STDOUT to file descr n'    : ' ><CURSOR>& ',
+	'duplicate STDIN from file descr n'   : ' <CURSOR><& ',
+	'duplicate STDOUT to file descr n'    : ' <CURSOR>>& ',
 	'take file descr n from file'         : ' <CURSOR>< ',
 	'take STDIN from file'                : ' < <CURSOR>',
 == ENDLIST ==
