@@ -156,7 +156,7 @@ function! s:SetupTemplates ( rec )
 	"-------------------------------------------------------------------------------
 	" setup template library
 	"-------------------------------------------------------------------------------
-	let rec.templates = mmtemplates#core#NewLibrary ()
+	let rec.templates = mmtemplates#core#NewLibrary ( 'api_version', '1.0' )
 
 	" mapleader
 	if empty ( g:Templates_MapLeader )
@@ -182,7 +182,7 @@ function! s:SetupTemplates ( rec )
 	"-------------------------------------------------------------------------------
 
 	if ! empty ( rec.list )
-		call mmtemplates#core#AddCustomTemplateFiles ( rec.templates, rec.list, 'templates '.rec.filetype )
+		call mmtemplates#core#AddCustomTemplateFiles ( rec.templates, rec.list, rec.filetype."'s templates" )
 	endif
 
 	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)
