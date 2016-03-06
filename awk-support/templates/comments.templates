@@ -37,9 +37,9 @@
 
 § -------------------------------------------------------------
 
-== Comments.date == append, map:cd, sc:d ==
+== Comments.date == insert, map:cd, sc:d ==
 |DATE|
-== Comments.date-time == append, map:ct, sc:t ==
+== Comments.date-time == insert, map:ct, sc:t ==
 |DATE| |TIME|
 == ENDTEMPLATE ==
 

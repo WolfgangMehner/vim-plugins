@@ -450,7 +450,7 @@ function! Awk_RereadTemplates ()
 	"-------------------------------------------------------------------------------
 	" setup template library
 	"-------------------------------------------------------------------------------
-	let g:Awk_Templates = mmtemplates#core#NewLibrary ()
+	let g:Awk_Templates = mmtemplates#core#NewLibrary ( 'api_version', '1.0' )
 
 	" mapleader
 	if empty ( g:Awk_MapLeader )
