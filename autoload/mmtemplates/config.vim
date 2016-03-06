@@ -196,7 +196,7 @@ function! mmtemplates#config#Add ( ft, path, ... )
 	endif
 
 	if has_key ( s:filetype_list, ft )
-		call insert ( s:filetype_list[ft], entry )
+		call add ( s:filetype_list[ft], entry )
 	else
 		let s:filetype_list[ft] = [ entry ]
 	endif

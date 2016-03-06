@@ -1,4 +1,4 @@
-*templatesupport.txt*         MM Template Support                  Jan 06 2016
+*templatesupport.txt*         MM Template Support                  Mar 06 2016
 
 MM Template Support                                        *template-support*
 
@@ -89,6 +89,7 @@ Here is a list of high profile plug-ins which use the template support:
  C.2    List                                 |template-support-opt-list|
  D.    Change Log                            |template-support-change-log|
  D.1    Interface Versions                   |template-support-change-interf|
+ D.2    API Versions                         |template-support-change-api|
  E.    Credits                               |template-support-credits|
 
 ==============================================================================
@@ -1513,13 +1514,17 @@ insert templates into a buffer. A further function expands macros in a text.
                                                *mmtemplates#core#NewLibrary()*
 To create a new template library call:
 
-	library = mmtemplates#core#NewLibrary ( ... ) ~
+  library = mmtemplates#core#NewLibrary ( ... ) ~
 
 Optional parameters:
-	"debug", level      - View debug information with the given level of detail.
-	                      (integer, default: show no debug information)
+  "api_version", vers - the API version to use (string, default "0.9")
+  "debug", level      - View debug information with the given level of detail.
+                        (integer, default: show no debug information)
 Returns:
-	library - The template library. (dict)
+  library - The template library. (dict)
+
+The API version parameter can be used to enable new behavior which is not
+backwards compatible, see |template-support-change-api|.
 
 Example:
 
@@ -3066,6 +3071,30 @@ See also |template-support-lib-interf|.
 
 - Initial version of the interface with all changes introduced prior to
   version "1.0".
+
+------------------------------------------------------------------------------
+D.2  API VERSIONS                                *template-support-change-api*
+------------------------------------------------------------------------------
+
+The API version governs the behavior of the API, and is used to enable
+features which are not backwards compatible. The API version is set when
+calling |mmtemplates#core#NewLibrary()|. This only concerns plug-in
+developers.
+
+------------------------------------------------------------------------------
+  API VERSION 1.0
+------------------------------------------------------------------------------
+
+- When calling |mmtemplates#core#CreateMenus()|, the menu names supplied with
+  the options "existing_menus", "sub_menu", and "specials_menu" must now be
+  correctly escaped for menu creation.
+
+------------------------------------------------------------------------------
+  API VERSION 0.9
+------------------------------------------------------------------------------
+
+- Initial version of the API with all changes introduced prior to version
+  "1.0".
 
 ==============================================================================
 E.  CREDITS                                         *template-support-credits*
