@@ -12,15 +12,17 @@ let <CURSOR> = <+VAL+>
 let <CURSOR> = [ <+VAL+>, <+VAL+> ]
 == Statements.let dictionary == map:sd, sc:d ==
 let <CURSOR> = {
-	<+KEY+>:<+VAL+>,
-	<+KEY+>:<+VAL+>,
-	<+KEY+>:<+VAL+>,
-	}
+			\ <+KEY+> : <+VAL+>,
+			\ <+KEY+> : <+VAL+>,
+			\ <+KEY+> : <+VAL+>,
+			\ }
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
 §  Control
 § -------------------------------------------------------------
+
+== SEP: Statements.sep1 ==
 
 == Statements.for == map:sf, sc:f ==
 for <CURSOR> in <+LIST+>

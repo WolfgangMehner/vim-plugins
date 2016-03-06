@@ -569,7 +569,7 @@ function! Vim_RereadTemplates ()
 	"-------------------------------------------------------------------------------
 	" setup template library
 	"-------------------------------------------------------------------------------
- 	let g:Vim_Templates = mmtemplates#core#NewLibrary ()
+ 	let g:Vim_Templates = mmtemplates#core#NewLibrary ( 'api_version', '1.0' )
 	"
 	" mapleader
 	if empty ( g:Vim_MapLeader )
@@ -615,7 +615,7 @@ function! Vim_RereadTemplates ()
 
 	" additional templates (optional)
 	if ! empty ( s:Vim_AdditionalTemplates )
-		call mmtemplates#core#AddCustomTemplateFiles ( g:Vim_Templates, s:Vim_AdditionalTemplates, 'g:Vim_AdditionalTemplates' )
+		call mmtemplates#core#AddCustomTemplateFiles ( g:Vim_Templates, s:Vim_AdditionalTemplates, "Vim's additional templates"  )
 	endif
 
 	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)
