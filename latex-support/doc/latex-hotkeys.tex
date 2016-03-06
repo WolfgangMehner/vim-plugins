@@ -6,10 +6,12 @@
 %%
 %%        Version:  see \Pluginversion
 %%        Created:  02.01.2013
-%%       Revision:  none
+%%       Revision:  24.02.2016
 %%
-%%         Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
-%%      Copyright:  Copyright (c) 2013-2014, Dr. Fritz Mehner
+%%         Author:  Wolfgang Mehner (WM), wolfgang-mehner@web.de
+%%                  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
+%%      Copyright:  Copyright (c) 2013-2015, Dr. Fritz Mehner
+%%                  Copyright (c) 2016-2016, Wolfgang Mehner
 %%
 %%=====================================================================================
 
@@ -28,7 +30,7 @@
 
 \setlength\parindent{0pt}
 
-\newcommand{\Pluginversion}{1.1.1}
+\newcommand{\Pluginversion}{1.2}
 \newcommand{\ReleaseDate}{\today}
 \newcommand{\Rep}{{\scriptsize{[n]}}}
 \newcommand{\Map}[1] {\textbf{\textasciiacute}\texttt{#1}}
@@ -52,11 +54,11 @@
 %%----------------------------------------------------------------------
 %%  hyperref
 %%----------------------------------------------------------------------
-\usepackage[ps2pdf]{hyperref}
-\hypersetup{pdfauthor={Dr.-Ing. Fritz Mehner, Germany, mehner.fritz@web.de}}
+\usepackage{hyperref}
+\hypersetup{pdfauthor={Wolfgang Mehner, Germany, wolfgang-mehner@web.de}}
 \hypersetup{pdfkeywords={Vim, LaTeX}}
 \hypersetup{pdfsubject={Vim-plug-in, latex-support.vim, hot keys}}
-\hypersetup{pdftitle={Vim-plug-in, latex-support.vim, hot keys}}
+\hypersetup{pdftitle={Vim Plug-in : latex-support.vim}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  START OF DOCUMENT
@@ -72,16 +74,16 @@
 \textbf{\textsc{\small{Vim-Plug-in}}}\\
 \textbf{\LARGE{latex-support.vim}}\\
 \textbf{\textsc{\small{Version \Pluginversion}}}\\
-\vspace{5mm}%
+\vspace{1mm}%
 \textbf{\textsc{\Huge{Hot keys}}}\\
-\vspace{5mm}%
-Key mappings for Vim and gVim.\\
-Plug-in: http://vim.sourceforge.net\\
-Fritz Mehner (mehner.fritz@web.de)\\
+\vspace{1mm}%
+Key mappings for Vim and gVim\\
+{\tiny  \texttt{http://www.vim.org}\hspace{1.5mm}---\hspace{1.5mm}\textbf{Wolfgang Mehner},  \texttt{wolfgang-mehner@web.de}}\\
 \vspace{1.0mm}
-{\normalsize (i)} insert mode, {\normalsize (n)} normal mode, {\normalsize (v)} visual mode\\
-\vspace{4.0mm}
-
+{\normalsize (i)} insert mode, {\normalsize (n)} normal mode, {\normalsize (v)} visual mode,\\
+{\normalsize (T)} tab-completion
+\vspace{1.0mm}
+%
 %%======================================================================
 %%  page 1 / table, left part     [[[1
 %%======================================================================
@@ -111,7 +113,7 @@ Fritz Mehner (mehner.fritz@web.de)\\
 \hline     \Map{cfr2} & frame comment, type 2       \hfill (n, i)   \\
 \hline     \Map{cfr3} & frame comment, type 3       \hfill (n, i)   \\
 \hline     \Map{ch}   & file prolog                 \hfill (n, i)   \\
-\hline     \Map{cm}   & plug-in macros              \hfill (n, i)   \\
+\hline     \Map{cm}   & plug-in macros              \hfill (n, i, T)\\
 \hline     \Map{cd}   & date                        \hfill (n, i)   \\
 \hline     \Map{ct}   & date \& time                \hfill (n, i)   \\
 \hline
@@ -120,8 +122,8 @@ Fritz Mehner (mehner.fritz@web.de)\\
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{D}ocument}}                 \\[1.0ex]
-\hline     \Map{dc}  &  document class              \hfill (n, i)\\
-\hline     \Map{di}  &  indices                     \hfill (n, i)\\
+\hline     \Map{dc}  &  document class              \hfill (n, i, T)\\
+\hline     \Map{di}  &  indices                     \hfill (n, i, T)\\
 \hline     \Map{dti} &  title                       \hfill (n, i)\\
 \hline     \Map{dbi} &  bibliography                \hfill (n, i)\\
 \hline     \Map{dac} &  addcontentsline             \hfill (n, i)\\
@@ -140,21 +142,21 @@ Fritz Mehner (mehner.fritz@web.de)\\
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{T}ext}}                 \\[1.0ex]
-\hline \Map{e}    & environment                    \hfill (n, i, v)\\
-\hline \Map{ts}   & section                        \hfill (n, i)\\
-\hline \Map{to}   & organization                   \hfill (n, i)\\
+\hline \Map{e}    & environment                    \hfill (n, i, v, T)\\
+\hline \Map{ts}   & section                        \hfill (n, i, T)\\
+\hline \Map{to}   & organization                   \hfill (n, i, T)\\
 \hline \Map{tld}  & list environment, description  \hfill (n, i)\\
 \hline \Map{tle}  & list environment, enumerate    \hfill (n, i)\\
 \hline \Map{tli}  & list environment, itemize      \hfill (n, i)\\
 \hline \Map{tll}  & list environment, list         \hfill (n, i)\\
 \hline \Map{tlit} & list environment, item         \hfill (n, i)\\
 \hline \Map{tlil} & list environment, item+labels  \hfill (n, i)\\
-\hline \Map{tf}   & font style                     \hfill (n, i, v)\\
-\hline \Map{tfs}  & font size                      \hfill (n, i, v)\\
-\hline \Map{tq}   & quotes                         \hfill (n, i, v)\\
-\hline \Map{tsp}  & spacing                        \hfill (n, i)\\
-\hline \Map{ta}   & line alignment + spacing       \hfill (n, i, v)\\
-\hline \Map{ttc}  & textcomp characters            \hfill (n, i)\\
+\hline \Map{tf}   & font style                     \hfill (n, i, v, T)\\
+\hline \Map{tfs}  & font size                      \hfill (n, i, v, T)\\
+\hline \Map{tq}   & quotes                         \hfill (n, i, v, T)\\
+\hline \Map{tsp}  & spacing                        \hfill (n, i, T)\\
+\hline \Map{ta}   & line alignment + spacing       \hfill (n, i, v, T)\\
+\hline \Map{ttc}  & textcomp characters            \hfill (n, i, T)\\
 \hline
 \hline \Map{tbi}  & bibitem                        \hfill (n, i)\\
 \hline \Map{tci}  & cite                           \hfill (n, i)\\
@@ -178,34 +180,20 @@ Fritz Mehner (mehner.fritz@web.de)\\
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{62mm}|}
 %%----------------------------------------------------------------------
-%%  Snippets
-%%----------------------------------------------------------------------
-\hline
-\multicolumn{2}{|r|}{\textsl{S\textbf{n}ippets}}                \\[1.0ex]
-\hline \Map{nr}  & read code snippet         \hfill (n, i)   \\
-\hline \Map{nv}  & view code snippet         \hfill (n, i)   \\
-\hline \Map{nw}  & write code snippet        \hfill (n, i, v)\\
-\hline \Map{ne}  & edit code snippet         \hfill (n, i)   \\
-\hline
-\hline \Map{ntl} & edit local templates      \hfill (n, i)   \\
-\hline \Map{ntr} & reread templates          \hfill (n, i)   \\
-\hline \Map{nts} & choose style              \hfill (n, i)   \\
-\hline
-%%----------------------------------------------------------------------
 %%  Math
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{M}ath}}  \\[1.0ex]
-\hline  \Map{msp} & spaces                    \hfill (n, i)\\
-\hline  \Map{mac} & accents                   \hfill (n, i)\\
-\hline  \Map{mfs} & font styles               \hfill (n, i)\\
-\hline  \Map{md}  & delimiter                 \hfill (n, i)\\
-\hline  \Map{mf}  & functions                 \hfill (n, i)\\
-\hline  \Map{mgl} & lowercase  greek          \hfill (n, i)\\
-\hline  \Map{mgu} & uppercase greek           \hfill (n, i)\\
-\hline  \Map{mo}  & operators                 \hfill (n, i)\\
-\hline  \Map{mr}  & relations                 \hfill (n, i)\\
-\hline  \Map{mar} & arrows                    \hfill (n, i)\\
+\hline  \Map{msp} & spaces                    \hfill (n, i, T)\\
+\hline  \Map{mac} & accents                   \hfill (n, i, T)\\
+\hline  \Map{mfs} & font styles               \hfill (n, i, T)\\
+\hline  \Map{md}  & delimiter                 \hfill (n, i, T)\\
+\hline  \Map{mf}  & functions                 \hfill (n, i, T)\\
+\hline  \Map{mgl} & lowercase  greek          \hfill (n, i, T)\\
+\hline  \Map{mgu} & uppercase greek           \hfill (n, i, T)\\
+\hline  \Map{mo}  & operators                 \hfill (n, i, T)\\
+\hline  \Map{mr}  & relations                 \hfill (n, i, T)\\
+\hline  \Map{mar} & arrows                    \hfill (n, i, T)\\
 \hline
 \hline  \Map{me}  & equation+label            \hfill (n, i, v)\\
 \hline  \Map{mea} & eqnarray+label            \hfill (n, i, v)\\
@@ -232,7 +220,7 @@ Fritz Mehner (mehner.fritz@web.de)\\
 %%  page 2 / table, left part     [[[1
 %%======================================================================
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
-\begin{tabular}[]{|p{11mm}|p{63mm}|}
+\begin{tabular}[]{|p{11mm}|p{60mm}|}
 %%----------------------------------------------------------------------
 %%  Wizard
 %%----------------------------------------------------------------------
@@ -240,7 +228,8 @@ Fritz Mehner (mehner.fritz@web.de)\\
 \multicolumn{2}{|r|}{\textsl{\textbf{W}izard}}\\[1.0ex]
 \hline  \Map{wll}  & lstlisting               \hfill (n, i, v)\\
 \hline  \Map{wlil} & lstinputlisting          \hfill (n, i)\\
-\hline  \Map{nls}  & lstset                   \hfill (n, i)\\
+\hline  \Map{wlin} & lstinline                \hfill (n, i, v)\\
+\hline  \Map{wls}  & lstset                   \hfill (n, i, T)\\
 \hline
 \hline  \Map{wtt}  & table                    \hfill (n, i, v)\\
 \hline  \Map{wttf} & table, floating          \hfill (n, i, v)\\
@@ -258,6 +247,32 @@ Fritz Mehner (mehner.fritz@web.de)\\
 \hline  \Map{wmp}  & minipage                 \hfill (n, i, v)\\
 \hline  \Map{wbp}  & parbox                   \hfill (n, i, v)\\
 \hline
+%
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%======================================================================
+%%  page 2 / table, middle part      [[[1
+%%======================================================================
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{62mm}|}
+%%----------------------------------------------------------------------
+%%  Snippets
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{S\textbf{n}ippets}}                \\[1.0ex]
+\hline \Map{nr}  & read code snippet         \hfill (n, i)   \\
+\hline \Map{nv}  & view code snippet         \hfill (n, i)   \\
+\hline \Map{nw}  & write code snippet        \hfill (n, i, v)\\
+\hline \Map{ne}  & edit code snippet         \hfill (n, i)   \\
+\hline
+\hline \Map{ntl} & edit local templates      \hfill (n, i)   \\
+\hline \Map{ntc} & edit custom templates     \hfill (n, i)   \\
+\hline \Map{ntp} & edit personal templates   \hfill (n, i)   \\
+\hline \Map{ntr} & reread the templates      \hfill (n, i)   \\
+\hline \Map{ntw} & template setup wizard     \hfill (n, i)   \\
+\hline \Map{nts} & choose template style     \hfill (n, i, T)\\
+\hline
 %%----------------------------------------------------------------------
 %%  menu run
 %%----------------------------------------------------------------------
@@ -272,7 +287,7 @@ Fritz Mehner (mehner.fritz@web.de)\\
 \hline \Map{rmi}  & run \texttt{makeindex}                   \hfill (n, i)\\
 \hline \Map{rbi}  & run \texttt{bibtex}                      \hfill (n, i)\\
 \hline \Map{rc}   & run a converter                          \hfill (n, i)\\
-\hline \Map{rh}   & hardcopy buffer to \small{FILENAME}.ps   \hfill (n, i, v)\\
+\hline \Map{rh}   & hardcopy buffer to postscript            \hfill (n, i, v)\\
 \hline \Map{rse}  & show plugin settings                     \hfill (n, i)\\
 \hline
 %%----------------------------------------------------------------------
@@ -287,10 +302,6 @@ Fritz Mehner (mehner.fritz@web.de)\\
 \hline
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
-%
-%%======================================================================
-%%  page 2 / table, middle part     [[[1
-%%======================================================================
 %
 \end{center}%
 \end{multicols}%

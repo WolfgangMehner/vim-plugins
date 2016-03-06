@@ -576,7 +576,7 @@ The following function keys are defined in normal, visual and insert mode:
 4.1  FILES                                         *latexsupport-custom-files*
 ------------------------------------------------------------------------------
 
-README.latexsupport               The starting point.
+README.md                         The starting point.
 
 autoload/mmtemplates/core         The template system plug-in.
 
@@ -1113,7 +1113,7 @@ You can use Vim's dictionary feature CTRL-X, CTRL-K (and CTRL-P, CTRL-N).
 8.  RELEASE NOTES                                 *latexsupport-release-notes*
 ==============================================================================
 
-See files README.latexsupport and doc/ChangeLog.
+See files latex-support/README.md and doc/ChangeLog.
 
 ==============================================================================
 vim:tw=78:expandtab:ts=2:ft=help:norl:

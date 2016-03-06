@@ -15,7 +15,7 @@
 == ENDTEMPLATE ==
 
 == Wizard.listings.lstinline == insert, map:wlin, sc:i ==
-\lstinline'<CURSOR>'
+\lstinline'<CURSOR><SPLIT>'
 == ENDTEMPLATE ==
 
 == Wizard.tables.table == map:wtt, sc:t ==

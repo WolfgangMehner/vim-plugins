@@ -577,7 +577,7 @@ function! s:RereadTemplates ()
 	"-------------------------------------------------------------------------------
 	" SETUP TEMPLATE LIBRARY
 	"-------------------------------------------------------------------------------
-	let g:Latex_Templates = mmtemplates#core#NewLibrary ()
+	let g:Latex_Templates = mmtemplates#core#NewLibrary ( 'api_version', '1.0' )
 	"
 	" mapleader
 	if empty ( g:Latex_MapLeader )
@@ -623,7 +623,7 @@ function! s:RereadTemplates ()
 
 	" additional templates (optional)
 	if ! empty ( s:Latex_AdditionalTemplates )
-		call mmtemplates#core#AddCustomTemplateFiles ( g:Latex_Templates, s:Latex_AdditionalTemplates, 'g:Latex_AdditionalTemplates' )
+		call mmtemplates#core#AddCustomTemplateFiles ( g:Latex_Templates, s:Latex_AdditionalTemplates, "LaTeX's additional templates"  )
 	endif
 
 	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)
