@@ -4,6 +4,9 @@
 
 § =============================================================
 §  Personal Information
+§
+§  - overwrites the information in the template personalization
+§    file, because these commands are read later
 § =============================================================
 
 SetMacro( 'AUTHOR',       'YOUR NAME' )

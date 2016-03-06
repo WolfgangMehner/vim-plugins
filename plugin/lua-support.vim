@@ -1311,7 +1311,7 @@ function! s:SetupTemplates()
 	"-------------------------------------------------------------------------------
 	" setup template library
 	"-------------------------------------------------------------------------------
-	let g:Lua_Templates = mmtemplates#core#NewLibrary ()
+	let g:Lua_Templates = mmtemplates#core#NewLibrary ( 'api_version', '1.0' )
 	"
 	" mapleader
 	if empty ( g:Lua_MapLeader )
@@ -1357,7 +1357,7 @@ function! s:SetupTemplates()
 	"
 	" additional templates (optional)
 	if ! empty ( s:Lua_AdditionalTemplates )
-		call mmtemplates#core#AddCustomTemplateFiles ( g:Lua_Templates, s:Lua_AdditionalTemplates, 'g:Lua_AdditionalTemplates' )
+		call mmtemplates#core#AddCustomTemplateFiles ( g:Lua_Templates, s:Lua_AdditionalTemplates, "Lua's additional templates" )
 	endif
 	"
 	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)
