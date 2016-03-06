@@ -1999,7 +1999,7 @@ function! s:Perl_RereadTemplates ()
 	"-------------------------------------------------------------------------------
 	" setup template library
 	"-------------------------------------------------------------------------------
-	let g:Perl_Templates = mmtemplates#core#NewLibrary ()
+	let g:Perl_Templates = mmtemplates#core#NewLibrary ( 'api_version', '1.0' )
 	"
 	" mapleader
 	if empty ( g:Perl_MapLeader )
@@ -2045,7 +2045,7 @@ function! s:Perl_RereadTemplates ()
 
 	" additional templates (optional)
 	if ! empty ( s:Perl_AdditionalTemplates )
-		call mmtemplates#core#AddCustomTemplateFiles ( g:Perl_Templates, s:Perl_AdditionalTemplates, 'g:Perl_AdditionalTemplates' )
+		call mmtemplates#core#AddCustomTemplateFiles ( g:Perl_Templates, s:Perl_AdditionalTemplates, "Perl's additional templates" )
 	endif
 
 	" personal templates (shared across template libraries) (optional, existence of file checked by template engine)

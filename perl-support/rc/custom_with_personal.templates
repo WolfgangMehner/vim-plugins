@@ -2,13 +2,11 @@
 §  Template Customization
 § =============================================================
 
-§ prevent the loading of the personal file,
-§ since we configure the personalization here
-§ (see :help g:Templates_UsePersonalizationFile)
-SetProperty( 'Templates::UsePersonalizationFile', 'no' )
-
 § =============================================================
 §  Personal Information
+§
+§  - overwrites the information in the template personalization
+§    file, because these commands are read later
 § =============================================================
 
 SetMacro( 'AUTHOR',       'YOUR NAME' )

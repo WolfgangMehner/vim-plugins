@@ -2,14 +2,16 @@
 %%
 %%         File:  perl-hot-keys.tex
 %%
-%%  Description:  perl-support.vim : Key mappings for Vim without GUI.
+%%  Description:  perl-support.vim : Key mappings
 %%                
-%%                
-%%       Author:  Dr.-Ing. Fritz Mehner
-%%        Email:  mehner@web.de
-%%    Copyright:  Copyright (C)  2003-2014  Dr.-Ing. Fritz Mehner (mehner.fritz@web.de)
 %%      Version:  see \Pluginversion
 %%      Created:  06.06.2003
+%%     Revision:  24.02.2016
+%%
+%%       Author:  Wolfgang Mehner (WM), wolfgang-mehner@web.de
+%%                Dr. Fritz Mehner (fgm), mehner.fritz@web.de
+%%    Copyright:  Copyright (c) 2003-2015, Dr. Fritz Mehner
+%%                Copyright (c) 2016-2016, Wolfgang Mehner
 %%                
 %%=====================================================================================
 
@@ -28,7 +30,7 @@
 
 \setlength\parindent{0pt}
 
-\newcommand{\Pluginversion}{5.4pre}
+\newcommand{\Pluginversion}{5.4}
 \newcommand{\ReleaseDate}{\today}
 \newcommand{\Rep}{{\scriptsize{[n]}}}
 
@@ -51,12 +53,11 @@
 %%----------------------------------------------------------------------
 %%  hyperref
 %%----------------------------------------------------------------------
-\usepackage[ps2pdf]{hyperref}
-\hypersetup{pdfauthor={Dr.-Ing. Fritz Mehner, Germany, mehner.fritz@web.de}}
-\hypersetup{pdfkeywords={Vim, Perl}}
-\hypersetup{pdfsubject={Vim-plug-in,  perl-support.vim, hot keys}}
-\hypersetup{pdftitle={Vim-plug-in,  perl-support.vim, hot keys}}
-
+\usepackage{hyperref}
+\hypersetup{pdfauthor={Wolfgang Mehner, Germany, wolfgang-mehner@web.de}}
+\hypersetup{pdfkeywords={Vim, Perl, POD}}
+\hypersetup{pdfsubject={Vim-plug-in, perl-support.vim, hot keys}}
+\hypersetup{pdftitle={Vim Plug-in : perl-support.vim}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  START OF DOCUMENT
@@ -73,16 +74,15 @@
 \textbf{\textsc{\small{Vim-Plug-in}}}\\
 \textbf{\LARGE{perl-support.vim}}\\
 \textbf{\textsc{\small{Version \Pluginversion}}}\\
-\vspace{5mm}%
+\vspace{1mm}%
 \textbf{\textsc{\Huge{Hot keys}}}\\ 
-\vspace{5mm}%
-Key mappings for Vim and gVim.\\
-Plug-in: http://vim.sourceforge.net\\
-Fritz Mehner (mehner.fritz@web.de)\\
+\vspace{1mm}%
+Key mappings for Vim and gVim\\
+{\tiny  \texttt{http://www.vim.org}\hspace{1.5mm}---\hspace{1.5mm}\textbf{Wolfgang Mehner},  \texttt{wolfgang-mehner@web.de}}\\
 \vspace{1.0mm}
 {\normalsize (i)} insert mode, {\normalsize (n)} normal mode, {\normalsize (v)} visual mode\\
-\vspace{4.0mm}
-
+\vspace{1.0mm}
+%
 %%======================================================================
 %%  page 1, table, left part				[[[1
 %%======================================================================
@@ -100,6 +100,7 @@ Fritz Mehner (mehner.fritz@web.de)\\
 %%----------------------------------------------------------------------
 \hline 
 \multicolumn{2}{|r|}{\textsl{\textbf{H}elp}}\\[1.0ex]
+\hline \verb'\he'   & English dictionary                 \hfill (n,i)\\
 \hline \verb'\h'    & read perldoc for word under cursor \hfill (n,i)\\
 \hline \verb'\hp'   & help (plug-in) \hfill (n,i)\\
 \hline 
@@ -180,24 +181,18 @@ Fritz Mehner (mehner.fritz@web.de)\\
 \hline \verb'\ipi' & open pipe                 \hfill (n, v, i)\\
 \hline
 %%----------------------------------------------------------------------
-%%  snippet menu
+%%  menu Special variables
 %%----------------------------------------------------------------------
 \hline
-\multicolumn{2}{|r|}{\textsl{S\textbf{n}ippet}}                \\[1.0ex]
-\hline \verb'\nr'  & read code snippet         \hfill (n, i)   \\
-\hline \verb'\nv'  & view code snippet         \hfill (n, i)   \\
-\hline \verb'\nw'  & write code snippet        \hfill (n, v, i)\\
-\hline \verb'\ne'  & edit code snippet         \hfill (n, i)   \\
-%
-\hline \verb'\ntl' & edit local templates      \hfill (n, i)\\
-\hline \verb'\ntc' & edit custom templates     \hfill (n, i)\\
-\hline \verb'\ntp' & edit personal templates   \hfill (n, i)\\
-\hline \verb'\ntr' & reread the templates      \hfill (n, i)\\
-\hline \verb'\ntw' & template setup wizard     \hfill (n, i)\\
-\hline \verb'\nts' & choose template style     \hfill (n, i)\\
-%
-\hline \verb'\njt' & insert jump tag           \hfill (n, i)\\
-\hline \verb'\nxs' & regex snippet template    \hfill (n, i)\\
+\multicolumn{2}{|r|}{\textsl{\textbf{S}pecial Variables}}            \\[1.0ex]
+\hline \verb'\vb'   & basics                           \hfill (n, i)\\
+\hline \verb'\ve'   & errors                           \hfill (n, i)\\
+\hline \verb'\vf'   & files                            \hfill (n, i)\\
+\hline \verb'\vid'  & IDs                              \hfill (n, i)\\
+\hline \verb'\vio'  & IO                               \hfill (n, i)\\
+\hline \verb'\vr'   & regexp                           \hfill (n, i)\\
+\hline \verb'\vps'  & POSIX signals                    \hfill (n, i)\\
+\hline \verb'\vue'  & use English                      \hfill (n, i)\\
 \hline
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
@@ -213,10 +208,10 @@ Fritz Mehner (mehner.fritz@web.de)\\
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{Regular E\textbf{x}pressions}}     \\[1.0ex]
-\hline     \verb'xpc' &  POSIX classes                 \hfill (n, i)\\ 
-\hline     \verb'xup' &  Unicode properties            \hfill (n, i)\\ 
-\hline     \verb'xex' &  extended Regex                \hfill (n, i)\\ 
-\hline     \verb'xms' &  metasymbols                   \hfill (n, i)\\ 
+\hline     \verb'\xpc'&  POSIX classes                 \hfill (n, i)\\
+\hline     \verb'\xup'&  Unicode properties            \hfill (n, i)\\
+\hline     \verb'\xex'&  extended Regex                \hfill (n, i)\\
+\hline     \verb'\xms'&  metasymbols                   \hfill (n, i)\\
 %
 \hline \Rep\verb'\xr' &  pick up Regex                 \hfill (n, v)\\
 \hline \Rep\verb'\xs' &  pick up string                \hfill (n, v)\\
@@ -224,20 +219,6 @@ Fritz Mehner (mehner.fritz@web.de)\\
 \hline     \verb'\xm' &  match                         \hfill (n)   \\
 \hline     \verb'\xmm'&  match multiple (Regex/target) \hfill (n)   \\
 \hline     \verb'\xe' &  explain Regex                 \hfill (n, v)\\
-\hline
-%%----------------------------------------------------------------------
-%%  menu Special variables
-%%----------------------------------------------------------------------
-\hline
-\multicolumn{2}{|r|}{\textsl{\textbf{S}pecial Variables}}            \\[1.0ex]
-\hline \verb'\vb'   & basics                           \hfill (n, i)\\
-\hline \verb'\ve'   & errors                           \hfill (n, i)\\
-\hline \verb'\vf'   & files                            \hfill (n, i)\\
-\hline \verb'\vid'  & IDs                              \hfill (n, i)\\
-\hline \verb'\vio'  & IO                               \hfill (n, i)\\
-\hline \verb'\vr'   & regexp                           \hfill (n, i)\\
-\hline \verb'\vps'  & POSIX signals                    \hfill (n, i)\\
-\hline \verb'\vue'  & use English                      \hfill (n, i)\\
 \hline
 %%----------------------------------------------------------------------
 %%  menu POD
@@ -259,6 +240,26 @@ Fritz Mehner (mehner.fritz@web.de)\\
 \hline \verb'\podm'   & Convert POD data to *roff input \hfill (n, i)\\
 \hline \verb'\podt'   & Convert POD data to ASCII text  \hfill (n, i)\\
 \hline \verb'\pm'     & markup sequences                \hfill (n, i)\\
+\hline
+%%----------------------------------------------------------------------
+%%  snippet menu
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{S\textbf{n}ippet}}                \\[1.0ex]
+\hline \verb'\nr'  & read code snippet         \hfill (n, i)   \\
+\hline \verb'\nv'  & view code snippet         \hfill (n, i)   \\
+\hline \verb'\nw'  & write code snippet        \hfill (n, v, i)\\
+\hline \verb'\ne'  & edit code snippet         \hfill (n, i)   \\
+%
+\hline \verb'\ntl' & edit local templates      \hfill (n, i)\\
+\hline \verb'\ntc' & edit custom templates     \hfill (n, i)\\
+\hline \verb'\ntp' & edit personal templates   \hfill (n, i)\\
+\hline \verb'\ntr' & reread the templates      \hfill (n, i)\\
+\hline \verb'\ntw' & template setup wizard     \hfill (n, i)\\
+\hline \verb'\nts' & choose template style     \hfill (n, i)\\
+%
+\hline \verb'\njt' & insert jump tag           \hfill (n, i)\\
+\hline \verb'\nxs' & regex snippet template    \hfill (n, i)\\
 \hline
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
