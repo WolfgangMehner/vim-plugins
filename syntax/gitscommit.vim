@@ -23,6 +23,8 @@ syn match  GitCommitLineNwarn   "^.\{,76}\zs.*$"
 syn match  GitCommitLine2warn   "^\%2l.*$"
 syn match  GitCommitLine1warn   "^\%1l.\{,50}\zs.*"
 
+syn match GitComment   "^#.*$"
+
 "-------------------------------------------------------------------------------
 " Highlight
 "-------------------------------------------------------------------------------

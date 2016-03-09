@@ -2,6 +2,9 @@ Interesting:
 - Documentation of Windows idiosyncrasies:
     :help win32
 - Dictionary API: http://dictionaryapi.net/
+- Use plug-in internal mappings with <Plug> to get <expr> to work for menus:
+    exe 'vmenu '.entry.' <C-C><Plug>GitsupportMenu1'
+    nmap <expr> <Plug>GitsupportMenu1 <SID>AssembleCmdLine( ':GitLog -p -S "'.@*, '"' )
 
 Project:
 - (FM,WM, DONE?) Use normal!, noremap and noremenu consistently.
@@ -99,12 +102,14 @@ Git:
 - (WM) Do not use "sync fromstart" in syntax highlighting,
   is extremely slow for diff and log.
 - (WM) Document map "ow" in status buffer, mention in the README.
-- (WM) Document map "ac", "cc", and "rc" in diff buffer, mention in the README.
+- (DONE) Document map "ac", "cc", and "rc" in diff buffer, mention in the README.
 - (WM) Update buffer after executing a command: :GitBranch, :GitRemote, :GitStash, ...
 - (WM) Buffer "git stash list", maps for: create
 - (WM) Feed output of "git apply" into quickfix.
 - (WM) Rename function 'GitS_FoldLog' into 'GitS_FoldLogTxt'.
 - (WM) Set 'foldmethod' individually and not in 's:OpenGitBuffer'.
+- Enable and document :GitAbove, :GitBelow, and :GitTab.
+- Document 'g:Git_Editor', and the use of '$GIT_EDITOR', and add it to :GitSupportSettings.
 
 LaTeX:
 - (FM) Documentation: Menu 'Beamer' missing.
