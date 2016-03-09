@@ -927,6 +927,9 @@ let s:HelpTxtStdNoUpdate .= "q       : close"
 " custom commands   {{{2
 "
 if s:Enabled
+"	command! -nargs=* -complete=file                                 GitAbove           :call GitS_Split('above',<count>,<q-args>)
+"	command! -nargs=* -complete=file                                 GitBelow           :call GitS_Split('below',<count>,<q-args>)
+"	command! -nargs=* -complete=file -count=1000                     GitTab             :call GitS_Split('tab',<count>,<q-args>)
 	command! -nargs=* -complete=file -bang                           GitAdd             :call GitS_Add(<q-args>,'<bang>'=='!'?'ef':'e')
 	command! -nargs=* -complete=file -range=0                        GitBlame           :call GitS_Blame('update',<q-args>,<line1>,<line2>)
 	command! -nargs=* -complete=file                                 GitBranch          :call GitS_Branch(<q-args>,'')
@@ -1011,17 +1014,23 @@ highlight default link GitConflict    DiffText
 "-------------------------------------------------------------------------------
 "
 function! s:OpenGitBuffer ( buf_name )
-	"
+
 	" a buffer like this already opened on the current tab page?
 	if bufwinnr ( a:buf_name ) != -1
 		" yes -> go to the window containing the buffer
 		exe bufwinnr( a:buf_name ).'wincmd w'
 		return 0
 	endif
-	"
+
 	" no -> open a new window
-	aboveleft new
-	"
+	if s:SplitMode == '' || s:SplitMode == 'above'
+		aboveleft new
+	elseif s:SplitMode == 'below'
+		belowright new
+	elseif s:SplitMode == 'tab'
+		exe s:SplitAddArg.'tabnew'
+	endif
+
 	" buffer exists elsewhere?
 	if bufnr ( a:buf_name ) != -1
 		" yes -> settings of the new buffer
@@ -1035,7 +1044,7 @@ function! s:OpenGitBuffer ( buf_name )
 		setlocal tabstop=8
 		setlocal foldmethod=syntax
 	endif
-	"
+
 	return 1
 endfunction    " ----------  end of function s:OpenGitBuffer  ----------
 "
@@ -1171,7 +1180,43 @@ function! GitS_FoldGrep ()
 		return head.line.tail
 	endif
 endfunction    " ----------  end of function GitS_FoldGrep  ----------
+
+"-------------------------------------------------------------------------------
+" GitS_Split : Open a Git buffer differently.   {{{1
 "
+" Mode:
+"   above - split aboveleft
+"   below - split belowright
+"   tab   - open in new tab
+"-------------------------------------------------------------------------------
+
+let s:SplitMode   = ''
+let s:SplitAddArg = 0
+
+function! GitS_Split ( mode, count, args )
+
+	if a:mode == 'above'
+	elseif a:mode == 'below'
+	elseif a:mode == 'tab'
+		let s:SplitAddArg = a:count == 1000 ? tabpagenr() : a:count
+	else
+		return s:ErrorMsg ( 'Unknown mode "'.a:mode.'".' )
+	endif
+
+	let s:SplitMode = a:mode
+
+	try
+		exe a:args
+	catch /.*/
+		call s:ErrorMsg ( substitute ( v:exception, '^Vim:', '', '' ) )
+	finally
+	endtry
+
+	let s:SplitMode   = ''
+	let s:SplitAddArg = 0
+
+endfunction    " ----------  end of function GitS_Split  ----------
+
 "-------------------------------------------------------------------------------
 " GitS_Run : execute 'git ...'   {{{1
 "
