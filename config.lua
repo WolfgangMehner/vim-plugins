@@ -290,7 +290,7 @@ config.perl = {
 		GITHUB_USER = 'WolfgangMehner',
 		GITHUB_REPO = 'perl-support',
 
-		IMG_MAIN_FILE    = 'perlsupport/main.png',
+		IMG_MAIN_FILE    = 'perlsupport/menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
 
 		REF_README = 'blob/master/README.md',

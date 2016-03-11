@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 	<head>
-		<title>VIM plug-in Perl Support : Screen Shots</title>
+		<title>Perl Support - CONTENT</title>
 		<base href="..">
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15">
 		<link rel="stylesheet" type="text/css" href="vimstyle.css">
@@ -23,7 +23,15 @@
 					<td>
 						<h3>Speed-up the development of Perl Scripts:</h3>
 						<ul>
-							<li>FEATURES !!!</li>
+							<li>insert code snippets: comments, statements, functions, regular expressions, ...</li>
+							<li>... which come in an extendible template library</li>
+							<li>quickly comment the code by automatically generating function descriptions</li>
+						</ul>
+						<ul>
+							<li>run the script from within Vim</li>
+							<li>run the syntax checker, perlcritic, perltidy, profiling, ...</li>
+							<li>analyse regular expressions</li>
+							<li>quick access to the documentation</li>
 						</ul>
 					</td>
 				</tr>
@@ -46,9 +54,140 @@
 				<!-- ################################## MENU COMMENTS ##################################-->
 				<!-- ###################################################################################-->
 				<tr>
-					<td><img src="perlsupport/someimage.png"> </td>
+					<td><img src="perlsupport/menu_comments.png"> </td>
 					<td>
 						<h3>Menu <i>Comments</i> : insert comments</h3>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU STATEMENTS ################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="perlsupport/menu_statements.png"> </td>
+					<td>
+						<h3>Menu <i>Statements</i> : insert statements</h3>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU IDIOMS ####################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="perlsupport/menu_idioms.png"> </td>
+					<td>
+						<h3>Menu <i>Idioms</i> : insert frequently used statements</h3>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU SPEC VARS #################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="perlsupport/menu_spec_var.png"> </td>
+					<td>
+						<table class="img_float_table"><tbody>
+							<tr>
+								<td>
+									<h3>Menu <i>Special Variables</i> : insert special variables</h3>
+								</td>
+								<td>
+									<img src="perlsupport/menu_spec_var_basics.png">
+								</td>
+							</tr>
+						</tbody></table>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU REGEX #####################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="perlsupport/menu_regex.png"> </td>
+					<td>
+						<table class="img_float_table"><tbody>
+							<tr>
+								<td>
+									<h3>Menu <i>Regex</i> : assemble regular expressions</h3>
+								</td>
+								<td>
+									<img src="perlsupport/menu_regex_extended.png">
+								</td>
+							</tr>
+						</tbody></table>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU POD #######################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="perlsupport/menu_pod.png"> </td>
+					<td>
+						<table class="img_float_table"><tbody>
+							<tr>
+								<td>
+									<h3>Menu <i>POD</i> : compose and check plain old documents</h3>
+								</td>
+								<td>
+									<img src="perlsupport/menu_pod_markup.png">
+								</td>
+							</tr>
+						</tbody></table>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU SNIPPETS ##################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="perlsupport/menu_snippets.png"> </td>
+					<td>
+						<h3>Menu <i>Snippets</i> : insert code snippets and manage templates</h3>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU PROFILING #################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="perlsupport/menu_profiling.png"> </td>
+					<td>
+						<h3>Menu <i>Profiling</i> : run a profiler</h3>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU RUN #######################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="perlsupport/menu_run.png"> </td>
+					<td>
+						<h3>Menu <i>Run</i> : run the script, check the syntax, start debugger</h3>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU HELP ######################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="perlsupport/menu_help.png"> </td>
+					<td>
+						<h3>Menu <i>Help</i> : call help</h3>
+						<p>Help is quickly accessible through the <b>Help</b> menu. Place the cursor on the name of a module, function, or FAQ keyword ...</p>
+						<pre>
+<span class="keyword">op<span class="cursor_nrm">e</span>n my</span> <span class="identifier">$pin</span>, "ls -l |";</pre>
+						<p>then use the entry or the map <b>\h</b> and the help will be displayed in a Vim buffer.</p>
+						<hr>
+						<p>The same works for any word in the English language. Placing the cursor on a word and hitting <b>\he</b> opens a dictionary for the word.</p>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## TOOL BOX - MAKE ################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="maketool/menu_main.png"> </td>
+					<td>
+						<h3>Toolbox <i>Make</i> : make integration</h3>
+						<p>Run make in the current directory, passing cmd.-line arguments:</p>
+						<pre>:Make -j3</pre>
+						<hr>
+						<p>In larger projects a specific makefile can be chosen:</p>
+						<pre>:MakeFile ../Makefile</pre>
+						<p>... and run from anywhere:</p>
+						<pre>:Make doc</pre>
+						<p>The tool will change the directory and execute the previously chosen makefile, independently of the current working directory.</p>
 					</td>
 				</tr>
 			</tbody>
