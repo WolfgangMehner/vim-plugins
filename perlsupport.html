@@ -178,6 +178,71 @@
 					<td><img src="perlsupport/menu_comments.png"> </td>
 					<td>
 						<h3>Menu <i>Comments</i> : insert comments</h3>
+						<p>A lot of the menu entries are defined in a so-called template library.
+						The library defines the menu entries, maps and the inserted text.
+						The personal information can also be configured there.</p>
+						<hr>
+						<p>A file header can be inserted into each new file:</p>
+						<pre>
+<span class="comment">#!/usr/bin/env perl
+#===============================================================================
+#
+#         FILE: somescript.pl
+#
+#        USAGE: ./somescript.pl
+#
+#  DESCRIPTION:
+#
+#      OPTIONS: ---
+# REQUIREMENTS: ---
+#         BUGS: ---
+#        NOTES: ---
+#       AUTHOR: Wolfgang Mehner (WM), &lt;thisguy@doggymail.de>
+# ORGANIZATION:
+#      VERSION: 1.0
+#      CREATED: 12.03.2016 22:06
+#     REVISION: ---
+#===============================================================================</span>
+
+<span class="keyword">use strict</span>;
+<span class="keyword">use warnings</span>;
+<span class="keyword">use utf8</span>;</pre>
+						<p>This prolog is generated from the template shown below. This template file can easily be changed by the user.
+						Tags (like <code >|FILENAME|</code>) are replaced when the template is inserted.</p>
+						<pre>
+<span class="type">== Comments.file description pl == map:chpl, sc:d, start, noindent ==</span>
+#!<span class="tag">|PERL_INTERPRETER|</span>
+#===============================================================================
+#
+#         FILE: <span class="tag">|FILENAME|</span>
+#
+#        USAGE: ./<span class="tag">|FILENAME|</span>
+#
+#  DESCRIPTION: <span class="tag">&lt;CURSOR></span>
+#
+#      OPTIONS: ---
+# REQUIREMENTS: ---
+#         BUGS: ---
+#        NOTES: ---
+#       AUTHOR: <span class="tag">|AUTHOR|</span> (<span class="tag">|AUTHORREF|</span>), <span class="tag">|EMAIL|</span>
+# ORGANIZATION: <span class="tag">|ORGANIZATION|</span>
+#      VERSION: 1.0
+#      CREATED: <span class="tag">|DATE|</span> <span class="tag">|TIME|</span>
+#     REVISION: ---
+#===============================================================================
+
+use strict;
+use warnings;
+use utf8;
+
+<span class="type">== ENDTEMPLATE ==</span></pre>
+						<hr>
+						<p>The entry <b>keyword comments &#10142; todo</b> generates a special end-of-line comment.
+						These comments are easily locatable by their keywords (e.g. <b>:TODO:</b>).
+						Date and author reference name are inserted by the editor.</p>
+						<pre>
+<span class="comment"># :TODO:29.02.2015 12:34:WM:</span></pre>
+						<p>These comments are not for the final version of a script, of course.</p>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -187,6 +252,24 @@
 					<td><img src="perlsupport/menu_statements.png"> </td>
 					<td>
 						<h3>Menu <i>Statements</i> : insert statements</h3>
+						<p>Insert statements with jump tags for convenient editing, using the entry <b>if, else</b> or via the map <b>\sie</b>:<br></p>
+						<pre>
+<span class="keyword">if</span> ( <span class="cursor_ins">|</span> ) {
+  <span class="jumptag"><-IF_PART-></span>
+}
+<span class="keyword">else</span> {
+  <span class="jumptag"><-ELSE_PART-></span>
+}</pre>
+						<p>The cursor is positioned after the "if". Use <b>CTRL+J</b> to jump to the tags and start editing.</p>
+						<hr>
+						<p>A lot of menu entires have a special behavior in visual mode. Select some lines in visual mode ...</p>
+						<pre>
+<span class="visual"><span class="keyword">print</span> &quot;This is $i\n&quot;;</span> </pre>
+						<p>then use the entry <b>foreach</b>. The text is inserted around the selected lines and they are indented:</p>
+						<pre>
+<span class="keyword">foreach my</span> $<span class="cursor_ins">|</span> (  ) {
+  <span class="keyword">print</span> &quot;This is $i\n&quot;;
+} </pre>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -196,6 +279,13 @@
 					<td><img src="perlsupport/menu_idioms.png"> </td>
 					<td>
 						<h3>Menu <i>Idioms</i> : insert frequently used statements</h3>
+						<p>Insert an empty subroutine using <b>subroutine</b>.
+						You will be asks for the name of the subroutine and the following lines will be inserted:
+						<pre>
+<span class="keyword">sub</span> <span class="identifier">brain_function</span> {
+  <span class="keyword">my</span> ( <span class="identifier">$par1</span> ) = <span class="identifier">@_</span>;
+  <span class="keyword">return</span> ;
+} <span class="comment">## --- end sub brain_function</span></pre>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -208,6 +298,9 @@
 							<tr>
 								<td>
 									<h3>Menu <i>Special Variables</i> : insert special variables</h3>
+									<p>The submenus contain frequently used special variables.
+									The menus contain the long and short names of most variables,
+									which saves a lot of time used on searching in reference manuals.</p>
 								</td>
 								<td>
 									<img src="perlsupport/menu_spec_var_basics.png">
@@ -226,12 +319,45 @@
 							<tr>
 								<td>
 									<h3>Menu <i>Regex</i> : assemble regular expressions</h3>
+									<p>Instead of typing in regex tokens directly,
+									just pick what you want from the menus.</p>
+									<hr>
+									<h4>Explain a regular expression</h4>
+									<p>If the Perl module YAPE::Regex::Explain is installed,
+									a regular expression can be explained to you.
+									Just mark the expression (in visual mode) and use the menu entry <b>explain regex</b> or the hotkey <b>\xe</b>:</p>
+									<a href="perlsupport/regex_explain.png"><img class="preview_image_3_4" src="perlsupport/regex_explain.png"></a>
 								</td>
 								<td>
 									<img src="perlsupport/menu_regex_extended.png">
 								</td>
 							</tr>
 						</tbody></table>
+						<hr>
+						<h4>Regular expression tester</h4>
+						<p>If you have a Vim binary with Perl interface compiled in you can
+						test regular expressions very easily.<br>
+						Pick up a regular expression by selecting the appropriate string
+						(in visual mode, e.g. inside or with the complete m// operator)
+						and use the menu entry <b>pick up regex</b>.
+						Pick up flags the same way with <b>pick up flags</b>.
+						Now pick up a string as target with <b>pick up string</b> and select the menu entry <b>match</b>.
+						The regular expression, the target and the match are shown in a new window called <i>REGEX-TEST</i>:</p>
+						<a href="perlsupport/regex_tester_1.png"><img class="preview_image_3_4" src="perlsupport/regex_tester_1.png"></a>
+						<p>Multi-line regular expressions are allowed.
+						They work properly if the flag <code>'x'</code> is set.
+						Multi-line strings are also allowed.</p>
+						<a href="perlsupport/regex_tester_2.png"><img class="preview_image_3_4" src="perlsupport/regex_tester_2.png"></a>
+						<p>Match several regular expressions with several targets.
+						Multi-line strings are also allowed.</p>
+						<a href="perlsupport/regex_tester_3.png"><img class="preview_image_3_4" src="perlsupport/regex_tester_3.png"></a>
+						<p>List all matches using the modifier <code>'g'</code>.
+						Multi-line strings are also allowed.</p>
+						<a href="perlsupport/regex_tester_4.png"><img class="preview_image_3_4" src="perlsupport/regex_tester_4.png"></a>
+						<p>Test a regular expression with embedded code.
+						Multi-line strings are also allowed.</p>
+						<a href="perlsupport/regex_tester_5.png"><img class="preview_image_3_4" src="perlsupport/regex_tester_5.png"></a>
+						<p>See <a target=_blank href="doc/perlsupport.html#perlsupport-regex-match">:help perlsupport-regex-match</a> for more options and features.</p>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -244,6 +370,10 @@
 							<tr>
 								<td>
 									<h3>Menu <i>POD</i> : compose and check plain old documents</h3>
+									<p>Compose PODs by inserting empty statements from the menu.</p>
+									<p>Run a module or a POD file through podchecker using <b>run podchecker</b>.
+									Displays warnings and errors in a quickfix error window:</p>
+									<a href="perlsupport/podchecker_qf.png"><img class="preview_image_3_4" src="perlsupport/podchecker_qf.png"></a>
 								</td>
 								<td>
 									<img src="perlsupport/menu_pod_markup.png">
@@ -259,6 +389,15 @@
 					<td><img src="perlsupport/menu_snippets.png"> </td>
 					<td>
 						<h3>Menu <i>Snippets</i> : insert code snippets and manage templates</h3>
+						<p>The plug-in comes with a facility to extract, manage and insert often used code snippets.
+						Visually select a few lines and use the menu entry <b>write code snippet</b> to write these lines into a file.
+						The code snippet can then be edited and inserted again using <b>read code snippet</b>.</p>
+						<p>(See <a target=_blank href="doc/perlsupport.html#perlsupport-snippets-menu">:help perlsupport-snippets-menu</a>)</p>
+						<hr>
+						<p>The templates which define the behavior of most of the menu entries are also manage here.
+						Use <b>templates setup wizard</b> to create a personalization file with your personal details for the comments.</p>
+						<p>The templates support different coding styles. Use the entry <b>choose style</b> to switch between them.</p>
+						<p>(See <a target=_blank href="doc/perlsupport.html#perlsupport-templates">:help perlsupport-templates</a>)</p>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -268,6 +407,9 @@
 					<td><img src="perlsupport/menu_profiling.png"> </td>
 					<td>
 						<h3>Menu <i>Profiling</i> : run a profiler</h3>
+						<p>Three profilers can be run from within the Vim session.
+						The reports will be shown in the quickfix buffer:</p>
+						<a href="perlsupport/profiling_qf.png"><img class="preview_image_3_4" src="perlsupport/profiling_qf.png"></a>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -277,6 +419,23 @@
 					<td><img src="perlsupport/menu_run.png"> </td>
 					<td>
 						<h3>Menu <i>Run</i> : run the script, check the syntax, start debugger</h3>
+						<p>Run the script or check the syntax.
+						In case of errors an error window will be opened to show the current list of errors:</p>
+						<a href="perlsupport/run_error_list.png"><img class="preview_image_3_4" src="perlsupport/run_error_list.png"></a>
+						<hr>
+						<p>The Perl documentation can be read for the word under the cursor by typing <code>&lt;SHIFT+F1></code>.
+						If the list of all installed Perl modules is already generated this list can be shown by <b>show installed Perl modules</b>.
+						From this list an entry can be chosen by <code>&lt;SHIFT+F1></code>.
+						The man page will now be shown in a help window:</p>
+						<a href="perlsupport/perlmodules.png"><img class="preview_image_3_4" src="perlsupport/perlmodules.png"></a>
+						<hr>
+						<p>Navigate through PODs with an addition to the <a target=_blank href="http://www.vim.org/scripts/script.php?script_id=273">taglist</a>-plugin
+						(based on <a target=_blank href="http://ctags.sourceforge.net">Exuberant Ctags</a>) :</p>
+						<a href="perlsupport/taglist.png"><img class="preview_image_3_4" src="perlsupport/taglist.png"></a>
+						<hr>
+						<p>Optional: Run <b>perlcritic</b> for the current buffer
+						(search for 'Perl::Critic' or 'perlcritic' on <a target=_blank href="http://search.cpan.org">CPAN </a> to get the latest version) :</p>
+						<a href="perlsupport/perlcritic.png"><img class="preview_image_3_4" src="perlsupport/perlcritic.png"></a>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -316,7 +475,7 @@
 		<!-- ###################################################################################-->
 		<!-- ################################## FOOTER #########################################-->
 		<!-- ###################################################################################-->
-		<p>Page updated: March 11 2016 &nbsp;&nbsp;/&nbsp;&nbsp;
+		<p>Page updated: March 12 2016 &nbsp;&nbsp;/&nbsp;&nbsp;
 		Mail to: <a href="mailto:wolfgang-mehner@web.de">Wolfgang Mehner</a></p>
 	</body>
 </html>

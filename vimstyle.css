@@ -56,6 +56,16 @@ img.preview_image
 	max-width:256px;
 }
 
+img.preview_image_3_4
+{
+	max-width:192px;
+}
+
+img.preview_image_half
+{
+	max-width:192px;
+}
+
 /*
  * table for the title bar
  *
@@ -412,6 +422,14 @@ table.menu_structure > tbody > tr > td > h3,
 table.img_float_table > tbody > tr > td > h3
 {
 	color:#2d9460;
+}
+
+table.menu_structure > tbody > tr > td > h4,
+table.img_float_table > tbody > tr > td > h4
+{
+	font-size:1.1em;
+	margin-top:13px;
+	margin-bottom:13px;
 }
 
 table.menu_structure > tbody > tr > td > hr,
