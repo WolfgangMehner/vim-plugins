@@ -231,12 +231,12 @@ config.latex = {
 		MAINTAINER_MAIL = 'wolfgang-mehner@web.de',
 
 		GITHUB_USER = 'WolfgangMehner',
-		GITHUB_REPO = 'vim-plugins',
+		GITHUB_REPO = 'latex-support',
 
 		IMG_MAIN_FILE    = 'latexsupport/menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
 
-		REF_README = 'blob/master/latex-support/README.latexsupport',
+		REF_README = 'blob/master/README.md',
 		REF_HELP   = config.plugin_links.latex.doc,
 		REF_MAPS   = config.plugin_links.latex.maps,
 	},
@@ -327,12 +327,12 @@ config.vim = {
 		MAINTAINER_MAIL = 'wolfgang-mehner@web.de',
 
 		GITHUB_USER = 'WolfgangMehner',
-		GITHUB_REPO = 'vim-plugins',
+		GITHUB_REPO = 'vim-support',
 
 		IMG_MAIN_FILE    = 'vimsupport/menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
 
-		REF_README = 'blob/master/vim-support/README.vimsupport',
+		REF_README = 'blob/master/README.md',
 		REF_HELP   = config.plugin_links.vim.doc,
 		REF_MAPS   = config.plugin_links.vim.maps,
 	},
