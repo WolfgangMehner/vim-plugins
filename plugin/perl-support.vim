@@ -58,16 +58,16 @@
 if exists("g:Perl_PluginVersion") || &compatible
   finish
 endif
-let g:Perl_PluginVersion= "5.4pre"
+let g:Perl_PluginVersion= "5.4beta"
 "
 "===  FUNCTION  ================================================================
-"          NAME:  Perl_SetGlobalVariable     {{{1
+"          NAME:  s:ApplyDefaultSetting     {{{1
 "   DESCRIPTION:  Define a global variable and assign a default value if nor
 "                 already defined
 "    PARAMETERS:  name - global variable
 "                 default - default value
 "===============================================================================
-function! s:perl_SetGlobalVariable ( name, default )
+function! s:ApplyDefaultSetting ( name, default )
   if !exists('g:'.a:name)
     exe 'let g:'.a:name."  = '".a:default."'"
 	else
@@ -77,19 +77,22 @@ function! s:perl_SetGlobalVariable ( name, default )
 			exe 'let g:'.a:name."  = '".a:default."'"
 		endif
   endif
-endfunction   " ---------- end of function  s:perl_SetGlobalVariable  ----------
+endfunction   " ---------- end of function  s:ApplyDefaultSetting  ----------
 "
 "===  FUNCTION  ================================================================
-"          NAME:  Perl_SetLocalVariable     {{{1
+"          NAME:  s:GetGlobalSetting   {{{1
 "   DESCRIPTION:  Assign a value to a local variable if a corresponding global
 "                 variable exists
-"    PARAMETERS:  name - name of a global variable
+"    PARAMETERS:  varname - name of a global variable
+"                 glbname - name of the global variable (string, optional)
 "===============================================================================
-function! s:perl_SetLocalVariable ( name )
-  if exists('g:'.a:name)
-    exe 'let s:'.a:name.'  = g:'.a:name
-  endif
-endfunction   " ---------- end of function  s:perl_SetLocalVariable  ----------
+function! s:GetGlobalSetting ( varname, ... )
+	let lname = a:varname
+	let gname = a:0 >= 1 ? a:1 : lname
+	if exists ( 'g:'.gname )
+		let { 's:'.lname } = { 'g:'.gname }
+	endif
+endfunction   " ---------- end of function  s:GetGlobalSetting  ----------
 "
 "------------------------------------------------------------------------------
 "
@@ -100,7 +103,7 @@ endfunction   " ---------- end of function  s:perl_SetLocalVariable  ----------
 let s:MSWIN = has("win16") || has("win32")   || has("win64")    || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
-let s:Perl_Perl			          = ''                     " the Perl interpreter used
+let s:Perl_Executable         = ''                     " the Perl interpreter used
 let s:Perl_Perl_is_executable = 0                      " the Perl interpreter used
 let g:Perl_Installation				= '*undefined*'
 let g:Perl_PluginDir					= ''
@@ -136,8 +139,8 @@ if  s:MSWIN
 					\	$HOME.'/vimfiles/autoload/mmtoolbox/' ]
 	end
 	"
-	let s:Perl_Perl		  	          = 'C:/Perl/bin/perl.exe'
-  let g:Perl_FilenameEscChar 			= ''
+	let s:Perl_Executable           = 'C:/Perl/bin/perl.exe'
+  let g:Perl_FilenameEscChar      = ''
 	"
 else
   " ==========  Linux/Unix  ======================================================
@@ -161,8 +164,8 @@ else
 					\	$HOME.'/.vim/autoload/mmtoolbox/' ]
 	endif
 	"
-	let s:Perl_Perl		  	          = '/usr/bin/perl'
-  let g:Perl_FilenameEscChar 			= ' \%#[]'
+	let s:Perl_Executable           = '/usr/bin/perl'
+  let g:Perl_FilenameEscChar      = ' \%#[]'
 	"
   " ==============================================================================
 endif
@@ -170,10 +173,10 @@ endif
 " g:Perl_CodeSnippets is used in autoload/perlsupportgui.vim
 "
 let s:Perl_CodeSnippets  				= g:Perl_PluginDir.'/perl-support/codesnippets/'
-call s:perl_SetGlobalVariable( 'Perl_CodeSnippets', s:Perl_CodeSnippets )
+call s:ApplyDefaultSetting( 'Perl_CodeSnippets', s:Perl_CodeSnippets )
 "
 "
-call s:perl_SetGlobalVariable( 'Perl_PerlTags', 'off' )
+call s:ApplyDefaultSetting( 'Perl_PerlTags', 'off' )
 "
 if !exists("g:Perl_Dictionary_File")
   let g:Perl_Dictionary_File       = g:Perl_PluginDir.'/perl-support/wordlists/perl.list'
@@ -189,7 +192,6 @@ let s:Perl_Ctrl_j								 = 'on'
 let s:Perl_TimestampFormat       = '%Y%m%d.%H%M%S'
 
 let s:Perl_PerlModuleList        = g:Perl_PluginDir.'/perl-support/modules/perl-modules.list'
-let s:Perl_XtermDefaults         = "-fa courier -fs 12 -geometry 80x24"
 let s:Perl_Debugger              = "perl"
 let s:Perl_ProfilerTimestamp     = "no"
 let s:Perl_LineEndCommColDefault = 49
@@ -202,78 +204,90 @@ let s:Perl_Printheader           = "%<%f%h%m%<  %=%{strftime('%x %X')}     Page 
 let s:Perl_GuiSnippetBrowser     = 'gui'										" gui / commandline
 let s:Perl_CreateMenusDelayed    = 'yes'
 let s:Perl_DirectRun             = 'no'
-"
+
+let s:Xterm_Executable           = 'xterm'
+
 let s:Perl_InsertFileHeader			   = 'yes'
 let s:Perl_Wrapper                 = g:Perl_PluginDir.'/perl-support/scripts/wrapper.sh'
 let s:Perl_PerlModuleListGenerator = g:Perl_PluginDir.'/perl-support/scripts/pmdesc3.pl'
 let s:Perl_PerltidyBackup			     = "no"
 "
-call s:perl_SetGlobalVariable ( 'Perl_MapLeader', '' )
+call s:ApplyDefaultSetting ( 'Perl_MapLeader', '' )
 let s:Perl_RootMenu								= '&Perl'
 "
 let s:Perl_AdditionalTemplates    = mmtemplates#config#GetFt ( 'perl' )
 let s:Perl_UseToolbox             = 'yes'
-call s:perl_SetGlobalVariable ( 'Perl_UseTool_make',    'yes' )
+call s:ApplyDefaultSetting ( 'Perl_UseTool_make',    'yes' )
 "
 "------------------------------------------------------------------------------
-"
-"  Look for global variables (if any), to override the defaults.
-"
-call s:perl_SetLocalVariable('Perl_Perl                   ')
-call s:perl_SetLocalVariable('Perl_DirectRun              ')
-call s:perl_SetLocalVariable('Perl_InsertFileHeader       ')
-call s:perl_SetLocalVariable('Perl_CreateMenusDelayed     ')
-call s:perl_SetLocalVariable('Perl_Ctrl_j                 ')
-call s:perl_SetLocalVariable('Perl_Debugger               ')
-call s:perl_SetLocalVariable('Perl_GlobalTemplateFile     ')
-call s:perl_SetLocalVariable('Perl_LocalTemplateFile      ')
-call s:perl_SetLocalVariable('Perl_CustomTemplateFile     ')
-call s:perl_SetLocalVariable('Perl_GuiSnippetBrowser      ')
-call s:perl_SetLocalVariable('Perl_LineEndCommColDefault  ')
-call s:perl_SetLocalVariable('Perl_LoadMenus              ')
-call s:perl_SetLocalVariable('Perl_NYTProf_browser        ')
-call s:perl_SetLocalVariable('Perl_NYTProf_html           ')
-call s:perl_SetLocalVariable('Perl_PerlcriticOptions      ')
-call s:perl_SetLocalVariable('Perl_PerlcriticSeverity     ')
-call s:perl_SetLocalVariable('Perl_PerlcriticVerbosity    ')
-call s:perl_SetLocalVariable('Perl_PerlModuleList         ')
-call s:perl_SetLocalVariable('Perl_PerlModuleListGenerator')
-call s:perl_SetLocalVariable('Perl_PerltidyBackup         ')
-call s:perl_SetLocalVariable('Perl_PodcheckerWarnings     ')
-call s:perl_SetLocalVariable('Perl_Printheader            ')
-call s:perl_SetLocalVariable('Perl_ProfilerTimestamp      ')
-call s:perl_SetLocalVariable('Perl_TemplateOverriddenMsg  ')
-call s:perl_SetLocalVariable('Perl_TimestampFormat        ')
-call s:perl_SetLocalVariable('Perl_UseToolbox             ')
-call s:perl_SetLocalVariable('Perl_XtermDefaults          ')
-"
-"  Initialize global variables, if they do not already exist.
-"
-call s:perl_SetGlobalVariable( "Perl_OutputGvim",'vim' )
-call s:perl_SetGlobalVariable( "Perl_PerlRegexSubstitution",'$~' )
-"
-let s:Perl_Perl_is_executable	= executable(s:Perl_Perl)
-"
-" set default geometry if not specified
-"
-if match( s:Perl_XtermDefaults, "-geometry\\s\\+\\d\\+x\\d\\+" ) < 0
-  let s:Perl_XtermDefaults  = s:Perl_XtermDefaults." -geometry 80x24"
+
+" look for global variables (if any), to override the defaults
+
+call s:GetGlobalSetting('Perl_Executable','Perl_Perl')
+call s:GetGlobalSetting('Perl_Executable')
+call s:GetGlobalSetting('Perl_DirectRun')
+call s:GetGlobalSetting('Perl_InsertFileHeader')
+call s:GetGlobalSetting('Perl_CreateMenusDelayed')
+call s:GetGlobalSetting('Perl_Ctrl_j')
+call s:GetGlobalSetting('Perl_Debugger')
+call s:GetGlobalSetting('Perl_GlobalTemplateFile')
+call s:GetGlobalSetting('Perl_LocalTemplateFile')
+call s:GetGlobalSetting('Perl_CustomTemplateFile')
+call s:GetGlobalSetting('Perl_GuiSnippetBrowser')
+call s:GetGlobalSetting('Perl_LineEndCommColDefault')
+call s:GetGlobalSetting('Perl_LoadMenus')
+call s:GetGlobalSetting('Perl_NYTProf_browser')
+call s:GetGlobalSetting('Perl_NYTProf_html')
+call s:GetGlobalSetting('Perl_PerlcriticOptions')
+call s:GetGlobalSetting('Perl_PerlcriticSeverity')
+call s:GetGlobalSetting('Perl_PerlcriticVerbosity')
+call s:GetGlobalSetting('Perl_PerlModuleList')
+call s:GetGlobalSetting('Perl_PerlModuleListGenerator')
+call s:GetGlobalSetting('Perl_PerltidyBackup')
+call s:GetGlobalSetting('Perl_PodcheckerWarnings')
+call s:GetGlobalSetting('Perl_Printheader')
+call s:GetGlobalSetting('Perl_ProfilerTimestamp')
+call s:GetGlobalSetting('Perl_TemplateOverriddenMsg')
+call s:GetGlobalSetting('Perl_TimestampFormat')
+call s:GetGlobalSetting('Perl_UseToolbox')
+
+" initialize global variables, if they do not already exist
+
+call s:ApplyDefaultSetting( "Perl_OutputGvim",'vim' )
+call s:ApplyDefaultSetting( "Perl_PerlRegexSubstitution",'$~' )
+
+" xterm
+
+let s:Perl_XtermDefaults = "-fa courier -fs 12 -geometry 80x24"
+
+" check 'g:Perl_XtermDefaults' for backwards compatibility
+if ! exists ( 'g:Xterm_Options' )
+	call s:GetGlobalSetting ( 'Perl_XtermDefaults' )
+	" set default geometry if not specified
+	if match( s:Perl_XtermDefaults, "-geometry\\s\\+\\d\\+x\\d\\+" ) < 0
+		let s:Perl_XtermDefaults  = s:Perl_XtermDefaults." -geometry 80x24"
+	endif
 endif
-"
-" Flags for perldoc
-"
+
+call s:GetGlobalSetting ( 'Xterm_Executable' )
+call s:ApplyDefaultSetting ( 'Xterm_Options', s:Perl_XtermDefaults )
+
+" flags for perldoc
+
 if has("gui_running")
   let s:Perl_perldoc_flags  = ""
 else
-  " Display docs using plain text converter.
+  " display docs using plain text converter
   let s:Perl_perldoc_flags  = "-otext"
 endif
-"
+
 " escape the printheader
-"
-let s:Perl_Printheader  					= escape( s:Perl_Printheader, ' %' )
-let s:Perl_PerlExecutableVersion	= ''
-"
+let s:Perl_Printheader = escape( s:Perl_Printheader, ' %' )
+
+" Perl executable and interface version
+let s:Perl_Perl_is_executable = executable(s:Perl_Executable)
+let s:Perl_InterfaceVersion   = ''
+
 "------------------------------------------------------------------------------
 "  Control variables (not user configurable)
 "------------------------------------------------------------------------------
@@ -908,11 +922,11 @@ function! Perl_perldoc_generate_module_list()
   echohl Search
   echo " ... generating Perl module list ... "
   if  s:MSWIN
-    silent exe ":!".s:Perl_Perl." ".fnameescape(s:Perl_PerlModuleListGenerator)." > ".shellescape(s:Perl_PerlModuleList)
+    silent exe ":!".s:Perl_Executable." ".fnameescape(s:Perl_PerlModuleListGenerator)." > ".shellescape(s:Perl_PerlModuleList)
     silent exe ":!sort ".fnameescape(s:Perl_PerlModuleList)." /O ".fnameescape(s:Perl_PerlModuleList)
   else
 		" direct STDOUT and STDERR to the module list file :
-    silent exe ":!".s:Perl_Perl." ".shellescape(s:Perl_PerlModuleListGenerator)." -s &> ".s:Perl_PerlModuleList
+    silent exe ":!".s:Perl_Executable." ".shellescape(s:Perl_PerlModuleListGenerator)." -s &> ".s:Perl_PerlModuleList
   endif
 	redraw!
   echo " DONE "
@@ -926,11 +940,15 @@ endfunction   " ---------- end of function  Perl_perldoc_generate_module_list  -
 "       RETURNS:
 "===============================================================================
 function! Perl_Settings ( verbose )
-	"
+
 	if     s:MSWIN | let sys_name = 'Windows'
 	elseif s:UNIX  | let sys_name = 'UN*X'
 	else           | let sys_name = 'unknown' | endif
-	"
+
+	call s:CheckPerltidy ()
+	let perl_exe_status = s:Perl_Perl_is_executable ? '' : ' (not executable)'
+	let perltidy_status = s:Perl_perltidy_module_executable == 'yes' ? '' : ' ('.s:perltidy_short_message.')'
+
   let txt = " Perl-Support settings\n\n"
 	" template settings: macros, style, ...
 	if exists ( 'g:Perl_Templates' )
@@ -983,29 +1001,41 @@ function! Perl_Settings ( verbose )
 					\ .'       insert file header :  "'.s:Perl_InsertFileHeader."\"\n"
 	endif
 	let txt .= "\n"
-	" ----- output ------------------------------
-  let txt = txt."     current output dest. :  ".g:Perl_OutputGvim."\n"
-	if	!s:MSWIN
-		let txt = txt.'           xterm defaults :  '.s:Perl_XtermDefaults."\n"
-	endif
 	" ----- perlcritic --------------------------
-  let txt = txt."               perlcritic :  perlcritic -severity ".s:Perl_PerlcriticSeverity
-				\				.' ['.s:PCseverityName[s:Perl_PerlcriticSeverity].']'
-				\				."  -verbosity ".s:Perl_PerlcriticVerbosity
-				\				."  ".s:Perl_PerlcriticOptions."\n"
-	if !empty(s:Perl_PerlExecutableVersion)
-		let txt = txt."  Perl interface version  :  ".s:Perl_PerlExecutableVersion."\n"
+	let txt .= "         perl interpreter :  ".s:Perl_Executable.perl_exe_status."\n"
+	if executable("perlcritic")
+		let txt .= "               perlcritic :  perlcritic -severity ".s:Perl_PerlcriticSeverity
+					\ .' ['.s:PCseverityName[s:Perl_PerlcriticSeverity].']'
+					\ ."  -verbosity ".s:Perl_PerlcriticVerbosity
+					\ ."  ".s:Perl_PerlcriticOptions."\n"
+	else
+		let txt .= "               perlcritic :  perlcritic (not executable)\n"
 	endif
-  let txt = txt."\n"
-  let txt = txt."    Additional hot keys\n\n"
-  let txt = txt."                Shift-F1  :  read perldoc (for word under cursor)\n"
-  let txt = txt."                      F9  :  start a debugger (".s:Perl_Debugger.")\n"
-  let txt = txt."                  Alt-F9  :  run syntax check          \n"
-  let txt = txt."                 Ctrl-F9  :  run script                \n"
-  let txt = txt."                Shift-F9  :  set command line arguments\n"
-  let txt = txt."_________________________________________________________________________\n"
-  let txt = txt."  Perl-Support, Version ".g:Perl_PluginVersion." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
-	"
+	let txt .= "                 perltidy :  perltidy".perltidy_status."\n"
+	if !empty(s:Perl_InterfaceVersion)
+		let txt = txt."  Perl interface version  :  ".s:Perl_InterfaceVersion."\n"
+	endif
+	" ----- output ------------------------------
+	if a:verbose >= 1
+		let txt = txt."               direct run :  ".s:Perl_DirectRun."\n"
+		let txt = txt."            output method :  ".g:Perl_OutputGvim."\n"
+	endif
+	if !s:MSWIN && a:verbose >= 1
+		let txt = txt.'         xterm executable :  '.s:Xterm_Executable."\n"
+		let txt = txt.'            xterm options :  '.g:Xterm_Options."\n"
+	endif
+	if a:verbose == 0
+		let txt = txt."\n"
+		let txt = txt."    Additional hot keys\n\n"
+		let txt = txt."                Shift-F1  :  read perldoc (for word under cursor)\n"
+		let txt = txt."                      F9  :  start a debugger (".s:Perl_Debugger.")\n"
+		let txt = txt."                  Alt-F9  :  run syntax check          \n"
+		let txt = txt."                 Ctrl-F9  :  run script                \n"
+		let txt = txt."                Shift-F9  :  set command line arguments\n"
+	endif
+	let txt = txt."________________________________________________________________________________\n"
+	let txt = txt."  Perl-Support, Version ".g:Perl_PluginVersion." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
+
 	if a:verbose == 2
 		split PerlSupport_Settings.txt
 		put = txt
@@ -1038,7 +1068,7 @@ function! Perl_SyntaxCheck ()
 	"
 	" Errorformat from compiler/perl.vim (VIM distribution).
 	"
-	exe ':set makeprg='.s:Perl_Perl.'\ -cW'
+	exe ':set makeprg='.s:Perl_Executable.'\ -cW'
 	exe ':set errorformat=
 				\%-G%.%#had\ compilation\ errors.,
 				\%-G%.%#syntax\ OK,
@@ -1125,7 +1155,7 @@ let s:Perl_OutputBufferNumber = -1
 function! Perl_Check_Interpreter ()
 	if !s:Perl_Perl_is_executable
 		echohl WarningMsg
-		echomsg '(possibly default) Perl interpreter "'.s:Perl_Perl.'" not executable'
+		echomsg '(possibly default) Perl interpreter "'.s:Perl_Executable.'" not executable'
 		echohl None
 		return 0
 	endif
@@ -1170,7 +1200,7 @@ function! Perl_Run ()
 		if executable(l:fullname) && s:Perl_DirectRun == 'yes'
 			exe "!".shellescape(l:fullname).l:arguments
 		else
-			exe '!'.s:Perl_Perl.' '.l:switches.shellescape(l:fullname).l:arguments
+			exe '!'.s:Perl_Executable.' '.l:switches.shellescape(l:fullname).l:arguments
 		endif
 		"
 	endif
@@ -1208,7 +1238,7 @@ function! Perl_Run ()
 		if executable(l:fullname) && s:Perl_DirectRun == 'yes'
 			exe "%!".shellescape(l:fullname).l:arguments
 		else
-			exe '%!'.s:Perl_Perl.' '.l:switches.shellescape(l:fullname).l:arguments
+			exe '%!'.s:Perl_Executable.' '.l:switches.shellescape(l:fullname).l:arguments
 		endif
 		"
       setlocal  nomodifiable
@@ -1227,13 +1257,13 @@ function! Perl_Run ()
 		"
 		if  s:MSWIN
 			" MSWIN : same as "vim"
-			exe '!'.s:Perl_Perl.' '.l:switches.shellescape(l:fullname).l:arguments
+			exe '!'.s:Perl_Executable.' '.l:switches.shellescape(l:fullname).l:arguments
 		else
 			" Linux
 			if executable(l:fullname) == 1 && s:Perl_DirectRun == 'yes'
-				silent exe '!xterm -title '.shellescape(l:fullname).' '.s:Perl_XtermDefaults.' -e '.s:Perl_Wrapper.' '.shellescape(l:fullname).l:arguments
+				silent exe '!'.s:Xterm_Executable.' -title '.shellescape(l:fullname).' '.g:Xterm_Options.' -e '.s:Perl_Wrapper.' '.shellescape(l:fullname).l:arguments
 			else
-				silent exe '!xterm -title '.shellescape(l:fullname).' '.s:Perl_XtermDefaults.' -e '.s:Perl_Wrapper.' '.s:Perl_Perl.' '.l:switches.shellescape(l:fullname).l:arguments
+				silent exe '!'.s:Xterm_Executable.' -title '.shellescape(l:fullname).' '.g:Xterm_Options.' -e '.s:Perl_Wrapper.' '.s:Perl_Executable.' '.l:switches.shellescape(l:fullname).l:arguments
 			endif
 			:redraw!
 		endif
@@ -1270,12 +1300,12 @@ function! Perl_Debugger ()
 			return
 		endif
     if  s:MSWIN
-      exe '!'. s:Perl_Perl .' -d '.shellescape( filename.l:arguments )
+      exe '!'. s:Perl_Executable .' -d '.shellescape( filename.l:arguments )
     else
       if has("gui_running") || &term == "xterm"
-     	 	silent exe "!xterm ".s:Perl_XtermDefaults.' -e ' . s:Perl_Perl . l:switches .' -d '.shellescape(filename).l:arguments.' &'
+				silent exe '!'.s:Xterm_Executable.' '.g:Xterm_Options.' -e ' . s:Perl_Executable . l:switches .' -d '.shellescape(filename).l:arguments.' &'
       else
-        silent exe '!clear; ' .s:Perl_Perl. l:switches . ' -d '.shellescape(filename).l:arguments
+        silent exe '!clear; ' .s:Perl_Executable. l:switches . ' -d '.shellescape(filename).l:arguments
       endif
     endif
   endif
@@ -1318,7 +1348,7 @@ endfunction   " ---------- end of function  Perl_Debugger  ----------
 "===============================================================================
 function! Perl_XtermSize ()
   let regex = '-geometry\s\+\d\+x\d\+'
-  let geom  = matchstr( s:Perl_XtermDefaults, regex )
+  let geom  = matchstr( g:Xterm_Options, regex )
   let geom  = matchstr( geom, '\d\+x\d\+' )
   let geom  = substitute( geom, 'x', ' ', "" )
   let answer= Perl_Input("   xterm size (COLUMNS LINES) : ", geom )
@@ -1326,7 +1356,7 @@ function! Perl_XtermSize ()
     let answer= Perl_Input(" + xterm size (COLUMNS LINES) : ", geom )
   endwhile
   let answer  = substitute( answer, '\s\+', "x", "" )           " replace inner whitespaces
-  let s:Perl_XtermDefaults  = substitute( s:Perl_XtermDefaults, regex, "-geometry ".answer , "" )
+  let g:Xterm_Options  = substitute( g:Xterm_Options, regex, "-geometry ".answer , "" )
 endfunction   " ---------- end of function  Perl_XtermSize  ----------
 "
 "===  FUNCTION  ================================================================
@@ -1516,8 +1546,46 @@ function! Perl_JumpCtrlJ ()
 	return ''
 endfunction    " ----------  end of function Perl_JumpCtrlJ  ----------
 
+"===  FUNCTION  ================================================================
+"          NAME:  s:CheckPerltidy   {{{1
+"   DESCRIPTION:  check whether perltidy(1) is executable and correctly set up
+"    PARAMETERS:  -
+"       RETURNS:  -
+"===============================================================================
+
 let s:Perl_perltidy_startscript_executable = 'no'
 let s:Perl_perltidy_module_executable      = 'no'
+
+let s:perltidy_long_message = ''
+let s:perltidy_short_message = ''
+
+function! s:CheckPerltidy ()
+
+  " check if perltidy start script is executable
+  if s:Perl_perltidy_startscript_executable == 'no'
+    if executable("perltidy")
+      let s:Perl_perltidy_startscript_executable  = 'yes'
+    else
+      let s:perltidy_long_message = 'perltidy does not exist or is not executable!'
+			let s:perltidy_short_message = 'not executable'
+      return
+    endif
+  endif
+
+  " check if perltidy module is executable
+  " WORKAROUND: after upgrading Perl the module will no longer be found
+  if s:Perl_perltidy_module_executable == 'no'
+    let perltidy_version = system("perltidy -v")
+    if match( perltidy_version, 'copyright\c' )      >= 0 &&
+    \  match( perltidy_version, 'Steve\s\+Hancock' ) >= 0
+      let s:Perl_perltidy_module_executable = 'yes'
+    else
+      let s:perltidy_long_message = 'The module Perl::Tidy can not be found! Please reinstall perltidy.'
+			let s:perltidy_short_message = 'module Perl::Tidy not found'
+      return
+    endif
+  endif
+endfunction    " ----------  end of function s:CheckPerltidy  ----------
 
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_Perltidy     {{{1
@@ -1533,36 +1601,17 @@ function! Perl_Perltidy (mode)
 		echomsg "'".Sou."' seems not to be a Perl file."
 		return
 	endif
-  "
-  " check if perltidy start script is executable
-  "
-  if s:Perl_perltidy_startscript_executable == 'no'
-    if !executable("perltidy")
-      echohl WarningMsg
-      echo 'perltidy does not exist or is not executable!'
-      echohl None
-      return
-    else
-      let s:Perl_perltidy_startscript_executable  = 'yes'
-    endif
-  endif
-  "
-  " check if perltidy module is executable
-  " WORKAROUND: after upgrading Perl the module will no longer be found
-  "
-  if s:Perl_perltidy_module_executable == 'no'
-    let perltidy_version = system("perltidy -v")
-    if match( perltidy_version, 'copyright\c' )      >= 0 &&
-    \  match( perltidy_version, 'Steve\s\+Hancock' ) >= 0
-      let s:Perl_perltidy_module_executable = 'yes'
-    else
-      echohl WarningMsg
-      echo 'The module Perl::Tidy can not be found! Please reinstall perltidy.'
-      echohl None
-      return
-    endif
-  endif
-	"
+
+  " check if perltidy is available
+	call s:CheckPerltidy ()
+
+	if s:Perl_perltidy_module_executable != 'yes'
+		echohl WarningMsg
+		echo s:perltidy_long_message
+		echohl None
+		return
+	endif
+
   " ----- normal mode ----------------
   if a:mode=="n"
     if Perl_Input("reformat whole file [y/n/Esc] : ", "y", '' ) != "y"
@@ -2441,7 +2490,7 @@ function! Perl_InitializePerlInterface( )
 			# ---------------------------------------------------------------
 			# find out the version of the Perl interface
 			# ---------------------------------------------------------------
- 			VIM::DoCommand("let s:Perl_PerlExecutableVersion = \"$^V\"");
+			VIM::DoCommand("let s:Perl_InterfaceVersion = \"$^V\"");
 			VIM::DoCommand("let g:Perl_InterfaceInitialized = 'yes'");
 			#
 			# ---------------------------------------------------------------
