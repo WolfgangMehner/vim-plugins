@@ -767,7 +767,9 @@ function! Perl_perldoc()
       setlocal bufhidden=delete
       setlocal syntax=OFF
     endif
-    "
+
+		let error_list = []
+
     " search order:  library module --> builtin function --> FAQ keyword
     "
     let delete_perldoc_errors = ""
@@ -776,9 +778,9 @@ function! Perl_perldoc()
       let delete_perldoc_errors = " 2>/dev/null"
     endif
     setlocal  modifiable
-    "
-    " controll repeated search
-    "
+
+		" control repeated search
+
     if item == s:Perl_PerldocSearchWord
       " last item : search ring :
       if s:Perl_PerldocTry == 'module'
@@ -802,7 +804,10 @@ function! Perl_perldoc()
       let command=":%!perldoc  ".s:Perl_perldoc_flags." ".item.delete_perldoc_errors
       silent exe command
       if v:shell_error != 0
-        let s:Perl_PerldocTry         = 'function'
+				let s:Perl_PerldocTry = 'function'
+				if empty ( error_list) || error_list[-1] != getline ( 1 )
+					let error_list += getline ( 1, '$' )
+				endif
       endif
       if s:MSWIN
 				call s:perl_RemoveSpecialCharacters()
@@ -814,7 +819,10 @@ function! Perl_perldoc()
       " -otext has to be ahead of -f and -q
       silent exe ":%!perldoc ".s:Perl_perldoc_flags." -f ".item.delete_perldoc_errors
       if v:shell_error != 0
-        let s:Perl_PerldocTry         = 'faq'
+				let s:Perl_PerldocTry = 'faq'
+				if empty ( error_list) || error_list[-1] != getline ( 1 )
+					let error_list += getline ( 1, '$' )
+				endif
       endif
     endif
     "
@@ -822,19 +830,26 @@ function! Perl_perldoc()
     if s:Perl_PerldocTry == 'faq'
       silent exe ":%!perldoc ".s:Perl_perldoc_flags." -q ".item.delete_perldoc_errors
       if v:shell_error != 0
-        let s:Perl_PerldocTry         = 'error'
+				let s:Perl_PerldocTry = 'error'
+				if empty ( error_list) || error_list[-1] != getline ( 1 )
+					let error_list += getline ( 1, '$' )
+				endif
       endif
     endif
     "
     " no documentation found
     if s:Perl_PerldocTry == 'error'
-      let zz=   "No documentation found for perl module, perl function or perl FAQ keyword\n"
-      let zz=zz."  '".item."'  "
-      silent put! =zz
 			" delete into black hole register "_
-      normal!  2j"_dd
-      let s:Perl_PerldocTry         = 'module'
-      let s:Perl_PerldocSearchWord  = ""
+			normal! gg"_dG
+			let zz = "No documentation found for perl module, perl function or perl FAQ keyword\n"
+						\ ."  '".item."'\n\n"
+						\ ."perldoc reports:\n  "
+						\ .join( error_list, "\n  " )
+			silent put! = zz
+			" delete into black hole register "_
+			normal! G"_dd
+			let s:Perl_PerldocTry        = 'module'
+			let s:Perl_PerldocSearchWord = ""
     endif
     if s:UNIX
       " remove windows line ends

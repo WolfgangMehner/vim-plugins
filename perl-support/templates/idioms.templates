@@ -15,6 +15,10 @@ my	%<CURSOR>	= (
 	<+key1+> => <+val1+>,
 	<+key2+> => <+val2+>,
 	);
+== ENDTEMPLATE ==
+
+== SEP: Idioms.sep_data ==
+
 == Idioms.regex == map:ir, sc:r, insert ==
 my	$rgx_<CURSOR>	= qr/<+regexp+>/;
 == Idioms.match == map:im, sc:m, insert ==
@@ -23,11 +27,19 @@ $<CURSOR> =~ m/<+regexp+>/xm
 $<CURSOR> =~ s/<+pattern+>/<+replacement+>/xm
 == Idioms.translate == map:it, sc:t, insert ==
 $<CURSOR> =~ tr/<+searchlist+>/<+replacementlist+>/
+== ENDTEMPLATE ==
+
+== SEP: Idioms.sep_regex ==
+
 == Idioms.subroutine == map:isu, sc:s ==
 sub |?FUNCTION_NAME| {
 	my	( $par1<CURSOR> )	= @_;
 <SPLIT>	return ;
 } ## --- end sub |FUNCTION_NAME|
+== ENDTEMPLATE ==
+
+== SEP: Idioms.sep_io ==
+
 == Idioms.print == map:ip, sc:p, insert ==
 print "<CURSOR>\n";
 == Idioms.open input file == map:ii, sc:i ==
