@@ -1,4 +1,4 @@
-*csupport.txt*                  C/C++ Support                      Jan 02 2016
+*csupport.txt*                  C/C++ Support                      Mar 17 2016
 
 C/C++ Support                                            *c-support* *csupport*
 
@@ -1040,7 +1040,7 @@ The first (uppercase) item shows the current method.  The default is 'vim'.
 This can be changed by setting the variable g:C_OutputGvim to another value.
 Possible values are 'vim', 'buffer' and 'xterm' .
 
-The xterm defaults can be set in ~/.vimrc by the variable g:C_XtermDefaults .
+The xterm defaults can be set in ~/.vimrc by the variable g:Xterm_Options .
 The default is "-fa courier -fs 12 -geometry 80x24" :
   font name     : -fa courier
   font size     : -fs 12
@@ -1463,7 +1463,8 @@ Several global variables are checked by the script to customize it:
  g:C_SourceCodeExtensions   'c cc cp cxx cpp CPP c++ C i ii'
  g:C_TypeOfH                'cpp'
  g:C_VimCompilerName        gcc
- g:C_XtermDefaults          '-fa courier -fs 12 -geometry 80x24'
+ g:Xterm_Executable         'xterm'
+ g:Xterm_Options            '-fa courier -fs 12 -geometry 80x24'
 
  Linux/UNIX:
   g:C_CCompiler             'gcc'
@@ -1526,7 +1527,9 @@ The variable plugin_dir will automatically be set to one of the following values
  g:C_SourceCodeExtensions  : filename extensions for C/C++ implementation files
  g:C_TypeOfH               : filetype of header files with extension 'h' (c,cpp)
  g:C_VimCompilerName       : the compiler name used by :compiler
- g:C_XtermDefaults         : the xterm defaults
+ g:Xterm_Executable        : the xterm executable
+ g:Xterm_Options           : the xterm options
+ g:C_XtermDefaults         : the xterm options (included for backwards
 
 To override the default add appropriate assignments to ~/.vimrc .
 The following global variables can be changed on the fly from the Vim command

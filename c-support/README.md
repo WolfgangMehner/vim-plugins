@@ -1,4 +1,4 @@
-README for c.vim (Version 6.2) / February 16 2016
+README for c.vim (Version 6.2) / March 17 2016
 ================================================================================
 
   *  INSTALLATION
@@ -206,6 +206,8 @@ RELEASE NOTES FOR VERSION 6.2
 ----------------------------------------------------------------------
 - Add 'g:C_CustomTemplateFile'.
 - Add template personalization file and setup wizard.
+- Respect 'g:Xterm_Executable' and 'g:Xterm_Options'.
+  ('g:C_XtermDefaults' still works for backwards compatibility.)
 - Remove unused 'g:C_GuiTemplateBrowser'.
 - Change 'Run -> link' and 'Run -> run', do not produce object file anymore.
 - Add submenu 'Preprocessor -> include POSIX header'.
