@@ -1,8 +1,8 @@
-*awksupport.txt*                 Awk Support                       Feb 21 2016
+*awksupport.txt*                 Awk Support                       Mar 17 2016
 
 Awk Support                                         *awk-support* *awksupport*
 
-                             Plug-in version 1.3pre
+                             Plug-in version 1.3
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
@@ -133,7 +133,7 @@ n\cj.
 ----------------------
 The comment sign # can be set or removed at the beginning of the current line
 or for a marked block using the menu items 'comment' (or \cc) and 'uncomment'
-(or \cu).  A single line needs not to be marked (normal mode, insert mode).
+(or \co). A single line needs not to be marked (normal mode, insert mode).
 
 A marked block
 >
@@ -143,9 +143,9 @@ A marked block
 <
 will be changed into (and vice versa)
 >
- #  x = 33                                     # this is x
- #  y = 44                                     # and y
- #  z = 55                                     # and now z
+ #x = 33                                     # this is x
+ #y = 44                                     # and y
+ #z = 55                                     # and now z
 <
 1.1.4 FRAME COMMENTS, FILE HEADER, ...             *awksupport-comm-templates*
 --------------------------------------
@@ -540,7 +540,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
   [n]\cj     adjust end-of-line comments         (n, i, v)
      \cs     set end-of-line comment column      (n)
   [n]\cc     comment code                        (n, i, v)
-  [n]\cu     uncomment code                      (n, i, v)
+  [n]\co     uncomment code                      (n, i, v)
      \cfr    frame comment                       (n, i)
      \cfu    function description                (n, i)
      \ch     file header                         (n, i)
