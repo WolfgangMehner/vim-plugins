@@ -1,4 +1,4 @@
-README for vim-support.vim (Version 2.4pre) / January 04 2016
+README for vim-support.vim (Version 2.4) / March 17 2016
 ================================================================================
 
 [INSTALLATION][sec_install]
@@ -177,10 +177,12 @@ RELEASE NOTES
 ================================================================================
   [sec_release]: #release-notes
 
-RELEASE NOTES FOR VERSION 2.4pre
+RELEASE NOTES FOR VERSION 2.4
 ----------------------------------------------------------------------
 - Add 'g:Vim_CustomTemplateFile'.
 - Add template personalization file and setup wizard.
+- Change the map for 'comment -> code' to '\co' for consistency with the other
+  plug-ins. The old map '\cu' still works, however.
 - New and reworked templates.
 - Minor changes.
 

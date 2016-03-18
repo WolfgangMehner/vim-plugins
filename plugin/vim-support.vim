@@ -38,7 +38,7 @@ if exists("g:VimSupportVersion") || &cp
  finish
 endif
 "
-let g:VimSupportVersion= "2.4pre"                  " version number of this script; do not change
+let g:VimSupportVersion= "2.4"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  GetGlobalSetting     {{{1
@@ -715,8 +715,8 @@ function! s:InitMenus()
 	"
 	exe ahead.'&comment<TAB>'.esc_mapl.'cc		:call Vim_CodeComment()<CR>'
 	exe vhead.'&comment<TAB>'.esc_mapl.'cc		:call Vim_CodeComment()<CR>'
-	exe ahead.'&uncomment<TAB>'.esc_mapl.'cu	:call Vim_CommentCode(0)<CR>'
-	exe vhead.'&uncomment<TAB>'.esc_mapl.'cu	:call Vim_CommentCode(0)<CR>'
+	exe ahead.'&uncomment<TAB>'.esc_mapl.'co	:call Vim_CommentCode(0)<CR>'
+	exe vhead.'&uncomment<TAB>'.esc_mapl.'co	:call Vim_CommentCode(0)<CR>'
 	exe ahead.'-Sep01-						<Nop>'
 	"
 	exe ahead.'&function\ description\ (auto)<TAB>'.esc_mapl.'ca	     :call Vim_FunctionComment()<CR>'
@@ -943,19 +943,25 @@ function! s:CreateAdditionalMaps ()
 	nnoremap    <buffer>  <silent>  <LocalLeader>cs         :call Vim_GetLineEndCommCol()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>cs    <C-C>:call Vim_GetLineEndCommCol()<CR>
 	vnoremap    <buffer>  <silent>  <LocalLeader>cs    <C-C>:call Vim_GetLineEndCommCol()<CR>
-	"
+
 	nnoremap    <buffer>  <silent>  <LocalLeader>cc         :call Vim_CodeComment()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>cc    <C-C>:call Vim_CodeComment()<CR>
 	vnoremap    <buffer>  <silent>  <LocalLeader>cc         :call Vim_CodeComment()<CR>
-	"
+
+	nnoremap    <buffer>  <silent>  <LocalLeader>co         :call Vim_CommentCode(0)<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>co    <C-C>:call Vim_CommentCode(0)<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>co         :call Vim_CommentCode(0)<CR>
+
+	" :TODO:17.03.2016 12:16:WM: old maps '\cu' for backwards compatibility,
+	" deprecate this eventually
 	nnoremap    <buffer>  <silent>  <LocalLeader>cu         :call Vim_CommentCode(0)<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>cu    <C-C>:call Vim_CommentCode(0)<CR>
 	vnoremap    <buffer>  <silent>  <LocalLeader>cu         :call Vim_CommentCode(0)<CR>
-	"
+
   nnoremap    <buffer>  <silent>  <LocalLeader>ca         :call Vim_FunctionComment()<CR>
   inoremap    <buffer>  <silent>  <LocalLeader>ca    <Esc>:call Vim_FunctionComment()<CR>
   vnoremap    <buffer>  <silent>  <LocalLeader>ca         :call Vim_FunctionComment()<CR>
-	"
+
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------
