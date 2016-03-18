@@ -1,8 +1,8 @@
-*bashsupport.txt*                Bash Support                      Feb 21 2016
+*bashsupport.txt*                Bash Support                      Mar 17 2016
 
 Bash Support                                      *bash-support* *bashsupport*
 
-                             Plug-in version 4.3pre
+                             Plug-in version 4.3
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
@@ -150,7 +150,7 @@ n\cj.
 ------------------------
 The comment sign # can be set or removed at the beginning of the current line
 or for a marked block using the menu items 'comment' (or \cc) and 'uncomment'
-(or \cu).  A single line needs not to be marked (normal mode, insert mode).
+(or \co). A single line needs not to be marked (normal mode, insert mode).
 
 A marked block
 >
@@ -659,7 +659,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
   [n]\cj     adjust end-of-line comments         (n, i, v)
      \cs     set end-of-line comment column      (n)
   [n]\cc     code -> comment                     (n, i, v)
-  [n]\cu     uncomment code                      (n, i, v)
+  [n]\co     uncomment code                      (n, i, v)
      \cfr    frame comment                       (n, i)
      \cfu    function description                (n, i)
      \ch     file header                         (n, i)

@@ -37,7 +37,7 @@ if exists("g:BASH_Version") || &cp
  finish
 endif
 "
-let g:BASH_Version= "4.3pre"                  " version number of this script; do not change
+let g:BASH_Version= "4.3"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  BASH_SetGlobalVariable     {{{1
@@ -408,37 +408,41 @@ function! BASH_EndOfLineComment ( ) range
 endfunction		" ---------- end of function  BASH_EndOfLineComment  ----------
 "
 "===  FUNCTION  ================================================================
-"          NAME:  BASH_CodeComment     {{{1
+"          NAME:  s:CodeComment     {{{1
 "   DESCRIPTION:  Code -> Comment
 "    PARAMETERS:  -
 "       RETURNS:
 "===============================================================================
-function! BASH_CodeComment() range
-	" add '# ' at the beginning of the lines
+function! s:CodeComment() range
+	" add '#' at the beginning of the lines
 	for line in range( a:firstline, a:lastline )
-		exe line.'s/^/# /'
+		exe line.'s/^/#/'
 	endfor
-endfunction    " ----------  end of function BASH_CodeComment  ----------
-"
+endfunction    " ----------  end of function s:CodeComment  ----------
+
 "===  FUNCTION  ================================================================
-"          NAME:  BASH_CommentCode     {{{1
+"          NAME:  s:CommentCode     {{{1
 "   DESCRIPTION:  Comment -> Code
 "    PARAMETERS:  toggle - 0 : uncomment, 1 : toggle comment
 "       RETURNS:
 "===============================================================================
-function! BASH_CommentCode( toggle ) range
+function! s:CommentCode( toggle ) range
 	for i in range( a:firstline, a:lastline )
-		if getline( i ) =~ '^# '
+		" :TRICKY:15.08.2014 17:17:WM:
+		" Older version prior to 2.3 inserted a space after the quote when turning
+		" a line into a comment. In order to deal with old code commented with this
+		" feature, we use a special rule to delete "hidden" spaces before tabs.
+		" Every other space which was inserted after a quote will be visible.
+		if getline( i ) =~ '^# \t'
 			silent exe i.'s/^# //'
 		elseif getline( i ) =~ '^#'
 			silent exe i.'s/^#//'
 		elseif a:toggle
-			silent exe i.'s/^/# /'
+			silent exe i.'s/^/#/'
 		endif
 	endfor
-	"
-endfunction    " ----------  end of function BASH_CommentCode  ----------
-"
+endfunction    " ----------  end of function s:CommentCode  ----------
+
 "===  FUNCTION  ================================================================
 "          NAME:  BASH_echo_comment     {{{1
 "   DESCRIPTION:  put statement in an echo
@@ -650,10 +654,10 @@ function! s:InitMenus()
 	exe  head.'&set\ end-of-line\ com\.\ col\.<Tab>'.esc_mapl.'cs  <Esc>:call BASH_GetLineEndCommCol()<CR>'
 	"
 	exe ahead.'-Sep01-						<Nop>'
-	exe ahead.'&comment<TAB>'.esc_mapl.'cc															:call BASH_CodeComment()<CR>'
-	exe vhead.'&comment<TAB>'.esc_mapl.'cc															:call BASH_CodeComment()<CR>'
-	exe ahead.'&uncomment<TAB>'.esc_mapl.'cu														:call BASH_CommentCode(0)<CR>'
-	exe vhead.'&uncomment<TAB>'.esc_mapl.'cu														:call BASH_CommentCode(0)<CR>'
+	exe ahead.'&comment<TAB>'.esc_mapl.'cc															:call <SID>CodeComment()<CR>'
+	exe vhead.'&comment<TAB>'.esc_mapl.'cc															:call <SID>CodeComment()<CR>'
+	exe ahead.'&uncomment<TAB>'.esc_mapl.'co														:call <SID>CommentCode(0)<CR>'
+	exe vhead.'&uncomment<TAB>'.esc_mapl.'co														:call <SID>CommentCode(0)<CR>'
 	exe ahead.'-Sep02-						<Nop>'
 	"
 	"-------------------------------------------------------------------------------
@@ -969,20 +973,26 @@ function! s:CreateAdditionalMaps ()
 	nnoremap  <buffer>  <silent>  <LocalLeader>cs         :call BASH_GetLineEndCommCol()<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>cs    <C-C>:call BASH_GetLineEndCommCol()<CR>
 	vnoremap  <buffer>  <silent>  <LocalLeader>cs    <C-C>:call BASH_GetLineEndCommCol()<CR>
-	"
-	nnoremap  <buffer>  <silent>  <LocalLeader>cc         :call BASH_CodeComment()<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>cc    <C-C>:call BASH_CodeComment()<CR>
-	vnoremap  <buffer>  <silent>  <LocalLeader>cc         :call BASH_CodeComment()<CR>
-	"
-	nnoremap  <buffer>  <silent>  <LocalLeader>cu         :call BASH_CommentCode(0)<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>cu    <C-C>:call BASH_CommentCode(0)<CR>
-	vnoremap  <buffer>  <silent>  <LocalLeader>cu         :call BASH_CommentCode(0)<CR>
-	"
+
+	nnoremap  <buffer>  <silent>  <LocalLeader>cc         :call <SID>CodeComment()<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>cc    <C-C>:call <SID>CodeComment()<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>cc         :call <SID>CodeComment()<CR>
+
+	nnoremap  <buffer>  <silent>  <LocalLeader>co         :call <SID>CommentCode(0)<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>co    <C-C>:call <SID>CommentCode(0)<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>co         :call <SID>CommentCode(0)<CR>
+
+	" :TODO:17.03.2016 12:16:WM: old maps '\cu' for backwards compatibility,
+	" deprecate this eventually
+	nnoremap  <buffer>  <silent>  <LocalLeader>cu         :call <SID>CommentCode(0)<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>cu    <C-C>:call <SID>CommentCode(0)<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>cu         :call <SID>CommentCode(0)<CR>
+
    noremap  <buffer>  <silent>  <LocalLeader>ce         :call BASH_echo_comment()<CR>j'
   inoremap  <buffer>  <silent>  <LocalLeader>ce    <C-C>:call BASH_echo_comment()<CR>j'
    noremap  <buffer>  <silent>  <LocalLeader>cr         :call BASH_remove_echo()<CR>j'
   inoremap  <buffer>  <silent>  <LocalLeader>cr    <C-C>:call BASH_remove_echo()<CR>j'
-	"
+
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------

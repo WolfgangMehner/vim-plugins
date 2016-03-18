@@ -47,14 +47,11 @@ Awk:
 - (DONE) 'code->comment' should not insert a space following the hash?
 
 Bash:
-- (FM) 'code->comment' should not insert a space following the hash?
-- (FM) The conformation message for 'make script exec.' is not visible (see fix
-  in perl-support).
-- (FM) Rename function 'g:BASH_RereadTemplates'.
-- (FM) Compl.-func. 'BASH_BuiltinComplete' missing.
-- (WM) Template library, list 'TestsFileTypes': "symbolic link -h" ?
-- (WM) Template library, list 'TestsFileCharacteristics': "file exists -a" ?
-- (WM) Template library, list 'IORedirection': check "duplicate STDIN from file descr n" and "duplicate STDOUT to file descr n"
+- (DONE) 'code->comment' should not insert a space following the hash?
+- (DONE) Template library, list 'IORedirection': check "duplicate STDIN from file descr n" and "duplicate STDOUT to file descr n"
+- (DONE) Template library, list 'TestsFileTypes': "symbolic link -h".
+- (DONE) Template library, list 'TestsFileCharacteristics': "file exists -a". Is apparently deprecated.
+- Compl.-func. 'BASH_BuiltinComplete' missing.
 
 C/C++:
 - (FM, DONE) Documentation: Change documentation with regard to Make integration.
