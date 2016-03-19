@@ -808,7 +808,7 @@ See |bashsupport-usage-vim| for more hotkeys.
 4.1  FILES                                          *bashsupport-custom-files*
 ------------------------------------------------------------------------------
 
-README.bashsupport                  Release notes, installation description.
+bash-support/README.md              Release notes, installation description.
 
 plugin/bash-support.vim             The Bash plug-in for Vim/gVim.
 bash-support/scripts/wrapper.sh     A wrapper script for the use of an xterm.
@@ -819,12 +819,16 @@ bash-support/codesnippets/*         Some code snippets as a starting point.
 
 bash-support/templates/*            Bash template files (see |bashsupport-comm-templates|).
 
+autoload/mmtemplates/*              The template engine.
+
 bash-support/wordlists/*            Additional word lists (dictionaries).
 
   -------------------------------------------------------------
   The following files and extensions are for convenience only.
   bash-support.vim will work without them.
   -------------------------------------------------------------
+
+bash-support/doc/*                    Hotkey reference card (PDF), changelog.
 
 bash-support/rc/costumization.bashrc  Additional settings I use in .bashrc: 
                                       set the prompt P2, P3, P4 (for debugging).
@@ -837,9 +841,8 @@ bash-support/rc/costumization.vimrc   Additional settings I use in '.vimrc': inc
 bash-support/rc/costumization.gvimrc  Additional settings I use in '.gvimrc': hot keys,
                                       mouse settings, ...  The file is commented.
                                       Append it to your '.gvimrc' if you like.
-bash-support/rc/sh.vim                Suggestions for additional maps.
 
-bash-support/doc/*                    Hotkey reference card (PDF), changelog.
+bash-support/rc/sh.vim                Suggestions for additional maps.
 
 
 ------------------------------------------------------------------------------
@@ -1344,7 +1347,7 @@ CYGWIN with the value "nodosfilewarning".
 10.  Release Notes                                  *bashsupport-release-notes*
 ==============================================================================
 
-See file 'README.bashsupport'.
+See files 'README.md' and 'ChangeLog'.
 
 ==============================================================================
 vim:tw=78:expandtab:ts=2:ft=help:norl:
