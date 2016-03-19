@@ -651,9 +651,7 @@ influences only files with filetype 'vim'.
 3.1  FILES (after installation)                      *awksupport-custom-files*
 ------------------------------------------------------------------------------
 
-README.awksupport                  Release notes, installation description.
-
-ftplugin/help.vim                  Filetype plugin to extend Vim help.
+awk-support/README.md              Release notes, installation description.
 
 plugin/awk-support.vim             The Awk plugin for Vim/gVim.
 
@@ -664,7 +662,9 @@ awk-support/codesnippets/*         Some code snippets as a starting point.
 awk-support/templates/*            Awk template files
                                    (see |awksupport-comm-templates|).
 
-autoload/mmtemplates/core          The template engine.
+autoload/mmtemplates/*             The template engine.
+
+awk-support/wordlists/*            Additional word lists (dictionaries).
 
 The following files and extensions are for convenience only.  awk-support.vim
 will work without them.
@@ -1061,7 +1061,7 @@ for the system
 7.  RELEASE NOTES                                   *awksupport-release-notes*
 ==============================================================================
 
-See file 'README.awksupport'.
+See files 'README.md' and 'ChangeLog'.
 
 ==============================================================================
 vim:tw=78:expandtab:ts=2:ft=help:norl:
