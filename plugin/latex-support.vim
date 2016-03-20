@@ -38,7 +38,7 @@ if exists("g:LatexSupportVersion") || &cp
  finish
 endif
 "
-let g:LatexSupportVersion= "1.2pre"                  " version number of this script; do not change
+let g:LatexSupportVersion= "1.2"                  " version number of this script; do not change
 "
 "===  FUNCTION  ================================================================
 "          NAME:  latex_SetGlobalVariable     {{{1
@@ -1294,7 +1294,7 @@ function! Latex_Settings ( verbose )
 	" ----- dictionaries ------------------------
   if !empty(g:Latex_Dictionary_File)
 		let ausgabe= &dictionary
-		let ausgabe= substitute( ausgabe, ",", ",\n                           + ", "g" )
+		let ausgabe= substitute( ausgabe, ",", ",\n                             ", "g" )
 		let txt = txt."       dictionary file(s) :  ".ausgabe."\n"
 	endif
 	" ----- map leader, menus, file headers -----

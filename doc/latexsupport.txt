@@ -1,8 +1,8 @@
-*latexsupport.txt*              LaTeX Support                      Jan 08 2016
+*latexsupport.txt*              LaTeX Support                      Mar 20 2016
 
 LaTeX Support                                     *latex-support* *latexsupport*
 
-                             Plug-in version 1.2pre
+                             Plug-in version 1.2
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
@@ -872,7 +872,7 @@ obtain personalized comments, e.g. something like this:
 Use the custom template file for LaTeX templates which override the global
 templates or to add new ones.
 
-The old system (before version 6.2), using a "local" template file, >
+The old system (before version 1.2), using a "local" template file, >
   ~/.vim/latex-support/templates
 is still supported for backwards compatibility.
 >
@@ -908,6 +908,13 @@ plug-ins which support this feature, so it should only contain basic
 information not pertaining to a specific programming language. It can be set
 up using a wizard, which is run by the map \ntw or the menu entry:
   LaTeX -> Snippets -> template setup wizard
+
+Further template files can be added using the call: >
+  call mmtemplates#config#Add ( 'latex', '<PATH>/some.templates', 'example', 'nte' )
+The first parameter adds the file to your LaTeX templates, the second is the
+path. The remaining two optional parameters specify the symbolic name for
+these templates and the map to edit them. The map is '\nte' in this example,
+if the standard mapleader is set.
 
 ------------------------------------------------------------------------------
 5.1  TEMPLATE FILES                             *latexsupport-templates-files*
@@ -1009,8 +1016,7 @@ need to have all user defined macros in the master file.
 5.2.1   USER DEFINED FORMATS FOR DATE AND TIME   *latexsupport-templates-date*
 ------------------------------------------------------------------------------
 The format for *|DATE|* ,*|TIME|* , and*|YEAR|* can be set by the user. The
-defaults are
-Example:
+defaults are:
 >
   |DATE|        '%x'
   |TIME|        '%X'

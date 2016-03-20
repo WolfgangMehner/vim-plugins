@@ -1,4 +1,4 @@
-README for latex-support.vim (Version 1.2pre) / January 06 2016
+README for latex-support.vim (Version 1.2) / March 17 2016
 ================================================================================
 
   *  INSTALLATION
@@ -173,7 +173,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 RELEASE NOTES
 ================================================================================
 
-RELEASE NOTES FOR VERSION 1.2pre
+RELEASE NOTES FOR VERSION 1.2
 ----------------------------------------------------------------------
 - Add 'g:Latex_CustomTemplateFile'.
 - Add template personalization file and setup wizard.

@@ -106,11 +106,9 @@ Git:
 - Document 'g:Git_Editor', and the use of '$GIT_EDITOR', and add it to :GitSupportSettings.
 
 LaTeX:
-- (FM) Documentation: Menu 'Beamer' missing.
-- (WM, DONE) Documentation: Menu 'Help' missing.
-- (FM) Reference Card: Menu 'Beamer' missing.
-- (WM, DONE) Reference Card: Entry 'Help->english' missing.
-- (WM) Documentation: The documentation of "g:Templates_MapInUseWarn" is wrong.
+- (DONE) Reference Card: Menu 'Beamer' missing.
+- (DONE) Documentation: Adding additional template files.
+- Add 'luatex' as a type setter.
 
 Lua:
 - (DONE) Documentation: Add setup of C API templates.
