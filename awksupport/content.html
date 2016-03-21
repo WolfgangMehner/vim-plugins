@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 	<head>
-		<title>VIM plug-in AWK Support : Screen Shots</title>
+		<title>AWK Support - CONTENT</title>
 		<base href="..">
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15">
 		<link rel="stylesheet" type="text/css" href="vimstyle.css">
@@ -23,7 +23,14 @@
 					<td>
 						<h3>Speed-up the development of AWK scripts:</h3>
 						<ul>
-							<li>FEATURES !!!</li>
+							<li>insert code snippets: comments, statements, functions, regular expressions, ...</li>
+							<li>... which come in an extendible template library</li>
+						</ul>
+						<ul>
+							<li>manage code snippets</li>
+							<li>run the script from within Vim</li>
+							<li>run the syntax checker and lint</li>
+							<li>quick access to the documentation</li>
 						</ul>
 					</td>
 				</tr>
@@ -46,9 +53,127 @@
 				<!-- ################################## MENU COMMENTS ##################################-->
 				<!-- ###################################################################################-->
 				<tr>
-					<td><img src="awksupport/someimage.png"> </td>
+					<td><img src="awksupport/menu_comments.png"> </td>
 					<td>
 						<h3>Menu <i>Comments</i> : insert comments</h3>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU STATEMENTS ################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="awksupport/menu_statements.png"> </td>
+					<td>
+						<h3>Menu <i>Statements</i> : insert statements</h3>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU COMMENTS ##################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="awksupport/menu_idioms.png"> </td>
+					<td>
+						<h3>Menu <i>Idioms</i> : insert frequently used statements</h3>
+						<p>Insert an empty function using <b>function</b>.
+						You will be asks for the name of the function and the following lines will be inserted:
+						<pre>
+<span class="keyword">function</span> brain_function ( <span class="cursor_ins">|</span> )
+{
+  <span class="jumptag"><-FUNCTION_BODY-></span>
+}   <span class="comment"># -----  end of function brain_function  -----</span>
+						</pre>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU FUNCTIONS #################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="awksupport/menu_functions.png"> </td>
+					<td>
+						<table class="img_float_table"><tbody>
+							<tr>
+								<td>
+									<h3>Menu <i>Function</i> : insert AWK function calls</h3>
+									<p>Choose the standard functions from one of several lists (tab completion!).
+									They are inserted with jumps tags named for the functions parameters:</p>
+									<pre>
+<span class="identifier">match </span>( <span class="cursor_ins">|</span><span class="jumptag">&lt;+STRING+></span>, <span class="jumptag">&lt;+REGEXP+></span> ) </pre>
+									<p>Use <b>CTRL+J</b> to jump to the tags and start editing.</p>
+								</td>
+								<td>
+									<img src="awksupport/menu_functions_string.png">
+								</td>
+							</tr>
+						</tbody></table>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU REGEX #####################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="awksupport/menu_regex.png"> </td>
+					<td>
+						<table class="img_float_table"><tbody>
+							<tr>
+								<td>
+									<h3>Menu <i>Regex</i> : assemble regular expressions</h3>
+									<p>Instead of typing in regex tokens directly,
+									just pick what you want from the menus.</p>
+								</td>
+								<td>
+									<img src="awksupport/menu_regex_op.png">
+								</td>
+							</tr>
+						</tbody></table>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU SNIPPETS ##################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="awksupport/menu_snippets.png"> </td>
+					<td>
+						<h3>Menu <i>Snippets</i> : insert code snippets and manage templates</h3>
+						<p>The plug-in comes with a facility to extract, manage and insert often used code snippets.
+						Visually select a few lines and use the menu entry <b>write code snippet</b> to write these lines into a file.
+						The code snippet can then be edited and inserted again using <b>read code snippet</b>.</p>
+						<p>(See <a target=_blank href="%REF_HELP%#awksupport-snippets">:help awksupport-snippets</a>)</p>
+						<hr>
+						<p>The templates which define the behavior of most of the menu entries are also manage here.
+						Use <b>templates setup wizard</b> to create a personalization file with your personal details for the comments.</p>
+						<p>The templates support different coding styles. Use the entry <b>choose style</b> to switch between them.</p>
+						<p>(See <a target=_blank href="%REF_HELP%#awksupport-templates">:help awksupport-templates</a>)</p>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU RUN #######################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="awksupport/menu_run.png"> </td>
+					<td>
+						<h3>Menu <i>Run</i> : run script, check syntax, do lint check, ... </h3>
+						<p>Run the script, the output is redirected to the AWK-Output buffer:</p>
+						<a href="awksupport/run_script.png"><img class="preview_image_3_4" src="awksupport/run_script.png"></a>
+						<hr>
+						<p>Check the syntax. In case of errors a quickfix window will be opened to show the current list of errors:</p>
+						<a href="awksupport/run_syntax_check.png"><img class="preview_image_3_4" src="awksupport/run_syntax_check.png"></a>
+						<hr>
+						<p>Run lint check:</p>
+						<a href="awksupport/run_lint.png"><img class="preview_image_3_4" src="awksupport/run_lint.png"></a>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU HELP ######################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="awksupport/menu_help.png"> </td>
+					<td>
+						<h3>Menu <i>Help</i> : call help</h3>
+						<p>Help is quickly accessible through the <b>Help</b> menu.
+						Use the entry or the map <b>\hm</b> to display the AWK man-page.
+						It contains the documentation of the statements, functions, data structures, ...</p>
+						<hr>
+						<p>The same works for any word in the English language. Placing the cursor on a word and hitting <b>\he</b> opens a dictionary for the word.</p>
 					</td>
 				</tr>
 			</tbody>

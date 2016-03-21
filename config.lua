@@ -103,7 +103,7 @@ config.awk = {
 		GITHUB_USER = 'WolfgangMehner',
 		GITHUB_REPO = 'vim-plugins',
 
-		IMG_MAIN_FILE    = 'awksupport/main.png',
+		IMG_MAIN_FILE    = 'awksupport/menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
 
 		REF_README = 'blob/master/awk-support/README.awksupport',
