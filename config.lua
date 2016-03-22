@@ -132,7 +132,7 @@ config.bash = {
 		GITHUB_USER = 'WolfgangMehner',
 		GITHUB_REPO = 'vim-plugins',
 
-		IMG_MAIN_FILE    = 'bashsupport/root-menu.png',
+		IMG_MAIN_FILE    = 'bashsupport/menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
 
 		REF_README = 'blob/master/bash-support/README.bashsupport',

@@ -67,7 +67,7 @@
 			<tbody>
 				<tr>
 					<td>
-						<img src="bashsupport/root-menu.png" alt="root menu"><br>
+						<img src="bashsupport/menu_main.png" alt="root menu"><br>
 						<b>root menu</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					</td>
 					<td>
@@ -152,7 +152,14 @@
 					<td>
 						<h3>Speed-up the development of Bash scripts:</h3>
 						<ul>
-							<li>FEATURES !!!</li>
+							<li>insert code snippets: comments, statements, functions, regular expressions, ...</li>
+							<li>... which come in an extendible template library</li>
+						</ul>
+						<ul>
+							<li>manage code snippets</li>
+							<li>run the script from within Vim</li>
+							<li>run the syntax checker and debugger</li>
+							<li>quick access to the documentation</li>
 						</ul>
 					</td>
 				</tr>
@@ -174,9 +181,95 @@
 				<!-- ################################## MENU COMMENTS ##################################-->
 				<!-- ###################################################################################-->
 				<tr>
-					<td><img src="bashsupport/someimage.png"> </td>
+					<td><img src="bashsupport/menu_comments.png"> </td>
 					<td>
 						<h3>Menu <i>Comments</i> : insert comments</h3>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU STATEMENTS ################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="bashsupport/menu_statements.png"> </td>
+					<td>
+						<h3>Menu <i>Statements</i> : insert statements</h3>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU TESTS #####################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="bashsupport/menu_tests.png"> </td>
+					<td>
+						<table class="img_float_table"><tbody>
+							<tr>
+								<td>
+									<h3>Menu <i>Tests</i> : insert tests</h3>
+									<p>TODO</p>
+								</td>
+								<td>
+									<img src="bashsupport/menu_tests_types.png">
+								</td>
+							</tr>
+						</tbody></table>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU SPEC PARAMS ###############################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="bashsupport/menu_spec_params.png"> </td>
+					<td>
+						<h3>Menu <i>SpecParams</i> : insert special parameters</h3>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU SNIPPETS ##################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="bashsupport/menu_snippets.png"> </td>
+					<td>
+						<h3>Menu <i>Snippets</i> : insert code snippets and manage templates</h3>
+						<p>The plug-in comes with a facility to extract, manage and insert often used code snippets.
+						Visually select a few lines and use the menu entry <b>write code snippet</b> to write these lines into a file.
+						The code snippet can then be edited and inserted again using <b>read code snippet</b>.</p>
+						<p>(See <a target=_blank href="doc/bashsupport.html#bashsupport-snippets">:help bashsupport-snippets</a>)</p>
+						<hr>
+						<p>The templates which define the behavior of most of the menu entries are also manage here.
+						Use <b>templates setup wizard</b> to create a personalization file with your personal details for the comments.</p>
+						<p>The templates support different coding styles. Use the entry <b>choose style</b> to switch between them.</p>
+						<p>(See <a target=_blank href="doc/bashsupport.html#bashsupport-templates">:help bashsupport-templates</a>)</p>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU RUN #######################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="bashsupport/menu_run.png"> </td>
+					<td>
+						<h3>Menu <i>Run</i> : run script, check syntax, do lint check, ... </h3>
+<!--						<p>Run the script, the output is redirected to the AWK-Output buffer:</p>-->
+<!--						<a href="bashsupport/run_script.png"><img class="preview_image_3_4" src="bashsupport/run_script.png"></a>-->
+<!--						<hr>-->
+<!--						<p>Check the syntax. In case of errors a quickfix window will be opened to show the current list of errors:</p>-->
+<!--						<a href="bashsupport/run_syntax_check.png"><img class="preview_image_3_4" src="bashsupport/run_syntax_check.png"></a>-->
+<!--						<hr>-->
+<!--						<p>Run lint check:</p>-->
+<!--						<a href="bashsupport/run_lint.png"><img class="preview_image_3_4" src="bashsupport/run_lint.png"></a>-->
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU HELP ######################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="bashsupport/menu_help.png"> </td>
+					<td>
+						<h3>Menu <i>Help</i> : call help</h3>
+<!--						<p>Help is quickly accessible through the <b>Help</b> menu.-->
+<!--						Use the entry or the map <b>\hm</b> to display the AWK man-page.-->
+<!--						It contains the documentation of the statements, functions, data structures, ...</p>-->
+						<hr>
+						<p>The same works for any word in the English language. Placing the cursor on a word and hitting <b>\he</b> opens a dictionary for the word.</p>
 					</td>
 				</tr>
 			</tbody>
@@ -184,7 +277,7 @@
 		<!-- ###################################################################################-->
 		<!-- ################################## FOOTER #########################################-->
 		<!-- ###################################################################################-->
-		<p>Page updated: February 20 2016 &nbsp;&nbsp;/&nbsp;&nbsp;
+		<p>Page updated: March 21 2016 &nbsp;&nbsp;/&nbsp;&nbsp;
 		Mail to: <a href="mailto:wolfgang-mehner@web.de">Wolfgang Mehner</a></p>
 	</body>
 </html>
