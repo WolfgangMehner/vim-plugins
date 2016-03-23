@@ -162,6 +162,54 @@
 					<td><img src="awksupport/menu_comments.png"> </td>
 					<td>
 						<h3>Menu <i>Comments</i> : insert comments</h3>
+						<p>A lot of the menu entries are defined in a so-called template library.
+						The library defines the menu entries, maps and the inserted text.
+						The personal information can also be configured there.</p>
+						<hr>
+						<p>A <b>file description</b> can be inserted into each new file:</p>
+						<pre>
+<span class="comment">#!/usr/bin/awk -f
+#===============================================================================
+#
+#          File:  somescript.awk
+#
+#   Description:
+#
+#   VIM Version:  7.0+
+#        Author:  Wolfgang Mehner (WM), wolfgang-mehner@web.de
+#  Organization:
+#       Version:  1.0
+#       Created:  23.03.2016 10:45
+#      Revision:  ---
+#       License:  Copyright (c) 2016, Wolfgang Mehner
+#===============================================================================</span></pre>
+						<p>This prolog is generated from the template shown below. This template file can easily be changed by the user.
+						Tags (like <code >|FILENAME|</code>) are replaced when the template is inserted.</p>
+						<pre>
+<span class="type">== Comments.file description == start, map:ch ==</span>
+#!/usr/bin/awk -f
+#===============================================================================
+#
+#          File:  <span class="tag">|FILENAME|</span>
+#
+#   Description:  <span class="tag">&lt;CURSOR></span>
+#
+#   VIM Version:  7.0+
+#        Author:  <span class="tag">|AUTHOR|</span> (<span class="tag">|AUTHORREF|</span>), <span class="tag">|EMAIL|</span>
+#  Organization:  <span class="tag">|ORGANIZATION|</span>
+#       Version:  1.0
+#       Created:  <span class="tag">|DATE|</span> <span class="tag">|TIME|</span>
+#      Revision:  ---
+#       License:  <span class="tag">|COPYRIGHT|</span>
+#===============================================================================
+<span class="type">== ENDTEMPLATE ==</span></pre>
+						<hr>
+						<p>The entry <b>keyword comments &#10142; todo</b> generates a special end-of-line comment.
+						These comments are easily locatable by their keywords (e.g. <b>:TODO:</b>).
+						Date and author reference name are inserted by the editor.</p>
+						<pre>
+<span class="comment"># :TODO:29.02.2015 12:34:WM:</span></pre>
+						<p>These comments are not for the final version of a script, of course.</p>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -171,6 +219,28 @@
 					<td><img src="awksupport/menu_statements.png"> </td>
 					<td>
 						<h3>Menu <i>Statements</i> : insert statements</h3>
+						<p>Insert statements with jump tags for convenient editing, using the entry <b>if block else</b> or via the map <b>\sife</b>:<br></p>
+						<pre>
+<span class="keyword">if</span> ( <span class="cursor_ins">|</span> ) {
+  <span class="jumptag">&lt;-IF_PART-></span>
+}
+<span class="keyword">else</span> {
+  <span class="jumptag">&lt;-ELSE_PART-></span>
+}</pre>
+						<p>The cursor is positioned after the "if". Use <b>CTRL+J</b> to jump to the tags and start editing.</p>
+						<hr>
+						<p>A lot of menu entires have a special behavior in visual mode. Select some lines in visual mode ...</p>
+						<pre>
+<span class="identifier">match</span> ( str, "Name: ([[:alpha:]]+)", a )
+
+<span class="visual"><span class="keyword">printf</span> ( a[1] )</span></pre>
+						<p>then use the entry <b>if block</b>. The text is inserted around the selected lines and they are indented:</p>
+						<pre>
+<span class="identifier">match</span> ( str, "Name: ([[:alpha:]]+)", a )
+
+<span class="keyword">if</span> ( <span class="cursor_ins">|</span> ) {
+  <span class="keyword">printf</span> ( a[1] )
+}</pre>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -223,8 +293,9 @@
 							<tr>
 								<td>
 									<h3>Menu <i>Regex</i> : assemble regular expressions</h3>
-									<p>Instead of typing in regex tokens directly,
-									just pick what you want from the menus.</p>
+									<p>The submenus contain frequently used expressions.
+									The menus contain the names and the symbols,
+									which saves a lot of time used on searching in reference manuals.</p>
 								</td>
 								<td>
 									<img src="awksupport/menu_regex_op.png">
@@ -287,7 +358,7 @@
 		<!-- ###################################################################################-->
 		<!-- ################################## FOOTER #########################################-->
 		<!-- ###################################################################################-->
-		<p>Page updated: March 21 2016 &nbsp;&nbsp;/&nbsp;&nbsp;
+		<p>Page updated: March 23 2016 &nbsp;&nbsp;/&nbsp;&nbsp;
 		Mail to: <a href="mailto:wolfgang-mehner@web.de">Wolfgang Mehner</a></p>
 	</body>
 </html>
