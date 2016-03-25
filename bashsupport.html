@@ -184,6 +184,66 @@
 					<td><img src="bashsupport/menu_comments.png"> </td>
 					<td>
 						<h3>Menu <i>Comments</i> : insert comments</h3>
+						<p>A lot of the menu entries are defined in a so-called template library.
+						The library defines the menu entries, maps and the inserted text.
+						The personal information can also be configured there.</p>
+						<hr>
+						<p>A <b>file description</b> can be inserted into each new file:</p>
+						<pre>
+<span class="comment">#!/bin/bash -
+#===============================================================================
+#
+#          FILE: content.html
+#
+#         USAGE: ./content.html
+#
+#   DESCRIPTION:
+#
+#       OPTIONS: ---
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: Wolfgang Mehner (WM), wolfgang-mehner@web.de
+#  ORGANIZATION:
+#       CREATED: 23.03.2016 12:00
+#      REVISION:  ---
+#===============================================================================</span>
+
+<span class="keyword">set</span> -o <span class="type">nounset</span>                            <span class="comment"># Treat unset variables as an error</span>
+						</pre>
+						<p>This prolog is generated from the template shown below. This template file can easily be changed by the user.
+						Tags (like <code >|FILENAME|</code>) are replaced when the template is inserted.</p>
+						<pre>
+<span class="type">== Comments.file description == start, map:ch ==</span>
+#!/bin/bash -
+#===============================================================================
+#
+#          FILE: <span class="tag">|FILENAME|</span>
+#
+#         USAGE: ./<span class="tag">|FILENAME|</span>
+#
+#   DESCRIPTION:
+#
+#       OPTIONS: ---
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: <span class="tag">|AUTHOR|</span> (<span class="tag">|AUTHORREF|</span>), <span class="tag">|EMAIL|</span>
+#  ORGANIZATION: <span class="tag">|ORGANIZATION|</span>
+#       CREATED: <span class="tag">|DATE|</span> <span class="tag">|TIME|</span>
+#      REVISION:  ---
+#===============================================================================
+
+set -o nounset                              # Treat unset variables as an error
+<span class="tag">&lt;CURSOR></span>
+<span class="type">== ENDTEMPLATE ==</span></pre>
+						<hr>
+						<p>The entry <b>keyword comments &#10142; todo</b> generates a special end-of-line comment.
+						These comments are easily locatable by their keywords (e.g. <b>:TODO:</b>).
+						Date and author reference name are inserted by the editor.</p>
+						<pre>
+<span class="comment"># :TODO:29.02.2015 12:34:WM:</span></pre>
+						<p>These comments are not for the final version of a script, of course.</p>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -193,6 +253,25 @@
 					<td><img src="bashsupport/menu_statements.png"> </td>
 					<td>
 						<h3>Menu <i>Statements</i> : insert statements</h3>
+						<p>Insert statements with jump tags for convenient editing, using the entry <b>if-else</b> or via the map <b>\sie</b>:<br></p>
+						<pre>
+<span class="keyword">if</span> <span class="cursor_ins">|</span> <span class="keyword">; then</span>
+  <span class="jumptag">&lt;-IF_PART-></span>
+<span class="keyword">else</span>
+  <span class="jumptag">&lt;+ELSE_PART+></span>
+<span class="keyword">fi</span></pre>
+						<p>The cursor is positioned after the "if". Use <b>CTRL+J</b> to jump to the tags and start editing.</p>
+						<hr>
+						<p>A lot of menu entires have a special behavior in visual mode. Select some lines in visual mode ...</p>
+						<pre>
+<span class="comment"># remove the file</span>
+<span class="visual"><span class="keyword">rm</span> <span class="preproc">$FILE</span></span></pre>
+						<p>then use the entry <b>if</b>. The text is inserted around the selected lines and they are indented:</p>
+						<pre>
+<span class="comment"># remove the file</span>
+<span class="keyword">if</span> <span class="cursor_ins">|</span> <span class="keyword">; then</span>
+  <span class="keyword">rm</span> <span class="preproc">$FILE</span>
+<span class="keyword">fi</span></pre>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -205,7 +284,18 @@
 							<tr>
 								<td>
 									<h3>Menu <i>Tests</i> : insert tests</h3>
-									<p>TODO</p>
+									<p>Select tests from the menu. After inserting the if-statement ...</p>
+									<pre>
+<span class="comment"># remove the file</span>
+<span class="keyword">if</span> <span class="cursor_ins">|</span> <span class="keyword">; then</span>
+  <span class="keyword">rm</span> <span class="preproc">$FILE</span>
+<span class="keyword">fi</span></pre>
+									<p>use <b>file types &#10142; regular file</b> to insert the test:
+									<pre>
+<span class="comment"># remove the file</span>
+<span class="keyword">if [ -f</span> <span class="cursor_ins">|</span> <span class="keyword">] ; then</span>
+  <span class="keyword">rm</span> <span class="preproc">$FILE</span>
+<span class="keyword">fi</span></pre>
 								</td>
 								<td>
 									<img src="bashsupport/menu_tests_types.png">
@@ -221,6 +311,14 @@
 					<td><img src="bashsupport/menu_spec_params.png"> </td>
 					<td>
 						<h3>Menu <i>SpecParams</i> : insert special parameters</h3>
+						<p>The submenus contain frequently used special parameters.
+						The menus contain the name and an explanation of the variables,
+						which saves a lot of time used on searching in reference manuals.</p>
+						<p>The variables can also be inserted using the map <b>\bsp</b>.
+						You will be prompted for the variable, use tab-completion for convenient searching.</p>
+						<hr>
+						<p>Other menus offer the same functionality for environment variables,
+						built-in functions, I/O redirection, ...</p>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -248,14 +346,14 @@
 					<td><img src="bashsupport/menu_run.png"> </td>
 					<td>
 						<h3>Menu <i>Run</i> : run script, check syntax, do lint check, ... </h3>
-<!--						<p>Run the script, the output is redirected to the AWK-Output buffer:</p>-->
-<!--						<a href="bashsupport/run_script.png"><img class="preview_image_3_4" src="bashsupport/run_script.png"></a>-->
-<!--						<hr>-->
-<!--						<p>Check the syntax. In case of errors a quickfix window will be opened to show the current list of errors:</p>-->
-<!--						<a href="bashsupport/run_syntax_check.png"><img class="preview_image_3_4" src="bashsupport/run_syntax_check.png"></a>-->
-<!--						<hr>-->
-<!--						<p>Run lint check:</p>-->
-<!--						<a href="bashsupport/run_lint.png"><img class="preview_image_3_4" src="bashsupport/run_lint.png"></a>-->
+						<p>Running a faulty script, the errors are displayed in a quickfix window.</p>
+						<a href="bashsupport/run_quickfix.png"><img class="preview_image_3_4" src="bashsupport/run_quickfix.png"></a>
+						<hr>
+						<p>Redirect the output into a Vim buffer.</p>
+						<a href="bashsupport/run_buffer.png"><img class="preview_image_3_4" src="bashsupport/run_buffer.png"></a>
+						<hr>
+						<p>Start the debugger <a target=_blank href="http://bashdb.sourceforge.net/">bashdb</a> with a keystroke.</p>
+						<a href="bashsupport/run_debugger.png"><img class="preview_image_3_4" src="bashsupport/run_debugger.png"></a>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -264,12 +362,23 @@
 				<tr>
 					<td><img src="bashsupport/menu_help.png"> </td>
 					<td>
-						<h3>Menu <i>Help</i> : call help</h3>
-<!--						<p>Help is quickly accessible through the <b>Help</b> menu.-->
-<!--						Use the entry or the map <b>\hm</b> to display the AWK man-page.-->
-<!--						It contains the documentation of the statements, functions, data structures, ...</p>-->
-						<hr>
-						<p>The same works for any word in the English language. Placing the cursor on a word and hitting <b>\he</b> opens a dictionary for the word.</p>
+						<table class="img_float_table"><tbody>
+							<tr>
+								<td>
+									<h3>Menu <i>Help</i> : call help</h3>
+									<p>Help is quickly accessible through the <b>Help</b> menu.
+									Place the cursor on the name of a built-in or external program ...</p>
+									<pre>
+<span class="keyword">while g<span class="cursor_nrm">e</span>topts</span> <span class="preproc">$OPTIONSTRING</span> <span class="keyword">option ; do</span></pre>
+									<p>then use one of the entries or the maps <b>\hh</b> or <b>\hm</b> to display the help in a Vim buffer.</p>
+									<hr>
+									<p>The same works for any word in the English language. Placing the cursor on a word and hitting <b>\he</b> opens a dictionary for the word.</p>
+								<td>
+									<a href="bashsupport/help_buffer.png"><img class="preview_image_3_4" src="bashsupport/help_buffer.png"></a>
+									read help for built-ins
+								</td>
+							</tr>
+						</tbody></table>
 					</td>
 				</tr>
 			</tbody>
@@ -277,7 +386,7 @@
 		<!-- ###################################################################################-->
 		<!-- ################################## FOOTER #########################################-->
 		<!-- ###################################################################################-->
-		<p>Page updated: March 21 2016 &nbsp;&nbsp;/&nbsp;&nbsp;
+		<p>Page updated: March 25 2016 &nbsp;&nbsp;/&nbsp;&nbsp;
 		Mail to: <a href="mailto:wolfgang-mehner@web.de">Wolfgang Mehner</a></p>
 	</body>
 </html>
