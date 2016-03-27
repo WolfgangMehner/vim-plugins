@@ -219,6 +219,12 @@
 								</tr>
 							</tbody>
 						</table>
+						<hr>
+						<p>Start <code>gitk</code> with arguments:</p>
+						<pre>:GitK --all</pre>
+						<p>Commands which require user interaction can be started in an external <code>xterm</code> (U*IX)
+						or using the Git Bash (under Windows):</p>
+						<pre>:GitBash add --patch %</pre>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -228,7 +234,11 @@
 					<td><img src="gitsupport/git_menu_file.png"> </td>
 					<td>
 						<h3>Menu <i>File</i> : manage the current file</h3>
-						Acts on the file in the current buffer.
+						<p>Acts on the file in the current buffer.</p>
+						<p>Use the menu to <b>add</b>, <b>checkout</b>, and <b>reset</b> the file.
+						Show the unstaged and staged changes, using <b>diff</b> and <b>diff --cached</b>, respectively.</p>
+						<p>Run <b>blame</b>, which supports ranges.
+						Show the <b>log</b> of the file, which includes the diffstat for every commit.</p>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -284,12 +294,31 @@ Conflicts:
 						<pre>custom -> merge, fast-forward only</pre>
 					</td>
 				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU EDIT ######################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="gitsupport/git_menu_edit.png"> </td>
+					<td>
+						<h3>Menu <i>Edit</i> : jump to config files</h3>
+						<p>Open the config file of the repository in a new window ...</p>
+						<pre>:GitEdit config-local</pre>
+						or open the global one:
+						<pre>:GitEdit config-global</pre>
+						The command <code>:GitEdit</code> has tab-completion.
+						<hr>
+						<p>Jump to the <code>.gitignore</code> file of the repository ...</p>
+						<pre>:GitEdit ignore-local</pre>
+						or the private one <code>.git/info/exclude</code>:
+						<pre>:GitEdit ignore-private</pre>
+					</td>
+				</tr>
 			</tbody>
 		</table>
 		<!-- ###################################################################################-->
 		<!-- ################################## FOOTER #########################################-->
 		<!-- ###################################################################################-->
-		<p>Page updated: February 20 2016 &nbsp;&nbsp;/&nbsp;&nbsp;
+		<p>Page updated: March 27 2016 &nbsp;&nbsp;/&nbsp;&nbsp;
 		Mail to: <a href="mailto:wolfgang-mehner@web.de">Wolfgang Mehner</a></p>
 	</body>
 </html>
