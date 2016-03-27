@@ -1,8 +1,8 @@
-*templatesupport.txt*         MM Template Support                  Mar 06 2016
+*templatesupport.txt*         MM Template Support                  Mar 26 2016
 
 MM Template Support                                        *template-support*
 
-                            Plug-in version 1.0beta
+                             Plug-in version 1.0
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -2497,6 +2497,67 @@ Example: >
 Sets the shortcut for the submenu "Frames", not "Comments".
 
 ------------------------------------------------------------------------------
+                                             *template-support-SetExpansion()*
+Set the menu expansion of the template 'name':
+
+  SetExpansion ( name, expandleft [ , expandright ] ) ~
+
+This changes the way menus for lists are expanded, offering more options than
+the expansion set via the template options (see |template-support-lists-menu|).
+Within 'expandleft' and 'expandright' the following macros are replaced for
+every list entry:
+
+  Value            usage with lists
+ ----------------------------------------------------------------------------
+  *|KEY|*            the list element
+  *|VALUE|*          same as *|KEY|*
+ ----------------------------------------------------------------------------
+
+  Value            usage with dictionaries
+ ----------------------------------------------------------------------------
+  *|KEY|*            the key
+  *|VALUE|*          the value
+ ----------------------------------------------------------------------------
+
+The name of the template appears in the template definition between the first
+pair of == , the menu is part of the name, also whitespaces contained within
+the name.
+
+Example: >
+
+Consider this template definition:
+>
+  == LIST: list_headers == list ==
+    "stdlib",
+    "stdio",
+    "string",
+  == ENDLIST ==
+
+  == Include.standard include == expandmenu, below, sc:g ==
+  |PickList( "header file: ", "list_headers" )|
+  #include <|PICK|.h>
+  == ENDTEMPLATE ==
+<
+For the template a submenu is created with entries:
+  stdlib
+  stdio
+  string
+
+A different list expansion is set using: >
+  SetExpansion ( "Include.global include", "|VALUE|.h" )
+<
+Now the following list is created, *|VALUE|* is replaced for every list entry:
+  stdlib.h
+  stdstdio.h
+  stdstring.h
+
+The name is found in the head of the template:
+>
+  == Include.standard include == below, sc:g ==
+     ^                      ^
+     |------ the name ------|
+<
+------------------------------------------------------------------------------
                                                 *template-support-SetFormat()*
 Set the format of 'item' to 'format':
 
@@ -2560,6 +2621,28 @@ Consider this template definition:
 <
 Then you can set a different map using: >
   SetMap ( "Include.global include", "igl" )
+<
+------------------------------------------------------------------------------
+                                             *template-support-SetMenuEntry()*
+Set the menu entry of the template 'name' to 'entry':
+
+  SetMenuEntry ( name, entry ) ~
+
+This changes the menu entry of the template to 'entry'. By default the name
+itself is used as the menu entry. The name of the template appears in the
+template definition between the first pair of == , the menu is part of the
+name, also whitespaces contained within the name.
+
+Example: >
+
+Consider this template definition:
+>
+  == Include.global include == below, sc:g ==
+     ^                    ^
+     |----- the name -----|
+<
+Then you can set a different menu entry using: >
+  SetMenuEntry ( "Include.global include", "#include <>" )
 <
 ------------------------------------------------------------------------------
                                                   *template-support-SetPath()*
@@ -2872,7 +2955,7 @@ D.  CHANGE LOG                                   *template-support-change-log*
 ==============================================================================
 
 ------------------------------------------------------------------------------
-  RELEASE NOTES FOR VERSION 1.0beta
+  RELEASE NOTES FOR VERSION 1.0
 ------------------------------------------------------------------------------
 
   **  Added a system for introducing changes to the template library.     **
@@ -2894,7 +2977,7 @@ D.  CHANGE LOG                                   *template-support-change-log*
   templates or jumping via <ctrl+j>.
 - Add: Template options "expandleft" and "expandright". Extended the option
   "expandmenu".
-- Add: Functions 'SetMap', 'SetShortcut', and 'SetMenuEntry'.
+- Add: Functions 'SetMap', 'SetShortcut', 'SetMenuEntry', and 'SetExpansion'.
 - Change: If a template is redefined, the options are read again.
 - Change: During the creation of the submenu for a list-picking template, all
   special characters are escaped correctly. (The characters "\" and "|" were

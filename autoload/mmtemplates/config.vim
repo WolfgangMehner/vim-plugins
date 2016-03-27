@@ -42,7 +42,7 @@ if &cp || ( exists('g:TemplatesConfig_Version') && g:TemplatesConfig_Version != 
 	finish
 endif
 
-let s:TemplatesConfig_Version = '1.0beta'     " version number of this script; do not change
+let s:TemplatesConfig_Version = '1.0'     " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 "  --- Find Newest Version ---   {{{2

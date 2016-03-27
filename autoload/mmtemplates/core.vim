@@ -42,7 +42,7 @@ if &cp || ( exists('g:Templates_Version') && g:Templates_Version != 'searching' 
 	finish
 endif
 "
-let s:Templates_Version = '1.0beta'     " version number of this script; do not change
+let s:Templates_Version = '1.0'     " version number of this script; do not change
 "
 "----------------------------------------------------------------------
 "  --- Find Newest Version ---   {{{2
@@ -1385,6 +1385,7 @@ let s:FileReadNameSpace_0_9 = {
 			\ 'SetMap'       : 'ss',
 			\ 'SetShortcut'  : 'ss',
 			\ 'SetMenuEntry' : 'ss',
+			\ 'SetExpansion' : 'sss\?',
 			\
 			\ 'MenuShortcut' : 'ss',
 			\ }
@@ -1605,6 +1606,34 @@ function! s:SetMenuEntry ( name, menu_entry )
 	"
 endfunction    " ----------  end of function s:SetMenuEntry  ----------
 "
+"----------------------------------------------------------------------
+" s:SetExpansion : Set the expansion of a list menu (template function).   {{{2
+"-------------------------------------------------------------------------------
+
+function! s:SetExpansion ( name, expand_left, ... )
+
+	let expand_left = a:expand_left
+	if a:0 >= 1 | let expand_right = a:1
+	else        | let expand_right = ''
+	endif
+
+	" check for valid name and format
+	if ! has_key ( s:library.templates, a:name.'!!type' )
+		return s:ErrorMsg ( 'The template does not exist: '.a:name )
+	endif
+
+	let templ_menu = s:library.templates[ a:name.'!!menu' ]
+
+	if templ_menu.entry != 2
+		let templ_menu.entry        = 2
+		let templ_menu.expand_list  = ''
+	endif
+
+	let templ_menu.expand_left  = expand_left
+	let templ_menu.expand_right = expand_right
+
+endfunction    " ----------  end of function s:SetExpansion  ----------
+
 "----------------------------------------------------------------------
 "  s:IncludeFile : Read a template file (template function).   {{{2
 "----------------------------------------------------------------------
@@ -1912,7 +1941,9 @@ function! s:IncludeFile ( templatefile, ... )
 	call remove ( s:t_runtime.state_stack, -1 )
 	"
 endfunction    " ----------  end of function s:IncludeFile  ----------
-"
+" }}}2
+"----------------------------------------------------------------------
+
 "----------------------------------------------------------------------
 "  mmtemplates#core#ReadTemplates : Read a template file.   {{{1
 "----------------------------------------------------------------------
@@ -4991,8 +5022,8 @@ function! mmtemplates#core#EditTemplateFiles ( library, file )
 	" ==================================================
 	"
 	if ! available
-		" :TODO:18.12.2014 20:01:WM: start setup wizard
-		return
+		return s:ErrorMsg ( 'This template file is not avaiable. Use the wizard to set it up',
+					\ 'or follow the instructions of your plug-in for setting up this file.' )
 	endif
 	"
 	" ==================================================

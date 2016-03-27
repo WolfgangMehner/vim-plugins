@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language: mm template engine : template library
 " Maintainer: Wolfgang Mehner <wolfgang-mehner@web.de>
-" Last Change: 30.08.2014
+" Last Change: 27.03.2016
 " Version: 1.0
 
 if version < 600
@@ -54,6 +54,7 @@ syn match Function  "SetProperty\ze\s*("
 syn match Function  "SetMap\ze\s*("
 syn match Function  "SetShortcut\ze\s*("
 syn match Function  "SetMenuEntry\ze\s*("
+syn match Function  "SetExpansion\ze\s*("
 
 " functions: standard template
 syn match Function  "|\zsDefaultMacro\ze("

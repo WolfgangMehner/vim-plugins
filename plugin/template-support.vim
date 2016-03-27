@@ -39,7 +39,7 @@ endif
 if &cp || ( exists('g:TemplateSupport_Version') && ! exists('g:TemplateSupport_DevelopmentOverwrite') )
 	finish
 endif
-let g:TemplateSupport_Version= '1.0pre'     " version number of this script; do not change
+let g:TemplateSupport_Version= '1.0'     " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " Modul setup.   {{{1
