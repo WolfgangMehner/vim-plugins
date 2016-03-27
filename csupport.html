@@ -67,7 +67,7 @@
 			<tbody>
 				<tr>
 					<td>
-						<img src="csupport/root.png" alt="root menu"><br>
+						<img src="csupport/menu_main.png" alt="root menu"><br>
 						<b>root menu</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					</td>
 					<td>
@@ -134,7 +134,14 @@
 					<td>
 						<h3>Speed-up the development of C/C++ programs:</h3>
 						<ul>
-							<li>FEATURES !!!</li>
+							<li>insert code snippets: comments, statements, functions, regular expressions, ...</li>
+							<li>... which come in an extendible template library</li>
+						</ul>
+						<ul>
+							<li>compile and run the program from within Vim</li>
+							<li>run Splint, Cppcheck, ...</li>
+							<li>quick access to the documentation</li>
+							<li>make, Doxygen, CMake, ... integration</li>
 						</ul>
 					</td>
 				</tr>
@@ -156,9 +163,97 @@
 				<!-- ################################## MENU COMMENTS ##################################-->
 				<!-- ###################################################################################-->
 				<tr>
-					<td><img src="csupport/someimage.png"> </td>
+					<td><img src="csupport/menu_comments.png"> </td>
 					<td>
 						<h3>Menu <i>Comments</i> : insert comments</h3>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU STATEMENTS ################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="csupport/menu_statements.png"> </td>
+					<td>
+						<h3>Menu <i>Statements</i> : insert statements</h3>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU IDIOMS ####################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="csupport/menu_idioms.png"> </td>
+					<td>
+						<h3>Menu <i>Idioms</i> : insert frequently used statements</h3>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU SNIPPETS ##################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="csupport/menu_snippets.png"> </td>
+					<td>
+						<h3>Menu <i>Snippets</i> : insert code snippets and manage templates</h3>
+						<p>The plug-in comes with a facility to extract, manage and insert often used code snippets.
+						Visually select a few lines and use the menu entry <b>write code snippet</b> to write these lines into a file.
+						The code snippet can then be edited and inserted again using <b>read code snippet</b>.</p>
+						<p>(See <a target=_blank href="doc/csupport.html#csupport-snippets">:help csupport-snippets</a>)</p>
+						<hr>
+						<p>The templates which define the behavior of most of the menu entries are also manage here.
+						Use <b>templates setup wizard</b> to create a personalization file with your personal details for the comments.</p>
+						<p>The templates support different coding styles. Use the entry <b>choose style</b> to switch between them.</p>
+						<p>(See <a target=_blank href="doc/csupport.html#csupport-templates">:help csupport-templates</a>)</p>
+						<hr>
+						<p>Pick up function prototypes from one or more lines.
+						Insert the prototypes elsewhere.</p>
+						<p>Mark the following lines and choose <b>pick up func. prototype</b>:</p>
+<pre>
+<span class="type">double</span>
+f3_sub1 (               <span class="comment">// comment  comment comment</span>
+<span class="comment">/* */</span>       <span class="type">double</span> r1,  <span class="comment">/**/ // the first /* ssssss */</span> 
+            <span class="type">double</span> r2 ) <span class="comment">// the second</span> </pre>
+						<p>Now mark these lines and choose <b>pick up func. prototype</b> again:</p>
+<pre>
+<span class="type">int</span> f4_sub1  (  <span class="type">int</span> n1, <span class="comment">/* multi
+                           line
+                           comment */</span>
+
+                <span class="type">int</span> n2, <span class="type">int</span> n3 <span class="comment">/* comment3 */</span> ) </pre>
+						<p>The following lines will be inserted by <b>insert prototype(s)</b>:</p>
+<pre>
+<span class="type">double</span> f3_sub1 ( <span class="type">double</span> r1, <span class="type">double</span> r2 );
+<span class="type">int</span> f4_sub1 ( <span class="type">int</span> n1, <span class="type">int</span> n2, <span class="type">int</span> n3 ); </pre>
+						<p>(See <a target=_blank href="doc/csupport.html#csupport-proto">:help csupport-proto</a>)</p>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU RUN #######################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="csupport/menu_run.png"> </td>
+					<td>
+						<h3>Menu <i>Run</i> : compile and run the program, start debugger, ...</h3>
+						<a href="csupport/run_quickfix.png"><img class="preview_image_3_4" src="csupport/run_quickfix.png"></a>
+						<hr>
+						<a href="csupport/run_buffer.png"><img class="preview_image_3_4" src="csupport/run_buffer.png"></a>
+						<hr>
+						<a href="csupport/run_splint.png"><img class="preview_image_3_4" src="csupport/run_splint.png"></a>
+						<hr>
+						<a href="csupport/run_codecheck.png"><img class="preview_image_3_4" src="csupport/run_codecheck.png"></a>
+					</td>
+				</tr>
+				<!-- ###################################################################################-->
+				<!-- ################################## MENU HELP ######################################-->
+				<!-- ###################################################################################-->
+				<tr>
+					<td><img src="csupport/menu_help.png"> </td>
+					<td>
+						<h3>Menu <i>Help</i> : call help</h3>
+						<p>Help is quickly accessible through the <b>Help</b> menu. Place the cursor on the name of a function ...</p>
+						<pre>
+str<span class="cursor_nrm">c</span>py ( p1, p2 );</pre>
+						<p>then use the entry or the map <b>\hm</b> and the manpage will be displayed in a Vim buffer.</p>
+						<hr>
+						<p>The same works for any word in the English language. Placing the cursor on a word and hitting <b>\he</b> opens a dictionary for the word.</p>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -184,7 +279,7 @@
 		<!-- ###################################################################################-->
 		<!-- ################################## FOOTER #########################################-->
 		<!-- ###################################################################################-->
-		<p>Page updated: February 20 2016 &nbsp;&nbsp;/&nbsp;&nbsp;
+		<p>Page updated: March 27 2016 &nbsp;&nbsp;/&nbsp;&nbsp;
 		Mail to: <a href="mailto:wolfgang-mehner@web.de">Wolfgang Mehner</a></p>
 	</body>
 </html>

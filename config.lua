@@ -172,7 +172,7 @@ config.c = {
 		GITHUB_USER = 'WolfgangMehner',
 		GITHUB_REPO = 'vim-plugins',
 
-		IMG_MAIN_FILE    = 'csupport/root.png',
+		IMG_MAIN_FILE    = 'csupport/menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
 
 		REF_README = 'blob/master/c-support/README.csupport',
