@@ -492,11 +492,14 @@ table.nice_table
  * highlighting for various syntax categories:
  * - comment
  * - cursor (cursor_ins and cursor_nrm)
- * - jumptag (not yellow as Vim uses, since the yellow background looks really bold)
  * - identifier
+ * - jumptag (not yellow as Vim uses, since the yellow background looks really bold)
  * - keyword
  * - preproc
+ * - string
+ * - tag
  * - type
+ * - visual (to represent visual mode)
  *
  * Usage:
  * Place the word within a span:
@@ -540,6 +543,11 @@ span.visual
 span.preproc
 {
 	color:Purple;
+}
+span.string
+{
+	color:Magenta;
+	background-color:#eeeeee;
 }
 span.tag
 {

@@ -106,7 +106,7 @@ config.awk = {
 		IMG_MAIN_FILE    = 'awksupport/menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
 
-		REF_README = 'blob/master/awk-support/README.awksupport',
+		REF_README = 'blob/master/awk-support/README.md',
 		REF_HELP   = config.plugin_links.awk.doc,
 		REF_MAPS   = config.plugin_links.awk.maps,
 	},
@@ -135,7 +135,7 @@ config.bash = {
 		IMG_MAIN_FILE    = 'bashsupport/menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
 
-		REF_README = 'blob/master/bash-support/README.bashsupport',
+		REF_README = 'blob/master/bash-support/README.md',
 		REF_HELP   = config.plugin_links.bash.doc,
 		REF_MAPS   = config.plugin_links.bash.maps,
 	},
@@ -175,7 +175,7 @@ config.c = {
 		IMG_MAIN_FILE    = 'csupport/menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
 
-		REF_README = 'blob/master/c-support/README.csupport',
+		REF_README = 'blob/master/c-support/README.md',
 		REF_HELP   = config.plugin_links.c.doc,
 		REF_MAPS   = config.plugin_links.c.maps,
 	},

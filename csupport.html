@@ -72,7 +72,7 @@
 					</td>
 					<td>
 						<h2>C/C++ Support - Vim Plug-In</h2><h3>( version 6.1.1 )</h3>
-						View the <a target=_blank href="https://github.com/WolfgangMehner/vim-plugins/blob/master/c-support/README.csupport">Readme</a><br>
+						View the <a target=_blank href="https://github.com/WolfgangMehner/vim-plugins/blob/master/c-support/README.md">Readme</a><br>
 						Read the C/C++ Support <a target=_blank href="doc/csupport.html">Help File</a><br>
 						<br>
 						<a target=_blank href="csupport/c-hotkeys.pdf">The key mappings</a> of this plugin (PDF)<br>
@@ -166,6 +166,59 @@
 					<td><img src="csupport/menu_comments.png"> </td>
 					<td>
 						<h3>Menu <i>Comments</i> : insert comments</h3>
+						<p>A lot of the menu entries are defined in a so-called template library.
+						The library defines the menu entries, maps and the inserted text.
+						The personal information can also be configured there.</p>
+						<hr>
+						<p>A file header can be inserted into each new file:</p>
+						<pre>
+<span class="comment">/*
+ * =====================================================================================
+ *
+ *       Filename:  someprogram.c
+ *
+ *    Description:
+ *
+ *        Version:  1.0
+ *        Created:  31.03.2016 10:36
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Wolfgang Mehner (WM), thisguy@doggymail.de
+ *   Organization:
+ *
+ * =====================================================================================
+ */</span></pre>
+						<p>This prolog is generated from the template shown below. This template file can easily be changed by the user.
+						Tags (like <code >|FILENAME|</code>) are replaced when the template is inserted.</p>
+						<pre>
+<span class="type">== Comments.file description impl == map:cfdi, shortcut:c, start, noindent ==</span>
+/*
+ * =====================================================================================
+ *
+ *       Filename:  <span class="tag">|FILENAME|</span>
+ *
+ *    Description:  <span class="tag">&lt;CURSOR></span>
+ *
+ *        Version:  1.0
+ *        Created:  <span class="tag">|DATE|</span> <span class="tag">|TIME|</span>
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  <span class="tag">|AUTHOR|</span> (<span class="tag">|AUTHORREF|</span>), <span class="tag">|EMAIL|</span>
+ *   Organization:  <span class="tag">|ORGANIZATION|</span>
+ *
+ * =====================================================================================
+ */
+
+<span class="type">== ENDTEMPLATE ==</span></pre>
+						<hr>
+						<p>The entry <b>keyword comments &#10142; todo</b> generates a special end-of-line comment.
+						These comments are easily locatable by their keywords (e.g. <b>:TODO:</b>).
+						Date and author reference name are inserted by the editor.</p>
+						<pre>
+<span class="comment"> /* :TODO:29.02.2015 12:34:WM:  */</span></pre>
+						<p>These comments are not for the final version of a script, of course.</p>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -175,6 +228,31 @@
 					<td><img src="csupport/menu_statements.png"> </td>
 					<td>
 						<h3>Menu <i>Statements</i> : insert statements</h3>
+						<p>Insert statements with jump tags for convenient editing, using the entry <b>if block else</b> or via the map <b>\sife</b>:</p>
+						<pre>
+<span class="keyword">if</span> ( <span class="cursor_ins">|</span> ) {
+  <span class="jumptag">&lt;-IF_PART-></span>
+}
+<span class="keyword">else</span> {
+  <span class="jumptag">&lt;-ELSE_PART-></span>
+}</pre>
+						<p>The cursor is positioned after the "if". Use <b>CTRL+J</b> to jump to the tags and start editing.</p>
+						<hr>
+						<p>A lot of menu entires have a special behavior in visual mode. Select some lines in visual mode ...</p>
+						<pre>
+<span class="visual">x = sqrt ( y );</span>
+
+printf ( <span class="string">"%f\n"</span>, x ); </pre>
+						<p>then use the entry <b>if block else</b>. The text is inserted around the selected lines and they are indented:</p>
+						<pre>
+<span class="keyword">if</span> (  ) {
+  x = sqrt ( y );
+}
+<span class="keyword">else</span> {
+
+}
+
+printf ( <span class="string">"%f\n"</span>, x ); </pre>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -184,6 +262,36 @@
 					<td><img src="csupport/menu_idioms.png"> </td>
 					<td>
 						<h3>Menu <i>Idioms</i> : insert frequently used statements</h3>
+						<p>Insert an empty function using <b>function</b>.
+						You will be asks for the name of the function and the following lines will be inserted:</p>
+						<pre>
+<span class="comment">/*
+ * ===  FUNCTION  ======================================================================
+ *         Name:  brain_function
+ *  Description:
+ * =====================================================================================
+ */</span>
+  <span class="type">void</span>
+brain_function ( <span class="jumptag">&lt;+argument_list+></span> )
+{
+  <span class="keyword">return</span> <span class="jumptag">&lt;+return_value+></span>;
+}   <span class="comment">/* -----  end of function brain_function  ----- */</span></pre>
+						<hr>
+						<p>The menu also offers code snippets for important library functions, such as <b>malloc</b>.
+						After prompting for the name of the pointer, the call is inserted with an error check:</p>
+						<pre>
+p_data = malloc ( <span class="keyword">sizeof</span>(<span class="jumptag">&lt;+TYPE+></span>) );
+<span class="keyword">if</span> ( p_data==<span class="string">NULL</span> ) {
+  fprintf ( <span class="string">stderr</span>, <span class="string">"\ndynamic memory allocation failed\n"</span> );
+  exit (<span class="string">EXIT_FAILURE</span>);
+}
+
+free ( p_data );
+p_data = <span class="string">NULL</span>;</pre>
+						<p>Here the template library comes in particularly handy.
+						While we try to provide a sensible standard implementation,
+						which is very useful for quickly written, small programs,
+						you might want to adapt the inserted code to your personal needs.</p>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -193,23 +301,13 @@
 					<td><img src="csupport/menu_snippets.png"> </td>
 					<td>
 						<h3>Menu <i>Snippets</i> : insert code snippets and manage templates</h3>
-						<p>The plug-in comes with a facility to extract, manage and insert often used code snippets.
-						Visually select a few lines and use the menu entry <b>write code snippet</b> to write these lines into a file.
-						The code snippet can then be edited and inserted again using <b>read code snippet</b>.</p>
-						<p>(See <a target=_blank href="doc/csupport.html#csupport-snippets">:help csupport-snippets</a>)</p>
-						<hr>
-						<p>The templates which define the behavior of most of the menu entries are also manage here.
-						Use <b>templates setup wizard</b> to create a personalization file with your personal details for the comments.</p>
-						<p>The templates support different coding styles. Use the entry <b>choose style</b> to switch between them.</p>
-						<p>(See <a target=_blank href="doc/csupport.html#csupport-templates">:help csupport-templates</a>)</p>
-						<hr>
 						<p>Pick up function prototypes from one or more lines.
 						Insert the prototypes elsewhere.</p>
 						<p>Mark the following lines and choose <b>pick up func. prototype</b>:</p>
 <pre>
 <span class="type">double</span>
 f3_sub1 (               <span class="comment">// comment  comment comment</span>
-<span class="comment">/* */</span>       <span class="type">double</span> r1,  <span class="comment">/**/ // the first /* ssssss */</span> 
+<span class="comment">/* */</span>       <span class="type">double</span> r1,  <span class="comment">/**/ // the first /* ssssss */</span>
             <span class="type">double</span> r2 ) <span class="comment">// the second</span> </pre>
 						<p>Now mark these lines and choose <b>pick up func. prototype</b> again:</p>
 <pre>
@@ -223,6 +321,16 @@ f3_sub1 (               <span class="comment">// comment  comment comment</span>
 <span class="type">double</span> f3_sub1 ( <span class="type">double</span> r1, <span class="type">double</span> r2 );
 <span class="type">int</span> f4_sub1 ( <span class="type">int</span> n1, <span class="type">int</span> n2, <span class="type">int</span> n3 ); </pre>
 						<p>(See <a target=_blank href="doc/csupport.html#csupport-proto">:help csupport-proto</a>)</p>
+						<hr>
+						<p>The plug-in comes with a facility to extract, manage and insert often used code snippets.
+						Visually select a few lines and use the menu entry <b>write code snippet</b> to write these lines into a file.
+						The code snippet can then be edited and inserted again using <b>read code snippet</b>.</p>
+						<p>(See <a target=_blank href="doc/csupport.html#csupport-snippets">:help csupport-snippets</a>)</p>
+						<hr>
+						<p>The templates which define the behavior of most of the menu entries are also manage here.
+						Use <b>templates setup wizard</b> to create a personalization file with your personal details for the comments.</p>
+						<p>The templates support different coding styles. Use the entry <b>choose style</b> to switch between them.</p>
+						<p>(See <a target=_blank href="doc/csupport.html#csupport-templates">:help csupport-templates</a>)</p>
 					</td>
 				</tr>
 				<!-- ###################################################################################-->
@@ -232,12 +340,17 @@ f3_sub1 (               <span class="comment">// comment  comment comment</span>
 					<td><img src="csupport/menu_run.png"> </td>
 					<td>
 						<h3>Menu <i>Run</i> : compile and run the program, start debugger, ...</h3>
+						<p>Run the program.
+						In case of errors an error window will be opened to show the current list of errors:</p>
 						<a href="csupport/run_quickfix.png"><img class="preview_image_3_4" src="csupport/run_quickfix.png"></a>
 						<hr>
+						<p>Redirect the output into a Vim buffer:</p>
 						<a href="csupport/run_buffer.png"><img class="preview_image_3_4" src="csupport/run_buffer.png"></a>
 						<hr>
+						<p>Run current buffer through the source code analyser <a target=_blank href="http://www.splint.org">splint</a> and open an error window:</p>
 						<a href="csupport/run_splint.png"><img class="preview_image_3_4" src="csupport/run_splint.png"></a>
 						<hr>
+						<p>Run current buffer through the source code analyser CodeCheck (Trademark of Abraxas Software, Inc.) and open an error window:</p>
 						<a href="csupport/run_codecheck.png"><img class="preview_image_3_4" src="csupport/run_codecheck.png"></a>
 					</td>
 				</tr>
@@ -272,6 +385,10 @@ str<span class="cursor_nrm">c</span>py ( p1, p2 );</pre>
 						... and run from anywhere:
 						<pre>:Make doc</pre>
 						The tool will change the directory and execute the previously chosen makefile, independently of the current working directory.</p>
+						<hr>
+						<p>Similar tools exist for CMake and Doxygen, for their setup
+						see the <a target=_blank href="https://github.com/WolfgangMehner/vim-plugins/blob/master/c-support/README.md#installation">Readme</a></p>
+						or <a target=_blank href="doc/csupport.html#csupport-toolbox">:help csupport-toolbox</a> .</p>
 					</td>
 				</tr>
 			</tbody>
@@ -279,7 +396,7 @@ str<span class="cursor_nrm">c</span>py ( p1, p2 );</pre>
 		<!-- ###################################################################################-->
 		<!-- ################################## FOOTER #########################################-->
 		<!-- ###################################################################################-->
-		<p>Page updated: March 27 2016 &nbsp;&nbsp;/&nbsp;&nbsp;
+		<p>Page updated: April 05 2016 &nbsp;&nbsp;/&nbsp;&nbsp;
 		Mail to: <a href="mailto:wolfgang-mehner@web.de">Wolfgang Mehner</a></p>
 	</body>
 </html>
