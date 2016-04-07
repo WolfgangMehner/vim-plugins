@@ -41,7 +41,7 @@ endif
 if exists("g:C_Version") || &cp
  finish
 endif
-let g:C_Version= "6.2beta"								" version number of this script; do not change
+let g:C_Version= "6.2"								" version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
@@ -515,7 +515,7 @@ function! s:C_InitMenus ()
 		exe ihead.'s&plint<Tab>'.esc_mapl.'rp                           <C-C>:call C_SplintCheck()<CR>:call C_HlMessage()<CR>'
 		exe ahead.'cmd\.\ line\ arg\.\ for\ spl&int<Tab>'.esc_mapl.'rpa      :call C_SplintArguments()<CR>'
 		exe ihead.'cmd\.\ line\ arg\.\ for\ spl&int<Tab>'.esc_mapl.'rpa <C-C>:call C_SplintArguments()<CR>'
-		exe ahead.'-SEP2-                                          :'
+		exe ahead.'-SEP-SPLINT-                                              :'
 	endif
 	"
 	if s:C_CppcheckIsExecutable==1
@@ -530,6 +530,7 @@ function! s:C_InitMenus ()
 		for level in s:CppcheckSeverity
 			exe ahead.'cppcheck\ severity<Tab>'.esc_mapl.'rccs.&'.level.'   :call C_GetCppcheckSeverity("'.level.'")<CR>'
 		endfor
+		exe ahead.'-SEP-CPPCHECK-   :'
 	endif
 	"
 	if s:C_CodeCheckIsExecutable==1
@@ -537,7 +538,7 @@ function! s:C_InitMenus ()
 		exe ihead.'CodeChec&k<Tab>'.esc_mapl.'rk                           <C-C>:call C_CodeCheck()<CR>:call C_HlMessage()<CR>'
 		exe ahead.'cmd\.\ line\ arg\.\ for\ Cod&eCheck<Tab>'.esc_mapl.'rka      :call C_CodeCheckArguments()<CR>'
 		exe ihead.'cmd\.\ line\ arg\.\ for\ Cod&eCheck<Tab>'.esc_mapl.'rka <C-C>:call C_CodeCheckArguments()<CR>'
-		exe ahead.'-SEP3-                                             :'
+		exe ahead.'-SEP-CODECHECK-                                              :'
 	endif
 	"
 	exe ahead.'in&dent<Tab>'.esc_mapl.'ri                                  :call C_Indent()<CR>'
@@ -942,7 +943,7 @@ function! C_CommentToggle () range
 		let line			= getline(linenumber)
 		" ----------  C => C++  ----------
 		if match( line, LineEndCommentC ) >= 0
-			let	line	= substitute( line, '\/\*\s*\(.\{-}\)\*\/', '\/\/ \1', '' )
+			let line = substitute( line, '\/\*\s*\(.\{-}\)\s*\*\/', '\/\/ \1', '' )
 			call setline( linenumber, line )
 			continue
 		endif
@@ -2277,8 +2278,10 @@ function! C_Help( type )
 		setlocal buftype=nofile
 		setlocal noswapfile
 		setlocal bufhidden=delete
-		setlocal filetype=sh		" allows repeated use of <S-F1>
 		setlocal syntax=OFF
+
+		 noremap  <buffer>  <silent>  <S-F1>        :call C_Help("m")<CR>
+		inoremap  <buffer>  <silent>  <S-F1>   <C-C>:call C_Help("m")<CR>
 	endif
 	setlocal	modifiable
 	"
@@ -2331,7 +2334,13 @@ function! C_Help( type )
 			endif
 		endif
 
+		" :WORKAROUND:05.04.2016 21:05:WM: setting the filetype changes the global tabstop,
+		" handle this manually
+		let ts_save = &g:tabstop
+
 		set filetype=man
+
+		let &g:tabstop = ts_save
 
 		" get the width of the newly opened window
 		" and set the width of man's output accordingly

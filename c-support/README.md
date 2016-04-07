@@ -1,4 +1,4 @@
-README for c.vim (Version 6.2) / March 17 2016
+README for c.vim (Version 6.2) / April 07 2016
 ================================================================================
 
   *  INSTALLATION
@@ -210,9 +210,10 @@ RELEASE NOTES FOR VERSION 6.2
   ('g:C_XtermDefaults' still works for backwards compatibility.)
 - Remove unused 'g:C_GuiTemplateBrowser'.
 - Change 'Run -> link' and 'Run -> run', do not produce object file anymore.
+- Add submenu 'Comments -> all sections'.
 - Add submenu 'Preprocessor -> include POSIX header'.
 - New and reworked templates.
-- Minor changes.
+- Minor changes and bugfixes.
 
 
 RELEASE NOTES FOR OLDER VERSIONS

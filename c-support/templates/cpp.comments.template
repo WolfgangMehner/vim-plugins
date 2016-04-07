@@ -125,6 +125,76 @@
 // #####   |PICK|########################################<CURSOR>
 == ENDTEMPLATE ==
 
+== Comments.all sections.implementation, C == below, map:ccc, sc:c ==
+|InsertLine('Comments.C file sections', 'pick', 'HEADER FILE INCLUDES'       )|
+<CURSOR>
+|InsertLine('Comments.C file sections', 'pick', 'LOCAL MACROS'               )|
+
+|InsertLine('Comments.C file sections', 'pick', 'LOCAL TYPE DEFINITIONS'     )|
+
+|InsertLine('Comments.C file sections', 'pick', 'LOCAL DATA TYPES'           )|
+
+|InsertLine('Comments.C file sections', 'pick', 'LOCAL VARIABLES'            )|
+
+|InsertLine('Comments.C file sections', 'pick', 'LOCAL PROTOTYPES'           )|
+
+|InsertLine('Comments.C file sections', 'pick', 'EXP.  FUNCTION DEFINITIONS' )|
+
+|InsertLine('Comments.C file sections', 'pick', 'LOCAL FUNCTION DEFINITIONS' )|
+
+== Comments.all sections.implementation, CPP == below, map:ccp, sc:p ==
+|InsertLine('Comments.C file sections', 'pick', 'HEADER FILE INCLUDES'        )|
+<CURSOR>
+|InsertLine('Comments.C file sections', 'pick', 'LOCAL MACROS'                )|
+
+|InsertLine('Comments.C file sections', 'pick', 'LOCAL TYPE DEFINITIONS'      )|
+
+|InsertLine('Comments.C file sections', 'pick', 'LOCAL DATA TYPES'            )|
+
+|InsertLine('Comments.C file sections', 'pick', 'LOCAL CLASS DEFINITIONS'     )|
+
+|InsertLine('Comments.C file sections', 'pick', 'LOCAL VARIABLES'             )|
+
+|InsertLine('Comments.C file sections', 'pick', 'LOCAL PROTOTYPES'            )|
+
+|InsertLine('Comments.C file sections', 'pick', 'EXP.  FUNCTION DEFINITIONS'  )|
+
+|InsertLine('Comments.C file sections', 'pick', 'LOCAL FUNCTION DEFINITIONS'  )|
+
+|InsertLine('Comments.C file sections', 'pick', 'EXP.  CLASS IMPLEMENTATIONS' )|
+
+|InsertLine('Comments.C file sections', 'pick', 'LOCAL CLASS IMPLEMENTATIONS' )|
+
+== Comments.all sections.header, C == below, map:chc, sc:c ==
+|InsertLine('Comments.H file sections', 'pick', 'HEADER FILE INCLUDES'           )|
+<CURSOR>
+|InsertLine('Comments.H file sections', 'pick', 'EXPORTED MACROS'                )|
+
+|InsertLine('Comments.H file sections', 'pick', 'EXPORTED TYPE DEFINITIONS'      )|
+
+|InsertLine('Comments.H file sections', 'pick', 'EXPORTED DATA TYPES'            )|
+
+|InsertLine('Comments.H file sections', 'pick', 'EXPORTED VARIABLES'             )|
+
+|InsertLine('Comments.H file sections', 'pick', 'EXPORTED FUNCTION DECLARATIONS' )|
+
+== Comments.all sections.header, CPP == below, map:chp, sc:p ==
+|InsertLine('Comments.H file sections', 'pick', 'HEADER FILE INCLUDES'           )|
+<CURSOR>
+|InsertLine('Comments.H file sections', 'pick', 'EXPORTED MACROS'                )|
+
+|InsertLine('Comments.H file sections', 'pick', 'EXPORTED TYPE DEFINITIONS'      )|
+
+|InsertLine('Comments.H file sections', 'pick', 'EXPORTED DATA TYPES'            )|
+
+|InsertLine('Comments.H file sections', 'pick', 'EXPORTED CLASS DEFINITIONS'     )|
+
+|InsertLine('Comments.H file sections', 'pick', 'EXPORTED VARIABLES'             )|
+
+|InsertLine('Comments.H file sections', 'pick', 'EXPORTED FUNCTION DECLARATIONS' )|
+
+== ENDTEMPLATE ==
+
 § -------------------------------------------------------------
 §  keywords, special and macros
 §  date and time
