@@ -58,7 +58,7 @@
 if exists("g:Perl_PluginVersion") || &compatible
   finish
 endif
-let g:Perl_PluginVersion= "5.4beta"
+let g:Perl_PluginVersion= "5.4"
 "
 "===  FUNCTION  ================================================================
 "          NAME:  s:ApplyDefaultSetting     {{{1

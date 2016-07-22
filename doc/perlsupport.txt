@@ -1,4 +1,4 @@
-*perlsupport.txt*                Perl Support                      Mar 13 2016
+*perlsupport.txt*                Perl Support                      Jul 22 2016
 
 Perl Support                                      *perl-support* *perlsupport*
 
@@ -2103,6 +2103,13 @@ pertaining to a specific programming language. It can be set up using a
 wizard, which is run by the map \ntw or the menu entry:
   Perl -> Snippets -> template setup wizard
 
+Further template files can be added using the call: >
+  call mmtemplates#config#Add ( 'perl', '<PATH>/some.templates', 'example', 'nte' )
+The first parameter adds the file to your Perl templates, the second is the
+path. The remaining two optional parameters specify the symbolic name for
+these templates and the map to edit them. The map is '\nte' in this example,
+if the standard mapleader is set.
+
 ------------------------------------------------------------------------------
 5.1  TEMPLATE FILES                              *perlsupport-templates-files*
 ------------------------------------------------------------------------------
@@ -2531,6 +2538,10 @@ for the system
   - Script set executable (file access permission under LINUX/UNIX) ?
   - Script syntax correct ?
   - Necessary modules installed ?
+  - Under Windows, make sure the options 'shell', 'shellcmdflag',
+    'shellquote', and 'shellxquote' are set correctly. If "cmd.exe" is used as
+    the 'shell', 'shellxquote' must be set to a double quote:
+      :set shellxquote=\"
 
 * Some hotkeys (e.g. x-F9) do not work.
   - The hotkeys might be in use by your graphical desktop environment.

@@ -114,10 +114,10 @@ Lua:
 - (DONE) Documentation: Add setup of C API templates.
 
 Perl:
-- 'perldoc' does not print the correct error message if it is not installed.
+- (DONE?) 'perldoc' does not print the correct error message if it is not installed.
 - Documentation: Maps Ctrl+j and Crtl+d.
 - Documentation: Check that maps are introduced properly.
-- Documentation: Adding additional template files.
+- (DONE) Documentation: Adding additional template files.
 - (DONE) Remove old release script.
 
 Vim:
