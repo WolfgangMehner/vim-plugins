@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:GitSupport_Version') && ! exists('g:GitSupport_DevelopmentOverwrite') )
 	finish
 endif
-let g:GitSupport_Version= '0.9.3pre'     " version number of this script; do not change
+let g:GitSupport_Version= '0.9.3'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
@@ -4180,6 +4180,7 @@ function! GitS_PluginSettings( verbose )
 					\ .'     open fold after jump :  "'.g:Git_OpenFoldAfterJump."\"\n"
 					\ .'  status staged open diff :  "'.g:Git_StatusStagedOpenDiff."\"\n\n"
 					\ .'    cmd-line options file :  '.s:Git_CmdLineOptionsFile.file_options_status."\n"
+"					\ .'            commit editor :  "'.g:Git_Editor."\"\n"
 	endif
 	let txt .=
 				\  "________________________________________________________________________________\n"

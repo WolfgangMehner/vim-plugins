@@ -1,4 +1,15 @@
 --------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 0.9.3
+--------------------------------------------------------------------------------
+- Add: The diff buffer can be use to add/reset chunks, added new maps.
+- Add: Extended command-line completion to handle options for Git commands.
+- Add: New maps for the buffer: log
+- Add: Command :GitEdit to quickly jump to configuration files.
+- Change: The status buffer can handle renamed files.
+- Improve syntax highlighting.
+- Minor changes.
+
+--------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.2
 --------------------------------------------------------------------------------
 - Added: Command :GitBash for running interactive Git commands.

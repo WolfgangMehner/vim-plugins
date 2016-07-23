@@ -1,4 +1,4 @@
-README for git-support.vim (Version 0.9.3pre) / September 20 2015
+README for git-support.vim (Version 0.9.3) / July 23 2016
 ================================================================================
 
   *  INSTALLATION
@@ -125,7 +125,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 RELEASE NOTES
 ================================================================================
 
-RELEASE NOTES FOR VERSION 0.9.3pre
+RELEASE NOTES FOR VERSION 0.9.3
 ----------------------------------------------------------------------
 - Add: The diff buffer can be use to add/reset chunks, added new maps.
 - Add: Extended command-line completion to handle options for Git commands.

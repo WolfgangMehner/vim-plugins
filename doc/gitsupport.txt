@@ -1,8 +1,8 @@
-*gitsupport.txt*                  Git Support                      Sep 20 2015
+*gitsupport.txt*                  Git Support                      Jul 23 2016
 
 Git Support                                          *git-support* *gitsupport*
 
-                            Plug-in version 0.9.3pre
+                            Plug-in version 0.9.3
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 

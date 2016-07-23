@@ -75,23 +75,21 @@ C/C++:
   created.
 
 Git:
-- (WM, DONE) Add more suggestions for custom menu entries to 's:Git_CustomMenu'.
-- (WM, DONE) Add current custom menu entries to documentation and/or "git-support/rc/",
+- Add more suggestions for custom menu entries to 's:Git_CustomMenu'.
+- Add current custom menu entries to documentation and/or "git-support/rc/",
   as a starting point for customization.
-- (WM, DONE) Give directory as an argument to ':GitStatus'.
-- (WM, DONE) ':GitStatus' should respect 'status.relativePaths'.
-- (WM) Current method for jumping to Git buffers does not work for tabs.
+- Current method for jumping to Git buffers does not work for tabs.
   * (DONE) Open the buffer in a new window.
   * Optionally: Jump across tab pages.
-- (WM) How about jumping to windows?
+- How about jumping to windows?
   * (DONE) Open the buffer in a new window.
   * Optionally: Jump across tab pages.
-- (WM, DONE?) Problem with 's:OpenFile()':
+- (DONE) Problem with 's:OpenFile()':
   Since the name of the buffer has to match exactly, this does not always work
   with different working directories.
-- (WM, DONE?) Maps for completing Git commands, branches, tags, remotes, ...
+- (DONE) Maps for completing Git commands, branches, tags, remotes, ...
   similar to the cmd-line completion plug-in.
-- (WM) New status buffer output (version > 1.8.5):
+- (DONE) New status buffer output (version > 1.8.5):
   Update syntax highlighting, folding function, file actions
 - (WM) Do not use "sync fromstart" in syntax highlighting,
   is extremely slow for diff and log.
