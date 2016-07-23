@@ -1,4 +1,4 @@
-VimWebsite=~/Programme/VimWebsite/VimPlugins/ CD=. in=project/in.vim out=project/out.vim flags=r {
+VimWebsite=~/Programme/VimWebsite/ CD=. in=project/in.vim out=project/out.vim flags=r {
  .
  project/in.vim
  project/out.vim
