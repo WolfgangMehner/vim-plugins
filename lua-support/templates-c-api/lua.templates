@@ -10,7 +10,7 @@ IncludeFile( 'library_5_2.templates' )
 {
 	{CURSOR}<SPLIT>
 	return 0;
-}		// -----  end of function |FUNCTION_NAME|  -----
+}   // -----  end of function |FUNCTION_NAME|  -----
 == ENDTEMPLATE ==
 
 == Lua.library list == below, map:lll, sc:l ==
@@ -29,7 +29,7 @@ luaopen_|MODULE_NAME:L| ( lua_State *|LUA_STATE| )
 	luaL_newlib ( |LUA_STATE|, |?LIST_NAME| );
 
 	return 1;
-}		// -----  end of function luaopen_|MODULE_NAME:L|  -----
+}   // -----  end of function luaopen_|MODULE_NAME:L|  -----
 == ENDTEMPLATE ==
 
 == SEP: Lua.sep_lib ==

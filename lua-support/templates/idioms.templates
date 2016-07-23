@@ -178,7 +178,7 @@ assert ( io.close ( |FILE_HANDLE| ) )
 == SEP: Idioms.sep_path ==
 
 == Idioms.add to path == below, map:ip, sc:p ==
-package.path = package.path .. ';<CURSOR>/?.lua'
+package.path = '<CURSOR>/?.lua;' .. package.path
 == Idioms.add to path, local modules == below, sc:p ==
 package.path = '<CURSOR>|LUA_LOCAL_MODULES|/?.lua;' .. package.path
 == ENDTEMPLATE ==
