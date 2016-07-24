@@ -1,4 +1,4 @@
-*bashsupport.txt*                Bash Support                      Mar 17 2016
+*bashsupport.txt*                Bash Support                      Jul 24 2016
 
 Bash Support                                      *bash-support* *bashsupport*
 

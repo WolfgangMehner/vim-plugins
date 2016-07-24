@@ -1,4 +1,4 @@
-README for bash-support.vim (Version 4.3) / March 19 2016
+README for bash-support.vim (Version 4.3) / July 24 2016
 ================================================================================
 
   *  INSTALLATION
