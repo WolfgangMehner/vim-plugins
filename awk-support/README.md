@@ -1,4 +1,4 @@
-README for awk-support.vim (Version 1.3) / March 19 2016
+README for awk-support.vim (Version 1.3) / July 24 2016
 ================================================================================
 
   *  INSTALLATION

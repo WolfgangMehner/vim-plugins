@@ -1,4 +1,15 @@
 ---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.3
+---------------------------------------------------------------------------------------
+- Add 'g:Awk_CustomTemplateFile'.
+- Add template personalization file and setup wizard.
+- Change the way lines of code are turned into comments
+  (insert no space after the hash).
+- Change the map for 'comment -> code' to '\co' for consistency with the other
+  plug-ins. The old map '\cu' still works, however.
+- Minor corrections and improvements.
+
+---------------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 1.2
 ---------------------------------------------------------------------------------------
 - Bugfix: Setup of local templates in case of global installation.

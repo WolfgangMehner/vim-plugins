@@ -1039,8 +1039,15 @@ function! Awk_help( type )
 		setlocal syntax=OFF
 	endif
 	setlocal	modifiable
+
+	" :WORKAROUND:05.04.2016 21:05:WM: setting the filetype changes the global tabstop,
+	" handle this manually
+	let ts_save = &g:tabstop
+
 	setlocal filetype=man
-	"
+
+	let &g:tabstop = ts_save
+
 	"-------------------------------------------------------------------------------
 	" open the AWK manual
 	"-------------------------------------------------------------------------------
