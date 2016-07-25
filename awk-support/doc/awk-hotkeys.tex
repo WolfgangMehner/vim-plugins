@@ -50,7 +50,7 @@
 %%----------------------------------------------------------------------
 %%  hyperref
 %%----------------------------------------------------------------------
-\usepackage[ps2pdf]{hyperref}
+\usepackage{hyperref}
 \hypersetup{pdfauthor={Wolfgang Mehner, Germany, wolfgang-mehner@web.de}}
 \hypersetup{pdfkeywords={Vim, Perl}}
 \hypersetup{pdfsubject={Vim-plug-in,  awk-support.vim, hot keys}}
@@ -91,6 +91,7 @@ Key mappings for Vim and gVim.\\
 %%----------------------------------------------------------------------
 \hline 
 \multicolumn{2}{|r|}{\textsl{\textbf{H}elp}}\\[1.0ex]
+\hline \verb'\he'   & English dictionary                     \hfill (n,i)\\
 \hline \verb'\hm'   & display the Awk manual                 \hfill (n,i)\\
 \hline \verb'\hp'   & help (plug-in)                         \hfill (n,i)\\
 \hline 
@@ -165,33 +166,6 @@ Key mappings for Vim and gVim.\\
 \hline \verb'\fa ' & \texttt{isarray()}                      \hfill (n, i, v)\\
 \hline
 %%----------------------------------------------------------------------
-%%  snippet menu
-%%----------------------------------------------------------------------
-\hline
-\multicolumn{2}{|r|}{\textsl{S\textbf{n}ippet}}                \\[1.0ex]
-\hline \verb'\nr'  & read code snippet         \hfill (n, i)   \\
-\hline \verb'\nv'  & view code snippet         \hfill (n, i)   \\
-\hline \verb'\nw'  & write code snippet        \hfill (n, i, v)\\
-\hline \verb'\ne'  & edit code snippet         \hfill (n, i)   \\
-%
-\hline     \verb'\ntl' & edit local templates      \hfill (n, i)\\
-\hline     \verb'\ntc' & edit custom templates     \hfill (n, i)\\
-\hline     \verb'\ntp' & edit personal templates   \hfill (n, i)\\
-\hline     \verb'\ntr' & reread the templates      \hfill (n, i)\\
-\hline     \verb'\ntw' & template setup wizard     \hfill (n, i)\\
-\hline     \verb'\nts' & choose template style     \hfill (n, i)\\
-\hline
-%
-\end{tabular}\\
-%%~~~~~ TABULAR :  end  ~~~~~~~~~~
-%
-%%======================================================================
-%%  table, right part				[[[1
-%%======================================================================
-%
-%%~~~~~ TABULAR : begin ~~~~~~~~~~
-\begin{tabular}[]{|p{11mm}|p{62mm}|}
-%%----------------------------------------------------------------------
 %%  menu regex menu
 %%----------------------------------------------------------------------
 \hline
@@ -211,6 +185,33 @@ Key mappings for Vim and gVim.\\
 \multicolumn{2}{|r|}{\textsl{\textbf{S}pecial Variables}}            \\[1.0ex]
 \hline \verb'\va'   & built-in variables, auto-set        \hfill (n, i)\\
 \hline \verb'\vm'   & built-in variables, user-modifiable \hfill (n, i)\\
+\hline
+%
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%======================================================================
+%%  table, right part				[[[1
+%%======================================================================
+%
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{62mm}|}
+%%----------------------------------------------------------------------
+%%  snippet menu
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{S\textbf{n}ippet}}                \\[1.0ex]
+\hline \verb'\nr'  & read code snippet         \hfill (n, i)   \\
+\hline \verb'\nv'  & view code snippet         \hfill (n, i)   \\
+\hline \verb'\nw'  & write code snippet        \hfill (n, i, v)\\
+\hline \verb'\ne'  & edit code snippet         \hfill (n, i)   \\
+%
+\hline     \verb'\ntl' & edit local templates      \hfill (n, i)\\
+\hline     \verb'\ntc' & edit custom templates     \hfill (n, i)\\
+\hline     \verb'\ntp' & edit personal templates   \hfill (n, i)\\
+\hline     \verb'\ntr' & reread the templates      \hfill (n, i)\\
+\hline     \verb'\ntw' & template setup wizard     \hfill (n, i)\\
+\hline     \verb'\nts' & choose template style     \hfill (n, i)\\
 \hline
 %%----------------------------------------------------------------------
 %%  menu run

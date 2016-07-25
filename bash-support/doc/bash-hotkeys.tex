@@ -51,7 +51,7 @@
 %%----------------------------------------------------------------------
 %%  hyperref
 %%----------------------------------------------------------------------
-\usepackage[ps2pdf]{hyperref}
+\usepackage{hyperref}
 \hypersetup{pdfauthor={Wolfgang Mehner, Germany, wolfgang-mehner@web.de}}
 \hypersetup{pdfkeywords={Vim, Perl}}
 \hypersetup{pdfsubject={Vim-plug-in,  bash-support.vim, hot keys}}
@@ -84,11 +84,22 @@ Key mappings for Vim and gVim.\\
 %%======================================================================
 %%  table, left part				[[[1
 %%======================================================================
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{60mm}|}
+%%----------------------------------------------------------------------
+%%  menu Help				[[[2
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{H}elp}}\\[1.0ex]
+\hline \verb'\he'   & English dictionary                \hfill (n,i)\\
+\hline \verb'\hb'   & display the Bash manual           \hfill (n,i)\\
+\hline \verb'\hh'   & help (Bash builtins)              \hfill (n,i)\\
+\hline \verb'\hm'   & show manual (cmd. line utilities) \hfill (n,i)\\
+\hline \verb'\hp'   & help (plug-in)                    \hfill (n,i)\\
+\hline
 %%----------------------------------------------------------------------
 %%  main menu				[[[2
 %%----------------------------------------------------------------------
-%%~~~~~ TABULAR : begin ~~~~~~~~~~
-\begin{tabular}[]{|p{11mm}|p{60mm}|}
 \hline 
 \multicolumn{2}{|r|}{\textsl{\textbf{B}ash}}\\[1.0ex]
 \hline \verb'\bps'   & \textbf{p}arameter \textbf{s}ubstitution (list) \hfill (n, i)\\
@@ -115,6 +126,28 @@ Key mappings for Vim and gVim.\\
 \hline     \verb'\ch'   & file header                       \hfill (n, i)\\
 \hline     \verb'\cd'   & date                              \hfill (n, i)\\
 \hline     \verb'\ct'   & date \& time                      \hfill (n, i)\\
+\hline
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+\vfill
+%
+\begin{minipage}[b]{75mm}%
+\scriptsize{%
+\vspace{1mm}
+%\hrulefill\\
+$^1$ {Linux/U**x only}\\
+$^2$ {GUI only}
+}%
+\end{minipage}\\
+%
+%%======================================================================
+%%  table, middle part				[[[1
+%%======================================================================
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{60mm}|}
+\hline
+	\multicolumn{2}{|r|}{\textsl{\textbf{C}omments (cont)}}                       \\[1.0ex]
 \hline     \verb'\css'  & script sections                   \hfill (n, i)\\
 \hline     \verb'\ckc'  & keyword comments                  \hfill (n, i)\\
 \hline     \verb'\cma'  & plug-in macros                    \hfill (n, i)\\
@@ -122,17 +155,9 @@ Key mappings for Vim and gVim.\\
 \hline     \verb'\ce'   & \texttt{echo} "\textsl{actual line}"  \hfill (n, i)\\
 \hline     \verb'\cr'   & remove \texttt{echo} from actual line \hfill (n, i)\\
 \hline
-\end{tabular}\\
-%%~~~~~ TABULAR :  end  ~~~~~~~~~~
-%
-%%======================================================================
-%%  table, middle part				[[[1
-%%======================================================================
 %%----------------------------------------------------------------------
 %%  menu Statements				[[[2
 %%----------------------------------------------------------------------
-%%~~~~~ TABULAR : begin ~~~~~~~~~~
-\begin{tabular}[]{|p{11mm}|p{60mm}|}
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{S}tatements}}                    \\[1.0ex]
 \hline \verb'\sc'  & \verb'case in ... esac'               \hfill (n, i)\\
@@ -173,6 +198,14 @@ Key mappings for Vim and gVim.\\
 \hline \verb'\tm'  & string matches regexp             \hfill (n, i)\\
 \hline
 %%
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%======================================================================
+%%  table, right part				[[[1
+%%======================================================================
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{62mm}|}
 %%----------------------------------------------------------------------
 %%  menu IO-Redirection				[[[2
 %%----------------------------------------------------------------------
@@ -182,17 +215,9 @@ Key mappings for Vim and gVim.\\
 \hline \verb'\ioh'   & here-document                    \hfill (n, i)\\
 \hline
 %
-\end{tabular}\\
-%%~~~~~ TABULAR :  end  ~~~~~~~~~~
-%
-%%======================================================================
-%%  table, right part				[[[1
-%%======================================================================
 %%----------------------------------------------------------------------
 %%  menu Pattern Matching				[[[2
 %%----------------------------------------------------------------------
-%%~~~~~ TABULAR : begin ~~~~~~~~~~
-\begin{tabular}[]{|p{11mm}|p{62mm}|}
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{P}attern Matching}}     \\[1.0ex]
 \hline     \verb'pzo' & zero or one,      \verb' ?( | )'  \hfill (n, i)\\ 
@@ -238,29 +263,8 @@ Key mappings for Vim and gVim.\\
 \hline \verb'\rx'  & set xterm size$^{1,2}$               \hfill (n, i)\\
 \hline \verb'\ro'  & change output destination            \hfill (n, i)\\
 \hline
-%%----------------------------------------------------------------------
-%%  menu Help				[[[2
-%%----------------------------------------------------------------------
-\hline 
-\multicolumn{2}{|r|}{\textsl{\textbf{H}elp}}\\[1.0ex]
-\hline \verb'\hb'   & display the Bash manual           \hfill (n,i)\\
-\hline \verb'\hh'   & help (Bash builtins)              \hfill (n,i)\\
-\hline \verb'\hm'   & show manual (cmd. line utilities) \hfill (n,i)\\
-\hline \verb'\hp'   & help (plug-in)                    \hfill (n,i)\\
-\hline 
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
-%
-\vfill
-%
-\begin{minipage}[b]{75mm}%
-\scriptsize{%
-\vspace{2mm}
-%\hrulefill\\
-$^1$ {Linux/U**x only}\\
-$^2$ {GUI only}
-}%
-\end{minipage}\\
 %
 %
 \end{center}%
