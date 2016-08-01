@@ -1,4 +1,4 @@
-*vimsupport.txt*                 Vim Support                       Mar 17 2016
+*vimsupport.txt*                 Vim Support                       Jul 23 2016
 
 Vim Support                                         *vim-support* *vimsupport*
 
@@ -715,6 +715,13 @@ support this feature, so it should only contain basic information not
 pertaining to a specific programming language. It can be set up using a
 wizard, which is run by the map \ntw or the menu entry:
   Vim -> Snippets -> template setup wizard
+
+Further template files can be added using the call: >
+  call mmtemplates#config#Add ( 'vim', '<PATH>/some.templates', 'example', 'nte' )
+The first parameter adds the file to your VimL templates, the second is the
+path. The remaining two optional parameters specify the symbolic name for
+these templates and the map to edit them. The map is '\nte' in this example,
+if the standard mapleader is set.
 
 ------------------------------------------------------------------------------
 4.1  TEMPLATE FILES                               *vimsupport-templates-files*

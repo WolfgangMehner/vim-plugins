@@ -1,4 +1,4 @@
-README for vim-support.vim (Version 2.4) / March 17 2016
+README for vim-support.vim (Version 2.4) / July 23 2016
 ================================================================================
 
 [INSTALLATION][sec_install]

@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 2.4
+---------------------------------------------------------------------------------------
+- Add 'g:Vim_CustomTemplateFile'.
+- Add template personalization file and setup wizard.
+- Change the map for 'comment -> code' to '\co' for consistency with the other
+  plug-ins. The old map '\cu' still works, however.
+- New and reworked templates.
+- Minor changes.
+
+---------------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 2.3
 ---------------------------------------------------------------------------------------
 + Change the way lines of code are turned into comments
