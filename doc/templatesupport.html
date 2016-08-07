@@ -7,11 +7,11 @@
 <body>
 <h2>TEMPLATESUPPORT</h2>
 <pre>
-<b class="vimtag"><a name="templatesupport.txt">templatesupport.txt</a></b>         MM Template Support                 July 19 2015
+<b class="vimtag"><a name="templatesupport.txt">templatesupport.txt</a></b>         MM Template Support                  Mar 26 2016
 
 MM Template Support                                        <b class="vimtag"><a name="template-support">template-support</a></b>
 
-                            Plug-in version 1.0alpha
+                             Plug-in version 1.0
                         for Vim version 7.0 and above
                  Wolfgang Mehner <code class="special">&lt;wolfgang-mehner at web.de&gt;</code>
 
@@ -96,6 +96,7 @@ Here is a list of high profile plug-ins which use the template support:
  C.2    List                                 |<a href="templatesupport.html#template-support-opt-list">template-support-opt-list</a>|
  D.    Change Log                            |<a href="templatesupport.html#template-support-change-log">template-support-change-log</a>|
  D.1    Interface Versions                   |<a href="templatesupport.html#template-support-change-interf">template-support-change-interf</a>|
+ D.2    API Versions                         |<a href="templatesupport.html#template-support-change-api">template-support-change-api</a>|
  E.    Credits                               |<a href="templatesupport.html#template-support-credits">template-support-credits</a>|
 
 </pre><hr><pre>
@@ -459,17 +460,24 @@ The replacements for various macros are handled automatically by the template
 support. Mostly, they will help with the basic documentation of the file: What
 was edited and when?
 
-	<b class="vimtag"><a name="|PATH|">|PATH|</a></b>     : the path of the current file
-	<b class="vimtag"><a name="|FILENAME|">|FILENAME|</a></b> : the name of the file
-	<b class="vimtag"><a name="|BASENAME|">|BASENAME|</a></b> : the name of the file without the suffix
-	<b class="vimtag"><a name="|SUFFIX|">|SUFFIX|</a></b>   : the suffix of the file
+  <b class="vimtag"><a name="|PATH|">|PATH|</a></b>     : the path of the current file
+  <b class="vimtag"><a name="|FILENAME|">|FILENAME|</a></b> : the name of the file
+  <b class="vimtag"><a name="|BASENAME|">|BASENAME|</a></b> : the name of the file without the suffix
+  <b class="vimtag"><a name="|SUFFIX|">|SUFFIX|</a></b>   : the suffix of the file
 
 Except for using flags, the user has no further influence on the replacements
 of these macros, they can not be set via SetMacro().
 
-	<b class="vimtag"><a name="|TIME|">|TIME|</a></b>     : the current time
-	<b class="vimtag"><a name="|DATE|">|DATE|</a></b>     : the current date
-	<b class="vimtag"><a name="|YEAR|">|YEAR|</a></b>     : the current year
+  <b class="vimtag"><a name="|TIME|">|TIME|</a></b>     : the current time
+  <b class="vimtag"><a name="|DATE|">|DATE|</a></b>     : the current date
+  <b class="vimtag"><a name="|YEAR|">|YEAR|</a></b>     : the current year
+
+Further macros can be used to print "pretty" dates in READMEs and other
+documentation.
+
+  <b class="vimtag"><a name="|DATE_PRETTY|">|DATE_PRETTY|</a></b>  <b class="vimtag"><a name="|DATE_PRETTY1|">|DATE_PRETTY1|</a></b>
+  <b class="vimtag"><a name="|DATE_PRETTY2|">|DATE_PRETTY2|</a></b> <b class="vimtag"><a name="|DATE_PRETTY3|">|DATE_PRETTY3|</a></b>
+  <b class="vimtag"><a name="|TIME_PRETTY|">|TIME_PRETTY|</a></b>  <b class="vimtag"><a name="|YEAR_PRETTY|">|YEAR_PRETTY|</a></b>
 
 The format of the inserted dates and times can be set via SetFormat (see
 |<code class="badlink">template-support-SetFormat</code>|).
@@ -1338,6 +1346,8 @@ session. The variables can be set in the .vimrc file.
 
   Variable                    Default     Description and further information
  ----------------------------------------------------------------------------
+  |<a href="templatesupport.html#g:Templates_OverwriteWarning">g:Templates_OverwriteWarning</a>|'no'        whether to print a warning when
+                                          a template is overwritten
   |<a href="templatesupport.html#g:Templates_MapInUseWarn">g:Templates_MapInUseWarn</a>|    'yes'       whether to print a warning when
                                           maps would overwrite existing maps
   |<a href="templatesupport.html#g:Templates_TemplateBrowser">g:Templates_TemplateBrowser</a>| 'explore'   how to browse template files
@@ -1359,6 +1369,11 @@ session. The variables can be set in the .vimrc file.
 the Windows defaults are as follows:
   |<a href="templatesupport.html#g:Templates_InternetBrowserExec">g:Templates_InternetBrowserExec</a>|    - C:\Program Files\Mozilla Firefox\
                                        firefox.exe
+
+</pre><hr><pre>                                                <b class="vimtag"><a name="g:Templates_OverwriteWarning">g:Templates_OverwriteWarning</a></b>
+Whenever a template is overwritten, a warning can be printed. This warning is
+disable by default. It can be enabled by adding this setting to the ".vimrc":
+<code class="example">  let g:Templates_OverwriteWarning = 'yes'</code>
 
 </pre><hr><pre>                                                    <b class="vimtag"><a name="g:Templates_MapInUseWarn">g:Templates_MapInUseWarn</a></b>
 Whenever a map configured in a template library would overwrite a map which is
@@ -1449,13 +1464,17 @@ insert templates into a buffer. A further function expands macros in a text.
 </pre><hr><pre>                                               <b class="vimtag"><a name="mmtemplates%23core%23NewLibrary()">mmtemplates#core#NewLibrary()</a></b>
 To create a new template library call:
 
-<code class="section">	library = mmtemplates#core#NewLibrary ( ... ) </code>
+<code class="section">  library = mmtemplates#core#NewLibrary ( ... ) </code>
 
 Optional parameters:
-	"debug", level      - View debug information with the given level of detail.
-	                      (integer, default: show no debug information)
+  "api_version", vers - the API version to use (string, default "0.9")
+  "debug", level      - View debug information with the given level of detail.
+                        (integer, default: show no debug information)
 Returns:
-	library - The template library. (dict)
+  library - The template library. (dict)
+
+The API version parameter can be used to enable new behavior which is not
+backwards compatible, see |<a href="templatesupport.html#template-support-change-api">template-support-change-api</a>|.
 
 Example:
 
@@ -1973,7 +1992,7 @@ For "add" and "set" 'rval' is undefined.
 Macros:
 
 Setting the special macros "DATE", "TIME", and "YEAR" changes the format of
-the date and time. they use the same format as the function |<code class="badlink">strftime()</code>|.
+the date and time. They use the same format as the function |<code class="badlink">strftime()</code>|.
 Setting "BASENAME", "FILENAME", "PATH" and "SUFFIX" has no effect.
 
 Properties:
@@ -2388,18 +2407,92 @@ Example:
 <code class="example">	MenuShortcut ( "Comments.Frames.", "r" )</code>
 Sets the shortcut for the submenu "Frames", not "Comments".
 
+</pre><hr><pre>                                             <b class="vimtag"><a name="template-support-SetExpansion()">template-support-SetExpansion()</a></b>
+Set the menu expansion of the template 'name':
+
+<code class="section">  SetExpansion ( name, expandleft [ , expandright ] ) </code>
+
+This changes the way menus for lists are expanded, offering more options than
+the expansion set via the template options (see |<a href="templatesupport.html#template-support-lists-menu">template-support-lists-menu</a>|).
+Within 'expandleft' and 'expandright' the following macros are replaced for
+every list entry:
+
+  Value            usage with lists
+ ----------------------------------------------------------------------------
+  <b class="vimtag"><a name="|KEY|">|KEY|</a></b>            the list element
+  <b class="vimtag"><a name="|VALUE|">|VALUE|</a></b>          same as <b class="vimtag"><a name="|KEY|">|KEY|</a></b>
+ ----------------------------------------------------------------------------
+
+  Value            usage with dictionaries
+ ----------------------------------------------------------------------------
+  <b class="vimtag"><a name="|KEY|">|KEY|</a></b>            the key
+  <b class="vimtag"><a name="|VALUE|">|VALUE|</a></b>          the value
+ ----------------------------------------------------------------------------
+
+The name of the template appears in the template definition between the first
+pair of == , the menu is part of the name, also whitespaces contained within
+the name.
+
+Example:
+<code class="example"></code>
+Consider this template definition:
+
+<code class="example">  == LIST: list_headers == list ==</code>
+<code class="example">    "stdlib",</code>
+<code class="example">    "stdio",</code>
+<code class="example">    "string",</code>
+<code class="example">  == ENDLIST ==</code>
+<code class="example"></code>
+<code class="example">  == Include.standard include == expandmenu, below, sc:g ==</code>
+<code class="example">  |<code class="badlink">PickList( "header file: ", "list_headers" )</code>|</code>
+<code class="example">  #include &lt;|<code class="badlink">PICK</code>|.h&gt;</code>
+<code class="example">  == ENDTEMPLATE ==</code>
+
+For the template a submenu is created with entries:
+  stdlib
+  stdio
+  string
+
+A different list expansion is set using:
+<code class="example">  SetExpansion ( "Include.global include", "|<code class="badlink">VALUE</code>|.h" )</code>
+
+Now the following list is created, <b class="vimtag"><a name="|VALUE|">|VALUE|</a></b> is replaced for every list entry:
+  stdlib.h
+  stdstdio.h
+  stdstring.h
+
+The name is found in the head of the template:
+
+<code class="example">  == Include.standard include == below, sc:g ==</code>
+<code class="example">     ^                      ^</code>
+<code class="example">     |<code class="badlink">------ the name ------</code>|</code>
+
 </pre><hr><pre>                                                <b class="vimtag"><a name="template-support-SetFormat()">template-support-SetFormat()</a></b>
 Set the format of 'item' to 'format':
 
 <code class="section">	SetFormat ( item, format ) </code>
 
-This changes the way the macros "TIME", "DATE" and "YEAR" are replaced. It
-sets the format of the date and time. They use the same format as the function
-|<code class="badlink">strftime()</code>|.
+This changes the way the time and date macros are formatted:
+  DATE  DATE_PRETTY  DATE_PRETTY1
+  TIME  TIME_PRETTY  DATE_PRETTY2
+  YEAR  YEAR_PRETTY  DATE_PRETTY3
+They use the same format as the function |<code class="badlink">strftime()</code>|, also see the manpage of
+strftime(3).
+
+The locale can be set by calling the function with "TIME_LOCALE":
+<code class="example">	SetFormat ( "TIME_LOCALE", "fr_FR" )</code>
+Under Linux, run 'locale -a' to see all locales your system supports, compare
+the manpage of locale(1) and |<code class="badlink">:language</code>|.
 
 Example:
+<code class="example"></code>
+Change the format of <b class="vimtag"><a name="|TIME|">|TIME|</a></b> to only hours and minutes:
 <code class="example">	SetFormat ( "TIME", "%H:%M" )</code>
 The macro <b class="vimtag"><a name="|TIME|">|TIME|</a></b> will now be replaced by something like 10:24.
+
+Change the locale to Spanish:
+<code class="example">	SetFormat ( "TIME_LOCALE", "es_ES" )</code>
+The names of the days, month, ... will now be in Spanish.
 
 </pre><hr><pre>                                                 <b class="vimtag"><a name="template-support-SetMacro()">template-support-SetMacro()</a></b>
 Set the macro 'name' to 'text':
@@ -2435,6 +2528,27 @@ Consider this template definition:
 
 Then you can set a different map using:
 <code class="example">  SetMap ( "Include.global include", "igl" )</code>
+
+</pre><hr><pre>                                             <b class="vimtag"><a name="template-support-SetMenuEntry()">template-support-SetMenuEntry()</a></b>
+Set the menu entry of the template 'name' to 'entry':
+
+<code class="section">  SetMenuEntry ( name, entry ) </code>
+
+This changes the menu entry of the template to 'entry'. By default the name
+itself is used as the menu entry. The name of the template appears in the
+template definition between the first pair of == , the menu is part of the
+name, also whitespaces contained within the name.
+
+Example:
+<code class="example"></code>
+Consider this template definition:
+
+<code class="example">  == Include.global include == below, sc:g ==</code>
+<code class="example">     ^                    ^</code>
+<code class="example">     |<code class="badlink">----- the name -----</code>|</code>
+
+Then you can set a different menu entry using:
+<code class="example">  SetMenuEntry ( "Include.global include", "#include <code class="special">&lt;&gt;</code>" )</code>
 
 </pre><hr><pre>                                                  <b class="vimtag"><a name="template-support-SetPath()">template-support-SetPath()</a></b>
 Set the resource 'name' to the given path.
@@ -2724,7 +2838,7 @@ Interpretation:
 
 </pre><hr><pre>D.  CHANGE LOG                                   <b class="vimtag"><a name="template-support-change-log">template-support-change-log</a></b>
 </pre><hr><pre>
-</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 1.0alpha
+</pre><hr><pre>  RELEASE <code class="note">NOTE</code>S FOR VERSION 1.0
 </pre><hr><pre>
   **  Added a system for introducing changes to the template library.     **
   **  By default, all template libraries will be limited to the features  **
@@ -2737,6 +2851,7 @@ Interpretation:
   for that filetype.
 - Add: Format specifiers for macros.
 - Add: New "replacement cursor" tags <code class="special">&lt;RCURSOR&gt;</code> and <code class="special">{RCURSOR}</code>.
+- Add: New date and time macros <b class="vimtag"><a name="|DATE_PRETTY|">|DATE_PRETTY|</a></b> , <b class="vimtag"><a name="|TIME_PRETTY|">|TIME_PRETTY|</a></b> , ...
 - Add: Left-right separators <b class="vimtag"><a name="|%3C%3C%3E%3E|">|&lt;&lt;&gt;&gt;|</a></b> .
 - Add: New jump tags [+NAME+] and [-NAME-] for optional parameters.
 - Add: New map <code class="special">&lt;ctrl-d&gt;</code> to delete optional jump tags [+NAME+] and [-NAME-].
@@ -2744,7 +2859,7 @@ Interpretation:
   templates or jumping via <code class="special">&lt;ctrl+j&gt;</code>.
 - Add: Template options "expandleft" and "expandright". Extended the option
   "expandmenu".
-- Add: Functions 'SetMap', 'SetShortcut', and 'SetMenuEntry'.
+- Add: Functions 'SetMap', 'SetShortcut', 'SetMenuEntry', and 'SetExpansion'.
 - Change: If a template is redefined, the options are read again.
 - Change: During the creation of the submenu for a list-picking template, all
   special characters are escaped correctly. (The characters "\" and "|" were
@@ -2752,6 +2867,8 @@ Interpretation:
 - Change: Inserting templates in visual mode does not overwrite the unnamed
   register anymore.
 - Fix: Map creation could fail after reloading the template library.
+- Add: User setting |<a href="templatesupport.html#g:Templates_OverwriteWarning">g:Templates_OverwriteWarning</a>| to configure warnings in
+  case a template is overwritten.
 - Add: User setting |<a href="templatesupport.html#g:Templates_TemplateBrowser">g:Templates_TemplateBrowser</a>| to configure the browser
   used for editing templates.
 - Add: User settings |<a href="templatesupport.html#g:Templates_PersonalizationFile">g:Templates_PersonalizationFile</a>| and
@@ -2903,6 +3020,24 @@ See also |<a href="templatesupport.html#template-support-lib-interf">template-su
 - Initial version of the interface with all changes introduced prior to
   version "1.0".
 
+</pre><hr><pre>D.2  API VERSIONS                                <b class="vimtag"><a name="template-support-change-api">template-support-change-api</a></b>
+</pre><hr><pre>
+The API version governs the behavior of the API, and is used to enable
+features which are not backwards compatible. The API version is set when
+calling |<a href="templatesupport.html#mmtemplates%23core%23NewLibrary()">mmtemplates#core#NewLibrary()</a>|. This only concerns plug-in
+developers.
+
+</pre><hr><pre>  API VERSION 1.0
+</pre><hr><pre>
+- When calling |<a href="templatesupport.html#mmtemplates%23core%23CreateMenus()">mmtemplates#core#CreateMenus()</a>|, the menu names supplied with
+  the options "existing_menus", "sub_menu", and "specials_menu" must now be
+  correctly escaped for menu creation.
+
+</pre><hr><pre>  API VERSION 0.9
+</pre><hr><pre>
+- Initial version of the API with all changes introduced prior to version
+  "1.0".
+
 </pre><hr><pre>E.  CREDITS                                         <b class="vimtag"><a name="template-support-credits">template-support-credits</a></b>
 </pre><hr><pre>
 Fritz Mehner (vim.org user name: mehner):
@@ -2920,6 +3055,6 @@ Andrew L:
 
 </pre><hr><pre>vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
 </pre>
-<p><i>Generated by vim2html (modified) on Sa 26. Dez 15:03:11 CET 2015</i></p>
+<p><i>Generated by vim2html (modified) on So 7. Aug 16:09:57 CEST 2016</i></p>
 </body>
 </html>

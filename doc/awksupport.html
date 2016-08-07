@@ -7,13 +7,14 @@
 <body>
 <h2>AWKSUPPORT</h2>
 <pre>
-<b class="vimtag"><a name="awksupport.txt">awksupport.txt</a></b>                Awk Support                    April 21 2014
+<b class="vimtag"><a name="awksupport.txt">awksupport.txt</a></b>                 Awk Support                       Jul 24 2016
 
 Awk Support                                         <b class="vimtag"><a name="awk-support">awk-support</a></b> <b class="vimtag"><a name="awksupport">awksupport</a></b>
-                              Plugin version 1.2
+
+                             Plug-in version 1.3
                         for Vim version 7.0 and above
-                  Fritz Mehner  <code class="special">&lt;mehner.fritz at fh-swf.de&gt;</code>
-                Wolfgang Mehner  <code class="special">&lt;wolfgang-mehner at web.de&gt;</code>
+                   Wolfgang Mehner <code class="special">&lt;wolfgang-mehner@web.de&gt;</code>
+                      Fritz Mehner <code class="special">&lt;mehner.fritz@web.de&gt;</code>
 
 Awk Support implements an Awk-IDE for Awk/gAwk. It is written to considerably
 speed up writing Awk script code in a consistent style. This is done by
@@ -134,7 +135,7 @@ n\cj.
 1.1.3  COMMENT/UNCOMMENT                              <b class="vimtag"><a name="awksupport-comm-uncomm">awksupport-comm-uncomm</a></b>
 </pre><hr><pre>The comment sign # can be set or removed at the beginning of the current line
 or for a marked block using the menu items 'comment' (or \cc) and 'uncomment'
-(or \cu).  A single line needs not to be marked (normal mode, insert mode).
+(or \co). A single line needs not to be marked (normal mode, insert mode).
 
 A marked block
 
@@ -144,9 +145,9 @@ A marked block
 
 will be changed into (and vice versa)
 
-<code class="example"> #  x = 33                                     # this is x</code>
-<code class="example"> #  y = 44                                     # and y</code>
-<code class="example"> #  z = 55                                     # and now z</code>
+<code class="example"> #x = 33                                     # this is x</code>
+<code class="example"> #y = 44                                     # and y</code>
+<code class="example"> #z = 55                                     # and now z</code>
 
 1.1.4 FRAME COMMENTS, FILE HEADER, ...             <b class="vimtag"><a name="awksupport-comm-templates">awksupport-comm-templates</a></b>
 </pre><hr><pre>
@@ -319,14 +320,21 @@ The default value is 'gui'.
 contained within template files and can be changed by the user to meet their
 requirements (see|<a href="awksupport.html#awksupport-templates">awksupport-templates</a>|on how to use the template system).
 
-The menu item 'edit templates' opens the main template file in a local plugin
-installation. This is usually the file
-'$HOME/.vim/awk-support/templates/Templates'.  There may be dependent files
-loaded from the main file.  Now change whatever file you want, save it, and
-click on the menu item 'reread templates' to read in the file(s) and to
-rebuild the internal representation of the templates. If menu items,  hotkeys,
-or shortcuts have been added or changed these changes will be applied with the
-next start of Vim.
+The menu items 'edit ... templates' open various template files. The stock
+templates are usually located in the "local" template file:
+<code class="example">  ~/.vim/awk-support/templates/Templates</code>
+The template files named "custom" and "personal" can be used for
+customization, which avoids editing the stock templates.
+There may be dependent files loaded from the main files. Change whatever file
+you want, save it, and click on the menu item 'reread templates' to read in
+the file(s) and to rebuild the internal representation of the templates.
+
+Template browser
+</pre><hr><pre>When editing a template file, it is selected via |<code class="badlink">:Explore</code>|. You can change
+this behavior by setting a global variable in your ~/.vimrc (see
+|<a href="templatesupport.html#g:Templates_TemplateBrowser">g:Templates_TemplateBrowser</a>|):
+
+<code class="example">  let g:Templates_TemplateBrowser = 'browse'</code>
 
 </pre><hr><pre>1.8  MENU 'Run'                                               <b class="vimtag"><a name="awksupport-run">awksupport-run</a></b>
 </pre><hr><pre>
@@ -497,7 +505,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
   [n]\cj     adjust end-of-line comments         (n, i, v)
      \cs     set end-of-line comment column      (n)
   [n]\cc     comment code                        (n, i, v)
-  [n]\cu     uncomment code                      (n, i, v)
+  [n]\co     uncomment code                      (n, i, v)
      \cfr    frame comment                       (n, i)
      \cfu    function description                (n, i)
      \ch     file header                         (n, i)
@@ -558,6 +566,14 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \nw     write code snippet                  (n, i, v)
      \ne     edit code snippet                   (n, i)
 
+     \ntg    edit global template file           (n, i)
+     \ntl    edit local templates                (n, i)
+     \ntc    edit custom template file           (n, i)
+     \ntp    edit personal template file         (n, i)
+     \ntr    reread the templates                (n, i)
+     \ntw    template setup wizard               (n, i)
+     \nts    switch template style               (n, i)
+
   -- Run -----------------------------------------------------
 
      \rr     save and run script                 (n, i)
@@ -595,9 +611,7 @@ influences only files with filetype 'vim'.
 </pre><hr><pre>
 </pre><hr><pre>3.1  FILES (after installation)                      <b class="vimtag"><a name="awksupport-custom-files">awksupport-custom-files</a></b>
 </pre><hr><pre>
-README.awksupport                  Release <code class="note">note</code>s, installation description.
-
-ftplugin/help.vim                  Filetype plugin to extend Vim help.
+awk-support/README.md              Release <code class="note">note</code>s, installation description.
 
 plugin/awk-support.vim             The Awk plugin for Vim/gVim.
 
@@ -608,7 +622,9 @@ awk-support/codesnippets/*         Some code snippets as a starting point.
 awk-support/templates/*            Awk template files
                                    (see |<a href="awksupport.html#awksupport-comm-templates">awksupport-comm-templates</a>|).
 
-autoload/mmtemplates/core          The template engine.
+autoload/mmtemplates/*             The template engine.
+
+awk-support/wordlists/*            Additional word lists (dictionaries).
 
 The following files and extensions are for convenience only.  awk-support.vim
 will work without them.
@@ -632,8 +648,9 @@ Several global variables are checked by the plugin to customize it:
 
 </pre><hr><pre>Global Variable               Default Value
 </pre><hr><pre>g:Awk_Awk                   'awk' (Linux/U**X), 'awk.exe' (Windows)
-g:Awk_LocalTemplateFile     $HOME.'/.vim/awk-support/templates/Templates'
 g:Awk_GlobalTemplateFile    $VIM.'/vimfiles/awk-support/templates/Templates'
+g:Awk_LocalTemplateFile     $HOME.'/.vim/awk-support/templates/Templates'
+g:Awk_CustomTemplateFile    $HOME.'/.vim/templates/awk.templates'
 g:Awk_CodeSnippets          $HOME.'/.vim/awk-support/codesnippets' (Linux/U**X)
                             $VIM.'\vimfiles\awk-support/codesnippets/'(Windows)
 g:Awk_LoadMenus             'yes'
@@ -648,8 +665,9 @@ g:Awk_MapLeader             '\'
 
 </pre><hr><pre>Global Variable              Description
 </pre><hr><pre>g:Awk_Awk                   set the awk executable
-g:Awk_LocalTemplateFile     sets the local template file (see|<a href="awksupport.html#awksupport-templates">awksupport-templates</a>|)
 g:Awk_GlobalTemplateFile    sets the global template file (see|<a href="awksupport.html#awksupport-templates">awksupport-templates</a>|)
+g:Awk_LocalTemplateFile     sets the local template file (see|<a href="awksupport.html#awksupport-templates">awksupport-templates</a>|)
+g:Awk_CustomTemplateFile    sets the custom template file (see|<a href="awksupport.html#awksupport-templates">awksupport-templates</a>|)
 g:Awk_CodeSnippets          set the personal code snippet directory
 g:Awk_LoadMenus             Load menus and mappings ("yes", "no") at start up.
 g:Awk_CreateMenusDelayed    Load menus only with filetype 'awk'
@@ -713,30 +731,34 @@ the following line in '$HOME/.vimrc':
 
 As ****** USER ****** :
 
-The plugin tries to create a minimal template file 'Templates' (and the
-necessary directory '$HOME/.vim/awk-support/templates') when the first buffer
-with filetype 'vim' will be opened. You should edit this file to personalize
-some macros.
+Use the template setup wizard:
+  Awk -&gt; Snippets -&gt; template setup wizard
+to create a personalization file and/or a custom template file.
 
-You can also have local templates which override the global ones. To see a
-messages in this case set a global variable in '$HOME/.vimrc' (Windows:
-'$HOME\_vimrc'):
+The personalization file will be read by all plug-ins supporting this feature,
+and should contain only information relevant for all template libraries. You
+can set some macros in this file with your personal information in order to
+obtain personalized comments, e.g. something like this:
 
-<code class="example">  let g:Awk_TemplateOverriddenMsg= 'yes'</code>
+<code class="example"> SetMacro( 'AUTHOR',      'Wolfgang Mehner' )</code>
+<code class="example"> SetMacro( 'AUTHORREF',   'wm' )</code>
+<code class="example"> SetMacro( 'EMAIL',       'wolfgang-mehner@web.de' )</code>
+<code class="example"> SetMacro( 'COPYRIGHT',   'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
 
-The default is 'no'.
+Use the custom template file for Awk templates which override the global
+templates or to add new ones.
+
+The old system (before version 1.3), using a "local" template file,
+<code class="example">  ~/.vim/awk-support/templates</code>
+is still supported for backwards compatibility.
 
 Create your private snippet directory:
-
 <code class="example">  mkdir --parents  $HOME/.vim/awk-support/codesnippets</code>
-
 You may want to copy the snippets coming with this plugin (in
 $VIM/vimfiles/awk-support/codesnippets) into the new directory or to set a
 link to the global directory.
 
 </pre><hr><pre>4.  TEMPLATE FILES AND TAGS                             <b class="vimtag"><a name="awksupport-templates">awksupport-templates</a></b>
-</pre><hr><pre>
-</pre><hr><pre>4.1  Template Files                               <b class="vimtag"><a name="awksupport-templates-files">awksupport-templates-files</a></b>
 </pre><hr><pre>
 Nearly all menu items insert code snippets or comments. All of these are
 contained within template files and can be changed by the user to meet their
@@ -751,26 +773,45 @@ The master template file is '$HOME/.vim/awk-support/templates/Templates' for
 a user installation and  '$VIM/vimfiles/awk-support/templates/Templates' for
 a system-wide installation (see |<a href="awksupport.html#awksupport-system-wide">awksupport-system-wide</a>|).
 
-The master template file starts with a macro section followed by templates for
-single menu items or better by including other template files grouping the
-templates according to the menu structure of this plugin. The master file
-usually looks like this (my settings as an example):
+The master template file is '$HOME/.vim/awk-support/templates/Templates' for a
+user installation and  '$VIM/vimfiles/awk-support/templates/Templates' for a
+system-wide installation (see |<a href="awksupport.html#awksupport-system-wide">awksupport-system-wide</a>|).
+
+The master template file can be edited itself to adapt the templates/menus to
+the users need.  Alternatively, a custom template file can be added (see
+g:Awk_CustomTemplateFile), which eliminates the need to edit stock templates.
+The personalization (name, email, ..., date and time format) can be done in a
+special personalization template file. It will be read by all plug-ins which
+support this feature, so it should only contain basic information not
+pertaining to a specific programming language. It can be set up using a
+wizard, which is run by the map \ntw or the menu entry:
+  Awk -&gt; Snippets -&gt; template setup wizard
+
+Further template files can be added using the call:
+<code class="example">  call mmtemplates#config#Add ( 'awk', '<code class="special">&lt;PATH&gt;</code>/some.templates', 'example', 'nte' )</code>
+The first parameter adds the file to your Awk templates, the second is the
+path. The remaining two optional parameters specify the symbolic name for
+these templates and the map to edit them. The map is '\nte' in this example,
+if the standard mapleader is set.
+
+</pre><hr><pre>4.1  Template Files                               <b class="vimtag"><a name="awksupport-templates-files">awksupport-templates-files</a></b>
+</pre><hr><pre>
+The master template file starts with various settings followed by templates
+for single menu items or better by including other template files grouping the
+templates according to the menu structure of this plug-in. The master file
+usually looks like this:
 
 <code class="example"> &sect; =============================================================</code>
 <code class="example"> &sect;  User Macros</code>
 <code class="example"> &sect; =============================================================</code>
 <code class="example"></code>
-<code class="example"> SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
-<code class="example"> SetMacro( 'AUTHORREF',   'fgm' )</code>
-<code class="example"> SetMacro( 'COMPANY',     '' )</code>
-<code class="example"> SetMacro( 'COPYRIGHT',   'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
-<code class="example"> SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )</code>
-<code class="example"> SetMacro( 'LICENSE',     'GNU General Public License' )</code>
-<code class="example"> SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )</code>
-<code class="example"></code>
-<code class="example"> SetFormat( 'DATE', '%x' )</code>
-<code class="example"> SetFormat( 'TIME', '%H:%M' )</code>
-<code class="example"> SetFormat( 'YEAR', '%Y' )</code>
+<code class="example"> SetMacro( 'AUTHOR',       'YOUR NAME' )</code>
+<code class="example"> SetMacro( 'AUTHORREF',    '' )</code>
+<code class="example"> SetMacro( 'EMAIL',        '' )</code>
+<code class="example"> SetMacro( 'ORGANIZATION', '' )</code>
+<code class="example"> SetMacro( 'COMPANY',      '' )</code>
+<code class="example"> SetMacro( 'COPYRIGHT',    'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
+<code class="example"> SetMacro( 'LICENSE',      'GNU General Public License' )</code>
 <code class="example"></code>
 <code class="example"> SetStyle( 'default' )</code>
 <code class="example"></code>
@@ -794,19 +835,21 @@ usually looks like this (my settings as an example):
 
 Lines starting with a paragraph sign are comments. The section starting with
 
-<code class="example">  SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
+<code class="example">  SetMacro( 'AUTHOR',      'YOUR NAME' )</code>
 
-assigns values to predefined tags (macros).  Arbitrary user-defined macros are
+assigns values to predefined tags (macros). Arbitrary user-defined macros are
 possible. The macro name must follows the rules for a C language identifier:
-first character letter  or underscore; case matters; digits are allowed
+first character letter or underscore; case matters; digits are allowed
 beginning with the second character.
+Some of the macros assigned here are placeholders, they will be overwritten by
+template files read later on, which contain the user's configuration.
 
 The statement
 
 <code class="example">  IncludeFile( 'comments.templates' )</code>
 
 includes the templates from the file 'comments.templates' (in the same
-directory). An absolute path would also be possible.  The statement
+directory). An absolute path would also be possible. The statement
 
 <code class="example">  MenuShortcut( 'Comments',      'c' )</code>
 
@@ -837,6 +880,7 @@ personalize templates.
  <code class="special">&lt;CURSOR&gt;</code>           The cursor position after insertion of a template.
  <code class="special">&lt;+text+&gt;</code>,<code class="special">&lt;-text-&gt;</code>  See |<a href="awksupport.html#awksupport-templates-jumptags">awksupport-templates-jumptags</a>|.
  <code class="special">{+text+}</code>,<code class="special">{-text-}</code>
+ [+text+],[-text-]
 
  <code class="special">&lt;SPLIT&gt;</code>            The split point when inserting in visual mode
                     (see|<a href="awksupport.html#awksupport-templates">awksupport-templates</a>|)
@@ -882,6 +926,10 @@ There are four jump tag types which can be used as jump targets in templates:
 
  <code class="special">&lt;-text-&gt;</code>   Same as the two above. Will be removed if the template is used
  <code class="special">{-text-}</code>   in visual mode.
+
+ [+text+]   The "optional" tag. Serves as a jump tag, but can be deleted using
+            Ctrl-d.
+ [-text-]   Same as above, removed in visual mode.
 
 The text inside the brackets is userdefined and can be empty. The text can be
 composed from letters (uppercase and lowercase), digits, and underscores.
@@ -947,10 +995,10 @@ for the system
 
 </pre><hr><pre>7.  RELEASE <code class="note">NOTE</code>S                                   <b class="vimtag"><a name="awksupport-release-notes">awksupport-release-notes</a></b>
 </pre><hr><pre>
-See file 'README.awksupport'.
+See files 'README.md' and 'ChangeLog'.
 
-</pre><hr><pre>vim:tw=78:noet:ts=2:ft=help:norl:
+</pre><hr><pre>vim:tw=78:expandtab:ts=2:ft=help:norl:
 </pre>
-<p><i>Generated by vim2html on Mo 21. Apr 11:28:06 CEST 2014</i></p>
+<p><i>Generated by vim2html (modified) on So 7. Aug 16:09:57 CEST 2016</i></p>
 </body>
 </html>

@@ -101,12 +101,12 @@ config.awk = {
 		MAINTAINER_MAIL = 'wolfgang-mehner@web.de',
 
 		GITHUB_USER = 'WolfgangMehner',
-		GITHUB_REPO = 'vim-plugins',
+		GITHUB_REPO = 'awk-support',
 
 		IMG_MAIN_FILE    = 'awksupport/menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
 
-		REF_README = 'blob/master/awk-support/README.md',
+		REF_README = 'blob/master/README.md',
 		REF_HELP   = config.plugin_links.awk.doc,
 		REF_MAPS   = config.plugin_links.awk.maps,
 	},
@@ -130,12 +130,12 @@ config.bash = {
 		MAINTAINER_MAIL = 'wolfgang-mehner@web.de',
 
 		GITHUB_USER = 'WolfgangMehner',
-		GITHUB_REPO = 'vim-plugins',
+		GITHUB_REPO = 'bash-support',
 
 		IMG_MAIN_FILE    = 'bashsupport/menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
 
-		REF_README = 'blob/master/bash-support/README.md',
+		REF_README = 'blob/master/README.md',
 		REF_HELP   = config.plugin_links.bash.doc,
 		REF_MAPS   = config.plugin_links.bash.maps,
 	},
