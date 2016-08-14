@@ -1,4 +1,4 @@
-README for c.vim (Version 6.2) / April 07 2016
+README for c.vim (Version 6.2) / August 14 2016
 ================================================================================
 
   *  INSTALLATION

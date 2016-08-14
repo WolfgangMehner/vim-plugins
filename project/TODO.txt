@@ -70,9 +70,10 @@ C/C++:
   * Add escaped characters "\" and "|" once the template engine supports this.
 - (DONE) Documentation: Change the description of the Doxygen setup.
 - README: Change the description of the Doxygen setup.
-- Documentation: Adding additional template files.
+- (DONE) Documentation: Adding additional template files.
 - Configure the template which is inserted automatically when a new file is
   created.
+- (DONE) Add a template to insert all section comments into a file at once.
 
 Git:
 - Add more suggestions for custom menu entries to 's:Git_CustomMenu'.

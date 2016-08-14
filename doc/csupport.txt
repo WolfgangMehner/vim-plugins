@@ -1,4 +1,4 @@
-*csupport.txt*                  C/C++ Support                      Mar 17 2016
+*csupport.txt*                  C/C++ Support                      Aug 14 2016
 
 C/C++ Support                                            *c-support* *csupport*
 
@@ -1529,7 +1529,8 @@ The variable plugin_dir will automatically be set to one of the following values
  g:C_VimCompilerName       : the compiler name used by :compiler
  g:Xterm_Executable        : the xterm executable
  g:Xterm_Options           : the xterm options
- g:C_XtermDefaults         : the xterm options (included for backwards
+ g:C_XtermDefaults         : the xterm options
+                             (included for backwards compatibility)
 
 To override the default add appropriate assignments to ~/.vimrc .
 The following global variables can be changed on the fly from the Vim command
