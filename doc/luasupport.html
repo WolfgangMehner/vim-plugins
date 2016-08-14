@@ -7,11 +7,11 @@
 <body>
 <h2>LUASUPPORT</h2>
 <pre>
-<b class="vimtag"><a name="luasupport.txt">luasupport.txt</a></b>                 Lua Support                       Oct 04 2014
+<b class="vimtag"><a name="luasupport.txt">luasupport.txt</a></b>                 Lua Support                       Jul 23 2016
 
 Lua Support                                          <b class="vimtag"><a name="lua-support">lua-support</a></b> <b class="vimtag"><a name="luasupport">luasupport</a></b>
 
-                            Plug-in version 0.9
+                             Plug-in version 1.0
                         for Vim version 7.0 and above
                  Wolfgang Mehner <code class="special">&lt;wolfgang-mehner at web.de&gt;</code>
 
@@ -24,7 +24,7 @@ functions.
 See the chapter |<a href="luasupport.html#luasupport-introduction">luasupport-introduction</a>| for a quick overview and a short
 guide to this documentation.
 
-Lua is: Copyright 1994-2014 Lua.org, PUC-Rio.
+Lua is: Copyright 1994-2015 Lua.org, PUC-Rio.
 
 </pre><hr><pre>0.  TABLE OF CONTENTS                            <b class="vimtag"><a name="luasupport-support-contents">luasupport-support-contents</a></b>
 </pre><hr><pre>
@@ -40,7 +40,8 @@ Lua is: Copyright 1994-2014 Lua.org, PUC-Rio.
  2.4.1   Using QuickFix                 |<a href="luasupport.html#luasupport-usage-qf">luasupport-usage-qf</a>|
  2.5    Hardcopy                        |<a href="luasupport.html#luasupport-usage-hardcopy">luasupport-usage-hardcopy</a>|
  2.6    Help                            |<a href="luasupport.html#luasupport-usage-help">luasupport-usage-help</a>|
- 2.7    Toolbox                         |<a href="luasupport.html#luasupport-usage-toolbox">luasupport-usage-toolbox</a>|
+ 2.7    C-API Templates                 |<a href="luasupport.html#luasupport-usage-capi">luasupport-usage-capi</a>|
+ 2.8    Toolbox                         |<a href="luasupport.html#luasupport-usage-toolbox">luasupport-usage-toolbox</a>|
  3.    Templates                        |<a href="luasupport.html#luasupport-templates">luasupport-templates</a>|
  3.1    Introduction                    |<a href="luasupport.html#luasupport-templates-introduction">luasupport-templates-introduction</a>|
  3.2    Jump Tags                       |<a href="luasupport.html#luasupport-templates-jump-tags">luasupport-templates-jump-tags</a>|
@@ -50,6 +51,7 @@ Lua is: Copyright 1994-2014 Lua.org, PUC-Rio.
  4.1    Executables                     |<a href="luasupport.html#luasupport-config-executable">luasupport-config-executable</a>|
  4.1.1   Direct Run                     |<a href="luasupport.html#luasupport-config-direct-run">luasupport-config-direct-run</a>|
  4.1.2   Output Redirection             |<a href="luasupport.html#luasupport-config-output">luasupport-config-output</a>|
+ 4.1.3   Xterm                          |<a href="luasupport.html#luasupport-config-xterm">luasupport-config-xterm</a>|
  4.2    Menus                           |<a href="luasupport.html#luasupport-config-menus">luasupport-config-menus</a>|
  4.3    Maps                            |<a href="luasupport.html#luasupport-config-maps">luasupport-config-maps</a>|
  4.4    Comments                        |<a href="luasupport.html#luasupport-config-comments">luasupport-config-comments</a>|
@@ -80,7 +82,7 @@ auto completion.)
 The features of the plug-in are:
 - Turn code lines into comments and vice versa.
     |<a href="luasupport.html#luasupport-usage-comments-lines">luasupport-usage-comments-lines</a>|
-- Automatically add comments for functions and its parameters.
+- Automatically add comments for functions and their parameters.
     |<a href="luasupport.html#luasupport-usage-comments-auto">luasupport-usage-comments-auto</a>|
 - Open the online documentation for a given function.
     |<a href="luasupport.html#luasupport-usage-help">luasupport-usage-help</a>|
@@ -103,7 +105,7 @@ advanced user (see |<a href="templatesupport.html#templatesupport.txt">templates
 </pre><hr><pre>2.  USAGE                                                   <b class="vimtag"><a name="luasupport-usage">luasupport-usage</a></b>
 </pre><hr><pre>
 Features are accessible via menu entries and maps. Most maps are preceded by a
-mapleader. The leader is backslash, if the standard configuration is used.
+mapleader. The leader is a backslash, if the standard configuration is used.
 
 </pre><hr><pre>2.1  COMMENTS                                      <b class="vimtag"><a name="luasupport-usage-comments">luasupport-usage-comments</a></b>
 </pre><hr><pre>
@@ -165,7 +167,7 @@ Now each entry of the table can be documented.
 2.1.2  Comment Lines                         <b class="vimtag"><a name="luasupport-usage-comments-lines">luasupport-usage-comments-lines</a></b>
 
 Lines of code can be changed into comments and vice versa with just a few
-keystrokes.  In normal and insert mode, the comment, uncomment and toggle
+keystrokes. In normal and insert mode, the comment, uncomment and toggle
 functions will change the current line. In visual mode the entire selected
 range is affected.
 The maps can also be used together with a count, such as:
@@ -201,8 +203,9 @@ preventing their execution. To remove the inner-most long comment, use \crl.
 2.1.3  Automated Comments                     <b class="vimtag"><a name="luasupport-usage-comments-auto">luasupport-usage-comments-auto</a></b>
 
 A skeleton for a comment can be created automatically for a given function.
-This works on the current line or a selected range of lines. After choosing
-the function definition line, use "Comments -&gt; function description (auto)".
+This works on the current line or a selected range of lines. After placing the
+cursor in the line defining the function, use "Comments -&gt;
+function description (auto)".
 The appearance can be change in the template library.
 
 Example:
@@ -236,9 +239,9 @@ and fill in the information (see Sec. |<a href="luasupport.html#luasupport-templ
 </pre><hr><pre>
 The menu regex helps with writing patterns. It contains all the elements of
 patterns, including all character classes. Most of the menu entries are
-defined in the template library.  The entries "Regex -&gt; character classes
--&gt; printable char." and "Regex -&gt; frontier pattern" insert no text for
-Lua 5.1, since these features were introduced in Lua 5.2.
+defined in the template library. The entry "Regex -&gt; character classes
+-&gt; printable char." inserts no text for Lua 5.1, since this feature was
+introduced in Lua 5.2.
 The menu entry "Regex -&gt; esc. magic char." is not part of the template
 library. It can be used to escape the character under (in normal mode) or
 behind (in insert mode) the cursor. If it is one of the magic characters, a
@@ -253,7 +256,7 @@ behind (in insert mode) the cursor. If it is one of the magic characters, a
 </pre><hr><pre>
 Useful code snippets can be kept in a central place. This way, they can
 quickly be inserted into the code, using "Snippets -&gt; insert code snippet".
-New snippets can be created from existing lines of code be selecting them in
+New snippets can be created from existing lines of code by selecting them in
 visual mode and saving them using "Snippets -&gt; create code snippet".
 
 Code snippets are kept in a directory which can be changed using the setting
@@ -288,9 +291,8 @@ The file in the current buffer can be run or compiled with a keystroke.
   change the compiler        Run.set compiler exec.         <code class="special">&lt;LocalLeader&gt;</code>rsc
  ----------------------------------------------------------------------------
 
-(^1)
-  Only inside the buffer "Lua Output", where running a script echoes the
-  script's output, see |<a href="luasupport.html#luasupport-config-output">luasupport-config-output</a>|.
+(^1) Works only inside the buffer "Lua Output", where running a script echoes
+  the script's output, see |<a href="luasupport.html#luasupport-config-output">luasupport-config-output</a>|.
 
 The functionality is also available through commands. These commands can also
 be used to set different maps in the ftplugin.
@@ -383,24 +385,64 @@ documentation of Lua functions or an English dictionary.
   Feature                    Menu Entry                     Map
  ----------------------------------------------------------------------------
   open English dictionary    Help.English                   <code class="special">&lt;LocalLeader&gt;</code>he
-  open reference for a       Help.Lua function              <code class="special">&lt;LocalLeader&gt;</code>hl
+  open online reference      Help.Lua function, browser     <code class="special">&lt;LocalLeader&gt;</code>hl
+    for a library function
+  open Vim help for a 5.1    Help.Lua 51 function, Vim help <code class="special">&lt;LocalLeader&gt;</code>h1
+    library function
+  open Vim help for a 5.2    Help.Lua 52 function, Vim help <code class="special">&lt;LocalLeader&gt;</code>h2
+    library function
+  open Vim help for a 5.3    Help.Lua 53 function, Vim help <code class="special">&lt;LocalLeader&gt;</code>h3
     library function
   open plug-in help          Help.help (Lua support)        <code class="special">&lt;LocalLeader&gt;</code>hs
  ----------------------------------------------------------------------------
 
-The online reference can by opened very conveniently for Lua functions. Simply
+The online reference can be opened very conveniently for Lua functions. Simply
 place the cursor on the name of a function in your source code, and use the
 menu entry or the map to open the online reference for that function.
 (See Section |<a href="luasupport.html#luasupport-config-browser">luasupport-config-browser</a>| for the configuration.)
+
+For file handle methods help will be show as well. Every method call of the
+form
+<code class="example">  <code class="special">&lt;var-name&gt;</code>:flush (  )</code>
+will open the help for the function
+<code class="example">  file:flush</code>
+and similarly for all file handle methods.
+
+Similarly, the help can be read in Vim's help format, using the maps "\h1",
+"\h2", and "\h3", for Lua 5.1, 5.2, and 5.3 respectively.
 
 Example:
 
 Place the cursor on "sin" and invoke the map:
 <code class="example">  a = math.sin ( r * pi )</code>
-The following URL will be opened in your browser:
+The following URL will be opened in your browser (using "\hl"):
 <code class="example">  http://www.lua.org/manual/5.2/manual.html#pdf-math.sin</code>
+or the following help topic will be shown (using "\h2"):
+<code class="example">  :help lua52-math.sin</code>
 
-</pre><hr><pre>2.7  TOOLBOX                                        <b class="vimtag"><a name="luasupport-usage-toolbox">luasupport-usage-toolbox</a></b>
+</pre><hr><pre>2.7  C-API TEMPLATES                                   <b class="vimtag"><a name="luasupport-usage-capi">luasupport-usage-capi</a></b>
+</pre><hr><pre>
+This plug-in is shipped with templates for Lua's C-API. They can be used with
+the C-Support plug-in (www.vim.org/scripts/script.php?script_id=213).
+
+The templates have to be added to C-Support's (!) template library, so they
+can be used when editing C code. Find out the path where the plug-in is
+installed (<code class="special">&lt;PATH_TO_PLUG&gt;</code>/plugin/lua-support.vim) and add this line to the
+.vimrc:
+<code class="example">  call mmtemplates#config#Add ( 'C', '<code class="special">&lt;PATH_TO_PLUG&gt;</code>/lua-support/templates-c-api/Templates', 'Lua', 'ntL' )</code>
+The first parameter adds the file to your C templates, the second is the path.
+The remaining two optional parameters specify the symbolic name for these
+templates and the map to edit them. The map is '\ntL' in this example.
+
+The name of the pointer to the Lua state is set to "L" in all the templates,
+just as it is named in the Lua reference manual. It can be changed in your
+C-Support template customization file (see |<a href="csupport.html#csupport-templates">csupport-templates</a>|), by setting
+the macro <b class="vimtag"><a name="|LUA_STATE|">|LUA_STATE|</a></b> :
+<code class="example">  SetMacro( 'LUA_STATE', '<code class="special">&lt;name&gt;</code>' )</code>
+Use this menu entry to set up the file:
+  C/C++ -&gt; Snippets -&gt; template setup wizard
+
+</pre><hr><pre>2.8  TOOLBOX                                        <b class="vimtag"><a name="luasupport-usage-toolbox">luasupport-usage-toolbox</a></b>
 </pre><hr><pre>
 More functionality, not directly related to Lua, is provided in the so-called
 "Toolbox". By default, an integration for Make is inserted into the toolbox.
@@ -437,7 +479,7 @@ with macros and tags to provide further convenience. Macros can be
 automatically replaced with the date or the filename, or they can be replaced
 with input from the user, for example the name of a new function.
 
-While inserting a template, the user will often be ask to enter some
+While inserting a template, the user will often be asked to enter some
 replacement text on the command line, for example the name of a function. The
 replacement text will then be used in the template while it is inserted.
 Hitting <code class="special">&lt;ESC&gt;</code> or entering an empty text will abort template insertion.
@@ -445,15 +487,22 @@ Hitting <code class="special">&lt;ESC&gt;</code> or entering an empty text will 
 </pre><hr><pre>3.2  JUMP TAGS                                <b class="vimtag"><a name="luasupport-templates-jump-tags">luasupport-templates-jump-tags</a></b>
 </pre><hr><pre>
 Templates can include special tags, which mark positions where text needs to
-be added.
+be added:
+<code class="example">  <code class="special">{+TAGNAME+}</code> <code class="special">{-TAGNAME-}</code></code>
+<code class="example">  <code class="special">&lt;+TAGNAME+&gt;</code> <code class="special">&lt;-TAGNAME-&gt;</code></code>
+<code class="example">  [+TAGNAME+] [-TAGNAME-]</code>
 
   Feature                    Menu Entry                     Map
  ----------------------------------------------------------------------------
   jump to next tag           -                              <code class="special">&lt;<code class="keystroke">CTRL-J</code>&gt;</code>
+  delete optional tag        -                              <code class="special">&lt;<code class="keystroke">CTRL-D</code>&gt;</code>
  ----------------------------------------------------------------------------
 
 Use the <code class="special">&lt;<code class="keystroke">CTRL-J</code>&gt;</code> to jump to the next tag. The maps works in normal and insert
-mode.
+mode. Use <code class="special">&lt;<code class="keystroke">CTRL-D</code>&gt;</code> to delete optional tags on the same line, for example:
+<code class="example">  string.match ( <code class="special">&lt;+str+&gt;</code>, <code class="special">&lt;+pattern+&gt;</code>, [+init+] )</code>
+The optional argument "init" can be written down after jumping to the tag
+using <code class="special">&lt;<code class="keystroke">CTRL-J</code>&gt;</code> or deleted together with the comma using <code class="special">&lt;<code class="keystroke">CTRL-D</code>&gt;</code>.
 
 </pre><hr><pre>3.3  SPLIT TAGS                              <b class="vimtag"><a name="luasupport-templates-split-tags">luasupport-templates-split-tags</a></b>
 </pre><hr><pre>
@@ -486,22 +535,30 @@ The template system comes with several auxiliary functions.
 
   Feature                    Menu Entry                     Map
  ----------------------------------------------------------------------------
+  edit the global template   Snippets.edit global templates <code class="special">&lt;LocalLeader&gt;</code>ntg
+    library (^1)
   edit the local template    Snippets.edit local templates  <code class="special">&lt;LocalLeader&gt;</code>ntl
     library
-  edit the global template   Snippets.edit global templates <code class="special">&lt;LocalLeader&gt;</code>ntg
-    library (*1)
+  edit the custom template   Snippets.edit custom templates <code class="special">&lt;LocalLeader&gt;</code>ntc
+    library
+  edit the personal templ.   Snippets.edit personal templ.  <code class="special">&lt;LocalLeader&gt;</code>ntp
+    library
   reread the templates       Snippets.reread templates      <code class="special">&lt;LocalLeader&gt;</code>ntr
+  setup wizard               Snippets.template setup wizard <code class="special">&lt;LocalLeader&gt;</code>ntw
   choose a style             Snippets.choose style          <code class="special">&lt;LocalLeader&gt;</code>nts
  ----------------------------------------------------------------------------
 
-"Snippets -&gt; edit templates" will open a file browser in the directory
+(^1) system-wide installation only
+
+"Snippets -&gt; edit ... templates" will open a file browser in the directory
 containing your template library. This feature is merely a fast way to jump to
-the files.  After the templates have been edited, they need to be read again.
+the files. After the templates have been edited, they need to be read again.
 
-See the documentation of the template system for a more in-depth discussion:
-|<a href="templatesupport.html#templatesupport.txt">templatesupport</a>|
+For how to use these files to configure and personalize the template library,
+see |<a href="luasupport.html#luasupport-config-template-cstm">luasupport-config-template-cstm</a>|.
 
-<code class="note">Note</code> *1: system-wide installation only
+For help with setting up the template library, use the setup wizard
+"Snippets -&gt; template setup wizard".
 
 </pre><hr><pre>4.  CONFIGURATION                                   <b class="vimtag"><a name="luasupport-configuration">luasupport-configuration</a></b>
 </pre><hr><pre>
@@ -527,8 +584,11 @@ set in the .vimrc file.
 
   |<a href="luasupport.html#g:Lua_SnippetDir">g:Lua_SnippetDir</a>|          (see below)   directory with code snippers
   |<a href="luasupport.html#g:Lua_SnippetBrowser">g:Lua_SnippetBrowser</a>|      'gui'         browser to select code snippets
-  |<a href="luasupport.html#g:Lua_LclTemplateFile">g:Lua_LclTemplateFile</a>|     (see below)   the local top-level template file
-  |<a href="luasupport.html#g:Lua_GlbTemplateFile">g:Lua_GlbTemplateFile</a>|     (see below)   the global top-level template file
+  |<a href="luasupport.html#g:Lua_LocalTemplateFile">g:Lua_LocalTemplateFile</a>|   (see below)   the local top-level template file
+  |<a href="luasupport.html#g:Lua_GlobalTemplateFile">g:Lua_GlobalTemplateFile</a>|  (see below)   the global top-level template file
+  |<a href="luasupport.html#g:Lua_CustomTemplateFile">g:Lua_CustomTemplateFile</a>|  (see below)   the optional custom template file
+  |<a href="templatesupport.html#g:Templates_PersonalizationFile">g:Templates_PersonalizationFile</a>|
+                            (see below)   the personalization template file
 
   |<a href="luasupport.html#g:Lua_Printheader">g:Lua_Printheader</a>|         '...'         printheader used for hardcopy
 
@@ -552,7 +612,7 @@ Further customization is carried out in the template library:
   |<a href="luasupport.html#g:Lua_BinPath">g:Lua_BinPath</a>|           - -empty-
   |<a href="luasupport.html#g:Lua_Executable">g:Lua_Executable</a>|        - g:Lua_BinPath + lua
   |<a href="luasupport.html#g:Lua_CompilerExec">g:Lua_CompilerExec</a>|      - g:Lua_BinPath + luac
-(^2) UNIX only
+(^2) UNIX only, see |<a href="luasupport.html#luasupport-config-xterm">luasupport-config-xterm</a>|
 
 </pre><hr><pre>4.1  EXECUTABLES                                <b class="vimtag"><a name="luasupport-config-executable">luasupport-config-executable</a></b>
 </pre><hr><pre>                                                               <b class="vimtag"><a name="g:Lua_BinPath">g:Lua_BinPath</a></b>
@@ -637,10 +697,13 @@ The possible settings are listed below:
   'vim-io' (default)  run on the Vim command-line (supports input operations)
   'vim-qf'            print output on the Vim cmd.-line (supports quickfix)
   'buffer'            redirect the output into a buffer (supports quickfix)
-  'xterm'             run in a separate xterm (supports input operations)
+  'xterm'             run in a separate xterm (supports input operations;
+                       UNIX only, see |<a href="luasupport.html#luasupport-config-xterm">luasupport-config-xterm</a>|)
  ----------------------------------------------------------------------------
 
 </pre><hr><pre>
+4.1.3  Xterm                                         <b class="vimtag"><a name="luasupport-config-xterm">luasupport-config-xterm</a></b>
+
 The xterm related functionality is only available under UNIX. It is used to
 run interactive commands.
 
@@ -755,9 +818,10 @@ or on the command line by setting:
 <code class="example">  let g:Lua_SnippetBrowser = 'cmd-line'</code>
 
 </pre><hr><pre>4.6  TEMPLATE LIBRARY                         <b class="vimtag"><a name="luasupport-config-template-lib">luasupport-config-template-lib</a></b>
-</pre><hr><pre>                                                       <b class="vimtag"><a name="g:Lua_LclTemplateFile">g:Lua_LclTemplateFile</a></b>
-                                                       <b class="vimtag"><a name="g:Lua_GlbTemplateFile">g:Lua_GlbTemplateFile</a></b>
-The variables g:Lua_LclTemplateFile and g:Lua_GlbTemplateFile set the
+</pre><hr><pre>                        <b class="vimtag"><a name="g:Lua_LclTemplateFile">g:Lua_LclTemplateFile</a></b>    <b class="vimtag"><a name="g:Lua_GlbTemplateFile">g:Lua_GlbTemplateFile</a></b>
+                        <b class="vimtag"><a name="g:Lua_LocalTemplateFile">g:Lua_LocalTemplateFile</a></b>  <b class="vimtag"><a name="g:Lua_GlobalTemplateFile">g:Lua_GlobalTemplateFile</a></b>
+                        <b class="vimtag"><a name="g:Lua_CustomTemplateFile">g:Lua_CustomTemplateFile</a></b>
+The variables g:Lua_LocalTemplateFile and g:Lua_GlobalTemplateFile set the
 locations and names of the local and global template files, respectively.
 The default for the local and global template files depend on the type of the
 installation.
@@ -767,38 +831,63 @@ installation.
 
 Local installation:
 
-If the plug-in lua-support.vim can be found here:
-<code class="example">  <code class="special">&lt;VIMDIR&gt;</code>/plugin/lua-support.vim</code>
+If the plug-in lua-support.vim can be found somewhere in the $HOME directory:
+<code class="example">  <code class="special">&lt;RUNTIMEPATH&gt;</code>/plugin/lua-support.vim</code>
 The default for the local template file is:
-<code class="example">  g:Lua_LclTemplateFile</code>
-<code class="example">    = '<code class="special">&lt;VIMDIR&gt;</code>/lua-support/templates/Templates'</code>
+<code class="example">  g:Lua_LocalTemplateFile</code>
+<code class="example">    = '<code class="special">&lt;RUNTIMEPATH&gt;</code>/lua-support/templates/Templates'</code>
 There is no global template file.
 
 
-System-wide installation:
+System-wide installation (|<a href="luasupport.html#luasupport-system-wide">luasupport-system-wide</a>|):
 
 The default for the global template file is:
-<code class="example">  g:Lua_GlbTemplateFile</code>
+<code class="example">  g:Lua_GlobalTemplateFile</code>
 <code class="example">    = $VIM.'/vimfiles/lua-support/templates/Templates'</code>
 The default for the local template file is (UNIX/Linux):
-<code class="example">  s:Lua_LclTemplateFile</code>
+<code class="example">  s:Lua_LocalTemplateFile</code>
 <code class="example">    = $HOME.'/.vim/lua-support/templates/Templates'</code>
 or (Windows):
-<code class="example">  s:Lua_LclTemplateFile</code>
+<code class="example">  s:Lua_LocalTemplateFile</code>
 <code class="example">    = $HOME.'/vimfiles/lua-support/templates/Templates'</code>
+
+
+Independent of the type of installation, the default custom template file is:
+<code class="example">  s:Lua_CustomTemplateFile = $HOME.'/.vim/templates/lua.templates'</code>
+The personalization file is located in a directory relative to |<code class="badlink">runtimepath</code>|:
+<code class="example">  <code class="special">&lt;RUNTIMEPATH&gt;</code>/templates/personal.templates</code>
+For configuring the personalization file, see |<a href="templatesupport.html#g:Templates_PersonalizationFile">g:Templates_PersonalizationFile</a>|.
+
+Using the custom and personalization template files will give the average
+user sufficient options for customization. Adding even more template files is
+possible though, using the function "mmtemplates#config#Add". Each call to the
+function configures an additional template file:
+<code class="example">  call mmtemplates#config#Add ( "lua", filename, symbolic_name, edit_map )</code>
+For the filetype "lua", the file 'filename' will be loaded. It is associated
+with the name 'symbolic_name'. The map 'edit_map' can be used to open the file
+for editing. The third and fourth argument are optional and will be replaced
+by default values if missing.
 
 
 Example:
 
-To set a different local template file, add this line to your vimrc:
-<code class="example">  let g:Lua_LclTemplateFile = $HOME.'/myvim/lua/templates/my.templates'</code>
+To set a different custom template file, set this variable in your vimrc:
+<code class="example">  let g:Lua_CustomTemplateFile = $HOME.'/myvim/lua/templates/my.templates'</code>
 
 </pre><hr><pre>4.7  TEMPLATE CUSTOMIZATION                  <b class="vimtag"><a name="luasupport-config-template-cstm">luasupport-config-template-cstm</a></b>
 </pre><hr><pre>
-The template library is customized via your local template file. Use the menu
-entry "Snippets -&gt; edit local templates" to get there.
+The template library is customized via your local template files. Use the menu
+entries "Snippets -&gt; edit local templates", "Snippets -&gt; edit custom
+templates", or "Snippets -&gt; edit personal templates" to get there.
 
-You should fill in your name and other information here:
+The personalization template file is used to set personal information, and
+will be read by other plug-ins which use this feature. Use "Snippets -&gt;
+template setup wizard" for help with its setup. Since it is used by all
+plug-ins, it should only contain information which is independent of a
+specific programming language. The location can be configured via
+|<a href="templatesupport.html#g:Templates_PersonalizationFile">g:Templates_PersonalizationFile</a>|.
+
+You should fill in your name and other information there:
 
 <code class="example">  SetMacro( 'AUTHOR',    'Your Name' )</code>
 <code class="example">  SetMacro( 'AUTHORREF', 'YN' )</code>
@@ -819,6 +908,12 @@ represented using four digits.
 Afterwards, use the menu entry "Snippets -&gt; reread templates" to apply the
 changes.
 
+The custom template file can be used to set the personal information and/or to
+change or add Lua templates. The custom template file eliminates the need to
+edit the stock templates provided in the local template file (or the global
+template file for global installations). Its path and filename can be
+configured via |<a href="luasupport.html#g:Lua_CustomTemplateFile">g:Lua_CustomTemplateFile</a>|.
+
 </pre><hr><pre>4.8  HARDCOPY                                     <b class="vimtag"><a name="luasupport-config-hardcopy">luasupport-config-hardcopy</a></b>
 </pre><hr><pre>                                                           <b class="vimtag"><a name="g:Lua_Printheader">g:Lua_Printheader</a></b>
 The printheader used by "Run -&gt; hardcopy to filename.ps" is set via the
@@ -832,36 +927,9 @@ value on the command line.
 </pre><hr><pre>4.9  BROWSER                                       <b class="vimtag"><a name="luasupport-config-browser">luasupport-config-browser</a></b>
 </pre><hr><pre>
 Opening the online reference for various items is a feature of the template
-library. The browser has to be configured there, in your local template file
-(see |<a href="luasupport.html#luasupport-config-template-lib">luasupport-config-template-lib</a>|), by setting the macro <b class="vimtag"><a name="|HELP_BROWSER|">|HELP_BROWSER|</a></b>
-(see below).
-
-The help facility will open the reference with a system call like this:
-<code class="example">  |<code class="badlink">HELP_BROWSER</code>| |<code class="badlink">URL</code>|</code>
-where <b class="vimtag"><a name="|URL|">|URL|</a></b> is replaced with an appropriate URL and <b class="vimtag"><a name="|HELP_BROWSER|">|HELP_BROWSER|</a></b> is
-replaced with a string set by the user.
-
-Example:
-
-By adding this line to your local template file:
-<code class="example">  SetMacro( 'HELP_BROWSER', 'firefox -new-tab' )</code>
-The online reference will be opened like this:
-<code class="example">  firefox -new-tab http://wiki.awesomeluawiki.de/wiki/sin</code>
-
-Under Windows, the browser for opening the online documentation has to be
-configured. To set the executable, the template library has to be modified.
-In case of a local installation (the default), choose:
-  Lua -&gt; Snippets -&gt; edit local templates
-and for a system-wide installation:
-  Lua -&gt; Snippets -&gt; edit global templates
-Open the main template file 'Templates' and uncomment the line
-<code class="example"> &sect;SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )</code>
-by removing the leading '&sect;'
-<code class="example"> SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )</code>
-Then set the right executable. Mind the double quotes which escape the name of
-the executable.
-Finally, reread the template library using:
-  Lua -&gt; Snippets -&gt; reread templates
+library. The browser has to be configured using these variables:
+- |<a href="templatesupport.html#g:Templates_InternetBrowserExec">g:Templates_InternetBrowserExec</a>|
+- |<a href="templatesupport.html#g:Templates_InternetBrowserFlags">g:Templates_InternetBrowserFlags</a>|
 
 </pre><hr><pre>4.10  TOOLBOX                                      <b class="vimtag"><a name="luasupport-config-toolbox">luasupport-config-toolbox</a></b>
 </pre><hr><pre>                                                            <b class="vimtag"><a name="g:Lua_UseToolbox">g:Lua_UseToolbox</a></b>
@@ -877,11 +945,9 @@ of the "make" tool:
 </pre><hr><pre>
 A system-wide installation (one installation for all users) of the plug-in can
 be done. This will mean however, that a user can not edit the template
-library, for example to set his own name. So in case of a system-wide
-installation, every user can have an own set of templates (called local
-templates), which are localed in each users' home directory.
-<code class="note">Note:</code> As you might have guessed, this behavior is much more inspired by Linux
-than Windows.
+library, for example to set a name and mail. So in case of a system-wide
+installation, every user should use the customization options, which allow to
+put customization files into each users' home directory.
 
 A system-wide installation is done as follows.
 
@@ -912,26 +978,15 @@ These directories will not be found automatically. After installing the
 plug-in below '/usr/share/vim/site' the use of the templates will be enabled
 by the following line in '~/.vimrc' (see |<a href="luasupport.html#luasupport-config-template-lib">luasupport-config-template-lib</a>|):
 
-<code class="example">  let g:Lua_GlbTemplateFile =</code>
+<code class="example">  let g:Lua_GlobalTemplateFile =</code>
 <code class="example">    \ '/usr/share/vim/site/lua-support/templates/Templates'</code>
 
 </pre><hr><pre>
 As *** USER *** :
 
-This plug-in will try to create your private template directory, taking the
-path from the setting g:Lua_LclTemplateFile. The default is:
-<code class="example">  ~/.vim/lua-support/templates</code>
-The directory will contain a minimal personal main template file. You should
-set some macros in this file with your personal information in order to obtain
-personalized comments:
-
-<code class="example">  SetMacro( 'AUTHOR',    'Your Name' )</code>
-<code class="example">  SetMacro( 'AUTHORREF', 'YN' )</code>
-<code class="example">  SetMacro( 'EMAIL',     'your-email@i-use-vim.org' )</code>
-<code class="example">  SetMacro( 'COPYRIGHT', 'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
-
-You can also have local templates which override the global ones. To edit the
-file, use the menu entry "Lua -&gt; Snippets -&gt; edit local templates".
+Use the template setup wizard "Snippets -&gt; template setup wizard" to add your
+personalization. Use the custom template file for further customization. (see
+|<a href="luasupport.html#luasupport-config-template-cstm">luasupport-config-template-cstm</a>|)
 
 </pre><hr><pre>A.  TROUBLESHOOTING - KNOWN ISSUES                <b class="vimtag"><a name="luasupport-troubleshooting">luasupport-troubleshooting</a></b>
 </pre><hr><pre>
@@ -954,7 +1009,11 @@ file, use the menu entry "Lua -&gt; Snippets -&gt; edit local templates".
   - Is "lua" executable from the command line?
   - Is the $PATH variable set correctly?
   - Are the settings correct? See:
-      :help luasupport-config-executable
+      :help |<a href="luasupport.html#luasupport-config-executable">luasupport-config-executable</a>|
+  - Under Windows, make sure the options 'shell', 'shellcmdflag',
+    'shellquote', and 'shellxquote' are set correctly. If "cmd.exe" is used as
+    the 'shell', 'shellxquote' must be set to a double quote:
+      :set shellxquote=\"
 
 </pre><hr><pre>B.  RELEASE <code class="note">NOTE</code>S - CHANGE LOG                      <b class="vimtag"><a name="luasupport-release-notes">luasupport-release-notes</a></b>
 </pre><hr><pre>
@@ -968,8 +1027,14 @@ Fritz Mehner (vim.org user name: mehner) for a number of things:
 - parts of the documentation and other material are taken from his plug-ins as
   well
 
-</pre><hr><pre>vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
+Luis Carvalho (Kozure):
+- the idea for suppling Lua's reference manual in Vim's help format is taken
+  from his plug-in "luarefvim", which contains previous versions of the
+  reference manual
+  ( http://vim.sourceforge.net/scripts/script.php?script_id=1291 )
+
+</pre><hr><pre>vim:tw=78:expandtab:ts=2:ft=help:norl:
 </pre>
-<p><i>Generated by vim2html (modified) on Sa 15. Nov 18:58:06 CET 2014</i></p>
+<p><i>Generated by vim2html (modified) on So 14. Aug 17:16:25 CEST 2016</i></p>
 </body>
 </html>
