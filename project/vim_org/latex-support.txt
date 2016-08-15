@@ -1,7 +1,7 @@
 ================================================================================
 ===== summary
 ================================================================================
-LaTeX-IDE for Vim/gVim
+LaTeX IDE -- Insert commands, run the typesetter and BibTeX and look up help
 ================================================================================
 ===== detailed description
 ================================================================================
@@ -17,13 +17,13 @@ document, format conversion and running make can be done with a few keystrokes.
 - read, write, and maintain your own code snippets in a separate directory
 - show compilation errors in a quickfix window
 
-Some screen shots :  http://lug.fh-swf.de/vim/vim-latex/
+Some screen shots :  http://wolfgangmehner.github.io/vim-plugins/latexsupport.html
 
 For plug-in managers :  https://github.com/WolfgangMehner/latex-support
 
-The help file online :  http://lug.fh-swf.de/vim/vim-latex/latexsupport.html
+The help file online :  http://wolfgangmehner.github.io/vim-plugins/doc/latexsupport.html
 
-The key mappings of this plug-in :  http://lug.fh-swf.de/vim/vim-latex/latex-hotkeys.pdf
+The key mappings of this plug-in :  wolfgangmehner.github.io/vim-plugins/latexsupport/latex-hotkeys.pdf
 
 DOCUMENTATION
 --------------------------------------------------------
@@ -40,7 +40,7 @@ MAILING LIST
 --------------------------------------------------------
 You can subscribe to the vim-plugins-list mailing list to post your questions or
 suggestions for improvement or to report bugs. The list will also be used to
-announce new releases ( c.vim / bash-support / latex-support / perl-support ).
+announce new releases ( c.vim / perl-support / bash-support / latex-support ).
 Visit the following page for subscribing to the mailing list:
 
     http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list

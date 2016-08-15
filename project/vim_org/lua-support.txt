@@ -1,0 +1,72 @@
+================================================================================
+===== summary
+================================================================================
+Lua IDE -- Insert code snippets, run and check the code and look up help
+================================================================================
+===== detailed description
+================================================================================
+Speed-up the development of Lua scripts:
+
+- insert code snippets: comments, statements, functions, regular expressions, ...
+- ... which come in an extendible template library
+- quickly comment the code by automatically generating function descriptions
+- run or compile the code from within Vim
+- run the syntax checker
+- quick access to the online reference manual
+- ... or read the manual inside Vim
+- make integration
+
+Some screen shots :  http://wolfgangmehner.github.io/vim-plugins/luasupport.html
+
+For plug-in managers :  https://github.com/WolfgangMehner/lua-support
+
+The help file online :  http://wolfgangmehner.github.io/vim-plugins/doc/luasupport.html
+
+While this plug-in is conceived as a successor of the original lua-support ( http://vim.sourceforge.net/scripts/script.php?script_id=1763 ), backwards compatibility is not guaranteed.
+However, we hope that the better configurability through the template library and other new features make for a product which is much better suited to deal with a language like Lua.
+
+
+DOCUMENTATION
+--------------------------------------------------------
+This plug-in comes with a help file (luasupport.txt). Read it with
+
+    :help luasupport
+
+GitHub
+--------------------------------------------------------
+Lua-Support is on GitHub:
+
+    https://github.com/WolfgangMehner/vim-plugins
+
+(Please help us keep track of all the issues and name your report/request "Lua-Support: <title>")
+
+MAILING LIST
+--------------------------------------------------------
+You can subscribe to the vim-plugins-list mailing list to post your questions or
+suggestions for improvement or to report bugs. The list will also be used to
+announce new releases ( c.vim / perl-support / bash-support / lua-support ).
+Visit the following page for subscribing to the mailing list:
+
+    http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list
+
+The vim-plugins-list list is very low on traffic.
+================================================================================
+===== install details
+================================================================================
+Copy the zip archive lua-support.zip to $HOME/.vim/ (Linux/Unix) or
+$HOME/vimfiles (Windows) and run:
+    unzip lua-support.zip
+
+Redo the helptags (Linux/Windows):
+    :helptags $HOME/.vim/doc/
+    :helptags $HOME\vimfiles\doc\
+
+You might have to set the correct executable. See lua-support/README.md or:
+    :help g:Lua_Executable
+(the default is "lua")
+
+To install the templates for Lua's C-API, please consult:
+    :help luasupport-usage-capi
+================================================================================
+===== end
+================================================================================

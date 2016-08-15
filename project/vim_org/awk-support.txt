@@ -1,50 +1,65 @@
 ================================================================================
 ===== summary
 ================================================================================
-VimScript IDE -- Insert code snippets, quickly comment the code and look up help
+AWK IDE -- Insert code snippets, run and check the code and look up help
 ================================================================================
 ===== detailed description
 ================================================================================
-Vim-Support implements a Vim Script-IDE for Vim/gVim. It has been written to
-considerably speed up writing code in a consistent style. This is done by
-inserting complete statements, comments, idioms, and code snippets.
+AWK-IDE for Vim/gVim is written to considerably speed up writing scripts in a
+consistent style. This is done by inserting complete statements, idioms, code
+snippets, templates, and comments. Compiling and viewing a document, format
+conversion and running make can be done with a few keystrokes.
 
-Some screen shots :  http://wolfgangmehner.github.io/vim-plugins/vimsupport.html
+- insert various types of comments
+- insert complete but empty statements
+- insert often used code snippets
+- ... which come in an extendible template library
+- run scripts or run syntax check from within the editor
+- show compilation errors in a quickfix window
 
-For plug-in managers :  https://github.com/WolfgangMehner/vim-support
+Some screen shots :  http://wolfgangmehner.github.io/vim-plugins/awksupport.html
 
-The help file online :  http://wolfgangmehner.github.io/vim-plugins/doc/vimsupport.html
+For plug-in managers :  https://github.com/WolfgangMehner/awk-support
 
-The key mappings of this plug-in :  wolfgangmehner.github.io/vim-plugins/vimsupport/vim-hotkeys.pdf
+The help file online :  http://wolfgangmehner.github.io/vim-plugins/doc/awksupport.html
+
+The key mappings of this plug-in :  wolfgangmehner.github.io/vim-plugins/awksupport/awk-hotkeys.pdf
 
 DOCUMENTATION
 --------------------------------------------------------
-This plug-in comes with a help file (vimsupport.txt). Read it with
+This plug-in comes with a help file (awksupport.txt). Read it with
 
-    :help vimsupport
+    :h awksupport
 
 ** PLEASE READ THE DOCUMENTATION **
 
 Editing actions differ for different modes! There are a lot of features which
 can be configured or customized to match your needs.
 
+GitHub
+--------------------------------------------------------
+AWK-Support is on GitHub:
+
+    https://github.com/WolfgangMehner/vim-plugins
+
+(Please help us keep track of all the issues and name your report/request "AWK-Support: <title>")
+
 MAILING LIST
 --------------------------------------------------------
 You can subscribe to the vim-plugins-list mailing list to post your questions or
 suggestions for improvement or to report bugs. The list will also be used to
-announce new releases ( c.vim / perl-support / bash-support / vim-support ).
+announce new releases ( c.vim / perl-support / bash-support / awk-support ).
 Visit the following page for subscribing to the mailing list:
 
     http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list
 
 The vim-plugins-list list is very low on traffic.
-
 ================================================================================
 ===== install details
 ================================================================================
-Copy the zip archive vim-support.zip to $HOME/.vim/ or $VIM/vimfiles
+Copy the zip archive awk-support.zip to $HOME/.vim/ or $VIM/vimfiles
 (on the Windows platforms) and run
-    unzip vim-support.zip
+    unzip awk-support.zip
 If you have already an older version of this plug-in and you have modified the
 template files you may want to save your templates first or copy the files from
 the archive by hand. See also the file README.md within the zip file.

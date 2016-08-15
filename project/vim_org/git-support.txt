@@ -1,0 +1,69 @@
+================================================================================
+===== summary
+================================================================================
+Inspect the state of a repository and execute Git commands without leaving Vim.
+================================================================================
+===== detailed description
+================================================================================
+Integration of Git for Vim/gVim:
+- use Git from within Vim and eliminate the need for context switches
+- quickly add the file in the current buffer or show its diff
+- the output of commands like "git status" is redirected into buffers
+- ... the commit can be manipulated from right there
+- show the stash, logs, branches, tags, remotes, ...
+- show the Git help in a buffer, or open it in the browser
+- each buffer comes with a short help: press <SHIFT+F1>
+- run arbitrary Git commands and optionally redirect their output into a buffer
+- start gitk with arguments: :GitK --all
+
+- comes with a menu, which also severs as an overview of the plug-in's functionality
+- custom menu for often used combination of arguments
+- configurable syntax highlighting designed to match Git's own highlighting
+- automatic folds for diffs and logs
+
+Some screen shots :  http://wolfgangmehner.github.io/vim-plugins/gitsupport.html
+
+For plug-in managers :  https://github.com/WolfgangMehner/git-support
+
+The help file online :  http://wolfgangmehner.github.io/vim-plugins/doc/gitsupport.html
+
+DOCUMENTATION
+--------------------------------------------------------
+This plug-in comes with a help file (gitsupport.txt). Read it with
+
+    :help git-support
+
+GitHub
+--------------------------------------------------------
+Git Support is on GitHub:
+
+    https://github.com/WolfgangMehner/vim-plugins
+
+(Please help us keep track of all the issues and name your report/request "Git-Support: <title>") 
+
+MAILING LIST
+--------------------------------------------------------
+You can subscribe to the vim-plugins-list mailing list to post your questions or
+suggestions for improvement or to report bugs. The list will also be used to
+announce new releases ( c.vim / bash-support / perl-support / git-support ).
+Visit the following page for subscribing to the mailing list:
+
+    http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list
+
+The vim-plugins-list list is very low on traffic.
+================================================================================
+===== install details
+================================================================================
+Copy the zip archive git-support.zip to $HOME/.vim/ (Linux/Unix) or $HOME/vimfiles (Windows) and run:
+    unzip git-support.zip
+
+Windows: Set the correct executable. See git-support/README.gitsupport or: 
+      :help g:Git_Executable
+(the default is "C:\Program Files\Git\bin\git.exe")
+
+Consider configuring the syntax highlighting. By default, the syntax hightlighting uses Vim's own syntax
+categories. See git-support/README.gitsupport or git-support/rc/additions.vimrc for information on how
+to configure the syntax highlighting to look more like Git's output.
+================================================================================
+===== end
+================================================================================

@@ -1,51 +1,63 @@
 ================================================================================
 ===== summary
 ================================================================================
-VimScript IDE -- Insert code snippets, quickly comment the code and look up help
+Bash IDE -- Insert code snippets, run, check and debug the code and look up help
 ================================================================================
 ===== detailed description
 ================================================================================
-Vim-Support implements a Vim Script-IDE for Vim/gVim. It has been written to
-considerably speed up writing code in a consistent style. This is done by
-inserting complete statements, comments, idioms, and code snippets.
+Write Bash-scripts by inserting comments, statements, tests, variables, built-ins, etc..
+Speed up writing new scripts considerably.
+Write code und comments with a professional appearance from the beginning.
 
-Some screen shots :  http://wolfgangmehner.github.io/vim-plugins/vimsupport.html
+Some screen shots :  http://wolfgangmehner.github.io/vim-plugins/bashsupport.html
 
-For plug-in managers :  https://github.com/WolfgangMehner/vim-support
+For plug-in managers :  https://github.com/WolfgangMehner/bash-support
 
-The help file online :  http://wolfgangmehner.github.io/vim-plugins/doc/vimsupport.html
+The help file online :  http://wolfgangmehner.github.io/vim-plugins/doc/bashsupport.html
 
-The key mappings of this plug-in :  wolfgangmehner.github.io/vim-plugins/vimsupport/vim-hotkeys.pdf
+The key mappings of this plug-in :  wolfgangmehner.github.io/vim-plugins/bashsupport/bash-hotkeys.pdf
+
+The installation explained :  "Make Vim as Your Bash-IDE Using bash-support Plugin"
+(http://www.thegeekstuff.com/2009/02/make-vim-as-your-bash-ide-using-bash-support-plugin)
+
+Plug-in featured in the linux.com article 'Turn Vim into a bash IDE' :  http://www.linux.com/articles/114359
 
 DOCUMENTATION
 --------------------------------------------------------
-This plug-in comes with a help file (vimsupport.txt). Read it with
+This plug-in comes with a help file (bashsupport.txt). Read it with
 
-    :help vimsupport
+    :help bashsupport
 
 ** PLEASE READ THE DOCUMENTATION **
 
 Editing actions differ for different modes! There are a lot of features which
 can be configured or customized to match your needs.
 
+GitHub
+--------------------------------------------------------
+Bash-Support is on GitHub:
+
+    https://github.com/WolfgangMehner/vim-plugins
+
+(Please help us keep track of all the issues and name your report/request "Bash-Support: <title>")
+
 MAILING LIST
 --------------------------------------------------------
 You can subscribe to the vim-plugins-list mailing list to post your questions or
 suggestions for improvement or to report bugs. The list will also be used to
-announce new releases ( c.vim / perl-support / bash-support / vim-support ).
+announce new releases ( c.vim / perl-support / bash-support / awk-support ).
 Visit the following page for subscribing to the mailing list:
 
     http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list
 
 The vim-plugins-list list is very low on traffic.
-
 ================================================================================
 ===== install details
 ================================================================================
-Copy the zip archive vim-support.zip to $HOME/.vim/ or $VIM/vimfiles
+Copy the zip archive bash-support.zip to $HOME/.vim/ or $VIM/vimfiles
 (on the Windows platforms) and run
-    unzip vim-support.zip
-If you have already an older version of this plug-in and you have modified the
+    unzip bash-support.zip
+If you have already an older version of this plugin and you have modified the
 template files you may want to save your templates first or copy the files from
 the archive by hand. See also the file README.md within the zip file.
 ================================================================================
