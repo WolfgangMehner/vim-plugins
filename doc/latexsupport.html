@@ -7,81 +7,80 @@
 <body>
 <h2>LATEXSUPPORT</h2>
 <pre>
-<b class="vimtag"><a name="latexsupport.txt">latexsupport.txt</a></b>           LATEX Support                         Aug 15 2014
+<b class="vimtag"><a name="latexsupport.txt">latexsupport.txt</a></b>              LaTeX Support                      Aug 21 2016
 
 LaTeX Support                                     <b class="vimtag"><a name="latex-support">latex-support</a></b> <b class="vimtag"><a name="latexsupport">latexsupport</a></b>
 
-                             Plugin version 1.1.1
+                             Plug-in version 1.2
                         for Vim version 7.0 and above
-                    Fritz Mehner  <code class="special">&lt;mehner.fritz@fh-swf.de&gt;</code>
                    Wolfgang Mehner <code class="special">&lt;wolfgang-mehner@web.de&gt;</code>
+                      Fritz Mehner <code class="special">&lt;mehner.fritz@web.de&gt;</code>
 
 LaTeX-IDE for Vim/gVim. It is written to considerably speed up typesetting a
-document in a consistent style.  This is done by inserting complete
-statements, idioms, code snippets, templates, and comments.  Compiling and
-viewing a document, format conversion and running make can be done with a few
-keystrokes.
+document in a consistent style. This is done by inserting complete statements,
+idioms, code snippets, and comments. Compiling and viewing a document, format
+conversion and running make can be done with a few keystrokes.
 
-1.     USAGE WITH GUI  (gVim)                       |<a href="latexsupport.html#latexsupport-usage-gvim">latexsupport-usage-gvim</a>|
-1.1    MENU 'Comments'                              |<a href="latexsupport.html#latexsupport-comments">latexsupport-comments</a>|
-1.1.1  Append Aligned Comments To Lines             |<a href="latexsupport.html#latexsupport-aligned-comm">latexsupport-aligned-comm</a>|
-1.1.2  Adjust End-Of-Line Comments                  |<a href="latexsupport.html#latexsupport-comm-realign">latexsupport-comm-realign</a>|
-1.1.3  Toggle Comments                              |<a href="latexsupport.html#latexsupport-comm-toggle">latexsupport-comm-toggle</a>|
-1.1.4  Frame Comments, File Header, ...             |<a href="latexsupport.html#latexsupport-comm-templates">latexsupport-comm-templates</a>|
-1.2    MENU 'Text'                                  |<a href="latexsupport.html#latexsupport-text">latexsupport-text</a>|
-1.2.1  Normal Mode, Insert Mode                     |<a href="latexsupport.html#latexsupport-stat-norm-ins">latexsupport-stat-norm-ins</a>|
-1.2.2  Visual Mode                                  |<a href="latexsupport.html#latexsupport-stat-visual">latexsupport-stat-visual</a>|
-1.3    MENU 'Math'                                  |<a href="latexsupport.html#latexsupport-math">latexsupport-math</a>|
-1.4    MENU 'Document'                              |<a href="latexsupport.html#latexsupport-documents">latexsupport-documents</a>|
-1.5    MENU 'BibTeX'                                |<a href="latexsupport.html#latexsupport-bibtex">latexsupport-bibtex</a>|
-1.6    MENU 'Snippets'                              |<a href="latexsupport.html#latexsupport-snippets">latexsupport-snippets</a>|
-1.6.1  Code Snippets                                |<a href="latexsupport.html#latexsupport-snippets-menu">latexsupport-snippets-menu</a>|
-1.6.2  Code Templates                               |<a href="latexsupport.html#latexsupport-templates-menu">latexsupport-templates-menu</a>|
-1.7    MENU 'Wizard'                                |<a href="latexsupport.html#latexsupport-wizard">latexsupport-wizard</a>|
-1.8    MENU 'Run'                                   |<a href="latexsupport.html#latexsupport-run">latexsupport-run</a>|
-1.8.1  Running A Typesetter                         |<a href="latexsupport.html#latexsupport-run-typesetter">latexsupport-run-typesetter</a>|
-1.9    MENU 'Tool Box'                              |<a href="latexsupport.html#latexsupport-toolbox">latexsupport-toolbox</a>|
-1.9.1  Make                                         |<a href="latexsupport.html#latexsupport-toolbox-make">latexsupport-toolbox-make</a>|
-1.10   MENU 'Help'                                  |<a href="latexsupport.html#latexsupport-help">latexsupport-help</a>|
+1.     Usage With GUI  (gVim)                 |<a href="latexsupport.html#latexsupport-usage-gvim">latexsupport-usage-gvim</a>|
+1.1    Menu 'Comments'                        |<a href="latexsupport.html#latexsupport-comments">latexsupport-comments</a>|
+1.1.1  Append Aligned Comments To Lines       |<a href="latexsupport.html#latexsupport-aligned-comm">latexsupport-aligned-comm</a>|
+1.1.2  Adjust End-Of-Line Comments            |<a href="latexsupport.html#latexsupport-comm-realign">latexsupport-comm-realign</a>|
+1.1.3  Toggle Comments                        |<a href="latexsupport.html#latexsupport-comm-toggle">latexsupport-comm-toggle</a>|
+1.1.4  Frame Comments, File Header, ...       |<a href="latexsupport.html#latexsupport-comm-templates">latexsupport-comm-templates</a>|
+1.2    Menu 'Text'                            |<a href="latexsupport.html#latexsupport-text">latexsupport-text</a>|
+1.2.1  Normal Mode, Insert Mode               |<a href="latexsupport.html#latexsupport-stat-norm-ins">latexsupport-stat-norm-ins</a>|
+1.2.2  Visual Mode                            |<a href="latexsupport.html#latexsupport-stat-visual">latexsupport-stat-visual</a>|
+1.3    Menu 'Math'                            |<a href="latexsupport.html#latexsupport-math">latexsupport-math</a>|
+1.4    Menu 'Document'                        |<a href="latexsupport.html#latexsupport-documents">latexsupport-documents</a>|
+1.5    Menu 'BibTeX'                          |<a href="latexsupport.html#latexsupport-bibtex">latexsupport-bibtex</a>|
+1.6    Menu 'Snippets'                        |<a href="latexsupport.html#latexsupport-snippets">latexsupport-snippets</a>|
+1.6.1  Code Snippets                          |<a href="latexsupport.html#latexsupport-snippets-menu">latexsupport-snippets-menu</a>|
+1.6.2  Code Templates                         |<a href="latexsupport.html#latexsupport-templates-menu">latexsupport-templates-menu</a>|
+1.7    Menu 'Wizard'                          |<a href="latexsupport.html#latexsupport-wizard">latexsupport-wizard</a>|
+1.8    Menu 'Run'                             |<a href="latexsupport.html#latexsupport-run">latexsupport-run</a>|
+1.8.1  Running A Typesetter                   |<a href="latexsupport.html#latexsupport-run-typesetter">latexsupport-run-typesetter</a>|
+1.9    Menu 'Tool Box'                        |<a href="latexsupport.html#latexsupport-toolbox">latexsupport-toolbox</a>|
+1.9.1  Make                                   |<a href="latexsupport.html#latexsupport-toolbox-make">latexsupport-toolbox-make</a>|
+1.10   Menu 'Help'                            |<a href="latexsupport.html#latexsupport-help">latexsupport-help</a>|
 
-2.     USAGE WITHOUT GUI  (Vim)                     |<a href="latexsupport.html#latexsupport-mappings">latexsupport-mappings</a>|
+2.     Usage Without GUI  (Vim)               |<a href="latexsupport.html#latexsupport-mappings">latexsupport-mappings</a>|
 
-3.     FUNCTION KEYS                                |<a href="latexsupport.html#latexsupport-function-keys">latexsupport-function-keys</a>|
+3.     Function Keys                          |<a href="latexsupport.html#latexsupport-function-keys">latexsupport-function-keys</a>|
 
-4.     CUSTOMIZATION                                |<a href="latexsupport.html#latexsupport-customization">latexsupport-customization</a>|
-4.1    FILES                                        |<a href="latexsupport.html#latexsupport-custom-files">latexsupport-custom-files</a>|
-4.2    GLOBAL VARIABLES                             |<a href="latexsupport.html#latexsupport-custom-variables">latexsupport-custom-variables</a>|
-4.3    THE ROOT MENU                                |<a href="latexsupport.html#latexsupport-custom-root">latexsupport-custom-root</a>|
-4.4    System-wide installation                     |<a href="latexsupport.html#latexsupport-system-wide">latexsupport-system-wide</a>|
+4.     Customization                          |<a href="latexsupport.html#latexsupport-customization">latexsupport-customization</a>|
+4.1    Files                                  |<a href="latexsupport.html#latexsupport-custom-files">latexsupport-custom-files</a>|
+4.2    Global Variables                       |<a href="latexsupport.html#latexsupport-custom-variables">latexsupport-custom-variables</a>|
+4.3    The Root Menu                          |<a href="latexsupport.html#latexsupport-custom-root">latexsupport-custom-root</a>|
+4.4    System-wide installation               |<a href="latexsupport.html#latexsupport-system-wide">latexsupport-system-wide</a>|
 
-5.     TEMPLATE FILES AND TAGS                      |<a href="latexsupport.html#latexsupport-templates">latexsupport-templates</a>|
-5.1    TEMPLATE FILES                               |<a href="latexsupport.html#latexsupport-templates-files">latexsupport-templates-files</a>|
-5.2    MACROS                                       |<a href="latexsupport.html#latexsupport-templates-macros">latexsupport-templates-macros</a>|
-5.2.1  User Defined Formats For Date And Time       |<a href="latexsupport.html#latexsupport-templates-date">latexsupport-templates-date</a>|
-5.3    TEMPLATES                                    |<a href="latexsupport.html#latexsupport-templates-names">latexsupport-templates-names</a>|
-5.3.1  Template definition                          |<a href="latexsupport.html#latexsupport-templates-definition">latexsupport-templates-definition</a>|
-5.3.2  The jump tags <code class="special">&lt;+text+&gt;</code> etc.                  |<a href="latexsupport.html#latexsupport-templates-jumptags">latexsupport-templates-jumptags</a>|
-5.3.3  Command Ctrl-j                               |<a href="latexsupport.html#latexsupport-Ctrl-j">latexsupport-Ctrl-j</a>|
+5.     Template Files and Tags                |<a href="latexsupport.html#latexsupport-templates">latexsupport-templates</a>|
+5.1    Template Files                         |<a href="latexsupport.html#latexsupport-templates-files">latexsupport-templates-files</a>|
+5.2    Macros                                 |<a href="latexsupport.html#latexsupport-templates-macros">latexsupport-templates-macros</a>|
+5.2.1  Formating Date and Time                |<a href="latexsupport.html#latexsupport-templates-date">latexsupport-templates-date</a>|
+5.3    Templates                              |<a href="latexsupport.html#latexsupport-templates-names">latexsupport-templates-names</a>|
+5.3.1  Template definition                    |<a href="latexsupport.html#latexsupport-templates-definition">latexsupport-templates-definition</a>|
+5.3.2  The jump tags <code class="special">&lt;+text+&gt;</code> etc.            |<a href="latexsupport.html#latexsupport-templates-jumptags">latexsupport-templates-jumptags</a>|
+5.3.3  Command Ctrl-j                         |<a href="latexsupport.html#latexsupport-Ctrl-j">latexsupport-Ctrl-j</a>|
 
-6.     LaTeX Dictionary                             |<a href="latexsupport.html#latexsupport-dictionary">latexsupport-dictionary</a>|
+6.     LaTeX Dictionary                       |<a href="latexsupport.html#latexsupport-dictionary">latexsupport-dictionary</a>|
 
-7.     Troubleshooting                              |<a href="latexsupport.html#latexsupport-troubleshooting">latexsupport-troubleshooting</a>|
-8.     Release <code class="note">Note</code>s                                |<a href="latexsupport.html#latexsupport-release-notes">latexsupport-release-notes</a>|
+7.     Troubleshooting                        |<a href="latexsupport.html#latexsupport-troubleshooting">latexsupport-troubleshooting</a>|
+8.     Release <code class="note">Note</code>s                          |<a href="latexsupport.html#latexsupport-release-notes">latexsupport-release-notes</a>|
 
 
 </pre><hr><pre>1.  USAGE WITH GUI  (gVim)                           <b class="vimtag"><a name="latexsupport-usage-gvim">latexsupport-usage-gvim</a></b>
 </pre><hr><pre>
-The root menu is not visible by default.  The root menu 'LaTeX' will appears
-after the first file with extension 'tex' with filetype 'tex' has been opened.
+The root menu is not visible by default. The root menu 'LaTeX' will appear
+when the first file with filetype 'tex' is opened.
 
-If the root menu 'LaTeX' is not visible you also can call it with the item
-"Load LaTeX Support" from the standard Tools-menu.  The item "Unload LaTeX
+If the root menu 'LaTeX' is not visible you also can load it with the item
+"Load LaTeX Support" from the standard Tools-menu. The item "Unload LaTeX
 Support" can be used to unload the LaTeX root menu.
-See|<a href="latexsupport.html#latexsupport-custom-root">latexsupport-custom-root</a>|.
+(Compare |<a href="latexsupport.html#latexsupport-custom-root">latexsupport-custom-root</a>|.)
 
 Nearly all menu items insert code snippets or comments. All of these are
 contained within template files and can be changed by the user to meet their
-requirements (see|<a href="latexsupport.html#latexsupport-templates">latexsupport-templates</a>|).
+requirements. (See |<a href="latexsupport.html#latexsupport-templates">latexsupport-templates</a>|.)
 
 </pre><hr><pre>1.1 MENU 'Comments'                                    <b class="vimtag"><a name="latexsupport-comments">latexsupport-comments</a></b>
 </pre><hr><pre>
@@ -258,22 +257,21 @@ The default value is 'gui'.
 contained within template files and can be changed by the users to meet their
 requirements (see|<a href="latexsupport.html#latexsupport-templates">latexsupport-templates</a>|on how to use the template system).
 
-The menu item 'edit local templates' opens the main template file in the
-user's home directory. This is usually the file
-'~/.vim/latex-support/templates/Templates'.  There may be dependent files
-loaded from the main file.  Now change whatever file you want, save it, and
-click on the menu item 'reread templates' to read in the file(s) and to
-rebuild the internal representation of the templates.
+The menu items 'edit ... templates' open various template files. The stock
+templates are usually located in the "local" template file:
+<code class="example">  ~/.vim/latex-support/templates/Templates</code>
+The template files named "custom" and "personal" can be used for
+customization, which avoids editing the stock templates.
+There may be dependent files loaded from the main files. Change whatever file
+you want, save it, and click on the menu item 'reread templates' to read in
+the file(s) and to rebuild the internal representation of the templates.
 
 Template browser
-</pre><hr><pre>Under a GUI a file requester will be put up. Without GUI the filename will be
-read from the command line. You can change this behavior by setting a global
-variable in your ~/.vimrc :
+</pre><hr><pre>When editing a template file, it is selected via |<code class="badlink">:Explore</code>|. You can change
+this behavior by setting a global variable in your ~/.vimrc (see
+|<a href="templatesupport.html#g:Templates_TemplateBrowser">g:Templates_TemplateBrowser</a>|):
 
-<code class="example"> let g:Latex_GuiTemplateBrowser = 'explorer'</code>
-
-The default value is 'gui'. 'explorer' will start the file explorer
-(see help|<a href="pi_netrw.html#:Explore">:Explore</a>|). To use the command line assign 'commandline'.
+<code class="example">  let g:Templates_TemplateBrowser = 'browse'</code>
 
 Template Style
 </pre><hr><pre>The template system supports different template styles. If there are more than
@@ -355,23 +353,14 @@ The entry 'texdoc' starts texdoc for the word (package, command) under the
 cursor. If there is no word under the cursor, you will be prompted for the
 name of a package.
 
-The entry 'english' opens an online dictionary for the word under the cursor.
+The entry 'English' opens an online dictionary for the word under the cursor.
 
 </pre><hr><pre>
-Under Windows, the browser for opening the online documentation has to be
-configured. To set the executable, the template library has to be modified.
-In case of a local installation (the default), choose:
-  LaTeX -&gt; Snippets -&gt; edit local templates
-and for a global installation:
-  LaTeX -&gt; Snippets -&gt; edit global templates
-Open the main template file 'Templates' and uncomment the line
-<code class="example"> &sect;SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )</code>
-by removing the leading '&sect;'
-<code class="example"> SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )</code>
-Then set the right executable. Mind the double quotes which escape the name of
-the executable.
-Finally, reread the template library using:
-  LaTeX -&gt; Snippets -&gt; reread templates
+The browser for opening the online documentation, or the English dictionary,
+can be configured by setting a global variable in your ~/.vimrc (see
+|<a href="templatesupport.html#g:Templates_InternetBrowserExec">g:Templates_InternetBrowserExec</a>| and |<a href="templatesupport.html#g:Templates_InternetBrowserFlags">g:Templates_InternetBrowserFlags</a>|):
+
+<code class="example">  let g:Templates_InternetBrowserExec = 'firefox'</code>
 
 </pre><hr><pre>2.  USAGE WITHOUT GUI  (Vim)                           <b class="vimtag"><a name="latexsupport-mappings">latexsupport-mappings</a></b>
 </pre><hr><pre>
@@ -438,15 +427,8 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      ´tlil      list environment, item+labels   (ni)
      ´tf        font style                      (niv)
      ´tfs       font size                       (niv)
-     ´tq        quotes, single                  (niv)
-     ´tqq       quotes, double                  (niv)
-     ´tgq       quotes, single, German          (niv)
-     ´tgqq      quotes, double, German          (niv)
-     ´tfq       quotes, single, French          (niv)
-     ´tfqq      quotes, double, French          (niv)
+     ´tq        quotes                          (niv)
      ´tsp       spacing                         (ni)
-     ´tsh       hspace                          (ni)
-     ´tsv       vspace                          (ni)
      ´ta        line alignment + spacing        (niv)
      ´ttc       textcomp characters             (ni)
      ´tbi       bibitem                         (ni)
@@ -467,8 +449,12 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      ´nv       view code snippet                (ni)
      ´nw       write code snippet               (niv)
      ´ne       edit code snippet                (ni)
+     ´ntg      edit global templates            (ni)
      ´ntl      edit local templates             (ni)
+     ´ntc      edit custom templates            (ni)
+     ´ntp      edit personal templates          (ni)
      ´ntr      reread templates                 (ni)
+     ´ntw      template setup wizard            (ni)
      ´nts      choose style                     (ni)
   -----------------------------------------------------------------
   Math
@@ -550,7 +536,7 @@ The following function keys are defined in normal, visual and insert mode:
 </pre><hr><pre>
 </pre><hr><pre>4.1  FILES                                         <b class="vimtag"><a name="latexsupport-custom-files">latexsupport-custom-files</a></b>
 </pre><hr><pre>
-README.latexsupport               The starting point.
+README.md                         The starting point.
 
 autoload/mmtemplates/core         The template system plug-in.
 
@@ -608,6 +594,10 @@ Several global variables are checked after the plug-in has been loaded to custom
  g:Latex_PdfPng      'convert'
  g:Latex_PsPdf       'ps2pdf'
 
+ g:Latex_CustomTemplateFile     $HOME.'/.vim/templates/latex.templates'
+ g:Latex_GlobalTemplateFile     $VIMRUNTIME.'/latex-support/templates/Templates'
+ g:Latex_LocalTemplateFile      $HOME.'/.vim/latex-support/templates/Templates'
+
  -- MS Windows ---------------------------------------------------------------
  g:Latex_Latex       'latex.exe    -src-specials -file-line-error -interaction=nonstopmode'
  g:Latex_Tex         'tex.exe      -src-specials -file-line-error -interaction=nonstopmode'
@@ -625,16 +615,18 @@ Several global variables are checked after the plug-in has been loaded to custom
  g:Latex_PdfPng      ''
  g:Latex_PsPdf       'ps2pdf.exe'
 
+ g:Latex_CustomTemplateFile     $HOME.'/vimfiles/templates/latex.templates'
+ g:Latex_GlobalTemplateFile     $VIMRUNTIME.'/latex-support/templates/Templates'
+ g:Latex_LocalTemplateFile      $HOME.'/vimfiles/latex-support/templates/Templates'
+
  -- all ----------------------------------------------------------------------
  g:Latex_CodeSnippets           root_dir.'latex-support/codesnippets/'
  g:Latex_CreateMenusDelayed     'yes'
  g:Latex_Dictionary_File        ''
- g:Latex_GlobalTemplateFile     root_dir.'latex-support/templates/Templates'
  g:Latex_GuiSnippetBrowser      'gui'
  g:Latex_InsertFileProlog       'yes'
  g:Latex_LineEndCommColDefault  49
  g:Latex_LoadMenus              'yes'
- g:Latex_LocalTemplateFile      $HOME.'/.vim/latex-support/templates/Templates'
  g:Latex_MapLeader              '´'
  g:Latex_Printheader            "%&lt;%f%h%m%&lt;  %=%<code class="special">{strftime('%x %X')}</code>     Page %N"
  g:Latex_RootMenu               'LaTe&amp;X'
@@ -690,6 +682,10 @@ The name of the (non-standard) code snippet directory (see below).
 
  <b class="vimtag"><a name="g:Latex_CreateMenusDelayed">g:Latex_CreateMenusDelayed</a></b>
 Delaying the initialization until the first TeX/LaTeX file is opened.
+
+ <b class="vimtag"><a name="g:Latex_CustomTemplateFile">g:Latex_CustomTemplateFile</a></b>
+Sets the custom template file, path+name, used to overwrite stock templates
+(see|<a href="latexsupport.html#latexsupport-templates">latexsupport-templates</a>|).
 
  <b class="vimtag"><a name="g:Latex_Dictionary_File">g:Latex_Dictionary_File</a></b>
 Path and filename of the LaTeX word list used for dictionary completion.
@@ -809,38 +805,34 @@ the following line in '~/.vimrc':
 
 As *** USER *** :
 
-This plug-in will try to create your private template directory:
+Use the template setup wizard:
+  LaTeX -&gt; Snippets -&gt; template setup wizard
+to create a personalization file and/or a custom template file.
 
-  ~/.vim/latex-support/templates
-
-containing a minimal personal main template file 'Templates'.  You should set
-some macros in this file with your personal information in order to obtain
-personalized comments,  e.g. something like this:
+The personalization file will be read by all plug-ins supporting this feature,
+and should contain only information relevant for all template libraries. You
+can set some macros in this file with your personal information in order to
+obtain personalized comments, e.g. something like this:
 
 <code class="example"> SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
 <code class="example"> SetMacro( 'AUTHORREF',   'fgm' )</code>
-<code class="example"> SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )</code>
-<code class="example"> SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )</code>
+<code class="example"> SetMacro( 'EMAIL',       'mehner.fritz@web.de' )</code>
 <code class="example"> SetMacro( 'COPYRIGHT',   'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
 
-You can also have local templates which override the global ones. To see a
-messages in this case set a global variable in '~/.vimrc' (Windows: '~\_vimrc'):
+Use the custom template file for LaTeX templates which override the global
+templates or to add new ones.
 
-  let g:Templates_MapInUseWarn = 0
-
-The default is '1'.
+The old system (before version 1.2), using a "local" template file,
+<code class="example">  ~/.vim/latex-support/templates</code>
+is still supported for backwards compatibility.
 
 Create your private snippet directory:
-
-  mkdir --parents  ~/.vim/latex-support/codesnippets
-
+<code class="example">  mkdir --parents  ~/.vim/latex-support/codesnippets</code>
 You may want to copy the snippets comming with this plug-in (in
 $VIM/vimfiles/latex-support/codesnippets) into the new directory or to set a
 link to the global directory.
 
 </pre><hr><pre>5.  TEMPLATE FILES AND TAGS                           <b class="vimtag"><a name="latexsupport-templates">latexsupport-templates</a></b>
-</pre><hr><pre>
-</pre><hr><pre>5.1  TEMPLATE FILES                             <b class="vimtag"><a name="latexsupport-templates-files">latexsupport-templates-files</a></b>
 </pre><hr><pre>
 Nearly all menu items insert code snippets or comments. All of these are
 contained within template files and can be changed by the user to meet their
@@ -855,22 +847,43 @@ The master template file is '$HOME/.vim/latex-support/templates/Templates' for
 a user installation and  '$VIM/vimfiles/latex-support/templates/Templates' for
 a system-wide installation (see |<a href="latexsupport.html#latexsupport-system-wide">latexsupport-system-wide</a>|).
 
-The master template file starts with a macro section followed by templates for
-single menu items or better by including other template files grouping the
+The master template file can be edited itself to adapt the templates/menus to
+the users need.  Alternatively, a custom template file can be added (see
+|<a href="latexsupport.html#g:Latex_CustomTemplateFile">g:Latex_CustomTemplateFile</a>|), which eliminates the need to edit stock
+templates. The personalization (name, email, ..., date and time format) can be
+done in a special personalization template file. It will be read by all
+plug-ins which support this feature, so it should only contain basic
+information not pertaining to a specific programming language. It can be set
+up using a wizard, which is run by the map \ntw or the menu entry:
+  LaTeX -&gt; Snippets -&gt; template setup wizard
+
+Further template files can be added using the call:
+<code class="example">  call mmtemplates#config#Add ( 'latex', '<code class="special">&lt;PATH&gt;</code>/some.templates', 'example', 'nte' )</code>
+The first parameter adds the file to your LaTeX templates, the second is the
+path. The remaining two optional parameters specify the symbolic name for
+these templates and the map to edit them. The map is '\nte' in this example,
+if the standard mapleader is set.
+
+</pre><hr><pre>5.1  TEMPLATE FILES                             <b class="vimtag"><a name="latexsupport-templates-files">latexsupport-templates-files</a></b>
+</pre><hr><pre>
+The master template file starts with various settings followed by templates
+for single menu items or better by including other template files grouping the
 templates according to the menu structure of this plug-in. The master file
-usually looks like this (my settings as an example):
+usually looks like this:
 
 Example:
 
 <code class="example"> &sect; ==========================================================</code>
-<code class="example"> &sect;  User Macros</code>
+<code class="example"> &sect;  Settings</code>
 <code class="example"> &sect; ==========================================================</code>
 <code class="example"></code>
-<code class="example"> SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
-<code class="example"> SetMacro( 'AUTHORREF',   'fgm' )</code>
-<code class="example"> SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )</code>
-<code class="example"> SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )</code>
-<code class="example"> SetMacro( 'COPYRIGHT',   'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
+<code class="example"> SetMacro( 'AUTHOR',       'YOUR NAME' )</code>
+<code class="example"> SetMacro( 'AUTHORREF',    '' )</code>
+<code class="example"> SetMacro( 'EMAIL',        '' )</code>
+<code class="example"> SetMacro( 'ORGANIZATION', '' )</code>
+<code class="example"> SetMacro( 'COMPANY',      '' )</code>
+<code class="example"> SetMacro( 'COPYRIGHT',    'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
+<code class="example"> SetMacro( 'LICENSE',      'GNU General Public License' )</code>
 <code class="example"></code>
 <code class="example"> &sect; =============================================================</code>
 <code class="example"> &sect;  File Includes</code>
@@ -893,19 +906,21 @@ Example:
 
 Lines starting with a section sign (&sect;) are comments. The section starting with
 
-<code class="example">  SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
+<code class="example">  SetMacro( 'AUTHOR',       'YOUR NAME' )</code>
 
-assigns values to predefined tags (macros).  Arbitrary user-defined macros are
+assigns values to predefined tags (macros). Arbitrary user-defined macros are
 possible. The macro name must follows the rules for a C language identifier:
-first character letter  or underscore; case matters; digits are allowed
+first character letter or underscore; case matters; digits are allowed
 beginning with the second character.
+Some of the macros assigned here are placeholders, they will be overwritten by
+template files read later on, which contain the user's configuration.
 
 The statement
 
 <code class="example">  IncludeFile( 'comments.templates' )</code>
 
 includes the templates from the file 'comments.templates' (in the same
-directory). An absolute path would also be possible.  The statement
+directory). An absolute path would also be possible. The statement
 
 <code class="example">  MenuShortcut( 'Comments',      'c' )</code>
 
@@ -932,6 +947,7 @@ personalize templates.
  <code class="special">&lt;CURSOR&gt;</code>           The cursor position after insertion of a template.
  <code class="special">&lt;+text+&gt;</code>,<code class="special">&lt;-text-&gt;</code>  See |<a href="latexsupport.html#latexsupport-templates-jumptags">latexsupport-templates-jumptags</a>|.
  <code class="special">{+text+}</code>,<code class="special">{-text-}</code>
+ [+text+],[-text-]
 
  <code class="special">&lt;SPLIT&gt;</code>            The split point when inserting in visual mode
                     (see|<a href="latexsupport.html#latexsupport-templates">latexsupport-templates</a>|)
@@ -939,11 +955,11 @@ personalize templates.
 A dependent template file can start with its own command section. There is no
 need to have all user defined macros in the master file.
 
+</pre><hr><pre>
+5.2.1  Formating Date and Time                   <b class="vimtag"><a name="latexsupport-templates-date">latexsupport-templates-date</a></b>
 
-</pre><hr><pre>5.2.1   USER DEFINED FORMATS FOR DATE AND TIME   <b class="vimtag"><a name="latexsupport-templates-date">latexsupport-templates-date</a></b>
-</pre><hr><pre>The format for <b class="vimtag"><a name="|DATE|">|DATE|</a></b> ,<b class="vimtag"><a name="|TIME|">|TIME|</a></b> , and<b class="vimtag"><a name="|YEAR|">|YEAR|</a></b> can be set by the user. The
-defaults are
-Example:
+The format for <b class="vimtag"><a name="|DATE|">|DATE|</a></b> ,<b class="vimtag"><a name="|TIME|">|TIME|</a></b> , and<b class="vimtag"><a name="|YEAR|">|YEAR|</a></b> can be set by the user. The
+defaults are:
 
 <code class="example">  |<code class="badlink">DATE</code>|        '%x'</code>
 <code class="example">  |<code class="badlink">TIME</code>|        '%X'</code>
@@ -962,7 +978,9 @@ master template file is '$HOME/.vim/latex-support/templates/Templates',  e.g.
 <code class="example"></code>
 </pre><hr><pre>5.3  TEMPLATES                                  <b class="vimtag"><a name="latexsupport-templates-names">latexsupport-templates-names</a></b>
 </pre><hr><pre>
-5.3.1    Template definition                <b class="vimtag"><a name="latexsupport-templates-definition">latexsupport-templates-definition</a></b>
+</pre><hr><pre>
+5.3.1  Template definition                 <b class="vimtag"><a name="latexsupport-templates-definition">latexsupport-templates-definition</a></b>
+
 The template behind a menu item is identified by a given name. The first part
 of the name identifies the menu name, the second part identifies the item.
 A template definition starts with a template header with the following syntax:
@@ -971,6 +989,7 @@ A template definition starts with a template header with the following syntax:
 
 The options are described here: |<a href="templatesupport.html#template-support-options">template-support-options</a>|.
 
+</pre><hr><pre>
 5.3.2  The jump tags <code class="special">&lt;+text+&gt;</code> etc.           <b class="vimtag"><a name="latexsupport-templates-jumptags">latexsupport-templates-jumptags</a></b>
 
 There are four jump tag types which can be used as jump targets in templates:
@@ -982,10 +1001,15 @@ There are four jump tag types which can be used as jump targets in templates:
  <code class="special">&lt;-text-&gt;</code>   Same as the two above. Will be removed if the template is used
  <code class="special">{-text-}</code>   in visual mode.
 
+ [+text+]   The "optional" tag. Serves as a jump tag, but can be deleted using
+            Ctrl-d.
+ [-text-]   Same as above, removed in visual mode.
+
 The text inside the brackets is userdefined and can be empty. The text can be
 composed from letters (uppercase and lowercase), digits, and underscores.
 After the insertion of an template these jump targets will be highlighted.
 
+</pre><hr><pre>
 5.3.3  Command Ctrl-j                                    <b class="vimtag"><a name="latexsupport-Ctrl-j">latexsupport-Ctrl-j</a></b>
 
 Use the command Ctrl-j to jump to the next target. The target will be removed
@@ -1034,10 +1058,10 @@ You can use Vim's dictionary feature <code class="keystroke">CTRL-X</code>, <cod
 
 </pre><hr><pre>8.  RELEASE <code class="note">NOTE</code>S                                 <b class="vimtag"><a name="latexsupport-release-notes">latexsupport-release-notes</a></b>
 </pre><hr><pre>
-See files README.latexsupport and doc/ChangeLog.
+See files latex-support/README.md and doc/ChangeLog.
 
-</pre><hr><pre>vim:tw=78:noet:ts=2:ft=help:norl:
+</pre><hr><pre>vim:tw=78:expandtab:ts=2:ft=help:norl:
 </pre>
-<p><i>Generated by vim2html on Fr 22. Aug 20:59:52 CEST 2014</i></p>
+<p><i>Generated by vim2html (modified) on So 21. Aug 20:22:43 CEST 2016</i></p>
 </body>
 </html>
