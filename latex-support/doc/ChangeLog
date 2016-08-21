@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.2
+---------------------------------------------------------------------------------------
+- Add 'g:Latex_CustomTemplateFile'.
+- Add template personalization file and setup wizard.
+- Change some templates.
+- Add maps to bibtex buffers.
+
+---------------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 1.1.1
 ---------------------------------------------------------------------------------------
 - Added some new templates.
