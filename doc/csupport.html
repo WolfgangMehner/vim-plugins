@@ -7,12 +7,14 @@
 <body>
 <h2>CSUPPORT</h2>
 <pre>
-<b class="vimtag"><a name="csupport.txt">csupport.txt</a></b>                  C/C++ Support                  March 22 2014
+<b class="vimtag"><a name="csupport.txt">csupport.txt</a></b>                  C/C++ Support                      Aug 14 2016
 
-C/C++ Support                                           <b class="vimtag"><a name="c-support">c-support</a></b> <b class="vimtag"><a name="csupport">csupport</a></b>
-                             Plugin version 6.1.1
+C/C++ Support                                            <b class="vimtag"><a name="c-support">c-support</a></b> <b class="vimtag"><a name="csupport">csupport</a></b>
+
+                             Plug-in version 6.2
                         for Vim version 7.0 and above
-                       Fritz Mehner  <code class="special">&lt;mehner@fh-swf.de&gt;</code>
+                   Wolfgang Mehner <code class="special">&lt;wolfgang-mehner@web.de&gt;</code>
+                (formerly Fritz Mehner <code class="special">&lt;mehner.fritz@web.de&gt;</code>)
 
 C/C++-IDE for Vim/gVim. It is written to considerably speed up writing code in
 a consistent style.  This is done by inserting complete statements,idioms,
@@ -24,7 +26,7 @@ keystroke.
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ++  The plug-in version 6.0+ is a rewriting of version 5.19+.               ++
 ++  The versions 5.0+ are based on a new and more powerful template system  ++
-++  (please see  |<a href="templatesupport.html#template-support">template-support</a>| for more information).                    ++
+++  (please see  |<a href="templatesupport.html#template-support">template-support</a>| for more information).                  ++
 ++  The template syntax has changed!                                        ++
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -37,7 +39,7 @@ keystroke.
  1.1.4   Comment to code                        |<a href="csupport.html#csupport-comm-to-code">csupport-comm-to-code</a>|
  1.1.5   Toggle non-C comments                  |<a href="csupport.html#csupport-comm-non-c">csupport-comm-non-c</a>|
  1.1.6   Frame comments, file header, ...       |<a href="csupport.html#csupport-comm-frame">csupport-comm-frame</a>|
- 1.1.7   File section comments         ..       |<a href="csupport.html#csupport-comm-sections">csupport-comm-sections</a>|
+ 1.1.7   File section comments                  |<a href="csupport.html#csupport-comm-sections">csupport-comm-sections</a>|
  1.1.8   Keyword comment, special comment       |<a href="csupport.html#csupport-comm-keyword">csupport-comm-keyword</a>|
  1.1.9   Macros                                 |<a href="csupport.html#csupport-comm-macros">csupport-comm-macros</a>|
  1.1.10  Date and date+time                     |<a href="csupport.html#csupport-comm-date">csupport-comm-date</a>|
@@ -716,22 +718,21 @@ want to use an extractor like cextract or something else.
 taken from template files and can be changed by the user to meet his
 requirements (see|<a href="csupport.html#csupport-templates">csupport-templates</a>|on how to use the template system).
 
-The menu item 'edit local templates' opens the main template file in a local
-plugin installation. This is usually the file
-'~/.vim/c-support/templates/Templates'.  There may be dependent files
-loaded from the main file.  Now change whatever file you want, save it, and
-click on the menu item 'reread templates' to read in the file(s) and to
-rebuild the internal representation of the templates.
+The menu items 'edit ... templates' open various template files. The stock
+templates are usually located in the "local" template file:
+<code class="example">  ~/.vim/c-support/templates/Templates</code>
+The template files named "custom" and "personal" can be used for
+customization, which avoids editing the stock templates.
+There may be dependent files loaded from the main files. Change whatever file
+you want, save it, and click on the menu item 'reread templates' to read in
+the file(s) and to rebuild the internal representation of the templates.
 
 Template browser
-</pre><hr><pre>Under a GUI a file requester will be put up. Without GUI the filename will be
-read from the command line. You can change this behavior by setting a global
-variable in your ~/.vimrc :
+</pre><hr><pre>When editing a template file, it is selected via |<code class="badlink">:Explore</code>|. You can change
+this behavior by setting a global variable in your ~/.vimrc (see
+|<a href="templatesupport.html#g:Templates_TemplateBrowser">g:Templates_TemplateBrowser</a>|):
 
-<code class="example"> let g:C_GuiTemplateBrowser = 'explorer'</code>
-
-The default value is 'gui'. 'explorer' will start the file explorer
-(see help|<a href="pi_netrw.html#:Explore">:Explore</a>|). To use the commandline asign 'commandline'.
+<code class="example">  let g:Templates_TemplateBrowser = 'browse'</code>
 
 Template Style
 </pre><hr><pre>The template system supports different template styles. If there are more than
@@ -807,11 +808,9 @@ The filename extension for an object file can be set in ~.vimrc :
 The default is '.o' ('.obj' for Windows).
 
 LINK
-'link' makes an executable from the current buffer. If the buffer is not
-saved, or no object is available or the object is older then the source step
-'save and compile' is executed first.
-The linkging will only be tried if the current buffer contains a main
-function.
+'link' makes an executable from the current buffer.  The buffer will be saved
+first if necessary.  The linking will only be tried if the current buffer
+contains a main function. No object file will be created.
 
 The behavior of the compiler / linker is determined by the options assigned to
 the variables described in |<a href="csupport.html#csupport-custom-glob-vars">csupport-custom-glob-vars</a>| (4.group).
@@ -822,9 +821,10 @@ the variables described in |<a href="csupport.html#csupport-custom-glob-vars">cs
   only. The same holds for g:C_CplusCFlags and g:C_CplusLFlags.
 
 RUN
-'run' runs the executable with the same name  as the current buffer. If the
-buffer is not saved, or no executable is available or the executable is older
-then the source steps 'save and compile' and 'link' are executed first.
+'run' runs the executable with the same name as the current buffer.  The
+buffer will be saved first if necessary.  'run' makes an executable from the
+current buffer if none is available.  The linking will only be tried if the
+current buffer contains a main function. No object file will be craeted.
 
 The filename extension for an executable can be set in ~.vimrc :
 
@@ -1015,7 +1015,7 @@ The first (uppercase) item shows the current method.  The default is 'vim'.
 This can be changed by setting the variable g:C_OutputGvim to another value.
 Possible values are 'vim', 'buffer' and 'xterm' .
 
-The xterm defaults can be set in ~/.vimrc by the variable g:C_XtermDefaults .
+The xterm defaults can be set in ~/.vimrc by the variable g:Xterm_Options .
 The default is "-fa courier -fs 12 -geometry 80x24" :
   font name     : -fa courier
   font size     : -fs 12
@@ -1071,28 +1071,19 @@ reference manuals must be installed (usually man(1) for Linux/Unix, see
 |<a href="csupport.html#csupport-custom-glob-vars">csupport-custom-glob-vars</a>|). The hotkey is \hm (for "help manual").
 
 English dictionary
-</pre><hr><pre>The menu item 'english' opens an online dictionary for the word under the
+</pre><hr><pre>The menu item 'English' opens an online dictionary for the word under the
 cursor.
 
 Doxygen reference
-</pre><hr><pre>The menu item 'doxygen cmd' opens the online reference for the Doxygen command
+</pre><hr><pre>The menu item 'Doxygen' opens the online reference for the Doxygen command
 under the cursor.
 
 </pre><hr><pre>
-Under Windows, the browser for opening the online documentation has to be
-configured. To set the executable, the template library has to be modified.
-In case of a local installation (the default), choose:
-  C/C++ -&gt; Snippets -&gt; edit local templates
-and for a global installation:
-  C/C++ -&gt; Snippets -&gt; edit global templates
-Open the main template file 'Templates' and uncomment the line
-<code class="example"> &sect;SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )</code>
-by removing the leading '&sect;'
-<code class="example"> SetMacro( 'HELP_BROWSER', '"C:\Program Files\Mozilla Firefox\firefox.exe"' )</code>
-Then set the right executable. Mind the double quotes which escape the name of
-the executable.
-Finally, reread the template library using:
-  C/C++ -&gt; Snippets -&gt; reread templates
+The browser for opening the online documentation, or the English dictionary,
+can be configured by setting a global variable in your ~/.vimrc (see
+|<a href="templatesupport.html#g:Templates_InternetBrowserExec">g:Templates_InternetBrowserExec</a>| and |<a href="templatesupport.html#g:Templates_InternetBrowserFlags">g:Templates_InternetBrowserFlags</a>|):
+
+<code class="example">  let g:Templates_InternetBrowserExec = 'firefox'</code>
 
 </pre><hr><pre>1.10  MENU 'Doxygen'                                        <b class="vimtag"><a name="csupport-doxygen">csupport-doxygen</a></b>
 </pre><hr><pre>
@@ -1133,17 +1124,14 @@ respect the column set by 'Comments-&gt;set end-of-line com. col' (see
 
 1.10.1  ENABLING THE MENU                            <b class="vimtag"><a name="csupport-doxygen-enable">csupport-doxygen-enable</a></b>
 
-The 'Doxygen' submenu is disabled by default. To enable it, the template
-library has to be modified. In case of a local installation (the default),
-choose:
-  C/C++ -&gt; Snippets -&gt; edit local templates
-and for a global installation:
-  C/C++ -&gt; Snippets -&gt; edit global templates
-Open the main template file 'Templates' and uncomment the line
-<code class="example">  &sect;IncludeFile( 'doxygen.template' )</code>
-by removing the leading '&sect;'
-<code class="example">  IncludeFile( 'doxygen.template' )</code>
-After a restart of the editor, the 'Doxygen' menu will appear.
+The 'Doxygen' submenu is disabled by default. To enable it, the Doxygen
+templates have to be added to the template library. Find out the path where
+the plug-in is installed (<code class="special">&lt;PATH_TO_PLUG&gt;</code>/plugin/c.vim) and add this line to
+the .vimrc:
+<code class="example">  call mmtemplates#config#Add ( 'C', '<code class="special">&lt;PATH_TO_PLUG&gt;</code>/c-support/templates/doxygen.templates', 'Doxygen', 'ntd' )</code>
+The first parameter adds the file to your C templates, the second is the path.
+The remaining two optional parameters specify the symbolic name for these
+templates and the map to edit them. The map is '\ntd' in this example.
 
 </pre><hr><pre>2.  USAGE WITHOUT GUI  (Vim)                              <b class="vimtag"><a name="csupport-usage-vim">csupport-usage-vim</a></b>
 </pre><hr><pre>
@@ -1239,6 +1227,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
   -- Preprocessor -------------------------------------------------------
 
      \pih      include standard library header     (n,i)
+     \piph     include POSIX header                (n,i)
      \pg       #include <code class="special">&lt;&gt;</code>  (global)               (n,i)
      \pl       #include ""  (local)                (n,i)
      \pd       #define                             (n,i)
@@ -1269,8 +1258,13 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \nc       clear  prototype(s)                 (n,i)
      \ns       show   prototype(s)                 (n,i)
 
+     \ntg      edit global template file           (n,i)
      \ntl      edit local templates                (n,i)
+     \ntc      edit custom template file           (n,i)
+     \ntp      edit personal template file         (n,i)
      \ntr      reread templates                    (n,i)
+     \ntw      template setup wizard               (n,i)
+     \nts      choose style                        (n,i)
      \njt      include jump tags                   (n,i)
 
   -- C++ ----------------------------------------------------------------
@@ -1403,11 +1397,11 @@ Several global variables are checked by the script to customize it:
  g:C_CodeCheckOptions       '-K13'
  g:C_CodeSnippets           plugin_dir.'/c-support/codesnippets/'
  g:C_Ctrl_j                 'on'
+ g:C_CustomTemplateFile     $HOME.'/.vim/templates/c.templates'
  g:C_Debugger               'gdb'
  g:C_Dictionary_File        ''
  g:C_GlobalTemplateFile     plugin_dir.'c-support/templates/Templates'
  g:C_GuiSnippetBrowser      'gui'
- g:C_GuiTemplateBrowser     'gui'
  g:C_InsertFileHeader       'yes'
  g:C_LFlags                 '-Wall -g -O0'
  g:C_Libs                   '-lm'
@@ -1424,7 +1418,8 @@ Several global variables are checked by the script to customize it:
  g:C_SourceCodeExtensions   'c cc cp cxx cpp CPP c++ C i ii'
  g:C_TypeOfH                'cpp'
  g:C_VimCompilerName        gcc
- g:C_XtermDefaults          '-fa courier -fs 12 -geometry 80x24'
+ g:Xterm_Executable         'xterm'
+ g:Xterm_Options            '-fa courier -fs 12 -geometry 80x24'
 
  Linux/UNIX:
   g:C_CCompiler             'gcc'
@@ -1457,7 +1452,8 @@ The variable plugin_dir will automatically be set to one of the following values
  g:C_CodeSnippets          : The name of the code snippet directory (see
                              |<a href="csupport.html#csupport-snippets">csupport-snippets</a>|).
  g:C_CplusCompiler         : The name of the C++ compiler.
- g:C_Ctrl_j                : hotkey Ctrl-j  'on'/'off' (see |<a href="csupport.html#csupport-Ctrl-j">csupport-Ctrl-j</a>|)
+ g:C_Ctrl_j                : hotkey Ctrl-j 'on'/'off' (see |<a href="csupport.html#csupport-Ctrl-j">csupport-Ctrl-j</a>|)
+ g:C_CustomTemplateFile    : sets the custom template file (see|<a href="csupport.html#csupport-templates">csupport-templates</a>|)
  g:C_Debugger              : the default debugging: 'gdb', 'kdbg', or 'ddd'
  g:C_Dictionary_File       : The name(s) of the dictionary file(s) used for
                              word completion (see also |<a href="csupport.html#csupport-dictionary">csupport-dictionary</a>|)
@@ -1465,14 +1461,13 @@ The variable plugin_dir will automatically be set to one of the following values
                              point required if not empty)
  g:C_GlobalTemplateFile    : sets the global template file (see |<a href="csupport.html#csupport-templates">csupport-templates</a>|)
  g:C_GuiSnippetBrowser     : code snippet browser: 'gui', 'commandline'
- g:C_GuiTemplateBrowser    : code template browser: 'gui', 'explorer', 'commandline'
  g:C_InsertFileHeader      : insert file prolog in a new file ('yes', 'no')
  g:C_LFlags                : Compiler flags used for linkage.
  g:C_Libs                  : Libraries to link with.
  g:C_LineEndCommColDefault : Default starting column for end-of-line comments.
  g:C_LoadMenus             : Load menus and mappings ("yes", "no") at startup.
  g:C_CreateMenusDelayed    : Load menus only with filetypes 'c' or 'cpp'
- g:C_LocalTemplateFile     : sets the local template file  (see |<a href="csupport.html#csupport-templates">csupport-templates</a>|)
+ g:C_LocalTemplateFile     : sets the local template file (see |<a href="csupport.html#csupport-templates">csupport-templates</a>|)
  g:C_Man                   : The name of the man utility.
  g:C_MapLeader             : the map leader for hotkeys (see ||<a href="csupport.html#csupport-usage-vim">csupport-usage-vim</a>|)
  g:C_MenuHeader            : Switch the submenu header on/off.
@@ -1487,7 +1482,10 @@ The variable plugin_dir will automatically be set to one of the following values
  g:C_SourceCodeExtensions  : filename extensions for C/C++ implementation files
  g:C_TypeOfH               : filetype of header files with extension 'h' (c,cpp)
  g:C_VimCompilerName       : the compiler name used by :compiler
- g:C_XtermDefaults         : the xterm defaults
+ g:Xterm_Executable        : the xterm executable
+ g:Xterm_Options           : the xterm options
+ g:C_XtermDefaults         : the xterm options
+                             (included for backwards compatibility)
 
 To override the default add appropriate assignments to ~/.vimrc .
 The following global variables can be changed on the fly from the Vim command
@@ -1562,37 +1560,34 @@ the following line in '~/.vimrc':
 
 As *** USER *** :
 
+Use the template setup wizard:
+  C -&gt; Snippets -&gt; template setup wizard
+to create a personalization file and/or a custom template file.
+
+The personalization file will be read by all plug-ins supporting this feature,
+and should contain only information relevant for all template libraries. You
+can set some macros in this file with your personal information in order to
+obtain personalized comments, e.g. something like this:
+
+<code class="example"> SetMacro( 'AUTHOR',      'Wolfgang Mehner' )</code>
+<code class="example"> SetMacro( 'AUTHORREF',   'wm' )</code>
+<code class="example"> SetMacro( 'EMAIL',       'wolfgang-mehner@web.de' )</code>
+<code class="example"> SetMacro( 'COPYRIGHT',   'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
+
+Use the custom template file for C templates which override the global
+templates or to add new ones.
+
+The old system (before version 6.2), using a "local" template file,
+<code class="example">  ~/.vim/c-support/templates</code>
+is still supported for backwards compatibility.
+
 Create your private snippet directory:
-
 <code class="example">  mkdir --parents  ~/.vim/c-support/codesnippets</code>
-
 You may want to copy the snippets coming with this plugin (in
 $VIM/vimfiles/c-support/codesnippets) into the new directory or to set a
 link to the global directory.
 
-Create your private template directory:
-
-<code class="example">  mkdir --parents  ~/.vim/c-support/templates</code>
-
-Create a private template file 'Templates' (compulsory) in this directory to
-overwrite some macros, e.g.
-
-<code class="example"> SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
-<code class="example"> SetMacro( 'AUTHORREF',   'fgm' )</code>
-<code class="example"> SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )</code>
-<code class="example"> SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )</code>
-<code class="example"> SetMacro( 'COPYRIGHT',   'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
-
-You can also have local templates which override the global ones. To see a
-messages in this case set a global variable in '~/.vimrc' (Windows: '~\_vimrc'):
-
-<code class="example">  let g:Templates_MapInUseWarn = 0</code>
-
-The default is '1'.
-
 </pre><hr><pre>5.  TEMPLATE FILES AND TAGS                               <b class="vimtag"><a name="csupport-templates">csupport-templates</a></b>
-</pre><hr><pre>
-</pre><hr><pre>5.1  TEMPLATE FILES                                 <b class="vimtag"><a name="csupport-templates-files">csupport-templates-files</a></b>
 </pre><hr><pre>
 Nearly all menu items insert code snippets or comments. All of these are
 contained within template files and can be changed by the user to meet their
@@ -1607,22 +1602,43 @@ The master template file is '$HOME/.vim/c-support/templates/Templates' for
 a user installation and  '$VIM/vimfiles/c-support/templates/Templates' for
 a system-wide installation (see |<a href="csupport.html#csupport-system-wide">csupport-system-wide</a>|).
 
-The master template file starts with a macro section followed by templates for
-single menu items or better by including other template files grouping the
+The master template file can be edited itself to adapt the templates/menus to
+the users need.  Alternatively, a custom template file can be added (see
+g:C_CustomTemplateFile), which eliminates the need to edit stock templates.
+The personalization (name, email, ..., date and time format) can be done in a
+special personalization template file. It will be read by all plug-ins which
+support this feature, so it should only contain basic information not
+pertaining to a specific programming language. It can be set up using a
+wizard, which is run by the map \ntw or the menu entry:
+  C/C++ -&gt; Snippets -&gt; template setup wizard
+
+Further template files can be added using the call:
+<code class="example">  call mmtemplates#config#Add ( 'C', '<code class="special">&lt;PATH&gt;</code>/some.templates', 'example', 'nte' )</code>
+The first parameter adds the file to your C templates, the second is the path.
+The remaining two optional parameters specify the symbolic name for these
+templates and the map to edit them. The map is '\nte' in this example, if the
+standard mapleader is set.
+
+</pre><hr><pre>5.1  TEMPLATE FILES                                 <b class="vimtag"><a name="csupport-templates-files">csupport-templates-files</a></b>
+</pre><hr><pre>
+The master template file starts with various settings followed by templates
+for single menu items or better by including other template files grouping the
 templates according to the menu structure of this plug-in. The master file
-usually looks like this (my settings as an example):
+usually looks like this:
+
+Example:
 
 <code class="example"> &sect; ==========================================================</code>
-<code class="example"> &sect;  User Macros</code>
+<code class="example"> &sect;  Settings</code>
 <code class="example"> &sect; ==========================================================</code>
 <code class="example"></code>
-<code class="example"> SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
-<code class="example"> SetMacro( 'AUTHORREF',   'fgm' )</code>
-<code class="example"> SetMacro( 'COMPANY',     '' )</code>
-<code class="example"> SetMacro( 'COPYRIGHT',   'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
-<code class="example"> SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )</code>
-<code class="example"> SetMacro( 'LICENSE',     'GNU General Public License' )</code>
-<code class="example"> SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )</code>
+<code class="example"> SetMacro( 'AUTHOR',       'YOUR NAME' )</code>
+<code class="example"> SetMacro( 'AUTHORREF',    '' )</code>
+<code class="example"> SetMacro( 'EMAIL',        '' )</code>
+<code class="example"> SetMacro( 'ORGANIZATION', '' )</code>
+<code class="example"> SetMacro( 'COMPANY',      '' )</code>
+<code class="example"> SetMacro( 'COPYRIGHT',    'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
+<code class="example"> SetMacro( 'LICENSE',      'GNU General Public License' )</code>
 <code class="example"></code>
 <code class="example"> SetStyle( 'C' )</code>
 <code class="example"></code>
@@ -1657,19 +1673,21 @@ usually looks like this (my settings as an example):
 <code class="example"></code>
 Lines starting with a section sign (&sect;) are comments. The section starting with
 
-<code class="example">  SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
+<code class="example">  SetMacro( 'AUTHOR',       'YOUR NAME' )</code>
 
-assigns values to predefined tags (macros).  Arbitrary user-defined macros are
+assigns values to predefined tags (macros). Arbitrary user-defined macros are
 possible. The macro name must follows the rules for a C language identifier:
-first character letter  or underscore; case matters; digits are allowed
+first character letter or underscore; case matters; digits are allowed
 beginning with the second character.
+Some of the macros assigned here are placeholders, they will be overwritten by
+template files read later on, which contain the user's configuration.
 
 The statement
 
 <code class="example">  IncludeFile( 'c.comments.templates' )</code>
 
 includes the templates from the file 'c.comments.templates' (in the same
-directory). An absolute path would also be possible.  The statement
+directory). An absolute path would also be possible. The statement
 
 <code class="example">  MenuShortcut( 'Comments',      'c' )</code>
 
@@ -1696,13 +1714,13 @@ personalize templates.
  <code class="special">&lt;CURSOR&gt;</code>           The cursor position after insertion of a template.
  <code class="special">&lt;+text+&gt;</code>,<code class="special">&lt;-text-&gt;</code>  See |<a href="csupport.html#csupport-templates-jumptags">csupport-templates-jumptags</a>|.
  <code class="special">{+text+}</code>,<code class="special">{-text-}</code>
+ [+text+],[-text-]
 
  <code class="special">&lt;SPLIT&gt;</code>            The split point when inserting in visual mode
                     (see|<a href="csupport.html#csupport-templates">csupport-templates</a>|)
 
 A dependent template file can start with its own command section. There is no
 need to have all user defined macros in the master file.
-
 
 </pre><hr><pre>5.2.1   USER DEFINED FORMATS FOR DATE AND TIME    <b class="vimtag"><a name="csupport-templates-date">csupport-templates-date</a></b>
 </pre><hr><pre>The format for <b class="vimtag"><a name="|DATE|">|DATE|</a></b> ,<b class="vimtag"><a name="|TIME|">|TIME|</a></b> , and<b class="vimtag"><a name="|YEAR|">|YEAR|</a></b> can be set by the user. The
@@ -1745,6 +1763,10 @@ There are four jump tag types which can be used as jump targets in templates:
 
  <code class="special">&lt;-text-&gt;</code>   Same as the two above. Will be removed if the template is used
  <code class="special">{-text-}</code>   in visual mode.
+
+ [+text+]   The "optional" tag. Serves as a jump tag, but can be deleted using
+            Ctrl-d.
+ [-text-]   Same as above, removed in visual mode.
 
 The text inside the brackets is userdefined and can be empty. The text can be
 composed from letters (uppercase and lowercase), digits, and underscores.
@@ -2009,15 +2031,28 @@ directory):
 * Splint and/or CodeCheck menu item not visible.
   - The program is not installed or not found (path not set) or not executable.
 
+* External programs (compiler, make, cmake, ...) are not running.
+  - Are they executable from the command line?
+  - Is the $PATH variable set correctly?
+  - Are the settings correct? See:
+      :help |<a href="csupport.html#csupport-custom-glob-vars">csupport-custom-glob-vars</a>|
+    Compare the documentation of the toolbox, such as |<a href="toolboxcmake.html#toolbox-cmake-issues">toolbox-cmake-issues</a>|,
+    |<a href="toolboxdoxygen.html#toolbox-doxygen-issues">toolbox-doxygen-issues</a>|
+  - Under Windows, make sure the options 'shell', 'shellcmdflag',
+    'shellquote', and 'shellxquote' are set correctly. If "cmd.exe" is used as
+    the 'shell', 'shellxquote' must be set to a double quote:
+      :set shellxquote=\"
+
 * Code incorrectly indented after template insertion. The indentation may be
   incorrect inside blocks,  if the <code class="special">&lt;CURSOR&gt;</code> tag also appears inside the block.
   See |<a href="templatesupport.html#template-support-templ-tags">template-support-templ-tags</a>| for a detailed explanation.
 
 </pre><hr><pre>13.  RELEASE <code class="note">NOTE</code>S                                    <b class="vimtag"><a name="csupport-release-notes">csupport-release-notes</a></b>
-</pre><hr><pre>See file c-support/doc/ChangeLog .
+</pre><hr><pre>
+See file c-support/doc/ChangeLog .
 
-</pre><hr><pre>vim:tw=78:noet:ts=2:ft=help:norl:expandtab:
+</pre><hr><pre>vim:tw=78:expandtab:ts=2:ft=help:norl:
 </pre>
-<p><i>Generated by vim2html on Mo 21. Apr 18:16:15 CEST 2014</i></p>
+<p><i>Generated by vim2html (modified) on Sa 27. Aug 18:27:23 CEST 2016</i></p>
 </body>
 </html>

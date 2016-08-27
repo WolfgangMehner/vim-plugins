@@ -170,12 +170,12 @@ config.c = {
 		MAINTAINER_MAIL = 'wolfgang-mehner@web.de',
 
 		GITHUB_USER = 'WolfgangMehner',
-		GITHUB_REPO = 'vim-plugins',
+		GITHUB_REPO = 'c-support',
 
 		IMG_MAIN_FILE    = 'csupport/menu_main.png',
 		IMG_MAIN_CAPTION = 'root menu',
 
-		REF_README = 'blob/master/c-support/README.md',
+		REF_README = 'blob/master/README.md',
 		REF_HELP   = config.plugin_links.c.doc,
 		REF_MAPS   = config.plugin_links.c.maps,
 	},
