@@ -7,12 +7,14 @@
 <body>
 <h2>PERLSUPPORT</h2>
 <pre>
-<b class="vimtag"><a name="perlsupport.txt">perlsupport.txt</a></b>                Perl Support                    Sep 24 2014
+<b class="vimtag"><a name="perlsupport.txt">perlsupport.txt</a></b>                Perl Support                      Jul 22 2016
+
 Perl Support                                      <b class="vimtag"><a name="perl-support">perl-support</a></b> <b class="vimtag"><a name="perlsupport">perlsupport</a></b>
 
-                            Plug-in version 5.3.2
+                             Plug-in version 5.4
                         for Vim version 7.0 and above
-                       Fritz Mehner  <code class="special">&lt;mehner@fh-swf.de&gt;</code>
+                   Wolfgang Mehner <code class="special">&lt;wolfgang-mehner@web.de&gt;</code>
+                      Fritz Mehner <code class="special">&lt;mehner.fritz@web.de&gt;</code>
 
 Perl Support implements a Perl-IDE for Vim/gVim. It is written to considerably
 speed up writing code in a consistent style.  This is done by inserting
@@ -427,22 +429,21 @@ The default value is 'gui'.
 contained within template files and can be changed by the user to meet their
 requirements (see|<a href="perlsupport.html#perlsupport-templates">perlsupport-templates</a>|on how to use the template system).
 
-The menu item 'edit local templates' opens the main template file in the users
-home directory. This is usually the file
-'~/.vim/perl-support/templates/Templates'.  There may be dependent files
-loaded from the main file.  Now change whatever file you want, save it, and
-click on the menu item 'reread templates' to read in the file(s) and to
-rebuild the internal representation of the templates.
+The menu items 'edit ... templates' open various template files. The stock
+templates are usually located in the "local" template file:
+<code class="example">  ~/.vim/perl-support/templates/Templates</code>
+The template files named "custom" and "personal" can be used for
+customization, which avoids editing the stock templates.
+There may be dependent files loaded from the main files. Change whatever file
+you want, save it, and click on the menu item 'reread templates' to read in
+the file(s) and to rebuild the internal representation of the templates.
 
 Template browser
-</pre><hr><pre>Under a GUI a file requester will be put up. Without GUI the filename will be
-read from the command line. You can change this behavior by setting a global
-variable in your ~/.vimrc :
+</pre><hr><pre>When editing a template file, it is selected via |<code class="badlink">:Explore</code>|. You can change
+this behavior by setting a global variable in your ~/.vimrc (see
+|<a href="templatesupport.html#g:Templates_TemplateBrowser">g:Templates_TemplateBrowser</a>|):
 
-<code class="example"> let g:Perl_GuiTemplateBrowser = 'explorer'</code>
-
-The default value is 'gui'. 'explorer' will start the file explorer
-(see help|<a href="pi_netrw.html#:Explore">:Explore</a>|). To use the command line assign 'commandline'.
+<code class="example">  let g:Templates_TemplateBrowser = 'browse'</code>
 
 Template Style
 </pre><hr><pre>The template system supports different template styles. If there are more than
@@ -1270,7 +1271,7 @@ value.  Possible values are 'vim', 'buffer' and 'xterm'.
 Vim (non-GUI) : The output destination can be toggled between (1) and (2)
                 using the hotkey \ro .
 
-The xterm defaults can be set in .vimrc by the variable g:Perl_XtermDefaults .
+The xterm defaults can be set in .vimrc by the variable g:Xterm_Options .
 The default is "-fa courier -fs 12 -geometry 80x24" :
   font name     : -fa courier
   font size     : -fs 12
@@ -1296,12 +1297,28 @@ To switch the make tool box off add the following line to the file .vimrc
 
 The hotkeys for the make tool are defined in the file ~/.vim/ftplugin/perl.vim .
 
-</pre><hr><pre>1.11  Menu 'help'                                           <b class="vimtag"><a name="perlsupport-help">perlsupport-help</a></b>
+</pre><hr><pre>1.11  Menu 'Help'                                           <b class="vimtag"><a name="perlsupport-help">perlsupport-help</a></b>
 </pre><hr><pre>
-The root menu item 'help' (hotkey \hp ) shows this plug-in help in a help
-window.  The help tags must have been generated with
+This submenu offers convenient access to various documentations.
+
+The entry 'read perldoc' (hotkey "\h") looks up documentation for the word
+under the cursor. If there is no word under the cursor you will be asked for
+the name of a module or function.
+
+The entry 'English' (hotkey "\he") opens an online dictionary for the word
+under the cursor.
+
+The menu item 'help (Perl-Support)' (hotkey "\hp") shows this plug-in's help
+in a help window. The help tags must have been generated with
 
 <code class="example">  :helptags ~/.vim/doc</code>
+
+</pre><hr><pre>
+The browser for opening the online documentation, or the English dictionary,
+can be configured by setting a global variable in your ~/.vimrc (see
+|<a href="templatesupport.html#g:Templates_InternetBrowserExec">g:Templates_InternetBrowserExec</a>| and |<a href="templatesupport.html#g:Templates_InternetBrowserFlags">g:Templates_InternetBrowserFlags</a>|):
+
+<code class="example">  let g:Templates_InternetBrowserExec = 'firefox'</code>
 
 </pre><hr><pre>2.  USAGE WITHOUT GUI  (Vim)                            <b class="vimtag"><a name="perlsupport-mappings">perlsupport-mappings</a></b>
 </pre><hr><pre>
@@ -1366,8 +1383,12 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \nv        view code snippet                  (inv)
      \nw        write code snippet                 (inv)
 
+     \ntg       edit global template file          (in )
      \ntl       edit local template file           (in )
+     \ntc       edit custom template file          (in )
+     \ntp       edit personal template file        (in )
      \ntr       reread template file               (in )
+     \ntw       template setup wizard              (in )
      \nts       choose template style              (in )
      \ntj       jump tags                          (in )
      \nxs       regex code snippet documentation   (in )
@@ -1412,7 +1433,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \vid       IDs                                (in )
      \vio       IO                                 (in )
      \vr        regexp                             (in )
-     \vs        POSIX signals                      (in )
+     \vps       POSIX signals                      (in )
 
   -- POD -----------------------------------------------
 
@@ -1500,8 +1521,11 @@ The following mappings work also for filetype 'pod':
   \nw        write code snippet                (inv)
   \ne        edit code snippet                 (in )
 
-  \ntl       edit local template file          (in )
   \ntg       edit global template file         (in )
+  \ntl       edit local template file          (in )
+  \ntc       edit custom template file         (in )
+  \ntw       template setup wizard             (in )
+  \ntp       edit personal template file       (in )
   \ntr       reread template file              (in )
 
   -- POD -----------------------------------------------
@@ -1580,7 +1604,7 @@ unintentional use.  Use mappings instead (|<a href="perlsupport.html#perlsupport
 </pre><hr><pre>
 </pre><hr><pre>4.1  FILES                                          <b class="vimtag"><a name="perlsupport-custom-files">perlsupport-custom-files</a></b>
 </pre><hr><pre>
-README.perlsupport                The starting point.
+perl-support/README.md            The starting point.
 
 autoload/perlsupportgui.vim       Menu definitions.
 autoload/perlsupportregex.vim     Regex analyser code.
@@ -1646,24 +1670,25 @@ Several global variables are checked by the script to customize it:
 </pre><hr><pre>global variable                default value               tag (see below)
 </pre><hr><pre>g:Perl_GlobalTemplateFile      root_dir.'perl-support/templates/Templates'
 g:Perl_LocalTemplateFile       $HOME.'/.vim/perl-support/templates/Templates'
+g:Perl_CustomTemplateFile      $HOME.'/.vim/templates/perl.templates'
 g:Perl_Ctrl_j                  'on'
 
 g:Perl_CodeSnippets            root_dir.'perl-support/codesnippets/'
 g:Perl_LoadMenus               'yes'
 g:Perl_Dictionary_File         ''
-g:Perl_MenuHeader              'yes'
 g:Perl_GuiSnippetBrowser       'gui'
-g:Perl_GuiTemplateBrowser      'gui'
 g:Perl_InsertFileHeader        'yes'
 g:Perl_CreateMenusDelayed      'yes'
 g:Perl_PerlTags                'off'
 g:Perl_PerltidyBackup          'off'
+g:Perl_Executable              "/usr/bin/perl" or "C:/Perl/bin/perl.exe"
 g:Perl_DirectRun               'no'
 
 g:Perl_PerlModuleList          root_dir.'perl-support/modules/perl-modules.list'
 g:Perl_PerlModuleListGenerator root_dir.'perl-support/scripts/pmdesc3.pl'
 g:Perl_OutputGvim              "vim"
-g:Perl_XtermDefaults           "-fa courier -fs 12 -geometry 80x24"
+g:Xterm_Executable             "xterm"
+g:Xterm_Options                "-fa courier -fs 12 -geometry 80x24"
 g:Perl_Debugger                "perl"
 g:Perl_TimestampFormat         '%Y%m%d.%H%M%S'
 g:Perl_LineEndCommColDefault   49
@@ -1688,20 +1713,22 @@ g:Perl_MapLeader               '\'
  1. group: Sets the template directory and the names of the template files (see below).
            g:Perl_GlobalTemplateFile      : sets the global template file  (see|<a href="perlsupport.html#perlsupport-templates">perlsupport-templates</a>|)
            g:Perl_LocalTemplateFile       : sets the local template file  (see|<a href="perlsupport.html#perlsupport-templates">perlsupport-templates</a>|)
+           g:Perl_CustomTemplateFile      : sets the custom template file  (see|<a href="perlsupport.html#perlsupport-templates">perlsupport-templates</a>|)
            g:Perl_Ctrl_j                  : hotkey Ctrl-j  'on'/'off' (see|<a href="perlsupport.html#perlsupport-Ctrl-j">perlsupport-Ctrl-j</a>|)
 
  2. group: g:Perl_CodeSnippets       : The name of the (non-standard) code snippet directory (see below).
            g:Perl_LoadMenus          : Load menus and mappings ("yes", "no") at startup.
            g:Perl_Dictionary_File    : Path and filename of the Perl word list used for
                                        dictionary completion (see below).
-           g:Perl_MenuHeader         : Switch submenu titles on/off.
            g:Perl_GuiSnippetBrowser  : code snippet browser: 'gui', 'commandline'
-           g:Perl_GuiTemplateBrowser : code template browser: 'gui', 'explorer', 'commandline'
            g:Perl_InsertFileHeader   : insert file description comment in a new file ('yes', 'no')
            g:Perl_CreateMenusDelayed : Delaying the initialization until the first file is opened.
            g:Perl_PerlTags           : switch use of Perl::Tags on/off ( 'on', 'off' )
            g:Perl_Perltidy           : use perltidy as standard beautifier
            g:Perl_PerltidyBackup     : write a backup file before running perltidy
+           g:Perl_Executable         : the Perl executable
+           g:Perl_Perl               : the Perl executable (included for backwards
+                                       compatibility only)
            g:Perl_DirectRun          : run script via shebang
 
  3. group: g:Perl_PerlModuleList          : The name of the Perl module list (text file,
@@ -1711,7 +1738,10 @@ g:Perl_MapLeader               '\'
            g:Perl_OutputGvim              : when script is running output goes to the vim
                                             command line ("vim"), to a buffer ("buffer")
                                             or to an xterm ("xterm").
-           g:Perl_XtermDefaults           : the xterm defaults
+           g:Xterm_Executable             : the xterm executable
+           g:Xterm_Options                : the xterm options
+           g:Perl_XtermDefaults           : the xterm options (included for backwards
+                                            compatibility only)
            g:Perl_Debugger                : the debugger called by F9 (perl, ptkdb, ddd).
            g:Perl_TimestampFormat         : trailing time stamp for a file
            g:Perl_LineEndCommColDefault   : default starting column for line end comments
@@ -1880,31 +1910,29 @@ the following line in '~/.vimrc':
 
 As *** USER *** :
 
-This plug-in will try to create your private template directory:
+Use the template setup wizard:
+  Perl -&gt; Snippets -&gt; template setup wizard
+to create a personalization file and/or a custom template file.
 
-  ~/.vim/perl-support/templates
-
-containing a minimal personal main template file 'Templates'.  You should set
-some macros in this file with your personal information in order to obtain
-personalized comments,  e.g. something like this:
+The personalization file will be read by all plug-ins supporting this feature,
+and should contain only information relevant for all template libraries. You
+can set some macros in this file with your personal information in order to
+obtain personalized comments, e.g. something like this:
 
 <code class="example"> SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
 <code class="example"> SetMacro( 'AUTHORREF',   'fgm' )</code>
-<code class="example"> SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )</code>
-<code class="example"> SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )</code>
+<code class="example"> SetMacro( 'EMAIL',       'mehner.fritz@web.de' )</code>
 <code class="example"> SetMacro( 'COPYRIGHT',   'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
 
-You can also have local templates which override the global ones. To see a
-messages in this case set a global variable in '~/.vimrc' (Windows: '~\_vimrc'):
+Use the custom template file for Perl templates which override the global
+templates or to add new ones.
 
-	let g:Templates_MapInUseWarn = 0
-
-The default is '1'.
+The old system (before version 5.4), using a "local" template file,
+<code class="example">  ~/.vim/perl-support/templates</code>
+is still supported for backwards compatibility.
 
 Create your private snippet directory:
-
-  mkdir --parents  ~/.vim/perl-support/codesnippets
-
+<code class="example">  mkdir --parents  ~/.vim/perl-support/codesnippets</code>
 You may want to copy the snippets comming with this plug-in (in
 $VIM/vimfiles/perl-support/codesnippets) into the new directory or to set a
 link to the global directory.
@@ -1929,7 +1957,7 @@ The use of Perl 6 (or another interpreter) can be enabled in two way.
 The interpreter which runs ascript from inside Vim can be set globally
 in ~/.vimrc by
 
-<code class="example"> let g:Perl_Perl	= '/usr/bin/perl6'</code>
+<code class="example"> let g:Perl_Executable	= '/usr/bin/perl6'</code>
 
 Drawback for the moment: syntax checking does not work.
 
@@ -1949,8 +1977,6 @@ all Perl5-scripts via their first line, e.g.
 
 </pre><hr><pre>5.  TEMPLATE FILES AND TAGS                            <b class="vimtag"><a name="perlsupport-templates">perlsupport-templates</a></b>
 </pre><hr><pre>
-</pre><hr><pre>5.1  TEMPLATE FILES                              <b class="vimtag"><a name="perlsupport-templates-files">perlsupport-templates-files</a></b>
-</pre><hr><pre>
 Nearly all menu items insert code snippets or comments. All of these are
 contained within template files and can be changed by the user to meet their
 requirements. The menu shortcuts (e.g. 'c' for the Comments menu) and the
@@ -1964,22 +1990,43 @@ The master template file is '$HOME/.vim/perl-support/templates/Templates' for
 a user installation and  '$VIM/vimfiles/perl-support/templates/Templates' for
 a system-wide installation (see |<a href="perlsupport.html#perlsupport-system-wide">perlsupport-system-wide</a>|).
 
-The master template file starts with a macro section followed by templates for
-single menu items or better by including other template files grouping the
+The master template file can be edited itself to adapt the templates/menus to
+the users need.  Alternatively, a custom template file can be added (see
+g:Perl_CustomTemplateFile), which eliminates the need to edit stock templates.
+The personalization (name, email, ..., date and time format) can be done in a
+special personalization template file. It will be read by all plug-ins which
+support this feature, so it should only contain basic information not
+pertaining to a specific programming language. It can be set up using a
+wizard, which is run by the map \ntw or the menu entry:
+  Perl -&gt; Snippets -&gt; template setup wizard
+
+Further template files can be added using the call:
+<code class="example">  call mmtemplates#config#Add ( 'perl', '<code class="special">&lt;PATH&gt;</code>/some.templates', 'example', 'nte' )</code>
+The first parameter adds the file to your Perl templates, the second is the
+path. The remaining two optional parameters specify the symbolic name for
+these templates and the map to edit them. The map is '\nte' in this example,
+if the standard mapleader is set.
+
+</pre><hr><pre>5.1  TEMPLATE FILES                              <b class="vimtag"><a name="perlsupport-templates-files">perlsupport-templates-files</a></b>
+</pre><hr><pre>
+The master template file starts with various settings followed by templates
+for single menu items or better by including other template files grouping the
 templates according to the menu structure of this plug-in. The master file
-usually looks like this (my settings as an example):
+usually looks like this:
 
 Example:
 
 <code class="example"> &sect; ==========================================================</code>
-<code class="example"> &sect;  User Macros</code>
+<code class="example"> &sect;  Settings</code>
 <code class="example"> &sect; ==========================================================</code>
 <code class="example"></code>
-<code class="example"> SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
-<code class="example"> SetMacro( 'AUTHORREF',   'fgm' )</code>
-<code class="example"> SetMacro( 'EMAIL',       'mehner.fritz@fh-swf.de' )</code>
-<code class="example"> SetMacro( 'ORGANIZATION','FH Südwestfalen, Iserlohn' )</code>
-<code class="example"> SetMacro( 'COPYRIGHT',   'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
+<code class="example"> SetMacro( 'AUTHOR',       'YOUR NAME' )</code>
+<code class="example"> SetMacro( 'AUTHORREF',    '' )</code>
+<code class="example"> SetMacro( 'EMAIL',        '' )</code>
+<code class="example"> SetMacro( 'ORGANIZATION', '' )</code>
+<code class="example"> SetMacro( 'COMPANY',      '' )</code>
+<code class="example"> SetMacro( 'COPYRIGHT',    'Copyright (c) |<code class="badlink">YEAR</code>|, |<code class="badlink">AUTHOR</code>|' )</code>
+<code class="example"> SetMacro( 'LICENSE',      'GNU General Public License' )</code>
 <code class="example"></code>
 <code class="example"> SetStyle( 'default' )</code>
 <code class="example"></code>
@@ -2005,19 +2052,21 @@ Example:
 
 Lines starting with a section sign (&sect;) are comments. The section starting with
 
-<code class="example">  SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )</code>
+<code class="example">  SetMacro( 'AUTHOR',       'YOUR NAME' )</code>
 
-assigns values to predefined tags (macros).  Arbitrary user-defined macros are
+assigns values to predefined tags (macros). Arbitrary user-defined macros are
 possible. The macro name must follows the rules for a C language identifier:
 first character letter  or underscore; case matters; digits are allowed
 beginning with the second character.
+Some of the macros assigned here are placeholders, they will be overwritten by
+template files read later on, which contain the user's configuration.
 
 The statement
 
 <code class="example">  IncludeFile( 'comments.templates' )</code>
 
 includes the templates from the file 'comments.templates' (in the same
-directory). An absolute path would also be possible.  The statement
+directory). An absolute path would also be possible. The statement
 
 <code class="example">  MenuShortcut( 'Comments',      'c' )</code>
 
@@ -2044,13 +2093,13 @@ personalize templates.
  <code class="special">&lt;CURSOR&gt;</code>           The cursor position after insertion of a template.
  <code class="special">&lt;+text+&gt;</code>,<code class="special">&lt;-text-&gt;</code>  See |<a href="perlsupport.html#perlsupport-templates-jumptags">perlsupport-templates-jumptags</a>|.
  <code class="special">{+text+}</code>,<code class="special">{-text-}</code>
+ [+text+],[-text-]
 
  <code class="special">&lt;SPLIT&gt;</code>            The split point when inserting in visual mode
                     (see|<a href="perlsupport.html#perlsupport-templates">perlsupport-templates</a>|)
 
 A dependent template file can start with its own command section. There is no
 need to have all user defined macros in the master file.
-
 
 </pre><hr><pre>5.2.1   USER DEFINED FORMATS FOR DATE AND TIME    <b class="vimtag"><a name="perlsupport-templates-date">perlsupport-templates-date</a></b>
 </pre><hr><pre>The format for <b class="vimtag"><a name="|DATE|">|DATE|</a></b> ,<b class="vimtag"><a name="|TIME|">|TIME|</a></b> , and<b class="vimtag"><a name="|YEAR|">|YEAR|</a></b> can be set by the user. The
@@ -2093,6 +2142,10 @@ There are four jump tag types which can be used as jump targets in templates:
 
  <code class="special">&lt;-text-&gt;</code>   Same as the two above. Will be removed if the template is used
  <code class="special">{-text-}</code>   in visual mode.
+
+ [+text+]   The "optional" tag. Serves as a jump tag, but can be deleted using
+            Ctrl-d.
+ [-text-]   Same as above, removed in visual mode.
 
 The text inside the brackets is userdefined and can be empty. The text can be
 composed from letters (uppercase and lowercase), digits, and underscores.
@@ -2346,6 +2399,10 @@ for the system
   - Script set executable (file access permission under LINUX/UNIX) ?
   - Script syntax correct ?
   - Necessary modules installed ?
+  - Under Windows, make sure the options 'shell', 'shellcmdflag',
+    'shellquote', and 'shellxquote' are set correctly. If "cmd.exe" is used as
+    the 'shell', 'shellxquote' must be set to a double quote:
+      :set shellxquote=\"
 
 * Some hotkeys (e.g. x-F9) do not work.
   - The hotkeys might be in use by your graphical desktop environment.
@@ -2365,7 +2422,7 @@ for the system
 
 </pre><hr><pre>15.  RELEASE <code class="note">NOTE</code>S / CHANGELOG                     <b class="vimtag"><a name="perlsupport-release-notes">perlsupport-release-notes</a></b>
 </pre><hr><pre>
-See files 'README.perlsupport' and 'ChangeLog'.
+See files 'README.md' and 'ChangeLog'.
 
 </pre><hr><pre>16.  CREDITS                                             <b class="vimtag"><a name="perlsupport-credits">perlsupport-credits</a></b>
 </pre><hr><pre>
@@ -2384,8 +2441,8 @@ David Fishburn contributed changes for the Windows platform and suggested to
 The code snippet files pod-template-application.pl and pod-template-module.pl
   are taken from Damian Conway's book "Perl Best Practices".
 
-</pre><hr><pre>vim:tw=78:noet:ts=2:ft=help:norl:
+</pre><hr><pre>vim:tw=78:expandtab:ts=2:ft=help:norl:
 </pre>
-<p><i>Generated by vim2html on Do 25. Sep 21:02:49 CEST 2014</i></p>
+<p><i>Generated by vim2html (modified) on Sa 27. Aug 18:48:57 CEST 2016</i></p>
 </body>
 </html>
