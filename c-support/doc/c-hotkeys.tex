@@ -135,7 +135,7 @@ Key mappings for Vim and gVim.\\
 %%======================================================================
 %
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
-\begin{tabular}[]{|p{15mm}|p{55mm}|}
+\begin{tabular}[]{|p{11mm}|p{60mm}|}
 %%----------------------------------------------------------------------
 %%  menu statements
 %%----------------------------------------------------------------------
@@ -155,6 +155,40 @@ Key mappings for Vim and gVim.\\
 \hline \verb'\sc'  & \verb'case'                \hfill (n,i)\\
 \hline \verb'\sb'  & \verb'{ }'                 \hfill (n,v,i)\\
 \hline
+%%----------------------------------------------------------------------
+%%  idioms menu
+%%----------------------------------------------------------------------
+\hline
+\multicolumn{2}{|r|}{\textsl{\textbf{I}dioms}}   \\
+\hline \verb'\if'  & function                           \hfill (n,v,i)\\
+\hline \verb'\isf' & static function                    \hfill (n,v,i)\\
+\hline \verb'\im'  & \verb'main()'                      \hfill (n,v,i)\\
+\hline \verb'\ie'  & \verb'enum'   + \verb'typedef'     \hfill (n,v,i)\\
+\hline \verb'\is'  & \verb'struct' + \verb'typedef'     \hfill (n,v,i)\\
+\hline \verb'\iu'  & \verb'union'  + \verb'typedef'     \hfill (n,v,i)\\
+\hline \verb'\ipr' & \verb'printf()'                    \hfill (n,i)\\
+\hline \verb'\isc' & \verb'scanf()'                     \hfill (n,i)\\
+\hline \verb'\ica' & \verb'p=calloc()'                  \hfill (n,i)\\
+\hline \verb'\ima' & \verb'p=malloc()'                  \hfill (n,i)\\
+\hline \verb'\ire' & \verb'p=realloc()'                 \hfill (n,i)\\
+\hline \verb'\isi' & \verb'sizeof()'                    \hfill (n,v,i)\\
+\hline \verb'\ias' & \verb'assert()'                    \hfill (n,v,i)\\
+\hline \verb'\ii'  & open input file                    \hfill (n,v,i)\\
+\hline \verb'\io'  & open output file                   \hfill (n,v,i)\\
+\hline \verb'\ifsc'& fscanf                             \hfill (n,i)\\
+\hline \verb'\ifpr'& fprintf                            \hfill (n,i)\\
+\hline \Rep\verb'\i0'  & \verb'for( x=0; x<n; x+=1 )'   \hfill (n,v,i)\\
+\hline \Rep\verb'\in'  & \verb'for( x=n-1; x>=0; x-=1 )'\hfill (n,v,i)\\
+\hline
+\end{tabular} \\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%======================================================================
+%%  page 1, table, right  part        [[[1
+%%======================================================================
+%
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{60mm}|}%
 %%----------------------------------------------------------------------
 %%  preprocessor menu
 %%----------------------------------------------------------------------
@@ -178,15 +212,6 @@ Key mappings for Vim and gVim.\\
 \hline \verb'\pi0'  & \verb'#if 0 #endif'          \hfill (n,v,i)\\
 \hline \verb'\pr0'  & remove \verb'#if 0 #endif'   \hfill (n,i)\\
 \hline
-\end{tabular} \\
-%%~~~~~ TABULAR :  end  ~~~~~~~~~~
-%
-%%======================================================================
-%%  page 1, table, right  part        [[[1
-%%======================================================================
-%
-%%~~~~~ TABULAR : begin ~~~~~~~~~~
-\begin{tabular}[]{|p{11mm}|p{60mm}|}%
 %%----------------------------------------------------------------------
 %%  snippet menu
 %%----------------------------------------------------------------------
@@ -210,31 +235,6 @@ Key mappings for Vim and gVim.\\
 \hline     \verb'\ntw' & template setup wizard     \hfill (n, i)\\
 \hline     \verb'\nts' & choose template style     \hfill (n, i)\\
 \hline     \verb'\njt' & insert jump tag           \hfill (n,i)\\
-\hline
-%%----------------------------------------------------------------------
-%%  idioms menu
-%%----------------------------------------------------------------------
-\hline 
-\multicolumn{2}{|r|}{\textsl{\textbf{I}dioms}}   \\
-\hline \verb'\if'  & function                           \hfill (n,v,i)\\
-\hline \verb'\isf' & static function                    \hfill (n,v,i)\\
-\hline \verb'\im'  & \verb'main()'                      \hfill (n,v,i)\\
-\hline \verb'\ie'  & \verb'enum'   + \verb'typedef'     \hfill (n,v,i)\\
-\hline \verb'\is'  & \verb'struct' + \verb'typedef'     \hfill (n,v,i)\\
-\hline \verb'\iu'  & \verb'union'  + \verb'typedef'     \hfill (n,v,i)\\
-\hline \verb'\ipr' & \verb'printf()'                    \hfill (n,i)\\
-\hline \verb'\isc' & \verb'scanf()'                     \hfill (n,i)\\
-\hline \verb'\ica' & \verb'p=calloc()'                  \hfill (n,i)\\
-\hline \verb'\ima' & \verb'p=malloc()'                  \hfill (n,i)\\
-\hline \verb'\ire' & \verb'p=realloc()'                 \hfill (n,i)\\
-\hline \verb'\isi' & \verb'sizeof()'                    \hfill (n,v,i)\\
-\hline \verb'\ias' & \verb'assert()'                    \hfill (n,v,i)\\
-\hline \verb'\ii'  & open input file                    \hfill (n,v,i)\\
-\hline \verb'\io'  & open output file                   \hfill (n,v,i)\\
-\hline \verb'\ifsc'& fscanf                             \hfill (n,i)\\
-\hline \verb'\ifpr'& fprintf                            \hfill (n,i)\\
-\hline \Rep\verb'\i0'  & \verb'for( x=0; x<n; x+=1 )'   \hfill (n,v,i)\\
-\hline \Rep\verb'\in'  & \verb'for( x=n-1; x>=0; x-=1 )'\hfill (n,v,i)\\
 \hline
 \end{tabular}
 %
