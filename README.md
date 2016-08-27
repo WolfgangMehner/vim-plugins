@@ -27,11 +27,11 @@ If you really want to use the versions from the repository, [consult this](https
 
 # Documentation
 
-Each plug-in comes with its own readme as well as an extensive documentation utilizing Vim's help facility. For example: <br>
+Each plug-in comes with its own readme as well as an extensive documentation utilizing Vim's help facility. For example:
 
-> :help c-support
+    :help c-support
 
-> :help git-support
+    :help git-support
 
 # Mailing List
 

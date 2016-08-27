@@ -17,13 +17,13 @@ conversion and running make can be done with a few keystrokes.
 - run scripts or run syntax check from within the editor
 - show compilation errors in a quickfix window
 
-Some screen shots :  http://wolfgangmehner.github.io/vim-plugins/awksupport.html
+Some screen shots :  https://wolfgangmehner.github.io/vim-plugins/awksupport.html
 
 For plug-in managers :  https://github.com/WolfgangMehner/awk-support
 
-The help file online :  http://wolfgangmehner.github.io/vim-plugins/doc/awksupport.html
+The help file online :  https://wolfgangmehner.github.io/vim-plugins/doc/awksupport.html
 
-The key mappings of this plug-in :  wolfgangmehner.github.io/vim-plugins/awksupport/awk-hotkeys.pdf
+The key mappings of this plug-in :  https://wolfgangmehner.github.io/vim-plugins/awksupport/awk-hotkeys.pdf
 
 DOCUMENTATION
 --------------------------------------------------------

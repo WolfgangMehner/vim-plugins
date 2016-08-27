@@ -39,7 +39,7 @@ Templates:
 - (WM) Configure CTRL+J and CTRL+D.
 - (DONE) Can not use property "Templates::UsePersonalizationFile" anymore:
   Personalization files loaded before customization.
-- Change 3rd argument of 'mmtemplates#core#AddCustomTemplateFiles'?
+- (DONE?) Change 3rd argument of 'mmtemplates#core#AddCustomTemplateFiles'?
 - Add an appropriate action if 'mmtemplates#core#EditTemplateFiles' is called
   for a file which is not yet available.
 
@@ -112,6 +112,11 @@ LaTeX:
 Lua:
 - (DONE) Documentation: Add setup of C API templates.
 
+Matlab:
+- The old setup of the help via "SetMacro( 'HELP_BROWSER', ... )" is still
+  mentioned in the documentations.
+- Remove old release script 'release.lua'.
+
 Perl:
 - (DONE?) 'perldoc' does not print the correct error message if it is not installed.
 - Documentation: Maps Ctrl+j and Crtl+d.
@@ -120,7 +125,7 @@ Perl:
 - (DONE) Remove old release script.
 
 Vim:
-- (WM, DONE) 'code->comment' should not insert a space following the quote.
+- (DONE) Documentation: Adding additional template files.
 
 Toolbox:
 - (DONE) CMake: Does the help work at all under Windows? -> Yes.

@@ -1,0 +1,87 @@
+================================================================================
+===== summary
+================================================================================
+C/C++ IDE -- Write and run programs. Insert statements, idioms, comments etc.
+================================================================================
+===== detailed description
+================================================================================
+**   Statement oriented editing of  C / C++ programs
+**   Speed up writing new code considerably
+**   Write code and comments with a professional appearance from the beginning
+**   Use code snippets
+**   Toolbox for cmake(1), doxygen(1), and make(1)
+
+- insertion of various types of comments   (file prologue, function descriptions, file section headers
+    keyword comments, date, time, ...  )
+- insertion of empty control statements   (if-else, while, do-while, switch, ... )
+- insertion of various preprocessor directives
+- insertion of C-idioms   (enum+typedef, loops, complete main, empty function, file open dialogs, ... )
+- insertion of C++ -idioms   ( frames for simple classes and template classes, try-catch blocks,
+    file open dialogs, output manipulators, ios flags, ... )
+- use and organize your own collection of code snippets
+- compile / link / run support for one-file projects   (without a makefile)
+- run buffer through splint
+- personalization of comments   (name, email, ... )
+- menus can be switched on and off   (via the Tools menu)
+
+Some screen shots :  https://wolfgangmehner.github.io/vim-plugins/csupport.html
+
+For plug-in managers :  https://github.com/WolfgangMehner/c-support
+
+The help file online :  https://wolfgangmehner.github.io/vim-plugins/doc/csupport.html
+
+The key mappings of this plug-in :  https://wolfgangmehner.github.io/vim-plugins/csupport/c-hotkeys.pdf
+
+The installation explained :  "Make Vim as Your C/C++ IDE Using c.vim Plugin"
+(http://www.thegeekstuff.com/2009/01/tutorial-make-vim-as-your-cc-ide-using-cvim-plugin/)
+
+DOCUMENTATION
+--------------------------------------------------------
+This plug-in comes with a help file (csupport.txt). Read it with
+
+    :help csupport
+
+** PLEASE READ THE DOCUMENTATION **
+
+Editing actions differ for different modes! There are a lot of features which
+can be configured or customized to match your needs.
+
+GitHub
+--------------------------------------------------------
+C-Support is on GitHub:
+
+    https://github.com/WolfgangMehner/vim-plugins
+
+(Please help us keep track of all the issues and name your report/request "C-Support: <title>")
+
+MAILING LIST
+--------------------------------------------------------
+You can subscribe to the vim-plugins-list mailing list to post your questions or
+suggestions for improvement or to report bugs. The list will also be used to
+announce new releases ( c.vim / perl-support / bash-support / latex-support ).
+Visit the following page for subscribing to the mailing list:
+
+    http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list
+
+The vim-plugins-list list is very low on traffic.
+================================================================================
+===== install details
+================================================================================
+Copy the zip archive cvim.zip to $HOME/.vim/ (Linux/Unix) or $HOME/vimfiles
+(on the Windows platforms) and run
+    unzip cvim.zip
+If you have already an older version of this plug-in and you have modified the
+template files you may want to save your templates first or copy the files from
+the archive by hand. See also the file README.md within the zip file.
+
+To enable the tools for cmake or doxygen, add these lines to ~/.vimrc :
+
+    let  g:C_UseTool_cmake    = 'yes'
+    let  g:C_UseTool_doxygen = 'yes'
+
+For how to enable the Doxygen templates, see Chapter 1.10.1 of the documentation:
+
+    :help csupport-doxygen-enable
+================================================================================
+===== end
+================================================================================
