@@ -37,40 +37,172 @@ endif
 if exists("g:LatexSupportVersion") || &cp
  finish
 endif
+
+let g:LatexSupportVersion= "1.3pre"                  " version number of this script; do not change
+
+"-------------------------------------------------------------------------------
+" Auxiliary functions.   {{{1
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:ApplyDefaultSetting : Write default setting to a global variable.   {{{2
 "
-let g:LatexSupportVersion= "1.2"                  " version number of this script; do not change
+" Parameters:
+"   varname - name of the variable (string)
+"   value   - default value (string)
+" Returns:
+"   -
 "
-"===  FUNCTION  ================================================================
-"          NAME:  latex_SetGlobalVariable     {{{1
-"   DESCRIPTION:  Define a global variable and assign a default value if nor
-"                 already defined
-"    PARAMETERS:  name - global variable
-"                 default - default value
-"===============================================================================
-function! s:latex_SetGlobalVariable ( name, default )
-  if !exists('g:'.a:name)
-    exe 'let g:'.a:name."  = '".a:default."'"
-	else
-		" check for an empty initialization
-		exe 'let	val	= g:'.a:name
-		if empty(val)
-			exe 'let g:'.a:name."  = '".a:default."'"
-		endif
-  endif
-endfunction   " ---------- end of function  s:latex_SetGlobalVariable  ----------
+" If g:<varname> does not exists, assign:
+"   g:<varname> = value
+"-------------------------------------------------------------------------------
+
+function! s:ApplyDefaultSetting ( varname, value )
+	if ! exists ( 'g:'.a:varname )
+		exe 'let g:'.a:varname.' = '.string( a:value )
+	endif
+endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
+
+"-------------------------------------------------------------------------------
+" s:ErrorMsg : Print an error message.   {{{2
 "
-"===  FUNCTION  ================================================================
-"          NAME:  GetGlobalSetting     {{{1
-"   DESCRIPTION:  take over a global setting
-"    PARAMETERS:  varname - variable to set
-"       RETURNS:
-"===============================================================================
-function! s:GetGlobalSetting ( varname )
-	if exists ( 'g:'.a:varname )
-		exe 'let s:'.a:varname.' = g:'.a:varname
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:ErrorMsg ( ... )
+	echohl WarningMsg
+	for line in a:000
+		echomsg line
+	endfor
+	echohl None
+endfunction    " ----------  end of function s:ErrorMsg  ----------
+
+"-------------------------------------------------------------------------------
+" s:GetGlobalSetting : Get a setting from a global variable.   {{{2
+"
+" Parameters:
+"   varname - name of the variable (string)
+"   glbname - name of the global variable (string, optional)
+" Returns:
+"   -
+"
+" If 'glbname' is given, it is used as the name of the global variable.
+" Otherwise the global variable will also be named 'varname'.
+"
+" If g:<glbname> exists, assign:
+"   s:<varname> = g:<glbname>
+"-------------------------------------------------------------------------------
+
+function! s:GetGlobalSetting ( varname, ... )
+	let lname = a:varname
+	let gname = a:0 >= 1 ? a:1 : lname
+	if exists ( 'g:'.gname )
+		let { 's:'.lname } = { 'g:'.gname }
 	endif
 endfunction    " ----------  end of function s:GetGlobalSetting  ----------
+
+"-------------------------------------------------------------------------------
+" s:ImportantMsg : Print an important message.   {{{2
 "
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:ImportantMsg ( ... )
+	echohl Search
+	echo join ( a:000, "\n" )
+	echohl None
+endfunction    " ----------  end of function s:ImportantMsg  ----------
+
+"-------------------------------------------------------------------------------
+" s:SID : Return the <SID>.   {{{2
+"
+" Parameters:
+"   -
+" Returns:
+"   SID - the SID of the script (string)
+"-------------------------------------------------------------------------------
+
+function! s:SID ()
+	return matchstr ( expand('<sfile>'), '<SNR>\zs\d\+\ze_SID$' )
+endfunction    " ----------  end of function s:SID  ----------
+
+"-------------------------------------------------------------------------------
+" s:UserInput : Input after a highlighted prompt.   {{{2
+"
+" Parameters:
+"   prompt - the prompt (string)
+"   text - the default input (string)
+"   compl - completion (string, optional)
+"   clist - list, if 'compl' is "customlist" (list, optional)
+" Returns:
+"   input - the user input, an empty sting if the user hit <ESC> (string)
+"-------------------------------------------------------------------------------
+
+function! s:UserInput ( prompt, text, ... )
+
+	echohl Search																					" highlight prompt
+	call inputsave()																			" preserve typeahead
+	if a:0 == 0 || a:1 == ''
+		let retval = input( a:prompt, a:text )
+	elseif a:1 == 'customlist'
+		let s:UserInputList = a:2
+		let retval = input( a:prompt, a:text, 'customlist,<SNR>'.s:SID().'_UserInputEx' )
+		let s:UserInputList = []
+	else
+		let retval = input( a:prompt, a:text, a:1 )
+	endif
+	call inputrestore()																		" restore typeahead
+	echohl None																						" reset highlighting
+
+	let retval  = substitute( retval, '^\s\+', "", "" )		" remove leading whitespaces
+	let retval  = substitute( retval, '\s\+$', "", "" )		" remove trailing whitespaces
+
+	return retval
+
+endfunction    " ----------  end of function s:UserInput ----------
+
+"-------------------------------------------------------------------------------
+" s:UserInputEx : ex-command for s:UserInput.   {{{3
+"-------------------------------------------------------------------------------
+function! s:UserInputEx ( ArgLead, CmdLine, CursorPos )
+	if empty( a:ArgLead )
+		return copy( s:UserInputList )
+	endif
+	return filter( copy( s:UserInputList ), 'v:val =~ ''\V\<'.escape(a:ArgLead,'\').'\w\*''' )
+endfunction    " ----------  end of function s:UserInputEx  ----------
+" }}}3
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:WarningMsg : Print a warning/error message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:WarningMsg ( ... )
+	echohl WarningMsg
+	echo join ( a:000, "\n" )
+	echohl None
+endfunction    " ----------  end of function s:WarningMsg  ----------
+
+" }}}2
+"-------------------------------------------------------------------------------
+
 "------------------------------------------------------------------------------
 " *** PLATFORM SPECIFIC ITEMS ***     {{{1
 "------------------------------------------------------------------------------
@@ -175,12 +307,10 @@ else
 	endif
 	"
 endif
-"
+
 let s:Latex_AdditionalTemplates = mmtemplates#config#GetFt ( 'latex' )
-let s:Latex_CodeSnippets        = s:plugin_dir.'/latex-support/codesnippets/'
-call s:latex_SetGlobalVariable( 'Latex_CodeSnippets', s:Latex_CodeSnippets )
-"
-"
+call s:ApplyDefaultSetting ( 'Latex_CodeSnippets', s:plugin_dir.'/latex-support/codesnippets/' )
+
 "  g:Latex_Dictionary_File  must be global
 "
 if !exists("g:Latex_Dictionary_File")
@@ -199,7 +329,7 @@ let s:Latex_GuiSnippetBrowser 		= 'gui'             " gui / commandline
 let s:Latex_LoadMenus         		= 'yes'             " load the menus?
 let s:Latex_RootMenu          		= 'LaTe&X'          " name of the root menu
 let s:Latex_UseToolbox            = 'yes'
-call s:latex_SetGlobalVariable ( 'Latex_UseTool_make', 'yes' )
+call s:ApplyDefaultSetting ( 'Latex_UseTool_make', 'yes' )
 
 let s:Latex_LineEndCommColDefault = 49
 let s:Latex_Printheader   				= "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
@@ -209,7 +339,7 @@ let s:Latex_Wrapper               = s:plugin_dir.'/latex-support/scripts/wrapper
 let s:Latex_InsertFileProlog			= 'yes'
 
 " overwrite the mapleader, we should not use use "\" in LaTeX
-call s:latex_SetGlobalVariable ( 'Latex_MapLeader', '´' )
+call s:ApplyDefaultSetting ( 'Latex_MapLeader', '´' )
 
 call s:GetGlobalSetting( 'Latex_CustomTemplateFile' )
 call s:GetGlobalSetting( 'Latex_CreateMenusDelayed' )
@@ -257,32 +387,9 @@ let s:Latex_ViewerCall = {
 	\ 'pdf'           : s:Latex_PdfViewer,
 	\ 'ps'            : s:Latex_PsViewer,
 	\ }
-"
-let s:Latex_Printheader  					= escape( s:Latex_Printheader, ' %' )
-let s:Latex_saved_global_option		= {}
-"
-"------------------------------------------------------------------------------
-"  Latex_SaveGlobalOption    {{{1
-"  param 1 : option name
-"  param 2 : characters to be escaped (optional)
-"------------------------------------------------------------------------------
-function! s:Latex_SaveGlobalOption ( option, ... )
-	exe 'let escaped =&'.a:option
-	if a:0 == 0
-		let escaped	= escape( escaped, ' |"\' )
-	else
-		let escaped	= escape( escaped, ' |"\'.a:1 )
-	endif
-	let s:Latex_saved_global_option[a:option]	= escaped
-endfunction    " ----------  end of function Latex_SaveGlobalOption  ----------
-"
-"------------------------------------------------------------------------------
-"  Latex_RestoreGlobalOption    {{{1
-"------------------------------------------------------------------------------
-function! s:Latex_RestoreGlobalOption ( option )
-	exe ':set '.a:option.'='.s:Latex_saved_global_option[a:option]
-endfunction    " ----------  end of function Latex_RestoreGlobalOption  ----------
-"
+
+let s:Latex_Printheader = escape( s:Latex_Printheader, ' %' )
+
 "===  FUNCTION  ================================================================
 "          NAME:  Latex_Input     {{{1
 "   DESCRIPTION:  Input after a highlighted prompt
@@ -564,7 +671,167 @@ function! Latex_BibtexBeautify () range
 	endfor
 	"
 endfunction    " ----------  end of function Latex_BibtexBeautify ----------
+
+"-------------------------------------------------------------------------------
+" s:Compile : Run the typesetter.   {{{1
 "
+" Parameters:
+"   ... - command-line arguments (string, optional)
+"-------------------------------------------------------------------------------
+function! s:Compile ( args )
+
+	let typesettercall = s:Latex_TypesetterCall[s:Latex_Typesetter]
+	let typesetter     = split( s:Latex_TypesetterCall[s:Latex_Typesetter] )[0]
+	if ! executable( typesetter )
+		return s:ErrorMsg ( 'Typesetter "'.typesetter.'" does not exist or its name is not unique.' )
+	endif
+
+	" get the name of the source file
+	if a:args == ''
+		let source = expand("%")                    " name of the file in the current buffer
+	else
+		let source = a:args
+	endif
+
+	" write source file if necessary
+	if &filetype == 'tex'
+		silent exe 'update'
+	endif
+
+	cclose
+
+	" save current settings
+	let makeprg_saved = &l:makeprg
+	let errorf_saved  = &l:errorformat
+
+	" run typesetter
+	let &l:makeprg     = typesettercall
+	let &l:errorformat = '%f:%l: %m'
+
+	exe "make ".shellescape ( source )
+
+	" restore current settings
+	let &l:makeprg     = makeprg_saved
+	let &l:errorformat = errorf_saved
+
+	" open error window if necessary
+	botright cwindow
+
+endfunction    " ----------  end of function s:Compile ----------
+
+"-------------------------------------------------------------------------------
+" s:Bibtex : Run 'bibtex'.   {{{1
+"
+" Parameters:
+"   args - command-line arguments (string)
+"-------------------------------------------------------------------------------
+function! s:Bibtex ( args )
+
+	" get the name of the index file
+	if a:args == ''
+		let aux_file = expand("%:r")                " root of name of the name of the current buffer
+	else
+		let aux_file = a:args
+	endif
+
+	" write source file if necessary
+	if &filetype == 'tex' || &filetype == 'bib'
+		silent exe 'update'
+	endif
+
+	cclose
+
+	" save current settings
+	let makeprg_saved = &l:makeprg
+	let errorf_saved  = &l:errorformat
+
+	" run bibtex
+	let &l:makeprg     = s:Latex_Bibtex
+	let &l:errorformat='%+PDatabase file #%\\d%\\+: %f,%m---line %l of file %f,Warning--%m'
+
+	exe "make! ".shellescape ( aux_file )       | " do not jump to the first error
+
+	" restore current settings
+	let &l:makeprg     = makeprg_saved
+	let &l:errorformat = errorf_saved
+
+	" open error window if necessary
+	botright cwindow
+
+endfunction    " ----------  end of function s:Bibtex ----------
+
+"-------------------------------------------------------------------------------
+" s:Makeindex : Run 'makeindex'.   {{{1
+"
+" Parameters:
+"   args - command-line arguments (string)
+"-------------------------------------------------------------------------------
+function! s:Makeindex ( args )
+
+	" get the name of the index file
+	if a:args == ''
+		let idx_file = expand("%:r").'.idx'
+	else
+		let idx_file = a:args
+	endif
+
+	" check the file
+	if ! filereadable(idx_file)
+		return s:WarningMsg ( 'Can not find the file "'.idx_file.'"' )
+	endif
+
+	" run the file
+	exe '!makeindex '.shellescape( idx_file )
+	if v:shell_error
+		return s:WarningMsg ( 'makeindex reported errors' )
+	endif
+endfunction    " ----------  end of function s:Makeindex  ----------
+
+"-------------------------------------------------------------------------------
+" s:Lacheck : Run 'lacheck'.   {{{1
+"
+" Parameters:
+"   args - command-line arguments (string)
+"-------------------------------------------------------------------------------
+function! s:Lacheck ( args )
+
+	if ! executable( 'lacheck' )
+		return s:ErrorMsg ( '"lacheck" does not exist or is not executable.' )
+	endif
+
+	" get the name of the index file
+	if a:args == ''
+		let source = expand("%")                    " name of the file in the current buffer
+	else
+		let source = a:args
+	endif
+
+	" write source file if necessary
+	if &filetype == 'tex' || &filetype == 'bib'
+		silent exe 'update'
+	endif
+
+	cclose
+
+	" save current settings
+	let makeprg_saved = &l:makeprg
+	let errorf_saved  = &l:errorformat
+
+	" run lacheck
+	let &l:makeprg     = 'lacheck'
+	let &l:errorformat = '"%f"\, line %l:%m'
+
+	exe "make ".shellescape ( source )
+
+	" restore current settings
+	let &l:makeprg     = makeprg_saved
+	let &l:errorformat = errorf_saved
+
+	" open error window if necessary
+	botright cwindow
+
+endfunction    " ----------  end of function s:Lacheck ----------
+
 "===  FUNCTION  ================================================================
 "          NAME:  s:RereadTemplates     {{{1
 "   DESCRIPTION:  Reread the templates. Also set the character which starts
@@ -784,11 +1051,11 @@ function! s:InitMenus()
 	let ihead = 'imenu <silent> '.s:Latex_RootMenu.'.&Run.'
 	let vhead = 'vmenu <silent> '.s:Latex_RootMenu.'.&Run.'
 	"
- 	exe ahead.'save\ +\ &run\ typesetter<Tab>'.esc_mapl.'rr\ <C-F9>       :call Latex_Compile()<CR><CR>'
-	exe ihead.'save\ +\ &run\ typesetter<Tab>'.esc_mapl.'rr\ <C-F9>  <C-C>:call Latex_Compile()<CR><CR>'
+	exe ahead.'save\ +\ &run\ typesetter<Tab>'.esc_mapl.'rr\ <C-F9>       :call <SID>Compile("")<CR><CR>'
+	exe ihead.'save\ +\ &run\ typesetter<Tab>'.esc_mapl.'rr\ <C-F9>  <C-C>:call <SID>Compile("")<CR><CR>'
 	"
- 	exe ahead.'save\ +\ &run\ lacheck<Tab>'.esc_mapl.'rla       :call Latex_Lacheck()<CR><CR>'
-	exe ihead.'save\ +\ &run\ lacheck<Tab>'.esc_mapl.'rla  <C-C>:call Latex_Lacheck()<CR><CR>'
+	exe ahead.'save\ +\ &run\ lacheck<Tab>'.esc_mapl.'rla       :call <SID>Lacheck("")<CR><CR>'
+	exe ihead.'save\ +\ &run\ lacheck<Tab>'.esc_mapl.'rla  <C-C>:call <SID>Lacheck("")<CR><CR>'
 	"
  	exe ahead.'view\ &DVI<Tab>'.esc_mapl.'rdvi       :call Latex_View("dvi")<CR>'
 	exe ihead.'view\ &DVI<Tab>'.esc_mapl.'rdvi  <C-C>:call Latex_View("dvi")<CR>'
@@ -798,10 +1065,10 @@ function! s:InitMenus()
 	exe ihead.'view\ &PS<Tab>'.esc_mapl.'rps    <C-C>:call Latex_View("ps" )<CR>'
 	"
 	exe ahead.'-SEP1-                            :'
-	exe ahead.'run\ make&index<Tab>'.esc_mapl.'rmi                       :call Latex_Makeindex()<CR>'
-	exe ihead.'run\ make&index<Tab>'.esc_mapl.'rmi                  <C-C>:call Latex_Makeindex()<CR>'
-	exe ahead.'run\ &bibtex<Tab>'.esc_mapl.'rbi                          :call Latex_RunBibtex()<CR>'
-	exe ihead.'run\ &bibtex<Tab>'.esc_mapl.'rbi                     <C-C>:call Latex_RunBibtex()<CR>'
+	exe ahead.'run\ make&index<Tab>'.esc_mapl.'rmi                       :call <SID>Makeindex("")<CR>'
+	exe ihead.'run\ make&index<Tab>'.esc_mapl.'rmi                  <C-C>:call <SID>Makeindex("")<CR>'
+	exe ahead.'run\ &bibtex<Tab>'.esc_mapl.'rbi                          :call <SID>Bibtex("")<CR>'
+	exe ihead.'run\ &bibtex<Tab>'.esc_mapl.'rbi                     <C-C>:call <SID>Bibtex("")<CR>'
 	exe ahead.'-SEP2-                            :'
 
 	exe ahead.'Convert<Tab>'.esc_mapl.'rc.Convert<Tab>LaTeX            <Nop>'
@@ -1039,18 +1306,18 @@ function! s:CreateAdditionalLatexMaps ()
 	"-------------------------------------------------------------------------------
 	" run
 	"-------------------------------------------------------------------------------
-   noremap  <buffer>            <C-F9>                  :call Latex_Compile()<CR><CR>
-  inoremap  <buffer>            <C-F9>             <Esc>:call Latex_Compile()<CR><CR>
-  vnoremap  <buffer>            <C-F9>             <Esc>:call Latex_Compile()<CR><CR>
+   noremap  <buffer>            <C-F9>                  :call <SID>Compile("")<CR><CR>
+  inoremap  <buffer>            <C-F9>             <Esc>:call <SID>Compile("")<CR><CR>
+  vnoremap  <buffer>            <C-F9>             <Esc>:call <SID>Compile("")<CR><CR>
    noremap  <buffer>            <M-F9>                  :call Latex_View('choose')<CR><CR>
   inoremap  <buffer>            <M-F9>             <Esc>:call Latex_View('choose')<CR><CR>
   vnoremap  <buffer>            <M-F9>             <Esc>:call Latex_View('choose')<CR><CR>
-   noremap  <buffer>  <silent>  <LocalLeader>rr         :call Latex_Compile()<CR><CR>
-  inoremap  <buffer>  <silent>  <LocalLeader>rr    <C-C>:call Latex_Compile()<CR><CR>
-  vnoremap  <buffer>  <silent>  <LocalLeader>rr    <C-C>:call Latex_Compile()<CR><CR>
-   noremap  <buffer>  <silent>  <LocalLeader>rla        :call Latex_Lacheck()<CR>
-  inoremap  <buffer>  <silent>  <LocalLeader>rla   <C-C>:call Latex_Lacheck()<CR>
-  vnoremap  <buffer>  <silent>  <LocalLeader>rla   <C-C>:call Latex_Lacheck()<CR>
+   noremap  <buffer>  <silent>  <LocalLeader>rr         :call <SID>Compile("")<CR><CR>
+  inoremap  <buffer>  <silent>  <LocalLeader>rr    <C-C>:call <SID>Compile("")<CR><CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rr    <C-C>:call <SID>Compile("")<CR><CR>
+   noremap  <buffer>  <silent>  <LocalLeader>rla        :call <SID>Lacheck("")<CR>
+  inoremap  <buffer>  <silent>  <LocalLeader>rla   <C-C>:call <SID>Lacheck("")<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rla   <C-C>:call <SID>Lacheck("")<CR>
 	"
    noremap  <buffer>  <silent>  <LocalLeader>rdvi       :call Latex_View("dvi")<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rdvi  <C-C>:call Latex_View("dvi")<CR>
@@ -1062,12 +1329,12 @@ function! s:CreateAdditionalLatexMaps ()
   inoremap  <buffer>  <silent>  <LocalLeader>rps   <C-C>:call Latex_View("ps" )<CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>rps   <C-C>:call Latex_View("ps" )<CR>
 	"
-   noremap  <buffer>  <silent>  <LocalLeader>rmi        :call Latex_Makeindex()<CR>
-  inoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call Latex_Makeindex()<CR>
-  vnoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call Latex_Makeindex()<CR>
-   noremap  <buffer>  <silent>  <LocalLeader>rbi        :call Latex_RunBibtex()<CR>
-  inoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call Latex_RunBibtex()<CR>
-  vnoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call Latex_RunBibtex()<CR>
+   noremap  <buffer>  <silent>  <LocalLeader>rmi        :call <SID>Makeindex("")<CR>
+  inoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call <SID>Makeindex("")<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call <SID>Makeindex("")<CR>
+   noremap  <buffer>  <silent>  <LocalLeader>rbi        :call <SID>Bibtex("")<CR>
+  inoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call <SID>Bibtex("")<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call <SID>Bibtex("")<CR>
 	"
 	nnoremap  <buffer>  <silent>  <LocalLeader>rse        :call Latex_Settings(0)<CR>
   "
@@ -1178,12 +1445,12 @@ function! s:CreateAdditionalBibtexMaps ()
 	"-------------------------------------------------------------------------------
 	" run
 	"-------------------------------------------------------------------------------
-   noremap  <buffer>  <silent>  <LocalLeader>rmi        :call Latex_Makeindex()<CR>
-  inoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call Latex_Makeindex()<CR>
-  vnoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call Latex_Makeindex()<CR>
-   noremap  <buffer>  <silent>  <LocalLeader>rbi        :call Latex_RunBibtex()<CR>
-  inoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call Latex_RunBibtex()<CR>
-  vnoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call Latex_RunBibtex()<CR>
+   noremap  <buffer>  <silent>  <LocalLeader>rmi        :call <SID>Makeindex("")<CR>
+  inoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call <SID>Makeindex("")<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call <SID>Makeindex("")<CR>
+   noremap  <buffer>  <silent>  <LocalLeader>rbi        :call <SID>Bibtex("")<CR>
+  inoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call <SID>Bibtex("")<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call <SID>Bibtex("")<CR>
 	"
 	nnoremap  <buffer>  <silent>  <LocalLeader>rse        :call Latex_Settings(0)<CR>
   "
@@ -1290,7 +1557,7 @@ function! Latex_Settings ( verbose )
 	else
 		let txt .= "           template files :  -not loaded-\n"
 	endif
-	let txt = txt.'   code snippet directory :  "'.s:Latex_CodeSnippets."\"\n"
+	let txt = txt.'   code snippet directory :  "'.g:Latex_CodeSnippets."\"\n"
 	" ----- dictionaries ------------------------
   if !empty(g:Latex_Dictionary_File)
 		let ausgabe= &dictionary
@@ -1354,65 +1621,7 @@ function! Latex_RemoveGuiMenus ()
 		let s:Latex_MenuVisible = 'no'
 	endif
 endfunction    " ----------  end of function Latex_RemoveGuiMenus  ----------
-"
-"------------------------------------------------------------------------------
-"  Latex_SaveOption    {{{1
-"  param 1 : option name
-"  param 2 : characters to be escaped (optional)
-"------------------------------------------------------------------------------
-function! Latex_SaveOption ( option, ... )
-	exe 'let escaped =&'.a:option
-	if a:0 == 0
-		let escaped	= escape( escaped, ' |"\' )
-	else
-		let escaped	= escape( escaped, ' |"\'.a:1 )
-	endif
-	let s:Latex_saved_option[a:option]	= escaped
-endfunction    " ----------  end of function Latex_SaveOption  ----------
-"
-let s:Latex_saved_option					= {}
-"
-"------------------------------------------------------------------------------
-"  Latex_RestoreOption    {{{1
-"------------------------------------------------------------------------------
-function! Latex_RestoreOption ( option )
-	exe ':setlocal '.a:option.'='.s:Latex_saved_option[a:option]
-endfunction    " ----------  end of function Latex_RestoreOption  ----------
-"
-"------------------------------------------------------------------------------
-"  Run : compile buffer			{{{1
-"------------------------------------------------------------------------------
-function! Latex_Compile ()
-	if &filetype != 'tex'
-		echomsg	'The filetype of this buffer is not "tex".'
-		return
-	endif
 
-	let	typesettercall	= s:Latex_TypesetterCall[s:Latex_Typesetter]
-	let	typesetter			= split( s:Latex_TypesetterCall[s:Latex_Typesetter] )[0]
-	if !executable( typesetter )
-		echomsg 'Typesetter "'.typesetter.'" does not exist or its name is not unique.'
-		return
-	endif
-
-	let	l:currentbuffer	= bufname("%")
-	exe	":cclose"
-	let	Sou		= expand("%")											" name of the file in the current buffer
-	let SouEsc= escape( Sou, s:escfilename )
-
-	exe	":update"
-
-	setlocal errorformat=%f:%l:\ %m
-	exe		":setlocal makeprg=".escape( typesettercall, s:escfilename )
-	"
-	exe		"make ".SouEsc
-	exe		"set makeprg=make"
-	"
-	" open error window if necessary
-	exe	":botright cwindow"
-
-endfunction    " ----------  end of function Latex_Compile ----------
-"
 "------------------------------------------------------------------------------
 "  view PDF   {{{1
 "------------------------------------------------------------------------------
@@ -1455,85 +1664,7 @@ function! Latex_View ( format )
 		silent exe '!'.viewer.' '.targetformat.' &'
 	endif
 endfunction    " ----------  end of function Latex_View ----------
-"
-"----------------------------------------------------------------------
-"  run lacheck   {{{1
-"----------------------------------------------------------------------
-function! Latex_Lacheck ()
-	if !executable("lacheck")
-		echohl WarningMsg
-		echo 'lacheck does not exist or is not executable!'
-		echohl None
-	endif
-	if &filetype != 'tex'
-		echomsg	'The filetype of this buffer is not "tex".'
-		return
-	endif
-	let	l:currentbuffer	= bufname("%")
-	exe	":cclose"
-	let	Sou		= expand("%")											" name of the file in the current buffer
-	let SouEsc= escape( Sou, s:escfilename )
 
-	" update : write source file if necessary
-	exe	":update"
-
-	:setlocal errorformat="%f",\ line\ %l:%m
-
-	:set makeprg=lacheck
-	"
-	exe		"make ".SouEsc
-	exe		"set makeprg=make"
-	"
-	" open error window if necessary
-	exe	":botright cwindow"
-
-endfunction    " ----------  end of function Latex_Lacheck ----------
-"
-"------------------------------------------------------------------------------
-"  makeindex   {{{1
-"------------------------------------------------------------------------------
-function! Latex_Makeindex()
-	if &filetype != 'tex'
-		echomsg	'The filetype of this buffer is not "tex".'
-		return
-	endif
-  let Idx   = expand("%:r").'.idx'
-  if filereadable(Idx)
-    exe   '!makeindex '.Idx
-		if v:shell_error
-			echohl WarningMsg
-			echo 'makeindex reported errors !'
-			echohl None
-		endif
-  endif
-endfunction
-"
-"------------------------------------------------------------------------------
-"  run bibtex   {{{1
-"------------------------------------------------------------------------------
-function! Latex_RunBibtex ()
-	if &filetype != 'tex'
-		echomsg	'The filetype of this buffer is not "tex".'
-		return
-	endif
-
-	let	l:currentbuffer	= bufname("%")
-	exe	":cclose"
-	let	Sou		= expand("%:r")											" name of the file in the current buffer
-	let SouEsc= escape( Sou, s:escfilename )
-
-	" update : write source file if necessary
-	exe	":update"
-
-	exe		"set makeprg=".s:Latex_Bibtex
-	exe		"make ".SouEsc
-	exe		"set makeprg=make"
-	"
-	" open error window if necessary
-	exe	":botright cwindow"
-
-endfunction    " ----------  end of function Latex_RunBibtex ----------
-"
 "------------------------------------------------------------------------------
 "  Convert DVI   {{{1
 "------------------------------------------------------------------------------
@@ -1759,15 +1890,12 @@ function! Latex_texdoc( )
 		endif
 	endif
 endfunction		" ---------- end of function  Latex_texdoc  ----------
-"
-"----------------------------------------------------------------------
-"  *** SETUP PLUGIN ***  {{{1
-"----------------------------------------------------------------------
 
-"------------------------------------------------------------------------------
-"  setup the toolbox
-"------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
+" Setup: Templates, toolbox and menus.   {{{1
+"-------------------------------------------------------------------------------
 
+" setup the toolbox
 if s:Latex_UseToolbox == 'yes'
 	"
 	let s:Latex_Toolbox = mmtoolbox#tools#NewToolbox ( 'Latex' )
@@ -1780,12 +1908,20 @@ if s:Latex_UseToolbox == 'yes'
 	"
 endif
 
+" tool menu entry
 call Latex_ToolMenu()
 
+" load the menu right now?
 if s:Latex_LoadMenus == 'yes' && s:Latex_CreateMenusDelayed == 'no'
 	call Latex_CreateGuiMenus()
 endif
-"
+
+" user defined commands (working everywhere)
+command! -nargs=? -complete=file                       Latex            call <SID>Compile(<q-args>)
+command! -nargs=? -complete=file                       LatexBibtex      call <SID>Bibtex(<q-args>)
+command! -nargs=? -complete=file                       LatexMakeindex   call <SID>Makeindex(<q-args>)
+command! -nargs=? -complete=file                       LatexCheck       call <SID>Lacheck(<q-args>)
+
 if has( 'autocmd' )
 
   " In the absence of any LaTeX keywords, the default filetype for *.tex files is 'plaintex'.
@@ -1822,6 +1958,7 @@ if has( 'autocmd' )
 
 endif
 " }}}1
-"
+"-------------------------------------------------------------------------------
+
 " =====================================================================================
 " vim: tabstop=2 shiftwidth=2 foldmethod=marker
