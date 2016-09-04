@@ -631,8 +631,8 @@ Several global variables are checked after the plug-in has been loaded to custom
  g:Latex_Tex         'tex      -src-specials -file-line-error -interaction=nonstopmode'
  g:Latex_Pdflatex    'pdflatex -src-specials -file-line-error -interaction=nonstopmode'
  g:Latex_Pdftex      'pdftex   -src-specials -file-line-error -interaction=nonstopmode'
- g:Latex_Lualatex    'lualatex -src-specials -file-line-error -interaction=nonstopmode'
- g:Latex_Luatex      'luatex   -src-specials -file-line-error -interaction=nonstopmode'
+ g:Latex_Lualatex    'lualatex --file-line-error --interaction=nonstopmode'
+ g:Latex_Luatex      'luatex   --file-line-error --interaction=nonstopmode'
  g:Latex_Bibtex      "bibtex"
 
  g:Latex_DviViewer   "xdvi"

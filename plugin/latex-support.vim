@@ -238,8 +238,8 @@ if s:MSWIN
 	let s:Latex_Tex         = 'tex.exe      -src-specials -file-line-error -interaction=nonstopmode'
 	let s:Latex_Pdflatex    = 'pdflatex.exe -src-specials -file-line-error -interaction=nonstopmode'
 	let s:Latex_Pdftex      = 'pdftex.exe   -src-specials -file-line-error -interaction=nonstopmode'
-	let s:Latex_Lualatex    = 'lualatex.exe -src-specials -file-line-error -interaction=nonstopmode'
-	let s:Latex_Luatex      = 'luatex.exe   -src-specials -file-line-error -interaction=nonstopmode'
+	let s:Latex_Lualatex    = 'lualatex.exe --file-line-error --interaction=nonstopmode'
+	let s:Latex_Luatex      = 'luatex.exe   --file-line-error --interaction=nonstopmode'
 	let s:Latex_Bibtex      = 'bibtex.exe'
 
 	" viewer
@@ -285,8 +285,8 @@ else
 	let s:Latex_Tex         = 'tex      -src-specials -file-line-error -interaction=nonstopmode'
 	let s:Latex_Pdflatex    = 'pdflatex -src-specials -file-line-error -interaction=nonstopmode'
 	let s:Latex_Pdftex      = 'pdftex   -src-specials -file-line-error -interaction=nonstopmode'
-	let s:Latex_Lualatex    = 'lualatex -src-specials -file-line-error -interaction=nonstopmode'
-	let s:Latex_Luatex      = 'luatex   -src-specials -file-line-error -interaction=nonstopmode'
+	let s:Latex_Lualatex    = 'lualatex --file-line-error --interaction=nonstopmode'
+	let s:Latex_Luatex      = 'luatex   --file-line-error --interaction=nonstopmode'
 	let s:Latex_Bibtex      = "bibtex"
 
 	" viewer
