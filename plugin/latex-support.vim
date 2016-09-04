@@ -226,20 +226,22 @@ let s:Latex_GlobalTemplateFile = ''
 let s:Latex_LocalTemplateFile  = ''
 let s:Latex_CustomTemplateFile = ''             " the custom templates
 
-let s:Latex_Typesetter	= 'pdflatex'
+let s:Latex_Typesetter = 'pdflatex'
 
-let s:Latex_ToolboxDir					= []
+let s:Latex_ToolboxDir = []
 
-if	s:MSWIN
+if s:MSWIN
   " ==========  MS Windows  ======================================================
-	"
+
 	" typesetter
 	let s:Latex_Latex       = 'latex.exe    -src-specials -file-line-error -interaction=nonstopmode'
 	let s:Latex_Tex         = 'tex.exe      -src-specials -file-line-error -interaction=nonstopmode'
 	let s:Latex_Pdflatex    = 'pdflatex.exe -src-specials -file-line-error -interaction=nonstopmode'
 	let s:Latex_Pdftex      = 'pdftex.exe   -src-specials -file-line-error -interaction=nonstopmode'
+	let s:Latex_Lualatex    = 'lualatex.exe -src-specials -file-line-error -interaction=nonstopmode'
+	let s:Latex_Luatex      = 'luatex.exe   -src-specials -file-line-error -interaction=nonstopmode'
 	let s:Latex_Bibtex      = 'bibtex.exe'
-	"
+
 	" viewer
 	let s:Latex_DviViewer   = 'dviout.exe'
 	let s:Latex_PsViewer    = ''
@@ -277,18 +279,20 @@ if	s:MSWIN
 	"
 else
   " ==========  Linux/Unix  ======================================================
-	"
+
 	" typesetter
 	let s:Latex_Latex       = 'latex    -src-specials -file-line-error -interaction=nonstopmode'
 	let s:Latex_Tex         = 'tex      -src-specials -file-line-error -interaction=nonstopmode'
 	let s:Latex_Pdflatex    = 'pdflatex -src-specials -file-line-error -interaction=nonstopmode'
 	let s:Latex_Pdftex      = 'pdftex   -src-specials -file-line-error -interaction=nonstopmode'
-	"
+	let s:Latex_Lualatex    = 'lualatex -src-specials -file-line-error -interaction=nonstopmode'
+	let s:Latex_Luatex      = 'luatex   -src-specials -file-line-error -interaction=nonstopmode'
+	let s:Latex_Bibtex      = "bibtex"
+
 	" viewer
 	let s:Latex_DviViewer   = "xdvi"
 	let s:Latex_PsViewer    = "gv"
 	let s:Latex_PdfViewer   = "acroread"
-	let s:Latex_Bibtex  		= "bibtex"
 	"
 	" converter
 	let s:Latex_DviPdf      = 'dvipdft'
@@ -339,6 +343,7 @@ let s:Latex_CreateMenusDelayed		= 'yes'
 let s:Latex_GuiSnippetBrowser 		= 'gui'             " gui / commandline
 let s:Latex_LoadMenus         		= 'yes'             " load the menus?
 let s:Latex_RootMenu          		= 'LaTe&X'          " name of the root menu
+let s:Latex_Processing            = 'foreground'
 let s:Latex_UseToolbox            = 'yes'
 call s:ApplyDefaultSetting ( 'Latex_UseTool_make', 'yes' )
 
@@ -369,11 +374,14 @@ call s:GetGlobalSetting( 'Latex_Latex' )
 call s:GetGlobalSetting( 'Latex_LineEndCommColDefault' )
 call s:GetGlobalSetting( 'Latex_LoadMenus' )
 call s:GetGlobalSetting( 'Latex_LocalTemplateFile' )
+call s:GetGlobalSetting( 'Latex_Lualatex' )
+call s:GetGlobalSetting( 'Latex_Luatex' )
 call s:GetGlobalSetting( 'Latex_PdfPng' )
 call s:GetGlobalSetting( 'Latex_PdfViewer' )
 call s:GetGlobalSetting( 'Latex_Pdflatex' )
 call s:GetGlobalSetting( 'Latex_Pdftex' )
 call s:GetGlobalSetting( 'Latex_Printheader' )
+call s:GetGlobalSetting( 'Latex_Processing' )
 call s:GetGlobalSetting( 'Latex_PsPdf' )
 call s:GetGlobalSetting( 'Latex_PsViewer' )
 call s:GetGlobalSetting( 'Latex_RootMenu' )
@@ -382,14 +390,22 @@ call s:GetGlobalSetting( 'Latex_TexFlavor' )
 call s:GetGlobalSetting( 'Latex_Typesetter' )
 call s:GetGlobalSetting( 'Latex_UseToolbox' )
 
-let s:Latex_TypesetterCall	= {
-			\ 'latex' 		: s:Latex_Latex   ,
-			\ 'tex' 			: s:Latex_Tex     ,
-			\ 'pdflatex' 	: s:Latex_Pdflatex,
-			\ 'pdftex' 		: s:Latex_Pdftex  ,
+let s:Latex_TypesetterCall = {
+			\ 'latex'    : s:Latex_Latex   ,
+			\ 'tex'      : s:Latex_Tex     ,
+			\ 'pdflatex' : s:Latex_Pdflatex,
+			\ 'pdftex'   : s:Latex_Pdftex  ,
+			\ 'lualatex' : s:Latex_Lualatex,
+			\ 'luatex'   : s:Latex_Luatex  ,
 			\ }
 
-let s:Latex_ConverterCall	= {
+let s:Latex_TypesetterList = [
+			\    'tex',    'latex',
+			\ 'pdftex', 'pdflatex',
+			\ 'luatex', 'lualatex',
+			\ ]
+
+let s:Latex_ConverterCall = {
 			\ 'dvi-pdf' 	: [ s:Latex_DviPdf , "no" ],
 			\ 'dvi-png'		: [ s:Latex_DviPng , "no" ],
 			\ 'dvi-ps'		: [ s:Latex_DviPs  , "no" ],
@@ -402,6 +418,12 @@ let s:Latex_ViewerCall = {
 	\ 'pdf'           : s:Latex_PdfViewer,
 	\ 'ps'            : s:Latex_PsViewer,
 	\ }
+
+let s:Latex_ProcessingList = [ 'foreground' ]
+
+if has('job')
+	call add ( s:Latex_ProcessingList, 'background' )
+endif
 
 let s:Latex_Printheader = escape( s:Latex_Printheader, ' %' )
 
@@ -909,6 +931,88 @@ function! s:Conversions ( format )
 endfunction    " ----------  end of function s:Conversions  ----------
 
 "-------------------------------------------------------------------------------
+" s:GetTypesetterList : For cmd.-line completion.   {{{1
+"-------------------------------------------------------------------------------
+function! s:GetTypesetterList (...)
+	return join ( s:Latex_TypesetterList, "\n" )
+endfunction    " ----------  end of function s:GetTypesetterList  ----------
+
+"-------------------------------------------------------------------------------
+" s:SetTypesetter : Set s:Latex_Typesetter .   {{{1
+"
+" The new typesetter must be one of 's:Latex_TypesetterList'.
+"
+" Parameters:
+"   typesetter - the typesetter (string, optional)
+"-------------------------------------------------------------------------------
+function! s:SetTypesetter ( typesetter )
+
+	if a:typesetter == ''
+		echo s:Latex_Typesetter
+		return
+	endif
+
+	" 'typesetter' gives the typesetter
+	if index ( s:Latex_TypesetterList, a:typesetter ) == -1
+		return s:ErrorMsg ( 'Invalid option for the typesetter: "'.a:typesetter.'".' )
+	endif
+
+	let s:Latex_Typesetter = a:typesetter
+
+	" update the menu header
+	if ! has ( 'menu' ) || s:MenuVisible == 0
+		return
+	endif
+
+	exe 'aunmenu '.s:Latex_RootMenu.'.Run.choose\ typesetter.Typesetter'
+
+	let current = s:Latex_Typesetter
+	exe 'anoremenu ...400 '.s:Latex_RootMenu.'.Run.choose\ typesetter.Typesetter<TAB>(current\:\ '.current.') :echo "This is a menu header."<CR>'
+
+endfunction    " ----------  end of function s:SetTypesetter  ----------
+
+"-------------------------------------------------------------------------------
+" s:GetProcessingList : For cmd.-line completion.   {{{1
+"-------------------------------------------------------------------------------
+function! s:GetProcessingList (...)
+	return join ( s:Latex_ProcessingList, "\n" )
+endfunction    " ----------  end of function s:GetProcessingList  ----------
+
+"-------------------------------------------------------------------------------
+" s:SetProcessing : Set s:Latex_Processing .   {{{1
+"
+" The new processing method must be one of 's:Latex_ProcessingList'.
+"
+" Parameters:
+"   method - the method (string, optional)
+"-------------------------------------------------------------------------------
+function! s:SetProcessing ( method )
+
+	if a:method == ''
+		echo s:Latex_Processing
+		return
+	endif
+
+	" 'method' gives the processing method
+	if index ( s:Latex_ProcessingList, a:method ) == -1
+		return s:ErrorMsg ( 'Invalid option for the processing method: "'.a:method.'".' )
+	endif
+
+	let s:Latex_Processing = a:method
+
+	" update the menu header
+	if ! has ( 'menu' ) || s:MenuVisible == 0
+		return
+	endif
+
+	exe 'aunmenu '.s:Latex_RootMenu.'.Run.external\ processing.Processing'
+
+	let current = s:Latex_Processing
+	exe 'anoremenu ...400 '.s:Latex_RootMenu.'.Run.external\ processing.Processing<TAB>(current\:\ '.current.') :echo "This is a menu header."<CR>'
+
+endfunction    " ----------  end of function s:SetProcessing  ----------
+
+"-------------------------------------------------------------------------------
 " s:Texdoc : Look up package documentation.   {{{1
 "
 " Look up package documentation for word under the cursor or ask.
@@ -1176,13 +1280,10 @@ function! Latex_CodeSnippet(mode)
     echohl None
   endif
 endfunction   " ---------- end of function  Latex_CodeSnippet  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  CreateAdditionalLatexMaps     {{{1
-"   DESCRIPTION:  create additional maps for LaTeX
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
+
+"-------------------------------------------------------------------------------
+" s:CreateAdditionalLatexMaps : Create additional maps for LaTeX.   {{{1
+"-------------------------------------------------------------------------------
 function! s:CreateAdditionalLatexMaps ()
 	"
 	" ---------- Latex dictionary -------------------------------------------------
@@ -1275,7 +1376,15 @@ function! s:CreateAdditionalLatexMaps ()
    noremap  <buffer>  <silent>  <LocalLeader>rbi        :call <SID>Bibtex("")<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call <SID>Bibtex("")<CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call <SID>Bibtex("")<CR>
-	"
+
+	nnoremap  <buffer>            <LocalLeader>rt         :LatexTypesetter<SPACE>
+	inoremap  <buffer>            <LocalLeader>rt    <Esc>:LatexTypesetter<SPACE>
+	vnoremap  <buffer>            <LocalLeader>rt    <Esc>:LatexTypesetter<SPACE>
+
+	nnoremap  <buffer>            <LocalLeader>rp         :LatexProcessing<SPACE>
+	inoremap  <buffer>            <LocalLeader>rp    <Esc>:LatexProcessing<SPACE>
+	vnoremap  <buffer>            <LocalLeader>rp    <Esc>:LatexProcessing<SPACE>
+
 	nnoremap  <buffer>  <silent>  <LocalLeader>rse        :call Latex_Settings(0)<CR>
   "
 	 noremap  <buffer>  <silent>  <LocalLeader>rh         :call Latex_Hardcopy("n")<CR>
@@ -1324,13 +1433,10 @@ function! s:CreateAdditionalLatexMaps ()
 	call mmtemplates#core#CreateMaps ( 'g:Latex_Templates', g:Latex_MapLeader, 'do_special_maps', 'do_del_opt_map' ) |
 	"
 endfunction    " ----------  end of function s:CreateAdditionalLatexMaps  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  CreateAdditionalBibtexMaps     {{{1
-"   DESCRIPTION:  create additional maps for BibTeX
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
+
+"-------------------------------------------------------------------------------
+" s:CreateAdditionalBibtexMaps : Create additional maps for BibTeX.   {{{1
+"-------------------------------------------------------------------------------
 function! s:CreateAdditionalBibtexMaps ()
 	"
 	"-------------------------------------------------------------------------------
@@ -1558,13 +1664,6 @@ function! s:InitMenus()
 	exe ahead.'view\ &PS<Tab>'.esc_mapl.'rps         :call <SID>View("ps" )<CR>'
 	exe ihead.'view\ &PS<Tab>'.esc_mapl.'rps    <C-C>:call <SID>View("ps" )<CR>'
 
-	exe ahead.'-SEP1-                            :'
-	exe ahead.'run\ make&index<Tab>'.esc_mapl.'rmi                       :call <SID>Makeindex("")<CR>'
-	exe ihead.'run\ make&index<Tab>'.esc_mapl.'rmi                  <C-C>:call <SID>Makeindex("")<CR>'
-	exe ahead.'run\ &bibtex<Tab>'.esc_mapl.'rbi                          :call <SID>Bibtex("")<CR>'
-	exe ihead.'run\ &bibtex<Tab>'.esc_mapl.'rbi                     <C-C>:call <SID>Bibtex("")<CR>'
-	exe ahead.'-SEP2-                            :'
-
 	exe ahead.'Convert<Tab>'.esc_mapl.'rc.Convert<Tab>LaTeX            <Nop>'
 	exe ahead.'Convert<Tab>'.esc_mapl.'.-SEP3-                         :'
 	exe ahead.'Convert<Tab>'.esc_mapl.'rc.DVI->PDF                     :call <SID>Conversions( "dvi-pdf")<CR>'
@@ -1573,10 +1672,42 @@ function! s:InitMenus()
 	exe ahead.'Convert<Tab>'.esc_mapl.'rc.PDF->PNG                     :call <SID>Conversions( "pdf-png")<CR>'
 	exe ahead.'Convert<Tab>'.esc_mapl.'rc.PS->PDF                      :call <SID>Conversions( "ps-pdf" )<CR>'
 
+	exe ahead.'-SEP1-                            :'
+	exe ahead.'run\ make&index<Tab>'.esc_mapl.'rmi                       :call <SID>Makeindex("")<CR>'
+	exe ihead.'run\ make&index<Tab>'.esc_mapl.'rmi                  <C-C>:call <SID>Makeindex("")<CR>'
+	exe ahead.'run\ &bibtex<Tab>'.esc_mapl.'rbi                          :call <SID>Bibtex("")<CR>'
+	exe ihead.'run\ &bibtex<Tab>'.esc_mapl.'rbi                     <C-C>:call <SID>Bibtex("")<CR>'
+	exe ahead.'-SEP2-                            :'
+
+	" create a dummy menu header for the "choose typesetter" sub-menu
+	exe ahead.'&choose\ typesetter<TAB>'.esc_mapl.'rt.Typesetter   :'
+	exe ahead.'&choose\ typesetter<TAB>'.esc_mapl.'rt.-SepHead-    :'
+
+	" create a dummy menu header for the "external processing" sub-menu
+	exe ahead.'&external\ processing<TAB>'.esc_mapl.'rp.Processing   :'
+	exe ahead.'&external\ processing<TAB>'.esc_mapl.'rp.-SepHead-    :'
+
 	exe ahead.'-SEP3-                            :'
 	exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh        :call Latex_Hardcopy("n")<CR>'
 	exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call Latex_Hardcopy("v")<CR>'
-	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rse                 :call Latex_Settings(0)<CR>'
+
+	exe ahead.'-SEP4-                            :'
+	exe ahead.'plug-in\ &settings<Tab>'.esc_mapl.'rse                :call Latex_Settings(0)<CR>'
+
+	" run -> choose typesetter
+	for ts in s:Latex_TypesetterList
+		exe ahead.'choose\ typesetter.'.ts.'   :call <SID>SetTypesetter("'.ts.'")<CR>'
+	endfor
+
+	" run -> external processing
+	for m in s:Latex_ProcessingList
+		exe ahead.'external\ processing.'.m.'   :call <SID>SetProcessing("'.m.'")<CR>'
+	endfor
+
+	" deletes the dummy menu header and displays the current options
+	" in the menu header of the sub-menus
+	call s:SetTypesetter ( s:Latex_Typesetter )
+	call s:SetProcessing ( s:Latex_Processing )
 
 	"-------------------------------------------------------------------------------
 	" toolbox
@@ -1720,6 +1851,7 @@ function! Latex_Settings ( verbose )
 	endif
 	let txt = txt."\n"
 	let txt = txt.'               typesetter :  "'.s:Latex_TypesetterCall[s:Latex_Typesetter]."\"\n"
+	let txt = txt.'      external processing :  "'.s:Latex_Processing."\"\n"
 	let	txt = txt."__________________________________________________________________________\n"
 	let	txt = txt." LaTeX-Support, Version ".g:LatexSupportVersion." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
 	"
@@ -1923,6 +2055,9 @@ command! -nargs=? -complete=file                       Latex            call <SI
 command! -nargs=? -complete=file                       LatexBibtex      call <SID>Bibtex(<q-args>)
 command! -nargs=? -complete=file                       LatexMakeindex   call <SID>Makeindex(<q-args>)
 command! -nargs=? -complete=file                       LatexCheck       call <SID>Lacheck(<q-args>)
+
+command! -nargs=? -complete=custom,<SID>GetTypesetterList  LatexTypesetter   call <SID>SetTypesetter(<q-args>)
+command! -nargs=? -complete=custom,<SID>GetProcessingList  LatexProcessing   call <SID>SetProcessing(<q-args>)
 
 if has( 'autocmd' )
 

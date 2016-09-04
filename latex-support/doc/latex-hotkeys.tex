@@ -6,7 +6,7 @@
 %%
 %%        Version:  see \Pluginversion
 %%        Created:  02.01.2013
-%%       Revision:  24.02.2016
+%%       Revision:  04.09.2016
 %%
 %%         Author:  Wolfgang Mehner (WM), wolfgang-mehner@web.de
 %%                  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
@@ -30,7 +30,7 @@
 
 \setlength\parindent{0pt}
 
-\newcommand{\Pluginversion}{1.2}
+\newcommand{\Pluginversion}{1.3pre}
 \newcommand{\ReleaseDate}{\today}
 \newcommand{\Rep}{{\scriptsize{[n]}}}
 \newcommand{\Map}[1] {\textbf{\textasciiacute}\texttt{#1}}
@@ -143,8 +143,8 @@ Key mappings for Vim and gVim\\
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{T}ext}}                 \\[1.0ex]
 \hline \Map{e}    & environment                    \hfill (n, i, v, T)\\
-\hline \Map{ts}   & section                        \hfill (n, i, T)\\
 \hline \Map{to}   & organization                   \hfill (n, i, T)\\
+\hline \Map{ts}   & section                        \hfill (n, i, T)\\
 \hline \Map{tld}  & list environment, description  \hfill (n, i)\\
 \hline \Map{tle}  & list environment, enumerate    \hfill (n, i)\\
 \hline \Map{tli}  & list environment, itemize      \hfill (n, i)\\
@@ -155,7 +155,8 @@ Key mappings for Vim and gVim\\
 \hline \Map{tfs}  & font size                      \hfill (n, i, v, T)\\
 \hline \Map{tq}   & quotes                         \hfill (n, i, v, T)\\
 \hline \Map{tsp}  & spacing                        \hfill (n, i, T)\\
-\hline \Map{ta}   & line alignment + spacing       \hfill (n, i, v, T)\\
+\hline \Map{tal}  & line alignment + spacing       \hfill (n, i, v, T)\\
+\hline \Map{tac}  & accents                        \hfill (n, i, T)\\
 \hline \Map{ttc}  & textcomp characters            \hfill (n, i, T)\\
 \hline
 \hline \Map{tbi}  & bibitem                        \hfill (n, i)\\
@@ -295,12 +296,16 @@ Key mappings for Vim and gVim\\
 \hline \Map{rdvi} & view DVI                                 \hfill (n, i)\\
 \hline \Map{rpdf} & view PDF                                 \hfill (n, i)\\
 \hline \Map{rps}  & view PS                                  \hfill (n, i)\\
+\hline \Map{rc}   & run a converter                          \hfill (n, i)\\
 \hline
 \hline \Map{rmi}  & run \texttt{makeindex}                   \hfill (n, i)\\
 \hline \Map{rbi}  & run \texttt{bibtex}                      \hfill (n, i)\\
-\hline \Map{rc}   & run a converter                          \hfill (n, i)\\
+\hline
+\hline \Map{rt}   & choose the typesetter                    \hfill (n, i, T)\\
+\hline \Map{rp}   & method for external processing           \hfill (n, i, T)\\
+\hline
 \hline \Map{rh}   & hardcopy buffer to postscript            \hfill (n, i, v)\\
-\hline \Map{rse}  & show plugin settings                     \hfill (n, i)\\
+\hline \Map{rse}  & show plug-in settings                    \hfill (n, i)\\
 \hline
 %%----------------------------------------------------------------------
 %%  tool box
@@ -318,6 +323,44 @@ Key mappings for Vim and gVim\\
 %%======================================================================
 %%  page 2 / table, right part      [[[1
 %%======================================================================
+%
+\parbox[t][130mm][t]{70mm}{
+%
+%%----------------------------------------------------------------------
+%%  External Programs
+%%----------------------------------------------------------------------
+\large{\textbf{Run}}\\[1.0ex]
+Run the typesetter or \texttt{lacheck} : \\[1.0ex]
+\texttt{ :Latex [<tex-file>]} \\[1.0ex]
+\texttt{ :LatexCheck [<tex-file>]} \\[1.0ex]
+Run \texttt{makeindex} or \texttt{bibtex} : \\[1.0ex]
+\texttt{ :LatexMakeindex [<idx-file>]} \\[1.0ex]
+\texttt{ :LatexBibtex [<aux-file>]} \\[1.0ex]
+(the default arguments are derived from the name of the current buffer) \\[2.5ex]
+%
+%%----------------------------------------------------------------------
+%%  Options
+%%----------------------------------------------------------------------
+\large{\textbf{Options}}\\[1.0ex]
+Print or set the typesetter: \\[1.0ex]
+\texttt{ :LatexTypesetter [<typesetter>]} \\[1.0ex]
+Print or set the processing method: \\[1.0ex]
+\texttt{ :LatexProcessing [<method>]} \\[1.0ex]
+(both commands support tab-compl.) \\[2.5ex]
+%
+%%----------------------------------------------------------------------
+%%  Make
+%%----------------------------------------------------------------------
+\large{\textbf{Make}}\\[1.0ex]
+Run \texttt{make} : \\[1.0ex]
+\texttt{ :Make [<args>]} \\[1.0ex]
+Set the current makefile: \\[1.0ex]
+\texttt{ :MakeFile <file>} \\[1.0ex]
+(both commands support tab-compl.) \\[1.0ex]
+Help for the Make Tool: \\[1.0ex]
+\texttt{ :MakeHelp} \\[2.5ex]
+}
+%
 \end{center}%
 \end{multicols}%
 %

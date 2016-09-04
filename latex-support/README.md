@@ -1,4 +1,4 @@
-README for latex-support.vim (Version 1.2) / August 21 2016
+README for latex-support.vim (Version 1.3pre) / September 04 2016
 ================================================================================
 
   *  INSTALLATION
@@ -173,12 +173,16 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 RELEASE NOTES
 ================================================================================
 
-RELEASE NOTES FOR VERSION 1.2
+RELEASE NOTES FOR VERSION 1.3pre
 ----------------------------------------------------------------------
-- Add 'g:Latex_CustomTemplateFile'.
-- Add template personalization file and setup wizard.
-- Change some templates.
-- Add maps to bibtex buffers.
+- Add commands :Latex, :LatexBibtex, :LatexMakeindex, and :LatexCheck to run the
+  external commands.
+- Add command :LatexTypesetter to change the typesetter during runtime.
+- Add command :LatexProcessing to change between foreground and background
+  processing.
+- BibTeX errors are recognized by quickfix.
+- New templates.
+- Minor bugfixes.
 
 
 RELEASE NOTES FOR OLDER VERSIONS

@@ -1,8 +1,8 @@
-*latexsupport.txt*              LaTeX Support                      Aug 21 2016
+*latexsupport.txt*              LaTeX Support                      Sep 04 2016
 
 LaTeX Support                                     *latex-support* *latexsupport*
 
-                             Plug-in version 1.2
+                             Plug-in version 1.3pre
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
@@ -338,6 +338,8 @@ This can be changed in the .vimrc file using one of the variables
  let g:Latex_Tex         = 'tex      ... '
  let g:Latex_Pdflatex    = 'pdflatex ... '
  let g:Latex_Pdftex      = 'pdftex   ... '
+ let g:Latex_Lualatex    = 'lualatex ... '
+ let g:Latex_Luatex      = 'luatex   ... '
 <
 The errors a typesetter run will produce will be shown in a quickfix buffer.
 For convenience consider to use maps like
@@ -450,8 +452,8 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
   Text
   -----------------------------------------------------------------
      ´e         environment                     (niv)
-     ´ts        section                         (ni)
      ´to        organization                    (ni)
+     ´ts        section                         (ni)
      ´tld       list environment, description   (ni)
      ´tle       list environment, enumerate     (ni)
      ´tli       list environment, itemize       (ni)
@@ -462,7 +464,8 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      ´tfs       font size                       (niv)
      ´tq        quotes                          (niv)
      ´tsp       spacing                         (ni)
-     ´ta        line alignment + spacing        (niv)
+     ´tal       line alignment + spacing        (niv)
+     ´tac       accents                         (niv)
      ´ttc       textcomp characters             (ni)
      ´tbi       bibitem                         (ni)
      ´tci       cite                            (ni)
@@ -542,9 +545,12 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      ´rdvi      view DVI                        (ni)
      ´rpdf      view PDF                        (ni)
      ´rps       view PS                         (ni)
+     ´rc        run a converter                 (ni)
      ´rmi       run makeindex                   (ni)
      ´rbi       run bibtex                      (ni)
-     ´rc        run a converter                 (ni)
+     ´rt        choose the typesetter           (ni)
+     ´rp        method for external processing  (ni)
+     ´rh        hardcopy buffer to postscript   (niv)
      ´rse       show plugin settings            (ni)
 
 
@@ -625,6 +631,8 @@ Several global variables are checked after the plug-in has been loaded to custom
  g:Latex_Tex         'tex      -src-specials -file-line-error -interaction=nonstopmode'
  g:Latex_Pdflatex    'pdflatex -src-specials -file-line-error -interaction=nonstopmode'
  g:Latex_Pdftex      'pdftex   -src-specials -file-line-error -interaction=nonstopmode'
+ g:Latex_Lualatex    'lualatex -src-specials -file-line-error -interaction=nonstopmode'
+ g:Latex_Luatex      'luatex   -src-specials -file-line-error -interaction=nonstopmode'
  g:Latex_Bibtex      "bibtex"
 
  g:Latex_DviViewer   "xdvi"
@@ -693,7 +701,13 @@ The command line used to call the TeX typesetter.
 The command line used to call the pdfLaTeX typesetter.
 
  *g:Latex_Pdftex*
-The command line used to call the pdfTeXtypesetter.
+The command line used to call the pdfTeX typesetter.
+
+ *g:Latex_Lualatex*
+The command line used to call the luaLaTeX typesetter.
+
+ *g:Latex_Luatex*
+The command line used to call the luaTeX typesetter.
 
  *g:Latex_Bibtex*
 The command line used to call bibtex.
