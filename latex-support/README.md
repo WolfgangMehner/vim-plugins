@@ -180,6 +180,8 @@ RELEASE NOTES FOR VERSION 1.3pre
 - Add command :LatexTypesetter to change the typesetter during runtime.
 - Add command :LatexProcessing to change between foreground and background
   processing.
+- Add command :LatexErrors and map ´re to view errors from background processing
+  in quickfix.
 - BibTeX errors are recognized by quickfix.
 - New templates.
 - Minor bugfixes.

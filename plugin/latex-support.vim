@@ -354,9 +354,15 @@ endif
 let s:Latex_LineEndCommColDefault = 49
 let s:Latex_Printheader   				= "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
 let s:Latex_TemplateJumpTarget 		= ''
-let s:Latex_Errorformat    				= 'latex:\ %f:%l:\ %m'
 let s:Latex_Wrapper               = s:plugin_dir.'/latex-support/scripts/wrapper.sh'
 let s:Latex_InsertFileProlog			= 'yes'
+
+let s:Latex_LatexErrorf  = '%f:%l: %m'
+let s:Latex_BibtexErrorf =
+			\      '%+PDatabase file #%\\d%\\+: %f'
+			\ .','.'%m---line %l of file %f'
+			\ .','.'Warning--%m'
+			\ .','.'--line %l of file %f'
 
 " overwrite the mapleader, we should not use use "\" in LaTeX
 call s:ApplyDefaultSetting ( 'Latex_MapLeader', '´' )
@@ -660,6 +666,77 @@ function! s:BibtexBeautify () range
 endfunction    " ----------  end of function s:BibtexBeautify ----------
 
 "-------------------------------------------------------------------------------
+" === Background processing facilities ===   {{{1
+"-------------------------------------------------------------------------------
+
+let s:BackgroundType   = ''                     " type of the job
+let s:BackgroundStatus = -1                     " status of the last job
+let s:BackgroundOutput = []                     " output of the last job
+
+"-------------------------------------------------------------------------------
+" s:BackgroundCB_IO : Callback for output from the background job.   {{{2
+"
+" Parameters:
+"   chn - the channel (channel)
+"   msg - the new line (string)
+"-------------------------------------------------------------------------------
+function! s:BackgroundCB_IO ( chn, msg )
+	call add ( s:BackgroundOutput, a:msg )
+endfunction    " ----------  end of function s:BackgroundCB_IO  ----------
+
+"-------------------------------------------------------------------------------
+" s:BackgroundCB_Exit : Callback for a finished background job.   {{{2
+"
+" Parameters:
+"   job - the job (job)
+"   status - the status (number)
+"-------------------------------------------------------------------------------
+function! s:BackgroundCB_Exit ( job, status )
+	if a:status == 0
+		call s:ImportantMsg ( 'Job "'.s:BackgroundType.'" finished successfully.' )
+	else
+		call s:ImportantMsg ( 'Job "'.s:BackgroundType.'" failed (exit status '.a:status.').' )
+	endif
+
+	let s:BackgroundStatus = a:status
+	unlet s:BackgroundJob
+endfunction    " ----------  end of function s:BackgroundCB_Exit  ----------
+
+"-------------------------------------------------------------------------------
+" s:BackgroundErrors : Quickfix background errors.   {{{2
+"-------------------------------------------------------------------------------
+function! s:BackgroundErrors ()
+
+	if exists ( 's:BackgroundJob' )
+		return s:WarningMsg ( 'Job "'.s:BackgroundType.'" still running.' )
+	elseif len ( s:BackgroundOutput ) == 0
+		return s:WarningMsg ( 'Not output for last job.' )
+	endif
+
+	cclose
+
+	" save current settings
+	let errorf_saved  = &g:errorformat
+
+	" run typesetter
+	let &g:errorformat = s:Latex_LatexErrorf
+
+	let errors = join ( s:BackgroundOutput, "\n" )
+	silent exe 'cgetexpr errors'
+
+	" restore current settings
+	let &g:errorformat = errorf_saved
+
+	" open error window if necessary
+	botright cwindow
+
+	return
+endfunction    " ----------  end of function s:BackgroundErrors  ----------
+
+" }}}2
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
 " s:Compile : Run the typesetter.   {{{1
 "
 " Parameters:
@@ -687,13 +764,28 @@ function! s:Compile ( args )
 
 	cclose
 
+	if s:Latex_Processing == 'background' && has ( 'job' )
+		let s:BackgroundType   = s:Latex_Typesetter
+		let s:BackgroundStatus = -1
+		let s:BackgroundOutput = []
+
+		let s:BackgroundJob = job_start (
+					\ typesettercall.' "'.( source ).'"', {
+					\ 'callback' : '<SNR>'.s:SID().'_BackgroundCB_IO',
+					\ 'exit_cb'  : '<SNR>'.s:SID().'_BackgroundCB_Exit'
+					\ } )
+
+		call s:ImportantMsg ( 'Starting "'.s:Latex_Typesetter.'" in background.' )
+		return
+	endif
+
 	" save current settings
 	let makeprg_saved = &l:makeprg
 	let errorf_saved  = &l:errorformat
 
 	" run typesetter
 	let &l:makeprg     = typesettercall
-	let &l:errorformat = '%f:%l: %m'
+	let &l:errorformat = s:Latex_LatexErrorf
 
 	exe "make ".shellescape ( source )
 
@@ -734,7 +826,7 @@ function! s:Bibtex ( args )
 
 	" run bibtex
 	let &l:makeprg     = s:Latex_Bibtex
-	let &l:errorformat = '%+PDatabase file #%\\d%\\+: %f,%m---line %l of file %f,Warning--%m'
+	let &l:errorformat = s:Latex_BibtexErrorf
 
 	exe "make! ".shellescape ( aux_file )       | " do not jump to the first error
 
@@ -1359,6 +1451,9 @@ function! s:CreateAdditionalLatexMaps ()
    noremap  <buffer>  <silent>  <LocalLeader>rla        :call <SID>Lacheck("")<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rla   <C-C>:call <SID>Lacheck("")<CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>rla   <C-C>:call <SID>Lacheck("")<CR>
+   noremap  <buffer>  <silent>  <LocalLeader>re         :call <SID>BackgroundErrors()<CR>
+  inoremap  <buffer>  <silent>  <LocalLeader>re    <C-C>:call <SID>BackgroundErrors()<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>re    <C-C>:call <SID>BackgroundErrors()<CR>
 
    noremap  <buffer>  <silent>  <LocalLeader>rdvi       :call <SID>View("dvi")<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rdvi  <C-C>:call <SID>View("dvi")<CR>
@@ -1491,6 +1586,10 @@ function! s:CreateAdditionalBibtexMaps ()
 	"-------------------------------------------------------------------------------
 	" run
 	"-------------------------------------------------------------------------------
+   noremap  <buffer>  <silent>  <LocalLeader>re         :call <SID>BackgroundErrors()<CR>
+  inoremap  <buffer>  <silent>  <LocalLeader>re    <C-C>:call <SID>BackgroundErrors()<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>re    <C-C>:call <SID>BackgroundErrors()<CR>
+
    noremap  <buffer>  <silent>  <LocalLeader>rmi        :call <SID>Makeindex("")<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call <SID>Makeindex("")<CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call <SID>Makeindex("")<CR>
@@ -1657,20 +1756,25 @@ function! s:InitMenus()
 	exe ahead.'save\ +\ &run\ lacheck<Tab>'.esc_mapl.'rla       :call <SID>Lacheck("")<CR><CR>'
 	exe ihead.'save\ +\ &run\ lacheck<Tab>'.esc_mapl.'rla  <C-C>:call <SID>Lacheck("")<CR><CR>'
 
-	exe ahead.'view\ &DVI<Tab>'.esc_mapl.'rdvi       :call <SID>View("dvi")<CR>'
-	exe ihead.'view\ &DVI<Tab>'.esc_mapl.'rdvi  <C-C>:call <SID>View("dvi")<CR>'
-	exe ahead.'view\ &PDF<Tab>'.esc_mapl.'rpdf       :call <SID>View("pdf")<CR>'
-	exe ihead.'view\ &PDF<Tab>'.esc_mapl.'rpdf  <C-C>:call <SID>View("pdf")<CR>'
-	exe ahead.'view\ &PS<Tab>'.esc_mapl.'rps         :call <SID>View("ps" )<CR>'
-	exe ihead.'view\ &PS<Tab>'.esc_mapl.'rps    <C-C>:call <SID>View("ps" )<CR>'
+	exe ahead.'view\ last\ &errors<Tab>'.esc_mapl.'re           :call <SID>BackgroundErrors()<CR>'
+	exe ihead.'view\ last\ &errors<Tab>'.esc_mapl.'re      <C-C>:call <SID>BackgroundErrors()<CR>'
 
-	exe ahead.'Convert<Tab>'.esc_mapl.'rc.Convert<Tab>LaTeX            <Nop>'
-	exe ahead.'Convert<Tab>'.esc_mapl.'.-SEP3-                         :'
-	exe ahead.'Convert<Tab>'.esc_mapl.'rc.DVI->PDF                     :call <SID>Conversions( "dvi-pdf")<CR>'
-	exe ahead.'Convert<Tab>'.esc_mapl.'rc.DVI->PS                      :call <SID>Conversions( "dvi-ps" )<CR>'
-	exe ahead.'Convert<Tab>'.esc_mapl.'rc.DVI->PNG                     :call <SID>Conversions( "dvi-png")<CR>'
-	exe ahead.'Convert<Tab>'.esc_mapl.'rc.PDF->PNG                     :call <SID>Conversions( "pdf-png")<CR>'
-	exe ahead.'Convert<Tab>'.esc_mapl.'rc.PS->PDF                      :call <SID>Conversions( "ps-pdf" )<CR>'
+	exe ahead.'&View.View<Tab>LaTeX                 :echo "This is a menu header."<CR>'
+	exe ahead.'View.-SEP1-                          :'
+	exe ahead.'View.&DVI<Tab>'.esc_mapl.'rdvi       :call <SID>View("dvi")<CR>'
+	exe ihead.'View.&DVI<Tab>'.esc_mapl.'rdvi  <C-C>:call <SID>View("dvi")<CR>'
+	exe ahead.'View.&PDF<Tab>'.esc_mapl.'rpdf       :call <SID>View("pdf")<CR>'
+	exe ihead.'View.&PDF<Tab>'.esc_mapl.'rpdf  <C-C>:call <SID>View("pdf")<CR>'
+	exe ahead.'View.&PS<Tab>'.esc_mapl.'rps         :call <SID>View("ps" )<CR>'
+	exe ihead.'View.&PS<Tab>'.esc_mapl.'rps    <C-C>:call <SID>View("ps" )<CR>'
+
+	exe ahead.'&Convert<Tab>'.esc_mapl.'rc.Convert<Tab>LaTeX  :echo "This is a menu header."<CR>'
+	exe ahead.'Convert.-SEP1-                                 :'
+	exe ahead.'Convert.DVI->PDF                               :call <SID>Conversions( "dvi-pdf")<CR>'
+	exe ahead.'Convert.DVI->PS                                :call <SID>Conversions( "dvi-ps" )<CR>'
+	exe ahead.'Convert.DVI->PNG                               :call <SID>Conversions( "dvi-png")<CR>'
+	exe ahead.'Convert.PDF->PNG                               :call <SID>Conversions( "pdf-png")<CR>'
+	exe ahead.'Convert.PS->PDF                                :call <SID>Conversions( "ps-pdf" )<CR>'
 
 	exe ahead.'-SEP1-                            :'
 	exe ahead.'run\ make&index<Tab>'.esc_mapl.'rmi                       :call <SID>Makeindex("")<CR>'
@@ -1680,12 +1784,12 @@ function! s:InitMenus()
 	exe ahead.'-SEP2-                            :'
 
 	" create a dummy menu header for the "choose typesetter" sub-menu
-	exe ahead.'&choose\ typesetter<TAB>'.esc_mapl.'rt.Typesetter   :'
-	exe ahead.'&choose\ typesetter<TAB>'.esc_mapl.'rt.-SepHead-    :'
+	exe ahead.'choose\ &typesetter<TAB>'.esc_mapl.'rt.Typesetter   :'
+	exe ahead.'choose\ &typesetter<TAB>'.esc_mapl.'rt.-SepHead-    :'
 
 	" create a dummy menu header for the "external processing" sub-menu
-	exe ahead.'&external\ processing<TAB>'.esc_mapl.'rp.Processing   :'
-	exe ahead.'&external\ processing<TAB>'.esc_mapl.'rp.-SepHead-    :'
+	exe ahead.'external\ &processing<TAB>'.esc_mapl.'rp.Processing   :'
+	exe ahead.'external\ &processing<TAB>'.esc_mapl.'rp.-SepHead-    :'
 
 	exe ahead.'-SEP3-                            :'
 	exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh        :call Latex_Hardcopy("n")<CR>'
@@ -2055,6 +2159,8 @@ command! -nargs=? -complete=file                       Latex            call <SI
 command! -nargs=? -complete=file                       LatexBibtex      call <SID>Bibtex(<q-args>)
 command! -nargs=? -complete=file                       LatexMakeindex   call <SID>Makeindex(<q-args>)
 command! -nargs=? -complete=file                       LatexCheck       call <SID>Lacheck(<q-args>)
+
+command! -nargs=0                                      LatexErrors      call <SID>BackgroundErrors()
 
 command! -nargs=? -complete=custom,<SID>GetTypesetterList  LatexTypesetter   call <SID>SetTypesetter(<q-args>)
 command! -nargs=? -complete=custom,<SID>GetProcessingList  LatexProcessing   call <SID>SetProcessing(<q-args>)
