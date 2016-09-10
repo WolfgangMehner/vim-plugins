@@ -684,6 +684,7 @@ Several global variables are checked after the plug-in has been loaded to custom
  g:Latex_RootMenu               'LaTe&X'
  g:Latex_TexFlavor              'latex'
  g:Latex_Typesetter             'pdflatex'
+ g:Latex_Processing             'foreground'
 
 The variable root_dir will automatically be set to one of the following values:
   $HOME.'/.vim/'        for Linux/Unix
@@ -794,6 +795,12 @@ The filetype when starting with an empty file ('latex', 'plaintex')
  *g:Latex_Typesetter*
 The typesetter used by the run command ('rr', Ctrl-F9, or menu item):
 'pdflatex', 'pdftex', 'latex', or 'tex'.
+
+ *g:Latex_Processing*
+The way external programs such as the typesetter are run:
+'foreground' blocks the editor until the external process is done.
+'background' runs the process asynchronously and displays a message once it is
+done. Requires the |+job| feature.
 
 ------------------------------------------------------------------------------
 4.3  THE ROOT MENU                                  *latexsupport-custom-root*

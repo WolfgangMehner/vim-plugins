@@ -765,6 +765,10 @@ function! s:Compile ( args )
 	cclose
 
 	if s:Latex_Processing == 'background' && has ( 'job' )
+		if exists ( 's:BackgroundJob' )
+			return s:WarningMsg ( 'Job "'.s:BackgroundType.'" still running.' )
+		endif
+
 		let s:BackgroundType   = s:Latex_Typesetter
 		let s:BackgroundStatus = -1
 		let s:BackgroundOutput = []
