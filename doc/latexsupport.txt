@@ -525,7 +525,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      ´wlil      lstinputlisting                 (ni)
      ´nls       lstset                          (ni)
      ´wtt       table                           (niv)
-     ´wttf      table, floating                 (niv)
+     ´wtf       table, floating                 (niv)
      ´wtg       tabbing                         (ni)
      ´wtr       tabular                         (ni)
      ´wf        figure                          (ni)

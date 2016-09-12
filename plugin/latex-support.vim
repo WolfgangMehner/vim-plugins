@@ -666,6 +666,103 @@ function! s:BibtexBeautify () range
 endfunction    " ----------  end of function s:BibtexBeautify ----------
 
 "-------------------------------------------------------------------------------
+" === Wizards ===   {{{1
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:WizardTabbing : Wizard for inserting a tabbing.   {{{2
+"-------------------------------------------------------------------------------
+function! s:WizardTabbing()
+
+	" settings
+	let textwidth = 120                           " unit [mm]
+	let n_rows    = 1                             " default number of rows
+	let n_cols    = 2                             " default number of columns
+
+	" user input
+	let param = s:UserInput("rows columns [width [mm]]: ", n_rows." ".n_cols )
+	if param == ""
+		return
+	elseif match( param, '^\s*\d\+\(\s\+\d\+\)\{0,2}\s*$' ) < 0
+		return s:WarningMsg ( 'Wrong input format.' )
+	endif
+
+	" parse the input
+	let paramlist = split( param )
+	if len( paramlist ) >= 1
+		let n_rows  = str2nr( paramlist[0] )
+	endif
+	if len( paramlist ) >= 2
+		let n_cols  = str2nr( paramlist[1 ])
+	endif
+	if len( paramlist ) >= 3
+		let textwidth = paramlist[2]
+	endif
+
+	" generate replacements for all macros and insert the template
+	let n_rows = max( [ n_rows, 1 ] )  " at least 1 row
+	let n_cols = max( [ n_cols, 2 ] )  " at least 2 columns
+
+	let colwidth = textwidth/n_cols
+	let colwidth = max( [ colwidth, 10 ] )
+
+	let ROW_HEAD = repeat ( '\hspace{'.colwidth.'mm} \= ', n_cols )
+	let ROW      = repeat ( ' \> ', n_cols-1 )
+	let ROW_LIST = repeat ( [ ROW ], n_rows )
+
+	call mmtemplates#core#InsertTemplate ( g:Latex_Templates, 'Wizard.tables.tabbing',
+				\ '|ROW_HEAD|', ROW_HEAD, '|ROW|', ROW_LIST, 'placement', 'below' )
+endfunction    " ----------  end of function s:WizardTabbing  ----------
+
+"-------------------------------------------------------------------------------
+" s:WizardTabular : Wizard for inserting a tabular.   {{{2
+"-------------------------------------------------------------------------------
+function! s:WizardTabular()
+
+	" settings
+	let textwidth = 120   " [mm]
+	let n_rows    = 2
+	let n_cols    = 2
+
+	" user input
+	let param = s:UserInput("rows columns [width [mm]]: ", n_rows." ".n_cols )
+	if param == ""
+		return
+	elseif match( param, '^\s*\d\+\(\s\+\d\+\)\{0,2}\s*$' ) < 0
+		return s:WarningMsg ( 'Wrong input format.' )
+	endif
+
+	" parse the input
+	let paramlist = split( param )
+	if len( paramlist ) >= 1
+		let n_rows  = str2nr( paramlist[0] )
+	endif
+	if len( paramlist ) >= 2
+		let n_cols  = str2nr( paramlist[1 ])
+	endif
+	if len( paramlist ) >= 3
+		let textwidth = paramlist[2]
+	endif
+
+	" generate replacements for all macros and insert the template
+	let n_rows = max( [ n_rows, 1 ] )  " at least 1 row
+	let n_cols = max( [ n_cols, 2 ] )  " at least 2 columns
+
+	let colwidth = textwidth/n_cols
+	let colwidth = max( [ colwidth, 10 ] )
+
+	let COLUMNS  = repeat ( 'p{'.colwidth.'mm}', n_cols )
+	let ROW_HEAD = repeat ( ' & ', n_cols-1 )
+	let ROW_LIST = repeat ( [ ROW_HEAD ], n_rows-1 )
+
+	call mmtemplates#core#InsertTemplate ( g:Latex_Templates, 'Wizard.tables.tabular',
+				\ '|COLUMNS|', COLUMNS, '|ROW_HEAD|', ROW_HEAD, '|ROW|', ROW_LIST, 'placement', 'below' )
+endfunction    " ----------  end of function s:WizardTabular  ----------
+
+" }}}2
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
 " === Background processing facilities ===   {{{1
 "-------------------------------------------------------------------------------
 
@@ -1435,10 +1532,10 @@ function! s:CreateAdditionalLatexMaps ()
 	"-------------------------------------------------------------------------------
 	" wizard
 	"-------------------------------------------------------------------------------
-	nnoremap    <buffer>  <silent> <LocalLeader>wtg       :call Latex_Tabbing()<CR>k0a
-	inoremap    <buffer>  <silent> <LocalLeader>wtg  <C-C>:call Latex_Tabbing()<CR>k0a
-	nnoremap    <buffer>  <silent> <LocalLeader>wtr       :call Latex_Tabular()<CR>3k0a
-	inoremap    <buffer>  <silent> <LocalLeader>wtr  <C-C>:call Latex_Tabular()<CR>3k0a
+	nnoremap    <buffer>  <silent> <LocalLeader>wtg       :call <SID>WizardTabbing()<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>wtg  <C-C>:call <SID>WizardTabbing()<CR>
+	nnoremap    <buffer>  <silent> <LocalLeader>wtr       :call <SID>WizardTabular()<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>wtr  <C-C>:call <SID>WizardTabular()<CR>
 
 	"-------------------------------------------------------------------------------
 	" run
@@ -1734,13 +1831,12 @@ function! s:InitMenus()
 	let ihead = 'inoremenu <silent> '.s:Latex_RootMenu.'.&Wizard.'
 	let vhead = 'vnoremenu <silent> '.s:Latex_RootMenu.'.&Wizard.'
 
- 	exe ahead.'tables.tabbing<Tab>'.esc_mapl.'wtg                     :call Latex_Tabbing()<CR>k0a'
- 	exe ihead.'tables.tabbing<Tab>'.esc_mapl.'wtg                <C-C>:call Latex_Tabbing()<CR>k0a'
- 	exe ahead.'tables.tabular<Tab>'.esc_mapl.'wtr                     :call Latex_Tabular()<CR>3k0a'
- 	exe ihead.'tables.tabular<Tab>'.esc_mapl.'wtr                <C-C>:call Latex_Tabular()<CR>3k0a'
+	exe ahead.'tables.tabbing<Tab>'.esc_mapl.'wtg                     :call <SID>WizardTabbing()<CR>'
+	exe ihead.'tables.tabbing<Tab>'.esc_mapl.'wtg                <C-C>:call <SID>WizardTabbing()<CR>'
+	exe ahead.'tables.tabular<Tab>'.esc_mapl.'wtr                     :call <SID>WizardTabular()<CR>'
+	exe ihead.'tables.tabular<Tab>'.esc_mapl.'wtr                <C-C>:call <SID>WizardTabular()<CR>'
 
-	exe ahead.'li&gatures.ligatures<Tab>LaTeX                      <Nop>'
-	exe ahead.'li&gatures.-SEP3-                       :'
+	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', 'Wizard.li&gatures', 'priority', 600 )
 	exe ahead.'li&gatures.find\ double       <C-C>:/f[filt]<CR>'
 	exe ahead.'li&gatures.find\ triple       <C-C>:/ff[filt]<CR>'
 	exe ahead.'li&gatures.split\ with\ \\\/  <C-C>a\/<Esc>'
@@ -2031,107 +2127,6 @@ function! s:repeat_string ( string, n, ... )
 	endif
 	return result
 endfunction    " ----------  end of function repeat_string  ----------
-"
-"------------------------------------------------------------------------------
-"  Wizard : tabbing
-"------------------------------------------------------------------------------
-function! Latex_Tabbing()
-	let TextWidth   = 120                         " unit [mm]
-	let RowInput    = '1'                         " default number of rows
-	let ColInput    = '2'                         " default number of columns
-	let param       = s:UserInput("rows columns [width [mm]]: ", RowInput." ".ColInput )
-	if param == ""
-		return
-	endif
-	if match( param, '^\s*\d\+\(\s\+\d\+\)\{0,2}\s*$' ) < 0
-		echomsg " Wrong input format."
-		return
-	endif
-
-	let paramlist		= split( param )
-	if len( paramlist ) >= 1
-		let	RowInput	= paramlist[0]
-	endif
-	if len( paramlist ) >= 2
-		let	ColInput	= paramlist[1]
-	endif
-	if len( paramlist ) >= 3
-		let	TextWidth	= paramlist[2]
-	endif
-
-	let Rows  = str2nr(RowInput)
-	let Rows  = max( [ Rows, 1 ] )              " at least 1 row
-	let Cols  = str2nr(ColInput)
-	let Cols  = max( [ Cols, 2 ] )              " at least 2 columns
-
-	let zz		=  "\%\%----- TABBING : begin ----------\n\\begin{tabbing}\n"
-	let colwidth		= TextWidth/Cols
-	let colwidth		= max( [ colwidth, 10 ] )
-	"
-	" build head line
-	let	zz	=	s:repeat_string( "\\hspace{".colwidth."mm} \\= ", Cols, zz, "\\kill\n" )
-	"
-	" build a single row
-	let	row	=	s:repeat_string( " \\> ", Cols-1, " ", " \\\\\n" )
-	"
-	" generate all rows
-	let zz	= s:repeat_string( row, Rows, zz )
-	let zz	.= "\\end{tabbing}\n\%\%----- TABBING :  end  ----------\n"
-	put =zz
-	silent exe "normal! ".Rows."k"
-endfunction    " ----------  end of function Latex_Tabbing  ----------
-"
-"------------------------------------------------------------------------------
-"  Wizard : tabular
-"------------------------------------------------------------------------------
-function! Latex_Tabular()
-	let TextWidth   = 120   " [mm]
-	let RowInput    = "2"
-	let ColInput    = "2"
-	let param       = s:UserInput("rows columns [width [mm]]: ", RowInput." ".ColInput )
-	if param == ""
-		return
-	endif
-	if match( param, '^\s*\d\+\(\s\+\d\+\)\{0,2}\s*$' ) < 0
-		echomsg " Wrong input format."
-		return
-	endif
-
-	let paramlist		= split( param )
-	if len( paramlist ) >= 1
-		let	RowInput	= paramlist[0]
-	endif
-	if len( paramlist ) >= 2
-		let	ColInput	= paramlist[1]
-	endif
-	if len( paramlist ) >= 3
-		let	TextWidth	= paramlist[2]
-	endif
-
-	let Rows  		= str2nr(RowInput)
-	let Rows  		= max( [ Rows, 1 ] )  " at least 1 row
-	let Cols  		= str2nr(ColInput)
-	let Cols  		= max( [ Cols, 2 ] )  " at least 2 columns
-
-	let colwidth	= TextWidth/Cols
-	let colwidth	= max( [ colwidth, 10 ] )
-
-	let zz	= "\%\%----- TABULAR : begin ----------\n\\begin{tabular}[]{"
-	let	zz = s:repeat_string( "p{".colwidth."mm}", Cols, zz, "}\n" )
-	"
-	" build a single row
-	let	row	=	s:repeat_string( ' & ', Cols-1, ' ', " \\\\\n" )
-
-	let zz	.= "\\hline\n".row."\\hline\n"
-	"
-	" generate all rows
-	let	zz	= s:repeat_string( row, Rows-1, zz )
-	let zz	.= "\\hline\n"
-	let zz	.= "\\end{tabular}\\\\\n"
-	let zz	.= "\%\%----- TABULAR :  end  ----------\n"
-	put =zz
-	silent exe "normal! ".Rows."k"
-endfunction    " ----------  end of function Latex_Tabular  ----------
 
 "-------------------------------------------------------------------------------
 " === Setup: Templates, toolbox and menus ===   {{{1
