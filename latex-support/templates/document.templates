@@ -2,9 +2,10 @@
 §  Document
 § =============================================================
 
+MenuShortcut( 'Document.Lengths', 'l' )
 
 § -------------------------------------------------------------
-§  Title, Table of Contents, Bibliography
+§  Document Classes
 § -------------------------------------------------------------
 == LIST: document_classes == list, bare  ==
 article
@@ -22,15 +23,20 @@ scrlttr2
 scrlettr
 == ENDLIST ==
 
-== Document.document class == expandmenu, insert, map:dc ==
-|PickList( 'stype', 'document_classes' )|
+== Document.document classes == expandmenu, insert, sc:c ==
+|PickList( 'document class', 'document_classes' )|
 |PICK|<CURSOR>
+== ENDTEMPLATE ==
+
+== Document.documentclass == expandmenu, insert, map:dc, sc:c ==
+|PickList( 'document class', 'document_classes' )|
+\documentclass[<CURSOR>]{|PICK|}
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
 §  Indices
 § -------------------------------------------------------------
-== LIST: indices == list, bare  ==
+== LIST: document_indices == list, bare  ==
 listoffigures
 listoftables
 lstlistoflistings           
@@ -38,12 +44,12 @@ printindex
 tableofcontents
 == ENDLIST ==
 
-== Document.indices == expandmenu, insert, map:di ==
-|PickList( 'stype', 'indices' )|
+== Document.indices == expandmenu, insert, map:di, sc:i ==
+|PickList( 'index', 'document_indices' )|
 \|PICK|<CURSOR>
 == ENDTEMPLATE ==
 
-== Document.title == insert, map:dti ==
+== Document.title == below, map:dti, sc:t ==
 \author{|AUTHOR|}
 \title{<CURSOR>}
 \date{|DATE|}
@@ -51,12 +57,35 @@ tableofcontents
 \maketitle
 == ENDTEMPLATE ==
 
-== Document.bibliography == below, map:dbi ==
-\bibliographystyle{alpha}
+== Document.bibliography == below, map:dbi, sc:b ==
+|PickList( 'style', 'bibliography_style_list' )|
+\bibliographystyle{|PICK|}
 \bibliography{<CURSOR>}
 == ENDTEMPLATE ==
 
-== Document.addcontentsline == below, map:dac ==
+== SEP: Document.sep_contentsline ==
+
+== Document.addcontentsline == below, map:dac, sc:a ==
 \addcontentsline{toc<CURSOR>}{<+level+>}{<+entry+>}
 == ENDTEMPLATE ==
 
+§ -------------------------------------------------------------
+§  Lengths
+§ -------------------------------------------------------------
+
+== SEP: Document.sep_length ==
+
+== Document.Lengths.newlength == below, map:dln, sc:n ==
+\newlength{\|?LENGTH_NAME|<CURSOR>}
+== Document.Lengths.setlength == expandmenu, expandright:value, below, map:dls, sc:s ==
+|PickList( 'unit', 'common_units' )|
+\setlength{\|?LENGTH_NAME|}{<CURSOR>|PICK|}
+== Document.Lengths.addtolength == below, map:dla, sc:a ==
+|PickList( 'unit', 'common_units' )|
+\addtolength{\|?LENGTH_NAME|}{<CURSOR>|PICK|}
+== Document.Lengths.print length == insert, map:dlp, sc:p ==
+\the\|?LENGTH_NAME|<CURSOR>
+== Document.Lengths.setto == expandmenu, below, map:dlt, sc:t ==
+|PickList( 'which size?', [ 'depth', 'height', 'totalheight', 'width' ] )|
+\setto|PICK|{\|?LENGTH_NAME|}{<CURSOR>}
+== ENDTEMPLATE ==

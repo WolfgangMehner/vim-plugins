@@ -1,0 +1,19 @@
+§ =============================================================
+§  Resources
+§ =============================================================
+
+== LIST: bibliography_style_list == list, bare ==
+	abbrv
+	alpha
+	plain
+	unsrt
+== ENDLIST ==
+
+== LIST: common_units == hash ==
+	'point'       : 'pt',
+	'millimeter'  : 'mm',
+	'centimeter'  : 'cm',
+	'inch'        : 'in',
+	'height of x' : 'ex',
+	'height of M' : 'em',
+== ENDLIST ==

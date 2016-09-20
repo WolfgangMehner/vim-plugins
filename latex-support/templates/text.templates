@@ -30,12 +30,12 @@ paragraph
 subparagraph
 == ENDLIST ==
 
-== Text.section == expandmenu, noindent, map:ts, sc:s ==
-|PickList( 'choose', 'section_list' )|
-\|PICK|{<CURSOR>}
 == Text.organization == expandmenu, noindent, map:to, sc:o ==
 |PickList( 'choose', [ 'frontmatter', 'mainmatter', 'backmatter', 'appendix' ] )|
 \|PICK|
+== Text.section == expandmenu, noindent, map:ts, sc:s ==
+|PickList( 'choose', 'section_list' )|
+\|PICK|{<CURSOR>}
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
@@ -135,7 +135,7 @@ subparagraph
 § -------------------------------------------------------------
 §  spacing 
 § -------------------------------------------------------------
-== LIST: spacing == hash ==
+== LIST: text_spacing == hash ==
 	'newpage'   : 'newpage<CURSOR>',
 	'pagebreak' : 'pagebreak<CURSOR>',
 	'newline'   : 'newline<CURSOR>',
@@ -147,7 +147,7 @@ subparagraph
 == ENDLIST ==
 
 == Text.spacing == expandmenu, noindent, map:tsp, sc:s ==
-|PickList( 'choose', 'spacing' )|
+|PickList( 'choose', 'text_spacing' )|
 \|VALUE|
 == ENDTEMPLATE ==
 
@@ -167,13 +167,47 @@ verse
 verbatim
 == ENDLIST ==
 
-== Text.line alignment+spacing== expandmenu, noindent, map:ta, sc:s ==
+== Text.line alignment+spacing== expandmenu, noindent, map:tal, sc:a ==
 |PickList( 'choose', 'linespacing' )|
 \begin{|PICK|}
 <CURSOR><SPLIT>
 \end{|PICK|}
 == ENDTEMPLATE ==
 
+§ -------------------------------------------------------------
+§  accents
+§ -------------------------------------------------------------
+== LIST: textaccents == dict ==
+	'`{<CURSOR><SPLIT>}' : 'ò',
+	"'{<CURSOR><SPLIT>}" : 'ó',
+	'^{<CURSOR><SPLIT>}' : 'ô',
+	'"{<CURSOR><SPLIT>}' : 'ö',
+	'H{<CURSOR><SPLIT>}' : 'ő',
+	'~{<CURSOR><SPLIT>}' : 'õ',
+	'c{<CURSOR><SPLIT>}' : 'ç',
+	'k{<CURSOR><SPLIT>}' : 'ą',
+	'l{}<CURSOR><SPLIT>' : 'ł',
+	'={<CURSOR><SPLIT>}' : 'ō',
+	'b{<CURSOR><SPLIT>}' : 'o',
+	'.{<CURSOR><SPLIT>}' : 'ȯ',
+	'd{<CURSOR><SPLIT>}' : 'ụ',
+	'r{<CURSOR><SPLIT>}' : 'å',
+	'u{<CURSOR><SPLIT>}' : 'ŏ',
+	'v{<CURSOR><SPLIT>}' : 'š',
+	't{<CURSOR><SPLIT>}' : 'o͡o',
+	'o{}<CURSOR><SPLIT>' : 'ø',
+== ENDTEMPLATE ==
+
+== Text.accents == expandmenu, visual, insert, map:tac, sc:a ==
+|PickList( 'choose', 'textaccents' )|
+\|KEY|
+== ENDTEMPLATE ==
+
+SetExpansion ( 'Text.accents', '\|KEY:T|', '|VALUE|' )
+
+§ -------------------------------------------------------------
+§  textcomp chars.
+§ -------------------------------------------------------------
 == LIST: textcomp == dict ==
 	'asciiacute'  : '´',
 	'bullet'      : '•',

@@ -74,13 +74,6 @@
 §
 § =============================================================
 
-== LIST: bibliography_style_list == list, bare ==
-	abbrv
-	alpha
-	plain
-	unsrt
-== ENDLIST ==
-
 == BibTeX.bibliographystyle == insert ==
 |PickList( 'style', 'bibliography_style_list' )|
 \bibliographystyle{|PICK|<CURSOR>}

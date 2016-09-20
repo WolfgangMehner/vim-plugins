@@ -42,6 +42,7 @@ MenuShortcut( 'BibTeX',   'b' )
 MenuShortcut( 'Wizard',   'w' )
 MenuShortcut( 'Help',     'h' )
 
+IncludeFile( 'resources.templates' )
 IncludeFile( 'comments.templates' )
 IncludeFile( 'text.templates' )
 IncludeFile( 'math.templates' )
