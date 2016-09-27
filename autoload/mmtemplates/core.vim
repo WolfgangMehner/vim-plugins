@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Templates_Version below
 "       Created:  30.08.2011
-"      Revision:  30.09.2015
+"      Revision:  27.09.2016
 "       License:  Copyright (c) 2012-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -42,7 +42,7 @@ if &cp || ( exists('g:Templates_Version') && g:Templates_Version != 'searching' 
 	finish
 endif
 "
-let s:Templates_Version = '1.0'     " version number of this script; do not change
+let s:Templates_Version = '1.1alpha'     " version number of this script; do not change
 "
 "----------------------------------------------------------------------
 "  --- Find Newest Version ---   {{{2
@@ -279,6 +279,8 @@ let s:StandardMacros = {
 "----------------------------------------------------------------------
 "
 let s:StandardProperties = {
+			\ 'Templates::LanguageMode' : 'default',
+			\
 			\ 'Templates::EditTemplates::Map'   : 're',
 			\ 'Templates::RereadTemplates::Map' : 'rr',
 			\ 'Templates::SetupWizard::Map'     : 'rw',
@@ -1011,7 +1013,7 @@ function! s:AddTemplate ( type, name, settings, lines )
 					\ }
 		let s:library.templates[ name.'!!menu' ] = {
 					\ 'filetypes' : s:t_runtime.use_filetypes,
-					\ 'visual'    : -1 != stridx ( a:lines, '<SPLIT>' ),
+					\ 'visual'    : match ( a:lines, '<SPLIT>\|<SHIFT>' ) >= 0,
 					\ 'map'       : '',
 					\ 'entry'     : 1,
 					\ 'mname'     : '',
@@ -3435,15 +3437,39 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 	"
 	let placement   = a:placement
 	let indentation = a:indentation
-	"
-	if a:flag_mode != 'v'
+	let lang_mode = s:library.properties[ 'Templates::LanguageMode' ]
+
+	let text = a:text
+
+	let has_split = match( text, '<SPLIT>' ) >= 0
+	let has_shift = match( text, '<SHIFT>' ) >= 0
+
+	if a:flag_mode == 'v' && ! has_split && ! has_shift
+		call s:ErrorMsg ( 'Tag <SPLIT> or <SHIFT> missing in template.' )
+	endif
+
+	if lang_mode == 'python'
+		let indentation = 0
+
+		if placement =~ '^\%(start\|above\|below\)$'
+			if a:flag_mode == 'v'
+				let first_line = getline("'<")
+			else
+				let first_line = getline(".")
+			endif
+			let indent_spaces = matchstr ( first_line, '^\s\+' )
+			let text = substitute( text, "[^\n]\\+", indent_spaces.'&', 'g' )
+		endif
+	endif
+
+	if a:flag_mode != 'v' || ! ( has_split || has_shift )
 		" --------------------------------------------------
 		"  command and insert mode
 		" --------------------------------------------------
-		"
-		" remove the split point
-		let text = substitute( a:text, '\V'.'<SPLIT>', '', 'g' )
-		"
+
+		" remove the split and shift tags
+		let text = substitute( text, '\V'.'<SPLIT>\|<SHIFT>', '', 'g' )
+
 		if placement == 'below'
 			"
 			exe ':'.s:t_runtime.range[1]
@@ -3507,28 +3533,24 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 			throw 'Template:Insert:unknown placement "'.placement.'"'
 		endif
 		"
-	elseif a:flag_mode == 'v'
+	elseif a:flag_mode == 'v' && has_split
 		" --------------------------------------------------
 		"  visual mode
 		" --------------------------------------------------
-		"
-		" remove the jump targets (2nd type)
-		let text = substitute( a:text, regex.JumpTagType2, '', 'g' )
-		"
+
+		" remove the jump targets (2nd type) and the split tags
+		let text = substitute( text, regex.JumpTagType2, '', 'g' )
+		let text = substitute( text, '\V'.'<SHIFT>', '', 'g' )
+
 		" TODO: Is the behaviour well-defined?
 		" Suggestion: The line might include a cursor and a split and nothing else.
-		if match( text, '<SPLIT>' ) >= 0
-			if match( text, '<SPLIT>\s*\n' ) >= 0
-				let part = split ( text, '\s*<SPLIT>\s*\n', 1 )
-			else
-				let part = split ( text, '<SPLIT>', 1 )
-			endif
-			let part[1] = part[1][ 0: -2 ]  " remove trailing '\n'
+		if match( text, '<SPLIT>\s*\n' ) >= 0
+			let part = split ( text, '\s*<SPLIT>\s*\n', 1 )
 		else
-			let part = [ "", text[ 0: -2 ] ]  " remove trailing '\n'
-			echomsg 'tag <SPLIT> missing in template.'
+			let part = split ( text, '<SPLIT>', 1 )
 		endif
-		"
+		let part[1] = part[1][ 0: -2 ]  " remove trailing '\n'
+
 		" 'visual' and placement 'insert':
 		"   <part0><marked area><part1>
 		" part0 and part1 can consist of several lines
@@ -3556,11 +3578,52 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 			let pos1 = line("'<") - len(split( part[0], '\n' ))
 			let pos2 = line("'>") + len(split( part[1], '\n' ))
 		elseif placement =~ '^\%(start\|above\|append\)$'
-			throw 'Template:Insert:usage in split mode not allowed for placement "'.placement.'"'
+			throw 'Template:Insert:usage with tag <SPLIT> not allowed for template placement "'.placement.'"'
 		else
 			throw 'Template:Insert:unknown placement "'.placement.'"'
 		endif
 		"
+	elseif a:flag_mode == 'v' && has_shift
+		" --------------------------------------------------
+		"  visual mode (shift)
+		" --------------------------------------------------
+
+		" remove the jump targets (2nd type) and the split tags
+		let text = substitute( text, regex.JumpTagType2, '', 'g' )
+		let text = substitute( text, '\V'.'<SPLIT>', '', 'g' )
+
+		if match( text, '\%(\_^\|\n\)\s*<SHIFT>\s*\n' ) >= 0
+			let cursor_on_shift_line = 0
+		elseif match( text, '\%(\_^\|\n\)\s*<CURSOR><SHIFT>\s*\n' ) >= 0
+					\ || match( text, '\%(\_^\|\n\)\s*<SHIFT><CURSOR>\s*\n' ) >= 0
+			let cursor_on_shift_line = 1
+			let text = substitute( text, '\V'.'<CURSOR>', '', 'g' )
+		else
+			throw 'Template:Insert:the <SHIFT> tag must appear alone on the line, or with the cursor tag'
+		endif
+
+		let part = split ( text, '\s*<SHIFT>\s*\n', 1 )
+		let part[1] = part[1][ 0: -2 ]  " remove trailing '\n'
+
+		if placement == 'below'
+			if cursor_on_shift_line
+				normal! g'<I<CURSOR>
+			endif
+
+			silent '<,'>normal >>
+			if part[0] != ''
+				silent '<put! = part[0]
+			endif
+			if part[1] != ''
+				silent '>put = part[1]
+			endif
+			let pos1 = line("'<") - len(split( part[0], '\n' ))
+			let pos2 = line("'>") + len(split( part[1], '\n' ))
+		elseif placement =~ '^\%(start\|above\|insert\|append\)$'
+			throw 'Template:Insert:usage with tag <SHIFT> not allowed for template placement "'.placement.'"'
+		else
+			throw 'Template:Insert:unknown placement "'.placement.'"'
+		endif
 	endif
 	"
 	" proper indenting
