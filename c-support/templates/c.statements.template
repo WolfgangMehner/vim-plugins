@@ -35,6 +35,10 @@ else {
 else {
 <CURSOR><SPLIT>
 }
+== Statements.else if block == map:sx, shortcut:x  ==
+else if ( <CURSOR> ) {
+<SPLIT><-ELSE_IF_PART->
+}
 == Statements.while == map:sw, shortcut:w  ==
 while ( <CURSOR> )
 == Statements.while block == map:swh, shortcut:h  ==
