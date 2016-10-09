@@ -3437,6 +3437,7 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 	"
 	let placement   = a:placement
 	let indentation = a:indentation
+	let retabbing   = 0
 	let lang_mode = s:library.properties[ 'Templates::LanguageMode' ]
 
 	let text = a:text
@@ -3450,6 +3451,7 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 
 	if lang_mode == 'python'
 		let indentation = 0
+		let retabbing   = 1
 
 		if placement =~ '^\%(start\|above\|below\)$'
 			if a:flag_mode == 'v'
@@ -3631,9 +3633,14 @@ function! s:InsertIntoBuffer ( text, placement, indentation, flag_mode )
 		silent exe ":".pos1
 		silent exe "normal! ".( pos2-pos1+1 )."=="
 	endif
-	"
+
+	" retab
+	if retabbing
+		silent exe pos1.','.pos2.'retab'
+	endif
+
 	return [ pos1, pos2 ]
-	"
+
 endfunction    " ----------  end of function s:InsertIntoBuffer  ----------
 "
 "----------------------------------------------------------------------
