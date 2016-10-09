@@ -13,7 +13,7 @@
 "  Organization:  
 "       Version:  see variable g:Make_Version below
 "       Created:  06.05.2013
-"      Revision:  23.07.2015
+"      Revision:  07.10.2016
 "       License:  Copyright (c) 2013-2015, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -43,7 +43,7 @@ endif
 if &cp || ( exists('g:Make_Version') && ! exists('g:Make_DevelopmentOverwrite') )
 	finish
 endif
-let g:Make_Version= '1.1'     " version number of this script; do not change
+let g:Make_Version= '1.1.1'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions   {{{1
@@ -344,19 +344,16 @@ function! s:Settings ( verbose )
 		echo txt
 	endif
 endfunction    " ----------  end of function s:Settings  ----------
-"
-"-------------------------------------------------------------------------------
-" Modul setup (abort early?).   {{{1
-"-------------------------------------------------------------------------------
-if s:Enabled == 0
-	finish
-endif
-"
+
 "-------------------------------------------------------------------------------
 " s:Run : Run make.   {{{1
 "-------------------------------------------------------------------------------
 function! s:Run ( args )
-	"
+
+	if s:Enabled == 0
+		return s:ErrorMsg ( 'Make : "make" is not executable.' )
+	endif
+
 	silent exe 'update'   | " write source file if necessary
 	cclose
 	"
