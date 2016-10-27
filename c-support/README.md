@@ -1,4 +1,4 @@
-README for c.vim (Version 6.2) / August 14 2016
+README for c.vim (Version 6.2.1) / October 26 2016
 ================================================================================
 
   *  INSTALLATION
@@ -202,18 +202,15 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 RELEASE NOTES
 ================================================================================
 
-RELEASE NOTES FOR VERSION 6.2
+RELEASE NOTES FOR VERSION 6.2.1
 ----------------------------------------------------------------------
-- Add 'g:C_CustomTemplateFile'.
-- Add template personalization file and setup wizard.
-- Respect 'g:Xterm_Executable' and 'g:Xterm_Options'.
-  ('g:C_XtermDefaults' still works for backwards compatibility.)
-- Remove unused 'g:C_GuiTemplateBrowser'.
-- Change 'Run -> link' and 'Run -> run', do not produce object file anymore.
-- Add submenu 'Comments -> all sections'.
-- Add submenu 'Preprocessor -> include POSIX header'.
-- New and reworked templates.
-- Minor changes and bugfixes.
+- New and reworked templates. Change statement templates.
+
+Note: This reworks most of the statement templates. The loop and if templates
+which do not introduce a block have been remove entirely, since the templates
+without blocks save barely any typing. They do not make much sense in visual
+mode either. Removing them allows us to clean up the menu and use more consistent
+maps.
 
 
 RELEASE NOTES FOR OLDER VERSIONS

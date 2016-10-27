@@ -31,7 +31,7 @@
 %
 \setlength\parindent{0pt}
 %
-\newcommand{\Pluginversion}{6.2}
+\newcommand{\Pluginversion}{6.2.1}
 \newcommand{\ReleaseDate}{\today}
 \newcommand{\Rep}{{\tiny{[n]}}}
 %
@@ -141,16 +141,14 @@ Key mappings for Vim and gVim.\\
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{S}tatements}} \\
+\hline \verb'\sfo' & \verb'for { ; ; }'         \hfill \textit{standard} (n,v,i)\\
+\hline \verb'\sfr' & \verb'for { : }'           \hfill \textit{range-based} (n,v,i)\\
 \hline \verb'\sd'  & \verb'do { } while'        \hfill (n,v,i)\\
-\hline \verb'\sf'  & \verb'for'                 \hfill (n,i)\\
-\hline \verb'\sfo' & \verb'for { }'             \hfill (n,v,i)\\
-\hline \verb'\si'  & \verb'if'                  \hfill (n,i)\\
+\hline \verb'\sw'  & \verb'while { }'           \hfill (n,v,i)\\
 \hline \verb'\sif' & \verb'if { }'              \hfill (n,v,i)\\
-\hline \verb'\sie' & \verb'if else'             \hfill (n,v,i)\\
-\hline \verb'\sife'& \verb'if { } else { }'     \hfill (n,v,i)\\
-\hline \verb'\se'  & \verb'else { }'            \hfill (n,v,i)\\
-\hline \verb'\sw'  & \verb'while'               \hfill (n,i)\\
-\hline \verb'\swh' & \verb'while { }'           \hfill (n,v,i)\\
+\hline \verb'\sie' & \verb'if { } else { }'     \hfill (n,v,i)\\
+\hline \verb'\sei' & \verb'else if { }'         \hfill (n,v,i)\\
+\hline \verb'\sel' & \verb'else { }'            \hfill (n,v,i)\\
 \hline \verb'\ss'  & \verb'switch'              \hfill (n,v,i)\\
 \hline \verb'\sc'  & \verb'case'                \hfill (n,i)\\
 \hline \verb'\sb'  & \verb'{ }'                 \hfill (n,v,i)\\

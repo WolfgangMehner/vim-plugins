@@ -41,7 +41,7 @@ endif
 if exists("g:C_Version") || &cp
  finish
 endif
-let g:C_Version= "6.2"								" version number of this script; do not change
+let g:C_Version= "6.2.1"								" version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1

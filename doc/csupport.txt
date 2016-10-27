@@ -1,8 +1,8 @@
-*csupport.txt*                  C/C++ Support                      Aug 14 2016
+*csupport.txt*                  C/C++ Support                      Oct 09 2016
 
 C/C++ Support                                            *c-support* *csupport*
 
-                             Plug-in version 6.2
+                            Plug-in version 6.2.1pre
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                 (formerly Fritz Mehner <mehner.fritz@web.de>)
@@ -1226,18 +1226,19 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
 
   -- Statements ---------------------------------------------------------
 
+     \sfo      for { ; ; }                         (n,v,i)
+     \sfr      for { : }   (range-based)           (n,v,i)
      \sd       do { } while                        (n,v,i)
-     \sf       for                                 (n,i)
-     \sfo      for { }                             (n,v,i)
-     \si       if                                  (n,i)
+     \sw       while { }                           (n,v,i)
+
      \sif      if { }                              (n,v,i)
-     \sie      if else                             (n,v,i)
-     \sife     if { } else { }                     (n,v,i)
-     \se       else { }                            (n,v,i)
-     \sw       while                               (n,i)
-     \swh      while { }                           (n,v,i)
+     \sie      if { } else { }                     (n,v,i)
+     \sei      else if { }                         (n,v,i)
+     \sel      else { }                            (n,v,i)
+
      \ss       switch                              (n,v,i)
      \sc       case                                (n,i)
+
      \sb       {}                                  (n,v,i)
 
   -- Idioms -------------------------------------------------------------
