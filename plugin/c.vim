@@ -17,6 +17,7 @@
 "
 "        Version:  see variable  g:C_Version  below
 "        Created:  04.11.2000
+"       Revision:  08.11.2016
 "        License:  Copyright (c) 2000-2014, Fritz Mehner
 "                  Copyright (c) 2015-2016, Wolfgang Mehner
 "                  This program is free software; you can redistribute it and/or
@@ -30,7 +31,11 @@
 "                  See the GNU General Public License version 2 for more details.
 "
 "------------------------------------------------------------------------------
-"
+
+"-------------------------------------------------------------------------------
+" === Basic checks ===   {{{1
+"-------------------------------------------------------------------------------
+
 if v:version < 700
   echohl WarningMsg | echo 'The plugin c.vim needs Vim version 7+.'| echohl None
   finish
@@ -44,7 +49,7 @@ endif
 let g:C_Version= "6.2.1"								" version number of this script; do not change
 
 "-------------------------------------------------------------------------------
-" Auxiliary functions.   {{{1
+" === Auxiliary functions ===   {{{1
 "-------------------------------------------------------------------------------
 
 "-------------------------------------------------------------------------------
@@ -65,6 +70,25 @@ function! s:ApplyDefaultSetting ( varname, value )
 		let { 'g:'.a:varname } = a:value
 	endif
 endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
+
+"-------------------------------------------------------------------------------
+" s:ErrorMsg : Print an error message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:ErrorMsg ( ... )
+	echohl WarningMsg
+	for line in a:000
+		echomsg line
+	endfor
+	echohl None
+endfunction    " ----------  end of function s:ErrorMsg  ----------
 
 "-------------------------------------------------------------------------------
 " s:GetGlobalSetting : Get a setting from a global variable.   {{{2
@@ -90,6 +114,103 @@ function! s:GetGlobalSetting ( varname, ... )
 	endif
 endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 
+"-------------------------------------------------------------------------------
+" s:ImportantMsg : Print an important message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:ImportantMsg ( ... )
+	echohl Search
+	echo join ( a:000, "\n" )
+	echohl None
+endfunction    " ----------  end of function s:ImportantMsg  ----------
+
+"-------------------------------------------------------------------------------
+" s:SID : Return the <SID>.   {{{2
+"
+" Parameters:
+"   -
+" Returns:
+"   SID - the SID of the script (string)
+"-------------------------------------------------------------------------------
+
+function! s:SID ()
+	return matchstr ( expand('<sfile>'), '<SNR>\zs\d\+\ze_SID$' )
+endfunction    " ----------  end of function s:SID  ----------
+
+"-------------------------------------------------------------------------------
+" s:UserInput : Input after a highlighted prompt.   {{{2
+"
+" Parameters:
+"   prompt - the prompt (string)
+"   text - the default input (string)
+"   compl - completion (string, optional)
+"   clist - list, if 'compl' is "customlist" (list, optional)
+" Returns:
+"   input - the user input, an empty sting if the user hit <ESC> (string)
+"-------------------------------------------------------------------------------
+
+function! s:UserInput ( prompt, text, ... )
+
+	echohl Search																					" highlight prompt
+	call inputsave()																			" preserve typeahead
+	if a:0 == 0 || a:1 == ''
+		let retval = input( a:prompt, a:text )
+	elseif a:1 == 'customlist'
+		let s:UserInputList = a:2
+		let retval = input( a:prompt, a:text, 'customlist,<SNR>'.s:SID().'_UserInputEx' )
+		let s:UserInputList = []
+	else
+		let retval = input( a:prompt, a:text, a:1 )
+	endif
+	call inputrestore()																		" restore typeahead
+	echohl None																						" reset highlighting
+
+	let retval  = substitute( retval, '^\s\+', "", "" )		" remove leading whitespaces
+	let retval  = substitute( retval, '\s\+$', "", "" )		" remove trailing whitespaces
+
+	return retval
+
+endfunction    " ----------  end of function s:UserInput ----------
+
+"-------------------------------------------------------------------------------
+" s:UserInputEx : ex-command for s:UserInput.   {{{3
+"-------------------------------------------------------------------------------
+function! s:UserInputEx ( ArgLead, CmdLine, CursorPos )
+	if empty( a:ArgLead )
+		return copy( s:UserInputList )
+	endif
+	return filter( copy( s:UserInputList ), 'v:val =~ ''\V\<'.escape(a:ArgLead,'\').'\w\*''' )
+endfunction    " ----------  end of function s:UserInputEx  ----------
+" }}}3
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:WarningMsg : Print a warning/error message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:WarningMsg ( ... )
+	echohl WarningMsg
+	echo join ( a:000, "\n" )
+	echohl None
+endfunction    " ----------  end of function s:WarningMsg  ----------
+
+" }}}2
+"-------------------------------------------------------------------------------
+
 "===  FUNCTION  ================================================================
 "          NAME:  C_CheckGlobal   {{{1
 "   DESCRIPTION:  Assign a value to a local variable if a corresponding global
@@ -103,17 +224,17 @@ function! s:C_CheckGlobal ( name )
 	endif
 endfunction    " ----------  end of function s:C_CheckGlobal ----------
 
-" }}}1
+"-------------------------------------------------------------------------------
+" === Module setup ===   {{{1
 "-------------------------------------------------------------------------------
 
-"#################################################################################
+"-------------------------------------------------------------------------------
+" == Platform specific items ==   {{{2
 "
-"  Global variables (with default values) which can be overridden.
-"
-" Platform specific items:  {{{1
 " - root directory
 " - characters that must be escaped for filenames
-"
+"-------------------------------------------------------------------------------
+
 let s:MSWIN = has("win16") || has("win32")   || has("win64")    || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
@@ -184,19 +305,28 @@ endif
 let s:C_AdditionalTemplates   = mmtemplates#config#GetFt ( 'c' )
 let s:C_CodeSnippets  				= s:plugin_dir.'/c-support/codesnippets/'
 let s:C_IndentErrorLog				= $HOME.'/.indent.errorlog'
+
+"-------------------------------------------------------------------------------
+" == Various settings ==   {{{2
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" Use of dictionaries   {{{3
 "
-"  Use of dictionaries  {{{1
-"  Key word completion is enabled by the filetype plugin 'c.vim'
-"  g:C_Dictionary_File  must be global
-"
+" - Keyword completion is enabled by the filetype plugin 'c.vim'
+" - 'g:C_Dictionary_File' must be global
+"-------------------------------------------------------------------------------
+
 if !exists("g:C_Dictionary_File")
   let g:C_Dictionary_File = s:plugin_dir.'/c-support/wordlists/c-c++-keywords.list,'.
         \                   s:plugin_dir.'/c-support/wordlists/k+r.list,'.
         \                   s:plugin_dir.'/c-support/wordlists/stl_index.list'
 endif
-"
-"  Modul global variables (with default values) which can be overridden. {{{1
-"
+
+"-------------------------------------------------------------------------------
+" User configurable options   {{{3
+"-------------------------------------------------------------------------------
+
 if	s:MSWIN
 	call s:ApplyDefaultSetting ( 'C_CCompiler',     'gcc.exe' )
 	call s:ApplyDefaultSetting ( 'C_CplusCompiler', 'g++.exe' )
@@ -229,7 +359,6 @@ let s:C_ExecutableToRun       = ''
 let s:C_LineEndCommColDefault = 49
 let s:C_LoadMenus      				= 'yes'
 let s:C_CreateMenusDelayed    = 'no'
-let s:C_MenuHeader     				= 'yes'
 let s:C_OutputGvim            = 'vim'
 let s:C_Printheader           = "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
 let s:C_RootMenu  	   				= '&C\/C\+\+.'           " the name of the root menu of this plugin
@@ -249,11 +378,11 @@ let s:C_InsertFileHeader			= 'yes'
 let s:C_NonCComment						= '#'
 "
 let s:C_MenusVisible          = 'no'		" state variable controlling the C-menus
-"
-"------------------------------------------------------------------------------
-"
-"  Look for global variables (if any), to override the defaults.
-"
+
+"-------------------------------------------------------------------------------
+" Get user configuration   {{{3
+"-------------------------------------------------------------------------------
+
 call s:C_CheckGlobal('C_CodeCheckExeName     ')
 call s:C_CheckGlobal('C_CodeCheckOptions     ')
 call s:C_CheckGlobal('C_CodeSnippets         ')
@@ -269,7 +398,6 @@ call s:C_CheckGlobal('C_LineEndCommColDefault')
 call s:C_CheckGlobal('C_LoadMenus            ')
 call s:C_CheckGlobal('C_LocalTemplateFile    ')
 call s:C_CheckGlobal('C_Man                  ')
-call s:C_CheckGlobal('C_MenuHeader           ')
 call s:C_CheckGlobal('C_NonCComment          ')
 call s:C_CheckGlobal('C_ObjExtension         ')
 call s:C_CheckGlobal('C_OutputGvim           ')
@@ -279,7 +407,9 @@ call s:C_CheckGlobal('C_SourceCodeExtensions ')
 call s:C_CheckGlobal('C_TypeOfH              ')
 call s:C_CheckGlobal('C_UseToolbox           ')
 
-" xterm
+"-------------------------------------------------------------------------------
+" Xterm   {{{3
+"-------------------------------------------------------------------------------
 
 let s:Xterm_Executable = 'xterm'
 let s:C_XtermDefaults  = '-fa courier -fs 12 -geometry 80x24'
@@ -296,8 +426,10 @@ endif
 call s:GetGlobalSetting ( 'Xterm_Executable' )
 call s:ApplyDefaultSetting ( 'Xterm_Options', s:C_XtermDefaults )
 
-"----- some variables for internal use only -----------------------------------
-"
+"-------------------------------------------------------------------------------
+" Control variables (not user configurable)   {{{3
+"-------------------------------------------------------------------------------
+
 let s:stdbuf	= ''
 if executable( 'stdbuf' )
 	" stdbuf : the output stream will be unbuffered
@@ -319,11 +451,7 @@ let s:C_SplintIsExecutable		= executable( "splint" )
 let s:C_CppcheckIsExecutable	= executable( "cppcheck" )
 let s:C_CodeCheckIsExecutable	= executable( s:C_CodeCheckExeName )
 let s:C_IndentIsExecutable		= executable( "indent" )
-"
-"------------------------------------------------------------------------------
-"  Control variables (not user configurable)
-"------------------------------------------------------------------------------
-"
+
 let s:C_Com1          			= '/*'     " C-style : comment start
 let s:C_Com2          			= '*/'     " C-style : comment end
 "
@@ -357,7 +485,13 @@ let s:C_saved_global_option				= {}
 let s:C_SourceCodeExtensionsList	= split( s:C_SourceCodeExtensions, '\s\+' )
 "
 let s:CppcheckSeverity	= [ "all", "error", "warning", "style", "performance", "portability", "information" ]
-"
+
+" }}}3
+"-------------------------------------------------------------------------------
+
+" }}}2
+"-------------------------------------------------------------------------------
+
 "===  FUNCTION  ================================================================
 "          NAME:  C_MenuTitle     {{{1
 "   DESCRIPTION:  display warning
@@ -521,11 +655,9 @@ function! s:C_InitMenus ()
 	if s:C_CppcheckIsExecutable==1
 		exe ahead.'cppcheck<Tab>'.esc_mapl.'rcc                            :call C_CppcheckCheck()<CR>:call C_HlMessage()<CR>'
 		exe ihead.'cppcheck<Tab>'.esc_mapl.'rcc                       <C-C>:call C_CppcheckCheck()<CR>:call C_HlMessage()<CR>'
-		"
-		if s:C_MenuHeader == 'yes'
-			exe ahead.'cppcheck\ severity<Tab>'.esc_mapl.'rccs.cppcheck\ severity     :call C_MenuTitle()<CR>'
-			exe ahead.'cppcheck\ severity<Tab>'.esc_mapl.'rccs.-Sep5-                 :'
-		endif
+
+		exe ahead.'cppcheck\ severity<Tab>'.esc_mapl.'rccs.cppcheck\ severity     :call C_MenuTitle()<CR>'
+		exe ahead.'cppcheck\ severity<Tab>'.esc_mapl.'rccs.-Sep5-                 :'
 
 		for level in s:CppcheckSeverity
 			exe ahead.'cppcheck\ severity<Tab>'.esc_mapl.'rccs.&'.level.'   :call C_GetCppcheckSeverity("'.level.'")<CR>'

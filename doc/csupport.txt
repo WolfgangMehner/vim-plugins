@@ -1456,7 +1456,6 @@ Several global variables are checked by the script to customize it:
  g:C_CreateMenusDelayed     'no'
  g:C_LocalTemplateFile      $HOME.'/.vim/c-support/templates/Templates'
  g:C_MapLeader              '\'
- g:C_MenuHeader             'yes'
  g:C_NonCComment            '#'
  g:C_OutputGvim             'vim'
  g:C_Printheader            "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
@@ -1516,7 +1515,6 @@ The variable plugin_dir will automatically be set to one of the following values
  g:C_LocalTemplateFile     : sets the local template file (see |csupport-templates|)
  g:C_Man                   : The name of the man utility.
  g:C_MapLeader             : the map leader for hotkeys (see ||csupport-usage-vim|)
- g:C_MenuHeader            : Switch the submenu header on/off.
  g:C_NonCComment           : comment leader string for a non-C comment
  g:C_ObjExtension          : C/C+ file extension for objects (leading point
                              required if not empty)
