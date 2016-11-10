@@ -211,19 +211,6 @@ endfunction    " ----------  end of function s:WarningMsg  ----------
 " }}}2
 "-------------------------------------------------------------------------------
 
-"===  FUNCTION  ================================================================
-"          NAME:  C_CheckGlobal   {{{1
-"   DESCRIPTION:  Assign a value to a local variable if a corresponding global
-"                 variable exists.
-"    PARAMETERS:  name - variable to set
-"===============================================================================
-" :TODO:17.03.2016 10:39:WM: remove this function eventually
-function! s:C_CheckGlobal ( name )
-	if exists('g:'.a:name)
-		exe 'let s:'.a:name.' = g:'.a:name
-	endif
-endfunction    " ----------  end of function s:C_CheckGlobal ----------
-
 "-------------------------------------------------------------------------------
 " === Module setup ===   {{{1
 "-------------------------------------------------------------------------------
@@ -383,29 +370,29 @@ let s:C_MenusVisible          = 'no'		" state variable controlling the C-menus
 " Get user configuration   {{{3
 "-------------------------------------------------------------------------------
 
-call s:C_CheckGlobal('C_CodeCheckExeName     ')
-call s:C_CheckGlobal('C_CodeCheckOptions     ')
-call s:C_CheckGlobal('C_CodeSnippets         ')
-call s:C_CheckGlobal('C_CreateMenusDelayed   ')
-call s:C_CheckGlobal('C_Ctrl_j               ')
-call s:C_CheckGlobal('C_CustomTemplateFile   ')
-call s:C_CheckGlobal('C_ExeExtension         ')
-call s:C_CheckGlobal('C_GlobalTemplateFile   ')
-call s:C_CheckGlobal('C_GuiSnippetBrowser    ')
-call s:C_CheckGlobal('C_IndentErrorLog       ')
-call s:C_CheckGlobal('C_InsertFileHeader     ')
-call s:C_CheckGlobal('C_LineEndCommColDefault')
-call s:C_CheckGlobal('C_LoadMenus            ')
-call s:C_CheckGlobal('C_LocalTemplateFile    ')
-call s:C_CheckGlobal('C_Man                  ')
-call s:C_CheckGlobal('C_NonCComment          ')
-call s:C_CheckGlobal('C_ObjExtension         ')
-call s:C_CheckGlobal('C_OutputGvim           ')
-call s:C_CheckGlobal('C_Printheader          ')
-call s:C_CheckGlobal('C_RootMenu             ')
-call s:C_CheckGlobal('C_SourceCodeExtensions ')
-call s:C_CheckGlobal('C_TypeOfH              ')
-call s:C_CheckGlobal('C_UseToolbox           ')
+call s:GetGlobalSetting( 'C_CodeCheckExeName' )
+call s:GetGlobalSetting( 'C_CodeCheckOptions' )
+call s:GetGlobalSetting( 'C_CodeSnippets' )
+call s:GetGlobalSetting( 'C_CreateMenusDelayed' )
+call s:GetGlobalSetting( 'C_Ctrl_j' )
+call s:GetGlobalSetting( 'C_CustomTemplateFile' )
+call s:GetGlobalSetting( 'C_ExeExtension' )
+call s:GetGlobalSetting( 'C_GlobalTemplateFile' )
+call s:GetGlobalSetting( 'C_GuiSnippetBrowser' )
+call s:GetGlobalSetting( 'C_IndentErrorLog' )
+call s:GetGlobalSetting( 'C_InsertFileHeader' )
+call s:GetGlobalSetting( 'C_LineEndCommColDefault' )
+call s:GetGlobalSetting( 'C_LoadMenus' )
+call s:GetGlobalSetting( 'C_LocalTemplateFile' )
+call s:GetGlobalSetting( 'C_Man' )
+call s:GetGlobalSetting( 'C_NonCComment' )
+call s:GetGlobalSetting( 'C_ObjExtension' )
+call s:GetGlobalSetting( 'C_OutputGvim' )
+call s:GetGlobalSetting( 'C_Printheader' )
+call s:GetGlobalSetting( 'C_RootMenu' )
+call s:GetGlobalSetting( 'C_SourceCodeExtensions' )
+call s:GetGlobalSetting( 'C_TypeOfH' )
+call s:GetGlobalSetting( 'C_UseToolbox' )
 
 "-------------------------------------------------------------------------------
 " Xterm   {{{3
@@ -492,25 +479,11 @@ let s:CppcheckSeverity	= [ "all", "error", "warning", "style", "performance", "p
 " }}}2
 "-------------------------------------------------------------------------------
 
-"===  FUNCTION  ================================================================
-"          NAME:  C_MenuTitle     {{{1
-"   DESCRIPTION:  display warning
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-" :TODO:17.03.2016 10:39:WM: remove this function, is it unused but for one usage,
-" which should also be reworked
-function! C_MenuTitle ()
-		echohl WarningMsg | echo "This is a menu header." | echohl None
-endfunction    " ----------  end of function C_MenuTitle  ----------
+"-------------------------------------------------------------------------------
+" s:InitMenus : Initialize menus.   {{{1
+"-------------------------------------------------------------------------------
+function! s:InitMenus ()
 
-"------------------------------------------------------------------------------
-"  C : C_InitMenus                              {{{1
-"  Initialization of C support menus
-"------------------------------------------------------------------------------
-"
-function! s:C_InitMenus ()
-	"
 	if ! has ( 'menu' )
 		return
 	endif
@@ -656,11 +629,10 @@ function! s:C_InitMenus ()
 		exe ahead.'cppcheck<Tab>'.esc_mapl.'rcc                            :call C_CppcheckCheck()<CR>:call C_HlMessage()<CR>'
 		exe ihead.'cppcheck<Tab>'.esc_mapl.'rcc                       <C-C>:call C_CppcheckCheck()<CR>:call C_HlMessage()<CR>'
 
-		exe ahead.'cppcheck\ severity<Tab>'.esc_mapl.'rccs.cppcheck\ severity     :call C_MenuTitle()<CR>'
-		exe ahead.'cppcheck\ severity<Tab>'.esc_mapl.'rccs.-Sep5-                 :'
+		call mmtemplates#core#CreateMenus ( 'g:C_Templates', s:C_RootMenu, 'sub_menu', 'Run'.'.cppcheck\ severity<TAB>'.esc_mapl.'rccs' )
 
 		for level in s:CppcheckSeverity
-			exe ahead.'cppcheck\ severity<Tab>'.esc_mapl.'rccs.&'.level.'   :call C_GetCppcheckSeverity("'.level.'")<CR>'
+			exe ahead.'cppcheck\ severity.&'.level.'   :call C_GetCppcheckSeverity("'.level.'")<CR>'
 		endfor
 		exe ahead.'-SEP-CPPCHECK-   :'
 	endif
@@ -785,13 +757,12 @@ function! s:C_InitMenus ()
 	exe "vmenu          ".MenuPreprocessor.'#if\ &0\ #endif<Tab>'.esc_mapl.'pi0          <Esc>:call C_PPIf0("v")<CR>'
 	exe "amenu <silent> ".MenuPreprocessor.'&remove\ #if\ 0\ #endif<Tab>'.esc_mapl.'pr0       :call C_PPIf0Remove()<CR>'
 	exe "imenu <silent> ".MenuPreprocessor.'&remove\ #if\ 0\ #endif<Tab>'.esc_mapl.'pr0  <Esc>:call C_PPIf0Remove()<CR>'
-	"
-endfunction    " ----------  end of function  s:C_InitMenus  ----------
-"
-"===============================================================================================
-"----- Menu Functions --------------------------------------------------------------------------
-"===============================================================================================
-"
+
+	" }}}2
+	"===============================================================================================
+
+endfunction    " ----------  end of function  s:InitMenus  ----------
+
 "------------------------------------------------------------------------------
 "  C_SaveGlobalOption    {{{1
 "  param 1 : option name
@@ -2520,7 +2491,7 @@ function! C_CreateGuiMenus ()
 		amenu   <silent> 40.1000 &Tools.-SEP100- :
 		amenu   <silent> 40.1030 &Tools.Unload\ C\ Support <C-C>:call C_RemoveGuiMenus()<CR>
 		call s:C_RereadTemplates()
-		call s:C_InitMenus()
+		call s:InitMenus()
 		let  s:C_MenusVisible = 'yes'
 	endif
 endfunction    " ----------  end of function C_CreateGuiMenus  ----------
