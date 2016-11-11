@@ -24,10 +24,11 @@
 --      Purpose:  {+PURPOSE+}
 --  Description:  {+DESCRIPTION+}
 --   Parameters:  filename - {+DESCRIPTION+} ({+TYPE+})
+--                data - {+DESCRIPTION+} ({+TYPE+})
 --      Returns:  {+RETURNS+}
 ------------------------------------------------------------------------
 
-function read_file ( filename )
+function read_file ( filename, data )
   
   local fin, msg = io.open ( filename, 'r' )
 
@@ -36,17 +37,25 @@ function read_file ( filename )
     os.exit ( 1 )
   end
 
-  local data = {}
-  local section
+	local data = data or {}
+	local section, position
 
   for line in fin:lines() do
     
-    local sec_name, sec_param = string.match ( line, '^%s*<!%-%- ::([A-Z0-9_]+)::([A-Z_]+):: %-%->%s*$' )
+    local sec_name, sec_param = string.match ( line, '^%s*<!%-%- ::([A-Z0-9_@]+)::([A-Z_]+):: %-%->%s*$' )
+
+		local sec_list_name, sec_list_pos = string.match ( sec_name or '', '([A-Z0-9_]+)@([A-Z0-9_]+)' )
 
     if sec_name then
 			if sec_param == 'START' then
-				section = sec_name
-				data[section] = data[section] or ''
+				if sec_list_name then
+					section, position = sec_list_name, sec_list_pos
+					data[section] = data[section] or {}
+					data[section][position] = ''
+				else
+					section, position = sec_name, nil
+					data[section] = ''
+				end
 			elseif sec_param == 'END' then
 				section = nil
 			else
@@ -54,7 +63,11 @@ function read_file ( filename )
 				os.exit ( 1 )
       end
     elseif section then
-      data[section] = data[section] .. line .. '\n'
+			if position then
+				data[section][position] = data[section][position] .. line .. '\n'
+			else
+				data[section] = data[section] .. line .. '\n'
+			end
     end
   end
 
@@ -101,118 +114,51 @@ function read_version ( filename )
 end  -----  end of function read_version  -----
 
 ------------------------------------------------------------------------
---         Name:  generate_link_table   {{{1
+--         Name:  generate_chunk   {{{1
 --      Purpose:  {+PURPOSE+}
 --  Description:  {+DESCRIPTION+}
---   Parameters:  fout - {+DESCRIPTION+} ({+TYPE+})
---                config - {+DESCRIPTION+} ({+TYPE+})
---                template_data - {+DESCRIPTION+} ({+TYPE+})
---                custom_data - {+DESCRIPTION+} ({+TYPE+})
+--   Parameters:  chunk_data - {+DESCRIPTION+} ({+TYPE+})
+--                name - {+DESCRIPTION+} ({+TYPE+})
+--                fields - {+DESCRIPTION+} ({+TYPE+})
 --      Returns:  {+RETURNS+}
 ------------------------------------------------------------------------
 
-function generate_link_table ( fout, config, template_data, custom_data )
+function generate_chunk ( chunk_data, name, fields )
 
-	function handle_part ( name )
-		local part = custom_data[name] or template_data[name]
+	local part = chunk_data[name]
+	local res  = ''
 
-		if not part then
-			io.stderr:write ( '\nCan not find the part:\n'..name..'\n\n' )
-		else
-			part = string.gsub ( part, '%%([A-Z0-9_]+)%%', config.plugin.fields )
-
-			fout:write ( part )
+	if type ( part ) == 'table' then
+		assert ( part.ENTRY, '"ENTRY" missing from list' )
+		local l = fields[name]
+		if fields[name] then
+			if #l > 0 and part.HEAD then
+				res = res .. generate_chunk ( part, 'HEAD', fields )
+			end
+			for idx, val in ipairs ( l ) do
+				res = res .. generate_chunk ( part, 'ENTRY', val )
+			end
+			if #l > 0 and part.TAIL then
+				res = res .. generate_chunk ( part, 'TAIL', fields )
+			end
 		end
-	end  -----  end of function handle_part  -----
-
-	if #config.plugin.links_plugins >= 1 then
-		handle_part ( 'PAGE_HEADER_PLUGIN_HEAD' )
-	end
-	for idx, short_name in ipairs ( config.plugin.links_plugins ) do
-
-		config.plugin.fields.LINK_ID   = config.plugin_links[ short_name ].id
-		config.plugin.fields.LINK_PAGE = config.plugin_links[ short_name ].page
-		config.plugin.fields.LINK_NAME = config.plugin_links[ short_name ].name
-
-		handle_part ( 'PAGE_HEADER_PLUGIN_LINK' )
-	end
-	
-	if #config.plugin.links_others >= 1 then
-		handle_part ( 'PAGE_HEADER_PROJECT_HEAD' )
-	end
-	for idx, project in ipairs ( config.plugin.links_others ) do
-
-		local project_data
-
-		if type ( project ) == 'string' then
-			project_data = config.project_links[ short_name ]
-		else
-			project_data = project
-		end
-
-		config.plugin.fields.PROJECT_LINK = project_data.link
-		config.plugin.fields.PROJECT_NAME = project_data.name
-
-		handle_part ( 'PAGE_HEADER_PROJECT_LINK' )
+	else
+		res = string.gsub ( part, '%%([A-Z0-9_]+)%%', fields )
 	end
 
-end  -----  end of function generate_link_table  -----
-
-------------------------------------------------------------------------
---         Name:  generate_media_links   {{{1
---      Purpose:  {+PURPOSE+}
---  Description:  {+DESCRIPTION+}
---   Parameters:  fout - {+DESCRIPTION+} ({+TYPE+})
---                config - {+DESCRIPTION+} ({+TYPE+})
---                template_data - {+DESCRIPTION+} ({+TYPE+})
---                custom_data - {+DESCRIPTION+} ({+TYPE+})
---      Returns:  {+RETURNS+}
-------------------------------------------------------------------------
-
-function generate_media_links ( fout, config, template_data, custom_data )
-
-	function handle_part ( name )
-		local part = custom_data[name] or template_data[name]
-
-		if not part then
-			io.stderr:write ( '\nCan not find the part:\n'..name..'\n\n' )
-		else
-			part = string.gsub ( part, '%%([A-Z0-9_]+)%%', config.plugin.fields )
-
-			fout:write ( part )
-		end
-	end  -----  end of function handle_part  -----
-
-	if not config.plugin.links_media then
-		return
-	end
-
-	if #config.plugin.links_media >= 1 then
-		handle_part ( 'PAGE_HEADER_MEDIA_HEAD' )
-	end
-	for idx, media_link in ipairs ( config.plugin.links_media ) do
-
-		config.plugin.fields.MEDIA_LINK = media_link
-
-		handle_part ( 'PAGE_HEADER_MEDIA_LINK' )
-	end
-	if #config.plugin.links_media >= 1 then
-		handle_part ( 'PAGE_HEADER_MEDIA_TAIL' )
-	end
-
-end  -----  end of function generate_media_links  -----
+	return res
+end  -----  end of function generate_chunk  -----
 
 ------------------------------------------------------------------------
 --         Name:  generate_output   {{{1
 --      Purpose:  {+PURPOSE+}
 --  Description:  {+DESCRIPTION+}
 --   Parameters:  config - {+DESCRIPTION+} ({+TYPE+})
---                template_data - {+DESCRIPTION+} ({+TYPE+})
---                custom_data - {+DESCRIPTION+} ({+TYPE+})
+--                chunk_data - {+DESCRIPTION+} ({+TYPE+})
 --      Returns:  {+RETURNS+}
 ------------------------------------------------------------------------
 
-function generate_output ( config, template_data, custom_data )
+function generate_output ( config, chunk_data )
 
 	local fout, msg = io.open ( config.plugin.output, 'w' )
 
@@ -223,23 +169,16 @@ function generate_output ( config, template_data, custom_data )
 
 	for idx, name in ipairs ( config.plugin.template.order ) do
 		
-		local part = custom_data[name] or template_data[name]
+		local part = chunk_data[name]
 
-		if name == 'PAGE_HEADER_MAPPINGS' and not config.plugin.fields.REF_MAPS then
-			part = ''
-		end
-
-		if name == 'PAGE_HEADER_OTHERS' then
-			generate_link_table ( fout, config, template_data, custom_data )
-		elseif name == 'PAGE_HEADER_MEDIA' then
-			generate_media_links ( fout, config, template_data, custom_data )
-		elseif not part then
+		if not part then
 			io.stderr:write ( '\nCan not find the part:\n'..name..'\n\n' )
+			part = ''
 		else
-			part = string.gsub ( part, '%%([A-Z0-9_]+)%%', config.plugin.fields )
-
-			fout:write ( part )
+			part = generate_chunk ( chunk_data, name, config.plugin.fields )
 		end
+
+		fout:write ( part )
 
 	end
 
@@ -312,30 +251,31 @@ if not config.plugin then
    return 1
 end
 
-local custom_data   = read_file ( config.plugin.input )
-local template_data = read_file ( config.plugin.template.filename )
+local chunk_data = {}
+read_file ( config.plugin.template.filename, chunk_data )
+read_file ( config.plugin.input,             chunk_data )
 
-template_data.head = [[
+chunk_data.head = [[
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 	<head>
 ]]
-template_data.head_body = [[
+chunk_data.head_body = [[
 	</head>
 	<body>
 ]]
-template_data.body = [[
+chunk_data.body = [[
 	</body>
 </html>
 ]]
 
 config.plugin.fields.DATE = os.date ( '%B %d %Y' )
-if config.plugin_links[ options.plugin ] then
-	config.plugin.fields.VIMORG_ID = config.plugin_links[ options.plugin ].id
-end
 if config.plugin.fields.TOOL_VERSION == 'AUTO' then
 	config.plugin.fields.TOOL_VERSION = read_version ( config.plugin.fields.REF_HELP )
 end
 
-generate_output ( config, template_data, custom_data )
+generate_output ( config, chunk_data )
 
+
+------------------------------------------------------------------------
+-- vim: foldmethod=marker
