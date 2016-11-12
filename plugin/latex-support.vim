@@ -34,15 +34,18 @@
 " === Basic checks ===   {{{1
 "-------------------------------------------------------------------------------
 
+" need at least 7.0
 if v:version < 700
-  echohl WarningMsg | echo 'plugin latex-support.vim needs Vim version >= 7'| echohl None
-  finish
+	echohl WarningMsg
+	echo 'The plugin latex-support.vim needs Vim version >= 7.'
+	echohl None
+	finish
 endif
-"
-" Prevent duplicate loading:
-"
+
+" prevent duplicate loading
+" need compatible
 if exists("g:LatexSupportVersion") || &cp
- finish
+	finish
 endif
 
 let g:LatexSupportVersion= "1.3pre"                  " version number of this script; do not change
@@ -66,7 +69,7 @@ let g:LatexSupportVersion= "1.3pre"                  " version number of this sc
 
 function! s:ApplyDefaultSetting ( varname, value )
 	if ! exists ( 'g:'.a:varname )
-		exe 'let g:'.a:varname.' = '.string( a:value )
+		let { 'g:'.a:varname } = a:value
 	endif
 endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
 
@@ -157,8 +160,8 @@ endfunction    " ----------  end of function s:SID  ----------
 
 function! s:UserInput ( prompt, text, ... )
 
-	echohl Search																					" highlight prompt
-	call inputsave()																			" preserve typeahead
+	echohl Search                                         " highlight prompt
+	call inputsave()                                      " preserve typeahead
 	if a:0 == 0 || a:1 == ''
 		let retval = input( a:prompt, a:text )
 	elseif a:1 == 'customlist'
@@ -168,11 +171,11 @@ function! s:UserInput ( prompt, text, ... )
 	else
 		let retval = input( a:prompt, a:text, a:1 )
 	endif
-	call inputrestore()																		" restore typeahead
-	echohl None																						" reset highlighting
+	call inputrestore()                                   " restore typeahead
+	echohl None                                           " reset highlighting
 
-	let retval  = substitute( retval, '^\s\+', "", "" )		" remove leading whitespaces
-	let retval  = substitute( retval, '\s\+$', "", "" )		" remove trailing whitespaces
+	let retval  = substitute( retval, '^\s\+', "", "" )   " remove leading whitespaces
+	let retval  = substitute( retval, '\s\+$', "", "" )   " remove trailing whitespaces
 
 	return retval
 
@@ -824,8 +827,8 @@ function! s:BackgroundErrors ()
 	" restore current settings
 	let &g:errorformat = errorf_saved
 
-	" open error window if necessary
-	botright cwindow
+	" open error window (always, since the user asked for it)
+	botright copen
 
 	return
 endfunction    " ----------  end of function s:BackgroundErrors  ----------
@@ -1859,8 +1862,7 @@ function! s:InitMenus()
 	exe ahead.'view\ last\ &errors<Tab>'.esc_mapl.'re           :call <SID>BackgroundErrors()<CR>'
 	exe ihead.'view\ last\ &errors<Tab>'.esc_mapl.'re      <C-C>:call <SID>BackgroundErrors()<CR>'
 
-	exe ahead.'&View.View<Tab>LaTeX                 :echo "This is a menu header."<CR>'
-	exe ahead.'View.-SEP1-                          :'
+	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', 'Run'.'.&View' )
 	exe ahead.'View.&DVI<Tab>'.esc_mapl.'rdvi       :call <SID>View("dvi")<CR>'
 	exe ihead.'View.&DVI<Tab>'.esc_mapl.'rdvi  <C-C>:call <SID>View("dvi")<CR>'
 	exe ahead.'View.&PDF<Tab>'.esc_mapl.'rpdf       :call <SID>View("pdf")<CR>'
@@ -1868,8 +1870,7 @@ function! s:InitMenus()
 	exe ahead.'View.&PS<Tab>'.esc_mapl.'rps         :call <SID>View("ps" )<CR>'
 	exe ihead.'View.&PS<Tab>'.esc_mapl.'rps    <C-C>:call <SID>View("ps" )<CR>'
 
-	exe ahead.'&Convert<Tab>'.esc_mapl.'rc.Convert<Tab>LaTeX  :echo "This is a menu header."<CR>'
-	exe ahead.'Convert.-SEP1-                                 :'
+	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', 'Run'.'.&Convert<TAB>'.esc_mapl.'rc' )
 	exe ahead.'Convert.DVI->PDF                               :call <SID>Conversions( "dvi-pdf")<CR>'
 	exe ahead.'Convert.DVI->PS                                :call <SID>Conversions( "dvi-ps" )<CR>'
 	exe ahead.'Convert.DVI->PNG                               :call <SID>Conversions( "dvi-png")<CR>'
