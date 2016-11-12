@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Lua_Version below
 "       Created:  26.03.2014
-"      Revision:  30.12.2014
+"      Revision:  12.11.2016
 "       License:  Copyright (c) 2014-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -23,11 +23,11 @@
 "                 PURPOSE.
 "                 See the GNU General Public License version 2 for more details.
 "===============================================================================
-"
+
 "-------------------------------------------------------------------------------
-" Basic checks.   {{{1
+" === Basic checks ===   {{{1
 "-------------------------------------------------------------------------------
-"
+
 " need at least 7.0
 if v:version < 700
 	echohl WarningMsg
@@ -35,18 +35,19 @@ if v:version < 700
 	echohl None
 	finish
 endif
-"
+
 " prevent duplicate loading
 " need compatible
 if &cp || ( exists('g:Lua_Version') && ! exists('g:Lua_DevelopmentOverwrite') )
 	finish
 endif
-let g:Lua_Version= '1.0'     " version number of this script; do not change
-"
+
+let g:Lua_Version= '1.1pre'     " version number of this script; do not change
+
 "-------------------------------------------------------------------------------
-" Auxiliary functions.   {{{1
+" === Auxiliary functions ===   {{{1
 "-------------------------------------------------------------------------------
-"
+
 "-------------------------------------------------------------------------------
 " s:ApplyDefaultSetting : Write default setting to a global variable.   {{{2
 "
@@ -59,13 +60,13 @@ let g:Lua_Version= '1.0'     " version number of this script; do not change
 " If g:<varname> does not exists, assign:
 "   g:<varname> = value
 "-------------------------------------------------------------------------------
-"
+
 function! s:ApplyDefaultSetting ( varname, value )
 	if ! exists ( 'g:'.a:varname )
-		exe 'let g:'.a:varname.' = '.string( a:value )
+		let { 'g:'.a:varname } = a:value
 	endif
 endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
-"
+
 "-------------------------------------------------------------------------------
 " s:ErrorMsg : Print an error message.   {{{2
 "
@@ -76,7 +77,7 @@ endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
 " Returns:
 "   -
 "-------------------------------------------------------------------------------
-"
+
 function! s:ErrorMsg ( ... )
 	echohl WarningMsg
 	for line in a:000
@@ -84,7 +85,7 @@ function! s:ErrorMsg ( ... )
 	endfor
 	echohl None
 endfunction    " ----------  end of function s:ErrorMsg  ----------
-"
+
 "-------------------------------------------------------------------------------
 " s:GetGlobalSetting : Get a setting from a global variable.   {{{2
 "
@@ -100,7 +101,7 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 " If g:<glbname> exists, assign:
 "   s:<varname> = g:<glbname>
 "-------------------------------------------------------------------------------
-"
+
 function! s:GetGlobalSetting ( varname, ... )
 	let lname = a:varname
 	let gname = a:0 >= 1 ? a:1 : lname
@@ -108,7 +109,7 @@ function! s:GetGlobalSetting ( varname, ... )
 		let { 's:'.lname } = { 'g:'.gname }
 	endif
 endfunction    " ----------  end of function s:GetGlobalSetting  ----------
-"
+
 "-------------------------------------------------------------------------------
 " s:ImportantMsg : Print an important message.   {{{2
 "
@@ -119,7 +120,7 @@ endfunction    " ----------  end of function s:GetGlobalSetting  ----------
 " Returns:
 "   -
 "-------------------------------------------------------------------------------
-"
+
 function! s:ImportantMsg ( ... )
 	echohl Search
 	echo join ( a:000, "\n" )
@@ -155,11 +156,11 @@ endfunction    " ----------  end of function s:ShellEscExec  ----------
 " Returns:
 "   SID - the SID of the script (string)
 "-------------------------------------------------------------------------------
-"
+
 function! s:SID ()
 	return matchstr ( expand('<sfile>'), '<SNR>\zs\d\+\ze_SID$' )
 endfunction    " ----------  end of function s:SID  ----------
-"
+
 "-------------------------------------------------------------------------------
 " s:UserInput : Input after a highlighted prompt.   {{{2
 "
@@ -171,11 +172,11 @@ endfunction    " ----------  end of function s:SID  ----------
 " Returns:
 "   input - the user input, an empty sting if the user hit <ESC> (string)
 "-------------------------------------------------------------------------------
-"
+
 function! s:UserInput ( prompt, text, ... )
-	"
-	echohl Search																					" highlight prompt
-	call inputsave()																			" preserve typeahead
+
+	echohl Search                                         " highlight prompt
+	call inputsave()                                      " preserve typeahead
 	if a:0 == 0 || a:1 == ''
 		let retval = input( a:prompt, a:text )
 	elseif a:1 == 'customlist'
@@ -185,20 +186,19 @@ function! s:UserInput ( prompt, text, ... )
 	else
 		let retval = input( a:prompt, a:text, a:1 )
 	endif
-	call inputrestore()																		" restore typeahead
-	echohl None																						" reset highlighting
-	"
-	let retval  = substitute( retval, '^\s\+', "", "" )		" remove leading whitespaces
-	let retval  = substitute( retval, '\s\+$', "", "" )		" remove trailing whitespaces
-	"
+	call inputrestore()                                   " restore typeahead
+	echohl None                                           " reset highlighting
+
+	let retval  = substitute( retval, '^\s\+', "", "" )   " remove leading whitespaces
+	let retval  = substitute( retval, '\s\+$', "", "" )   " remove trailing whitespaces
+
 	return retval
-	"
+
 endfunction    " ----------  end of function s:UserInput ----------
-"
+
 "-------------------------------------------------------------------------------
 " s:UserInputEx : ex-command for s:UserInput.   {{{3
 "-------------------------------------------------------------------------------
-"
 function! s:UserInputEx ( ArgLead, CmdLine, CursorPos )
 	if empty( a:ArgLead )
 		return copy( s:UserInputList )
@@ -207,18 +207,35 @@ function! s:UserInputEx ( ArgLead, CmdLine, CursorPos )
 endfunction    " ----------  end of function s:UserInputEx  ----------
 " }}}3
 "-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:WarningMsg : Print a warning/error message.   {{{2
 "
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:WarningMsg ( ... )
+	echohl WarningMsg
+	echo join ( a:000, "\n" )
+	echohl None
+endfunction    " ----------  end of function s:WarningMsg  ----------
+
 " }}}2
 "-------------------------------------------------------------------------------
-"
+
 "-------------------------------------------------------------------------------
-" Modul setup.   {{{1
+" === Module setup ===   {{{1
 "-------------------------------------------------------------------------------
-"
+
 "-------------------------------------------------------------------------------
-" Installation.   {{{2
+" == Platform specific items ==   {{{2
 "-------------------------------------------------------------------------------
-"
+
 let s:MSWIN = has("win16") || has("win32")   || has("win64")    || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
 "
@@ -288,7 +305,7 @@ else
 endif
 "
 "-------------------------------------------------------------------------------
-" Various setting.   {{{2
+" == Various setting ==   {{{2
 "-------------------------------------------------------------------------------
 "
 let s:CmdLineEscChar = ' |"\'
@@ -369,10 +386,10 @@ let s:Lua_SnippetDir         = expand ( s:Lua_SnippetDir )
 "-------------------------------------------------------------------------------
 "
 "-------------------------------------------------------------------------------
-" Lua_EndOfLineComment : Append end-of-line comment.   {{{1
+" s:EndOfLineComment : Append end-of-line comment.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_EndOfLineComment () range
+function! s:EndOfLineComment () range
 	"
 	" local position
 	if !exists( 'b:Lua_LineEndCommentColumn' )
@@ -395,13 +412,13 @@ function! Lua_EndOfLineComment () range
 		endif
 	endfor
 	"
-endfunction    " ----------  end of function Lua_EndOfLineComment  ----------
+endfunction    " ----------  end of function s:EndOfLineComment  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_AdjustEndOfLineComm : Adjust end-of-line comment.   {{{1
+" s:AdjustEndOfLineComm : Adjust end-of-line comment.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_AdjustEndOfLineComm () range
+function! s:AdjustEndOfLineComm () range
 	"
 	" comment character (for use in regular expression)
 	let cc = '--'
@@ -495,35 +512,35 @@ function! Lua_AdjustEndOfLineComm () range
 	" restore the cursor position
 	call setpos ( '.', save_cursor )
 	"
-endfunction    " ----------  end of function Lua_AdjustEndOfLineComm  ----------
+endfunction    " ----------  end of function s:AdjustEndOfLineComm  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_SetEndOfLineCommPos : Set end-of-line comment position.   {{{1
+" s:SetEndOfLineCommPos : Set end-of-line comment position.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_SetEndOfLineCommPos () range
+function! s:SetEndOfLineCommPos () range
 	"
 	let b:Lua_LineEndCommentColumn = virtcol('.')
 	call s:ImportantMsg ( 'line end comments will start at column '.b:Lua_LineEndCommentColumn )
 	"
-endfunction    " ----------  end of function Lua_SetEndOfLineCommPos  ----------
+endfunction    " ----------  end of function s:SetEndOfLineCommPos  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_CodeComment : Code -> Comment   {{{1
+" s:CodeComment : Code -> Comment   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_CodeComment() range
+function! s:CodeComment() range
 	"
 	" add '%' at the beginning of the lines
 	silent exe ":".a:firstline.",".a:lastline."s/^/--/"
 	"
-endfunction    " ----------  end of function Lua_CodeComment  ----------
+endfunction    " ----------  end of function s:CodeComment  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_CommentCode : Comment -> Code   {{{1
+" s:CommentCode : Comment -> Code   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_CommentCode( toggle ) range
+function! s:CommentCode( toggle ) range
 	"
 	" remove comments:
 	" - remove '--' from the beginning of the line
@@ -537,13 +554,13 @@ function! Lua_CommentCode( toggle ) range
 		endif
 	endfor
 	"
-endfunction    " ----------  end of function Lua_CommentCode  ----------
+endfunction    " ----------  end of function s:CommentCode  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_InsertLongComment : Insert a --[[ --]] comment block.   {{{1
+" s:InsertLongComment : Insert a --[[ --]] comment block.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_InsertLongComment( mode )
+function! s:InsertLongComment( mode )
 	"
 	let cmt_counter = 0
 	let save_line   = line(".")
@@ -575,13 +592,13 @@ function! Lua_InsertLongComment( mode )
 		let zz=      "--]]  -- ".s:Lua_CommentLabel.cmt_counter." --"
 		'>put  =zz
 	endif
-endfunction    " ----------  end of function Lua_InsertLongComment  ----------
+endfunction    " ----------  end of function s:InsertLongComment  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_RemoveLongComment : Remove a --[[ --]] comment block.   {{{1
+" s:RemoveLongComment : Remove a --[[ --]] comment block.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_RemoveLongComment()
+function! s:RemoveLongComment()
 	"
 	let frstline = searchpair( '^--\[\[\s*--\s*'.s:Lua_CommentLabel.'\d\+',
 				\                    '',
@@ -613,7 +630,7 @@ function! Lua_RemoveLongComment()
 	"
 	return s:ImportantMsg ( 'removed the block comment from lines '.frstline.' to '.lastline )
 	"
-endfunction    " ----------  end of function Lua_RemoveLongComment  ----------
+endfunction    " ----------  end of function s:RemoveLongComment  ----------
 "
 "-------------------------------------------------------------------------------
 " s:GetFunctionParameters : Get the name, parameters, ... of a function.   {{{1
@@ -699,10 +716,10 @@ function! s:GetFunctionParameters( fun_line )
 endfunction    " ----------  end of function s:GetFunctionParameters  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_FunctionComment : Automatically comment a function.   {{{1
+" s:FunctionComment : Automatically comment a function.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_FunctionComment() range
+function! s:FunctionComment() range
 	"
 	let	linestring = getline(a:firstline)
 	for i in range(a:firstline+1,a:lastline)
@@ -726,7 +743,7 @@ function! Lua_FunctionComment() range
 					\ '|PARAMETERS|', param_list, 'placement', 'above' )
 	endif
 	"
-endfunction    " ----------  end of function Lua_FunctionComment  ----------
+endfunction    " ----------  end of function s:FunctionComment  ----------
 "
 "-------------------------------------------------------------------------------
 " Lua_ModifyVariable : Modify a variable in the line.   {{{1
@@ -781,10 +798,10 @@ function! Lua_ModifyVariable ( mode, ... )
 endfunction    " ----------  end of function Lua_ModifyVariable  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_EscMagicChar : Automatically escape magic characters.   {{{1
+" s:EscMagicChar : Automatically escape magic characters.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_EscMagicChar()
+function! s:EscMagicChar()
 	"
 	let col  = getpos('.')[2]
 	let char = getline('.')[col-1]
@@ -794,7 +811,7 @@ function! Lua_EscMagicChar()
 	endif
 	"
 	return ''
-endfunction    " ----------  end of function Lua_EscMagicChar  ----------
+endfunction    " ----------  end of function s:EscMagicChar  ----------
 "
 "-------------------------------------------------------------------------------
 " Lua_CodeSnippet : Code snippets.   {{{1
@@ -1280,7 +1297,7 @@ function! Lua_Hardcopy ( mode )
 endfunction    " ----------  end of function Lua_Hardcopy  ----------
 "
 "------------------------------------------------------------------------------
-"  === Templates API ===   {{{1
+" === Templates API ===   {{{1
 "------------------------------------------------------------------------------
 "
 "------------------------------------------------------------------------------
@@ -1566,35 +1583,35 @@ function! s:CreateMaps ()
 	"-------------------------------------------------------------------------------
 	" comments
 	"-------------------------------------------------------------------------------
-	 noremap    <buffer>  <silent>  <LocalLeader>cl         :call Lua_EndOfLineComment()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>cl    <Esc>:call Lua_EndOfLineComment()<CR>
-	 noremap    <buffer>  <silent>  <LocalLeader>cj         :call Lua_AdjustEndOfLineComm()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>cj    <Esc>:call Lua_AdjustEndOfLineComm()<CR>
-	 noremap    <buffer>  <silent>  <LocalLeader>cs         :call Lua_SetEndOfLineCommPos()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>cs    <Esc>:call Lua_SetEndOfLineCommPos()<CR>
+	 noremap    <buffer>  <silent>  <LocalLeader>cl         :call <SID>EndOfLineComment()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cl    <Esc>:call <SID>EndOfLineComment()<CR>
+	 noremap    <buffer>  <silent>  <LocalLeader>cj         :call <SID>AdjustEndOfLineComm()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cj    <Esc>:call <SID>AdjustEndOfLineComm()<CR>
+	 noremap    <buffer>  <silent>  <LocalLeader>cs         :call <SID>SetEndOfLineCommPos()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cs    <Esc>:call <SID>SetEndOfLineCommPos()<CR>
 	"
-	 noremap    <buffer>  <silent>  <LocalLeader>cc         :call Lua_CodeComment()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>cc    <Esc>:call Lua_CodeComment()<CR>
-	 noremap    <buffer>  <silent>  <LocalLeader>co         :call Lua_CommentCode(0)<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>co    <Esc>:call Lua_CommentCode(0)<CR>
-	 noremap    <buffer>  <silent>  <LocalLeader>ct         :call Lua_CommentCode(1)<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>ct    <Esc>:call Lua_CommentCode(1)<CR>
+	 noremap    <buffer>  <silent>  <LocalLeader>cc         :call <SID>CodeComment()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cc    <Esc>:call <SID>CodeComment()<CR>
+	 noremap    <buffer>  <silent>  <LocalLeader>co         :call <SID>CommentCode(0)<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>co    <Esc>:call <SID>CommentCode(0)<CR>
+	 noremap    <buffer>  <silent>  <LocalLeader>ct         :call <SID>CommentCode(1)<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>ct    <Esc>:call <SID>CommentCode(1)<CR>
 	"
-	nnoremap    <buffer>  <silent> <LocalLeader>cil         :call Lua_InsertLongComment('a')<CR>
-	inoremap    <buffer>  <silent> <LocalLeader>cil    <C-C>:call Lua_InsertLongComment('a')<CR>
-	vnoremap    <buffer>  <silent> <LocalLeader>cil    <C-C>:call Lua_InsertLongComment('v')<CR>
-	nnoremap    <buffer>  <silent> <LocalLeader>crl         :call Lua_RemoveLongComment()<CR>
-	inoremap    <buffer>  <silent> <LocalLeader>crl    <C-C>:call Lua_RemoveLongComment()<CR>
-	vnoremap    <buffer>  <silent> <LocalLeader>crl    <C-C>:call Lua_RemoveLongComment()<CR>
+	nnoremap    <buffer>  <silent> <LocalLeader>cil         :call <SID>InsertLongComment('a')<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>cil    <C-C>:call <SID>InsertLongComment('a')<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>cil    <C-C>:call <SID>InsertLongComment('v')<CR>
+	nnoremap    <buffer>  <silent> <LocalLeader>crl         :call <SID>RemoveLongComment()<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>crl    <C-C>:call <SID>RemoveLongComment()<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>crl    <C-C>:call <SID>RemoveLongComment()<CR>
 	"
-	 noremap    <buffer>  <silent>  <LocalLeader>ca         :call Lua_FunctionComment()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>ca    <Esc>:call Lua_FunctionComment()<CR>
+	 noremap    <buffer>  <silent>  <LocalLeader>ca         :call <SID>FunctionComment()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>ca    <Esc>:call <SID>FunctionComment()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" regex
 	"-------------------------------------------------------------------------------
-	nnoremap    <buffer>  <silent>  <LocalLeader>xe     i<C-R>=Lua_EscMagicChar()<CR><ESC><Right>
-	inoremap    <buffer>  <silent>  <LocalLeader>xe      <C-R>=Lua_EscMagicChar()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>xe     i<C-R>=<SID>EscMagicChar()<CR><ESC><Right>
+	inoremap    <buffer>  <silent>  <LocalLeader>xe      <C-R>=<SID>EscMagicChar()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" snippets
@@ -1729,28 +1746,28 @@ function! s:InitMenus()
 	let ahead = 'anoremenu <silent> '.s:Lua_RootMenu.'.Comments.'
 	let vhead = 'vnoremenu <silent> '.s:Lua_RootMenu.'.Comments.'
 	"
-	exe ahead.'end-of-&line\ comment<TAB>'.esc_mapl.'cl            :call Lua_EndOfLineComment()<CR>'
-	exe vhead.'end-of-&line\ comment<TAB>'.esc_mapl.'cl            :call Lua_EndOfLineComment()<CR>'
-	exe ahead.'ad&just\ end-of-line\ com\.<TAB>'.esc_mapl.'cj      :call Lua_AdjustEndOfLineComm()<CR>'
-	exe vhead.'ad&just\ end-of-line\ com\.<TAB>'.esc_mapl.'cj      :call Lua_AdjustEndOfLineComm()<CR>'
-	exe ahead.'&set\ end-of-line\ com\.\ col\.<TAB>'.esc_mapl.'cs  :call Lua_SetEndOfLineCommPos()<CR>'
-	exe vhead.'&set\ end-of-line\ com\.\ col\.<TAB>'.esc_mapl.'cs  :call Lua_SetEndOfLineCommPos()<CR>'
+	exe ahead.'end-of-&line\ comment<TAB>'.esc_mapl.'cl            :call <SID>EndOfLineComment()<CR>'
+	exe vhead.'end-of-&line\ comment<TAB>'.esc_mapl.'cl            :call <SID>EndOfLineComment()<CR>'
+	exe ahead.'ad&just\ end-of-line\ com\.<TAB>'.esc_mapl.'cj      :call <SID>AdjustEndOfLineComm()<CR>'
+	exe vhead.'ad&just\ end-of-line\ com\.<TAB>'.esc_mapl.'cj      :call <SID>AdjustEndOfLineComm()<CR>'
+	exe ahead.'&set\ end-of-line\ com\.\ col\.<TAB>'.esc_mapl.'cs  :call <SID>SetEndOfLineCommPos()<CR>'
+	exe vhead.'&set\ end-of-line\ com\.\ col\.<TAB>'.esc_mapl.'cs  :call <SID>SetEndOfLineCommPos()<CR>'
 	exe ahead.'-Sep01-                                             :'
 	"
-	exe ahead.'&code\ ->\ comment<TAB>'.esc_mapl.'cc         :call Lua_CodeComment()<CR>'
-	exe vhead.'&code\ ->\ comment<TAB>'.esc_mapl.'cc         :call Lua_CodeComment()<CR>'
-	exe ahead.'c&omment\ ->\ code<TAB>'.esc_mapl.'co         :call Lua_CommentCode(0)<CR>'
-	exe vhead.'c&omment\ ->\ code<TAB>'.esc_mapl.'co         :call Lua_CommentCode(0)<CR>'
-	exe ahead.'&toggle\ code\ <->\ com\.<TAB>'.esc_mapl.'ct  :call Lua_CommentCode(1)<CR>'
-	exe vhead.'&toggle\ code\ <->\ com\.<TAB>'.esc_mapl.'ct  :call Lua_CommentCode(1)<CR>'
+	exe ahead.'&code\ ->\ comment<TAB>'.esc_mapl.'cc         :call <SID>CodeComment()<CR>'
+	exe vhead.'&code\ ->\ comment<TAB>'.esc_mapl.'cc         :call <SID>CodeComment()<CR>'
+	exe ahead.'c&omment\ ->\ code<TAB>'.esc_mapl.'co         :call <SID>CommentCode(0)<CR>'
+	exe vhead.'c&omment\ ->\ code<TAB>'.esc_mapl.'co         :call <SID>CommentCode(0)<CR>'
+	exe ahead.'&toggle\ code\ <->\ com\.<TAB>'.esc_mapl.'ct  :call <SID>CommentCode(1)<CR>'
+	exe vhead.'&toggle\ code\ <->\ com\.<TAB>'.esc_mapl.'ct  :call <SID>CommentCode(1)<CR>'
 	"
-	exe ahead.'insert\ long\ comment<Tab>'.esc_mapl.'cil       :call Lua_InsertLongComment("a")<CR>'
-	exe vhead.'insert\ long\ comment<Tab>'.esc_mapl.'cil  <C-C>:call Lua_InsertLongComment("v")<CR>'
-	exe ahead.'remove\ long\ comment<Tab>'.esc_mapl.'crl       :call Lua_RemoveLongComment()<CR>'
+	exe ahead.'insert\ long\ comment<Tab>'.esc_mapl.'cil       :call <SID>InsertLongComment("a")<CR>'
+	exe vhead.'insert\ long\ comment<Tab>'.esc_mapl.'cil  <C-C>:call <SID>InsertLongComment("v")<CR>'
+	exe ahead.'remove\ long\ comment<Tab>'.esc_mapl.'crl       :call <SID>RemoveLongComment()<CR>'
 	exe ahead.'-Sep02-                                         :'
 	"
-	exe ahead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca  :call Lua_FunctionComment()<CR>'
-	exe vhead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca  :call Lua_FunctionComment()<CR>'
+	exe ahead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca  :call <SID>FunctionComment()<CR>'
+	exe vhead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca  :call <SID>FunctionComment()<CR>'
 	exe ahead.'-Sep03-                                            :'
 	"
 	"-------------------------------------------------------------------------------
@@ -1768,8 +1785,8 @@ function! s:InitMenus()
 	let ihead = 'inoremenu <silent> '.s:Lua_RootMenu.'.Regex.'
 	"
 	exe ahead.'-Sep01-                                  :'
-	exe nhead.'&esc\.\ magic\ char\.<Tab>'.esc_mapl.'xe  i<C-R>=Lua_EscMagicChar()<CR><ESC><Right>'
-	exe ihead.'&esc\.\ magic\ char\.<Tab>'.esc_mapl.'xe   <C-R>=Lua_EscMagicChar()<CR>'
+	exe nhead.'&esc\.\ magic\ char\.<Tab>'.esc_mapl.'xe  i<C-R>=<SID>EscMagicChar()<CR><ESC><Right>'
+	exe ihead.'&esc\.\ magic\ char\.<Tab>'.esc_mapl.'xe   <C-R>=<SID>EscMagicChar()<CR>'
 	"
 	"-------------------------------------------------------------------------------
 	" snippets
@@ -2014,7 +2031,7 @@ function! Lua_Settings( verbose )
 endfunction    " ----------  end of function Lua_Settings  ----------
 "
 "-------------------------------------------------------------------------------
-" Setup: Templates, toolbox and menus.   {{{1
+" === Setup: Templates, toolbox and menus ===   {{{1
 "-------------------------------------------------------------------------------
 "
 " setup the toolbox

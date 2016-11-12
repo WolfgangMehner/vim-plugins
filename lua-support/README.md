@@ -1,4 +1,4 @@
-README for lua-support.vim (Version 1.0) / July 23 2016
+README for lua-support.vim (Version 1.1pre) / November 12 2016
 ================================================================================
 
   *  INSTALLATION
@@ -198,21 +198,9 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 RELEASE NOTES
 ================================================================================
 
-RELEASE NOTES FOR VERSION 1.0
+RELEASE NOTES FOR VERSION 1.1pre
 ----------------------------------------------------------------------
-- The default style used by the template library is now 'Lua_52'.
-  You can change it in the template customization file (see below).
-  The jump to the online help is also set up for Lua 5.2.
-- Rename 'g:Lua_GlbTemplateFile' into 'g:Lua_GlobalTemplateFile'.
-- Rename 'g:Lua_LclTemplateFile' into 'g:Lua_LocalTemplateFile'.
-- Add optional custom templates 'g:Lua_CustomTemplateFile'.
-- Add template personalization file and setup wizard.
-- Add Lua's reference manual in Vim's help format.
-- Add maps and menu entries to jump to it conveniently.
-- New and improved templates, add Lua 5.3.
-- Add Lua C-API templates.
-- Fix running and compiling scripts under Windows.
-- Minor improvements.
+- Minor changes.
 
 
 RELEASE NOTES FOR OLDER VERSIONS
