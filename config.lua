@@ -52,8 +52,8 @@ template_index.order = {
 	'head_body',
 	'TITLE_BAR',
 	'FEATURES',
-	'PLUGIN_LIST',
-	'TOOLBOX_LIST',
+	'LINK_LIST:PLUGIN_LIST',
+	'LINK_LIST:TOOLBOX_LIST',
 	'FOOTER',
 	'FOOTNOTE',
 	'body',
@@ -77,10 +77,25 @@ config.index = {
 	fields = {
 		MAINTAINER_NAME = 'Wolfgang Mehner',
 		MAINTAINER_MAIL = 'wolfgang-mehner@web.de',
-	},
-	links_plugins = {
-	},
-	links_others = {
+
+		PLUGIN_LIST = {
+			header = { NAME = 'Plug-Ins', ANCHOR = 'PLUGINS', },
+			{	LINK = 'awksupport.html',   IMAGE = '<code style="font-weight:bold;font-size:1.4em;">AWK {}</code>',         TEXT = 'AWK-Support', },
+			{	LINK = 'bashsupport.html',  IMAGE = '<code style="font-size:1.5em;">$BASH</code>',                           TEXT = 'Bash-Support', },
+			{	LINK = 'csupport.html',     IMAGE = '<code style="font-size:2.2em;">C++</code>',                             TEXT = 'C/C++-Support', },
+			{	LINK = 'gitsupport.html',   IMAGE = '<img style="width:36px;" src="data/Git-Icon-Black.png" alt="Git">',     TEXT = 'Git-Support', },
+			{	LINK = 'latexsupport.html', IMAGE = '<img style="width:56px;" src="data/LaTeX_logo_200px.png" alt="LaTeX">', TEXT = 'LaTeX-Support', },
+			{	LINK = 'luasupport.html',   IMAGE = '<img style="width:48px;" src="data/lua-logo.gif" alt="Lua">',           TEXT = 'Lua-Support', },
+			{	LINK = 'perlsupport.html',  IMAGE = '<code style="font-size:1.5em;">$perl</code>',                           TEXT = 'Perl-Support', },
+			{	LINK = 'vimsupport.html',   IMAGE = '<img style="width:32px;" src="data/vim_small.gif" alt="Vim">',          TEXT = 'VimL-Support', },
+		},
+
+		TOOLBOX_LIST = {
+			header = { NAME = 'Toolbox', ANCHOR = 'TOOLBOX', },
+			{	LINK = 'cmaketool.html',   IMAGE = '<img style="width:36px;" src="data/Cmake-240px.png" alt="CMake">', TEXT = 'CMake-Tool', },
+			{	LINK = 'doxygentool.html', IMAGE = '<img style="width:72px;" src="data/doxygen.png" alt="Doxygen">',   TEXT = 'Doxygen-Tool', },
+			{	LINK = 'maketool.html',    IMAGE = '<code style="font-size:1.5em;">Make:</code>',                      TEXT = 'Make-Tool', },
+		},
 	},
 }
 

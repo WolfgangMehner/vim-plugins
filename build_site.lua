@@ -118,28 +118,31 @@ end  -----  end of function read_version  -----
 --      Purpose:  {+PURPOSE+}
 --  Description:  {+DESCRIPTION+}
 --   Parameters:  chunk_data - {+DESCRIPTION+} ({+TYPE+})
---                name - {+DESCRIPTION+} ({+TYPE+})
+--                chunk_name - {+DESCRIPTION+} ({+TYPE+})
 --                fields - {+DESCRIPTION+} ({+TYPE+})
+--                field_name - {+DESCRIPTION+} ({+TYPE+}, optional)
 --      Returns:  {+RETURNS+}
 ------------------------------------------------------------------------
 
-function generate_chunk ( chunk_data, name, fields )
+function generate_chunk ( chunk_data, chunk_name, fields, field_name )
 
-	local part = chunk_data[name]
+	local part = chunk_data[chunk_name]
 	local res  = ''
+
+	field_name = field_name or chunk_name
 
 	if type ( part ) == 'table' then
 		assert ( part.ENTRY, '"ENTRY" missing from list' )
-		local l = fields[name]
-		if fields[name] then
+		local l = fields[field_name]
+		if l then
 			if #l > 0 and part.HEAD then
-				res = res .. generate_chunk ( part, 'HEAD', fields )
+				res = res .. generate_chunk ( part, 'HEAD', l.header or fields )
 			end
 			for idx, val in ipairs ( l ) do
 				res = res .. generate_chunk ( part, 'ENTRY', val )
 			end
 			if #l > 0 and part.TAIL then
-				res = res .. generate_chunk ( part, 'TAIL', fields )
+				res = res .. generate_chunk ( part, 'TAIL', l.header or fields )
 			end
 		end
 	else
@@ -169,13 +172,18 @@ function generate_output ( config, chunk_data )
 
 	for idx, name in ipairs ( config.plugin.template.order ) do
 		
-		local part = chunk_data[name]
+		local part
+		local chunk_name, field_name = name
 
-		if not part then
-			io.stderr:write ( '\nCan not find the part:\n'..name..'\n\n' )
+		if string.match ( chunk_name, '%u:%u' ) then
+			chunk_name, field_name = string.match ( chunk_name, '([%u_]+):([%u_]+)' )
+		end
+
+		if not chunk_data[chunk_name] then
+			io.stderr:write ( '\nCan not find the part:\n'..chunk_name..'\n\n' )
 			part = ''
 		else
-			part = generate_chunk ( chunk_data, name, config.plugin.fields )
+			part = generate_chunk ( chunk_data, chunk_name, config.plugin.fields, field_name )
 		end
 
 		fout:write ( part )
