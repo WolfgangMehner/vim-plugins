@@ -1,8 +1,8 @@
-*templatesupport.txt*         MM Template Support                  Mar 26 2016
+*templatesupport.txt*         MM Template Support                  Nov 12 2016
 
 MM Template Support                                        *template-support*
 
-                             Plug-in version 1.0
+                             Plug-in version 1.1alpha
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -369,7 +369,7 @@ the interface.
 Templates are short pieces of text which are enhanced by so-called macros and
 tags. They define a simple markup language which determines the preparation of
 the text before it is inserted and control is handed back to the user.
-Beyond that, every template has a name which also determines its place in the
+Beyond that, every template has a name, which also determines its place in the
 menu structure the template support creates. Together with the template, its
 menu shortcut and map are defined. The whole accessibility of the template is
 specified in this one place.
@@ -388,9 +388,9 @@ The name can contain these characters:
 Dots have a special meaning. They determine the menu structure the template
 support will create (see |template-support-library| for a short introduction).
 
-The list of option defines the map and menu shortcut of the template, and some
-aspects of its behavior during insertion into a text, such as its placement
-relative to the position of the cursor.
+The list of options defines the map and menu shortcut of the template, and
+some aspects of its behavior during insertion into a text, such as its
+placement relative to the position of the cursor.
 
 The following example shows a possible template for the C statement "if":
 >
@@ -417,9 +417,9 @@ the same rules as C identifiers. They start with a letter or underscore, and
 can contain numbers after that. Within a template, macros are written as their
 names, surrounded by two bars:
 	*|AUTHOR|*
-Replacement for macros can be given in the template library itself: >
+Replacements for macros can be given in the template library itself: >
 	SetMacro( 'AUTHOR', 'Wolfgang Mehner' )
-These macros are replaced when inserting the template:
+The macros are replaced when inserting the template:
 >
 	== Comments.file description == start ==
 	# ==================================================
@@ -434,7 +434,7 @@ These macros are replaced when inserting the template:
 	== ENDTEMPLATE ==
 <
 The template library will appropriately replace *|FILENAME|* and *|DATE|* and
-take the replacement for *|AUTHOR|* from the template library.
+insert *|AUTHOR|* as specified via "SetMacro()".
 
 Another option is to ask the user for a replacement every time the template is
 inserted:
@@ -477,6 +477,9 @@ was edited and when?
 Except for using flags, the user has no further influence on the replacements
 of these macros, they can not be set via SetMacro().
 
+Dates and timestamps are inserted analogously. Their format can be set via
+SetFormat (see |template-support-SetFormat|).
+
   *|TIME|*     : the current time
   *|DATE|*     : the current date
   *|YEAR|*     : the current year
@@ -487,9 +490,6 @@ documentation.
   *|DATE_PRETTY|*  *|DATE_PRETTY1|*
   *|DATE_PRETTY2|* *|DATE_PRETTY3|*
   *|TIME_PRETTY|*  *|YEAR_PRETTY|*
-
-The format of the inserted dates and times can be set via SetFormat (see
-|template-support-SetFormat|).
 
 ------------------------------------------------------------------------------
 
@@ -516,6 +516,8 @@ The possible flags are listed below:
 	:u - change replacement text to uppercase
 	:c - capitalize text (change first letter to uppercase)
 	:L - legalize name (replace all non-word characters with underscores)
+
+(for technical reasons:)
 	:T - remove tags (remove all cursor, split, and jump tags)
 
 ------------------------------------------------------------------------------
@@ -602,10 +604,10 @@ To insert it such that the text is never longer than 4 characters: >
 The following format specifiers are possible, the alignment is always optional:
 
   %++++++l - pad the replacement text
-  %------l - pad the replacement text, cut off if it is to long
+  %------l - pad the replacement text, cut off if it is too long
 
   %+10l    - the width is given by the number
-  %-10l    - the width is given by the number, cut off if the text is to long
+  %-10l    - the width is given by the number, cut off if the text is too long
   %10l     - the width is given by the number, do not cut off
 
   %+l %-l  - align left
@@ -718,7 +720,7 @@ The template "Comments.end-of-line comment" will be inserted at the end of the
 current line, while "Comments.date and time" will insert a timestamp at the
 cursor position.
 
-These placement modes are available:
+These placements are available:
 	start  - the text is placed above the first line
 	above  - the text is placed above the current line
 	below  - the text is placed below the current line (default)
@@ -785,7 +787,7 @@ Jump and split tags might be in conflict. Consider the following example:
 	== ENDTEMPLATE ==
 <
 When using the template in visual mode, the jump tag <+IF_PART+> should not
-appear, since the if block already contains the selected line. This is why
+appear, since the if block already contains the selected lines. This is why
 jump tag exist in different versions. The two version <-NAME-> and {-NAME-}
 are removed in visual mode. They behave opposite to the <SPLIT> tag, which is
 removed in every other mode. A better version of the above example looks like
@@ -1062,7 +1064,7 @@ and systems.
 Different projects may require different coding styles. Template libraries can
 be written to support multiple styles (|template-support-adv-styles|).
 
-Many languages deal with files placed in one or more significant directory,
+Many languages deal with files placed in one or more significant directories,
 such as C's include directories or modules in other languages. File pickers
 assist in working with these directories (|template-support-adv-files|).
 
@@ -1083,11 +1085,11 @@ styles by placing them inside a "USE STYLES" statement:
   == USE STYLES : CPP ==
 
   == Comments.function description ==  ==
-	# ==================================================
-	#      Function:  |?FUNCTION_NAME|
-	#       Purpose:  <CURSOR>
-	#   Description:  TODO
-	# ==================================================
+	// ==================================================
+	//      Function:  |?FUNCTION_NAME|
+	//       Purpose:  <CURSOR>
+	//   Description:  TODO
+	// ==================================================
 
   == ENDTEMPLATE ==
 
@@ -1195,8 +1197,8 @@ would result in the line >
 	#include "GL/gl.h"
 being inserted, while the second template would insert >
 	#include <gl.h>
-The paths "/usr/include" or "/usr/include/GL" would have to be in the include
-path, of course.
+(The paths "/usr/include" or "/usr/include/GL" would have to be in the include
+path of your compiler, of course.)
 
 The second argument can also be a path. In fact, if it does not match an
 identifier, it is always assumed to be a path:
@@ -1214,7 +1216,7 @@ directory.
 ==============================================================================
 
 The template support automatically creates menus for every template. The user
-has a measure of influence on the result. Some of these options where already
+has a measure of influence on the result. Some of these options were already
 explained in |templates-support-templ-maps|, this chapter will introduce further
 capabilities.
 
@@ -1261,9 +1263,10 @@ while the relative position in relation to the other templates defines the
 placement. The last part of the name following the last dot has no influence,
 but must be unique.
 Unlike templates and lists, separators do not have to be ended with a line
-like "== ENDTEMPLATE ==". Separators only span one line. Separators could
-utilize the syntax of function calls, such as "SetMacro()". However, they have
-been designed in this way to visually be on the same level as templates.
+like "== ENDTEMPLATE ==". Separators only span one line. (Therefore,
+separators could utilize the syntax of function calls, such as "SetMacro()".
+However, they have been designed in this way to visually be on the same level
+as templates.)
 
 ------------------------------------------------------------------------------
 
