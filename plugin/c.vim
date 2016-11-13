@@ -36,17 +36,21 @@
 " === Basic checks ===   {{{1
 "-------------------------------------------------------------------------------
 
+" need at least 7.0
 if v:version < 700
-  echohl WarningMsg | echo 'The plugin c.vim needs Vim version 7+.'| echohl None
-  finish
+	echohl WarningMsg
+	echo 'The plugin c.vim needs Vim version >= 7.'
+	echohl None
+	finish
 endif
-"
-" Prevent duplicate loading:
-"
+
+" prevent duplicate loading
+" need compatible
 if exists("g:C_Version") || &cp
- finish
+	finish
 endif
-let g:C_Version= "6.2.1"								" version number of this script; do not change
+
+let g:C_Version= "6.2.1pre"								" version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " === Auxiliary functions ===   {{{1
@@ -158,8 +162,8 @@ endfunction    " ----------  end of function s:SID  ----------
 
 function! s:UserInput ( prompt, text, ... )
 
-	echohl Search																					" highlight prompt
-	call inputsave()																			" preserve typeahead
+	echohl Search                                         " highlight prompt
+	call inputsave()                                      " preserve typeahead
 	if a:0 == 0 || a:1 == ''
 		let retval = input( a:prompt, a:text )
 	elseif a:1 == 'customlist'
@@ -169,11 +173,11 @@ function! s:UserInput ( prompt, text, ... )
 	else
 		let retval = input( a:prompt, a:text, a:1 )
 	endif
-	call inputrestore()																		" restore typeahead
-	echohl None																						" reset highlighting
+	call inputrestore()                                   " restore typeahead
+	echohl None                                           " reset highlighting
 
-	let retval  = substitute( retval, '^\s\+', "", "" )		" remove leading whitespaces
-	let retval  = substitute( retval, '\s\+$', "", "" )		" remove trailing whitespaces
+	let retval  = substitute( retval, '^\s\+', "", "" )   " remove leading whitespaces
+	let retval  = substitute( retval, '\s\+$', "", "" )   " remove trailing whitespaces
 
 	return retval
 
@@ -608,12 +612,12 @@ function! s:InitMenus ()
 	exe ihead.'&link<Tab>'.esc_mapl.'rl\ \ \ \ \<F9\>                <C-C>:call C_Link()<CR>:call C_HlMessage()<CR>'
 	exe ahead.'&run<Tab>'.esc_mapl.'rr\ \ \<C-F9\>                        :call C_Run()<CR>'
 	exe ihead.'&run<Tab>'.esc_mapl.'rr\ \ \<C-F9\>                   <C-C>:call C_Run()<CR>'
-	exe ahead.'executable\ to\ run<Tab>'.esc_mapl.'re                     :call C_ExeToRun()<CR>'
-	exe ihead.'executable\ to\ run<Tab>'.esc_mapl.'re                <C-C>:call C_ExeToRun()<CR>'
+	exe ahead.'executable\ to\ run<Tab>'.esc_mapl.'re                     :call <SID>ExeToRun()<CR>'
+	exe ihead.'executable\ to\ run<Tab>'.esc_mapl.'re                <C-C>:call <SID>ExeToRun()<CR>'
 	exe 'anoremenu '.s:MenuRun.'.cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra\ \ \<S-F9\>         :CCmdlineArgs<Space>'
 	exe 'inoremenu '.s:MenuRun.'.cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra\ \ \<S-F9\>    <C-C>:CCmdlineArgs<Space>'
-	exe ahead.'run\ &debugger<Tab>'.esc_mapl.'rd                           :call C_Debugger()<CR>'
-	exe ihead.'run\ &debugger<Tab>'.esc_mapl.'rd                      <C-C>:call C_Debugger()<CR>'
+	exe ahead.'run\ &debugger<Tab>'.esc_mapl.'rd                           :call <SID>Debugger()<CR>'
+	exe ihead.'run\ &debugger<Tab>'.esc_mapl.'rd                      <C-C>:call <SID>Debugger()<CR>'
 	"
 	exe ahead.'-SEP1-                                                      :'
 	"
@@ -1851,35 +1855,31 @@ function! C_XtermSize ()
 	let answer  = substitute( answer, '\s\+', "x", "" )						" replace inner whitespaces
 	let g:Xterm_Options	= substitute( g:Xterm_Options, regex, "-geometry ".answer , "" )
 endfunction    " ----------  end of function C_XtermSize ----------
-"
-"------------------------------------------------------------------------------
-"  C_ExeToRun : choose executable to run       {{{1
-"------------------------------------------------------------------------------
-function! C_ExeToRun ()
-	let	s:C_ExecutableToRun = C_Input( 'executable to run [tab compl.]: ', '', 'file' )
+
+"-------------------------------------------------------------------------------
+" s:ExeToRun : Choose an executable to run.   {{{1
+"-------------------------------------------------------------------------------
+function! s:ExeToRun ()
+	let s:C_ExecutableToRun = s:UserInput( 'executable to run [tab compl.]: ', '', 'file' )
 	if s:C_ExecutableToRun !~ "^\s*$"
 		if s:MSWIN
 			let s:C_ExecutableToRun = substitute(s:C_ExecutableToRun, '\\ ', ' ', 'g' )
 		endif
-		let	s:C_ExecutableToRun = escape( getcwd().'/'.s:C_ExecutableToRun, s:C_FilenameEscChar )
+		let s:C_ExecutableToRun = escape( fnamemodify( s:C_ExecutableToRun, ':p' ), s:C_FilenameEscChar )
 	endif
-endfunction    " ----------  end of function C_ExeToRun ----------
-"
-"
-"===  FUNCTION  ================================================================
-"          NAME:  C_Debugger     {{{1
-"   DESCRIPTION:  start debugger
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! C_Debugger ()
-  "
-  silent exe  ":update"
+endfunction    " ----------  end of function s:ExeToRun ----------
+
+"-------------------------------------------------------------------------------
+" s:Debugger : Start a debugger   {{{1
+"-------------------------------------------------------------------------------
+function! s:Debugger ()
+
+	silent exe 'update'
 	if s:C_ExecutableToRun == ''
-		call C_ExeToRun()
+		call s:ExeToRun()
 	endif
-  let l:arguments 	= exists("b:C_CmdLineArgs") ? " ".b:C_CmdLineArgs : ""
-  "
+	let l:arguments = exists("b:C_CmdLineArgs") ? " ".b:C_CmdLineArgs : ""
+
   if  s:MSWIN
     let l:arguments = substitute( l:arguments, '^\s\+', ' ', '' )
     let l:arguments = substitute( l:arguments, '\s\+', "\" \"", 'g')
@@ -1927,8 +1927,8 @@ function! C_Debugger ()
   endif
   "
 	redraw!
-endfunction   " ---------- end of function  C_Debugger  ----------
-"
+endfunction   " ---------- end of function s:Debugger ----------
+
 "------------------------------------------------------------------------------
 "  C_SplintArguments : splint command line arguments       {{{1
 "------------------------------------------------------------------------------
@@ -2175,10 +2175,10 @@ function! C_HlMessage ( ... )
 	endif
 	echohl None
 endfunction    " ----------  end of function C_HlMessage ----------
-"
-"------------------------------------------------------------------------------
-"  C_Settings : settings     {{{1
-"------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" C_Settings : Print the settings.   {{{1
+"-------------------------------------------------------------------------------
 function! C_Settings ( verbose )
 	"
 	if     s:MSWIN | let sys_name = 'Windows'
@@ -2250,6 +2250,7 @@ function! C_Settings ( verbose )
 	let txt = txt.'          libraries (C++) :  "'.g:C_CplusLibs."\"\n"
 	let txt = txt.'         C / C++ compiler :  "'.g:C_CCompiler.'" / "'.g:C_CplusCompiler."\"\n"
 	let txt = txt.'                 debugger :  "'.g:C_Debugger."\"\n"
+	let txt = txt.'             exec. to run :  "'.s:C_ExecutableToRun."\"\n"
 	" ----- output ------------------------------
 	if a:verbose >= 1
 		let txt = txt."\n"
@@ -2896,12 +2897,12 @@ function! s:CreateAdditionalMaps ()
 	inoremap <buffer>  <silent>  <LocalLeader>rl    <C-C>:call C_Link()<CR>:call C_HlMessage()<CR>
 	noremap  <buffer>  <silent>  <LocalLeader>rr         :call C_Run()<CR>
 	inoremap <buffer>  <silent>  <LocalLeader>rr    <C-C>:call C_Run()<CR>
-	noremap  <buffer>  <silent>  <LocalLeader>re         :call C_ExeToRun()<CR>
-	inoremap <buffer>  <silent>  <LocalLeader>re    <C-C>:call C_ExeToRun()<CR>
+	noremap  <buffer>  <silent>  <LocalLeader>re         :call <SID>ExeToRun()<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>re    <C-C>:call <SID>ExeToRun()<CR>
 	noremap  <buffer>            <LocalLeader>ra         :CCmdlineArgs<Space>
 	inoremap <buffer>            <LocalLeader>ra    <C-C>:CCmdlineArgs<Space>
-	noremap  <buffer>  <silent>  <LocalLeader>rd         :call C_Debugger()<CR>
-	inoremap <buffer>  <silent>  <LocalLeader>rd    <C-C>:call C_Debugger()<CR>
+	noremap  <buffer>  <silent>  <LocalLeader>rd         :call <SID>Debugger()<CR>
+	inoremap <buffer>  <silent>  <LocalLeader>rd    <C-C>:call <SID>Debugger()<CR>
 	noremap  <buffer>  <silent>  <LocalLeader>rp         :call C_SplintCheck()<CR>:call C_HlMessage()<CR>
 	inoremap <buffer>  <silent>  <LocalLeader>rp    <C-C>:call C_SplintCheck()<CR>:call C_HlMessage()<CR>
 	noremap  <buffer>  <silent>  <LocalLeader>rpa        :call C_SplintArguments()<CR>

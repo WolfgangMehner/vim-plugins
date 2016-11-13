@@ -1,4 +1,4 @@
-README for c.vim (Version 6.2.1) / October 26 2016
+README for c.vim (Version 6.2.1pre) / November 13 2016
 ================================================================================
 
   *  INSTALLATION
@@ -204,6 +204,7 @@ RELEASE NOTES
 
 RELEASE NOTES FOR VERSION 6.2.1
 ----------------------------------------------------------------------
+- Fix a problem with the path when setting 'Run->executable to run'.
 - New and reworked templates. Change statement templates.
 
 Note: This reworks most of the statement templates. The loop and if templates
