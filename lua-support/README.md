@@ -18,7 +18,7 @@ Please read the documentation.
 
 This plug-in can be used with Vim version 7.x.
 
-Lua is: Copyright 1994-2015 Lua.org, PUC-Rio.
+Lua is: Copyright 1994-2016 Lua.org, PUC-Rio.
 
 
 --------------------------------------------------------------------------------
@@ -200,6 +200,7 @@ RELEASE NOTES
 
 RELEASE NOTES FOR VERSION 1.1pre
 ----------------------------------------------------------------------
+- Update Lua's reference manual to 5.3.3.
 - Minor changes.
 
 

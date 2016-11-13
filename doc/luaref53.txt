@@ -1,9 +1,9 @@
-*luaref53.txt*             Lua 5.3 Reference Manual                Nov 25 2015
+*luaref53.txt*             Lua 5.3 Reference Manual                May 30 2016
 
-Lua 5.3 Reference Manual                                     *lua53* *luaref53*
+Lua 5.3.3 Reference Manual                                   *lua53* *luaref53*
 
 by Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes
-Copyright © 2015 Lua.org, PUC-Rio. Freely available under the terms of
+Copyright © 2015 - 2016 Lua.org, PUC-Rio. Freely available under the terms of
 the Lua license (see http://www.lua.org/license.html).
 
 Formated for Vim help by
@@ -84,8 +84,8 @@ Formated for Vim help by
 Lua 5.3 Reference Manual
 
 by Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes
-Copyright © 2015 Lua.org, PUC-Rio. Freely available under the terms of the
-Lua license (see http://www.lua.org/license.html).
+Copyright © 2015-2016 Lua.org, PUC-Rio. Freely available under the terms of
+the Lua license (see http://www.lua.org/license.html).
 
 ------------------------------------------------------------------------------
 
@@ -95,22 +95,29 @@ contents |lua53-contents| . index |TODO-link| . other versions |lua51| |lua52| |
 1.  Introduction                                                  *lua53-sec1*
 ==============================================================================
 
-Lua is an extension programming language designed to support general
-procedural programming with data description facilities. Lua also offers good
-support for object-oriented programming, functional programming, and
-data-driven programming. Lua is intended to be used as a powerful,
-lightweight, embeddable scripting language for any program that needs one. Lua
-is implemented as a library, written in clean C, the common subset of Standard
-C and C++.
-As an extension language, Lua has no notion of a "main" program: it only works
+Lua is a powerful, efficient, lightweight, embeddable scripting language. It
+supports procedural programming, object-oriented programming, functional
+programming, data-driven programming, and data description.
+Lua combines simple procedural syntax with powerful data description
+constructs based on associative arrays and extensible semantics. Lua is
+dynamically typed, runs by interpreting bytecode with a register-based virtual
+machine, and has automatic memory management with incremental garbage
+collection, making it ideal for configuration, scripting, and rapid
+prototyping.
+Lua is implemented as a library, written in clean C, the common subset of
+Standard C and C++. The Lua distribution includes a host program called lua,
+which uses the Lua library to offer a complete, standalone Lua interpreter,
+for interactive or batch use. Lua is intended to be used both as a powerful,
+lightweight, embeddable scripting language for any program that needs one, and
+as a powerful but lightweight and efficient stand-alone language.
+As an extension language, Lua has no notion of a "main" program: it works
 embedded in a host client, called the embedding program or simply the host.
-The host program can invoke functions to execute a piece of Lua code, can
-write and read Lua variables, and can register C functions to be called by Lua
-code. Through the use of C functions, Lua can be augmented to cope with a wide
-range of different domains, thus creating customized programming languages
-sharing a syntactical framework. The Lua distribution includes a sample host
-program called lua, which uses the Lua library to offer a complete, standalone
-Lua interpreter, for interactive or batch use.
+(Frequently, this host is the stand-alone lua program.) The host program can
+invoke functions to execute a piece of Lua code, can write and read Lua
+variables, and can register C functions to be called by Lua code. Through the
+use of C functions, Lua can be augmented to cope with a wide range of
+different domains, thus creating customized programming languages sharing a
+syntactical framework.
 Lua is free software, and is provided as usual with no guarantees, as stated
 in its license. The implementation described in this manual is available at
 Lua's official web site, www.lua.org.
@@ -254,8 +261,8 @@ value as the error object. It is up to the Lua program or its host to handle
 such error objects.
 When you use |lua53-xpcall| or |lua53-lua_pcall|, you may give a message
 handler to be called in case of errors. This function is called with the
-original error message and returns a new error message. It is called before
-the error unwinds the stack, so that it can gather more information about the
+original error object and returns a new error object. It is called before the
+error unwinds the stack, so that it can gather more information about the
 error, for instance by inspecting the stack and creating a stack traceback.
 This message handler is still protected by the protected call; so, an error
 inside the message handler will call the message handler again. If this loop
@@ -272,11 +279,17 @@ a value by setting specific fields in its metatable. For instance, when a
 non-numeric value is the operand of an addition, Lua checks for a function in
 the field "__add" of the value's metatable. If it finds one, Lua calls this
 function to perform the addition.
-The keys in a metatable are derived from the event names; the corresponding
-values are called metamethods. In the previous example, the event is "add" and
-the metamethod is the function that performs the addition.
+The key for each event in a metatable is a string with the event name prefixed
+by two underscores; the corresponding values are called metamethods. In the
+previous example, the key is "__add" and the metamethod is the function that
+performs the addition.
 You can query the metatable of any value using the |lua53-getmetatable|
-function.
+function. Lua queries metamethods in metatables using a raw access (see
+|lua53-rawget|). So, to retrieve the metamethod for event ev in object o, Lua
+does the equivalent to the following code:
+>
+     rawget(getmetatable(o) or {}, "__ev")
+<
 You can replace the metatable of tables using the |lua53-setmetatable|
 function. You cannot change the metatable of other types from Lua code (except
 by using the debug library (|lua53-sec6.10|)); you should use the C API for
@@ -290,80 +303,80 @@ A metatable controls how an object behaves in arithmetic operations, bitwise
 operations, order comparisons, concatenation, length operation, calls, and
 indexing. A metatable also can define a function to be called when a userdata
 or a table is garbage collected (|lua53-sec2.5|).
-A detailed list of events controlled by metatables is given next. Each
-operation is identified by its corresponding event name. The key for each
-event is a string with its name prefixed by two underscores, '__'; for
-instance, the key for operation "add" is the string "__add". Note that queries
-for metamethods are always raw; the access to a metamethod does not invoke
-other metamethods.
-For the unary operators (negation, length, and bitwise not), the metamethod is
+For the unary operators (negation, length, and bitwise NOT), the metamethod is
 computed and called with a dummy second operand, equal to the first one. This
 extra operand is only to simplify Lua's internals (by making these operators
 behave like a binary operation) and may be removed in future versions. (For
 most uses this extra operand is irrelevant.)
-- "add": the + operation. If any operand for an addition is not a number (nor
-  a string coercible to a number), Lua will try to call a metamethod. First,
-  Lua will check the first operand (even if it is valid). If that operand does
-  not define a metamethod for the "__add" event, then Lua will check the
-  second operand. If Lua can find a metamethod, it calls the metamethod with
-  the two operands as arguments, and the result of the call (adjusted to one
-  value) is the result of the operation. Otherwise, it raises an error.
-- "sub": the - operation. Behavior similar to the "add" operation.
-- "mul": the * operation. Behavior similar to the "add" operation.
-- "div": the / operation. Behavior similar to the "add" operation.
-- "mod": the % operation. Behavior similar to the "add" operation.
-- "pow": the ^ (exponentiation) operation. Behavior similar to the "add"
+A detailed list of events controlled by metatables is given next. Each
+operation is identified by its corresponding key.
+- __add: the addition (+) operation. If any operand for an addition is not a
+  number (nor a string coercible to a number), Lua will try to call a
+  metamethod. First, Lua will check the first operand (even if it is valid).
+  If that operand does not define a metamethod for __add, then Lua will check
+  the second operand. If Lua can find a metamethod, it calls the metamethod
+  with the two operands as arguments, and the result of the call (adjusted to
+  one value) is the result of the operation. Otherwise, it raises an error.
+- __sub: the subtraction (-) operation. Behavior similar to the addition
   operation.
-- "unm": the - (unary minus) operation. Behavior similar to the "add"
+- __mul: the multiplication (*) operation. Behavior similar to the addition
   operation.
-- "idiv": the // (floor division) operation. Behavior similar to the "add"
+- __div: the division (/) operation. Behavior similar to the addition
   operation.
-- "band": the & (bitwise and) operation. Behavior similar to the "add"
+- __mod: the modulo (%) operation. Behavior similar to the addition operation.
+- __pow: the exponentiation (^) operation. Behavior similar to the addition
+  operation.
+- __unm: the negation (unary -) operation. Behavior similar to the addition
+  operation.
+- __idiv: the floor division (//) operation. Behavior similar to the addition
+  operation.
+- __band: the bitwise AND (&) operation. Behavior similar to the addition
   operation, except that Lua will try a metamethod if any operand is neither
   an integer nor a value coercible to an integer (see |lua53-sec3.4.3|).
-- "bor": the | (bitwise or) operation. Behavior similar to the "band"
+- __bor: the bitwise OR (|) operation. Behavior similar to the bitwise AND
   operation.
-- "bxor": the ~ (bitwise exclusive or) operation. Behavior similar to the
-  "band" operation.
-- "bnot": the ~ (bitwise unary not) operation. Behavior similar to the "band"
-  operation.
-- "shl": the << (bitwise left shift) operation. Behavior similar to the "band"
-  operation.
-- "shr": the >> (bitwise right shift) operation. Behavior similar to the
-  "band" operation.
-- "concat": the .. (concatenation) operation. Behavior similar to the "add"
+- __bxor: the bitwise exclusive OR (binary ~) operation. Behavior similar to
+  the bitwise AND operation.
+- __bnot: the bitwise NOT (unary ~) operation. Behavior similar to the bitwise
+  AND operation.
+- __shl: the bitwise left shift (<<) operation. Behavior similar to the
+  bitwise AND operation.
+- __shr: the bitwise right shift (>>) operation. Behavior similar to the
+  bitwise AND operation.
+- __concat: the concatenation (..) operation. Behavior similar to the addition
   operation, except that Lua will try a metamethod if any operand is neither a
   string nor a number (which is always coercible to a string).
-- "len": the # (length) operation. If the object is not a string, Lua will try
+- __len: the length (#) operation. If the object is not a string, Lua will try
   its metamethod. If there is a metamethod, Lua calls it with the object as
   argument, and the result of the call (always adjusted to one value) is the
   result of the operation. If there is no metamethod but the object is a
   table, then Lua uses the table length operation (see |lua53-sec3.4.7|).
   Otherwise, Lua raises an error.
-- "eq": the == (equal) operation. Behavior similar to the "add" operation,
+- __eq: the equal (==) operation. Behavior similar to the addition operation,
   except that Lua will try a metamethod only when the values being compared
   are either both tables or both full userdata and they are not primitively
   equal. The result of the call is always converted to a boolean.
-- "lt": the < (less than) operation. Behavior similar to the "add" operation,
-  except that Lua will try a metamethod only when the values being compared
-  are neither both numbers nor both strings. The result of the call is always
-  converted to a boolean.
-- "le": the <= (less equal) operation. Unlike other operations, the less-equal
-  operation can use two different events. First, Lua looks for the "__le"
-  metamethod in both operands, like in the "lt" operation. If it cannot find
-  such a metamethod, then it will try the "__lt" event, assuming that a <= b
-  is equivalent to not (b < a). As with the other comparison operators, the
-  result is always a boolean. (This use of the "__lt" event can be removed in
-  future versions; it is also slower than a real "__le" metamethod.)
-- "index": The indexing access table[key]. This event happens when table is
+- __lt: the less than (<) operation. Behavior similar to the addition
+  operation, except that Lua will try a metamethod only when the values being
+  compared are neither both numbers nor both strings. The result of the call
+  is always converted to a boolean.
+- __le: the less equal (<=) operation. Unlike other operations, the less-equal
+  operation can use two different events. First, Lua looks for the __le
+  metamethod in both operands, like in the less than operation. If it cannot
+  find such a metamethod, then it will try the __lt metamethod, assuming that
+  a <= b is equivalent to not (b < a). As with the other comparison operators,
+  the result is always a boolean. (This use of the __lt event can be removed
+  in future versions; it is also slower than a real __le metamethod.)
+- __index: The indexing access table[key]. This event happens when table is
   not a table or when key is not present in table. The metamethod is looked up
   in table.
   Despite the name, the metamethod for this event can be either a function or
-  a table. If it is a function, it is called with table and key as arguments.
-  If it is a table, the final result is the result of indexing this table with
-  key. (This indexing is regular, not raw, and therefore can trigger another
-  metamethod.)
-- "newindex": The indexing assignment table[key] = value. Like the index
+  a table. If it is a function, it is called with table and key as arguments,
+  and the result of the call (adjusted to one value) is the result of the
+  operation. If it is a table, the final result is the result of indexing this
+  table with key. (This indexing is regular, not raw, and therefore can
+  trigger another metamethod.)
+- __newindex: The indexing assignment table[key] = value. Like the index
   event, this event happens when table is not a table or when key is not
   present in table. The metamethod is looked up in table.
   Like with indexing, the metamethod for this event can be either a function
@@ -371,16 +384,22 @@ most uses this extra operand is irrelevant.)
   arguments. If it is a table, Lua does an indexing assignment to this table
   with the same key and value. (This assignment is regular, not raw, and
   therefore can trigger another metamethod.)
-  Whenever there is a "newindex" metamethod, Lua does not perform the
+  Whenever there is a __newindex metamethod, Lua does not perform the
   primitive assignment. (If necessary, the metamethod itself can call
   |lua53-rawset| to do the assignment.)
-- "call": The call operation func(args). This event happens when Lua tries to
+- __call: The call operation func(args). This event happens when Lua tries to
   call a non-function value (that is, func is not a function). The metamethod
   is looked up in func. If present, the metamethod is called with func as its
-  first argument, followed by the arguments of the original call (args).
+  first argument, followed by the arguments of the original call (args). All
+  results of the call are the result of the operation. (This is the only
+  metamethod that allows multiple results.)
 It is a good practice to add all needed metamethods to a table before setting
-it as a metatable of some object. In particular, the "__gc" metamethod works
+it as a metatable of some object. In particular, the __gc metamethod works
 only when this order is followed (see |lua53-sec2.5.1|).
+Because metatables are regular tables, they can contain arbitrary fields, not
+only the event names defined above. Some functions in the standard library
+(e.g., |lua53-tostring|) use other fields in metatables for their own
+purposes.
 
 ------------------------------------------------------------------------------
 2.5  Garbage Collection                                         *lua53-sec2.5*
@@ -517,7 +536,7 @@ function returns (explicitly or implicitly, after the last instruction); and
 abnormally, if there is an unprotected error. In case of normal termination,
 |lua53-coroutine.resume| returns true, plus any values returned by the
 coroutine main function. In case of errors, |lua53-coroutine.resume| returns
-false plus an error message.
+false plus an error object.
 A coroutine yields by calling |lua53-coroutine.yield|. When a coroutine
 yields, the corresponding |lua53-coroutine.resume| returns immediately, even
 if the yield happens inside nested function calls (that is, not in the main
@@ -649,7 +668,7 @@ Any byte in a literal string not explicitly affected by the previous rules
 represents itself. However, Lua opens files for parsing in text mode, and the
 system file functions may have problems with some control characters. So, it
 is safer to represent non-text data as a quoted literal with explicit escape
-sequences for non-text characters.
+sequences for the non-text characters.
 For convenience, when the opening long bracket is immediately followed by a
 newline, the newline is not included in the string. As an example, in a system
 using ASCII (in which 'a' is coded as 97, newline is coded as 10, and '1' is
@@ -668,9 +687,9 @@ A numeric constant (or numeral) can be written with an optional fractional
 part and an optional decimal exponent, marked by a letter 'e' or 'E'. Lua also
 accepts hexadecimal constants, which start with 0x or 0X. Hexadecimal
 constants also accept an optional fractional part plus an optional binary
-exponent, marked by a letter 'p' or 'P'. A numeric constant with a fractional
-dot or an exponent denotes a float; otherwise it denotes an integer. Examples
-of valid integer constants are
+exponent, marked by a letter 'p' or 'P'. A numeric constant with a radix point
+or an exponent denotes a float; otherwise, if its value fits in an integer, it
+denotes an integer. Examples of valid integer constants are
 >
      3   345   0xff   0xBEBADA
 <
@@ -1013,7 +1032,7 @@ Binary operators comprise arithmetic operators (see |lua53-sec3.4.1|), bitwise
 operators (see |lua53-sec3.4.2|), relational operators (see |lua53-sec3.4.4|),
 logical operators (see |lua53-sec3.4.5|), and the concatenation operator (see
 |lua53-sec3.4.6|). Unary operators comprise the unary minus (see
-|lua53-sec3.4.1|), the unary bitwise not (see |lua53-sec3.4.2|), the unary
+|lua53-sec3.4.1|), the unary bitwise NOT (see |lua53-sec3.4.2|), the unary
 logical not (see |lua53-sec3.4.5|), and the unary length operator (see
 |lua53-sec3.4.7|).
 Both function calls and vararg expressions can result in multiple values. If a
@@ -1085,12 +1104,12 @@ mathematical result.)
 ------------------------------------------------------------------------------
 
 Lua supports the following bitwise operators:
-- &:bitwise and
-- &#124;:bitwise or
-- ~:bitwise exclusive or
+- &:bitwise AND
+- |:bitwise OR
+- ~:bitwise exclusive OR
 - >>:right shift
 - <<:left shift
-- ~:unary bitwise not
+- ~:unary bitwise NOT
 All bitwise operations convert its operands to integers (see
 |lua53-sec3.4.3|), operate on all bits of those integers, and result in an
 integer.
@@ -1125,6 +1144,9 @@ Lua lexer. (The string may have also leading and trailing spaces and a sign.)
 Then, the resulting number (float or integer) is converted to the type (float
 or integer) required by the context (e.g., the operation that forced the
 conversion).
+All conversions from strings to numbers accept both a dot and the current
+locale mark as the radix character. (The Lua lexer, however, accepts only a
+dot.)
 The conversion from numbers to strings uses a non-specified human-readable
 format. For complete control over how numbers are converted to strings, use
 the format function from the string library (see |lua53-string.format|).
@@ -1619,7 +1641,7 @@ function (see |lua53-lua_atpanic|) and then calls abort, thus exiting the host
 application. Your panic function can avoid this exit by never returning (e.g.,
 doing a long jump to your own recovery point outside Lua).
 The panic function runs as if it were a message handler (see |lua53-sec2.3|);
-in particular, the error message is at the top of the stack. However, there is
+in particular, the error object is at the top of the stack. However, there is
 no guarantee about stack space. To push anything on the stack, the panic
 function must first check the available space (see |lua53-sec4.2|).
 Most functions in the API can raise an error, for instance due to a memory
@@ -1731,8 +1753,10 @@ on the situation; an interrogation mark '?' means that we cannot know how many
 elements the function pops/pushes by looking only at its arguments (e.g., they
 may depend on what is on the stack). The third field, x, tells whether the
 function may raise errors: '-' means the function never raises any error; 'm'
-means the function may raise memory errors; 'e' means the function may raise
-errors; 'v' means the function may raise an error on purpose.
+means the function may raise out-of-memory errors and errors running a __gc
+metamethod; 'e' means the function may raise any errors (it can run arbitrary
+Lua code, either directly or through metamethods); 'v' means the function may
+raise an error on purpose.
 
 ------------------------------------------------------------------------------
 
@@ -1829,10 +1853,10 @@ The value of op must be one of the following constants:
 - LUA_OPMOD: performs modulo (%)
 - LUA_OPPOW: performs exponentiation (^)
 - LUA_OPUNM: performs mathematical negation (unary -)
-- LUA_OPBNOT: performs bitwise negation (~)
-- LUA_OPBAND: performs bitwise and (&)
-- LUA_OPBOR: performs bitwise or (|)
-- LUA_OPBXOR: performs bitwise exclusive or (~)
+- LUA_OPBNOT: performs bitwise NOT (~)
+- LUA_OPBAND: performs bitwise AND (&)
+- LUA_OPBOR: performs bitwise OR (|)
+- LUA_OPBXOR: performs bitwise exclusive OR (~)
 - LUA_OPSHL: performs left shift (<<)
 - LUA_OPSHR: performs right shift (>>)
 
@@ -2072,7 +2096,7 @@ object. This function does a long jump, and therefore never returns (see
 
                                                                 *lua53-lua_gc*
 lua_gc ~
-                                                                   [-0, +0, e]
+                                                                   [-0, +0, m]
 >
     int lua_gc (lua_State *L, int what, int data);
 <
@@ -2437,7 +2461,7 @@ an error message.
 The return values of lua_load are:
 - LUA_OK (|lua53-LUA_OK|): no errors;
 - LUA_ERRSYNTAX: syntax error during precompilation;
-- LUA_ERRMEM (|lua53-LUA_ERRMEM|): memory allocation error;
+- LUA_ERRMEM (|lua53-LUA_ERRMEM|): memory allocation (out-of-memory) error;
 - LUA_ERRGCMM (|lua53-LUA_ERRGCMM|): error while running a __gc metamethod.
   (This error has no relation with the chunk being loaded. It is generated by
   the garbage collector.)
@@ -2582,16 +2606,16 @@ Calls a function in protected mode.
 Both nargs and nresults have the same meaning as in |lua53-lua_call|. If there
 are no errors during the call, |lua53-lua_pcall| behaves exactly like
 |lua53-lua_call|. However, if there is any error, |lua53-lua_pcall| catches
-it, pushes a single value on the stack (the error message), and returns an
+it, pushes a single value on the stack (the error object), and returns an
 error code. Like |lua53-lua_call|, |lua53-lua_pcall| always removes the
 function and its arguments from the stack.
-If msgh is 0, then the error message returned on the stack is exactly the
-original error message. Otherwise, msgh is the stack index of a message
+If msgh is 0, then the error object returned on the stack is exactly the
+original error object. Otherwise, msgh is the stack index of a message
 handler. (This index cannot be a pseudo-index.) In case of runtime errors,
-this function will be called with the error message and its return value will
-be the message returned on the stack by |lua53-lua_pcall|.
+this function will be called with the error object and its return value will
+be the object returned on the stack by |lua53-lua_pcall|.
 Typically, the message handler is used to add more debug information to the
-error message, such as a stack traceback. Such information cannot be gathered
+error object, such as a stack traceback. Such information cannot be gathered
 after the return of |lua53-lua_pcall|, since by then the stack has unwound.
 The |lua53-lua_pcall| function returns one of the following constants (defined
 in lua.h):
@@ -2678,7 +2702,7 @@ its parameters and return its results (see |lua53-lua_CFunction|).
 
                                                        *lua53-lua_pushfstring*
 lua_pushfstring ~
-                                                                   [-0, +1, m]
+                                                                   [-0, +1, e]
 >
     const char *lua_pushfstring (lua_State *L, const char *fmt, ...);
 <
@@ -2695,6 +2719,8 @@ differences:
   |lua53-lua_Integer|), '%p' (inserts a pointer as a hexadecimal numeral),
   '%d' (inserts an int), '%c' (inserts an int as a one-byte character), and
   '%U' (inserts a long int as a UTF-8 byte sequence).
+Unlike other push functions, this function checks for the stack space it
+needs, including the slot for its result.
 
 ------------------------------------------------------------------------------
 
@@ -2832,8 +2858,8 @@ lua_rawequal ~
     int lua_rawequal (lua_State *L, int index1, int index2);
 <
 Returns 1 if the two values in indices index1 and index2 are primitively equal
-(that is, without calling metamethods). Otherwise returns 0. Also returns 0 if
-any of the indices are not valid.
+(that is, without calling the __eq metamethod). Otherwise returns 0. Also
+returns 0 if any of the indices are not valid.
 
 ------------------------------------------------------------------------------
 
@@ -2855,7 +2881,7 @@ lua_rawgeti ~
     int lua_rawgeti (lua_State *L, int index, lua_Integer n);
 <
 Pushes onto the stack the value t[n], where t is the table at the given index.
-The access is raw; that is, it does not invoke metamethods.
+The access is raw, that is, it does not invoke the __index metamethod.
 Returns the type of the pushed value.
 
 ------------------------------------------------------------------------------
@@ -2868,7 +2894,7 @@ lua_rawgetp ~
 <
 Pushes onto the stack the value t[k], where t is the table at the given index
 and k is the pointer p represented as a light userdata. The access is raw;
-that is, it does not invoke metamethods.
+that is, it does not invoke the __index metamethod.
 Returns the type of the pushed value.
 
 ------------------------------------------------------------------------------
@@ -2905,8 +2931,8 @@ lua_rawseti ~
 <
 Does the equivalent of t[i] = v, where t is the table at the given index and v
 is the value at the top of the stack.
-This function pops the value from the stack. The assignment is raw; that is,
-it does not invoke metamethods.
+This function pops the value from the stack. The assignment is raw, that is,
+it does not invoke the __newindex metamethod.
 
 ------------------------------------------------------------------------------
 
@@ -2918,8 +2944,8 @@ lua_rawsetp ~
 <
 Does the equivalent of t[p] = v, where t is the table at the given index, p is
 encoded as a light userdata, and v is the value at the top of the stack.
-This function pops the value from the stack. The assignment is raw; that is,
-it does not invoke metamethods.
+This function pops the value from the stack. The assignment is raw, that is,
+it does not invoke __newindex metamethod.
 
 ------------------------------------------------------------------------------
 
@@ -2995,7 +3021,7 @@ execution. When it returns, the stack contains all values passed to
 yields, LUA_OK (|lua53-LUA_OK|) if the coroutine finishes its execution
 without errors, or an error code in case of errors (see |lua53-lua_pcall|).
 In case of errors, the stack is not unwound, so you can use the debug API over
-it. The error message is on the top of the stack.
+it. The error object is on the top of the stack.
 To resume a coroutine, you remove any results from the last |lua53-lua_yield|,
 put on its stack only the values to be passed as results from yield, and then
 call |lua53-lua_resume|.
@@ -3361,14 +3387,14 @@ function (see |lua53-sec4.4|).
 
                                                            *lua53-lua_version*
 lua_version ~
-                                                                   [-0, +0, v]
+                                                                   [-0, +0, -]
 >
     const lua_Number *lua_version (lua_State *L);
 <
-Returns the address of the version number stored in the Lua core. When called
-with a valid |lua53-lua_State|, returns the address of the version used to
-create that state. When called with NULL, returns the address of the version
-running the call.
+Returns the address of the version number (a C static variable) stored in the
+Lua core. When called with a valid |lua53-lua_State|, returns the address of
+the version used to create that state. When called with NULL, returns the
+address of the version running the call.
 
 ------------------------------------------------------------------------------
 
@@ -3435,12 +3461,12 @@ passed to |lua53-lua_resume|. Moreover, the continuation function receives the
 value ctx that was passed to |lua53-lua_yieldk|.
 Usually, this function does not return; when the coroutine eventually resumes,
 it continues executing the continuation function. However, there is one
-special case, which is when this function is called from inside a line hook
-(see |lua53-sec4.9|). In that case, lua_yieldk should be called with no
-continuation (probably in the form of |lua53-lua_yield|), and the hook should
-return immediately after the call. Lua will yield and, when the coroutine
-resumes again, it will continue the normal execution of the (Lua) function
-that triggered the hook.
+special case, which is when this function is called from inside a line or a
+count hook (see |lua53-sec4.9|). In that case, lua_yieldk should be called
+with no continuation (probably in the form of |lua53-lua_yield|) and no
+results, and the hook should return immediately after the call. Lua will yield
+and, when the coroutine resumes again, it will continue the normal execution
+of the (Lua) function that triggered the hook.
 This function can raise an error if it is called from a thread with a pending
 C call with no continuation function, or it is called from a thread that is
 not running inside a resume (e.g., the main thread).
@@ -3683,7 +3709,7 @@ lua_sethook ~
 <
 Sets the debugging hook function.
 Argument f is the hook function. mask specifies on which events the hook will
-be called: it is formed by a bitwise or of the constants LUA_MASKCALL,
+be called: it is formed by a bitwise OR of the constants LUA_MASKCALL,
 LUA_MASKRET, LUA_MASKLINE, and LUA_MASKCOUNT. The count argument is only
 meaningful when the mask includes LUA_MASKCOUNT. For each event, the hook is
 called as explained below:
@@ -4061,7 +4087,7 @@ Checks whether the function argument arg is a userdata of the type tname (see
 
                                                      *lua53-luaL_checkversion*
 luaL_checkversion ~
-                                                                   [-0, +0, -]
+                                                                   [-0, +0, v]
 >
     void luaL_checkversion (lua_State *L);
 <
@@ -4235,7 +4261,7 @@ in function |lua53-lua_load|.
 
                                                          *lua53-luaL_loadfile*
 luaL_loadfile ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     int luaL_loadfile (lua_State *L, const char *filename);
 <
@@ -4246,7 +4272,7 @@ Equivalent to |lua53-luaL_loadfilex| with mode equal to NULL.
                                                            *lua53-LUA_ERRFILE*
                                                         *lua53-luaL_loadfilex*
 luaL_loadfilex ~
-                                                                   [-0, +1, e]
+                                                                   [-0, +1, m]
 >
     int luaL_loadfilex (lua_State *L, const char *filename,
                                                 const char *mode);
@@ -4341,6 +4367,23 @@ luaL_openlibs ~
     void luaL_openlibs (lua_State *L);
 <
 Opens all standard Lua libraries into the given state.
+
+------------------------------------------------------------------------------
+
+                                                              *lua53-luaL_opt*
+luaL_opt ~
+                                                                   [-0, +0, e]
+>
+    T luaL_opt (L, func, arg, dflt);
+<
+This macro is defined as follows:
+>
+     (lua_isnoneornil(L,(arg)) ? (dflt) : func(L,(arg)))
+<
+In words, if the argument arg is nil or absent, the macro results in the
+default dflt. Otherwise, it results in the result of calling func with the
+state L and the argument index arg as parameters. Note that it evaluates the
+expression dflt only if needed.
 
 ------------------------------------------------------------------------------
 
@@ -4567,7 +4610,7 @@ Converts any Lua value at the given index to a C string in a reasonable
 format. The resulting string is pushed onto the stack and also returned by the
 function. If len is not NULL, the function also sets *len with the string
 length.
-If the value has a metatable with a "__tostring" field, then luaL_tolstring
+If the value has a metatable with a __tostring field, then luaL_tolstring
 calls the corresponding metamethod with the value as argument, and uses the
 result of the call as its result.
 
@@ -4754,7 +4797,7 @@ does not affect any environment, nor vice versa.
 getmetatable (object) ~
 
 If object does not have a metatable, returns nil. Otherwise, if the object's
-metatable has a "__metatable" field, returns the associated value. Otherwise,
+metatable has a __metatable field, returns the associated value. Otherwise,
 returns the metatable of the given object.
 
 ------------------------------------------------------------------------------
@@ -4870,16 +4913,16 @@ instance for debugging. For complete control over the output, use
                                                               *lua53-rawequal*
 rawequal (v1, v2) ~
 
-Checks whether v1 is equal to v2, without invoking any metamethod. Returns a
-boolean.
+Checks whether v1 is equal to v2, without invoking the __eq metamethod.
+Returns a boolean.
 
 ------------------------------------------------------------------------------
 
                                                                 *lua53-rawget*
 rawget (table, index) ~
 
-Gets the real value of table[index], without invoking any metamethod. table
-must be a table; index may be any value.
+Gets the real value of table[index], without invoking the __index metamethod.
+table must be a table; index may be any value.
 
 ------------------------------------------------------------------------------
 
@@ -4887,16 +4930,16 @@ must be a table; index may be any value.
 rawlen (v) ~
 
 Returns the length of the object v, which must be a table or a string, without
-invoking any metamethod. Returns an integer.
+invoking the __len metamethod. Returns an integer.
 
 ------------------------------------------------------------------------------
 
                                                                 *lua53-rawset*
 rawset (table, index, value) ~
 
-Sets the real value of table[index] to value, without invoking any metamethod.
-table must be a table, index any value different from nil and NaN, and value
-any Lua value.
+Sets the real value of table[index] to value, without invoking the __newindex
+metamethod. table must be a table, index any value different from nil and NaN,
+and value any Lua value.
 This function returns table.
 
 ------------------------------------------------------------------------------
@@ -4917,7 +4960,7 @@ setmetatable (table, metatable) ~
 Sets the metatable for the given table. (To change the metatable of other
 types from Lua code, you must use the debug library (|lua53-sec6.10|).) If
 metatable is nil, removes the metatable of the given table. If the original
-metatable has a "__metatable" field, raises an error.
+metatable has a __metatable field, raises an error.
 This function returns table.
 
 ------------------------------------------------------------------------------
@@ -4945,7 +4988,7 @@ tostring (v) ~
 Receives a value of any type and converts it to a string in a human-readable
 format. (For complete control of how numbers are converted, use
 |lua53-string.format|.)
-If the metatable of v has a "__tostring" field, then tostring calls the
+If the metatable of v has a __tostring field, then tostring calls the
 corresponding value with v as argument, and uses the result of the call as its
 result.
 
@@ -5314,9 +5357,10 @@ Returns a formatted version of its variable number of arguments following the
 description given in its first argument (which must be a string). The format
 string follows the same rules as the ISO C function sprintf. The only
 differences are that the options/modifiers *, h, L, l, n, and p are not
-supported and that there is an extra option, q. The q option formats a string
-between double quotes, using escape sequences when necessary to ensure that it
-can safely be read back by the Lua interpreter. For instance, the call
+supported and that there is an extra option, q.
+The q option formats a string between double quotes, using escape sequences
+when necessary to ensure that it can safely be read back by the Lua
+interpreter. For instance, the call
 >
      string.format('%q', 'a string with "quotes" and \n new line')
 <
@@ -5326,12 +5370,13 @@ may produce the string:
       new line"
 <
 Options A, a, E, e, f, G, and g all expect a number as argument. Options c, d,
-i, o, u, X, and x expect an integer. Option q expects a string. Option s
-expects a string; if its argument is not a string, it is converted to one
-following the same rules of |lua53-tostring|. If the option has any modifier
-(flags, width, length), the string argument should not contain embedded zeros.
-When Lua is compiled with a non-C99 compiler, options A and a (hexadecimal
-floats) do not support any modifier (flags, width, length).
+i, o, u, X, and x expect an integer. When Lua is compiled with a C89 compiler,
+options A and a (hexadecimal floats) do not support any modifier (flags,
+width, length).
+Option s expects a string; if its argument is not a string, it is converted to
+one following the same rules of |lua53-tostring|. If the option has any
+modifier (flags, width, length), the string argument should not contain
+embedded zeros.
 
 ------------------------------------------------------------------------------
 
@@ -5545,6 +5590,10 @@ combinations are allowed in describing a character class:
   characters plus the underscore, [0-7] represents the octal digits, and
   [0-7%l%-] represents the octal digits plus the lowercase letters plus the
   '-' character.
+  You can put a closing square bracket in a set by positioning it as the first
+  character in the set. You can put an hyphen in a set by positioning it as
+  the first or the last character in the set. (You can also use an escape for
+  both cases.)
   The interaction between ranges and classes is not defined. Therefore,
   patterns like [%a-z] or [a-%%] have no meaning.
 - [^set]: represents the complement of set, where set is interpreted as above.
@@ -5762,10 +5811,11 @@ list[pos], list[pos+1], ..., list[#list]. The default value for pos is
                                                             *lua53-table.move*
 table.move (a1, f, e, t [,a2]) ~
 
-Moves elements from table a1 to table a2. This function performs the
-equivalent to the following multiple assignment: a2[t],... = a1[f],...,a1[e].
-The default for a2 is a1. The destination range can overlap with the source
-range. The number of elements to be moved must fit in a Lua integer.
+Moves elements from table a1 to table a2, performing the equivalent to the
+following multiple assignment: a2[t],... = a1[f],...,a1[e]. The default for a2
+is a1. The destination range can overlap with the source range. The number of
+elements to be moved must fit in a Lua integer.
+Returns the destination table a2.
 
 ------------------------------------------------------------------------------
 
@@ -6107,8 +6157,8 @@ error code.
                                                                *lua53-io.open*
 io.open (filename [, mode]) ~
 
-This function opens a file, in the mode specified in the string mode. It
-returns a new file handle, or, in case of errors, nil plus an error message.
+This function opens a file, in the mode specified in the string mode. In case
+of success, it returns a new file handle.
 The mode string can be any of the following:
 - "r": read mode (the default);
 - "w": write mode;
@@ -6149,8 +6199,8 @@ Equivalent to io.input():read(...).
                                                             *lua53-io.tmpfile*
 io.tmpfile () ~
 
-Returns a handle for a temporary file. This file is opened in update mode and
-it is automatically removed when the program ends.
+In case of success, returns a handle for a temporary file. This file is opened
+in update mode and it is automatically removed when the program ends.
 
 ------------------------------------------------------------------------------
 
@@ -6302,9 +6352,9 @@ formats the current time.
 If format starts with '!', then the date is formatted in Coordinated Universal
 Time. After this optional character, if format is the string "*t", then date
 returns a table with the following fields: year, month (1-12), day (1-31),
-hour (0-23), min (0-59), sec (0-61), wday (weekday, Sunday is 1), yday (day of
-the year), and isdst (daylight saving flag, a boolean). This last field may be
-absent if the information is not available.
+hour (0-23), min (0-59), sec (0-61), wday (weekday, 1-7, Sunday is 1), yday
+(day of the year, 1-366), and isdst (daylight saving flag, a boolean). This
+last field may be absent if the information is not available.
 If format is not "*t", then date returns the date as a string, formatted
 according to the same rules as the ISO C function strftime.
 When called without arguments, date returns a reasonable date and time
@@ -6700,6 +6750,9 @@ reading a line, Lua first try to interpret the line as an expression. If it
 succeeds, it prints its value. Otherwise, it interprets the line as a
 statement. If you write an incomplete statement, the interpreter waits for its
 completion by issuing a different prompt.
+If the global variable _PROMPT contains a string, then its value is used as
+the prompt. Similarly, if the global variable _PROMPT2 contains a string, its
+value is used as the secondary prompt (issued during incomplete statements).
 In case of unprotected errors in the script, the interpreter reports the error
 to the standard error stream. If the error object is not a string but has a
 metamethod __tostring, the interpreter calls this metamethod to produce the
@@ -6887,10 +6940,10 @@ Numeral, and LiteralString, see |lua53-sec3.1|.)
 ------------------------------------------------------------------------------
 
 Last update:
-Wed Nov 25 15:19:10 BRST 2015
+Mon May 30 13:11:08 BRT 2016
 
 Formated for Vim help:
-Thu Dec 03 15:45:51 CET 2015
+Sun Nov 13 16:05:15 CET 2016
 
 ==============================================================================
 vim:tw=78:expandtab:ts=4:ft=help:norl:

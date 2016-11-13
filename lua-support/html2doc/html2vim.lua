@@ -26,6 +26,7 @@ os.setlocale ( 'C' )
 
 --local lua_major           = 5
 --local lua_minor           = 1
+--local lua_release         = 5
 --local lua_date            = 'Feb 13 2012'
 --local lua_copyright       = '2006 - 2012'
 --local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref51.txt'
@@ -36,25 +37,27 @@ os.setlocale ( 'C' )
 --  settings for Lua 5.2.4
 ------------------------------------------------------------------------
 
-local lua_major           = 5
-local lua_minor           = 2
-local lua_date            = 'Feb 23 2015'
-local lua_copyright       = '2011 - 2015'
-local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref52.txt'
-local link_main_component = 'lua52'
-local html_filename       = '/home/wolfgang/Software/lua-5.2.4/doc/manual.html'
-
-------------------------------------------------------------------------
---  settings for Lua 5.3.2
-------------------------------------------------------------------------
-
 --local lua_major           = 5
---local lua_minor           = 3
---local lua_date            = 'Nov 25 2015'
---local lua_copyright       = '2015'
---local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref53.txt'
---local link_main_component = 'lua53'
---local html_filename       = '/home/wolfgang/Software/lua-5.3.2/doc/manual.html'
+--local lua_minor           = 2
+--local lua_release         = 4
+--local lua_date            = 'Feb 23 2015'
+--local lua_copyright       = '2011 - 2015'
+--local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref52.txt'
+--local link_main_component = 'lua52'
+--local html_filename       = '/home/wolfgang/Software/lua-5.2.4/doc/manual.html'
+
+------------------------------------------------------------------------
+--  settings for Lua 5.3.3
+------------------------------------------------------------------------
+
+local lua_major           = 5
+local lua_minor           = 3
+local lua_release         = 3
+local lua_date            = 'May 30 2016'
+local lua_copyright       = '2015 - 2016'
+local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref53.txt'
+local link_main_component = 'lua53'
+local html_filename       = '/home/wolfgang/Software/lua-5.3.3/doc/manual.html'
 
 ------------------------------------------------------------------------
 --  links to all versions (since Lua 5.3.1)
@@ -71,6 +74,8 @@ local handle_double = {}
 -- :TODO:18.01.2015 20:34:19:WM: find unicode for some tags
 -- :TODO:18.01.2015 20:34:19:WM: find unicode for pi
 local html_text_code_replace_data = {
+	[ '#124' ] = '|',
+
 	acute  = '´',
 	amp    = '&',
 	copy   = '©',
@@ -263,7 +268,7 @@ function html_text_code_replace ( code )
 
 	return html_text_code_replace_data [ code ]
 
-end  -----  end of function html_text_code_replace_data  -----
+end  -----  end of function html_text_code_replace  -----
 
 
 local function p_wrapup ( data, transform )
@@ -282,7 +287,7 @@ local function p_wrapup ( data, transform )
 	end
 
 	-- replace html codes &code;
-	text = string.gsub ( text, '&(%w+);', html_text_code_replace )
+	text = string.gsub ( text, '&(#?%w+);', html_text_code_replace )
 
 	-- remove leading and trailing whitespaces
 	text = string.match ( text, '^%s*(.-)%s*$' )
@@ -549,7 +554,7 @@ function handle_double.h3 ( data, opt, text )
 		local h_rght = string.format ( templates.anchor_pdf, f_name )
 
 		-- replace html codes &code;
-		text_cc = string.gsub ( text_cc, '&(%w+);', html_text_code_replace )
+		text_cc = string.gsub ( text_cc, '&(#?%w+);', html_text_code_replace )
 
 		t_set_anchor ( data )
 		t_add ( data, h_rght, { rightalign = true, } )
@@ -564,7 +569,7 @@ function handle_double.h3 ( data, opt, text )
 		local h_rght = string.format ( templates.anchor_c_api, f_name )
 
 		-- replace html codes &code;
-		text_cc = string.gsub ( text_cc, '&(%w+);', html_text_code_replace )
+		text_cc = string.gsub ( text_cc, '&(#?%w+);', html_text_code_replace )
 
 		t_set_anchor ( data )
 		t_add ( data, h_rght, { rightalign = true, } )
@@ -660,7 +665,7 @@ function handle_double.em ( data, opt, text, space )
 	assert ( opt == nil )
 
 	-- replace html codes &code; and remove tags
-	text = string.gsub ( text, '&(%w+);', html_text_code_replace )
+	text = string.gsub ( text, '&(#?%w+);', html_text_code_replace )
 	text = string.gsub ( text, '</?%w+>', '' )
 
 	if data.p_collect then
@@ -680,7 +685,7 @@ function handle_double.code ( data, opt, text, space )
 	assert ( opt == nil )
 
 	-- replace html codes &code; and remove tags
-	text = string.gsub ( text, '&(%w+);', html_text_code_replace )
+	text = string.gsub ( text, '&(#?%w+);', html_text_code_replace )
 	text = string.gsub ( text, '</?%w+>', '' )
 
 	if data.p_collect then
@@ -739,7 +744,7 @@ function handle_double.pre ( data, opt, text, space )
 	end
 
 	-- replace html codes &code; and remove tags
-	text = string.gsub ( text, '&(%w+);', html_text_code_replace )
+	text = string.gsub ( text, '&(#?%w+);', html_text_code_replace )
 	text = string.gsub ( text, '</?%w+>', '' )
 
 	-- TODO: handle tags in <pre>
@@ -1166,7 +1171,7 @@ end  -----  end of function parse_html  -----
 header_txt = [[
 *luaref%MAJOR%%MINOR%.txt*             Lua %MAJOR%.%MINOR% Reference Manual                %DATE%
 
-Lua %MAJOR%.%MINOR% Reference Manual                                     *%LINKMAIN%* *luaref%MAJOR%%MINOR%*
+Lua %MAJOR%.%MINOR%.%RELEASE% Reference Manual                                   *%LINKMAIN%* *luaref%MAJOR%%MINOR%*
 
 by Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes
 Copyright © %COPYRIGHT% Lua.org, PUC-Rio. Freely available under the terms of
@@ -1193,8 +1198,9 @@ vim:tw=78:expandtab:ts=4:ft=help:norl:
 
 -- replace text in the header
 local replace = {
-	MAJOR = lua_major,
-	MINOR = lua_minor,
+	MAJOR     = lua_major,
+	MINOR     = lua_minor,
+	RELEASE   = lua_release,
 	DATE      = lua_date,
 	COPYRIGHT = lua_copyright,
 	LINKMAIN  = link_main_component

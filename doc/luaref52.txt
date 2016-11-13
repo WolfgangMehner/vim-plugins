@@ -1,6 +1,6 @@
 *luaref52.txt*             Lua 5.2 Reference Manual                Feb 23 2015
 
-Lua 5.2 Reference Manual                                     *lua52* *luaref52*
+Lua 5.2.4 Reference Manual                                   *lua52* *luaref52*
 
 by Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes
 Copyright © 2011 - 2015 Lua.org, PUC-Rio. Freely available under the terms of
