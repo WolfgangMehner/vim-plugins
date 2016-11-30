@@ -266,15 +266,6 @@ Key mappings for Vim and gVim\\
 \hline  \Map{wmp}  & minipage                 \hfill (n, i, v)\\
 \hline  \Map{wbp}  & parbox                   \hfill (n, i, v)\\
 \hline
-%
-\end{tabular}\\
-%%~~~~~ TABULAR :  end  ~~~~~~~~~~
-%
-%%======================================================================
-%%  page 2 / table, middle part      [[[1
-%%======================================================================
-%%~~~~~ TABULAR : begin ~~~~~~~~~~
-\begin{tabular}[]{|p{11mm}|p{62mm}|}
 %%----------------------------------------------------------------------
 %%  Snippets
 %%----------------------------------------------------------------------
@@ -292,6 +283,15 @@ Key mappings for Vim and gVim\\
 \hline \Map{ntw} & template setup wizard     \hfill (n, i)   \\
 \hline \Map{nts} & choose template style     \hfill (n, i, T)\\
 \hline
+%
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%======================================================================
+%%  page 2 / table, middle part      [[[1
+%%======================================================================
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{62mm}|}
 %%----------------------------------------------------------------------
 %%  menu run
 %%----------------------------------------------------------------------
@@ -305,6 +305,7 @@ Key mappings for Vim and gVim\\
 \hline \Map{rps}  & view PS                                  \hfill (n, i)\\
 \hline \Map{rc}   & run a converter                          \hfill (n, i)\\
 \hline
+\hline \Map{rmg}  & run \texttt{makeglossaries}              \hfill (n, i)\\
 \hline \Map{rmi}  & run \texttt{makeindex}                   \hfill (n, i)\\
 \hline \Map{rbi}  & run \texttt{bibtex}                      \hfill (n, i)\\
 \hline
@@ -324,14 +325,10 @@ Key mappings for Vim and gVim\\
 \hline \Map{rmc} & \texttt{make clean}                      \hfill (n, i)   \\
 \hline \Map{rma} & command line arguments for \texttt{make} \hfill (n, i)   \\
 \hline
-\end{tabular}\\
+\end{tabular}\\[2.5ex]
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
-%%======================================================================
-%%  page 2 / table, right part      [[[1
-%%======================================================================
-%
-\parbox[t][130mm][t]{70mm}{
+\parbox[t][80mm][t]{70mm}{
 %
 %%----------------------------------------------------------------------
 %%  External Programs
@@ -340,12 +337,20 @@ Key mappings for Vim and gVim\\
 Run the typesetter or \texttt{lacheck} : \\[1.0ex]
 \texttt{ :Latex [<tex-file>]} \\[1.0ex]
 \texttt{ :LatexCheck [<tex-file>]} \\[1.0ex]
-Run \texttt{makeindex} or \texttt{bibtex} : \\[1.0ex]
+Run tools like \texttt{makeindex} or \texttt{bibtex} : \\[1.0ex]
+\texttt{ :LatexMakeglossaries [<base>]} \\[1.0ex]
 \texttt{ :LatexMakeindex [<idx-file>]} \\[1.0ex]
 \texttt{ :LatexBibtex [<aux-file>]} \\[1.0ex]
 (the default arguments are derived from the name of the current buffer) \\[2.5ex]
 Get the errors from the last background process: \\[1.0ex]
 \texttt{ :LatexErrors} \\[2.5ex]
+}
+%
+%%======================================================================
+%%  page 2 / table, right part      [[[1
+%%======================================================================
+%
+\parbox[t][130mm][t]{70mm}{
 %
 %%----------------------------------------------------------------------
 %%  Options

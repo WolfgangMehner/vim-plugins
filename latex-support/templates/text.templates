@@ -30,12 +30,12 @@ paragraph
 subparagraph
 == ENDLIST ==
 
-== Text.organization == expandmenu, noindent, map:to, sc:o ==
+== Text.organization == expandmenu, noindent, insert, map:to, sc:o ==
 |PickList( 'choose', [ 'frontmatter', 'mainmatter', 'backmatter', 'appendix' ] )|
-\|PICK|
-== Text.section == expandmenu, noindent, map:ts, sc:s ==
+\|PICK|<CURSOR>
+== Text.section == expandmenu, noindent, insert, map:ts, sc:s ==
 |PickList( 'choose', 'section_list' )|
-\|PICK|{<CURSOR>}
+\|PICK|{<CURSOR><SPLIT>}
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
@@ -119,8 +119,8 @@ subparagraph
 §  quotes
 § -------------------------------------------------------------
 == LIST: text_quotes == hash ==
-	'quotes, double' : "''<CURSOR><SPLIT>''",
-	'quotes, single' : "'<CURSOR><SPLIT>'",
+	'quotes, double' : "``<CURSOR><SPLIT>''",
+	'quotes, single' : "`<CURSOR><SPLIT>'",
 	'French, double' : '\flqq <CURSOR><SPLIT>\frqq{}',
 	'French, single' : '\flq <CURSOR><SPLIT>\frq{}',
 	'German, double' : '\glqq <CURSOR><SPLIT>\grqq{}',
@@ -146,7 +146,7 @@ subparagraph
 	'vspace'    : 'vspace{<CURSOR>mm}',
 == ENDLIST ==
 
-== Text.spacing == expandmenu, noindent, map:tsp, sc:s ==
+== Text.spacing == expandmenu, noindent, insert, map:tsp, sc:s ==
 |PickList( 'choose', 'text_spacing' )|
 \|VALUE|
 == ENDTEMPLATE ==

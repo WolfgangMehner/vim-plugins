@@ -910,9 +910,9 @@ endfunction    " ----------  end of function s:Compile ----------
 "-------------------------------------------------------------------------------
 function! s:Bibtex ( args )
 
-	" get the name of the index file
+	" get the root of the name of the current buffer
 	if a:args == ''
-		let aux_file = expand("%:r")                " root of name of the name of the current buffer
+		let aux_file = expand("%:r")
 	else
 		let aux_file = a:args
 	endif
@@ -942,6 +942,32 @@ function! s:Bibtex ( args )
 	botright cwindow
 
 endfunction    " ----------  end of function s:Bibtex ----------
+
+"-------------------------------------------------------------------------------
+" s:Makeglossaries : Run 'makeglossaries'.   {{{1
+"
+" Parameters:
+"   args - command-line arguments (string)
+"-------------------------------------------------------------------------------
+function! s:Makeglossaries ( args )
+
+	if ! executable ( 'makeglossaries' )
+		return s:ErrorMsg ( '"makeglossaries" does not exist or is not executable.' )
+	endif
+
+	" get the root of the name of the current buffer
+	if a:args == ''
+		let aux_file = expand("%:r")
+	else
+		let aux_file = a:args
+	endif
+
+	" run the file
+	exe '!makeglossaries '.shellescape( aux_file )
+	if v:shell_error
+		return s:WarningMsg ( 'makeglossaries reported errors' )
+	endif
+endfunction    " ----------  end of function s:Makeglossaries  ----------
 
 "-------------------------------------------------------------------------------
 " s:Makeindex : Run 'makeindex'.   {{{1
@@ -1004,14 +1030,21 @@ function! s:Lacheck ( args )
 	let &l:makeprg     = 'lacheck'
 	let &l:errorformat = '"%f"\, line %l:%m'
 
-	exe "make ".shellescape ( source )
+	let v:statusmsg = ''                          " reset, so we are able to check it below
+	silent exe "make ".shellescape ( source )   | " do not jump to the first error
+	" :TODO:26.11.2016 22:12:WM: using make! here seems to cause v:statusmsg to
+	" never be set to a none-emtpy value
 
 	" restore current settings
 	let &l:makeprg     = makeprg_saved
 	let &l:errorformat = errorf_saved
 
-	" open error window if necessary
-	botright cwindow
+	if empty ( v:statusmsg )
+		redraw                                      " redraw after cclose, before echoing
+		call s:ImportantMsg ( bufname('%').': No warnings.' )
+	else
+		botright cwindow                            " open error window
+	endif
 
 endfunction    " ----------  end of function s:Lacheck ----------
 
@@ -1569,6 +1602,9 @@ function! s:CreateAdditionalLatexMaps ()
   inoremap  <buffer>  <silent>  <LocalLeader>rps   <C-C>:call <SID>View("ps" )<CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>rps   <C-C>:call <SID>View("ps" )<CR>
 
+   noremap  <buffer>  <silent>  <LocalLeader>rmg        :call <SID>Makeglossaries("")<CR>
+  inoremap  <buffer>  <silent>  <LocalLeader>rmg   <C-C>:call <SID>Makeglossaries("")<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rmg   <C-C>:call <SID>Makeglossaries("")<CR>
    noremap  <buffer>  <silent>  <LocalLeader>rmi        :call <SID>Makeindex("")<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call <SID>Makeindex("")<CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call <SID>Makeindex("")<CR>
@@ -1694,6 +1730,9 @@ function! s:CreateAdditionalBibtexMaps ()
   inoremap  <buffer>  <silent>  <LocalLeader>re    <C-C>:call <SID>BackgroundErrors()<CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>re    <C-C>:call <SID>BackgroundErrors()<CR>
 
+   noremap  <buffer>  <silent>  <LocalLeader>rmg        :call <SID>Makeglossaries("")<CR>
+  inoremap  <buffer>  <silent>  <LocalLeader>rmg   <C-C>:call <SID>Makeglossaries("")<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>rmg   <C-C>:call <SID>Makeglossaries("")<CR>
    noremap  <buffer>  <silent>  <LocalLeader>rmi        :call <SID>Makeindex("")<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call <SID>Makeindex("")<CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>rmi   <C-C>:call <SID>Makeindex("")<CR>
@@ -1878,6 +1917,8 @@ function! s:InitMenus()
 	exe ahead.'Convert.PS->PDF                                :call <SID>Conversions( "ps-pdf" )<CR>'
 
 	exe ahead.'-SEP1-                            :'
+	exe ahead.'run\ make&glossaries<Tab>'.esc_mapl.'rmg                  :call <SID>Makeglossaries("")<CR>'
+	exe ihead.'run\ make&glossaries<Tab>'.esc_mapl.'rmg             <C-C>:call <SID>Makeglossaries("")<CR>'
 	exe ahead.'run\ make&index<Tab>'.esc_mapl.'rmi                       :call <SID>Makeindex("")<CR>'
 	exe ihead.'run\ make&index<Tab>'.esc_mapl.'rmi                  <C-C>:call <SID>Makeindex("")<CR>'
 	exe ahead.'run\ &bibtex<Tab>'.esc_mapl.'rbi                          :call <SID>Bibtex("")<CR>'
@@ -2155,10 +2196,11 @@ if s:Latex_LoadMenus == 'yes' && s:Latex_CreateMenusDelayed == 'no'
 endif
 
 " user defined commands (working everywhere)
-command! -nargs=? -complete=file                       Latex            call <SID>Compile(<q-args>)
-command! -nargs=? -complete=file                       LatexBibtex      call <SID>Bibtex(<q-args>)
-command! -nargs=? -complete=file                       LatexMakeindex   call <SID>Makeindex(<q-args>)
-command! -nargs=? -complete=file                       LatexCheck       call <SID>Lacheck(<q-args>)
+command! -nargs=? -complete=file                       Latex                call <SID>Compile(<q-args>)
+command! -nargs=? -complete=file                       LatexBibtex          call <SID>Bibtex(<q-args>)
+command! -nargs=? -complete=file                       LatexCheck           call <SID>Lacheck(<q-args>)
+command! -nargs=? -complete=file                       LatexMakeglossaries  call <SID>Makeglossaries(<q-args>)
+command! -nargs=? -complete=file                       LatexMakeindex       call <SID>Makeindex(<q-args>)
 
 command! -nargs=0                                      LatexErrors      call <SID>BackgroundErrors()
 
