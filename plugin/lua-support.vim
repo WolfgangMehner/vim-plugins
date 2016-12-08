@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Lua_Version below
 "       Created:  26.03.2014
-"      Revision:  12.11.2016
+"      Revision:  07.12.2016
 "       License:  Copyright (c) 2014-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -814,13 +814,13 @@ function! s:EscMagicChar()
 endfunction    " ----------  end of function s:EscMagicChar  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_CodeSnippet : Code snippets.   {{{1
+" s:CodeSnippet : Code snippets.   {{{1
 "
 " Parameters:
 "   action - "insert", "create", "vcreate", "view" or "edit" (string)
 "-------------------------------------------------------------------------------
-"
-function! Lua_CodeSnippet ( action )
+
+function! s:CodeSnippet ( action )
 	"
 	"-------------------------------------------------------------------------------
 	" setup
@@ -938,16 +938,16 @@ function! Lua_CodeSnippet ( action )
 		let b:browsefilter = browsefilter_save
 	endif
 	"
-endfunction    " ----------  end of function Lua_CodeSnippet  ----------
-"
+endfunction    " ----------  end of function s:CodeSnippet  ----------
+
 "-------------------------------------------------------------------------------
-" Lua_OutputBufferErrors : Load the "Lua Output" buffer into quickfix.   {{{1
+" s:OutputBufferErrors : Load the "Lua Output" buffer into quickfix.   {{{1
 "
 " Parameters:
 "   jump - if non-zero, also jump to the first error (integer)
 "-------------------------------------------------------------------------------
-"
-function! Lua_OutputBufferErrors ( jump )
+
+function! s:OutputBufferErrors ( jump )
 	"
 	if bufname('%') !~ 'Lua Output$'
 		return s:ImportantMsg ( 'not inside the "Lua Output" buffer' )
@@ -979,16 +979,16 @@ function! Lua_OutputBufferErrors ( jump )
 		cc
 	endif
 	"
-endfunction    " ----------  end of function Lua_OutputBufferErrors  ----------
-"
+endfunction    " ----------  end of function s:OutputBufferErrors  ----------
+
 "-------------------------------------------------------------------------------
-" Lua_Run : Run the current buffer.   {{{1
+" s:Run : Run the current buffer.   {{{1
 "
 " Parameters:
 "   args - command-line arguments (string)
 "-------------------------------------------------------------------------------
-"
-function! Lua_Run ( args )
+
+function! s:Run ( args )
 	"
 	silent exe 'update'   | " write source file if necessary
 	cclose
@@ -1078,12 +1078,12 @@ function! Lua_Run ( args )
 			call Lua_SetMapLeader ()
 			"
 			" maps: quickfix list
-			nnoremap  <buffer>  <silent>  <LocalLeader>qf       :call Lua_OutputBufferErrors(0)<CR>
-			inoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call Lua_OutputBufferErrors(0)<CR>
-			vnoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call Lua_OutputBufferErrors(0)<CR>
-			nnoremap  <buffer>  <silent>  <LocalLeader>qj       :call Lua_OutputBufferErrors(1)<CR>
-			inoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call Lua_OutputBufferErrors(1)<CR>
-			vnoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call Lua_OutputBufferErrors(1)<CR>
+			nnoremap  <buffer>  <silent>  <LocalLeader>qf       :call <SID>OutputBufferErrors(0)<CR>
+			inoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call <SID>OutputBufferErrors(0)<CR>
+			vnoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call <SID>OutputBufferErrors(0)<CR>
+			nnoremap  <buffer>  <silent>  <LocalLeader>qj       :call <SID>OutputBufferErrors(1)<CR>
+			inoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
+			vnoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
 			"
 			call Lua_ResetMapLeader ()
 		else
@@ -1136,16 +1136,16 @@ function! Lua_Run ( args )
 		"
 	endif
 	"
-endfunction    " ----------  end of function Lua_Run  ----------
-"
+endfunction    " ----------  end of function s:Run  ----------
+
 "-------------------------------------------------------------------------------
-" Lua_Compile : Compile or check the code.   {{{1
+" s:Compile : Compile or check the code.   {{{1
 "
 " Parameters:
 "   mode - "compile" or "check" (string)
 "-------------------------------------------------------------------------------
-"
-function! Lua_Compile( mode ) range
+
+function! s:Compile( mode ) range
 	"
 	silent exe 'update'   | " write source file if necessary
 	cclose
@@ -1197,13 +1197,13 @@ function! Lua_Compile( mode ) range
 		cc
 	endif
 	"
-endfunction    " ----------  end of function Lua_Compile  ----------
-"
+endfunction    " ----------  end of function s:Compile  ----------
+
 "-------------------------------------------------------------------------------
-" Lua_MakeExecutable : Make the script executable.   {{{1
+" s:MakeExecutable : Make the script executable.   {{{1
 "-------------------------------------------------------------------------------
-"
-function! Lua_MakeExecutable ()
+
+function! s:MakeExecutable ()
 	"
 	if ! executable ( 'chmod' )
 		return s:ErrorMsg ( 'Command "chmod" not executable.' )
@@ -1241,16 +1241,16 @@ function! Lua_MakeExecutable ()
 		"
 	endif
 
-endfunction    " ----------  end of function Lua_MakeExecutable  ----------
-"
+endfunction    " ----------  end of function s:MakeExecutable  ----------
+
 "-------------------------------------------------------------------------------
-" Lua_Hardcopy : Print the code to a file.   {{{1
+" s:Hardcopy : Print the code to a file.   {{{1
 "
 " Parameters:
 "   mode - "n" or "v", normal or visual mode (string)
 "-------------------------------------------------------------------------------
-"
-function! Lua_Hardcopy ( mode )
+
+function! s:Hardcopy ( mode )
 	"
   let outfile = expand("%:t")
 	"
@@ -1294,8 +1294,8 @@ function! Lua_Hardcopy ( mode )
 	let &g:printheader = printheader_saved
 	"
 	return
-endfunction    " ----------  end of function Lua_Hardcopy  ----------
-"
+endfunction    " ----------  end of function s:Hardcopy  ----------
+
 "------------------------------------------------------------------------------
 " === Templates API ===   {{{1
 "------------------------------------------------------------------------------
@@ -1431,23 +1431,23 @@ function! s:InsertFileHeader ()
 endfunction    " ----------  end of function s:InsertFileHeader  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_HelpPlugin : Plug-in help.   {{{1
+" s:HelpPlugin : Plug-in help.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_HelpPlugin ()
+function! s:HelpPlugin ()
 	try
 		help lua-support
 	catch
 		exe 'helptags '.s:plugin_dir.'/doc'
 		help lua-support
 	endtry
-endfunction    " ----------  end of function Lua_HelpPlugin  ----------
+endfunction    " ----------  end of function s:HelpPlugin  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_SetExecutable : Set s:Lua_Executable or s:Lua_CompilerExec   {{{1
+" s:SetExecutable : Set s:Lua_Executable or s:Lua_CompilerExec   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_SetExecutable ( exe_type, new_exec )
+function! s:SetExecutable ( exe_type, new_exec )
 	"
 	if a:exe_type == 'exe'
 		let var = 's:Lua_Executable'
@@ -1468,21 +1468,21 @@ function! Lua_SetExecutable ( exe_type, new_exec )
 	endif
 	"
 	return
-endfunction    " ----------  end of function Lua_SetExecutable  ----------
+endfunction    " ----------  end of function s:SetExecutable  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_GetOutputMethodList : For cmd.-line completion.   {{{1
+" s:GetOutputMethodList : For cmd.-line completion.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_GetOutputMethodList (...)
+function! s:GetOutputMethodList (...)
 	return join ( s:Lua_OutputMethodList, "\n" )
-endfunction    " ----------  end of function Lua_GetOutputMethodList  ----------
+endfunction    " ----------  end of function s:GetOutputMethodList  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_SetOutputMethod : Set s:Lua_OutputMethod   {{{1
+" s:SetOutputMethod : Set s:Lua_OutputMethod   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_SetOutputMethod ( method )
+function! s:SetOutputMethod ( method )
 	"
 	if a:method == ''
 		echo s:Lua_OutputMethod
@@ -1515,21 +1515,21 @@ function! Lua_SetOutputMethod ( method )
 	"
 	exe 'anoremenu ...400 '.s:Lua_RootMenu.'.Run.output\ method.Output\ Method<TAB>(current\:\ '.current.') :echo "This is a menu header."<CR>'
 	"
-endfunction    " ----------  end of function Lua_SetOutputMethod  ----------
+endfunction    " ----------  end of function s:SetOutputMethod  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_GetDirectRunList : For cmd.-line completion.   {{{1
+" s:GetDirectRunList : For cmd.-line completion.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_GetDirectRunList (...)
+function! s:GetDirectRunList (...)
 	return "yes\nno"
-endfunction    " ----------  end of function Lua_GetDirectRunList  ----------
+endfunction    " ----------  end of function s:GetDirectRunList  ----------
 "
 "-------------------------------------------------------------------------------
-" Lua_SetDirectRun : Set s:Lua_DirectRun   {{{1
+" s:SetDirectRun : Set s:Lua_DirectRun   {{{1
 "-------------------------------------------------------------------------------
 "
-function! Lua_SetDirectRun ( option )
+function! s:SetDirectRun ( option )
 	"
 	if a:option == ''
 		echo s:Lua_DirectRun
@@ -1554,7 +1554,7 @@ function! Lua_SetDirectRun ( option )
 	"
 	exe 'anoremenu ...400 '.s:Lua_RootMenu.'.Run.direct\ run.Direct\ Run<TAB>(currently\:\ '.current.') :echo "This is a menu header."<CR>'
 	"
-endfunction    " ----------  end of function Lua_SetDirectRun  ----------
+endfunction    " ----------  end of function s:SetDirectRun  ----------
 "
 "-------------------------------------------------------------------------------
 " s:CreateMaps : Create additional maps.   {{{1
@@ -1566,9 +1566,9 @@ function! s:CreateMaps ()
 	" user defined commands (only working in Lua buffers)
 	"-------------------------------------------------------------------------------
 	"
-	command! -nargs=* -buffer -complete=file Lua          call Lua_Run(<q-args>)
-	command! -nargs=0 -buffer -complete=file LuaCompile   call Lua_Compile('compile')
-	command! -nargs=0 -buffer -complete=file LuaCheck     call Lua_Compile('check')
+	command! -nargs=* -buffer -complete=file Lua          call <SID>Run(<q-args>)
+	command! -nargs=0 -buffer -complete=file LuaCompile   call <SID>Compile('compile')
+	command! -nargs=0 -buffer -complete=file LuaCheck     call <SID>Compile('check')
 	"
 	"-------------------------------------------------------------------------------
 	" settings - local leader
@@ -1616,34 +1616,34 @@ function! s:CreateMaps ()
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------
-	nnoremap    <buffer>  <silent> <LocalLeader>ni         :call Lua_CodeSnippet('insert')<CR>
-	inoremap    <buffer>  <silent> <LocalLeader>ni    <C-C>:call Lua_CodeSnippet('insert')<CR>
-	vnoremap    <buffer>  <silent> <LocalLeader>ni    <C-C>:call Lua_CodeSnippet('insert')<CR>
-	nnoremap    <buffer>  <silent> <LocalLeader>nc         :call Lua_CodeSnippet('create')<CR>
-	inoremap    <buffer>  <silent> <LocalLeader>nc    <C-C>:call Lua_CodeSnippet('create')<CR>
-	vnoremap    <buffer>  <silent> <LocalLeader>nc    <C-C>:call Lua_CodeSnippet('vcreate')<CR>
-	nnoremap    <buffer>  <silent> <LocalLeader>nv         :call Lua_CodeSnippet('view')<CR>
-	inoremap    <buffer>  <silent> <LocalLeader>nv    <C-C>:call Lua_CodeSnippet('view')<CR>
-	vnoremap    <buffer>  <silent> <LocalLeader>nv    <C-C>:call Lua_CodeSnippet('view')<CR>
-	nnoremap    <buffer>  <silent> <LocalLeader>ne         :call Lua_CodeSnippet('edit')<CR>
-	inoremap    <buffer>  <silent> <LocalLeader>ne    <C-C>:call Lua_CodeSnippet('edit')<CR>
-	vnoremap    <buffer>  <silent> <LocalLeader>ne    <C-C>:call Lua_CodeSnippet('edit')<CR>
+	nnoremap    <buffer>  <silent> <LocalLeader>ni         :call <SID>CodeSnippet('insert')<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>ni    <C-C>:call <SID>CodeSnippet('insert')<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>ni    <C-C>:call <SID>CodeSnippet('insert')<CR>
+	nnoremap    <buffer>  <silent> <LocalLeader>nc         :call <SID>CodeSnippet('create')<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>nc    <C-C>:call <SID>CodeSnippet('create')<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>nc    <C-C>:call <SID>CodeSnippet('vcreate')<CR>
+	nnoremap    <buffer>  <silent> <LocalLeader>nv         :call <SID>CodeSnippet('view')<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>nv    <C-C>:call <SID>CodeSnippet('view')<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>nv    <C-C>:call <SID>CodeSnippet('view')<CR>
+	nnoremap    <buffer>  <silent> <LocalLeader>ne         :call <SID>CodeSnippet('edit')<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>ne    <C-C>:call <SID>CodeSnippet('edit')<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>ne    <C-C>:call <SID>CodeSnippet('edit')<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" run, compile, checker
 	"-------------------------------------------------------------------------------
-	nnoremap    <buffer>  <silent>  <LocalLeader>rr         :call Lua_Run('')<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>rr    <Esc>:call Lua_Run('')<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>rr    <Esc>:call Lua_Run('')<CR>
-	nnoremap    <buffer>  <silent>  <LocalLeader>rc         :call Lua_Compile('compile')<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>rc    <Esc>:call Lua_Compile('compile')<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>rc    <Esc>:call Lua_Compile('compile')<CR>
-	nnoremap    <buffer>  <silent>  <LocalLeader>rk         :call Lua_Compile('check')<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>rk    <Esc>:call Lua_Compile('check')<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>rk    <Esc>:call Lua_Compile('check')<CR>
-	nnoremap    <buffer>  <silent>  <LocalLeader>re         :call Lua_MakeExecutable()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>re    <Esc>:call Lua_MakeExecutable()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>re    <Esc>:call Lua_MakeExecutable()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>rr         :call <SID>Run('')<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rr    <Esc>:call <SID>Run('')<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>rr    <Esc>:call <SID>Run('')<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>rc         :call <SID>Compile('compile')<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rc    <Esc>:call <SID>Compile('compile')<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>rc    <Esc>:call <SID>Compile('compile')<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>rk         :call <SID>Compile('check')<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rk    <Esc>:call <SID>Compile('check')<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>rk    <Esc>:call <SID>Compile('check')<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>re         :call <SID>MakeExecutable()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>re    <Esc>:call <SID>MakeExecutable()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>re    <Esc>:call <SID>MakeExecutable()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" output method
@@ -1664,9 +1664,9 @@ function! s:CreateMaps ()
 	"-------------------------------------------------------------------------------
 	" hardcopy
 	"-------------------------------------------------------------------------------
-	nnoremap    <buffer>  <silent> <LocalLeader>rh         :call Lua_Hardcopy('n')<CR>
-	inoremap    <buffer>  <silent> <LocalLeader>rh    <C-C>:call Lua_Hardcopy('n')<CR>
-	vnoremap    <buffer>  <silent> <LocalLeader>rh    <C-C>:call Lua_Hardcopy('v')<CR>
+	nnoremap    <buffer>  <silent> <LocalLeader>rh         :call <SID>Hardcopy('n')<CR>
+	inoremap    <buffer>  <silent> <LocalLeader>rh    <C-C>:call <SID>Hardcopy('n')<CR>
+	vnoremap    <buffer>  <silent> <LocalLeader>rh    <C-C>:call <SID>Hardcopy('v')<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" settings
@@ -1678,9 +1678,9 @@ function! s:CreateMaps ()
 	"-------------------------------------------------------------------------------
 	" help
 	"-------------------------------------------------------------------------------
-	nnoremap    <buffer>  <silent>  <LocalLeader>hs         :call Lua_HelpPlugin()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>hs    <Esc>:call Lua_HelpPlugin()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>hs    <Esc>:call Lua_HelpPlugin()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>hs         :call <SID>HelpPlugin()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>hs    <Esc>:call <SID>HelpPlugin()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>hs    <Esc>:call <SID>HelpPlugin()<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" toolbox
@@ -1795,11 +1795,11 @@ function! s:InitMenus()
 	let ahead = 'anoremenu <silent> '.s:Lua_RootMenu.'.Snippets.'
 	let vhead = 'vnoremenu <silent> '.s:Lua_RootMenu.'.Snippets.'
 	"
-	exe ahead.'&insert\ code\ snippet<Tab>'.esc_mapl.'ni       :call Lua_CodeSnippet("insert")<CR>'
-	exe ahead.'&create\ code\ snippet<Tab>'.esc_mapl.'nc       :call Lua_CodeSnippet("create")<CR>'
-	exe vhead.'&create\ code\ snippet<Tab>'.esc_mapl.'nc  <C-C>:call Lua_CodeSnippet("vcreate")<CR>'
-	exe ahead.'&view\ code\ snippet<Tab>'.esc_mapl.'nv         :call Lua_CodeSnippet("view")<CR>'
-	exe ahead.'&edit\ code\ snippet<Tab>'.esc_mapl.'ne         :call Lua_CodeSnippet("edit")<CR>'
+	exe ahead.'&insert\ code\ snippet<Tab>'.esc_mapl.'ni       :call <SID>CodeSnippet("insert")<CR>'
+	exe ahead.'&create\ code\ snippet<Tab>'.esc_mapl.'nc       :call <SID>CodeSnippet("create")<CR>'
+	exe vhead.'&create\ code\ snippet<Tab>'.esc_mapl.'nc  <C-C>:call <SID>CodeSnippet("vcreate")<CR>'
+	exe ahead.'&view\ code\ snippet<Tab>'.esc_mapl.'nv         :call <SID>CodeSnippet("view")<CR>'
+	exe ahead.'&edit\ code\ snippet<Tab>'.esc_mapl.'ne         :call <SID>CodeSnippet("edit")<CR>'
 	exe ahead.'-Sep01-                                         :'
 	"
 	" templates: edit and reload templates, styles
@@ -1814,15 +1814,15 @@ function! s:InitMenus()
 	let shead = 'anoremenu <silent> '.s:Lua_RootMenu.'.Run.'
 	let vhead = 'vnoremenu <silent> '.s:Lua_RootMenu.'.Run.'
 	"
-	exe shead.'&run<TAB><F9>\ '.esc_mapl.'rr             :call Lua_Run()<CR>'
-	exe shead.'&compile<TAB><S-F9>\ '.esc_mapl.'rc       :call Lua_Compile("compile")<CR>'
-	exe shead.'chec&k\ code<TAB><A-F9>\ '.esc_mapl.'rk   :call Lua_Compile("check")<CR>'
-	exe shead.'make\ &executable<TAB>'.esc_mapl.'re      :call Lua_MakeExecutable()<CR>'
+	exe shead.'&run<TAB><F9>\ '.esc_mapl.'rr             :call <SID>Run()<CR>'
+	exe shead.'&compile<TAB><S-F9>\ '.esc_mapl.'rc       :call <SID>Compile("compile")<CR>'
+	exe shead.'chec&k\ code<TAB><A-F9>\ '.esc_mapl.'rk   :call <SID>Compile("check")<CR>'
+	exe shead.'make\ &executable<TAB>'.esc_mapl.'re      :call <SID>MakeExecutable()<CR>'
 	"
 	exe shead.'&buffer\ "Lua\ Output".buffer\ "Lua\ Output"  :echo "This is a menu header."<CR>'
 	exe shead.'&buffer\ "Lua\ Output".-SepHead-              :'
-	exe shead.'&buffer\ "Lua\ Output".load\ into\ quick&fix<TAB>'.esc_mapl.'qf               :call Lua_OutputBufferErrors(0)<CR>'
-	exe shead.'&buffer\ "Lua\ Output".qf\.\ and\ &jump\ to\ first\ error<TAB>'.esc_mapl.'qj  :call Lua_OutputBufferErrors(1)<CR>'
+	exe shead.'&buffer\ "Lua\ Output".load\ into\ quick&fix<TAB>'.esc_mapl.'qf               :call <SID>OutputBufferErrors(0)<CR>'
+	exe shead.'&buffer\ "Lua\ Output".qf\.\ and\ &jump\ to\ first\ error<TAB>'.esc_mapl.'qj  :call <SID>OutputBufferErrors(1)<CR>'
 	"
 	exe shead.'-Sep01-                                   :'
 	"
@@ -1837,30 +1837,30 @@ function! s:InitMenus()
 	exe ahead.'&set\ compiler\ exec\.<TAB>'.esc_mapl.'rsc          :LuaCompilerExec<SPACE>'
 	exe shead.'-Sep02-                                             :'
 	"
-	exe shead.'&hardcopy\ to\ filename\.ps<TAB>'.esc_mapl.'rh      :call Lua_Hardcopy("n")<CR>'
-	exe vhead.'&hardcopy\ to\ filename\.ps<TAB>'.esc_mapl.'rh <C-C>:call Lua_Hardcopy("v")<CR>'
+	exe shead.'&hardcopy\ to\ filename\.ps<TAB>'.esc_mapl.'rh      :call <SID>Hardcopy("n")<CR>'
+	exe vhead.'&hardcopy\ to\ filename\.ps<TAB>'.esc_mapl.'rh <C-C>:call <SID>Hardcopy("v")<CR>'
 	exe shead.'-Sep03-                                             :'
 	"
 	exe shead.'&settings<TAB>'.esc_mapl.'rs  :call Lua_Settings(0)<CR>'
 	"
 	" run -> output method
 	"
-	exe shead.'output\ method.vim\ &io<TAB>interactive   :call Lua_SetOutputMethod("vim-io")<CR>'
-	exe shead.'output\ method.vim\ &qf<TAB>quickfix      :call Lua_SetOutputMethod("vim-qf")<CR>'
-	exe shead.'output\ method.&buffer<TAB>quickfix       :call Lua_SetOutputMethod("buffer")<CR>'
+	exe shead.'output\ method.vim\ &io<TAB>interactive   :call <SID>SetOutputMethod("vim-io")<CR>'
+	exe shead.'output\ method.vim\ &qf<TAB>quickfix      :call <SID>SetOutputMethod("vim-qf")<CR>'
+	exe shead.'output\ method.&buffer<TAB>quickfix       :call <SID>SetOutputMethod("buffer")<CR>'
 	if ! s:MSWIN
-		exe shead.'output\ method.&xterm<TAB>interactive     :call Lua_SetOutputMethod("xterm")<CR>'
+		exe shead.'output\ method.&xterm<TAB>interactive     :call <SID>SetOutputMethod("xterm")<CR>'
 	endif
 	"
 	" run -> direct run
 	"
-	exe shead.'direct\ run.&yes<TAB>use\ executable\ scripts     :call Lua_SetDirectRun("yes")<CR>'
-	exe shead.'direct\ run.&no<TAB>always\ use\ :LuaExecutable   :call Lua_SetDirectRun("no")<CR>'
+	exe shead.'direct\ run.&yes<TAB>use\ executable\ scripts     :call <SID>SetDirectRun("yes")<CR>'
+	exe shead.'direct\ run.&no<TAB>always\ use\ :LuaExecutable   :call <SID>SetDirectRun("no")<CR>'
 	"
 	" deletes the dummy menu header and displays the current options
 	" in the menu header of the sub-menus
-	call Lua_SetOutputMethod ( s:Lua_OutputMethod )
-	call Lua_SetDirectRun ( s:Lua_DirectRun )
+	call s:SetOutputMethod ( s:Lua_OutputMethod )
+	call s:SetDirectRun ( s:Lua_DirectRun )
 	"
 	"-------------------------------------------------------------------------------
 	" tool box
@@ -1878,7 +1878,7 @@ function! s:InitMenus()
 	let vhead = 'vnoremenu <silent> '.s:Lua_RootMenu.'.Help.'
 	"
 	exe ahead.'-Sep01-                                  :'
-	exe ahead.'&help\ (Lua-Support)<TAB>'.esc_mapl.'hs  :call Lua_HelpPlugin()<CR>'
+	exe ahead.'&help\ (Lua-Support)<TAB>'.esc_mapl.'hs  :call <SID>HelpPlugin()<CR>'
 	"
 endfunction    " ----------  end of function s:InitMenus  ----------
 "
@@ -2057,10 +2057,10 @@ if s:Lua_LoadMenus == 'startup'
 endif
 "
 " user defined commands (working everywhere)
-command! -nargs=? -complete=custom,Lua_GetOutputMethodList LuaOutputMethod   call Lua_SetOutputMethod(<q-args>)
-command! -nargs=? -complete=custom,Lua_GetDirectRunList    LuaDirectRun      call Lua_SetDirectRun(<q-args>)
-command! -nargs=? -complete=shellcmd                       LuaExecutable     call Lua_SetExecutable('exe',<q-args>)
-command! -nargs=? -complete=shellcmd                       LuaCompilerExec   call Lua_SetExecutable('compile',<q-args>)
+command! -nargs=? -complete=custom,<SID>GetOutputMethodList LuaOutputMethod   call <SID>SetOutputMethod(<q-args>)
+command! -nargs=? -complete=custom,<SID>GetDirectRunList    LuaDirectRun      call <SID>SetDirectRun(<q-args>)
+command! -nargs=? -complete=shellcmd                        LuaExecutable     call <SID>SetExecutable('exe',<q-args>)
+command! -nargs=? -complete=shellcmd                        LuaCompilerExec   call <SID>SetExecutable('compile',<q-args>)
 "
 if has( 'autocmd' )
 	autocmd FileType *
@@ -2078,6 +2078,6 @@ if has( 'autocmd' )
 endif
 " }}}1
 "-------------------------------------------------------------------------------
-"
+
 " =====================================================================================
 "  vim: foldmethod=marker
