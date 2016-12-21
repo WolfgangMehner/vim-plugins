@@ -10,6 +10,7 @@
 	'close STDOUT'                        : ' >&- <CURSOR>',
 	'direct file descr n to file, append' : ' <CURSOR>>> ',
 	'direct file descr n to file'         : ' <CURSOR>> ',
+	'direct STDERR to STDOUT'             : ' 2>&1<CURSOR>',
 	'direct STDOUT and STDERR to file'    : ' &> <CURSOR>',
 	'direct STDOUT to file, append'       : ' >> <CURSOR>',
 	'direct STDOUT to file'               : ' > <CURSOR>',

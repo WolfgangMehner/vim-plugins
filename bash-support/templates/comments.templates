@@ -16,15 +16,15 @@
 #       RETURNS:  
 #-------------------------------------------------------------------------------
 == Comments.file header == start, map:ch ==
-#!/bin/bash - 
+#!/bin/bash -
 #===============================================================================
 #
 #          FILE: |FILENAME|
-# 
-#         USAGE: ./|FILENAME| 
-# 
+#
+#         USAGE: ./|FILENAME|
+#
 #   DESCRIPTION: 
-# 
+#
 #       OPTIONS: ---
 #  REQUIREMENTS: ---
 #          BUGS: ---
