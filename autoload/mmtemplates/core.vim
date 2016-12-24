@@ -3913,7 +3913,7 @@ function! s:DoCreateMap ( map, mode, report )
 		endif
 	endif
 
-	return empty ( mapinfo )
+	return empty ( mapinfo ) || mapinfo =~ 'mmtemplates#core#'
 endfunction    " ----------  end of function s:DoCreateMap  ----------
 " }}}2
 "----------------------------------------------------------------------
@@ -5236,7 +5236,7 @@ function! mmtemplates#core#AddCustomTemplateFiles ( library, temp_list, list_nam
 			call s:ErrorMsg ( 'The entry of '.a:list_name.' with index '.i.' does not contain a file name.' )
 			continue
 		elseif ! filereadable ( file_name )
-			call s:ErrorMsg ( 'The entry of '.a:list_name.' with index '.i.' does not name a readable file.' )
+			call s:ErrorMsg ( 'The entry of '.a:list_name.' with index '.i.' does not name a readable file:', '  '.file_name )
 			continue
 		endif
 		"

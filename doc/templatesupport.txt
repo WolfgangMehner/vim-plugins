@@ -2958,6 +2958,19 @@ D.  CHANGE LOG                                   *template-support-change-log*
 ==============================================================================
 
 ------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.1
+------------------------------------------------------------------------------
+
+- Add <SHIFT> tag (shift the visual selection to the right) as an alternative
+  to <SPLIT>.
+- Add property 'Templates::LanguageMode', which can be set to "default" or
+  "python".
+- Add Python mode (Templates::LanguageMode == "python"), to handle indentation
+  and retabbing of Python templates.
+- Bugfixes and minor improvements.
+- Update the documentation.
+
+------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 1.0
 ------------------------------------------------------------------------------
 
