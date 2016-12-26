@@ -15,7 +15,7 @@ ___This is a preview version!___
 Notable new features:
 
 - Call external tools via the command-line: `:Latex`, `:LatexCheck`,
-  `:LatexMakeindex`, `:LatexBibtex`.
+  `:LatexMakeindex`, `:LatexBibtex`, `:LatexView`.
 - Change the typesetter during runtime using `:LatexTypesetter`.
 - Background processing, enable via `:LatexProcessing`.
 - View errors from background processing in quickfix using `:LatexErrors`.

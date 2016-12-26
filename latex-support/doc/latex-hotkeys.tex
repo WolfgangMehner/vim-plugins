@@ -299,7 +299,7 @@ Key mappings for Vim and gVim\\
 \multicolumn{2}{|r|}{\textsl{\textbf{R}un}} \\[1.0ex]
 \hline \Map{rr}   & save + run typesetter                    \hfill (n, i)\\
 \hline \Map{rla}  & save + run \texttt{lacheck}              \hfill (n, i)\\
-\hline \Map{re}   & errors from last bg. process             \hfill (n, i)\\
+\hline \Map{re}   & errors from last bg.\ process            \hfill (n, i)\\
 \hline \Map{rdvi} & view DVI                                 \hfill (n, i)\\
 \hline \Map{rpdf} & view PDF                                 \hfill (n, i)\\
 \hline \Map{rps}  & view PS                                  \hfill (n, i)\\
@@ -328,38 +328,49 @@ Key mappings for Vim and gVim\\
 \end{tabular}\\[2.5ex]
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
-\parbox[t][80mm][t]{70mm}{
+\parbox[t][80mm][t]{70mm}{%
 %
 %%----------------------------------------------------------------------
 %%  External Programs
 %%----------------------------------------------------------------------
 \large{\textbf{Run}}\\[1.0ex]
 Run the typesetter or \texttt{lacheck} : \\[1.0ex]
-\texttt{ :Latex [<tex-file>]} \\[1.0ex]
-\texttt{ :LatexCheck [<tex-file>]} \\[1.0ex]
+\texttt{:Latex [<tex-file>]} \\[1.0ex]
+\texttt{:LatexCheck [<tex-file>]} \\[1.0ex]
 Run tools like \texttt{makeindex} or \texttt{bibtex} : \\[1.0ex]
-\texttt{ :LatexMakeglossaries [<base>]} \\[1.0ex]
-\texttt{ :LatexMakeindex [<idx-file>]} \\[1.0ex]
-\texttt{ :LatexBibtex [<aux-file>]} \\[1.0ex]
+\texttt{:LatexMakeglossaries [<base>]} \\[1.0ex]
+\texttt{:LatexMakeindex [<idx-file>]} \\[1.0ex]
+\texttt{:LatexBibtex [<aux-file>]} \\[1.0ex]
 (the default arguments are derived from the name of the current buffer) \\[2.5ex]
 Get the errors from the last background process: \\[1.0ex]
-\texttt{ :LatexErrors} \\[2.5ex]
+\texttt{:LatexErrors} \\[2.5ex]
 }
 %
 %%======================================================================
 %%  page 2 / table, right part      [[[1
 %%======================================================================
 %
-\parbox[t][130mm][t]{70mm}{
+\parbox[t][130mm][t]{70mm}{%
+%
+%%----------------------------------------------------------------------
+%%  View
+%%----------------------------------------------------------------------
+\large{\textbf{View}}\\[1.0ex]
+View a document of the specified format
+(supports \texttt{dvi}, \texttt{pdf}, and \texttt{ps}): \\[1.0ex]
+\texttt{:LatexView [<format>]} \\[1.0ex]
+\texttt{:LatexView [<format>] <file>} \\[1.0ex]
+\texttt{:LatexView <file> [<format>]} \\[1.0ex]
+(the default filename is derived from the name of the current buffer.) \\[2.5ex]
 %
 %%----------------------------------------------------------------------
 %%  Options
 %%----------------------------------------------------------------------
 \large{\textbf{Options}}\\[1.0ex]
 Print or set the typesetter: \\[1.0ex]
-\texttt{ :LatexTypesetter [<typesetter>]} \\[1.0ex]
+\texttt{:LatexTypesetter [<typesetter>]} \\[1.0ex]
 Print or set the processing method: \\[1.0ex]
-\texttt{ :LatexProcessing [<method>]} \\[1.0ex]
+\texttt{:LatexProcessing [<method>]} \\[1.0ex]
 (both commands support tab-compl.) \\[2.5ex]
 %
 %%----------------------------------------------------------------------
@@ -367,12 +378,12 @@ Print or set the processing method: \\[1.0ex]
 %%----------------------------------------------------------------------
 \large{\textbf{Make}}\\[1.0ex]
 Run \texttt{make} : \\[1.0ex]
-\texttt{ :Make [<args>]} \\[1.0ex]
+\texttt{:Make [<args>]} \\[1.0ex]
 Set the current makefile: \\[1.0ex]
-\texttt{ :MakeFile <file>} \\[1.0ex]
+\texttt{:MakeFile <file>} \\[1.0ex]
 (both commands support tab-compl.) \\[1.0ex]
 Help for the Make Tool: \\[1.0ex]
-\texttt{ :MakeHelp} \\[2.5ex]
+\texttt{:MakeHelp} \\[2.5ex]
 }
 %
 \end{center}%

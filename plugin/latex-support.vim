@@ -16,7 +16,7 @@
 "
 "       Version:  see variable g:LatexSupportVersion below.
 "       Created:  27.12.2012
-"      Revision:  03.09.2016
+"      Revision:  26.12.2016
 "       License:  Copyright (c) 2012-2015, Fritz Mehner
 "                 Copyright (c) 2016-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
@@ -1051,49 +1051,83 @@ endfunction    " ----------  end of function s:Lacheck ----------
 "-------------------------------------------------------------------------------
 " s:View : View a document.   {{{1
 "
-" Perform the conversion s:Latex_ViewerCall[ <format> ] . When the 'format'
-" "choose", the format is chosen according to 's:Latex_Typesetter'.
+" Views a document. The format is guessed from the filename, or specified on
+" the command line. Supports the following calls:
+" :LatexView fmt
+" :LatexView fmt file
+" :LatexView file fmt
+" :LatexView file
+" :LatexView
+"
+" - If no format is specified, it is guessed from the filename.
+" - If no filename is specified, it is guessed from the name of the buffer
+"   and the format.
+" - If neither filename nor format are specified, they are guessed from
+"   the typesetter and the name of the buffer.
 "
 " Parameters:
-"   format - the format 'dvi', pdf, 'ps', or 'choose' (string)
+"   args - the cmd.-line arguments (string)
 "-------------------------------------------------------------------------------
-function! s:View ( format )
+function! s:View ( args )
 
-	if &filetype != 'tex'
-		echomsg 'The filetype of this buffer is not "tex".'
-		return
-	endif
+	let targetfile = ''
+	let format     = ''
 
-	let fmt = a:format
-	if fmt == 'choose'
-		let typesettercall = s:Latex_TypesetterCall[s:Latex_Typesetter]
-		if typesettercall =~ '^pdf'
-			let fmt = 'pdf'
-		else
-			let fmt = 'dvi'
-		endif
-	endif
-
-	let viewer = s:Latex_ViewerCall[fmt]
-	if viewer == '' || !executable( split(viewer)[0] )
-		echomsg 'Viewer '.viewer.' does not exist or its name is not unique.'
-		return
-	endif
-
-	let targetformat = expand("%:r").'.'.fmt
-	if !filereadable( targetformat )
-		if filereadable( expand("%:r").'.dvi' )
-			call s:Conversions( 'dvi-'.fmt )
-		else
-			echomsg 'File "'.targetformat.'" does not exist or is not readable.'
-			return
-		endif
-	endif
-
-	if s:MSWIN
-		silent exe '!start '.viewer.' '.targetformat
+	" analyse the command-line arguments
+	if a:args =~ '^\s*\(dvi\|pdf\|ps\)\s*$'
+		" :LatexView fmt
+		let format = substitute ( a:args, '\s\+', '', 'g' )
+		let targetfile = expand("%:r").'.'.format
+	elseif a:args =~ '^\s*\(dvi\|pdf\|ps\)\s'
+		" :LatexView fmt file
+		let mlist = matchlist ( a:args, '^\s*\(dvi\|pdf\|ps\)\s\+\(.*\)' )
+		let format = mlist[1]
+		let targetfile = mlist[2]
+	elseif a:args =~ '\s\(dvi\|pdf\|ps\)\s*$'
+		" :LatexView file fmt
+		let mlist = matchlist ( a:args, '^\(.\{-}\)\s\+\(dvi\|pdf\|ps\)\s*$' )
+		let targetfile = mlist[1]
+		let format = mlist[2]
+	elseif a:args !~ '^\s*$'
+		" :LatexView file
+		let targetfile = a:args
+		let format = matchstr ( targetfile, '[^.]\+\ze\s*$' )
+		let format = tolower ( format )
 	else
-		silent exe '!'.viewer.' '.targetformat.' &'
+		" :LatexView -empty-
+
+		" guess the format from the typesetter
+		if s:Latex_Typesetter =~ '^pdf' || s:Latex_Typesetter =~ '^lua'
+			let format = 'pdf'
+		else
+			let format = 'dvi'
+		endif
+
+		" get the file
+		let targetfile = expand("%:r").'.'.format
+	endif
+
+	" check the file ...
+	if ! filereadable( targetfile )
+		return s:ErrorMsg ( 'File "'.targetfile.'" does not exist or is not readable.' )
+	endif
+
+	" ... and the format
+	if ! has_key ( s:Latex_ViewerCall, format )
+		return s:ErrorMsg ( 'Filetype "'.format.'" not supported.' )
+	endif
+
+	" get the viewer command
+	let viewer = s:Latex_ViewerCall[format]
+	if viewer == '' || ! executable( split(viewer)[0] )
+		return s:ErrorMsg ( 'Viewer '.viewer.' does not exist or its name is not unique.' )
+	endif
+
+	" run the command
+	if s:MSWIN
+		silent exe '!start '.viewer.' '.targetfile
+	else
+		silent exe '!'.viewer.' '.targetfile.' &'
 	endif
 endfunction    " ----------  end of function s:View ----------
 
@@ -1405,13 +1439,17 @@ function! s:CheckTemplatePersonalization ()
 	"
 endfunction    " ----------  end of function s:CheckTemplatePersonalization  ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  Latex_JumpForward     {{{1
-"   DESCRIPTION:  Jump to the next target, otherwise behind the current string.
-"    PARAMETERS:  -
-"       RETURNS:  empty string
-"===============================================================================
-function! Latex_JumpForward ()
+"-------------------------------------------------------------------------------
+" s:JumpForward : Jump to the next target.   {{{1
+"
+" If no target is found, jump behind the current string
+"
+" Parameters:
+"   -
+" Returns:
+"   empty sting
+"-------------------------------------------------------------------------------
+function! s:JumpForward ()
   let match	= search( s:Latex_TemplateJumpTarget, 'c' )
 	if match > 0
 		" remove the target
@@ -1422,8 +1460,8 @@ function! Latex_JumpForward ()
 		normal! l
 	endif
 	return ''
-endfunction    " ----------  end of function Latex_JumpForward  ----------
-"
+endfunction    " ----------  end of function s:JumpForward  ----------
+
 "===  FUNCTION  ================================================================
 "          NAME:  Latex_CodeSnippet     {{{1
 "   DESCRIPTION:  read / write / edit code sni
@@ -1576,12 +1614,6 @@ function! s:CreateAdditionalLatexMaps ()
 	"-------------------------------------------------------------------------------
 	" run
 	"-------------------------------------------------------------------------------
-   noremap  <buffer>            <C-F9>                  :call <SID>Compile("")<CR><CR>
-  inoremap  <buffer>            <C-F9>             <Esc>:call <SID>Compile("")<CR><CR>
-  vnoremap  <buffer>            <C-F9>             <Esc>:call <SID>Compile("")<CR><CR>
-   noremap  <buffer>            <M-F9>                  :call <SID>View('choose')<CR><CR>
-  inoremap  <buffer>            <M-F9>             <Esc>:call <SID>View('choose')<CR><CR>
-  vnoremap  <buffer>            <M-F9>             <Esc>:call <SID>View('choose')<CR><CR>
    noremap  <buffer>  <silent>  <LocalLeader>rr         :call <SID>Compile("")<CR><CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rr    <C-C>:call <SID>Compile("")<CR><CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>rr    <C-C>:call <SID>Compile("")<CR><CR>
@@ -1660,8 +1692,8 @@ function! s:CreateAdditionalLatexMaps ()
 	"-------------------------------------------------------------------------------
 	" templates
 	"-------------------------------------------------------------------------------
-	nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=Latex_JumpForward()<CR>
-	inoremap  <buffer>  <silent>  <C-j>  <C-G>u<C-R>=Latex_JumpForward()<CR>
+	nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=<SID>JumpForward()<CR>
+	inoremap  <buffer>  <silent>  <C-j>  <C-G>u<C-R>=<SID>JumpForward()<CR>
 	"
 	" ----------------------------------------------------------------------------
 	"
@@ -1776,8 +1808,8 @@ function! s:CreateAdditionalBibtexMaps ()
 	"-------------------------------------------------------------------------------
 	" templates
 	"-------------------------------------------------------------------------------
-	nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=Latex_JumpForward()<CR>
-	inoremap  <buffer>  <silent>  <C-j>  <C-G>u<C-R>=Latex_JumpForward()<CR>
+	nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=<SID>JumpForward()<CR>
+	inoremap  <buffer>  <silent>  <C-j>  <C-G>u<C-R>=<SID>JumpForward()<CR>
 	"
 	" ----------------------------------------------------------------------------
 	"
@@ -1892,8 +1924,8 @@ function! s:InitMenus()
 	let ihead = 'imenu <silent> '.s:Latex_RootMenu.'.&Run.'
 	let vhead = 'vmenu <silent> '.s:Latex_RootMenu.'.&Run.'
 
-	exe ahead.'save\ +\ &run\ typesetter<Tab>'.esc_mapl.'rr\ <C-F9>       :call <SID>Compile("")<CR><CR>'
-	exe ihead.'save\ +\ &run\ typesetter<Tab>'.esc_mapl.'rr\ <C-F9>  <C-C>:call <SID>Compile("")<CR><CR>'
+	exe ahead.'save\ +\ &run\ typesetter<Tab>'.esc_mapl.'rr       :call <SID>Compile("")<CR><CR>'
+	exe ihead.'save\ +\ &run\ typesetter<Tab>'.esc_mapl.'rr  <C-C>:call <SID>Compile("")<CR><CR>'
 
 	exe ahead.'save\ +\ &run\ lacheck<Tab>'.esc_mapl.'rla       :call <SID>Lacheck("")<CR><CR>'
 	exe ihead.'save\ +\ &run\ lacheck<Tab>'.esc_mapl.'rla  <C-C>:call <SID>Lacheck("")<CR><CR>'
@@ -2149,27 +2181,6 @@ function! Latex_Hardcopy (mode)
 	exe  ':set printheader='.escape( old_printheader, ' %' )
 endfunction   " ---------- end of function  Latex_Hardcopy  ----------
 
-"------------------------------------------------------------------------------
-"  build new string from repetition of a given string
-"  1. parameter : given string
-"  2. parameter : repetition count
-"  3. parameter : head (optional)
-"  4. parameter : tail (optional)
-"------------------------------------------------------------------------------
-function! s:repeat_string ( string, n, ... )
-	let result	= ''
-	if a:0 >= 1
-		let result	= a:1                           " start with the head
-	endif
-	for n in range( 1, a:n )
-		let result	.= a:string
-	endfor
-	if a:0 == 2
-		let result	.= a:2                          " append the tail
-	endif
-	return result
-endfunction    " ----------  end of function repeat_string  ----------
-
 "-------------------------------------------------------------------------------
 " === Setup: Templates, toolbox and menus ===   {{{1
 "-------------------------------------------------------------------------------
@@ -2201,6 +2212,7 @@ command! -nargs=? -complete=file                       LatexBibtex          call
 command! -nargs=? -complete=file                       LatexCheck           call <SID>Lacheck(<q-args>)
 command! -nargs=? -complete=file                       LatexMakeglossaries  call <SID>Makeglossaries(<q-args>)
 command! -nargs=? -complete=file                       LatexMakeindex       call <SID>Makeindex(<q-args>)
+command! -nargs=* -complete=file                       LatexView            call <SID>View(<q-args>)
 
 command! -nargs=0                                      LatexErrors      call <SID>BackgroundErrors()
 

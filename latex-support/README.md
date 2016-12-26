@@ -1,4 +1,4 @@
-README for latex-support.vim (Version 1.3pre) / September 04 2016
+README for latex-support.vim (Version 1.3pre) / December 26 2016
 ================================================================================
 
   *  INSTALLATION
@@ -177,13 +177,16 @@ RELEASE NOTES FOR VERSION 1.3pre
 ----------------------------------------------------------------------
 - Add commands :Latex, :LatexBibtex, :LatexMakeindex, and :LatexCheck to run the
   external commands.
+- Add command :LatexView to start external viewers.
 - Add command :LatexTypesetter to change the typesetter during runtime.
 - Add command :LatexProcessing to change between foreground and background
   processing.
 - Add command :LatexErrors and map ´re to view errors from background processing
   in quickfix.
+- Add command :LatexMakeglossaries to run 'makeglossaries'.
+- Move the definition of the maps 'CTRL+F9' and 'ALT+F9' to the filetype plug-in.
 - BibTeX errors are recognized by quickfix.
-- New templates.
+- Improve templates.
 - Minor bugfixes.
 
 
