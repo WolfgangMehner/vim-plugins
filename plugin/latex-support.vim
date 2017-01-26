@@ -18,7 +18,7 @@
 "       Created:  27.12.2012
 "      Revision:  26.12.2016
 "       License:  Copyright (c) 2012-2015, Fritz Mehner
-"                 Copyright (c) 2016-2016, Wolfgang Mehner
+"                 Copyright (c) 2016-2017, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -1418,25 +1418,21 @@ endfunction    " ----------  end of function s:RereadTemplates  ----------
 let s:DoneCheckTemplatePersonalization = 0
 
 function! s:CheckTemplatePersonalization ()
-	"
+
 	" check whether the templates are personalized
-	if ! s:DoneCheckTemplatePersonalization
-				\ && mmtemplates#core#ExpandText ( g:Latex_Templates, '|AUTHOR|' ) == 'YOUR NAME'
-		let s:DoneCheckTemplatePersonalization = 1
-		"
-		let maplead = mmtemplates#core#Resource ( g:Latex_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
-		"
-		redraw
-		echohl Search
-		echo 'The personal details (name, mail, ...) are not set in the template library.'
-		echo 'They are used to generate comments, ...'
-		echo 'To set them, start the setup wizard using:'
-		echo '- use the menu entry "LaTeX -> Snippets -> template setup wizard"'
-		echo '- use the map "'.maplead.'ntw" inside a LaTeX buffer'
-		echo "\n"
-		echohl None
+	if s:DoneCheckTemplatePersonalization
+				\ || mmtemplates#core#ExpandText ( g:Latex_Templates, '|AUTHOR|' ) != 'YOUR NAME'
+				\ || s:Latex_InsertFileProlog != 'yes'
+		return
 	endif
-	"
+
+	let s:DoneCheckTemplatePersonalization = 1
+
+	let maplead = mmtemplates#core#Resource ( g:Latex_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
+
+	redraw
+	call s:ImportantMsg ( 'The personal details are not set in the template library. Use the map "'.maplead.'ntw".' )
+
 endfunction    " ----------  end of function s:CheckTemplatePersonalization  ----------
 
 "-------------------------------------------------------------------------------
@@ -1462,12 +1458,13 @@ function! s:JumpForward ()
 	return ''
 endfunction    " ----------  end of function s:JumpForward  ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  Latex_CodeSnippet     {{{1
-"   DESCRIPTION:  read / write / edit code sni
-"    PARAMETERS:  mode - edit, read, write, writemarked, view
-"===============================================================================
-function! Latex_CodeSnippet(mode)
+"-------------------------------------------------------------------------------
+" s:CodeSnippet : Code snippets.   {{{1
+"
+" Parameters:
+"   mode - view, edit, read, write, writemarked (string)
+"-------------------------------------------------------------------------------
+function! s:CodeSnippet ( mode )
   if isdirectory(g:Latex_CodeSnippets)
     "
     " read snippet file, put content below current line
@@ -1546,7 +1543,7 @@ function! Latex_CodeSnippet(mode)
     echo "code snippet directory ".g:Latex_CodeSnippets." does not exist"
     echohl None
   endif
-endfunction   " ---------- end of function  Latex_CodeSnippet  ----------
+endfunction   " ---------- end of function s:CodeSnippet  ----------
 
 "-------------------------------------------------------------------------------
 " s:CreateAdditionalLatexMaps : Create additional maps for LaTeX.   {{{1
@@ -1593,15 +1590,15 @@ function! s:CreateAdditionalLatexMaps ()
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------
-	nnoremap  <buffer>  <silent>  <LocalLeader>nr         :call Latex_CodeSnippet("read")<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>nr    <Esc>:call Latex_CodeSnippet("read")<CR>
-	nnoremap  <buffer>  <silent>  <LocalLeader>nw         :call Latex_CodeSnippet("write")<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call Latex_CodeSnippet("write")<CR>
-	vnoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call Latex_CodeSnippet("writemarked")<CR>
-	nnoremap  <buffer>  <silent>  <LocalLeader>ne         :call Latex_CodeSnippet("edit")<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>ne    <Esc>:call Latex_CodeSnippet("edit")<CR>
-	nnoremap  <buffer>  <silent>  <LocalLeader>nv         :call Latex_CodeSnippet("view")<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>nv    <Esc>:call Latex_CodeSnippet("view")<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>nr         :call <SID>CodeSnippet("read")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>nr    <Esc>:call <SID>CodeSnippet("read")<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>nw         :call <SID>CodeSnippet("write")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call <SID>CodeSnippet("write")<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call <SID>CodeSnippet("writemarked")<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>ne         :call <SID>CodeSnippet("edit")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>ne    <Esc>:call <SID>CodeSnippet("edit")<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>nv         :call <SID>CodeSnippet("view")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>nv    <Esc>:call <SID>CodeSnippet("view")<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" wizard
@@ -1654,9 +1651,9 @@ function! s:CreateAdditionalLatexMaps ()
 
 	nnoremap  <buffer>  <silent>  <LocalLeader>rse        :call Latex_Settings(0)<CR>
   "
-	 noremap  <buffer>  <silent>  <LocalLeader>rh         :call Latex_Hardcopy("n")<CR>
-	vnoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call Latex_Hardcopy("v")<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call Latex_Hardcopy("n")<CR>
+	 noremap  <buffer>  <silent>  <LocalLeader>rh         :call <SID>Hardcopy("n")<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call <SID>Hardcopy("v")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call <SID>Hardcopy("n")<CR>
 	"
 	 noremap  <buffer>  <silent>  <LocalLeader>rc        :call <SID>ConvertInput()<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>rc   <C-C>:call <SID>ConvertInput()<CR>
@@ -1745,15 +1742,15 @@ function! s:CreateAdditionalBibtexMaps ()
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------
-	nnoremap  <buffer>  <silent>  <LocalLeader>nr         :call Latex_CodeSnippet("read")<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>nr    <Esc>:call Latex_CodeSnippet("read")<CR>
-	nnoremap  <buffer>  <silent>  <LocalLeader>nw         :call Latex_CodeSnippet("write")<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call Latex_CodeSnippet("write")<CR>
-	vnoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call Latex_CodeSnippet("writemarked")<CR>
-	nnoremap  <buffer>  <silent>  <LocalLeader>ne         :call Latex_CodeSnippet("edit")<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>ne    <Esc>:call Latex_CodeSnippet("edit")<CR>
-	nnoremap  <buffer>  <silent>  <LocalLeader>nv         :call Latex_CodeSnippet("view")<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>nv    <Esc>:call Latex_CodeSnippet("view")<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>nr         :call <SID>CodeSnippet("read")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>nr    <Esc>:call <SID>CodeSnippet("read")<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>nw         :call <SID>CodeSnippet("write")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call <SID>CodeSnippet("write")<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call <SID>CodeSnippet("writemarked")<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>ne         :call <SID>CodeSnippet("edit")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>ne    <Esc>:call <SID>CodeSnippet("edit")<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>nv         :call <SID>CodeSnippet("view")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>nv    <Esc>:call <SID>CodeSnippet("view")<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" run
@@ -1774,9 +1771,9 @@ function! s:CreateAdditionalBibtexMaps ()
 	"
 	nnoremap  <buffer>  <silent>  <LocalLeader>rse        :call Latex_Settings(0)<CR>
   "
-	 noremap  <buffer>  <silent>  <LocalLeader>rh         :call Latex_Hardcopy("n")<CR>
-	vnoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call Latex_Hardcopy("v")<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call Latex_Hardcopy("n")<CR>
+	 noremap  <buffer>  <silent>  <LocalLeader>rh         :call <SID>Hardcopy("n")<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call <SID>Hardcopy("v")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call <SID>Hardcopy("n")<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" tool box
@@ -1884,15 +1881,15 @@ function! s:InitMenus()
 	let ihead = 'inoremenu <silent> '.s:Latex_RootMenu.'.S&nippets.'
 	let vhead = 'vnoremenu <silent> '.s:Latex_RootMenu.'.S&nippets.'
 
-	exe ahead.'&read\ code\ snippet<Tab>'.esc_mapl.'nr       :call Latex_CodeSnippet("read")<CR>'
-	exe ihead.'&read\ code\ snippet<Tab>'.esc_mapl.'nr  <C-C>:call Latex_CodeSnippet("read")<CR>'
-	exe ahead.'&view\ code\ snippet<Tab>'.esc_mapl.'nv       :call Latex_CodeSnippet("view")<CR>'
-	exe ihead.'&view\ code\ snippet<Tab>'.esc_mapl.'nv  <C-C>:call Latex_CodeSnippet("view")<CR>'
-	exe ahead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw      :call Latex_CodeSnippet("write")<CR>'
-	exe ihead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Latex_CodeSnippet("write")<CR>'
-	exe vhead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Latex_CodeSnippet("writemarked")<CR>'
-	exe ahead.'&edit\ code\ snippet<Tab>'.esc_mapl.'ne       :call Latex_CodeSnippet("edit")<CR>'
-	exe ihead.'&edit\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call Latex_CodeSnippet("edit")<CR>'
+	exe ahead.'&read\ code\ snippet<Tab>'.esc_mapl.'nr       :call <SID>CodeSnippet("read")<CR>'
+	exe ihead.'&read\ code\ snippet<Tab>'.esc_mapl.'nr  <C-C>:call <SID>CodeSnippet("read")<CR>'
+	exe ahead.'&view\ code\ snippet<Tab>'.esc_mapl.'nv       :call <SID>CodeSnippet("view")<CR>'
+	exe ihead.'&view\ code\ snippet<Tab>'.esc_mapl.'nv  <C-C>:call <SID>CodeSnippet("view")<CR>'
+	exe ahead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw      :call <SID>CodeSnippet("write")<CR>'
+	exe ihead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call <SID>CodeSnippet("write")<CR>'
+	exe vhead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call <SID>CodeSnippet("writemarked")<CR>'
+	exe ahead.'&edit\ code\ snippet<Tab>'.esc_mapl.'ne       :call <SID>CodeSnippet("edit")<CR>'
+	exe ihead.'&edit\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call <SID>CodeSnippet("edit")<CR>'
 	exe ahead.'-SepSnippets-                       :'
 
 	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'do_specials', 'specials_menu', 'Snippets'	)
@@ -1966,8 +1963,8 @@ function! s:InitMenus()
 	exe ahead.'external\ &processing<TAB>'.esc_mapl.'rp.-SepHead-    :'
 
 	exe ahead.'-SEP3-                            :'
-	exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh        :call Latex_Hardcopy("n")<CR>'
-	exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call Latex_Hardcopy("v")<CR>'
+	exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh        :call <SID>Hardcopy("n")<CR>'
+	exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call <SID>Hardcopy("v")<CR>'
 
 	exe ahead.'-SEP4-                            :'
 	exe ahead.'plug-in\ &settings<Tab>'.esc_mapl.'rse                :call Latex_Settings(0)<CR>'
@@ -2065,12 +2062,17 @@ function! s:RemoveMenus()
 	endif
 endfunction    " ----------  end of function s:RemoveMenus  ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  Latex_Settings     {{{1
-"   DESCRIPTION:  Display plugin settings
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
+"-------------------------------------------------------------------------------
+" Latex_Settings : Display plug-in settings.   {{{1
+"
+" verbosity:
+"   0 - basic settings
+"   1 - all setting
+"   2 - print all settings into buffer
+"
+" Parameters:
+"   verbose - verbosity (integer)
+"-------------------------------------------------------------------------------
 function! Latex_Settings ( verbose )
 	"
 	if     s:MSWIN | let sys_name = 'Windows'
@@ -2141,13 +2143,15 @@ function! Latex_Settings ( verbose )
 	endif
 endfunction    " ----------  end of function Latex_Settings ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  Latex_Hardcopy     {{{1
-"   DESCRIPTION:  print PostScript to file
-"    PARAMETERS:  mode - n:normal / v:visual
-"       RETURNS:
-"===============================================================================
-function! Latex_Hardcopy (mode)
+"-------------------------------------------------------------------------------
+" s:Hardcopy : Print buffer to PostScript file.   {{{1
+"
+" Parameters:
+"   mode - "n" or "v" (string)
+" Returns:
+"   <+RETURN+> - <+DESCRIPTION+> (<+TYPE+>)
+"-------------------------------------------------------------------------------
+function! s:Hardcopy ( mode )
   let outfile = expand("%")
   if empty(outfile)
     redraw!
@@ -2179,7 +2183,7 @@ function! Latex_Hardcopy (mode)
 		endif
 	endif
 	exe  ':set printheader='.escape( old_printheader, ' %' )
-endfunction   " ---------- end of function  Latex_Hardcopy  ----------
+endfunction   " ---------- end of function s:Hardcopy  ----------
 
 "-------------------------------------------------------------------------------
 " === Setup: Templates, toolbox and menus ===   {{{1
