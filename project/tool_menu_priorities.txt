@@ -12,6 +12,8 @@ Tools.Latex	40.1110
 Tools.Lua	40.1122
 Tools.Matlab	40.1140
 Tools.Perl	40.1160
+Tools.Python	40.1162
+Tools.Verilog	40.1168
 Tools.Vim	40.1170
 
 Tools.Filter	40.1210		???

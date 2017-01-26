@@ -1,26 +1,38 @@
 # Welcome to Vim-Plugins
 
 This repository hosts the latest development versions of various Vim plug-ins.
+Currently maintained by Wolfgang Mehner:
+[GitHub](https://github.com/WolfgangMehner)
+[Vim.org](http://www.vim.org/account/profile.php?user_id=36934)
 
-Fritz Mehner ([github](https://github.com/FritzMehner)) ([Vim.org](http://www.vim.org/account/profile.php?user_id=169)):
+__Support for Various Programming Languages__
 
-* [AWK-Support](http://www.vim.org/scripts/script.php?script_id=4415): AWK IDE for Vim
-* [Bash-Support](http://www.vim.org/scripts/script.php?script_id=365): Bash IDE for Vim
-* [C-Support](http://www.vim.org/scripts/script.php?script_id=213): C/C++ IDE for Vim
-* [LaTeX-Support](http://www.vim.org/scripts/script.php?script_id=4405): LaTeX IDE for Vim
-* [Perl-Support](http://www.vim.org/scripts/script.php?script_id=556): Perl IDE for Vim
-* [Vim-Support](http://www.vim.org/scripts/script.php?script_id=3931): Vim-Script IDE
+Name           | Supports            | vim.org                                                         | GitHub
+---            | ---                 | ---                                                             | ---
+AWK-Support    | AWK                 | [vim.org](http://www.vim.org/scripts/script.php?script_id=4415) | [GitHub](https://github.com/WolfgangMehner/awk-support)
+Bash-Support   | Bash                | [vim.org](http://www.vim.org/scripts/script.php?script_id=365)  | [GitHub](https://github.com/WolfgangMehner/bash-support)
+C-Support      | C/C++ & Doxygen     | [vim.org](http://www.vim.org/scripts/script.php?script_id=213)  | [GitHub](https://github.com/WolfgangMehner/c-support)
+LaTeX-Support  | LaTeX/LuaTeX/BibTeX | [vim.org](http://www.vim.org/scripts/script.php?script_id=4405) | [GitHub](https://github.com/WolfgangMehner/latex-support)
+Lua-Support    | Lua & C-API         | [vim.org](http://www.vim.org/scripts/script.php?script_id=4950) | [GitHub](https://github.com/WolfgangMehner/lua-support)
+Matlab-Support | Matlab              | -                                                               | [GitHub](https://github.com/WolfgangMehner/matlab-support)
+Perl-Support   | Perl & POD          | [vim.org](http://www.vim.org/scripts/script.php?script_id=556)  | [GitHub](https://github.com/WolfgangMehner/perl-support)
+Vim-Support    | Vim-Script          | [vim.org](http://www.vim.org/scripts/script.php?script_id=3931) | [GitHub](https://github.com/WolfgangMehner/vim-support)
 
-Wolfgang Mehner ([github](https://github.com/WolfgangMehner)) ([Vim.org](http://www.vim.org/account/profile.php?user_id=36934)):
+__Other Tools__
 
-* Template-Support: Template engine used by the other plug-ins
-* [Git-Support](http://www.vim.org/scripts/script.php?script_id=4497): Manage Git repositories from within Vim
-* [Lua-Support](http://www.vim.org/scripts/script.php?script_id=4950): Lua IDE for Vim
-* Matlab-Support: Matlab IDE for Vim (to be published)
+Name            | Description                                                  | vim.org                                                         | GitHub
+---             | ---                                                          | ---                                                             | ---
+Git-Support     | Manage Git repos from within Vim                             | [vim.org](http://www.vim.org/scripts/script.php?script_id=4497) | [GitHub](https://github.com/WolfgangMehner/git-support)
+Verilog-Support | SystemVerilog & UVM by [jmcneal](https://github.com/jmcneal) | -                                                               | [GitHub](https://github.com/jmcneal/verilog-support)
+
+Most of the plug-ins were originally developed by Fritz Mehner:
+[GitHub](https://github.com/FritzMehner)
+[Vim.org](http://www.vim.org/account/profile.php?user_id=169)
 
 # Installation
 
-We recommend downloading the latest versions published on vim.org (see above).
+We recommend downloading the latest official versions published on vim.org (see above).
+Or try the development snapshots in the individual GitHub repositories (see above).
 The versions available here might be buggy.
 
 If you really want to use the versions from the repository, [consult this](https://github.com/WolfgangMehner/vim-plugins/wiki/Installation).
