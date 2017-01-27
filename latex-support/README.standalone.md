@@ -19,6 +19,8 @@ Notable new features:
 - Change the typesetter during runtime using `:LatexTypesetter`.
 - Background processing, enable via `:LatexProcessing`.
 - View errors from background processing in quickfix using `:LatexErrors`.
+- Add maps for BibTeX buffers. The maps for the Comment, Text, and BibTeX
+  templates now are available when editing BibTeX.
 
 The background processing relies on the new `+job` feature, which becomes
 available with a patch level of approx. `7.4.2000`.

@@ -105,9 +105,8 @@ Git:
 - Document 'g:Git_Editor', and the use of '$GIT_EDITOR', and add it to :GitSupportSettings.
 
 LaTeX:
-- (DONE) Reference Card: Menu 'Beamer' missing.
-- (DONE) Documentation: Adding additional template files.
-- Add 'luatex' as a type setter.
+- (DONE) Add 'luatex' as a type setter.
+- Add :LatexConvert as an ex-command.
 
 Lua:
 - (DONE) Documentation: Add setup of C API templates.

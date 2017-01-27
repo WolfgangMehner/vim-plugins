@@ -43,12 +43,22 @@ MenuShortcut( 'Wizard',   'w' )
 MenuShortcut( 'Help',     'h' )
 
 IncludeFile( 'resources.templates' )
+
+§ load for LaTeX and BibTex
+== USE FILETYPES: default, bibtex ==
 IncludeFile( 'comments.templates' )
 IncludeFile( 'text.templates' )
+== ENDFILETYPES ==
+
 IncludeFile( 'math.templates' )
 IncludeFile( 'document.templates' )
 IncludeFile( 'beamer.templates' )
+
+§ load for BibTex only
+== USE FILETYPES: bibtex ==
 IncludeFile( 'bibtex.templates' )
+== ENDFILETYPES ==
+
 IncludeFile( 'wizard.templates' )
 
 § =============================================================

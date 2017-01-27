@@ -1,8 +1,8 @@
-*latexsupport.txt*              LaTeX Support                      Nov 30 2016
+*latexsupport.txt*              LaTeX Support                      Jan 27 2017
 
 LaTeX Support                                     *latex-support* *latexsupport*
 
-                             Plug-in version 1.3pre
+                             Plug-in version 1.3alpha
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
@@ -573,17 +573,17 @@ Additional maps can be defined by the user, using the ex-commands :Latex,
 :LatexCheck, :LatexView, ...
 To define the following function keys in normal, visual, and insert mode:
 
-    Ctrl-F9   run typesetter
-     Alt-F9   run viewer
+         F9   run typesetter
+    CTRL-F9   run viewer
 
 Add these lines to your Latex filetype plug-in: >
 
-  nnoremap   <buffer>   <C-F9>        :Latex<CR>
-  inoremap   <buffer>   <C-F9>   <Esc>:Latex<CR>
-  vnoremap   <buffer>   <C-F9>   <Esc>:Latex<CR>
-  nnoremap   <buffer>   <A-F9>        :LatexView<CR>
-  inoremap   <buffer>   <A-F9>   <Esc>:LatexView<CR>
-  vnoremap   <buffer>   <A-F9>   <Esc>:LatexView<CR>
+  nnoremap   <buffer>     <F9>        :Latex<CR>
+  inoremap   <buffer>     <F9>   <Esc>:Latex<CR>
+  vnoremap   <buffer>     <F9>   <Esc>:Latex<CR>
+  nnoremap   <buffer>   <C-F9>        :LatexView<CR>
+  inoremap   <buffer>   <C-F9>   <Esc>:LatexView<CR>
+  vnoremap   <buffer>   <C-F9>   <Esc>:LatexView<CR>
 <
 
 ==============================================================================

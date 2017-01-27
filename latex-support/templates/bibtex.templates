@@ -83,7 +83,7 @@
 
 == SEP: BibTeX.sep1 ==
 
-== BibTeX.article == below, noindent ==
+== BibTeX.article == below, noindent, map:bar, sc:a ==
 @article{<CURSOR>,
   author        = {},
   title         = {},
@@ -138,7 +138,7 @@
   month         = {},
   note          = {},
 }
-== BibTeX.incollection == below, noindent ==
+== BibTeX.incollection == below, noindent, map:bic, sc:i ==
 @incollection{<CURSOR>,
   author        = {},
   title         = {},
@@ -157,7 +157,7 @@
   month         = {},
   note          = {},
 }
-== BibTeX.inproceedings == below, noindent ==
+== BibTeX.inproceedings == below, noindent, map:bip, sc:i ==
 @inproceedings{<CURSOR>,
   author        = {},
   title         = {},

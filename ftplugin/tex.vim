@@ -7,10 +7,10 @@
 " ----------------------------------------------------------------------------
 
 " Only do this when not done yet for this buffer
-if exists("b:did_LATEX_ftplugin")
+if exists("b:did_latex_support_ftplugin")
   finish
 endif
-let b:did_LATEX_ftplugin = 1
+let b:did_latex_support_ftplugin = 1
 
 " ---------- Add to the keyword characters -----------------------------------
 "            Useful for searching labels which use special characters
@@ -24,12 +24,12 @@ call Latex_SetMapLeader ()
 
 " ---------- Maps for running Latex et al. -----------------------------------
 
-nnoremap  <buffer>            <C-F9>                 :Latex<CR>
-inoremap  <buffer>            <C-F9>            <Esc>:Latex<CR>
-vnoremap  <buffer>            <C-F9>            <Esc>:Latex<CR>
-nnoremap  <buffer>            <A-F9>                 :LatexView<CR>
-inoremap  <buffer>            <A-F9>            <Esc>:LatexView<CR>
-vnoremap  <buffer>            <A-F9>            <Esc>:LatexView<CR>
+nnoremap  <buffer>            <F9>                   :Latex<CR>
+inoremap  <buffer>            <F9>              <Esc>:Latex<CR>
+vnoremap  <buffer>            <F9>              <Esc>:Latex<CR>
+nnoremap  <buffer>            <C-F9>                 :LatexView<CR>
+inoremap  <buffer>            <C-F9>            <Esc>:LatexView<CR>
+vnoremap  <buffer>            <C-F9>            <Esc>:LatexView<CR>
 
 " ---------- Maps for the Make tool ------------------------------------------
 

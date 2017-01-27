@@ -16,7 +16,7 @@
 "
 "       Version:  see variable g:LatexSupportVersion below.
 "       Created:  27.12.2012
-"      Revision:  26.12.2016
+"      Revision:  27.01.2017
 "       License:  Copyright (c) 2012-2015, Fritz Mehner
 "                 Copyright (c) 2016-2017, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
@@ -48,7 +48,7 @@ if exists("g:LatexSupportVersion") || &cp
 	finish
 endif
 
-let g:LatexSupportVersion= "1.3pre"                  " version number of this script; do not change
+let g:LatexSupportVersion= "1.3alpha"                  " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " === Auxiliary functions ===   {{{1

@@ -280,12 +280,13 @@ mathtt
 
 == SEP: Math.sep2 == 
 
+== Math.cases == sc:c, below, map:mca ==
+\begin{cases}
+	<CURSOR> & <+cond+> \\
+	<+term+> & <+cond+>
+\end{cases}
 == Math.choose == sc:c, insert, map:mch ==
 {<CURSOR><SPLIT>}\choose{<+k+>}
-== Math.ddot == insert, map:mddt ==
-\ddot{<CURSOR><SPLIT>}
-== Math.dot  == sc:d, insert, map:mdt ==
-\dot{<CURSOR><SPLIT>}
 == Math.frac == sc:f, insert, map:mfr ==
 \frac{<CURSOR><SPLIT>}{<+denominator+>}
 == Math.nth root == sc:n, insert, map:mnr ==
@@ -296,8 +297,6 @@ mathtt
 \sqrt{<CURSOR><SPLIT>}
 == Math.sum  == sc:s, insert, map:msu ==
 \sum_{<CURSOR>}^{<+upperlimit+>}{<SPLIT><-summand->}
-== Math.vec  == sc:v, insert, map:mve ==
-\vec{<CURSOR><SPLIT>}
 == ENDTEMPLATE ==
 
 == Math.operatorname  == sc:o, insert, map:mon ==
