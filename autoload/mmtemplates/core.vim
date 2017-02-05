@@ -1702,9 +1702,9 @@ function! s:IncludeFile ( templatefile, ... )
 	let filelines = readfile( templatefile )
 	"
 	for line in filelines
-		"
-		let firstchar = line[0]
-		"
+
+		let firstchar = matchstr( line, '^.\?' )
+
 		" which state
 		if state == 'command'
 			" ==================================================
@@ -4949,10 +4949,10 @@ function! mmtemplates#core#ChangeSyntax ( library, category, ... )
 			return s:ErrorMsg ( 'Not enough arguments for '.a:category.'.' )
 		elseif a:0 == 1
 			let t_lib.regex_settings.CommentStart = a:1
-			let t_lib.regex_settings.CommentHint  = a:1[0]
+			let t_lib.regex_settings.CommentHint  = matchstr( a:1, '^.\?' )
 		elseif a:0 == 2
 			let t_lib.regex_settings.CommentStart = a:1
-			let t_lib.regex_settings.CommentHint  = a:2[0]
+			let t_lib.regex_settings.CommentHint  = matchstr( a:2, '^.\?' )
 		endif
 		"
 		call s:UpdateFileReadRegex ( t_lib.regex_file, t_lib.regex_settings, t_lib.interface )
