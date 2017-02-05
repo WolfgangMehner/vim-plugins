@@ -7,12 +7,12 @@ Interesting:
     nmap <expr> <Plug>GitsupportMenu1 <SID>AssembleCmdLine( ':GitLog -p -S "'.@*, '"' )
 
 Project:
-- (FM,WM, DONE?) Use normal!, noremap and noremenu consistently.
-- (FM,WM) Is the difference between local and global/system installation
-  documented somewhere?
-- (WM, DONE?) Improve 'adjust end-of-line comment' to change the line if the comment
+- Use normal!, noremap and noremenu consistently.
+- Is the difference between local and global/system installation documented
+  somewhere?
+- (DONE?) Improve 'adjust end-of-line comment' to change the line if the comment
   itself contains ignored sections?
-- (WM) Remove old ".../rc/sample_template_file".
+- Remove old ".../rc/sample_template_file".
 - Do not always jump to errors automatically from the quickfix list. Make this
   configurable.
 - Configure the template which is inserted automatically when a new file is
@@ -20,26 +20,28 @@ Project:
 - Use 'Xterm_Executable' and 'Xterm_Options' everywhere.
 
 vim.org:
-- (FM, DONE?) Reference github on plug-in pages.
+- (DONE) Reference GitHub on plug-in pages.
 
 Templates:
-- (WM, DONE) API 'EditTemplateFiles'.
+- (DONE) API 'EditTemplateFiles'.
   * Check whether an indexed file actually exists.
   * Configuration of the file browser (+ documentation).
-- (WM, DONE?) After reloading a template library, it is possible that the maps
-  are not created anymore.
-- (WM, DONE?) Correct escape for menu names.
+- (DONE) After reloading a template library, it is possible that the maps are
+  not created anymore.
+- (DONE) Correct escape for menu names.
   * At least these special characters must be escaped: <space> . | \ &
   * Expanded menus for lists.
-- (WM, DONE) When overwriting templates, also set new map and shortcut, if one
-  is given.
+- (DONE) When overwriting templates, also set new map and shortcut, if one is
+  given.
 - (DONE) Add configuration "g:Templates_OverwriteWarning".
-- (WM) Better debugging while reading template files:
-  Print filename and line number for errors and warnings.
-- (WM) Configure CTRL+J and CTRL+D.
 - (DONE) Can not use property "Templates::UsePersonalizationFile" anymore:
   Personalization files loaded before customization.
-- (DONE?) Change 3rd argument of 'mmtemplates#core#AddCustomTemplateFiles'?
+  -> Custom templates loaded afterwards, so less need for skipping
+  personalization file.
+- (DONE) Change 3rd argument of 'mmtemplates#core#AddCustomTemplateFiles'?
+- Better debugging while reading template files:
+  Print filename and line number for errors and warnings.
+- Configure CTRL+J and CTRL+D.
 - Add an appropriate action if 'mmtemplates#core#EditTemplateFiles' is called
   for a file which is not yet available.
 

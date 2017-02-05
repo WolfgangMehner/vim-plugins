@@ -58,6 +58,8 @@ IncludeFile( 'functions.templates' )
 §  Help
 § =============================================================
 
+SetMacro( 'HelpPathEnglish', 'http://en.wiktionary.org/wiki/' )
+
 == HELP: Help.English == map:he, sc:e ==
 |Word( '' )|
 |Substitute( '\W', '', 'g' )|
