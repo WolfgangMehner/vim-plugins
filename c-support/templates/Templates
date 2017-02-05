@@ -24,6 +24,13 @@ SetFormat( 'YEAR', '%Y' )
 
 SetStyle( 'C' )
 
+§ templates automatically included into new files
+§ set the property to an empty string to disable the insertion
+SetProperty ( 'C::FileSkeleton::Header',   'Comments.file description impl' )
+SetProperty ( 'C::FileSkeleton::Source',   'Comments.file description header' )
+SetProperty ( 'Cpp::FileSkeleton::Header', 'Comments.file description impl' )
+SetProperty ( 'Cpp::FileSkeleton::Source', 'Comments.file description header' )
+
 § ==========================================================
 §  File Includes and Shortcuts
 § ==========================================================

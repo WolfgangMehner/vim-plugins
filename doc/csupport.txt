@@ -1,4 +1,4 @@
-*csupport.txt*                  C/C++ Support                      Oct 09 2016
+*csupport.txt*                  C/C++ Support                      Feb 05 2017
 
 C/C++ Support                                            *c-support* *csupport*
 
@@ -87,7 +87,8 @@ keystroke.
  5.3    Templates                               |csupport-templates-names|
  5.3.1  Template definition                     |csupport-templates-definition|
  5.3.2  The jump tags <+text+> etc.             |csupport-templates-jumptags|
- 5.3.3  Command Ctrl-j                          |csupport-Ctrl-j|
+ 5.3.3  Command Ctrl-j                          |csupport-CTRL-J|
+ 5.4    File Skeletons                          |csupport-file-skeleton|
  5.5    Binding a style to a file extension     |csupport-templates-bind|
  6.    C/C++ Dictionaries                       |csupport-dictionary|
  7.    Extend ctags                             |csupport-ctags|
@@ -1497,7 +1498,7 @@ The variable plugin_dir will automatically be set to one of the following values
  g:C_CodeSnippets          : The name of the code snippet directory (see
                              |csupport-snippets|).
  g:C_CplusCompiler         : The name of the C++ compiler.
- g:C_Ctrl_j                : hotkey Ctrl-j 'on'/'off' (see |csupport-Ctrl-j|)
+ g:C_Ctrl_j                : hotkey Ctrl-j 'on'/'off' (see |csupport-CTRL-j|)
  g:C_CustomTemplateFile    : sets the custom template file (see|csupport-templates|)
  g:C_Debugger              : the default debugging: 'gdb', 'kdbg', or 'ddd'
  g:C_Dictionary_File       : The name(s) of the dictionary file(s) used for
@@ -1830,7 +1831,7 @@ The text inside the brackets is userdefined and can be empty. The text can be
 composed from letters (uppercase and lowercase), digits, and underscores.
 After the insertion of an template these jump targets will be highlighted.
 
-5.3.3  Command Ctrl-j                                        *csupport-Ctrl-j*
+5.3.3  Command Ctrl-j                                        *csupport-CTRL-j*
 
 Use the command Ctrl-j to jump to the next target. The target will be removed
 and the mode will switched to insertion. Ctrl-j works in normal and in insert
@@ -1848,9 +1849,39 @@ you jump to the target <-IF PART-> and deletes it.  When the block is written
 a Ctrl-j leads you to the else-part.  The target <+ELSE_PART+> disappears and
 you can type on.
 
-==============================================================================
+------------------------------------------------------------------------------
+5.4  FILE SKELETONS                                   *csupport-file-skeleton*
+------------------------------------------------------------------------------
+
+If g:InsertFileHeader is set to "yes", templates are automatically inserted
+into new C and C++ files. The lists of templates used to create these file
+skeletons are specified in the template library. They can for example be set
+in the customization file (see |csupport-templates|).
+
+                          *C::FileSkeleton::Header* *Cpp::FileSkeleton::Header*
+                          *C::FileSkeleton::Source* *Cpp::FileSkeleton::Source*
+The file skeletons are controlled via these properties. For each filetype, the
+headers and source files can be different:
+>
+  SetProperty ( 'C::FileSkeleton::Header',   'Comments.file description impl' )
+  SetProperty ( 'C::FileSkeleton::Source',   'Comments.file description header' )
+  SetProperty ( 'Cpp::FileSkeleton::Header', 'Comments.file description impl' )
+  SetProperty ( 'Cpp::FileSkeleton::Source', 'Comments.file description header' )
+<
+This inserts only comments to describe the file. To disable the insertion for
+one of these types, set the property to an empty string: >
+  SetProperty ( 'C::FileSkeleton::Source', '' )
+In general, these properties are semicolon-separated lists of templates to be
+inserted: >
+  SetProperty ( 'C::FileSkeleton::Source', 'Comments.file description header; ;Comments.all sections.implementation, C' )
+This will inserted the file description and the file section comments (see
+|csupport-comm-sections|). If a space appears as an entry in the list, an
+empty line is inserted: >
+  '...; ;...'
+<
+------------------------------------------------------------------------------
 5.5  BINDING A STYLE TO A FILE EXTENSION             *csupport-templates-bind*
-==============================================================================
+------------------------------------------------------------------------------
 
 You can bind the existing styles to one or more filename extensions. To do so
 assign a Dictionary to the global variable g:C_Styles in '~/.vimrc' :

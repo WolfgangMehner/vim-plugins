@@ -1,4 +1,4 @@
-README for c.vim (Version 6.2.1pre) / November 13 2016
+README for c.vim (Version 6.2.1pre) / February 05 2017
 ================================================================================
 
   *  INSTALLATION
@@ -204,6 +204,10 @@ RELEASE NOTES
 
 RELEASE NOTES FOR VERSION 6.2.1
 ----------------------------------------------------------------------
+- The templates which are inserted into new files as file skeletons can be
+  specified in the templates library, via properties:
+    C::FileSkeleton::Header, Cpp::FileSkeleton::Header,
+    C::FileSkeleton::Source, Cpp::FileSkeleton::Source
 - Fix a problem with the path when setting 'Run->executable to run'.
 - New and reworked templates. Change statement templates.
 

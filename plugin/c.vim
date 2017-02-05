@@ -17,7 +17,7 @@
 "
 "        Version:  see variable  g:C_Version  below
 "        Created:  04.11.2000
-"       Revision:  08.11.2016
+"       Revision:  29.01.2017
 "        License:  Copyright (c) 2000-2014, Fritz Mehner
 "                  Copyright (c) 2015-2016, Wolfgang Mehner
 "                  This program is free software; you can redistribute it and/or
@@ -1518,14 +1518,7 @@ function! C_ProtoShow ()
 		echo "currently no prototypes available"
 	endif
 endfunction    " ---------  end of function C_ProtoShow  ----------
-"
-"------------------------------------------------------------------------------
-"  C_EscapeBlanks : C_EscapeBlanks       {{{1
-"------------------------------------------------------------------------------
-function! C_EscapeBlanks (arg)
-	return  substitute( a:arg, " ", "\\ ", "g" )
-endfunction    " ---------  end of function C_EscapeBlanks  ----------
-"
+
 "------------------------------------------------------------------------------
 "  C_Compile : C_Compile       {{{1
 "------------------------------------------------------------------------------
@@ -2491,21 +2484,12 @@ function! C_CreateGuiMenus ()
 		aunmenu <silent> &Tools.Load\ C\ Support
 		amenu   <silent> 40.1000 &Tools.-SEP100- :
 		amenu   <silent> 40.1030 &Tools.Unload\ C\ Support <C-C>:call C_RemoveGuiMenus()<CR>
-		call s:C_RereadTemplates()
+		call s:RereadTemplates()
 		call s:InitMenus()
 		let  s:C_MenusVisible = 'yes'
 	endif
 endfunction    " ----------  end of function C_CreateGuiMenus  ----------
-"
-"------------------------------------------------------------------------------
-"  s:CheckAndRereadTemplates     {{{1
-"------------------------------------------------------------------------------
-function! s:CheckAndRereadTemplates ()
-	if ! exists ( 'g:C_Templates' )
-		call s:C_RereadTemplates()        
-	endif
-endfunction    " ----------  end of function s:CheckAndRereadTemplates  ----------
-"
+
 "------------------------------------------------------------------------------
 "  === Templates API ===   {{{1
 "------------------------------------------------------------------------------
@@ -2528,15 +2512,12 @@ function! C_ResetMapLeader ()
 	endif
 endfunction    " ----------  end of function C_ResetMapLeader  ----------
 " }}}2
-"
-"===  FUNCTION  ================================================================
-"          NAME:  C_RereadTemplates     {{{1
-"   DESCRIPTION:  rebuild commands and the menu from the (changed) template file
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! s:C_RereadTemplates ()
-	"
+
+"-------------------------------------------------------------------------------
+" s:RereadTemplates : Reload the templates.   {{{1
+"-------------------------------------------------------------------------------
+function! s:RereadTemplates ()
+
 	"-------------------------------------------------------------------------------
 	" SETUP TEMPLATE LIBRARY
 	"-------------------------------------------------------------------------------
@@ -2564,7 +2545,13 @@ function! s:C_RereadTemplates ()
 	"
 	" syntax: comments
 	call mmtemplates#core#ChangeSyntax ( g:C_Templates, 'comment', '§' )
-	"
+
+	" property: file skeletons
+	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'C::FileSkeleton::Header',   'Comments.file description impl' )
+	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'C::FileSkeleton::Source',   'Comments.file description header' )
+	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'Cpp::FileSkeleton::Header', 'Comments.file description impl' )
+	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'Cpp::FileSkeleton::Source', 'Comments.file description header' )
+
 	" property: Doxygen menu
 	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'Doxygen::BriefAM::Menu', '' )
 	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'Doxygen::BriefAM::Map', '' )
@@ -2608,38 +2595,75 @@ function! s:C_RereadTemplates ()
 	" get the jump tags
 	let s:C_TemplateJumpTarget = mmtemplates#core#Resource ( g:C_Templates, "jumptag" )[0]
 	"
-endfunction    " ----------  end of function s:C_RereadTemplates  ----------
+endfunction    " ----------  end of function s:RereadTemplates  ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  s:CheckTemplatePersonalization     {{{1
-"   DESCRIPTION:  check whether the name, .. has been set
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
+"-------------------------------------------------------------------------------
+" s:CheckTemplatePersonalization : Check whether the name, .. has been set.   {{{1
+"-------------------------------------------------------------------------------
+
 let s:DoneCheckTemplatePersonalization = 0
-"
+
 function! s:CheckTemplatePersonalization ()
-	"
+
 	" check whether the templates are personalized
-	if ! s:DoneCheckTemplatePersonalization
-				\ && mmtemplates#core#ExpandText ( g:C_Templates, '|AUTHOR|' ) == 'YOUR NAME'
-		let s:DoneCheckTemplatePersonalization = 1
-		"
-		let maplead = mmtemplates#core#Resource ( g:C_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
-		"
-		redraw
-		echohl Search
-		echo 'The personal details (name, mail, ...) are not set in the template library.'
-		echo 'They are used to generate comments, ...'
-		echo 'To set them, start the setup wizard using:'
-		echo '- use the menu entry "C/C++ -> Snippets -> template setup wizard"'
-		echo '- use the map "'.maplead.'ntw" inside a C buffer'
-		echo "\n"
-		echohl None
+	if s:DoneCheckTemplatePersonalization
+				\ || mmtemplates#core#ExpandText ( g:C_Templates, '|AUTHOR|' ) != 'YOUR NAME'
+				\ || s:C_InsertFileHeader != 'yes'
+		return
 	endif
-	"
+
+	let s:DoneCheckTemplatePersonalization = 1
+
+	let maplead = mmtemplates#core#Resource ( g:C_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
+
+	redraw
+	call s:ImportantMsg ( 'The personal details are not set in the template library. Use the map "'.maplead.'ntw".' )
+
 endfunction    " ----------  end of function s:CheckTemplatePersonalization  ----------
-"
+
+"-------------------------------------------------------------------------------
+" s:CheckAndRereadTemplates : Make sure the templates are loaded.   {{{1
+"-------------------------------------------------------------------------------
+function! s:CheckAndRereadTemplates ()
+	if ! exists ( 'g:C_Templates' )
+		call s:RereadTemplates()
+	endif
+endfunction    " ----------  end of function s:CheckAndRereadTemplates  ----------
+
+"-------------------------------------------------------------------------------
+" s:InsertFileHeader : Insert a file header.   {{{1
+"-------------------------------------------------------------------------------
+function! s:InsertFileHeader ()
+	call s:CheckAndRereadTemplates()
+
+	" prevent insertion for a file generated from a link error
+	if isdirectory(expand('%:p:h')) && s:C_InsertFileHeader == 'yes'
+		let ft = &filetype == 'cpp' ? 'Cpp' : 'C'
+
+		if index( s:C_SourceCodeExtensionsList, expand('%:e') ) >= 0
+			let templ_s = mmtemplates#core#Resource ( g:C_Templates, 'get', 'property', ft.'::FileSkeleton::Source' )[0]
+		else
+			let templ_s = mmtemplates#core#Resource ( g:C_Templates, 'get', 'property', ft.'::FileSkeleton::Header' )[0]
+		endif
+
+		" insert templates in reverse order, always above the firs line
+		" the last one to insert (the first in the list), will determine the
+		" placement of the cursor
+		let templ_l = split ( templ_s, ';' )
+		for i in range ( len(templ_l)-1, 0, -1 )
+			exe 1
+			if -1 != match ( templ_l[i], '^\s\+$' )
+				put! =''
+			else
+				call mmtemplates#core#InsertTemplate ( g:C_Templates, templ_l[i], 'placement', 'above' )
+			endif
+		endfor
+		if len(templ_l) > 0
+			set modified
+		endif
+	endif
+endfunction    " ----------  end of function s:InsertFileHeader  ----------
+
 "------------------------------------------------------------------------------
 "  C_ToolMenu     {{{1
 "------------------------------------------------------------------------------
@@ -2662,26 +2686,6 @@ function! C_RemoveGuiMenus ()
 		let s:C_MenusVisible = 'no'
 	endif
 endfunction    " ----------  end of function C_RemoveGuiMenus  ----------
-
-"------------------------------------------------------------------------------
-" C_OpenFold     {{{1
-" Open fold and go to the first or last line of this fold. 
-"------------------------------------------------------------------------------
-function! C_OpenFold ( mode )
-	if foldclosed(".") >= 0
-		" we are on a closed  fold: get end position, open fold, jump to the
-		" last line of the previously closed fold
-		let	foldstart	= foldclosed(".")
-		let	foldend		= foldclosedend(".")
-		normal! zv
-		if a:mode == 'below'
-			exe ":".foldend
-		endif
-		if a:mode == 'start'
-			exe ":".foldstart
-		endif
-	endif
-endfunction    " ----------  end of function C_OpenFold  ----------
 
 "------------------------------------------------------------------------------
 "  C_HighlightJumpTargets   {{{1
@@ -2709,32 +2713,7 @@ function! C_JumpCtrlJ ()
 	endif
 	return ''
 endfunction    " ----------  end of function C_JumpCtrlJ  ----------
-"
-"------------------------------------------------------------------------------
-"  C_ExpandSingleMacro     {{{1
-"------------------------------------------------------------------------------
-function! C_ExpandSingleMacro ( val, macroname, replacement )
-  return substitute( a:val, escape(a:macroname, '$' ), a:replacement, "g" )
-endfunction    " ----------  end of function C_ExpandSingleMacro  ----------
 
-"------------------------------------------------------------------------------
-"  check for header or implementation file     {{{1
-"------------------------------------------------------------------------------
-function! C_InsertTemplateWrapper ()
-	" prevent insertion for a file generated from a link error:
-	"
-	call s:CheckAndRereadTemplates()
-	if isdirectory(expand('%:p:h')) && s:C_InsertFileHeader == 'yes'
-		if index( s:C_SourceCodeExtensionsList, expand('%:e') ) >= 0 
- 			call mmtemplates#core#InsertTemplate(g:C_Templates, 'Comments.file description impl')
-		else
- 			call mmtemplates#core#InsertTemplate(g:C_Templates, 'Comments.file description header')
-		endif
-		set modified
-	endif
-endfunction    " ----------  end of function C_InsertTemplateWrapper  ----------
-
-"
 "===  FUNCTION  ================================================================
 "          NAME:  CreateAdditionalMaps     {{{1
 "   DESCRIPTION:  create additional maps
@@ -3029,7 +3008,7 @@ if has("autocmd")
 				\	if ( &filetype == 'cpp' || &filetype == 'c') |
 				\		if ! exists( 'g:C_Templates' ) |
 				\			if s:C_LoadMenus == 'yes' | call C_CreateGuiMenus ()    |
-				\			else                      | call s:C_RereadTemplates () |
+				\			else                      | call s:RereadTemplates () |
 				\			endif |
 				\		endif |
 				\		call s:CreateAdditionalMaps() |
@@ -3044,7 +3023,7 @@ if has("autocmd")
 				" template styles are the default settings
 				"-------------------------------------------------------------------------------
 				autocmd BufNewFile  * if &filetype =~ '^\(c\|cpp\)$' && expand("%:e") !~ 'ii\?' |
-							\     call C_InsertTemplateWrapper() | endif
+							\     call s:InsertFileHeader() | endif
 				"
 			else
 				"-------------------------------------------------------------------------------
@@ -3052,7 +3031,7 @@ if has("autocmd")
 				"-------------------------------------------------------------------------------
 				for [ pattern, stl ] in items( g:C_Styles )
 					exe "autocmd BufNewFile,BufRead,BufEnter ".pattern." call mmtemplates#core#ChooseStyle ( g:C_Templates, '".stl."')"
-					exe "autocmd BufNewFile                  ".pattern." call C_InsertTemplateWrapper()"
+					exe "autocmd BufNewFile                  ".pattern." call s:InsertFileHeader()"
 				endfor
 				"
 			endif
@@ -3064,6 +3043,8 @@ if has("autocmd")
 	exe 'autocmd BufRead *.'.join( s:C_SourceCodeExtensionsList, '\|*.' )
 				\     .' call C_HighlightJumpTargets()'
 endif " has("autocmd")
-"
+" }}}1
+"-------------------------------------------------------------------------------
+
 "=====================================================================================
 " vim: tabstop=2 shiftwidth=2 foldmethod=marker
