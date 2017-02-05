@@ -47,17 +47,17 @@ os.setlocale ( 'C' )
 --local html_filename       = '/home/wolfgang/Software/lua-5.2.4/doc/manual.html'
 
 ------------------------------------------------------------------------
---  settings for Lua 5.3.3
+--  settings for Lua 5.3.4
 ------------------------------------------------------------------------
 
 local lua_major           = 5
 local lua_minor           = 3
-local lua_release         = 3
+local lua_release         = 4
 local lua_date            = 'May 30 2016'
 local lua_copyright       = '2015 - 2016'
 local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref53.txt'
 local link_main_component = 'lua53'
-local html_filename       = '/home/wolfgang/Software/lua-5.3.3/doc/manual.html'
+local html_filename       = '/home/wolfgang/Software/lua-5.3.4/doc/manual.html'
 
 ------------------------------------------------------------------------
 --  links to all versions (since Lua 5.3.1)

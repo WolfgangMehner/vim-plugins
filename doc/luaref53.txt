@@ -1,6 +1,6 @@
 *luaref53.txt*             Lua 5.3 Reference Manual                May 30 2016
 
-Lua 5.3.3 Reference Manual                                   *lua53* *luaref53*
+Lua 5.3.4 Reference Manual                                   *lua53* *luaref53*
 
 by Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes
 Copyright © 2015 - 2016 Lua.org, PUC-Rio. Freely available under the terms of
@@ -84,7 +84,7 @@ Formated for Vim help by
 Lua 5.3 Reference Manual
 
 by Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes
-Copyright © 2015-2016 Lua.org, PUC-Rio. Freely available under the terms of
+Copyright © 2015-2017 Lua.org, PUC-Rio. Freely available under the terms of
 the Lua license (see http://www.lua.org/license.html).
 
 ------------------------------------------------------------------------------
@@ -186,14 +186,11 @@ can contain values of all types (except nil). Any key with value nil is not
 considered part of the table. Conversely, any key that is not part of a table
 has an associated value nil.
 Tables are the sole data-structuring mechanism in Lua; they can be used to
-represent ordinary arrays, sequences, symbol tables, sets, records, graphs,
-trees, etc. To represent records, Lua uses the field name as an index. The
-language supports this representation by providing a.name as syntactic sugar
-for a["name"]. There are several convenient ways to create tables in Lua (see
+represent ordinary arrays, lists, symbol tables, sets, records, graphs, trees,
+etc. To represent records, Lua uses the field name as an index. The language
+supports this representation by providing a.name as syntactic sugar for
+a["name"]. There are several convenient ways to create tables in Lua (see
 |lua53-sec3.4.9|).
-We use the term sequence to denote a table where the set of all positive
-numeric keys is equal to {1..n} for some non-negative integer n, which is
-called the length of the sequence (see |lua53-sec3.4.7|).
 Like indices, the values of table fields can be of any type. In particular,
 because functions are first-class values, table fields can contain functions.
 Thus tables can also carry methods (see |lua53-sec3.4.11|).
@@ -266,7 +263,9 @@ error unwinds the stack, so that it can gather more information about the
 error, for instance by inspecting the stack and creating a stack traceback.
 This message handler is still protected by the protected call; so, an error
 inside the message handler will call the message handler again. If this loop
-goes on for too long, Lua breaks it and returns an appropriate message.
+goes on for too long, Lua breaks it and returns an appropriate message. (The
+message handler is called only for regular runtime errors. It is not called
+for memory-allocation errors nor for errors while running finalizers.)
 
 ------------------------------------------------------------------------------
 2.4  Metatables and Metamethods                                 *lua53-sec2.4*
@@ -631,18 +630,19 @@ The following strings denote other tokens:
      (     )     {     }     [     ]     ::
      ;     :     ,     .     ..    ...
 <
-Literal strings can be delimited by matching single or double quotes, and can
-contain the following C-like escape sequences: '\a' (bell), '\b' (backspace),
-'\f' (form feed), '\n' (newline), '\r' (carriage return), '\t' (horizontal
-tab), '\v' (vertical tab), '\\' (backslash), '\"' (quotation mark [double
-quote]), and '\'' (apostrophe [single quote]). A backslash followed by a real
-newline results in a newline in the string. The escape sequence '\z' skips the
-following span of white-space characters, including line breaks; it is
-particularly useful to break and indent a long literal string into multiple
-lines without adding the newlines and spaces into the string contents.
-Strings in Lua can contain any 8-bit value, including embedded zeros, which
-can be specified as '\0'. More generally, we can specify any byte in a literal
-string by its numeric value. This can be done with the escape sequence \xXX,
+A short literal string can be delimited by matching single or double quotes,
+and can contain the following C-like escape sequences: '\a' (bell), '\b'
+(backspace), '\f' (form feed), '\n' (newline), '\r' (carriage return), '\t'
+(horizontal tab), '\v' (vertical tab), '\\' (backslash), '\"' (quotation mark
+[double quote]), and '\'' (apostrophe [single quote]). A backslash followed by
+a line break results in a newline in the string. The escape sequence '\z'
+skips the following span of white-space characters, including line breaks; it
+is particularly useful to break and indent a long literal string into multiple
+lines without adding the newlines and spaces into the string contents. A short
+literal string cannot contain unescaped line breaks nor escapes not forming a
+valid escape sequence.
+We can specify any byte in a short literal string by its numeric value
+(including embedded zeros). This can be done with the escape sequence \xXX,
 where XX is a sequence of exactly two hexadecimal digits, or with the escape
 sequence \ddd, where ddd is a sequence of up to three decimal digits. (Note
 that if a decimal escape sequence is to be followed by a digit, it must be
@@ -664,11 +664,6 @@ form can run for several lines, do not interpret any escape sequences, and
 ignore long brackets of any other level. Any kind of end-of-line sequence
 (carriage return, newline, carriage return followed by newline, or newline
 followed by carriage return) is converted to a simple newline.
-Any byte in a literal string not explicitly affected by the previous rules
-represents itself. However, Lua opens files for parsing in text mode, and the
-system file functions may have problems with some control characters. So, it
-is safer to represent non-text data as a quoted literal with explicit escape
-sequences for the non-text characters.
 For convenience, when the opening long bracket is immediately followed by a
 newline, the newline is not included in the string. As an example, in a system
 using ASCII (in which 'a' is coded as 97, newline is coded as 10, and '1' is
@@ -683,6 +678,11 @@ coded as 49), the five literal strings below denote the same string:
      alo
      123"]==]
 <
+Any byte in a literal string not explicitly affected by the previous rules
+represents itself. However, Lua opens files for parsing in text mode, and the
+system file functions may have problems with some control characters. So, it
+is safer to represent non-text data as a quoted literal with explicit escape
+sequences for the non-text characters.
 A numeric constant (or numeral) can be written with an optional fractional
 part and an optional decimal exponent, marked by a letter 'e' or 'E'. Lua also
 accepts hexadecimal constants, which start with 0x or 0X. Hexadecimal
@@ -1227,22 +1227,33 @@ metamethod is called (see |lua53-sec2.4|).
 3.4.7  The Length Operator                                    *lua53-sec3.4.7*
 ------------------------------------------------------------------------------
 
-The length operator is denoted by the unary prefix operator #. The length of a
-string is its number of bytes (that is, the usual meaning of string length
-when each character is one byte).
+The length operator is denoted by the unary prefix operator #.
+The length of a string is its number of bytes (that is, the usual meaning of
+string length when each character is one byte).
+The length operator applied on a table returns a border in that table. A
+border in a table t is any natural number that satisfies the following
+condition:
+>
+     (border == 0 or t[border] ~= nil) and t[border + 1] == nil
+<
+In words, a border is any (natural) index in a table where a non-nil value is
+followed by a nil value (or zero, when index 1 is nil).
+A table with exactly one border is called a sequence. For instance, the table
+{10, 20, 30, 40, 50} is a sequence, as it has only one border (5). The table
+{10, 20, 30, nil, 50} has two borders (3 and 5), and therefore it is not a
+sequence. The table {nil, 20, 30, nil, nil, 60, nil} has three borders (0, 3,
+and 6), so it is not a sequence, too. The table {} is a sequence with border
+0. Note that non-natural keys do not interfere with whether a table is a
+sequence.
+When t is a sequence, #t returns its only border, which corresponds to the
+intuitive notion of the length of the sequence. When t is not a sequence, #t
+can return any of its borders. (The exact one depends on details of the
+internal representation of the table, which in turn can depend on how the
+table was populated and the memory addresses of its non-numeric keys.)
+The computation of the length of a table has a guaranteed worst time of O(log
+n), where n is the largest natural key in the table.
 A program can modify the behavior of the length operator for any value but
 strings through the __len metamethod (see |lua53-sec2.4|).
-Unless a __len metamethod is given, the length of a table t is only defined if
-the table is a sequence, that is, the set of its positive numeric keys is
-equal to {1..n} for some non-negative integer n. In that case, n is its
-length. Note that a table like
->
-     {10, 20, nil, 40}
-<
-is not a sequence, because it has the key 4 but does not have the key 3. (So,
-there is no n such that the set {1..n} is equal to the set of positive numeric
-keys of that table.) Note, however, that non-numeric keys do not interfere
-with whether a table is a sequence.
 
 ------------------------------------------------------------------------------
 3.4.8  Precedence                                             *lua53-sec3.4.8*
@@ -1519,18 +1530,28 @@ Lua state), and so do not generate any hidden side-effects.
 As in most C libraries, the Lua API functions do not check their arguments for
 validity or consistency. However, you can change this behavior by compiling
 Lua with the macro LUA_USE_APICHECK defined.
+The Lua library is fully reentrant: it has no global variables. It keeps all
+information it needs in a dynamic structure, called the Lua state.
+Each Lua state has one or more threads, which correspond to independent,
+cooperative lines of execution. The type |lua53-lua_State| (despite its name)
+refers to a thread. (Indirectly, through the thread, it also refers to the Lua
+state associated to the thread.)
+A pointer to a thread must be passed as the first argument to every function
+in the library, except to |lua53-lua_newstate|, which creates a Lua state from
+scratch and returns a pointer to the main thread in the new state.
 
 ------------------------------------------------------------------------------
 4.1  The Stack                                                  *lua53-sec4.1*
 ------------------------------------------------------------------------------
 
 Lua uses a virtual stack to pass values to and from C. Each element in this
-stack represents a Lua value (nil, number, string, etc.).
+stack represents a Lua value (nil, number, string, etc.). Functions in the API
+can access this stack through the Lua state parameter that they receive.
 Whenever Lua calls C, the called function gets a new stack, which is
 independent of previous stacks and of stacks of C functions that are still
 active. This stack initially contains any arguments to the C function and it
-is where the C function pushes its results to be returned to the caller (see
-|lua53-lua_CFunction|).
+is where the C function can store temporary Lua values and must push its
+results to be returned to the caller (see |lua53-lua_CFunction|).
 For convenience, most query operations in the API do not follow a strict stack
 discipline. Instead, they can refer to any element in the stack by using an
 index: A positive index represents an absolute stack position (starting at 1);
@@ -1632,22 +1653,29 @@ constants in lua.h. The following constants are defined:
 
 Internally, Lua uses the C longjmp facility to handle errors. (Lua will use
 exceptions if you compile it as C++; search for LUAI_THROW in the source code
-for details.) When Lua faces any error (such as a memory allocation error,
-type errors, syntax errors, and runtime errors) it raises an error; that is,
-it does a long jump. A protected environment uses setjmp to set a recovery
-point; any error jumps to the most recent active recovery point.
+for details.) When Lua faces any error (such as a memory allocation error or a
+type error) it raises an error; that is, it does a long jump. A protected
+environment uses setjmp to set a recovery point; any error jumps to the most
+recent active recovery point.
+Inside a C function you can raise an error by calling |lua53-lua_error|.
+Most functions in the API can raise an error, for instance due to a memory
+allocation error. The documentation for each function indicates whether it can
+raise errors.
 If an error happens outside any protected environment, Lua calls a panic
 function (see |lua53-lua_atpanic|) and then calls abort, thus exiting the host
 application. Your panic function can avoid this exit by never returning (e.g.,
 doing a long jump to your own recovery point outside Lua).
+The panic function, as its name implies, is a mechanism of last resort.
+Programs should avoid it. As a general rule, when a C function is called by
+Lua with a Lua state, it can do whatever it wants on that Lua state, as it
+should be already protected. However, when C code operates on other Lua states
+(e.g., a Lua parameter to the function, a Lua state stored in the registry, or
+the result of |lua53-lua_newthread|), it should use them only in API calls
+that cannot raise errors.
 The panic function runs as if it were a message handler (see |lua53-sec2.3|);
 in particular, the error object is at the top of the stack. However, there is
 no guarantee about stack space. To push anything on the stack, the panic
 function must first check the available space (see |lua53-sec4.2|).
-Most functions in the API can raise an error, for instance due to a memory
-allocation error. The documentation for each function indicates whether it can
-raise errors.
-Inside a C function you can raise an error by calling |lua53-lua_error|.
 
 ------------------------------------------------------------------------------
 4.7  Handling Yields in C                                       *lua53-sec4.7*
@@ -1888,7 +1916,7 @@ onto the stack. All arguments and the function value are popped from the stack
 when the function is called. The function results are pushed onto the stack
 when the function returns. The number of results is adjusted to nresults,
 unless nresults is LUA_MULTRET. In this case, all results from the function
-are pushed. Lua takes care that the returned values fit into the stack space,
+are pushed; Lua takes care that the returned values fit into the stack space,
 but it does not ensure any extra space in the stack. The function results are
 pushed onto the stack in direct order (the first result is pushed first), so
 that after the call the last result is on the top of the stack.
@@ -2231,8 +2259,8 @@ lua_getuservalue ~
 >
     int lua_getuservalue (lua_State *L, int index);
 <
-Pushes onto the stack the Lua value associated with the userdata at the given
-index.
+Pushes onto the stack the Lua value associated with the full userdata at the
+given index.
 Returns the type of the pushed value.
 
 ------------------------------------------------------------------------------
@@ -2492,8 +2520,8 @@ lua_newstate ~
 Creates a new thread running in a new, independent state. Returns NULL if it
 cannot create the thread or the state (due to lack of memory). The argument f
 is the allocator function; Lua does all memory allocation for this state
-through this function. The second argument, ud, is an opaque pointer that Lua
-passes to the allocator in every call.
+through this function (see |lua53-lua_Alloc|). The second argument, ud, is an
+opaque pointer that Lua passes to the allocator in every call.
 
 ------------------------------------------------------------------------------
 
@@ -2624,8 +2652,9 @@ in lua.h):
 - LUA_ERRMEM: memory allocation error. For such errors, Lua does not call the
   message handler.
 - LUA_ERRERR: error while running the message handler.
-- LUA_ERRGCMM: error while running a __gc metamethod. (This error typically
-  has no relation with the function being called.)
+- LUA_ERRGCMM: error while running a __gc metamethod. For such errors, Lua
+  does not call the message handler (as this kind of error typically has no
+  relation with the function being called).
 
 ------------------------------------------------------------------------------
 
@@ -3135,7 +3164,7 @@ lua_setuservalue ~
     void lua_setuservalue (lua_State *L, int index);
 <
 Pops a value from the stack and sets it as the new value associated to the
-userdata at the given index.
+full userdata at the given index.
 
 ------------------------------------------------------------------------------
 
@@ -4282,8 +4311,8 @@ chunk in the file named filename. If filename is NULL, then it loads from the
 standard input. The first line in the file is ignored if it starts with a #.
 The string mode works as in function |lua53-lua_load|.
 This function returns the same results as |lua53-lua_load|, but it has an
-extra error code LUA_ERRFILE if it cannot open/read the file or the file has a
-wrong mode.
+extra error code LUA_ERRFILE for file-related errors (e.g., it cannot open or
+read the file).
 As |lua53-lua_load|, this function only loads the chunk; it does not run it.
 
 ------------------------------------------------------------------------------
@@ -4415,6 +4444,8 @@ argument is absent or is nil, returns d. Otherwise, raises an error.
 If l is not NULL, fills the position *l with the result's length. If the
 result is NULL (only possible when returning d and d == NULL), its length is
 considered zero.
+This function uses |lua53-lua_tolstring| to get its result, so all conversions
+and caveats of that function apply here.
 
 ------------------------------------------------------------------------------
 
@@ -5160,8 +5191,8 @@ package.cpath ~
 The path used by |lua53-require| to search for a C loader.
 Lua initializes the C path |lua53-package.cpath| in the same way it
 initializes the Lua path |lua53-package.path|, using the environment variable
-LUA_CPATH_5_3 or the environment variable LUA_CPATH or a default path defined
-in luaconf.h.
+LUA_CPATH_5_3, or the environment variable LUA_CPATH, or a default path
+defined in luaconf.h.
 
 ------------------------------------------------------------------------------
 
@@ -5526,8 +5557,8 @@ string.sub (s, i [, j]) ~
 Returns the substring of s that starts at i and continues until j; i and j can
 be negative. If j is absent, then it is assumed to be equal to -1 (which is
 the same as the string length). In particular, the call string.sub(s,1,j)
-returns a prefix of s with length j, and string.sub(s, -i) returns a suffix of
-s with length i.
+returns a prefix of s with length j, and string.sub(s, -i) (for a positive i)
+returns a suffix of s with length i.
 If, after the translation of negative indices, i is less than 1, it is
 corrected to 1. If j is greater than the string length, it is corrected to
 that length. If, after these corrections, i is greater than j, the function
@@ -5783,9 +5814,9 @@ This function assumes that s is a valid UTF-8 string.
 
 This library provides generic functions for table manipulation. It provides
 all its functions inside the table table.
-Remember that, whenever an operation needs the length of a table, the table
-must be a proper sequence or have a __len metamethod (see |lua53-sec3.4.7|).
-All functions ignore non-numeric keys in the tables given as arguments.
+Remember that, whenever an operation needs the length of a table, all caveats
+about the length operator apply (see |lua53-sec3.4.7|). All functions ignore
+non-numeric keys in the tables given as arguments.
 
 ------------------------------------------------------------------------------
 
@@ -5853,9 +5884,8 @@ is used instead.
 Note that the comp function must define a strict partial order over the
 elements in the list; that is, it must be asymmetric and transitive.
 Otherwise, no valid sort may be possible.
-The sort algorithm is not stable; that is, elements not comparable by the
-given order (e.g., equal elements) may have their relative positions changed
-by the sort.
+The sort algorithm is not stable: elements considered equal by the given order
+may have their relative positions changed by the sort.
 
 ------------------------------------------------------------------------------
 
@@ -6085,8 +6115,8 @@ not a number.
                                                               *lua53-math.ult*
 math.ult (m, n) ~
 
-Returns a boolean, true if integer m is below integer n when they are compared
-as unsigned integers.
+Returns a boolean, true if and only if integer m is below integer n when they
+are compared as unsigned integers.
 
 ------------------------------------------------------------------------------
 6.8  Input and Output Facilities                                *lua53-sec6.8*
@@ -6415,15 +6445,16 @@ os.remove (filename) ~
 
 Deletes the file (or empty directory, on POSIX systems) with the given name.
 If this function fails, it returns nil, plus a string describing the error and
-the error code.
+the error code. Otherwise, it returns true.
 
 ------------------------------------------------------------------------------
 
                                                              *lua53-os.rename*
 os.rename (oldname, newname) ~
 
-Renames file or directory named oldname to newname. If this function fails, it
-returns nil, plus a string describing the error and the error code.
+Renames the file or directory named oldname to newname. If this function
+fails, it returns nil, plus a string describing the error and the error code.
+Otherwise, it returns true.
 
 ------------------------------------------------------------------------------
 
@@ -6590,7 +6621,8 @@ no known names (variables from chunks saved without debug information).
                                                     *lua53-debug.getuservalue*
 debug.getuservalue (u) ~
 
-Returns the Lua value associated to u. If u is not a userdata, returns nil.
+Returns the Lua value associated to u. If u is not a full userdata, returns
+nil.
 
 ------------------------------------------------------------------------------
 
@@ -6940,10 +6972,10 @@ Numeral, and LiteralString, see |lua53-sec3.1|.)
 ------------------------------------------------------------------------------
 
 Last update:
-Mon May 30 13:11:08 BRT 2016
+Mon Jan 9 13:30:53 BRST 2017
 
 Formated for Vim help:
-Sun Nov 13 16:05:15 CET 2016
+Tue Jan 31 16:01:50 CET 2017
 
 ==============================================================================
 vim:tw=78:expandtab:ts=4:ft=help:norl:
