@@ -136,13 +136,13 @@ function generate_chunk ( chunk_data, chunk_name, fields, field_name )
 		local l = fields[field_name]
 		if l then
 			if #l > 0 and part.HEAD then
-				res = res .. generate_chunk ( part, 'HEAD', l.header or fields )
+				res = res .. generate_chunk ( part, 'HEAD', l.header or l )
 			end
 			for idx, val in ipairs ( l ) do
 				res = res .. generate_chunk ( part, 'ENTRY', val )
 			end
 			if #l > 0 and part.TAIL then
-				res = res .. generate_chunk ( part, 'TAIL', l.header or fields )
+				res = res .. generate_chunk ( part, 'TAIL', l.header or l )
 			end
 		end
 	else
@@ -175,8 +175,8 @@ function generate_output ( config, chunk_data )
 		local part
 		local chunk_name, field_name = name
 
-		if string.match ( chunk_name, '%u:%u' ) then
-			chunk_name, field_name = string.match ( chunk_name, '([%u_]+):([%u_]+)' )
+		if string.match ( chunk_name, '[%u%d_]+:[%u%d_]+' ) then
+			chunk_name, field_name = string.match ( chunk_name, '([%u%d_]+):([%u%d_]+)' )
 		end
 
 		if not chunk_data[chunk_name] then
