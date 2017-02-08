@@ -633,3 +633,47 @@ table.badge_link_table > tbody > tr > td:nth-child(2)
 	width:70%;
 }
 
+/*
+ * news items
+ *
+ * defines:
+ * - 'div' for front page news
+ * - 'div' for news
+ */
+
+div.front_page_news,
+div.news
+{
+	max-width:1000px;
+
+	margin-left:12px;
+}
+
+div.front_page_news > h3,
+div.news > h3
+{
+	margin-top:20px;
+	margin-bottom:5px;
+	font-size:1.2em;
+}
+
+div.front_page_news > i:first-of-type,
+div.news > i:first-of-type
+{
+	font-size:0.9em;
+}
+
+div.front_page_news > p,
+div.news > p
+{
+}
+
+div.news > a:hover
+{
+	color:black;
+}
+
+div.news > a:target
+{
+	color:#a000ff;
+}

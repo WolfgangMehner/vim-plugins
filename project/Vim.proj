@@ -8,7 +8,9 @@ VimWebsite=~/Programme/VimWebsite/ CD=. in=project/in.vim out=project/out.vim fl
  root=. CD=. filter="*.lua\|*.css\|template_*.html" {
   build_site.lua
   config.lua
+  news.lua
   template_index.html
+  template_news.html
   template_plugin.html
   vimstyle.css
 	Makefile # pragma keep

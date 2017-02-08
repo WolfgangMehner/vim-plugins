@@ -18,6 +18,8 @@
 --------------------------------------------------------------------------------
 --
 
+local news = dofile ( 'news.lua' )
+
 local template_plugin = {
 	filename = 'template_plugin.html',
 }
@@ -29,6 +31,7 @@ template_plugin.order = {
 	'TITLE_BAR',
 	'PAGE_HEADER_PART1',
 	'PAGE_HEADER_MAPPINGS',
+	'PAGE_HEADER_NEWS',
 	'PAGE_HEADER_MEDIA',
 	'PAGE_HEADER_PART2',
 	'PAGE_HEADER_LINKS_PART1',
@@ -51,6 +54,7 @@ template_index.order = {
 	'HTML_HEAD',
 	'head_body',
 	'TITLE_BAR',
+	'NEWS',
 	'FEATURES',
 	'LINK_LIST:PLUGIN_LIST',
 	'LINK_LIST:TOOLBOX_LIST',
@@ -96,6 +100,10 @@ config.index = {
 			{	LINK = 'doxygentool.html', IMAGE = '<img style="width:72px;" src="data/doxygen.png" alt="Doxygen">',   TEXT = 'Doxygen-Tool', },
 			{	LINK = 'maketool.html',    IMAGE = '<code style="font-size:1.5em;">Make:</code>',                      TEXT = 'Make-Tool', },
 		},
+
+		NEWS = {
+			news[1], news[2], news[3],
+		}
 	},
 }
 
@@ -369,6 +377,74 @@ config.vim = {
 		},
 	},
 }
+
+local template_news = {
+	filename = 'template_news.html',
+}
+
+template_news.order = {
+	'head',
+	'HTML_HEAD',
+	'head_body',
+	'TITLE_BAR',
+}
+
+config.news = {
+	input    = 'template_news.html',
+	output   = 'news.html',
+	template = template_news,
+	fields = {
+		MAINTAINER_NAME = 'Wolfgang Mehner',
+		MAINTAINER_MAIL = 'wolfgang-mehner@web.de',
+	},
+}
+
+local news_per_page = 3
+local news_all = { 'awk', 'bash', 'c', 'git', 'latex', 'lua', 'perl', 'vim', }
+
+for idx, name in ipairs ( news_all ) do
+	config[name].fields.PAGE_HEADER_NEWS = { n = 0, }
+end
+
+function news_add_to_plugin ( name, item )
+	if config[name].fields.PAGE_HEADER_NEWS.n >= news_per_page then
+		return
+	end
+	table.insert ( config[name].fields.PAGE_HEADER_NEWS, item )
+	config[name].fields.PAGE_HEADER_NEWS.n = config[name].fields.PAGE_HEADER_NEWS.n + 1
+end  -----  end of function news_add_to_plugin  -----
+
+for idx, record in ipairs ( news ) do
+
+	record.ANCHOR = 'NEWS_'..record.ID
+
+	local rec = {}
+
+	for k, v in pairs ( record ) do
+		rec[k] = v
+	end
+	for k, v in ipairs ( record ) do
+		rec[k] = { PAR = v }
+	end
+
+	if record.all then
+		for idx, name in ipairs ( news_all ) do
+			news_add_to_plugin ( name, record )
+		end
+	else
+		for idx, name in ipairs ( news_all ) do
+			if record[name] then
+				news_add_to_plugin ( name, record )
+			end
+		end
+	end
+
+	config.news.fields[ 'NEWS'..idx ] = rec
+	table.insert ( template_news.order, 'NEWS:NEWS'..idx )
+end
+
+table.insert ( template_news.order, 'FOOTER' )
+table.insert ( template_news.order, 'body' )
 
 return config
 

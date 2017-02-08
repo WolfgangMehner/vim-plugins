@@ -4,6 +4,9 @@ all: index.html awksupport.html bashsupport.html csupport.html gitsupport.html l
 index.html: config.lua template_index.html
 	./build_site.lua -p index
 
+news.html: config.lua template_news.html news.lua
+	./build_site.lua -p news
+
 awksupport.html: config.lua template_plugin.html awksupport/content.html doc/awksupport.html
 	./build_site.lua -p awk
 
