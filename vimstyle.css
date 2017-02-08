@@ -39,16 +39,16 @@ code
 }
 /*	font-weight:600; */
 
-p.footnote
-{
-  font-size:0.5em;
-}
-
-hr.footnote
+hr
 {
 	color:SkyBlue;
 	border-style:solid;
 	border-width:1px;
+}
+
+p.footnote
+{
+  font-size:0.5em;
 }
 
 img.preview_image
@@ -291,6 +291,7 @@ table.other_plugins a:hover
  */
 table.features
 {
+	max-width:1200px;
 	border-spacing:4px;
 }
 
@@ -568,15 +569,15 @@ span.type
  * - 'div' for the header badge
  * - 'div' and link table for the plug-in badges
  */
-div.plugin_badge_container
+div.container
 {
 	overflow:hidden;
 }
 
-div.plugin_badge_header
+div.header_badge
 {
 	float:left;
-	width:250px;
+	width:500px;
 	height:55px;
 	margin:5px;
 
@@ -593,7 +594,7 @@ div.plugin_badge_header
 	color:White;
 }
 
-div.plugin_badge_header > div
+div.header_badge > div
 {
 	padding-top:14px;
 
