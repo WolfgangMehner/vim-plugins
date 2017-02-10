@@ -12,7 +12,7 @@
 "       Version:  see variable g:Lua_Version below
 "       Created:  26.03.2014
 "      Revision:  07.12.2016
-"       License:  Copyright (c) 2014-2016, Wolfgang Mehner
+"       License:  Copyright (c) 2014-2017, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -901,7 +901,7 @@ function! s:CodeSnippet ( action )
 				if a:action == 'create' && confirm( 'Write whole file as a snippet? ', "&Cancel\n&No\n&Yes" ) == 3
 					exe 'write! '.fnameescape( snippetfile )
 				elseif a:action == 'vcreate'
-					exe '*write! '.fnameescape( snippetfile )
+					exe "'<,'>write! ".fnameescape( snippetfile )
 				endif
 			endif
 		endif
@@ -1269,7 +1269,7 @@ function! s:Hardcopy ( mode )
 		if a:mode == 'n'
 			silent exe  'hardcopy'
 		elseif a:mode == 'v'
-			silent exe  '*hardcopy'
+			silent exe  "'<,'>hardcopy"
 		endif
 	else
 		"
@@ -1285,7 +1285,7 @@ function! s:Hardcopy ( mode )
 			silent exe  'hardcopy > '.psfile
 			call s:ImportantMsg ( 'file "'.outfile.'" printed to "'.psfile.'"' )
 		elseif a:mode == 'v'
-			silent exe  '*hardcopy > '.psfile
+			silent exe  "'<,'>hardcopy > ".psfile
 			call s:ImportantMsg ( 'file "'.outfile.'" (lines '.line("'<").'-'.line("'>").') printed to "'.psfile.'"' )
 		endif
 	endif
@@ -1352,7 +1352,10 @@ function! s:SetupTemplates()
 	"
 	" syntax: comments
 	call mmtemplates#core#ChangeSyntax ( g:Lua_Templates, 'comment', '§' )
-	"
+
+	" property: file skeletons
+	call mmtemplates#core#Resource ( g:Lua_Templates, 'add', 'property', 'Lua::FileSkeleton::Script', 'Comments.file description' )
+
 	"-------------------------------------------------------------------------------
 	" load template library
 	"-------------------------------------------------------------------------------
@@ -1390,46 +1393,58 @@ endfunction    " ----------  end of function s:SetupTemplates  ----------
 "-------------------------------------------------------------------------------
 " s:CheckTemplatePersonalization : Check whether the name, .. has been set.   {{{1
 "-------------------------------------------------------------------------------
-"
+
 let s:DoneCheckTemplatePersonalization = 0
-"
+
 function! s:CheckTemplatePersonalization ()
-	"
+
 	" check whether the templates are personalized
-	if ! s:DoneCheckTemplatePersonalization
-				\ && mmtemplates#core#ExpandText ( g:Lua_Templates, '|AUTHOR|' ) == 'YOUR NAME'
-		let s:DoneCheckTemplatePersonalization = 1
-		"
-		let maplead = mmtemplates#core#Resource ( g:Lua_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
-		"
-		redraw
-		call s:ImportantMsg (
-					\ 'The personal details (name, mail, ...) are not set in the template library.',
-					\ 'They are used to generate comments, ...',
-					\ 'To set them, start the setup wizard using:',
-					\ '- use the menu entry "Lua -> Snippets -> template setup wizard"',
-					\ '- use the map "'.maplead.'ntw" inside a Lua buffer',
-					\ '' )
+	if s:DoneCheckTemplatePersonalization
+				\ || mmtemplates#core#ExpandText ( g:Lua_Templates, '|AUTHOR|' ) != 'YOUR NAME'
+				\ || g:Lua_InsertFileHeader != 'yes'
+		return
 	endif
-	"
+
+	let s:DoneCheckTemplatePersonalization = 1
+
+	let maplead = mmtemplates#core#Resource ( g:Lua_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
+
+	redraw
+	call s:ImportantMsg ( 'The personal details are not set in the template library. Use the map "'.maplead.'ntw".' )
+
 endfunction    " ----------  end of function s:CheckTemplatePersonalization  ----------
-"
+
 "-------------------------------------------------------------------------------
 " s:InsertFileHeader : Insert a header for a new file.   {{{1
 "-------------------------------------------------------------------------------
-"
+
 function! s:InsertFileHeader ()
-	"
+
 	if ! exists ( 'g:Lua_Templates' )
 		return
 	endif
-	"
+
 	if g:Lua_InsertFileHeader == 'yes'
-		call mmtemplates#core#InsertTemplate ( g:Lua_Templates, 'Comments.file description' )
+		let templ_s = mmtemplates#core#Resource ( g:Lua_Templates, 'get', 'property', 'Lua::FileSkeleton::Script' )[0]
+
+		" insert templates in reverse order, always above the firs line
+		" the last one to insert (the first in the list), will determine the
+		" placement of the cursor
+		let templ_l = split ( templ_s, ';' )
+		for i in range ( len(templ_l)-1, 0, -1 )
+			exe 1
+			if -1 != match ( templ_l[i], '^\s\+$' )
+				put! =''
+			else
+				call mmtemplates#core#InsertTemplate ( g:Lua_Templates, templ_l[i], 'placement', 'above' )
+			endif
+		endfor
+		if len(templ_l) > 0
+			set modified
+		endif
 	endif
-	"
 endfunction    " ----------  end of function s:InsertFileHeader  ----------
-"
+
 "-------------------------------------------------------------------------------
 " s:HelpPlugin : Plug-in help.   {{{1
 "-------------------------------------------------------------------------------

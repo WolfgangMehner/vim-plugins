@@ -38,6 +38,10 @@ SetMacro( 'LUA_INTERPRETER', '/usr/bin/env lua' )
 § used by the template "Idioms.add to path, local modules":
 SetMacro( 'LUA_LOCAL_MODULES', $HOME.'/lib/lua/5.2' )
 
+§ templates automatically included into new files
+§ set the property to an empty string to disable the insertion
+§SetProperty ( 'Lua::FileSkeleton::Script', 'Comments.file description' )
+
 § -------------------------------------------------------------
 §  A template definition is build like this:
 §    == Menu.some name == <options> ==

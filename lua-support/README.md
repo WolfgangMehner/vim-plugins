@@ -1,4 +1,4 @@
-README for lua-support.vim (Version 1.1pre) / November 12 2016
+README for lua-support.vim (Version 1.1pre) / February 10 2017
 ================================================================================
 
   *  INSTALLATION
@@ -200,7 +200,10 @@ RELEASE NOTES
 
 RELEASE NOTES FOR VERSION 1.1pre
 ----------------------------------------------------------------------
-- Update Lua's reference manual to 5.3.3.
+- The templates which are inserted into new files as file skeletons can be
+  specified in the templates library, via the property:
+    Lua::FileSkeleton::Script
+- Update Lua's reference manual to 5.3.4.
 - Minor changes.
 
 
