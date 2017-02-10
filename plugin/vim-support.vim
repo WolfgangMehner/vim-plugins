@@ -18,7 +18,7 @@
 "       Created:  14.01.2012
 "      Revision:  12.11.2016
 "       License:  Copyright (c) 2012-2015, Fritz Mehner
-"                 Copyright (c) 2016-2016, Wolfgang Mehner
+"                 Copyright (c) 2016-2017, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -551,17 +551,19 @@ function! Vim_CommentCode( toggle ) range
 	endfor
 	"
 endfunction    " ----------  end of function Vim_CommentCode  ----------
+
+"-------------------------------------------------------------------------------
+" s:GetFunctionParameters : Get function name and parameters.   {{{1
 "
-"===  FUNCTION  ================================================================
-"          NAME:  GetFunctionParameters     {{{1
-"   DESCRIPTION:  get function name and parameters
-"    PARAMETERS:  fun_line - function head
-"       RETURNS:  scope     - The scope. (string, 's:', 'g:' or empty)
-"                 fun_name  - The name of the function (string, id without the scope)
-"                 param_str - Names of the parameters. (list of strings)
-"                 ellipsis  - Has an ellipsis? (boolean)
-"                 range     - Has a range? (boolean)
-"===============================================================================
+" Parameters:
+"   fun_line - function head (string)
+" Returns:
+"   scope     - the scope (string, 's:', 'g:' or empty)
+"   fun_name  - the name of the function (string, id without the scope)
+"   param_str - names of the parameters (list of strings)
+"   ellipsis  - has an ellipsis? (boolean)
+"   range     - has a range? (boolean)
+"-------------------------------------------------------------------------------
 function! s:GetFunctionParameters ( fun_line )
 	"
 	" 1. function names with '.' (dictionaries) and '#' (autoload)
@@ -651,28 +653,27 @@ function! Vim_Help ()
 		endif
 	endif
 endfunction    " ----------  end of function Vim_Help  ----------
-"
-"------------------------------------------------------------------------------
-"  Vim_HelpVimSupport : help vimsupport     {{{1
-"------------------------------------------------------------------------------
-function! Vim_HelpVimSupport ()
+
+"-------------------------------------------------------------------------------
+" s:HelpPlugin : Plug-in help.   {{{1
+"-------------------------------------------------------------------------------
+function! s:HelpPlugin ()
 	try
-		:help vimsupport
+		help vimsupport
 	catch
-		exe ':helptags '.s:plugin_dir.'/doc'
-		:help vimsupport
+		exe 'helptags '.s:plugin_dir.'/doc'
+		help vimsupport
 	endtry
-endfunction    " ----------  end of function Vim_HelpVimSupport ----------
+endfunction    " ----------  end of function s:HelpPlugin ----------
+
+"-------------------------------------------------------------------------------
+" s:RereadTemplates : Initial loading of the templates.   {{{1
 "
-"===  FUNCTION  ================================================================
-"          NAME:  Vim_RereadTemplates     {{{1
-"   DESCRIPTION:  Reread the templates. Also set the character which starts
-"                 the comments in the template files.
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Vim_RereadTemplates ()
-	"
+" Reread the templates. Also set the character which starts the comments in
+" the template files.
+"-------------------------------------------------------------------------------
+function! s:RereadTemplates ()
+
 	"-------------------------------------------------------------------------------
 	" setup template library
 	"-------------------------------------------------------------------------------
@@ -736,42 +737,60 @@ function! Vim_RereadTemplates ()
 	"-------------------------------------------------------------------------------
 	" further setup
 	"-------------------------------------------------------------------------------
-	"
+
 	" get the jump tags
 	let s:Vim_TemplateJumpTarget = mmtemplates#core#Resource ( g:Vim_Templates, "jumptag" )[0]
-	"
-endfunction    " ----------  end of function Vim_RereadTemplates  ----------
+
+endfunction    " ----------  end of function s:RereadTemplates  ----------
+
+"-------------------------------------------------------------------------------
+" s:CheckTemplatePersonalization : Check template personalization.   {{{1
 "
-"===  FUNCTION  ================================================================
-"          NAME:  s:CheckTemplatePersonalization     {{{1
-"   DESCRIPTION:  check whether the name, .. has been set
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
+" Check whether the |AUTHOR| has been set in the template library.
+" If not, display help on how to set up the template personalization.
+"-------------------------------------------------------------------------------
 let s:DoneCheckTemplatePersonalization = 0
-"
+
 function! s:CheckTemplatePersonalization ()
-	"
+
 	" check whether the templates are personalized
-	if ! s:DoneCheckTemplatePersonalization
-				\ && mmtemplates#core#ExpandText ( g:Vim_Templates, '|AUTHOR|' ) == 'YOUR NAME'
-		let s:DoneCheckTemplatePersonalization = 1
-		"
-		let maplead = mmtemplates#core#Resource ( g:Vim_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
-		"
-		redraw
-		echohl Search
-		echo 'The personal details (name, mail, ...) are not set in the template library.'
-		echo 'They are used to generate comments, ...'
-		echo 'To set them, start the setup wizard using:'
-		echo '- use the menu entry "Vim -> Snippets -> template setup wizard"'
-		echo '- use the map "'.maplead.'ntw" inside a Vim buffer'
-		echo "\n"
-		echohl None
+	if s:DoneCheckTemplatePersonalization
+				\ || mmtemplates#core#ExpandText ( g:Vim_Templates, '|AUTHOR|' ) != 'YOUR NAME'
+		return
 	endif
-	"
+
+	let s:DoneCheckTemplatePersonalization = 1
+
+	let maplead = mmtemplates#core#Resource ( g:Vim_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
+
+	redraw
+	call s:ImportantMsg ( 'The personal details are not set in the template library. Use the map "'.maplead.'ntw".' )
+
 endfunction    " ----------  end of function s:CheckTemplatePersonalization  ----------
+
+"-------------------------------------------------------------------------------
+" s:JumpForward : Jump to the next target.   {{{1
 "
+" If no target is found, jump behind the current string
+"
+" Parameters:
+"   -
+" Returns:
+"   empty sting
+"-------------------------------------------------------------------------------
+function! s:JumpForward ()
+	let match = search( s:Vim_TemplateJumpTarget, 'c' )
+	if match > 0
+		" remove the target
+		call setline( match, substitute( getline('.'), s:Vim_TemplateJumpTarget, '', '' ) )
+	else
+		" try to jump behind parenthesis or strings
+		call search( "[\]})\"'`]", 'W' )
+		normal! l
+	endif
+	return ''
+endfunction    " ----------  end of function s:JumpForward  ----------
+
 "===  FUNCTION  ================================================================
 "          NAME:  InitMenus     {{{1
 "   DESCRIPTION:  Initialize menus.
@@ -881,28 +900,9 @@ function! s:InitMenus()
 	"
   exe ahead.'&keyword\ help<Tab>'.esc_mapl.'hk\ \ <S-F1>    :call Vim_Help()<CR>'
 	exe ahead.'-SEP1- :'
-	exe ahead.'&help\ (Vim-Support)<Tab>'.esc_mapl.'hp        :call Vim_HelpVimSupport()<CR>'
+	exe ahead.'&help\ (Vim-Support)<Tab>'.esc_mapl.'hp        :call <SID>HelpPlugin()<CR>'
 	"
 endfunction    " ----------  end of function s:InitMenus  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Vim_JumpForward     {{{1
-"   DESCRIPTION:  Jump to the next target, otherwise behind the current string.
-"    PARAMETERS:  -
-"       RETURNS:  empty string
-"===============================================================================
-function! Vim_JumpForward ()
-  let match	= search( s:Vim_TemplateJumpTarget, 'c' )
-	if match > 0
-		" remove the target
-		call setline( match, substitute( getline('.'), s:Vim_TemplateJumpTarget, '', '' ) )
-	else
-		" try to jump behind parenthesis or strings 
-		call search( "[\]})\"'`]", 'W' )
-		normal! l
-	endif
-	return ''
-endfunction    " ----------  end of function Vim_JumpForward  ----------
 
 "===  FUNCTION  ================================================================
 "          NAME:  Vim_CodeSnippet     {{{1
@@ -1093,8 +1093,8 @@ function! s:CreateAdditionalMaps ()
 	nnoremap    <buffer>  <silent>  <LocalLeader>rs         :call Vim_Settings(0)<CR>
 	nnoremap    <buffer>  <silent>  <LocalLeader>hk          :call Vim_Help()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>hk     <C-C>:call Vim_Help()<CR>
-	 noremap    <buffer>  <silent>  <LocalLeader>hp         :call Vim_HelpVimSupport()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>hp    <C-C>:call Vim_HelpVimSupport()<CR>
+	 noremap    <buffer>  <silent>  <LocalLeader>hp         :call <SID>HelpPlugin()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>hp    <C-C>:call <SID>HelpPlugin()<CR>
 	" 
 	if has("gui_running")
 		nnoremap    <buffer>  <silent>  <S-F1>             :call Vim_Help()<CR>
@@ -1115,10 +1115,10 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" templates
 	"-------------------------------------------------------------------------------
-	"
-	nnoremap    <buffer>  <silent>  <C-j>       i<C-R>=Vim_JumpForward()<CR>
-	inoremap    <buffer>  <silent>  <C-j>  <C-G>u<C-R>=Vim_JumpForward()<CR>
-	"
+
+	nnoremap    <buffer>  <silent>  <C-j>       i<C-R>=<SID>JumpForward()<CR>
+	inoremap    <buffer>  <silent>  <C-j>  <C-G>u<C-R>=<SID>JumpForward()<CR>
+
 	" ----------------------------------------------------------------------------
 	"
 	call mmtemplates#core#CreateMaps ( 'g:Vim_Templates', g:Vim_MapLeader, 'do_special_maps', 'do_del_opt_map' ) |
@@ -1189,7 +1189,7 @@ function! Vim_CreateGuiMenus ()
 		anoremenu   <silent> 40.1000 &Tools.-SEP100- :
 		anoremenu   <silent> 40.1170 &Tools.Unload\ Vim\ Support :call Vim_RemoveGuiMenus()<CR>
 		"
-		call Vim_RereadTemplates()
+		call s:RereadTemplates()
 		call s:InitMenus () 
 		"
 		let s:Vim_MenuVisible = 'yes'
@@ -1234,7 +1234,7 @@ if has( 'autocmd' )
         \ if &filetype == 'vim' || ( &filetype == 'help' && &modifiable == 1 && s:Vim_CreateMapsForHelp == 'yes' ) |
         \   if ! exists( 'g:Vim_Templates' ) |
         \     if s:Vim_LoadMenus == 'yes' | call Vim_CreateGuiMenus ()  |
-        \     else                        | call Vim_RereadTemplates () |
+        \     else                        | call s:RereadTemplates () |
         \     endif |
         \   endif |
         \   call s:CreateAdditionalMaps() |
