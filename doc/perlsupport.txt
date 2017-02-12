@@ -1,8 +1,8 @@
-*perlsupport.txt*                Perl Support                      Jul 22 2016
+*perlsupport.txt*                Perl Support                      Feb 12 2017
 
 Perl Support                                      *perl-support* *perlsupport*
 
-                             Plug-in version 5.4
+                             Plug-in version 5.5pre
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
