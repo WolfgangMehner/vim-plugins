@@ -162,11 +162,13 @@ config.bash = {
 
 		PAGE_HEADER_MAPPINGS = { { REF_MAPS = link_bash.MAPS, } },
 		PAGE_HEADER_MEDIA = {
+			{ PARAGRAPH = [[The installation explained: <a target=_blank href="http://www.tecmint.com">TecMint</a> article<br>
+			<a target=_blank href="http://www.tecmint.com/use-vim-as-bash-ide-using-bash-support-in-linux/">How to Make 'Vim Editor' as Bash-IDE Using 'bash-support' Plugin in Linux</a>]], },
 			{ PARAGRAPH = [[Plugin featured in the <a target=_blank href="http://hackerpublicradio.org">Hacker Public Radio</a> episode <a target=_blank href="http://hackerpublicradio.org/eps.php?id=1091">Useful Vim Plugins</a>]], },
 			{ PARAGRAPH = [[The installation explained: <a target=_blank href="http://www.thegeekstuff.com">The Geek Stuff</a> article<br>
 			<a target=_blank href="http://www.thegeekstuff.com/2009/02/make-vim-as-your-bash-ide-using-bash-support-plugin/">Make Vim as Your Bash-IDE Using bash-support Plugin</a>]], },
 			{ PARAGRAPH = [[Plugin featured in the <a target=_blank href="http://www.linux.com">Linux.com</a> article <a target=_blank href="http://www.linux.com/articles/114359">Turn Vim into a bash IDE</a>]], },
-			{ PARAGRAPH = [[Covered in the Oct./Nov. 2007 issue of <a target=_blank href="http://www.cul.de/freex.html">freeX</a>, "Vim als Bash-IDE" (German)]], },
+			--{ PARAGRAPH = [[Covered in the Oct./Nov. 2007 issue of <a target=_blank href="http://www.cul.de/freex.html">freeX</a>, "Vim als Bash-IDE" (German)]], },
 		},
 		PAGE_HEADER_PLUGIN = {
 			link_awk, link_c, link_latex, link_lua, link_perl, link_vim,
