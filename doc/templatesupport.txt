@@ -1,4 +1,4 @@
-*templatesupport.txt*         MM Template Support                  Nov 12 2016
+*templatesupport.txt*         MM Template Support                  Apr 14 2017
 
 MM Template Support                                        *template-support*
 
@@ -2967,6 +2967,8 @@ D.  CHANGE LOG                                   *template-support-change-log*
   "python".
 - Add Python mode (Templates::LanguageMode == "python"), to handle indentation
   and retabbing of Python templates.
+- Update the syntax highlighting.
+- Fix warnings about comments using '§'.
 - Bugfixes and minor improvements.
 - Update the documentation.
 

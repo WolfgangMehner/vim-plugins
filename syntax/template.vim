@@ -87,6 +87,7 @@ syn match TemplTag     "|<\+>\+|"
 syn match TemplTag     "<CURSOR>\|{CURSOR}"
 syn match TemplTag     "<RCURSOR>\|{RCURSOR}"
 syn match TemplTag     "<SPLIT>"
+syn match TemplTag     "<SHIFT>"
 syn match TemplTag     "<CONTENT>"
 
 syn match TemplJump    "<\([+-]\)\w*\1>"

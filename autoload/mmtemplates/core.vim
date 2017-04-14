@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Templates_Version below
 "       Created:  30.08.2011
-"      Revision:  27.09.2016
+"      Revision:  14.04.2017
 "       License:  Copyright (c) 2012-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -4458,10 +4458,11 @@ function! s:CreateSpecialsMenus ( styles_only )
 			if ! empty ( e_map )
 				let entry_compl .= '<TAB>'.map_ldr.mmtemplates#core#EscapeMenu( e_map, 'right' )
 			endif
-			exe 'anoremenu <silent> '.s:t_runtime.root_menu.specials_menu.entry_compl.' '.cmd
+			exe 'anoremenu <silent> '.s:t_runtime.root_menu.specials_menu.entry_compl.'           '.cmd
+			exe 'inoremenu <silent> '.s:t_runtime.root_menu.specials_menu.entry_compl.' <Esc><Esc>'.cmd
 		endfor
 	endif
-	"
+
 	" ==================================================
 	"  create a menu for all the styles
 	" ==================================================
@@ -4473,13 +4474,15 @@ function! s:CreateSpecialsMenus ( styles_only )
 	else               | let entry_styles = s:InsertShortcut ( '.choose\ style', sc_style, 0 ).'<TAB>'.map_style
 	endif
 	call s:CreateSubmenu ( specials_menu.entry_styles, s:StandardPriority )
-	"
+
 	" add entries for all styles
 	for s in s:library.styles
 		exe 'anoremenu <silent> '.s:t_runtime.root_menu.specials_menu.'.choose\ style.&'.s
 					\ .' :call mmtemplates#core#ChooseStyle('.s:t_runtime.lib_name.','.string(s).')<CR>'
+		exe 'inoremenu <silent> '.s:t_runtime.root_menu.specials_menu.'.choose\ style.&'.s
+					\ .' <Esc><Esc>:call mmtemplates#core#ChooseStyle('.s:t_runtime.lib_name.','.string(s).')<CR>'
 	endfor
-	"
+
 endfunction    " ----------  end of function s:CreateSpecialsMenus  ----------
 " }}}2
 "----------------------------------------------------------------------
