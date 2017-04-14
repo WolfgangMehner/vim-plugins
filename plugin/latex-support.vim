@@ -134,6 +134,33 @@ function! s:ImportantMsg ( ... )
 endfunction    " ----------  end of function s:ImportantMsg  ----------
 
 "-------------------------------------------------------------------------------
+" s:Redraw : Redraw depending on whether a GUI is running.   {{{2
+"
+" Example:
+"   call s:Redraw ( 'r!', '' )
+" Clear the screen and redraw in a terminal, do nothing when a GUI is running.
+"
+" Parameters:
+"   cmd_term - redraw command in terminal mode (string)
+"   cmd_gui -  redraw command in GUI mode (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:Redraw ( cmd_term, cmd_gui )
+	if has('gui_running')
+		let cmd = a:cmd_gui
+	else
+		let cmd = a:cmd_term
+	endif
+
+	let cmd = substitute ( cmd, 'r\%[edraw]', 'redraw', '' )
+	if cmd != ''
+		silent exe cmd
+	endif
+endfunction    " ----------  end of function s:Redraw  ----------
+
+"-------------------------------------------------------------------------------
 " s:SID : Return the <SID>.   {{{2
 "
 " Parameters:
@@ -1040,9 +1067,10 @@ function! s:Lacheck ( args )
 	let &l:errorformat = errorf_saved
 
 	if empty ( v:statusmsg )
-		redraw                                      " redraw after cclose, before echoing
+		call s:Redraw('r!','r')                     " redraw after cclose, before echoing
 		call s:ImportantMsg ( bufname('%').': No warnings.' )
 	else
+		call s:Redraw('r!','')                      " redraw after cclose, before opening the new window
 		botright cwindow                            " open error window
 	endif
 
@@ -1532,7 +1560,7 @@ function! s:CodeSnippet ( mode )
 				if a:mode == "write"
 					:execute ":write! ".l:snippetfile
 				else
-					:execute ":*write! ".l:snippetfile
+					:execute ":'<,'>write! ".l:snippetfile
 				endif
       endif
     endif
@@ -1856,6 +1884,7 @@ function! s:InitMenus()
 	let vhead = 'vnoremenu <silent> '.s:Latex_RootMenu.'.Comments.'
 
 	exe ahead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl                    :call <SID>EndOfLineComment()<CR>'
+	exe ihead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl               <Esc>:call <SID>EndOfLineComment()<CR>'
 	exe vhead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl                    :call <SID>EndOfLineComment()<CR>'
 
 	exe ahead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call <SID>AdjustLineEndComm()<CR>'
@@ -1917,19 +1946,18 @@ function! s:InitMenus()
 	" run
 	"-------------------------------------------------------------------------------
 
-	let ahead = 'amenu <silent> '.s:Latex_RootMenu.'.&Run.'
-	let ihead = 'imenu <silent> '.s:Latex_RootMenu.'.&Run.'
-	let vhead = 'vmenu <silent> '.s:Latex_RootMenu.'.&Run.'
+	let ahead = 'anoremenu <silent> '.s:Latex_RootMenu.'.Run.'
+	let ihead = 'inoremenu <silent> '.s:Latex_RootMenu.'.Run.'
+	let vhead = 'vnoremenu <silent> '.s:Latex_RootMenu.'.Run.'
 
 	exe ahead.'save\ +\ &run\ typesetter<Tab>'.esc_mapl.'rr       :call <SID>Compile("")<CR><CR>'
 	exe ihead.'save\ +\ &run\ typesetter<Tab>'.esc_mapl.'rr  <C-C>:call <SID>Compile("")<CR><CR>'
+	exe ahead.'save\ +\ run\ &lacheck<Tab>'.esc_mapl.'rla         :call <SID>Lacheck("")<CR>'
+	exe ihead.'save\ +\ run\ &lacheck<Tab>'.esc_mapl.'rla    <C-C>:call <SID>Lacheck("")<CR>'
+	exe ahead.'view\ last\ &errors<Tab>'.esc_mapl.'re             :call <SID>BackgroundErrors()<CR>'
+	exe ihead.'view\ last\ &errors<Tab>'.esc_mapl.'re        <C-C>:call <SID>BackgroundErrors()<CR>'
 
-	exe ahead.'save\ +\ &run\ lacheck<Tab>'.esc_mapl.'rla       :call <SID>Lacheck("")<CR><CR>'
-	exe ihead.'save\ +\ &run\ lacheck<Tab>'.esc_mapl.'rla  <C-C>:call <SID>Lacheck("")<CR><CR>'
-
-	exe ahead.'view\ last\ &errors<Tab>'.esc_mapl.'re           :call <SID>BackgroundErrors()<CR>'
-	exe ihead.'view\ last\ &errors<Tab>'.esc_mapl.'re      <C-C>:call <SID>BackgroundErrors()<CR>'
-
+	exe ahead.'-SEP-VIEW-  :'
 	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', 'Run'.'.&View' )
 	exe ahead.'View.&DVI<Tab>'.esc_mapl.'rdvi       :call <SID>View("dvi")<CR>'
 	exe ihead.'View.&DVI<Tab>'.esc_mapl.'rdvi  <C-C>:call <SID>View("dvi")<CR>'
@@ -1940,10 +1968,15 @@ function! s:InitMenus()
 
 	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', 'Run'.'.&Convert<TAB>'.esc_mapl.'rc' )
 	exe ahead.'Convert.DVI->PDF                               :call <SID>Conversions( "dvi-pdf")<CR>'
+	exe ihead.'Convert.DVI->PDF                          <C-C>:call <SID>Conversions( "dvi-pdf")<CR>'
 	exe ahead.'Convert.DVI->PS                                :call <SID>Conversions( "dvi-ps" )<CR>'
+	exe ihead.'Convert.DVI->PS                           <C-C>:call <SID>Conversions( "dvi-ps" )<CR>'
 	exe ahead.'Convert.DVI->PNG                               :call <SID>Conversions( "dvi-png")<CR>'
+	exe ihead.'Convert.DVI->PNG                          <C-C>:call <SID>Conversions( "dvi-png")<CR>'
 	exe ahead.'Convert.PDF->PNG                               :call <SID>Conversions( "pdf-png")<CR>'
+	exe ihead.'Convert.PDF->PNG                          <C-C>:call <SID>Conversions( "pdf-png")<CR>'
 	exe ahead.'Convert.PS->PDF                                :call <SID>Conversions( "ps-pdf" )<CR>'
+	exe ihead.'Convert.PS->PDF                           <C-C>:call <SID>Conversions( "ps-pdf" )<CR>'
 
 	exe ahead.'-SEP1-                            :'
 	exe ahead.'run\ make&glossaries<Tab>'.esc_mapl.'rmg                  :call <SID>Makeglossaries("")<CR>'
@@ -1965,18 +1998,22 @@ function! s:InitMenus()
 	exe ahead.'-SEP3-                            :'
 	exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh        :call <SID>Hardcopy("n")<CR>'
 	exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call <SID>Hardcopy("v")<CR>'
+	exe ihead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call <SID>Hardcopy("n")<CR>'
 
 	exe ahead.'-SEP4-                            :'
 	exe ahead.'plug-in\ &settings<Tab>'.esc_mapl.'rse                :call Latex_Settings(0)<CR>'
+	exe ihead.'plug-in\ &settings<Tab>'.esc_mapl.'rse           <C-C>:call Latex_Settings(0)<CR>'
 
 	" run -> choose typesetter
 	for ts in s:Latex_TypesetterList
-		exe ahead.'choose\ typesetter.'.ts.'   :call <SID>SetTypesetter("'.ts.'")<CR>'
+		exe ahead.'choose\ typesetter.'.ts.'       :call <SID>SetTypesetter("'.ts.'")<CR>'
+		exe ihead.'choose\ typesetter.'.ts.'  <C-C>:call <SID>SetTypesetter("'.ts.'")<CR>'
 	endfor
 
 	" run -> external processing
 	for m in s:Latex_ProcessingList
-		exe ahead.'external\ processing.'.m.'   :call <SID>SetProcessing("'.m.'")<CR>'
+		exe ahead.'external\ processing.'.m.'       :call <SID>SetProcessing("'.m.'")<CR>'
+		exe ihead.'external\ processing.'.m.'  <C-C>:call <SID>SetProcessing("'.m.'")<CR>'
 	endfor
 
 	" deletes the dummy menu header and displays the current options
@@ -1996,8 +2033,8 @@ function! s:InitMenus()
 	" help
 	"-------------------------------------------------------------------------------
 
-	let ahead = 'amenu <silent> '.s:Latex_RootMenu.'.Help.'
-	let ihead = 'imenu <silent> '.s:Latex_RootMenu.'.Help.'
+	let ahead = 'anoremenu <silent> '.s:Latex_RootMenu.'.Help.'
+	let ihead = 'inoremenu <silent> '.s:Latex_RootMenu.'.Help.'
 
 	exe ahead.'&texdoc<Tab>'.esc_mapl.'ht        :call <SID>Texdoc()<CR>'
 	exe ihead.'&texdoc<Tab>'.esc_mapl.'ht   <C-C>:call <SID>Texdoc()<CR>'
@@ -2177,7 +2214,7 @@ function! s:Hardcopy ( mode )
 	endif
 	" ----- visual mode ----------------
 	if a:mode=="v"
-		silent exe  "*hardcopy > ".outdir.outfile.".ps"
+		silent exe  "'<,'>hardcopy > ".outdir.outfile.".ps"
 		if  !s:MSWIN
 			echo 'file "'.outfile.'" (lines '.line("'<").'-'.line("'>").') printed to "'.outdir.outfile.'.ps"'
 		endif
