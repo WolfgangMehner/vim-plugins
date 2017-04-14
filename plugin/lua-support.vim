@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Lua_Version below
 "       Created:  26.03.2014
-"      Revision:  07.12.2016
+"      Revision:  14.04.2017
 "       License:  Copyright (c) 2014-2017, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -42,7 +42,7 @@ if &cp || ( exists('g:Lua_Version') && ! exists('g:Lua_DevelopmentOverwrite') )
 	finish
 endif
 
-let g:Lua_Version= '1.1pre'     " version number of this script; do not change
+let g:Lua_Version= '1.0.1pre'     " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " === Auxiliary functions ===   {{{1
@@ -126,6 +126,33 @@ function! s:ImportantMsg ( ... )
 	echo join ( a:000, "\n" )
 	echohl None
 endfunction    " ----------  end of function s:ImportantMsg  ----------
+
+"-------------------------------------------------------------------------------
+" s:Redraw : Redraw depending on whether a GUI is running.   {{{2
+"
+" Example:
+"   call s:Redraw ( 'r!', '' )
+" Clear the screen and redraw in a terminal, do nothing when a GUI is running.
+"
+" Parameters:
+"   cmd_term - redraw command in terminal mode (string)
+"   cmd_gui -  redraw command in GUI mode (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:Redraw ( cmd_term, cmd_gui )
+	if has('gui_running')
+		let cmd = a:cmd_gui
+	else
+		let cmd = a:cmd_term
+	endif
+
+	let cmd = substitute ( cmd, 'r\%[edraw]', 'redraw', '' )
+	if cmd != ''
+		silent exe cmd
+	endif
+endfunction    " ----------  end of function s:Redraw  ----------
 
 "-------------------------------------------------------------------------------
 " s:ShellEscExec : Escape an executable for the shell   {{{2
@@ -1184,19 +1211,20 @@ function! s:Compile( mode ) range
 	" restore current settings
 	let &l:makeprg = makeprg_saved
 	let &l:errorformat = errorf_saved
-	"
+
 	" any errors?
 	if a:mode == 'compile' && empty ( v:statusmsg )
-		redraw                                      " redraw after cclose, before echoing
+		call s:Redraw('r!','r')                     " redraw after cclose, before echoing
 		call s:ImportantMsg ( bufname('%').': Compiled successfully.' )
 	elseif a:mode == 'check' && empty ( v:statusmsg )
-		redraw                                      " redraw after cclose, before echoing
+		call s:Redraw('r!','r')                     " redraw after cclose, before echoing
 		call s:ImportantMsg ( bufname('%').': No warnings.' )
 	else
+		call s:Redraw('r!','')                      " redraw after cclose, before opening the new window
 		botright cwindow
 		cc
 	endif
-	"
+
 endfunction    " ----------  end of function s:Compile  ----------
 
 "-------------------------------------------------------------------------------
@@ -1757,34 +1785,44 @@ function! s:InitMenus()
 	"-------------------------------------------------------------------------------
 	" comments
 	"-------------------------------------------------------------------------------
-	"
+
 	let ahead = 'anoremenu <silent> '.s:Lua_RootMenu.'.Comments.'
 	let vhead = 'vnoremenu <silent> '.s:Lua_RootMenu.'.Comments.'
-	"
-	exe ahead.'end-of-&line\ comment<TAB>'.esc_mapl.'cl            :call <SID>EndOfLineComment()<CR>'
-	exe vhead.'end-of-&line\ comment<TAB>'.esc_mapl.'cl            :call <SID>EndOfLineComment()<CR>'
-	exe ahead.'ad&just\ end-of-line\ com\.<TAB>'.esc_mapl.'cj      :call <SID>AdjustEndOfLineComm()<CR>'
-	exe vhead.'ad&just\ end-of-line\ com\.<TAB>'.esc_mapl.'cj      :call <SID>AdjustEndOfLineComm()<CR>'
-	exe ahead.'&set\ end-of-line\ com\.\ col\.<TAB>'.esc_mapl.'cs  :call <SID>SetEndOfLineCommPos()<CR>'
-	exe vhead.'&set\ end-of-line\ com\.\ col\.<TAB>'.esc_mapl.'cs  :call <SID>SetEndOfLineCommPos()<CR>'
+	let ihead = 'inoremenu <silent> '.s:Lua_RootMenu.'.Comments.'
+
+	exe ahead.'end-of-&line\ comment<TAB>'.esc_mapl.'cl                 :call <SID>EndOfLineComment()<CR>'
+	exe vhead.'end-of-&line\ comment<TAB>'.esc_mapl.'cl                 :call <SID>EndOfLineComment()<CR>'
+	exe ihead.'end-of-&line\ comment<TAB>'.esc_mapl.'cl            <Esc>:call <SID>EndOfLineComment()<CR>'
+	exe ahead.'ad&just\ end-of-line\ com\.<TAB>'.esc_mapl.'cj           :call <SID>AdjustEndOfLineComm()<CR>'
+	exe vhead.'ad&just\ end-of-line\ com\.<TAB>'.esc_mapl.'cj           :call <SID>AdjustEndOfLineComm()<CR>'
+	exe ihead.'ad&just\ end-of-line\ com\.<TAB>'.esc_mapl.'cj      <Esc>:call <SID>AdjustEndOfLineComm()<CR>'
+	exe ahead.'&set\ end-of-line\ com\.\ col\.<TAB>'.esc_mapl.'cs       :call <SID>SetEndOfLineCommPos()<CR>'
+	exe vhead.'&set\ end-of-line\ com\.\ col\.<TAB>'.esc_mapl.'cs       :call <SID>SetEndOfLineCommPos()<CR>'
+	exe ihead.'&set\ end-of-line\ com\.\ col\.<TAB>'.esc_mapl.'cs  <Esc>:call <SID>SetEndOfLineCommPos()<CR>'
 	exe ahead.'-Sep01-                                             :'
-	"
-	exe ahead.'&code\ ->\ comment<TAB>'.esc_mapl.'cc         :call <SID>CodeComment()<CR>'
-	exe vhead.'&code\ ->\ comment<TAB>'.esc_mapl.'cc         :call <SID>CodeComment()<CR>'
-	exe ahead.'c&omment\ ->\ code<TAB>'.esc_mapl.'co         :call <SID>CommentCode(0)<CR>'
-	exe vhead.'c&omment\ ->\ code<TAB>'.esc_mapl.'co         :call <SID>CommentCode(0)<CR>'
-	exe ahead.'&toggle\ code\ <->\ com\.<TAB>'.esc_mapl.'ct  :call <SID>CommentCode(1)<CR>'
-	exe vhead.'&toggle\ code\ <->\ com\.<TAB>'.esc_mapl.'ct  :call <SID>CommentCode(1)<CR>'
-	"
+
+	exe ahead.'&code\ ->\ comment<TAB>'.esc_mapl.'cc              :call <SID>CodeComment()<CR>'
+	exe vhead.'&code\ ->\ comment<TAB>'.esc_mapl.'cc              :call <SID>CodeComment()<CR>'
+	exe ihead.'&code\ ->\ comment<TAB>'.esc_mapl.'cc         <ESC>:call <SID>CodeComment()<CR>'
+	exe ahead.'c&omment\ ->\ code<TAB>'.esc_mapl.'co              :call <SID>CommentCode(0)<CR>'
+	exe vhead.'c&omment\ ->\ code<TAB>'.esc_mapl.'co              :call <SID>CommentCode(0)<CR>'
+	exe ihead.'c&omment\ ->\ code<TAB>'.esc_mapl.'co         <ESC>:call <SID>CommentCode(0)<CR>'
+	exe ahead.'&toggle\ code\ <->\ com\.<TAB>'.esc_mapl.'ct       :call <SID>CommentCode(1)<CR>'
+	exe vhead.'&toggle\ code\ <->\ com\.<TAB>'.esc_mapl.'ct       :call <SID>CommentCode(1)<CR>'
+	exe ihead.'&toggle\ code\ <->\ com\.<TAB>'.esc_mapl.'ct  <ESC>:call <SID>CommentCode(1)<CR>'
+
 	exe ahead.'insert\ long\ comment<Tab>'.esc_mapl.'cil       :call <SID>InsertLongComment("a")<CR>'
 	exe vhead.'insert\ long\ comment<Tab>'.esc_mapl.'cil  <C-C>:call <SID>InsertLongComment("v")<CR>'
+	exe ihead.'insert\ long\ comment<Tab>'.esc_mapl.'cil  <C-C>:call <SID>InsertLongComment("a")<CR>'
 	exe ahead.'remove\ long\ comment<Tab>'.esc_mapl.'crl       :call <SID>RemoveLongComment()<CR>'
+	exe ihead.'remove\ long\ comment<Tab>'.esc_mapl.'crl  <C-C>:call <SID>RemoveLongComment()<CR>'
 	exe ahead.'-Sep02-                                         :'
-	"
-	exe ahead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca  :call <SID>FunctionComment()<CR>'
-	exe vhead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca  :call <SID>FunctionComment()<CR>'
-	exe ahead.'-Sep03-                                            :'
-	"
+
+	exe ahead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca       :call <SID>FunctionComment()<CR>'
+	exe vhead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca       :call <SID>FunctionComment()<CR>'
+	exe ihead.'function\ description\ (&auto)<TAB>'.esc_mapl.'ca  <Esc>:call <SID>FunctionComment()<CR>'
+	exe ahead.'-Sep03-                                                 :'
+
 	"-------------------------------------------------------------------------------
 	" templates
 	"-------------------------------------------------------------------------------
@@ -1806,17 +1844,22 @@ function! s:InitMenus()
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------
-	"
+
 	let ahead = 'anoremenu <silent> '.s:Lua_RootMenu.'.Snippets.'
 	let vhead = 'vnoremenu <silent> '.s:Lua_RootMenu.'.Snippets.'
-	"
+	let ihead = 'inoremenu <silent> '.s:Lua_RootMenu.'.Snippets.'
+
 	exe ahead.'&insert\ code\ snippet<Tab>'.esc_mapl.'ni       :call <SID>CodeSnippet("insert")<CR>'
+	exe ihead.'&insert\ code\ snippet<Tab>'.esc_mapl.'ni  <C-C>:call <SID>CodeSnippet("insert")<CR>'
 	exe ahead.'&create\ code\ snippet<Tab>'.esc_mapl.'nc       :call <SID>CodeSnippet("create")<CR>'
 	exe vhead.'&create\ code\ snippet<Tab>'.esc_mapl.'nc  <C-C>:call <SID>CodeSnippet("vcreate")<CR>'
+	exe ihead.'&create\ code\ snippet<Tab>'.esc_mapl.'nc  <C-C>:call <SID>CodeSnippet("create")<CR>'
 	exe ahead.'&view\ code\ snippet<Tab>'.esc_mapl.'nv         :call <SID>CodeSnippet("view")<CR>'
+	exe ihead.'&view\ code\ snippet<Tab>'.esc_mapl.'nv    <C-C>:call <SID>CodeSnippet("view")<CR>'
 	exe ahead.'&edit\ code\ snippet<Tab>'.esc_mapl.'ne         :call <SID>CodeSnippet("edit")<CR>'
+	exe ihead.'&edit\ code\ snippet<Tab>'.esc_mapl.'ne    <C-C>:call <SID>CodeSnippet("edit")<CR>'
 	exe ahead.'-Sep01-                                         :'
-	"
+
 	" templates: edit and reload templates, styles
 	call mmtemplates#core#CreateMenus ( 'g:Lua_Templates', s:Lua_RootMenu, 'do_specials',
 				\ 'specials_menu', 'Snippets'	)
@@ -1824,77 +1867,96 @@ function! s:InitMenus()
 	"-------------------------------------------------------------------------------
 	" run
 	"-------------------------------------------------------------------------------
-	"
-	let ahead = 'anoremenu          '.s:Lua_RootMenu.'.Run.'
-	let shead = 'anoremenu <silent> '.s:Lua_RootMenu.'.Run.'
+
+	let ahead = 'anoremenu <silent> '.s:Lua_RootMenu.'.Run.'
 	let vhead = 'vnoremenu <silent> '.s:Lua_RootMenu.'.Run.'
-	"
-	exe shead.'&run<TAB><F9>\ '.esc_mapl.'rr             :call <SID>Run()<CR>'
-	exe shead.'&compile<TAB><S-F9>\ '.esc_mapl.'rc       :call <SID>Compile("compile")<CR>'
-	exe shead.'chec&k\ code<TAB><A-F9>\ '.esc_mapl.'rk   :call <SID>Compile("check")<CR>'
-	exe shead.'make\ &executable<TAB>'.esc_mapl.'re      :call <SID>MakeExecutable()<CR>'
-	"
-	exe shead.'&buffer\ "Lua\ Output".buffer\ "Lua\ Output"  :echo "This is a menu header."<CR>'
-	exe shead.'&buffer\ "Lua\ Output".-SepHead-              :'
-	exe shead.'&buffer\ "Lua\ Output".load\ into\ quick&fix<TAB>'.esc_mapl.'qf               :call <SID>OutputBufferErrors(0)<CR>'
-	exe shead.'&buffer\ "Lua\ Output".qf\.\ and\ &jump\ to\ first\ error<TAB>'.esc_mapl.'qj  :call <SID>OutputBufferErrors(1)<CR>'
-	"
-	exe shead.'-Sep01-                                   :'
-	"
+	let ihead = 'inoremenu <silent> '.s:Lua_RootMenu.'.Run.'
+	let ahead_loud = 'anoremenu     '.s:Lua_RootMenu.'.Run.'
+	let ihead_loud = 'inoremenu     '.s:Lua_RootMenu.'.Run.'
+
+	exe ahead.'&run<TAB><F9>\ '.esc_mapl.'rr                 :call <SID>Run("")<CR>'
+	exe ihead.'&run<TAB><F9>\ '.esc_mapl.'rr            <Esc>:call <SID>Run("")<CR>'
+	exe ahead.'&compile<TAB><S-F9>\ '.esc_mapl.'rc           :call <SID>Compile("compile")<CR>'
+	exe ihead.'&compile<TAB><S-F9>\ '.esc_mapl.'rc      <Esc>:call <SID>Compile("compile")<CR>'
+	exe ahead.'chec&k\ code<TAB><A-F9>\ '.esc_mapl.'rk       :call <SID>Compile("check")<CR>'
+	exe ihead.'chec&k\ code<TAB><A-F9>\ '.esc_mapl.'rk  <Esc>:call <SID>Compile("check")<CR>'
+	exe ahead.'make\ &executable<TAB>'.esc_mapl.'re          :call <SID>MakeExecutable()<CR>'
+	exe ihead.'make\ &executable<TAB>'.esc_mapl.'re     <Esc>:call <SID>MakeExecutable()<CR>'
+
+	exe ahead.'&buffer\ "Lua\ Output".buffer\ "Lua\ Output"  :echo "This is a menu header."<CR>'
+	exe ahead.'&buffer\ "Lua\ Output".-SepHead-              :'
+	exe ahead.'&buffer\ "Lua\ Output".load\ into\ quick&fix<TAB>'.esc_mapl.'qf                    :call <SID>OutputBufferErrors(0)<CR>'
+	exe ihead.'&buffer\ "Lua\ Output".load\ into\ quick&fix<TAB>'.esc_mapl.'qf               <Esc>:call <SID>OutputBufferErrors(0)<CR>'
+	exe ahead.'&buffer\ "Lua\ Output".qf\.\ and\ &jump\ to\ first\ error<TAB>'.esc_mapl.'qj       :call <SID>OutputBufferErrors(1)<CR>'
+	exe ihead.'&buffer\ "Lua\ Output".qf\.\ and\ &jump\ to\ first\ error<TAB>'.esc_mapl.'qj  <Esc>:call <SID>OutputBufferErrors(1)<CR>'
+
+	exe ahead.'-Sep01-                                   :'
+
 	" create a dummy menu header for the "output method" sub-menu
-	exe shead.'&output\ method<TAB>'.esc_mapl.'ro.Output\ Method   :'
-	exe shead.'&output\ method<TAB>'.esc_mapl.'ro.-SepHead-        :'
+	exe ahead.'&output\ method<TAB>'.esc_mapl.'ro.Output\ Method   :'
+	exe ahead.'&output\ method<TAB>'.esc_mapl.'ro.-SepHead-        :'
 	" create a dummy menu header for the "direct run" sub-menu
-	exe shead.'&direct\ run<TAB>'.esc_mapl.'rd.Direct\ Run   :'
-	exe shead.'&direct\ run<TAB>'.esc_mapl.'rd.-SepHead-     :'
-	"
-	exe ahead.'&set\ executable<TAB>'.esc_mapl.'rse                :LuaExecutable<SPACE>'
-	exe ahead.'&set\ compiler\ exec\.<TAB>'.esc_mapl.'rsc          :LuaCompilerExec<SPACE>'
-	exe shead.'-Sep02-                                             :'
-	"
-	exe shead.'&hardcopy\ to\ filename\.ps<TAB>'.esc_mapl.'rh      :call <SID>Hardcopy("n")<CR>'
+	exe ahead.'&direct\ run<TAB>'.esc_mapl.'rd.Direct\ Run   :'
+	exe ahead.'&direct\ run<TAB>'.esc_mapl.'rd.-SepHead-     :'
+
+	exe ahead_loud.'&set\ executable<TAB>'.esc_mapl.'rse                :LuaExecutable<SPACE>'
+	exe ihead_loud.'&set\ executable<TAB>'.esc_mapl.'rse           <Esc>:LuaExecutable<SPACE>'
+	exe ahead_loud.'&set\ compiler\ exec\.<TAB>'.esc_mapl.'rsc          :LuaCompilerExec<SPACE>'
+	exe ihead_loud.'&set\ compiler\ exec\.<TAB>'.esc_mapl.'rsc     <Esc>:LuaCompilerExec<SPACE>'
+	exe ahead.'-Sep02-                                             :'
+
+	exe ahead.'&hardcopy\ to\ filename\.ps<TAB>'.esc_mapl.'rh      :call <SID>Hardcopy("n")<CR>'
 	exe vhead.'&hardcopy\ to\ filename\.ps<TAB>'.esc_mapl.'rh <C-C>:call <SID>Hardcopy("v")<CR>'
-	exe shead.'-Sep03-                                             :'
-	"
-	exe shead.'&settings<TAB>'.esc_mapl.'rs  :call Lua_Settings(0)<CR>'
-	"
+	exe ihead.'&hardcopy\ to\ filename\.ps<TAB>'.esc_mapl.'rh <C-C>:call <SID>Hardcopy("n")<CR>'
+	exe ahead.'-Sep03-                                             :'
+
+	exe ahead.'&settings<TAB>'.esc_mapl.'rs       :call Lua_Settings(0)<CR>'
+	exe ihead.'&settings<TAB>'.esc_mapl.'rs  <Esc>:call Lua_Settings(0)<CR>'
+
 	" run -> output method
-	"
-	exe shead.'output\ method.vim\ &io<TAB>interactive   :call <SID>SetOutputMethod("vim-io")<CR>'
-	exe shead.'output\ method.vim\ &qf<TAB>quickfix      :call <SID>SetOutputMethod("vim-qf")<CR>'
-	exe shead.'output\ method.&buffer<TAB>quickfix       :call <SID>SetOutputMethod("buffer")<CR>'
+
+	exe ahead.'output\ method.vim\ &io<TAB>interactive       :call <SID>SetOutputMethod("vim-io")<CR>'
+	exe ihead.'output\ method.vim\ &io<TAB>interactive  <Esc>:call <SID>SetOutputMethod("vim-io")<CR>'
+	exe ahead.'output\ method.vim\ &qf<TAB>quickfix          :call <SID>SetOutputMethod("vim-qf")<CR>'
+	exe ihead.'output\ method.vim\ &qf<TAB>quickfix     <Esc>:call <SID>SetOutputMethod("vim-qf")<CR>'
+	exe ahead.'output\ method.&buffer<TAB>quickfix           :call <SID>SetOutputMethod("buffer")<CR>'
+	exe ihead.'output\ method.&buffer<TAB>quickfix      <Esc>:call <SID>SetOutputMethod("buffer")<CR>'
 	if ! s:MSWIN
-		exe shead.'output\ method.&xterm<TAB>interactive     :call <SID>SetOutputMethod("xterm")<CR>'
+		exe ahead.'output\ method.&xterm<TAB>interactive       :call <SID>SetOutputMethod("xterm")<CR>'
+		exe ihead.'output\ method.&xterm<TAB>interactive  <Esc>:call <SID>SetOutputMethod("xterm")<CR>'
 	endif
-	"
+
 	" run -> direct run
-	"
-	exe shead.'direct\ run.&yes<TAB>use\ executable\ scripts     :call <SID>SetDirectRun("yes")<CR>'
-	exe shead.'direct\ run.&no<TAB>always\ use\ :LuaExecutable   :call <SID>SetDirectRun("no")<CR>'
-	"
+
+	exe ahead.'direct\ run.&yes<TAB>use\ executable\ scripts         :call <SID>SetDirectRun("yes")<CR>'
+	exe ihead.'direct\ run.&yes<TAB>use\ executable\ scripts    <Esc>:call <SID>SetDirectRun("yes")<CR>'
+	exe ahead.'direct\ run.&no<TAB>always\ use\ :LuaExecutable       :call <SID>SetDirectRun("no")<CR>'
+	exe ihead.'direct\ run.&no<TAB>always\ use\ :LuaExecutable  <Esc>:call <SID>SetDirectRun("no")<CR>'
+
 	" deletes the dummy menu header and displays the current options
 	" in the menu header of the sub-menus
 	call s:SetOutputMethod ( s:Lua_OutputMethod )
 	call s:SetDirectRun ( s:Lua_DirectRun )
-	"
+
 	"-------------------------------------------------------------------------------
 	" tool box
 	"-------------------------------------------------------------------------------
-	"
+
 	if s:Lua_UseToolbox == 'yes' && mmtoolbox#tools#Property ( s:Lua_Toolbox, 'empty-menu' ) == 0
 		call mmtoolbox#tools#AddMenus ( s:Lua_Toolbox, s:Lua_RootMenu.'.&Tool\ Box' )
 	endif
-	"
+
 	"-------------------------------------------------------------------------------
 	" help
 	"-------------------------------------------------------------------------------
-	"
+
 	let ahead = 'anoremenu <silent> '.s:Lua_RootMenu.'.Help.'
-	let vhead = 'vnoremenu <silent> '.s:Lua_RootMenu.'.Help.'
-	"
-	exe ahead.'-Sep01-                                  :'
-	exe ahead.'&help\ (Lua-Support)<TAB>'.esc_mapl.'hs  :call <SID>HelpPlugin()<CR>'
-	"
+	let ihead = 'inoremenu <silent> '.s:Lua_RootMenu.'.Help.'
+
+	exe ahead.'-Sep01-                                       :'
+	exe ahead.'&help\ (Lua-Support)<TAB>'.esc_mapl.'hs       :call <SID>HelpPlugin()<CR>'
+	exe ihead.'&help\ (Lua-Support)<TAB>'.esc_mapl.'hs  <Esc>:call <SID>HelpPlugin()<CR>'
+
 endfunction    " ----------  end of function s:InitMenus  ----------
 "
 "-------------------------------------------------------------------------------
