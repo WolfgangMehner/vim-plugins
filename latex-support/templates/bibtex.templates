@@ -95,7 +95,7 @@
   month         = {},
   note          = {},
 }
-== BibTeX.book == below, noindent ==
+== BibTeX.book == below, noindent, map:bbo, sc:b ==
 @book{<CURSOR>,
   author        = {},
   editor        = {},
@@ -110,7 +110,7 @@
   month         = {},
   note          = {},
 }
-== BibTeX.booklet == below, noindent ==
+== BibTeX.booklet == below, noindent, map:bbl, sc:b ==
 @booklet{<CURSOR>,
   title         = {},
   author        = {},
@@ -120,7 +120,7 @@
   year          = ,
   note          = {},
 }
-== BibTeX.inbook == below, noindent ==
+== BibTeX.inbook == below, noindent, map:bib, sc:i ==
 @inbook{<CURSOR>,
   author        = {},
   editor        = {},
@@ -174,7 +174,7 @@
   publisher     = {},
   note          = {},
 }
-== BibTeX.manual == below, noindent ==
+== BibTeX.manual == below, noindent, map:bma, sc:m ==
 @manual{<CURSOR>,
   title         = {},
   author        = {},
@@ -185,7 +185,7 @@
   year          = ,
   note          = {},
 }
-== BibTeX.mastersthesis == below, noindent ==
+== BibTeX.mastersthesis == below, noindent, map:bmt, sc:m ==
 @mastersthesis{<CURSOR>,
   author        = {},
   title         = {},
@@ -196,7 +196,7 @@
   month         = {},
   note          = {},
 }
-== BibTeX.misc == below, noindent ==
+== BibTeX.misc == below, noindent, map:bmi, sc:m ==
 @misc{<CURSOR>,
   author        = {},
   title         = {},
@@ -205,7 +205,7 @@
   year          = ,
   note          = {},
 }
-== BibTeX.phdthesis == below, noindent ==
+== BibTeX.phdthesis == below, noindent, map:bpt, sc:p ==
 @phdthesis{<CURSOR>,
   author        = {},
   title         = {},
@@ -216,7 +216,7 @@
   month         = {},
   note          = {},
 }
-== BibTeX.proceedings == below, noindent ==
+== BibTeX.proceedings == below, noindent, map:bpr, sc:p ==
 @proceedings{<CURSOR>,
   title         = {},
   year          = ,
@@ -230,7 +230,7 @@
   month         = {},
   organization  = {},
 }
-== BibTeX.techreport == below, noindent ==
+== BibTeX.techreport == below, noindent, map:bte, sc:t ==
 @techreport{<CURSOR>,
   author        = {},
   title         = {},
@@ -242,7 +242,7 @@
   month         = {},
   note          = {},
 }
-== BibTeX.unpublished == below, noindent ==
+== BibTeX.unpublished == below, noindent, map:bun, sc:u ==
 @unpublished{<CURSOR>,
   author        = {},
   title         = {},

@@ -271,11 +271,6 @@ mathtt
 <CURSOR><SPLIT> & = &  \\
  & = & 
 \end{eqnarray}
-== Math.matrix == sc:m, map:mm, noindent ==
-	\left(\begin{matrix}
-		<CURSOR> &  \\
-		 & 
-	\end{matrix}\right)
 == ENDTEMPLATE ==
 
 == SEP: Math.sep2 == 
@@ -289,6 +284,11 @@ mathtt
 {<CURSOR><SPLIT>}\choose{<+k+>}
 == Math.frac == sc:f, insert, map:mfr ==
 \frac{<CURSOR><SPLIT>}{<+denominator+>}
+== Math.matrix == sc:m, map:mma, below, noindent ==
+	\left(\begin{matrix}
+		<CURSOR> &  \\
+		 & 
+	\end{matrix}\right)
 == Math.nth root == sc:n, insert, map:mnr ==
 \sqrt[<CURSOR>]{<SPLIT><-radicand->}
 == Math.prod  == sc:p, insert, map:mpr ==

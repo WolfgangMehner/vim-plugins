@@ -21,6 +21,7 @@ scrdoc
 scrreprt
 scrlttr2
 scrlettr
+standalone
 == ENDLIST ==
 
 == Document.document classes == expandmenu, insert, sc:c ==
