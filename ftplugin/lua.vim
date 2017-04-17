@@ -9,7 +9,7 @@
 "  Organization:  
 "       Version:  1.0
 "       Created:  26.03.2014
-"      Revision:  ---
+"      Revision:  17.04.2017
 "       License:  Copyright (c) 2014, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -21,13 +21,13 @@
 "                 PURPOSE.
 "                 See the GNU General Public License version 2 for more details.
 "===============================================================================
-"
+
 " Only do this when not done yet for this buffer
-if exists("b:did_Lua_ftplugin")
+if exists("b:did_lua_support_ftplugin")
 	finish
 endif
-let b:did_Lua_ftplugin = 1
-"
+let b:did_lua_support_ftplugin = 1
+
 "-------------------------------------------------------------------------------
 " set "maplocalleader" as configured using "g:Lua_MapLeader"
 "-------------------------------------------------------------------------------
