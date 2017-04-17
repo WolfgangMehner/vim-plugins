@@ -4,18 +4,18 @@
 "
 "   Language :  C
 "     Plugin :  c.vim 
+"   Revision :  15.04.2017
 " Maintainer :  Wolfgang Mehner <wolfgang-mehner@web.de>
 "               (formerly Fritz Mehner <mehner.fritz@web.de>)
 "
 " ------------------------------------------------------------------------------
-"
+
 " Only do this when not done yet for this buffer
-" 
-if exists("b:did_C_ftplugin")
-  finish
+if exists("b:did_c_support_ftplugin")
+	finish
 endif
-let b:did_C_ftplugin = 1
-"
+let b:did_c_support_ftplugin = 1
+
 "-------------------------------------------------------------------------------
 " additional mapping : complete a classical C comment: '/*' => '/* | */'
 "-------------------------------------------------------------------------------

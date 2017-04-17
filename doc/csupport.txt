@@ -1860,8 +1860,9 @@ in the customization file (see |csupport-templates|).
 
                           *C::FileSkeleton::Header* *Cpp::FileSkeleton::Header*
                           *C::FileSkeleton::Source* *Cpp::FileSkeleton::Source*
-The file skeletons are controlled via these properties. For each filetype, the
-headers and source files can be different:
+The file skeletons are controlled via these properties, which can be set in
+one of the template files. For each filetype, the headers and source files can
+be different:
 >
   SetProperty ( 'C::FileSkeleton::Header',   'Comments.file description impl' )
   SetProperty ( 'C::FileSkeleton::Source',   'Comments.file description header' )
@@ -1874,7 +1875,7 @@ one of these types, set the property to an empty string: >
 In general, these properties are semicolon-separated lists of templates to be
 inserted: >
   SetProperty ( 'C::FileSkeleton::Source', 'Comments.file description header; ;Comments.all sections.implementation, C' )
-This will inserted the file description and the file section comments (see
+This will insert the file description and the file section comments (see
 |csupport-comm-sections|). If a space appears as an entry in the list, an
 empty line is inserted: >
   '...; ;...'

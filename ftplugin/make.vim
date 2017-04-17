@@ -3,18 +3,19 @@
 " Vim filetype plugin file
 "
 "   Language :  Make
-"     Plugin :  make.vim 
-" Maintainer :  Fritz Mehner <mehner@web.de>
+"     Plugin :  c.vim / latex.vim / ...
+"   Revision :  15.04.2017
+" Maintainer :  Wolfgang Mehner <wolfgang-mehner@web.de>
+"               (formerly Fritz Mehner <mehner.fritz@web.de>)
 "
 " ------------------------------------------------------------------------------
-"
+
 " Only do this when not done yet for this buffer
-" 
-if exists("b:did_Make_ftplugin")
-  finish
+if exists("b:did_c_support_make")
+	finish
 endif
-let b:did_Make_ftplugin = 1
-"
+let b:did_c_support_make = 1
+
 " ---------- Maps for the Make tool -----------------------------
 "
  noremap  <buffer>  <silent>  <LocalLeader>rm        :Make<CR>
