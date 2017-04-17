@@ -1,8 +1,8 @@
-*vimsupport.txt*                 Vim Support                       Jul 23 2016
+*vimsupport.txt*                 Vim Support                       Apr 17 2017
 
 Vim Support                                         *vim-support* *vimsupport*
 
-                             Plug-in version 2.4
+                             Plug-in version 2.5pre
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
@@ -542,8 +542,6 @@ influences only files with filetype 'vim'.
 ------------------------------------------------------------------------------
 
 vim-support/README.md              Release notes, installation description.
-
-ftplugin/help.vim                  Filetype plugin to extend Vim help.
 
 plugin/vim-support.vim             The vim plugin for Vim/gVim.
 
