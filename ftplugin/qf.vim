@@ -1,22 +1,22 @@
-"===============================================================================
+" ------------------------------------------------------------------------------
 "
-"          File:  qf.vim
-" 
-"   Description:  
-" 
-"   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
-"       Version:  1.0
-"       Created:  18.02.2012 19:51
-"       License:  Copyright (c) 2012, Dr. Fritz Mehner
-"===============================================================================
+" Vim filetype plugin file
 "
+" This creates additional maps to sort the output of the profilers
+"
+"   Language :  Perl (quickfix)
+"     Plugin :  perl-support.vim
+"   Revision :  15.04.2017
+" Maintainer :  Wolfgang Mehner <wolfgang-mehner@web.de>
+"               (formerly Fritz Mehner <mehner.fritz@web.de>)
+"
+" ----------------------------------------------------------------------------
+
 " Only do this when not done yet for this buffer
-"
-if exists("b:did_PERL_quickfix")
-  finish
+if exists("b:did_perl_support_quickfix")
+	finish
 endif
-let b:did_PERL_quickfix = 1
+let b:did_perl_support_quickfix = 1
 
 noremap    <buffer>  <silent>  <LocalLeader>rpss       :call perlsupportprofiling#Perl_SmallProfSortInput()<CR>
 noremap    <buffer>  <silent>  <LocalLeader>rpfs       :call perlsupportprofiling#Perl_FastProfSortInput()<CR>

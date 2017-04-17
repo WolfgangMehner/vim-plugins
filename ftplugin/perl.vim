@@ -1,18 +1,21 @@
+" ------------------------------------------------------------------------------
+"
 " Vim filetype plugin file
 "
 "   Language :  Perl
 "     Plugin :  perl-support.vim
-" Maintainer :  Fritz Mehner <mehner@web.de>
+"   Revision :  15.04.2017
+" Maintainer :  Wolfgang Mehner <wolfgang-mehner@web.de>
+"               (formerly Fritz Mehner <mehner.fritz@web.de>)
 "
 " ----------------------------------------------------------------------------
-"
+
 " Only do this when not done yet for this buffer
-"
-if exists("b:did_PERL_ftplugin")
-  finish
+if exists("b:did_perl_support_ftplugin")
+	finish
 endif
-let b:did_PERL_ftplugin = 1
-"
+let b:did_perl_support_ftplugin = 1
+
 " ---------- tabulator / shiftwidth ------------------------------------------
 "  Set tabulator and shift width to 4 conforming to the Perl Style Guide.
 "  Uncomment the next two lines to force these settings for all files with
