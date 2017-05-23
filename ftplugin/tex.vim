@@ -1,14 +1,17 @@
+" ------------------------------------------------------------------------------
+"
 " Vim filetype plugin file
 "
 "   Language :  LaTeX
 "     Plugin :  latex-support.vim
+"   Revision :  15.04.2017
 " Maintainer :  Wolfgang Mehner <wolfgang-mehner@web.de>
 "
 " ----------------------------------------------------------------------------
 
 " Only do this when not done yet for this buffer
 if exists("b:did_latex_support_ftplugin")
-  finish
+	finish
 endif
 let b:did_latex_support_ftplugin = 1
 

@@ -255,6 +255,30 @@ mathtt
 == ENDTEMPLATE ==
 
 § =============================================================
+§  Math, miscellany, single menu items
+§ =============================================================
+
+MenuShortcut( 'Math.Miscellany', 'y' )
+
+== Math.Miscellany.cases == sc:c, below, map:mca ==
+\begin{cases}
+	<CURSOR> & <+cond+> \\
+	<+term+> & <+cond+>
+\end{cases}
+== Math.Miscellany.matrix == sc:m, map:mma, below, noindent ==
+	\left(\begin{matrix}
+		<CURSOR> &  \\
+		 & 
+	\end{matrix}\right)
+== Math.Miscellany.overset == insert, sc:o, map:mov ==
+\overset{<CURSOR><+over+>}{<-operator-><SPLIT>}
+== Math.Miscellany.sideset == insert, sc:s, map:msi ==
+\sideset{<CURSOR><+before+>}{<+after+>}{<-operator-><SPLIT>}
+== Math.Miscellany.underset == insert, sc:u, map:mun ==
+\underset{<CURSOR><+under+>}{<-operator-><SPLIT>}
+== ENDTEMPLATE ==
+
+§ =============================================================
 §  Math, single menu items
 § =============================================================
 
@@ -275,20 +299,10 @@ mathtt
 
 == SEP: Math.sep2 == 
 
-== Math.cases == sc:c, below, map:mca ==
-\begin{cases}
-	<CURSOR> & <+cond+> \\
-	<+term+> & <+cond+>
-\end{cases}
 == Math.choose == sc:c, insert, map:mch ==
 {<CURSOR><SPLIT>}\choose{<+k+>}
 == Math.frac == sc:f, insert, map:mfr ==
 \frac{<CURSOR><SPLIT>}{<+denominator+>}
-== Math.matrix == sc:m, map:mma, below, noindent ==
-	\left(\begin{matrix}
-		<CURSOR> &  \\
-		 & 
-	\end{matrix}\right)
 == Math.nth root == sc:n, insert, map:mnr ==
 \sqrt[<CURSOR>]{<SPLIT><-radicand->}
 == Math.prod  == sc:p, insert, map:mpr ==
