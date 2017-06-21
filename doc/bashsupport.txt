@@ -1,8 +1,8 @@
-*bashsupport.txt*                Bash Support                      Jul 24 2016
+*bashsupport.txt*                Bash Support                      Jun 20 2017
 
 Bash Support                                      *bash-support* *bashsupport*
 
-                             Plug-in version 4.3
+                             Plug-in version 4.4
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
@@ -12,7 +12,7 @@ speed up writing code in a consistent style.  This is done by inserting
 complete statements, comments, idioms, and code snippets.  Syntax checking,
 running a script, starting a debugger  can be done with a keystroke.  There
 are many additional hints and options which can improve speed and comfort when
-writing shell scripts. This plug-in can be used for Bash version 4.0.
+writing shell scripts. This plug-in can be used for Bash up to version 4.4.
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

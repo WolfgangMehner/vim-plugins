@@ -12,6 +12,7 @@
 	'indirect parameter expansion'				:	'${!<CURSOR>}',
 	'names matching prefix'								:	'${!<CURSOR>*}',
 	'parameter length'										:	'${#<CURSOR>}',
+	'parameter transformation'						:	'${<CURSOR>@<+operator+>}',
 	'pattern substitution all'						:	'${<CURSOR>//<+pattern+>/<+string+>}',
 	'pattern substitution begin'					:	'${<CURSOR>/#<+pattern+>/<+string+>}',
 	'pattern substitution'								:	'${<CURSOR>/<+pattern+>/<+string+>}',
