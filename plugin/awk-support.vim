@@ -2,19 +2,19 @@
 "
 "          File:  awk-support.vim
 "
-"   Description:  awk support
+"   Description:  AWK support
 "
-"                  Write awk scripts by inserting comments, statements,
+"                  Write AWK scripts by inserting comments, statements,
 "                  variables and builtins.
 "
 "   VIM Version:  7.0+
 "        Author:  Wolfgang Mehner <wolfgang-mehner@web.de>
 "                 Fritz Mehner <mehner.fritz@web.de>
-"       Version:  see variable g:AwkSupportVersion below
+"       Version:  see g:AwkSupportVersion below
 "       Created:  14.01.2012
-"      Revision:  21.02.2016
+"      Revision:  28.06.2017
 "       License:  Copyright (c) 2001-2015, Dr. Fritz Mehner
-"                 Copyright (c) 2016-2016, Wolfgang Mehner
+"                 Copyright (c) 2016-2017, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -25,83 +25,214 @@
 "                 PURPOSE.
 "                 See the GNU General Public License version 2 for more details.
 "===============================================================================
-"
+
+"-------------------------------------------------------------------------------
+" === Basic checks ===   {{{1
+"-------------------------------------------------------------------------------
+
+" need at least 7.0
 if v:version < 700
-  echohl WarningMsg | echo 'plugin awk-support.vim needs Vim version >= 7'| echohl None
-  finish
+	echohl WarningMsg
+	echo 'The plugin awk-support.vim needs Vim version >= 7.'
+	echohl None
+	finish
 endif
-"
-" Prevent duplicate loading:
-"
+
+" prevent duplicate loading
+" need compatible
 if exists("g:AwkSupportVersion") || &cp
- finish
+	finish
 endif
+
+let g:AwkSupportVersion= "1.4pre"                  " version number of this script; do not change
+
+"-------------------------------------------------------------------------------
+" === Auxiliary functions ===   {{{1
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:ApplyDefaultSetting : Write default setting to a global variable.   {{{2
 "
-let g:AwkSupportVersion= "1.3"                  " version number of this script; do not change
+" Parameters:
+"   varname - name of the variable (string)
+"   value   - default value (string)
+" Returns:
+"   -
 "
-"===  FUNCTION  ================================================================
-"          NAME:  SetGlobalVariable     {{{1
-"   DESCRIPTION:  Define a global variable and assign a default value if nor
-"                 already defined
-"    PARAMETERS:  name - global variable
-"                 default - default value
-"===============================================================================
-function! s:SetGlobalVariable ( name, default )
-  if !exists('g:'.a:name)
-    exe 'let g:'.a:name."  = '".a:default."'"
-	else
-		" check for an empty initialization
-		exe 'let	val	= g:'.a:name
-		if empty(val)
-			exe 'let g:'.a:name."  = '".a:default."'"
-		endif
-  endif
-endfunction   " ---------- end of function  s:SetGlobalVariable  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  GetGlobalSetting     {{{1
-"   DESCRIPTION:  take over a global setting
-"    PARAMETERS:  varname - variable to set
-"       RETURNS:
-"===============================================================================
-function! s:GetGlobalSetting ( varname )
-	if exists ( 'g:'.a:varname )
-		exe 'let s:'.a:varname.' = g:'.a:varname
-	endif
-endfunction    " ----------  end of function s:GetGlobalSetting  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  ApplyDefaultSetting     {{{1
-"   DESCRIPTION:  make a local setting global
-"    PARAMETERS:  varname - variable to set
-"       RETURNS:
-"===============================================================================
-function! s:ApplyDefaultSetting ( varname )
+" If g:<varname> does not exists, assign:
+"   g:<varname> = value
+"-------------------------------------------------------------------------------
+
+function! s:ApplyDefaultSetting ( varname, value )
 	if ! exists ( 'g:'.a:varname )
-		exe 'let g:'.a:varname.' = s:'.a:varname
+		let { 'g:'.a:varname } = a:value
 	endif
 endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
-"
-"------------------------------------------------------------------------------
-" *** PLATFORM SPECIFIC ITEMS ***     {{{1
-"------------------------------------------------------------------------------
-let s:MSWIN = has("win16") || has("win32")   || has("win64") || has("win95")
-let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
-"
-let s:installation						= '*undefined*'
-let g:Awk_PluginDir						= ''
-let s:Awk_GlobalTemplateFile	= ''
-let s:Awk_LocalTemplateFile		= ''
-let s:Awk_CustomTemplateFile  = ''                " the custom templates
-let s:Awk_FilenameEscChar 		= ''
-let s:Awk_XtermDefaults       = '-fa courier -fs 12 -geometry 80x24'
 
+"-------------------------------------------------------------------------------
+" s:ErrorMsg : Print an error message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
 
-if	s:MSWIN
-  " ==========  MS Windows  ======================================================
-	"
+function! s:ErrorMsg ( ... )
+	echohl WarningMsg
+	for line in a:000
+		echomsg line
+	endfor
+	echohl None
+endfunction    " ----------  end of function s:ErrorMsg  ----------
+
+"-------------------------------------------------------------------------------
+" s:GetGlobalSetting : Get a setting from a global variable.   {{{2
+"
+" Parameters:
+"   varname - name of the variable (string)
+"   glbname - name of the global variable (string, optional)
+" Returns:
+"   -
+"
+" If 'glbname' is given, it is used as the name of the global variable.
+" Otherwise the global variable will also be named 'varname'.
+"
+" If g:<glbname> exists, assign:
+"   s:<varname> = g:<glbname>
+"-------------------------------------------------------------------------------
+
+function! s:GetGlobalSetting ( varname, ... )
+	let lname = a:varname
+	let gname = a:0 >= 1 ? a:1 : lname
+	if exists ( 'g:'.gname )
+		let { 's:'.lname } = { 'g:'.gname }
+	endif
+endfunction    " ----------  end of function s:GetGlobalSetting  ----------
+
+"-------------------------------------------------------------------------------
+" s:ImportantMsg : Print an important message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:ImportantMsg ( ... )
+	echohl Search
+	echo join ( a:000, "\n" )
+	echohl None
+endfunction    " ----------  end of function s:ImportantMsg  ----------
+
+"-------------------------------------------------------------------------------
+" s:SID : Return the <SID>.   {{{2
+"
+" Parameters:
+"   -
+" Returns:
+"   SID - the SID of the script (string)
+"-------------------------------------------------------------------------------
+
+function! s:SID ()
+	return matchstr ( expand('<sfile>'), '<SNR>\zs\d\+\ze_SID$' )
+endfunction    " ----------  end of function s:SID  ----------
+
+"-------------------------------------------------------------------------------
+" s:UserInput : Input after a highlighted prompt.   {{{2
+"
+" Parameters:
+"   prompt - the prompt (string)
+"   text - the default input (string)
+"   compl - completion (string, optional)
+"   clist - list, if 'compl' is "customlist" (list, optional)
+" Returns:
+"   input - the user input, an empty sting if the user hit <ESC> (string)
+"-------------------------------------------------------------------------------
+
+function! s:UserInput ( prompt, text, ... )
+
+	echohl Search                                         " highlight prompt
+	call inputsave()                                      " preserve typeahead
+	if a:0 == 0 || a:1 == ''
+		let retval = input( a:prompt, a:text )
+	elseif a:1 == 'customlist'
+		let s:UserInputList = a:2
+		let retval = input( a:prompt, a:text, 'customlist,<SNR>'.s:SID().'_UserInputEx' )
+		let s:UserInputList = []
+	else
+		let retval = input( a:prompt, a:text, a:1 )
+	endif
+	call inputrestore()                                   " restore typeahead
+	echohl None                                           " reset highlighting
+
+	let retval  = substitute( retval, '^\s\+', "", "" )   " remove leading whitespaces
+	let retval  = substitute( retval, '\s\+$', "", "" )   " remove trailing whitespaces
+
+	return retval
+
+endfunction    " ----------  end of function s:UserInput ----------
+
+"-------------------------------------------------------------------------------
+" s:UserInputEx : ex-command for s:UserInput.   {{{3
+"-------------------------------------------------------------------------------
+function! s:UserInputEx ( ArgLead, CmdLine, CursorPos )
+	if empty( a:ArgLead )
+		return copy( s:UserInputList )
+	endif
+	return filter( copy( s:UserInputList ), 'v:val =~ ''\V\<'.escape(a:ArgLead,'\').'\w\*''' )
+endfunction    " ----------  end of function s:UserInputEx  ----------
+" }}}3
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:WarningMsg : Print a warning/error message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:WarningMsg ( ... )
+	echohl WarningMsg
+	echo join ( a:000, "\n" )
+	echohl None
+endfunction    " ----------  end of function s:WarningMsg  ----------
+
+" }}}2
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" === Module setup ===   {{{1
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" == Platform specific items ==   {{{2
+"-------------------------------------------------------------------------------
+
+let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
+let s:UNIX  = has("unix")  || has("macunix") || has("win32unix")
+
+let s:installation           = '*undefined*'
+let g:Awk_PluginDir          = ''
+let s:Awk_GlobalTemplateFile = ''
+let s:Awk_LocalTemplateFile  = ''
+let s:Awk_CustomTemplateFile = ''                " the custom templates
+let s:Awk_FilenameEscChar    = ''
+let s:Awk_XtermDefaults      = '-fa courier -fs 12 -geometry 80x24'
+
+if s:MSWIN
+	" ==========  MS Windows  ======================================================
+
 	let s:Awk_PluginDir = substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
-	"
+
 	" change '\' to '/' to avoid interpretation as escape character
 	if match(	substitute( expand("<sfile>"), '\', '/', 'g' ),
 				\		substitute( expand("$HOME"),   '\', '/', 'g' ) ) == 0
@@ -118,18 +249,17 @@ if	s:MSWIN
 		let s:Awk_LocalTemplateFile  = $HOME.'/vimfiles/awk-support/templates/Templates'
 		let s:Awk_CustomTemplateFile = $HOME.'/vimfiles/templates/awk.templates'
 	endif
-	"
-  let s:Awk_FilenameEscChar 		= ''
-	let s:Awk_Display    					= ''
-	let s:Awk_ManualReader				= 'man.exe'
-	let s:Awk_Awk									= 'awk.exe'
-	let s:Awk_OutputGvim					= 'xterm'
-	"
+
+	let s:Awk_FilenameEscChar    = ''
+	let s:Awk_Display            = ''
+	let s:Awk_ManualReader       = 'man.exe'
+	let s:Awk_Executable         = 'awk.exe'
+	let s:Awk_OutputGvim         = 'xterm'
 else
-  " ==========  Linux/Unix  ======================================================
-	"
-	let s:Awk_PluginDir = expand("<sfile>:p:h:h")
-	"
+	" ==========  Linux/Unix  ======================================================
+
+	let s:Awk_PluginDir = expand('<sfile>:p:h:h')
+
 	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
@@ -140,23 +270,21 @@ else
 		"
 		" SYSTEM WIDE INSTALLATION
 		let s:installation           = 'system'
-		let s:Awk_PluginDir          = $VIM.'/vimfiles'
 		let s:Awk_GlobalTemplateFile = s:Awk_PluginDir.'/awk-support/templates/Templates'
 		let s:Awk_LocalTemplateFile  = $HOME.'/.vim/awk-support/templates/Templates'
 		let s:Awk_CustomTemplateFile = $HOME.'/vimfiles/templates/awk.templates'
 	endif
-	"
-	let s:Awk_Awk									= '/usr/bin/awk'
-  let s:Awk_FilenameEscChar 		= ' \%#[]'
-	let s:Awk_Display							= $DISPLAY
-	let s:Awk_ManualReader				= '/usr/bin/man'
-	let s:Awk_OutputGvim					= 'vim'
-	"
+
+	let s:Awk_Executable          = '/usr/bin/awk'
+	let s:Awk_FilenameEscChar     = ' \%#[]'
+	let s:Awk_Display             = $DISPLAY
+	let s:Awk_ManualReader        = '/usr/bin/man'
+	let s:Awk_OutputGvim          = 'vim'
 endif
 
 let s:Awk_AdditionalTemplates = mmtemplates#config#GetFt ( 'awk' )
 let s:Awk_CodeSnippets        = s:Awk_PluginDir.'/awk-support/codesnippets/'
-call s:SetGlobalVariable ( 'Awk_CodeSnippets', s:Awk_CodeSnippets )
+call s:ApplyDefaultSetting ( 'Awk_CodeSnippets', s:Awk_CodeSnippets )
 
 "  g:Awk_Dictionary_File  must be global
 if !exists("g:Awk_Dictionary_File")
@@ -181,9 +309,12 @@ let s:Awk_TemplateJumpTarget 		= ''
 let s:Awk_Errorformat    				= 'awk:\ %f:%l:\ %m'
 let s:Awk_Wrapper               = s:Awk_PluginDir.'/awk-support/scripts/wrapper.sh'
 let s:Awk_InsertFileHeader			= 'yes'
-"
-call s:GetGlobalSetting ( 'Awk_Awk')
-call s:GetGlobalSetting ( 'Awk_InsertFileHeader ')
+let s:Awk_Ctrl_j                = 'yes'
+
+call s:GetGlobalSetting ( 'Awk_Executable', 'Awk_Awk' )
+call s:GetGlobalSetting ( 'Awk_Executable' )
+call s:GetGlobalSetting ( 'Awk_InsertFileHeader' )
+call s:GetGlobalSetting ( 'Awk_Ctrl_j' )
 call s:GetGlobalSetting ( 'Awk_GuiSnippetBrowser' )
 call s:GetGlobalSetting ( 'Awk_LoadMenus' )
 call s:GetGlobalSetting ( 'Awk_RootMenu' )
@@ -197,7 +328,7 @@ call s:GetGlobalSetting ( 'Awk_CustomTemplateFile' )
 call s:GetGlobalSetting ( 'Awk_CreateMenusDelayed' )
 call s:GetGlobalSetting ( 'Awk_LineEndCommColDefault' )
 
-call s:ApplyDefaultSetting ( 'Awk_MapLeader'    )
+call s:ApplyDefaultSetting ( 'Awk_MapLeader', '' )       " default: do not overwrite 'maplocalleader'
 "
 " set default geometry if not specified
 "
@@ -1146,7 +1277,7 @@ function! Awk_Settings ( verbose )
 	else
 		let cmd_line_args = ''
 	endif
-	let txt .= '           Awk executable :  "'.s:Awk_Awk."\"\n"
+	let txt .= '           Awk executable :  "'.s:Awk_Executable."\"\n"
 	let txt .= '  Awk cmd. line arguments :  "'.cmd_line_args."\"\n"
 	let txt = txt."\n"
 	" ----- output ------------------------------
@@ -1350,7 +1481,7 @@ function! Awk_Run ( mode ) range
 		"
 		" ----- normal mode ----------
 		"
- 		exe ':!'.s:Awk_Awk.l:awkCmdLineArgs." -f '".l:fullname."' ".l:arguments
+		exe ':!'.s:Awk_Executable.l:awkCmdLineArgs." -f '".l:fullname."' ".l:arguments
 		if &term == 'xterm'
 			redraw!
 		endif
@@ -1388,9 +1519,9 @@ function! Awk_Run ( mode ) range
 			setlocal	modifiable
 			if a:mode=="n"
 				if	s:MSWIN
-					silent exe ":%!".s:Awk_Awk.l:awkCmdLineArgs.' -f "'.l:fullname.'" '.l:arguments
+					silent exe ":%!".s:Awk_Executable.l:awkCmdLineArgs.' -f "'.l:fullname.'" '.l:arguments
 				else
-					silent exe ":%!".s:Awk_Awk.l:awkCmdLineArgs." -f ".l:fullnameesc.l:arguments
+					silent exe ":%!".s:Awk_Executable.l:awkCmdLineArgs." -f ".l:fullnameesc.l:arguments
 				endif
 			endif
 			"
@@ -1415,7 +1546,7 @@ function! Awk_Run ( mode ) range
 	if s:Awk_OutputGvim == 'xterm'
 		"
 		if	s:MSWIN
-			exe ':!'.s:Awk_Awk.l:awkCmdLineArgs.' -f "'.l:fullname.'" '.l:arguments
+			exe ':!'.s:Awk_Executable.l:awkCmdLineArgs.' -f "'.l:fullname.'" '.l:arguments
 		else
 			silent exe '!xterm -title '.l:fullnameesc.' '.s:Awk_XtermDefaults
 						\			.' -e '.s:Awk_Wrapper.' '.l:awkCmdLineArgs.l:fullnameesc.l:arguments.' &'
@@ -1455,7 +1586,7 @@ function! Awk_SyntaxCheck ( check )
 			"
 			" no whitespaces
 			"
-			exe	":setlocal makeprg=".s:Awk_Awk
+			exe	":setlocal makeprg=".s:Awk_Executable
 			exe	':setlocal errorformat='.s:Awk_Errorformat
 			let	l:fullname	= fnameescape( l:fullname )
 			silent exe  ":make -e 'BEGIN { exit(0) } END { exit(0) }' -f ".l:fullname
@@ -1473,7 +1604,7 @@ function! Awk_SyntaxCheck ( check )
 			"
 			" no whitespaces
 			"
-			exe	":setlocal makeprg=".s:Awk_Awk
+			exe	":setlocal makeprg=".s:Awk_Executable
 			exe	':setlocal errorformat='.s:Awk_Errorformat
 			let	l:fullname	= fnameescape( l:fullname )
 			exe  ":make --lint -f ".l:fullname.' '.l:arguments

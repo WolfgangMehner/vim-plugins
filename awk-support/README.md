@@ -1,4 +1,4 @@
-README for awk-support.vim (Version 1.3) / July 24 2016
+README for awk-support.vim (Version 1.4pre) / June 28 2017
 ================================================================================
 
   *  INSTALLATION
@@ -172,14 +172,10 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 RELEASE NOTES
 ================================================================================
 
-RELEASE NOTES FOR VERSION 1.3
+RELEASE NOTES FOR VERSION 1.4pre
 ----------------------------------------------------------------------
-- Add 'g:Awk_CustomTemplateFile'.
-- Add template personalization file and setup wizard.
-- Change the way lines of code are turned into comments
-  (insert no space after the hash).
-- Change the map for 'comment -> code' to '\co' for consistency with the other
-  plug-ins. The old map '\cu' still works, however.
+- Rename setting 'g:Awk_Awk' into 'g:Awk_Executable'.
+  ('g:Awk_Awk' still works for backwards compatibility.)
 - Minor corrections and improvements.
 
 RELEASE NOTES FOR OLDER VERSIONS
