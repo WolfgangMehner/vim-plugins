@@ -308,15 +308,17 @@ let s:BASH_LineEndCommColDefault	= 49
 let s:BASH_Printheader   					= "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
 let s:BASH_TemplateJumpTarget 		= ''
 let s:BASH_Errorformat    				= '%f:\ %[%^0-9]%#\ %l:%m,%f:\ %l:%m,%f:%l:%m,%f[%l]:%m'
-let s:BASH_Wrapper               	= s:BASH_PluginDir.'/bash-support/scripts/wrapper.sh'
-let s:BASH_InsertFileHeader				= 'yes'
+let s:BASH_Wrapper                = s:BASH_PluginDir.'/bash-support/scripts/wrapper.sh'
+let s:BASH_InsertFileHeader       = 'yes'
+let s:BASH_Ctrl_j                 = 'yes'
 let s:BASH_SyntaxCheckOptionsGlob = ''
-"
+
 call s:GetGlobalSetting ( 'BASH_Debugger' )
 call s:GetGlobalSetting ( 'BASH_bashdb' )
 call s:GetGlobalSetting ( 'BASH_SyntaxCheckOptionsGlob' )
 call s:GetGlobalSetting ( 'BASH_Executable' )
 call s:GetGlobalSetting ( 'BASH_InsertFileHeader' )
+call s:GetGlobalSetting ( 'BASH_Ctrl_j' )
 call s:GetGlobalSetting ( 'BASH_GuiSnippetBrowser' )
 call s:GetGlobalSetting ( 'BASH_LoadMenus' )
 call s:GetGlobalSetting ( 'BASH_RootMenu' )
@@ -637,15 +639,11 @@ function! Bash_ResetMapLeader ()
 	endif
 endfunction    " ----------  end of function Bash_ResetMapLeader  ----------
 " }}}2
-"
-"===  FUNCTION  ================================================================
-"          NAME:  BASH_RereadTemplates     {{{1
-"   DESCRIPTION:  Reread the templates. Also set the character which starts
-"                 the comments in the template files.
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! BASH_RereadTemplates ()
+
+"-------------------------------------------------------------------------------
+" s:RereadTemplates : Initial loading of the templates.   {{{1
+"-------------------------------------------------------------------------------
+function! s:RereadTemplates ()
 
 	"-------------------------------------------------------------------------------
 	" setup template library
@@ -674,6 +672,9 @@ function! BASH_RereadTemplates ()
 
 	" syntax: comments
 	call mmtemplates#core#ChangeSyntax ( g:BASH_Templates, 'comment', '§' )
+
+	" property: file skeletons
+	call mmtemplates#core#Resource ( g:BASH_Templates, 'add', 'property', 'Bash::FileSkeleton::Script', 'Comments.shebang;Comments.file header; ;Skeleton.script-set' )
 
 	"-------------------------------------------------------------------------------
 	" load template library
@@ -714,37 +715,91 @@ function! BASH_RereadTemplates ()
 	" get the jump tags
 	let s:BASH_TemplateJumpTarget = mmtemplates#core#Resource ( g:BASH_Templates, "jumptag" )[0]
 
-endfunction    " ----------  end of function BASH_RereadTemplates  ----------
+endfunction    " ----------  end of function s:RereadTemplates  ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  s:CheckTemplatePersonalization     {{{1
-"   DESCRIPTION:  check whether the name, .. has been set
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
+"-------------------------------------------------------------------------------
+" s:CheckTemplatePersonalization : Check whether the name, .. has been set.   {{{1
+"-------------------------------------------------------------------------------
+
 let s:DoneCheckTemplatePersonalization = 0
 
 function! s:CheckTemplatePersonalization ()
 
 	" check whether the templates are personalized
-	if ! s:DoneCheckTemplatePersonalization
-				\ && mmtemplates#core#ExpandText ( g:BASH_Templates, '|AUTHOR|' ) == 'YOUR NAME'
-		let s:DoneCheckTemplatePersonalization = 1
-
-		let maplead = mmtemplates#core#Resource ( g:BASH_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
-
-		redraw
-		echohl Search
-		echo 'The personal details (name, mail, ...) are not set in the template library.'
-		echo 'They are used to generate comments, ...'
-		echo 'To set them, start the setup wizard using:'
-		echo '- use the menu entry "Bash -> Snippets -> template setup wizard"'
-		echo '- use the map "'.maplead.'ntw" inside a Bash buffer'
-		echo "\n"
-		echohl None
+	if s:DoneCheckTemplatePersonalization
+				\ || mmtemplates#core#ExpandText ( g:BASH_Templates, '|AUTHOR|' ) != 'YOUR NAME'
+				\ || s:BASH_InsertFileHeader != 'yes'
+		return
 	endif
 
+	let s:DoneCheckTemplatePersonalization = 1
+
+	let maplead = mmtemplates#core#Resource ( g:BASH_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
+
+	redraw
+	call s:ImportantMsg ( 'The personal details are not set in the template library. Use the map "'.maplead.'ntw".' )
+
 endfunction    " ----------  end of function s:CheckTemplatePersonalization  ----------
+
+"-------------------------------------------------------------------------------
+" s:CheckAndRereadTemplates : Make sure the templates are loaded.   {{{1
+"-------------------------------------------------------------------------------
+function! s:CheckAndRereadTemplates ()
+	if ! exists ( 'g:BASH_Templates' )
+		call s:RereadTemplates()
+	endif
+endfunction    " ----------  end of function s:CheckAndRereadTemplates  ----------
+
+"-------------------------------------------------------------------------------
+" s:InsertFileHeader : Insert a file header.   {{{1
+"-------------------------------------------------------------------------------
+function! s:InsertFileHeader ()
+	call s:CheckAndRereadTemplates()
+
+	" prevent insertion for a file generated from a some error
+	if isdirectory(expand('%:p:h')) && s:BASH_InsertFileHeader == 'yes'
+		let templ_s = mmtemplates#core#Resource ( g:BASH_Templates, 'get', 'property', 'Bash::FileSkeleton::Script' )[0]
+
+		" insert templates in reverse order, always above the first line
+		" the last one to insert (the first in the list), will determine the
+		" placement of the cursor
+		let templ_l = split ( templ_s, ';' )
+		for i in range ( len(templ_l)-1, 0, -1 )
+			exe 1
+			if -1 != match ( templ_l[i], '^\s\+$' )
+				put! =''
+			else
+				call mmtemplates#core#InsertTemplate ( g:BASH_Templates, templ_l[i], 'placement', 'above' )
+			endif
+		endfor
+		if len(templ_l) > 0
+			set modified
+		endif
+	endif
+endfunction    " ----------  end of function s:InsertFileHeader  ----------
+
+"-------------------------------------------------------------------------------
+" s:JumpForward : Jump to the next target.   {{{1
+"
+" If no target is found, jump behind the current string
+"
+" Parameters:
+"   -
+" Returns:
+"   empty sting
+"-------------------------------------------------------------------------------
+function! s:JumpForward ()
+	let match = search( s:BASH_TemplateJumpTarget, 'c' )
+	if match > 0
+		" remove the target
+		call setline( match, substitute( getline('.'), s:BASH_TemplateJumpTarget, '', '' ) )
+	else
+		" try to jump behind parenthesis or strings
+		call search( "[\]})\"'`]", 'W' )
+		normal! l
+	endif
+	return ''
+endfunction    " ----------  end of function s:JumpForward  ----------
 
 "===  FUNCTION  ================================================================
 "          NAME:  InitMenus     {{{1
@@ -924,26 +979,7 @@ function! s:InitMenus()
 	exe "imenu  <silent>  ".s:BASH_RootMenu.'.&Help.help\ (Bash-&Support)<Tab>'.esc_mapl.'hbs      <C-C>:call BASH_HelpBashSupport()<CR>'
 	"
 endfunction    " ----------  end of function s:InitMenus  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  BASH_JumpForward     {{{1
-"   DESCRIPTION:  Jump to the next target, otherwise behind the current string.
-"    PARAMETERS:  -
-"       RETURNS:  empty string
-"===============================================================================
-function! BASH_JumpForward ()
-  let match	= search( s:BASH_TemplateJumpTarget, 'c' )
-	if match > 0
-		" remove the target
-		call setline( match, substitute( getline('.'), s:BASH_TemplateJumpTarget, '', '' ) )
-	else
-		" try to jump behind parenthesis or strings
-		call search( "[\]})\"'`]", 'W' )
-		normal! l
-	endif
-	return ''
-endfunction    " ----------  end of function BASH_JumpForward  ----------
-"
+
 "===  FUNCTION  ================================================================
 "          NAME:  BASH_CodeSnippet     {{{1
 "   DESCRIPTION:  read / write / edit code sni
@@ -1227,8 +1263,10 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" templates
 	"-------------------------------------------------------------------------------
-	nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=BASH_JumpForward()<CR>
-	inoremap  <buffer>  <silent>  <C-j>  <C-g>u<C-R>=BASH_JumpForward()<CR>
+	if s:BASH_Ctrl_j == 'yes'
+		nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=<SID>JumpForward()<CR>
+		inoremap  <buffer>  <silent>  <C-j>  <C-g>u<C-R>=<SID>JumpForward()<CR>
+	endif
 
 	call mmtemplates#core#CreateMaps ( 'g:BASH_Templates', g:BASH_MapLeader, 'do_special_maps', 'do_del_opt_map' )
 
@@ -1577,7 +1615,7 @@ function! BASH_CreateGuiMenus ()
 		amenu   <silent> 40.1000 &Tools.-SEP100- :
 		amenu   <silent> 40.1020 &Tools.Unload\ Bash\ Support :call BASH_RemoveGuiMenus()<CR>
 		"
-		call BASH_RereadTemplates()
+		call s:RereadTemplates()
 		call s:InitMenus ()
 		"
 		let s:BASH_MenuVisible = 'yes'
@@ -2081,7 +2119,7 @@ if has( 'autocmd' )
         \ if &filetype == 'sh' |
         \   if ! exists( 'g:BASH_Templates' ) |
         \     if s:BASH_LoadMenus == 'yes' | call BASH_CreateGuiMenus ()  |
-        \     else                         | call BASH_RereadTemplates () |
+        \     else                         | call s:RereadTemplates () |
         \     endif |
         \   endif |
         \   call s:CreateAdditionalMaps () |
@@ -2092,16 +2130,17 @@ if has( 'autocmd' )
 	" insert file header
 	"-------------------------------------------------------------------------------
 	if s:BASH_InsertFileHeader == 'yes'
-		autocmd BufNewFile  *.sh  call mmtemplates#core#InsertTemplate(g:BASH_Templates, 'Comments.file header')
+		autocmd BufNewFile  *.sh  call s:InsertFileHeader()
 		if exists( 'g:BASH_AlsoBash' )
 			for item in g:BASH_AlsoBash
-				exe "autocmd BufNewFile ".item." call mmtemplates#core#InsertTemplate(g:BASH_Templates, 'Comments.file header')"
+				exe "autocmd BufNewFile ".item." call s:InsertFileHeader()"
 			endfor
 		endif
 	endif
 
 endif
 " }}}1
-"
+"-------------------------------------------------------------------------------
+
 " =====================================================================================
 " vim: tabstop=2 shiftwidth=2 foldmethod=marker

@@ -2,7 +2,7 @@
 
 Bash Support                                      *bash-support* *bashsupport*
 
-                             Plug-in version 4.4
+                             Plug-in version 4.4pre
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
@@ -68,7 +68,8 @@ writing shell scripts. This plug-in can be used for Bash up to version 4.4.
  5.3.1    Template names                         |bashsupport-templates-names|
  5.3.2    The jump tags <+text+> etc.            |bashsupport-templates-jumptags|
  5.3.3    Command Ctrl-j                         |bashsupport-Ctrl-j|
- 5.4     Additional filenames with filetype 'sh' |bashsupport-also-bash|
+ 5.4     File Skeletons                          |bashsupport-file-skeleton|
+ 5.5     Additional filenames with filetype 'sh' |bashsupport-also-bash|
  6.     Bash dictionary                          |bashsupport-dictionary|
  7.     Additional Mappings                      |bashsupport-ad-mappings|
  8.     Windows particularities                  |bashsupport-windows|
@@ -874,13 +875,14 @@ g:BASH_LineEndCommColDefault   49
 g:BASH_SyntaxCheckOptionsGlob  ''
 g:BASH_Printheader             '%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N'
 g:BASH_InsertFileHeader        'yes'
+g:BASH_Ctrl_j                  'yes'
 g:BASH_Executable              $SHELL         (Linux/U**X)
                                'bash.exe'     (Windows)
 g:BASH_ManualReader            'man'          (Linux/U**X)
                                'man.exe'      (Windows)
 g:BASH_MapLeader               '\'
 g:BASH_Errorformat             '%f:\ line\ %l:\ %m'
-g:BASH_AlsoBash                ''
+g:BASH_AlsoBash                []
 
 ------------------------------------------------------------------------------
 
@@ -913,6 +915,7 @@ g:BASH_AlsoBash                ''
            g:BASH_SyntaxCheckOptionsGlob : shopt options used with syntax checking
            g:BASH_Printheader            : hardcopy header format
            g:BASH_InsertFileHeader       : suppress file header comment for new files
+           g:BASH_Ctrl_j                 : hotkey Ctrl-J 'yes'/'no' (see |bashsupport-Ctrl-j|)
            g:BASH_Executable             : the shell used
            g:BASH_ManualReader           : the interface to the on-line manuals
            g:BASH_MapLeader              : the map leader for hotkeys 
@@ -1219,20 +1222,45 @@ you jump to the target <-IF_PART-> and deletes it.  When the block is written
 a Ctrl-j leads you to the else-part.  The target <-ELSE_PART-> disappears and
 you can type on.
 
+------------------------------------------------------------------------------
+5.4  FILE SKELETONS                                *bashsupport-file-skeleton*
+------------------------------------------------------------------------------
+                                                     *g:BASH_InsertFileHeader*
+If g:BASH_InsertFileHeader is set to "yes", a file skeleton is automatically
+inserted into new Bash scripts. The list of templates used to create this
+skeleton is specified in the template library. For this purpose a property is
+used, which can for example be set in the customization file
+(see |bashsupport-templates|).
 
-==============================================================================
-5.4  ADDITIONAL FILENAMES WITH FILETYPE 'sh'           *bashsupport-also-bash*
-==============================================================================
-
+                                                  *Bash::FileSkeleton::Script*
+The file skeleton is controlled via this properties, which can be set in one
+of the template files:
+>
+  SetProperty ( 'Bash::FileSkeleton::Script', 'Comments.file header' )
+<
+This inserts only a comment box to document the file. To disable the insertion
+completely, set the property to an empty string: >
+  SetProperty ( 'Bash::FileSkeleton::Script', '' )
+In general, this property is a semicolon-separated list of templates to be
+inserted: >
+  SetProperty ( 'Bash::FileSkeleton::Script', 'Comments.shebang;Comments.file header; ;Skeleton.script-set' )
+This will insert a shebang, a file description, and the default set commands
+from the template "Skeleton.script-set". If a space appears as an entry in the
+list, an empty line is inserted: >
+  '...; ;...'
+<
+------------------------------------------------------------------------------
+5.5  ADDITIONAL FILENAMES WITH FILETYPE 'sh'           *bashsupport-also-bash*
+------------------------------------------------------------------------------
+                                                             *g:BASH_AlsoBash*
 The standard extension for shell script files used by this plug-in is ".sh".
 If you want to have other filenames recognized and treated as shell files
-set the global variable  g:BASH_AlsoBash in your '.vimrc' :
+set the global variable g:BASH_AlsoBash in your '.vimrc' :
  >
- let g:BASH_AlsoBash = [ '*.SlackBuild' , 'rc.*' ]
+  let g:BASH_AlsoBash = [ '*.SlackBuild' , 'rc.*' ]
 <
-This is a Vim List. Please quote the entries and separate them with commas.
-Do not include  the default extension '*.sh'.
-
+This is a Vim |List|. Please quote the entries and separate them with commas.
+Do not include the default extension '*.sh'.
 
 ==============================================================================
 6.  BASH DICTIONARY                                   *bashsupport-dictionary*

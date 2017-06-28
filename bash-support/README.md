@@ -1,4 +1,4 @@
-README for bash-support.vim (Version 4.3) / July 24 2016
+README for bash-support.vim (Version 4.4pre) / June 22 2017
 ================================================================================
 
   *  INSTALLATION
@@ -175,14 +175,15 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 RELEASE NOTES
 ================================================================================
 
-RELEASE NOTES FOR VERSION 4.3
+RELEASE NOTES FOR VERSION 4.4pre
 ----------------------------------------------------------------------
-- Add 'g:BASH_CustomTemplateFile'.
-- Add template personalization file and setup wizard.
-- Change the way lines of code are turned into comments
-  (insert no space after the hash).
-- Change the map for 'comment -> code' to '\co' for consistency with the other
-  plug-ins. The old map '\cu' still works, however.
+- Add shell options and variables for BASH Version 4.4.
+- The templates which are inserted into new files as file skeletons can be
+  specified in the templates library, via the property:
+    Bash::FileSkeleton::Script
+- Add configuration variable 'g:BASH_Ctrl_j' to control the creation of the
+  Ctrl+J map.
+- New and reworked templates.
 - Minor corrections and improvements.
 
 RELEASE NOTES FOR OLDER VERSIONS

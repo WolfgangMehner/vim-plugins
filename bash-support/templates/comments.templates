@@ -16,14 +16,13 @@
 #       RETURNS:  
 #-------------------------------------------------------------------------------
 == Comments.file header == start, map:ch ==
-#!/bin/bash -
 #===============================================================================
 #
 #          FILE: |FILENAME|
 #
 #         USAGE: ./|FILENAME|
 #
-#   DESCRIPTION: 
+#   DESCRIPTION: <CURSOR>
 #
 #       OPTIONS: ---
 #  REQUIREMENTS: ---
@@ -34,12 +33,13 @@
 #       CREATED: |DATE| |TIME|
 #      REVISION:  ---
 #===============================================================================
-
-set -o nounset                              # Treat unset variables as an error
-<CURSOR>
+== Comments.shebang == start, map:csh ==
+#!|BASH_INTERPRETER| -
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
+
+== SEP: Comments.sep-date-time == insert, map:cd, sc:d ==
 
 == Comments.date == insert, map:cd, sc:d ==
 |DATE|<CURSOR>
