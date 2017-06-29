@@ -24,6 +24,13 @@ SetFormat( 'YEAR', '%Y' )
 
 SetStyle( 'default' )
 
+§ used by the template "Comments.shebang":
+SetMacro( 'AWK_INTERPRETER', '/usr/bin/awk' )
+
+§ templates automatically included into new files
+§ set the property to an empty string to disable the insertion
+SetProperty ( 'Awk::FileSkeleton::Script', 'Comments.shebang;Comments.file description' )
+
 § =============================================================
 §  File Includes and Shortcuts
 § =============================================================
@@ -41,6 +48,19 @@ IncludeFile( 'idioms.templates' )
 IncludeFile( 'functions.templates' )
 IncludeFile( 'specvar.templates' )
 IncludeFile( 'regex.templates' )
+
+§ =============================================================
+§  Inserted when creating a new script.
+§  See configuration variable 'g:Awk_InsertFileHeader'
+§  and template property 'Awk::FileSkeleton::Script'.
+§
+§  - option 'nomenu': this will not create a menu entry
+§ =============================================================
+
+== Skeleton.script-start == nomenu, below ==
+BEGIN {
+}   # -----  end BEGIN  -----
+== ENDTEMPLATE ==
 
 § =============================================================
 §  Help

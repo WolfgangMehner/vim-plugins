@@ -265,14 +265,14 @@ else
 		" USER INSTALLATION ASSUMED
 		let s:installation           = 'local'
 		let s:Awk_LocalTemplateFile  = s:Awk_PluginDir.'/awk-support/templates/Templates'
-		let s:Awk_CustomTemplateFile = $HOME.'/vimfiles/templates/awk.templates'
+		let s:Awk_CustomTemplateFile = $HOME.'/.vim/templates/awk.templates'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
 		let s:installation           = 'system'
 		let s:Awk_GlobalTemplateFile = s:Awk_PluginDir.'/awk-support/templates/Templates'
 		let s:Awk_LocalTemplateFile  = $HOME.'/.vim/awk-support/templates/Templates'
-		let s:Awk_CustomTemplateFile = $HOME.'/vimfiles/templates/awk.templates'
+		let s:Awk_CustomTemplateFile = $HOME.'/.vim/templates/awk.templates'
 	endif
 
 	let s:Awk_Executable          = '/usr/bin/awk'
@@ -310,11 +310,13 @@ let s:Awk_Errorformat    				= 'awk:\ %f:%l:\ %m'
 let s:Awk_Wrapper               = s:Awk_PluginDir.'/awk-support/scripts/wrapper.sh'
 let s:Awk_InsertFileHeader			= 'yes'
 let s:Awk_Ctrl_j                = 'yes'
+let s:Awk_Ctrl_d                = 'yes'
 
 call s:GetGlobalSetting ( 'Awk_Executable', 'Awk_Awk' )
 call s:GetGlobalSetting ( 'Awk_Executable' )
 call s:GetGlobalSetting ( 'Awk_InsertFileHeader' )
 call s:GetGlobalSetting ( 'Awk_Ctrl_j' )
+call s:GetGlobalSetting ( 'Awk_Ctrl_d' )
 call s:GetGlobalSetting ( 'Awk_GuiSnippetBrowser' )
 call s:GetGlobalSetting ( 'Awk_LoadMenus' )
 call s:GetGlobalSetting ( 'Awk_RootMenu' )
@@ -573,14 +575,10 @@ function! s:CommentCode( toggle ) range
 	endfor
 endfunction    " ----------  end of function s:CommentCode  ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  Awk_RereadTemplates     {{{1
-"   DESCRIPTION:  Reread the templates. Also set the character which starts
-"                 the comments in the template files.
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! Awk_RereadTemplates ()
+"-------------------------------------------------------------------------------
+" s:RereadTemplates : Initial loading of the templates.   {{{1
+"-------------------------------------------------------------------------------
+function! s:RereadTemplates ()
 
 	"-------------------------------------------------------------------------------
 	" setup template library
@@ -609,6 +607,9 @@ function! Awk_RereadTemplates ()
 
 	" syntax: comments
 	call mmtemplates#core#ChangeSyntax ( g:Awk_Templates, 'comment', '§' )
+
+	" property: file skeletons
+	call mmtemplates#core#Resource ( g:Awk_Templates, 'add', 'property', 'Awk::FileSkeleton::Script', 'Comments.shebang;Comments.file description' )
 
 	"-------------------------------------------------------------------------------
 	" load template library
@@ -649,37 +650,91 @@ function! Awk_RereadTemplates ()
 	" get the jump tags
 	let s:Awk_TemplateJumpTarget = mmtemplates#core#Resource ( g:Awk_Templates, "jumptag" )[0]
 
-endfunction    " ----------  end of function Awk_RereadTemplates  ----------
+endfunction    " ----------  end of function s:RereadTemplates  ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  s:CheckTemplatePersonalization     {{{1
-"   DESCRIPTION:  check whether the name, .. has been set
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
+"-------------------------------------------------------------------------------
+" s:CheckTemplatePersonalization : Check whether the name, .. has been set.   {{{1
+"-------------------------------------------------------------------------------
+
 let s:DoneCheckTemplatePersonalization = 0
 
 function! s:CheckTemplatePersonalization ()
 
 	" check whether the templates are personalized
-	if ! s:DoneCheckTemplatePersonalization
-				\ && mmtemplates#core#ExpandText ( g:Awk_Templates, '|AUTHOR|' ) == 'YOUR NAME'
-		let s:DoneCheckTemplatePersonalization = 1
-
-		let maplead = mmtemplates#core#Resource ( g:Awk_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
-
-		redraw
-		echohl Search
-		echo 'The personal details (name, mail, ...) are not set in the template library.'
-		echo 'They are used to generate comments, ...'
-		echo 'To set them, start the setup wizard using:'
-		echo '- use the menu entry "Awk -> Snippets -> template setup wizard"'
-		echo '- use the map "'.maplead.'ntw" inside an Awk buffer'
-		echo "\n"
-		echohl None
+	if s:DoneCheckTemplatePersonalization
+				\ || mmtemplates#core#ExpandText ( g:Awk_Templates, '|AUTHOR|' ) != 'YOUR NAME'
+				\ || s:Awk_InsertFileHeader != 'yes'
+		return
 	endif
 
+	let s:DoneCheckTemplatePersonalization = 1
+
+	let maplead = mmtemplates#core#Resource ( g:Awk_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
+
+	redraw
+	call s:ImportantMsg ( 'The personal details are not set in the template library. Use the map "'.maplead.'ntw".' )
+
 endfunction    " ----------  end of function s:CheckTemplatePersonalization  ----------
+
+"-------------------------------------------------------------------------------
+" s:CheckAndRereadTemplates : Make sure the templates are loaded.   {{{1
+"-------------------------------------------------------------------------------
+function! s:CheckAndRereadTemplates ()
+	if ! exists ( 'g:Awk_Templates' )
+		call s:RereadTemplates()
+	endif
+endfunction    " ----------  end of function s:CheckAndRereadTemplates  ----------
+
+"-------------------------------------------------------------------------------
+" s:InsertFileHeader : Insert a file header.   {{{1
+"-------------------------------------------------------------------------------
+function! s:InsertFileHeader ()
+	call s:CheckAndRereadTemplates()
+
+	" prevent insertion for a file generated from a some error
+	if isdirectory(expand('%:p:h')) && s:Awk_InsertFileHeader == 'yes'
+		let templ_s = mmtemplates#core#Resource ( g:Awk_Templates, 'get', 'property', 'Awk::FileSkeleton::Script' )[0]
+
+		" insert templates in reverse order, always above the first line
+		" the last one to insert (the first in the list), will determine the
+		" placement of the cursor
+		let templ_l = split ( templ_s, ';' )
+		for i in range ( len(templ_l)-1, 0, -1 )
+			exe 1
+			if -1 != match ( templ_l[i], '^\s\+$' )
+				put! =''
+			else
+				call mmtemplates#core#InsertTemplate ( g:Awk_Templates, templ_l[i], 'placement', 'above' )
+			endif
+		endfor
+		if len(templ_l) > 0
+			set modified
+		endif
+	endif
+endfunction    " ----------  end of function s:InsertFileHeader  ----------
+
+"-------------------------------------------------------------------------------
+" s:JumpForward : Jump to the next target.   {{{1
+"
+" If no target is found, jump behind the current string
+"
+" Parameters:
+"   -
+" Returns:
+"   empty sting
+"-------------------------------------------------------------------------------
+function! s:JumpForward ()
+	let match = search( s:Awk_TemplateJumpTarget, 'c' )
+	if match > 0
+		" remove the target
+		call setline( match, substitute( getline('.'), s:Awk_TemplateJumpTarget, '', '' ) )
+	else
+		" try to jump behind parenthesis or strings
+		call search( "[\]})\"'`]", 'W' )
+		normal! l
+	endif
+	return ''
+endfunction    " ----------  end of function s:JumpForward  ----------
 
 "===  FUNCTION  ================================================================
 "          NAME:  InitMenus     {{{1
@@ -841,26 +896,7 @@ function! s:InitMenus()
 	exe ihead.'&help\ (Awk-Support)<Tab>'.esc_mapl.'hp   <C-C>:call Awk_HelpAwkSupport()<CR>'
 	"
 endfunction    " ----------  end of function s:InitMenus  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Awk_JumpForward     {{{1
-"   DESCRIPTION:  Jump to the next target, otherwise behind the current string.
-"    PARAMETERS:  -
-"       RETURNS:  empty string
-"===============================================================================
-function! Awk_JumpForward ()
-  let match	= search( s:Awk_TemplateJumpTarget, 'c' )
-	if match > 0
-		" remove the target
-		call setline( match, substitute( getline('.'), s:Awk_TemplateJumpTarget, '', '' ) )
-	else
-		" try to jump behind parenthesis or strings
-		call search( "[\]})\"'`]", 'W' )
-		normal! l
-	endif
-	return ''
-endfunction    " ----------  end of function Awk_JumpForward  ----------
-"
+
 "===  FUNCTION  ================================================================
 "          NAME:  Awk_CodeSnippet     {{{1
 "   DESCRIPTION:  read / write / edit code sni
@@ -1125,10 +1161,16 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" templates
 	"-------------------------------------------------------------------------------
-	nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=Awk_JumpForward()<CR>
-	inoremap  <buffer>  <silent>  <C-j>  <C-g>u<C-R>=Awk_JumpForward()<CR>
+	if s:Awk_Ctrl_j == 'yes'
+		nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=<SID>JumpForward()<CR>
+		inoremap  <buffer>  <silent>  <C-j>  <C-g>u<C-R>=<SID>JumpForward()<CR>
+	endif
 
-	call mmtemplates#core#CreateMaps ( 'g:Awk_Templates', g:Awk_MapLeader, 'do_special_maps', 'do_del_opt_map' )
+	if s:Awk_Ctrl_d == 'yes'
+		call mmtemplates#core#CreateMaps ( 'g:Awk_Templates', g:Awk_MapLeader, 'do_special_maps', 'do_del_opt_map' )
+	else
+		call mmtemplates#core#CreateMaps ( 'g:Awk_Templates', g:Awk_MapLeader, 'do_special_maps' )
+	endif
 
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 "
@@ -1305,7 +1347,7 @@ function! Awk_CreateGuiMenus ()
 		amenu   <silent> 40.1000 &Tools.-SEP100- :
 		amenu   <silent> 40.1010 &Tools.Unload\ Awk\ Support :call Awk_RemoveGuiMenus()<CR>
 		"
-		call Awk_RereadTemplates()
+		call s:RereadTemplates()
 		call s:InitMenus ()
 		"
 		let s:Awk_MenuVisible = 'yes'
@@ -1702,7 +1744,7 @@ if has( 'autocmd' )
         \ if &filetype == 'awk' |
         \   if ! exists( 'g:Awk_Templates' ) |
         \     if s:Awk_LoadMenus == 'yes' | call Awk_CreateGuiMenus ()  |
-        \     else                        | call Awk_RereadTemplates () |
+        \     else                        | call s:RereadTemplates () |
         \     endif |
         \   endif |
         \   call s:CreateAdditionalMaps () |
@@ -1710,11 +1752,12 @@ if has( 'autocmd' )
         \ endif
 
   if s:Awk_InsertFileHeader == 'yes'
-    autocmd BufNewFile  *.awk  call mmtemplates#core#InsertTemplate(g:Awk_Templates, 'Comments.file description')
+    autocmd BufNewFile  *.awk  call s:InsertFileHeader()
   endif
 
 endif
 " }}}1
-"
+"-------------------------------------------------------------------------------
+
 " =====================================================================================
 " vim: tabstop=2 shiftwidth=2 foldmethod=marker

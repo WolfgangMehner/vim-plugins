@@ -174,8 +174,14 @@ RELEASE NOTES
 
 RELEASE NOTES FOR VERSION 1.4pre
 ----------------------------------------------------------------------
+- The templates which are inserted into new files as file skeletons can be
+  specified in the templates library, via the property:
+    Awk::FileSkeleton::Script
+- Add configuration variables 'g:Awk_Ctrl_j' and 'g:Awk_Ctrl_d' to control the
+  creation of the CTRL+J and CTRL+D maps.
 - Rename setting 'g:Awk_Awk' into 'g:Awk_Executable'.
   ('g:Awk_Awk' still works for backwards compatibility.)
+- New and reworked templates.
 - Minor corrections and improvements.
 
 RELEASE NOTES FOR OLDER VERSIONS

@@ -55,6 +55,7 @@ writing Awk scripts.
  4.3.1    Template definition               |awksupport-templates-definition|
  4.3.2    The macros <+text+> etc.          |awksupport-templates-jumptags|
  4.3.3    Command Ctrl-j                    |awksupport-Ctrl-j|
+ 4.4      File Skeletons                    |awksupport-file-skeleton|
  5.     WINDOWS PARTICULARITIES             |awksupport-windows|
  6.     TROUBLESHOOTING                     |awksupport-troubleshooting|
  7.     RELEASE NOTES                       |awksupport-release-notes|
@@ -702,6 +703,8 @@ g:Awk_CreateMenusDelayed    'no'
 g:Awk_RootMenu              '&Awk'
 g:Awk_GuiSnippetBrowser     'gui'
 g:Awk_InsertFileHeader      'yes'
+g:Awk_Ctrl_j                'yes'
+g:Awk_Ctrl_d                'yes'
 g:Awk_LineEndCommColDefault 49
 g:Awk_Printheader           '%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N'
                              'vim.exe'     (Windows)
@@ -723,6 +726,8 @@ g:Awk_RootMenu              The name of the root menu item of this plugin
                              (see |awksupport-custom-root|).
 g:Awk_GuiSnippetBrowser     code snippet browser: 'gui', 'commandline'
 g:Awk_InsertFileHeader      insert file description comment in a new file ('yes', 'no')
+g:Awk_Ctrl_j                hotkey Ctrl-J 'yes'/'no' (see |awksupport-Ctrl-j|)
+g:Awk_Ctrl_d                hotkey Ctrl-D 'yes'/'no' (see |awksupport-templates-jumptags|)
 
 g:Awk_LineEndCommColDefault default starting column for line end comments
 g:Awk_Printheader           hardcopy header format
@@ -1016,6 +1021,33 @@ you jump to the target <-IF PART-> and deletes it.  When the block is written
 a Ctrl-j leads you to the else-part.  The target <-ELSE_PART-> disappears and
 you can type on.
 
+------------------------------------------------------------------------------
+4.4  FILE SKELETONS                                 *awksupport-file-skeleton*
+------------------------------------------------------------------------------
+                                                      *g:Awk_InsertFileHeader*
+If g:Awk_InsertFileHeader is set to "yes", a file skeleton is automatically
+inserted into new Awk scripts. The list of templates used to create this
+skeleton is specified in the template library. For this purpose a property is
+used, which can for example be set in the customization file
+(see |awksupport-templates|).
+
+                                                   *Awk::FileSkeleton::Script*
+The file skeleton is controlled via this properties, which can be set in one
+of the template files:
+>
+  SetProperty ( 'Awk::FileSkeleton::Script', 'Comments.file description' )
+<
+This inserts only a comment box to document the file. To disable the insertion
+completely, set the property to an empty string: >
+  SetProperty ( 'Awk::FileSkeleton::Script', '' )
+In general, this property is a semicolon-separated list of templates to be
+inserted: >
+  SetProperty ( 'Awk::FileSkeleton::Script', 'Comments.shebang;Comments.file description; ;Skeleton.script-start' )
+This will insert a shebang, a file description, and some code from the
+template "Skeleton.script-start". If a space appears as an entry in the list,
+an empty line is inserted: >
+  '...; ;...'
+<
 ==============================================================================
 5.  WINDOWS PARTICULARITIES                               *awksupport-windows*
 ==============================================================================

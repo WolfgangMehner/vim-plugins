@@ -18,7 +18,6 @@
 #       RETURNS:  
 #===============================================================================
 == Comments.file description == start, map:ch ==
-#!/usr/bin/awk -f
 #===============================================================================
 #
 #          File:  |FILENAME|
@@ -33,9 +32,13 @@
 #      Revision:  ---
 #       License:  |COPYRIGHT|
 #===============================================================================
+== Comments.shebang == start, map:csh ==
+#!|AWK_INTERPRETER| -f
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
+
+== SEP: Comments.sep-date-time ==
 
 == Comments.date == insert, map:cd, sc:d ==
 |DATE|

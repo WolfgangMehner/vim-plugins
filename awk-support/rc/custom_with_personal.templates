@@ -32,6 +32,13 @@ SetMacro( 'LICENSE',      'GNU General Public License' )
 § set the template style used after loading the library
 SetStyle( 'default' )
 
+§ used by the template "Comments.shebang":
+SetMacro( 'AWK_INTERPRETER', '/usr/bin/awk' )
+
+§ templates automatically included into new files
+§ set the property to an empty string to disable the insertion
+§SetProperty ( 'Awk::FileSkeleton::Script', 'Comments.shebang;Comments.file description; ;Skeleton.script-start' )
+
 § -------------------------------------------------------------
 §  A template definition is build like this:
 §    == Menu.some name == <options> ==
@@ -42,6 +49,21 @@ SetStyle( 'default' )
 §  A template ends with the line "== ENDTEMPLATE ==" or with
 §  the start of a new template.
 § -------------------------------------------------------------
+
+§ -------------------------------------------------------------
+§  Inserted when creating a new script.
+§  See configuration variable 'g:Awk_InsertFileHeader'
+§  and template property 'Awk::FileSkeleton::Script'.
+§
+§  - option 'nomenu': this will not create a menu entry
+§ -------------------------------------------------------------
+
+§ uncomment and edit to customize
+
+§== Skeleton.script-start == nomenu, below ==
+§BEGIN {
+§}   # -----  end BEGIN  -----
+§== ENDTEMPLATE ==
 
 § -------------------------------------------------------------
 §  Statements
