@@ -286,15 +286,24 @@ let s:Awk_AdditionalTemplates = mmtemplates#config#GetFt ( 'awk' )
 let s:Awk_CodeSnippets        = s:Awk_PluginDir.'/awk-support/codesnippets/'
 call s:ApplyDefaultSetting ( 'Awk_CodeSnippets', s:Awk_CodeSnippets )
 
-"  g:Awk_Dictionary_File  must be global
+"-------------------------------------------------------------------------------
+" == Various settings ==   {{{2
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" Use of dictionaries   {{{3
+"
+" - keyword completion is enabled by the function 's:CreateAdditionalMaps' below
+"-------------------------------------------------------------------------------
+
 if !exists("g:Awk_Dictionary_File")
 	let g:Awk_Dictionary_File     = s:Awk_PluginDir.'/awk-support/wordlists/awk-keywords.list'
 endif
 
-"----------------------------------------------------------------------
-"  *** MODUL GLOBAL VARIABLES *** {{{1
-"----------------------------------------------------------------------
-"
+"-------------------------------------------------------------------------------
+" User configurable options   {{{3
+"-------------------------------------------------------------------------------
+
 let s:Awk_CreateMenusDelayed= 'yes'
 let s:Awk_MenuVisible				= 'no'
 let s:Awk_GuiSnippetBrowser = 'gui'             " gui / commandline
@@ -303,14 +312,17 @@ let s:Awk_RootMenu          = '&Awk'            " name of the root menu
 "
 let s:Awk_MapLeader             = ''            " default: do not overwrite 'maplocalleader'
 let s:Awk_LineEndCommColDefault = 49
-let s:Awk_StartComment					= '#'
 let s:Awk_Printheader   				= "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
 let s:Awk_TemplateJumpTarget 		= ''
-let s:Awk_Errorformat    				= 'awk:\ %f:%l:\ %m'
+let s:Awk_Errorformat           = 'awk: %f:%l: %m'
 let s:Awk_Wrapper               = s:Awk_PluginDir.'/awk-support/scripts/wrapper.sh'
 let s:Awk_InsertFileHeader			= 'yes'
 let s:Awk_Ctrl_j                = 'yes'
 let s:Awk_Ctrl_d                = 'yes'
+
+"-------------------------------------------------------------------------------
+" Get user configuration   {{{3
+"-------------------------------------------------------------------------------
 
 call s:GetGlobalSetting ( 'Awk_Executable', 'Awk_Awk' )
 call s:GetGlobalSetting ( 'Awk_Executable' )
@@ -331,77 +343,38 @@ call s:GetGlobalSetting ( 'Awk_CreateMenusDelayed' )
 call s:GetGlobalSetting ( 'Awk_LineEndCommColDefault' )
 
 call s:ApplyDefaultSetting ( 'Awk_MapLeader', '' )       " default: do not overwrite 'maplocalleader'
-"
+
+let s:Awk_Printheader = escape( s:Awk_Printheader, ' %' )
+
+"-------------------------------------------------------------------------------
+" Xterm   {{{3
+"-------------------------------------------------------------------------------
+
 " set default geometry if not specified
-"
 if match( s:Awk_XtermDefaults, "-geometry\\s\\+\\d\\+x\\d\\+" ) < 0
 	let s:Awk_XtermDefaults	= s:Awk_XtermDefaults." -geometry 80x24"
 endif
-"
-let s:Awk_Printheader  					= escape( s:Awk_Printheader, ' %' )
-let s:Awk_saved_global_option		= {}
-let b:Awk_AwkCmdLineArgs				= ''
-"------------------------------------------------------------------------------
-"  Awk_SaveGlobalOption    {{{1
-"  param 1 : option name
-"  param 2 : characters to be escaped (optional)
-"------------------------------------------------------------------------------
-function! s:Awk_SaveGlobalOption ( option, ... )
-	exe 'let escaped =&'.a:option
-	if a:0 == 0
-		let escaped	= escape( escaped, ' |"\' )
-	else
-		let escaped	= escape( escaped, ' |"\'.a:1 )
-	endif
-	let s:Awk_saved_global_option[a:option]	= escaped
-endfunction    " ----------  end of function Awk_SaveGlobalOption  ----------
-"
-"------------------------------------------------------------------------------
-"  Awk_RestoreGlobalOption    {{{1
-"------------------------------------------------------------------------------
-function! s:Awk_RestoreGlobalOption ( option )
-	exe ':set '.a:option.'='.s:Awk_saved_global_option[a:option]
-endfunction    " ----------  end of function Awk_RestoreGlobalOption  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Awk_Input     {{{1
-"   DESCRIPTION:  Input after a highlighted prompt
-"    PARAMETERS:  prompt       - prompt string
-"                 defaultreply - default reply
-"                 ...          - completion
-"       RETURNS:  reply
-"===============================================================================
-function! Awk_Input ( prompt, defaultreply, ... )
-	echohl Search																					" highlight prompt
-	call inputsave()																			" preserve typeahead
-	if a:0 == 0 || empty(a:1)
-		let retval	=input( a:prompt, a:defaultreply )
-	else
-		let retval	=input( a:prompt, a:defaultreply, a:1 )
-	endif
-	call inputrestore()																		" restore typeahead
-	echohl None																						" reset highlighting
-	let retval  = substitute( retval, '^\s\+', '', '' )		" remove leading whitespaces
-	let retval  = substitute( retval, '\s\+$', '', '' )		" remove trailing whitespaces
-	return retval
-endfunction    " ----------  end of function Awk_Input ----------
-"
+
+" }}}3
+"-------------------------------------------------------------------------------
+
+" }}}2
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:AdjustLineEndComm : Adjust end-of-line comments.   {{{1
+"-------------------------------------------------------------------------------
+
 " patterns to ignore when adjusting line-end comments (incomplete):
-let	s:AlignRegex	= [
+let s:AlignRegex = [
 	\	'\$#' ,
 	\	"'\\%(\\\\'\\|[^']\\)*'"  ,
 	\	'"\%(\\.\|[^"]\)*"'  ,
 	\	'`[^`]\+`' ,
 	\	]
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Awk_AdjustLineEndComm     {{{1
-"   DESCRIPTION:  adjust end-of-line comments
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! Awk_AdjustLineEndComm ( ) range
-	"
+
+function! s:AdjustLineEndComm ( ) range
+
 	" comment character (for use in regular expression)
 	let cc = '#'                       " start of an Awk comment
 	"
@@ -490,37 +463,31 @@ function! Awk_AdjustLineEndComm ( ) range
 	"
 	" restore the cursor position
 	call setpos ( '.', save_cursor )
-	"
-endfunction		" ---------- end of function  Awk_AdjustLineEndComm  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Awk_GetLineEndCommCol     {{{1
-"   DESCRIPTION:  get end-of-line comment position
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! Awk_GetLineEndCommCol ()
-	let actcol	= virtcol(".")
+
+endfunction   " ---------- end of function s:AdjustLineEndComm  ----------
+
+"-------------------------------------------------------------------------------
+" s:GetLineEndCommCol : Set end-of-line comment position.   {{{1
+"-------------------------------------------------------------------------------
+function! s:GetLineEndCommCol ()
+	let actcol = virtcol(".")
 	if actcol+1 == virtcol("$")
-		let	b:Awk_LineEndCommentColumn	= ''
+		let b:Awk_LineEndCommentColumn = ''
 		while match( b:Awk_LineEndCommentColumn, '^\s*\d\+\s*$' ) < 0
-			let b:Awk_LineEndCommentColumn = Awk_Input( 'start line-end comment at virtual column : ', actcol, '' )
+			let b:Awk_LineEndCommentColumn = s:UserInput( 'start line-end comment at virtual column : ', actcol, '' )
 		endwhile
 	else
-		let	b:Awk_LineEndCommentColumn	= virtcol(".")
+		let b:Awk_LineEndCommentColumn = virtcol(".")
 	endif
-  echomsg "line end comments will start at column  ".b:Awk_LineEndCommentColumn
-endfunction		" ---------- end of function  Awk_GetLineEndCommCol  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Awk_EndOfLineComment     {{{1
-"   DESCRIPTION:  single end-of-line comment
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! Awk_EndOfLineComment ( ) range
+	echomsg "line end comments will start at column  ".b:Awk_LineEndCommentColumn
+endfunction   " ---------- end of function s:GetLineEndCommCol  ----------
+
+"-------------------------------------------------------------------------------
+" s:EndOfLineComment : Append end-of-line comments.   {{{1
+"-------------------------------------------------------------------------------
+function! s:EndOfLineComment ( ) range
 	if !exists("b:Awk_LineEndCommentColumn")
-		let	b:Awk_LineEndCommentColumn	= s:Awk_LineEndCommColDefault
+		let b:Awk_LineEndCommentColumn = s:Awk_LineEndCommColDefault
 	endif
 	" ----- trim whitespaces -----
 	exe a:firstline.','.a:lastline.'s/\s*$//'
@@ -528,23 +495,20 @@ function! Awk_EndOfLineComment ( ) range
 	for line in range( a:lastline, a:firstline, -1 )
 		silent exe ":".line
 		if getline(line) !~ '^\s*$'
-			let linelength	= virtcol( [line, "$"] ) - 1
-			let	diff				= 1
+			let linelength = virtcol( [line, "$"] ) - 1
+			let diff = 1
 			if linelength < b:Awk_LineEndCommentColumn
-				let diff	= b:Awk_LineEndCommentColumn -1 -linelength
+				let diff = b:Awk_LineEndCommentColumn -1 -linelength
 			endif
-			exe "normal!	".diff."A "
+			exe "normal! ".diff."A "
 			call mmtemplates#core#InsertTemplate(g:Awk_Templates, 'Comments.end-of-line comment')
 		endif
 	endfor
-endfunction		" ---------- end of function  Awk_EndOfLineComment  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  s:CodeComment     {{{1
-"   DESCRIPTION:  Code -> Comment
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
+endfunction   " ---------- end of function s:EndOfLineComment  ----------
+
+"-------------------------------------------------------------------------------
+" s:CodeComment : Code -> Comment   {{{1
+"-------------------------------------------------------------------------------
 function! s:CodeComment() range
 	" add '#' at the beginning of the lines
 	for line in range( a:firstline, a:lastline )
@@ -552,12 +516,12 @@ function! s:CodeComment() range
 	endfor
 endfunction    " ----------  end of function s:CodeComment  ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  s:CommentCode     {{{1
-"   DESCRIPTION:  Comment -> Code
-"    PARAMETERS:  toggle - 0 : uncomment, 1 : toggle comment
-"       RETURNS:
-"===============================================================================
+"-------------------------------------------------------------------------------
+" s:CommentCode : Comment -> Code   {{{1
+"
+" Parameters:
+"   toggle - 0 : uncomment, 1 : toggle comment (integer)
+"-------------------------------------------------------------------------------
 function! s:CommentCode( toggle ) range
 	for i in range( a:firstline, a:lastline )
 		" :TRICKY:15.08.2014 17:17:WM:
@@ -776,13 +740,13 @@ function! s:InitMenus()
 	let vhead = 'vnoremenu <silent> '.s:Awk_RootMenu.'.Comments.'
 	let ihead = 'inoremenu <silent> '.s:Awk_RootMenu.'.Comments.'
 	"
-	exe ahead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl                    :call Awk_EndOfLineComment()<CR>'
-	exe vhead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl                    :call Awk_EndOfLineComment()<CR>'
+	exe ahead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl                    :call <SID>EndOfLineComment()<CR>'
+	exe vhead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl                    :call <SID>EndOfLineComment()<CR>'
 
-	exe ahead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call Awk_AdjustLineEndComm()<CR>'
-	exe ihead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj         <Esc>:call Awk_AdjustLineEndComm()<CR>'
-	exe vhead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call Awk_AdjustLineEndComm()<CR>'
-	exe  head.'&set\ end-of-line\ com\.\ col\.<Tab>'.esc_mapl.'cs     <Esc>:call Awk_GetLineEndCommCol()<CR>'
+	exe ahead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call <SID>AdjustLineEndComm()<CR>'
+	exe ihead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj         <Esc>:call <SID>AdjustLineEndComm()<CR>'
+	exe vhead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call <SID>AdjustLineEndComm()<CR>'
+	exe  head.'&set\ end-of-line\ com\.\ col\.<Tab>'.esc_mapl.'cs     <Esc>:call <SID>GetLineEndCommCol()<CR>'
 	"
 	exe ahead.'-Sep01-						<Nop>'
 	exe ahead.'&comment<TAB>'.esc_mapl.'cc		:call <SID>CodeComment()<CR>'
@@ -1058,17 +1022,17 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" comments
 	"-------------------------------------------------------------------------------
-	nnoremap    <buffer>  <silent>  <LocalLeader>cl         :call Awk_EndOfLineComment()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>cl    <C-C>:call Awk_EndOfLineComment()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>cl         :call Awk_EndOfLineComment()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>cl         :call <SID>EndOfLineComment()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cl    <C-C>:call <SID>EndOfLineComment()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>cl         :call <SID>EndOfLineComment()<CR>
 	"
-	nnoremap    <buffer>  <silent>  <LocalLeader>cj         :call Awk_AdjustLineEndComm()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>cj    <C-C>:call Awk_AdjustLineEndComm()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>cj         :call Awk_AdjustLineEndComm()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>cj         :call <SID>AdjustLineEndComm()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cj    <C-C>:call <SID>AdjustLineEndComm()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>cj         :call <SID>AdjustLineEndComm()<CR>
 	"
-	nnoremap    <buffer>  <silent>  <LocalLeader>cs         :call Awk_GetLineEndCommCol()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>cs    <C-C>:call Awk_GetLineEndCommCol()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>cs    <C-C>:call Awk_GetLineEndCommCol()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>cs         :call <SID>GetLineEndCommCol()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cs    <C-C>:call <SID>GetLineEndCommCol()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>cs    <C-C>:call <SID>GetLineEndCommCol()<CR>
 
 	nnoremap    <buffer>  <silent>  <LocalLeader>cc         :call <SID>CodeComment()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>cc    <C-C>:call <SID>CodeComment()<CR>
@@ -1119,7 +1083,10 @@ function! s:CreateAdditionalMaps ()
 	endif
 	nnoremap    <buffer>  <silent>  <LocalLeader>rh        :call Awk_Hardcopy("n")<CR>
 	vnoremap    <buffer>  <silent>  <LocalLeader>rh   <C-C>:call Awk_Hardcopy("v")<CR>
-  "
+
+	nnoremap    <buffer>  <silent>  <LocalLeader>rx        :call Awk_XtermSize()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>rx   <C-C>:call Awk_XtermSize()<CR>
+
    noremap  <buffer>  <silent>  <C-F9>        :call Awk_Run("n")<CR>
   inoremap  <buffer>  <silent>  <C-F9>   <C-C>:call Awk_Run("n")<CR>
 		"
@@ -1233,7 +1200,7 @@ function! Awk_help( type )
 		endif
 
 		if s:MSWIN
-			call s:awk_RemoveSpecialCharacters()
+			call s:RemoveSpecialCharacters()
 		endif
 	endif
 
@@ -1241,11 +1208,16 @@ function! Awk_help( type )
 endfunction		" ---------- end of function  Awk_help  ----------
 "
 "------------------------------------------------------------------------------
-"  remove <backspace><any character> in CYGWIN man(1) output   {{{1
-"  remove           _<any character> in CYGWIN man(1) output
 "------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:RemoveSpecialCharacters : Clean CYGWIN output   {{{1
 "
-function! s:awk_RemoveSpecialCharacters ( )
+" Clean CYGWIN man(1) output:
+" remove <backspace><any character>
+" remove           _<any character>
+"-------------------------------------------------------------------------------
+function! s:RemoveSpecialCharacters ( )
 	let	patternunderline	= '_\%x08'
 	let	patternbold				= '\%x08.'
 	setlocal modifiable
@@ -1257,8 +1229,8 @@ function! s:awk_RemoveSpecialCharacters ( )
 	endif
 	setlocal nomodifiable
 	silent normal! gg
-endfunction		" ---------- end of function  s:awk_RemoveSpecialCharacters   ----------
-"
+endfunction		" ---------- end of function  s:RemoveSpecialCharacters   ----------
+
 "===  FUNCTION  ================================================================
 "          NAME:  Awk_Settings     {{{1
 "   DESCRIPTION:  Display plugin settings
@@ -1441,40 +1413,16 @@ function! Awk_XtermSize ()
 	let geom	= matchstr( s:Awk_XtermDefaults, regex )
 	let geom	= matchstr( geom, '\d\+x\d\+' )
 	let geom	= substitute( geom, 'x', ' ', "" )
-	let	answer= Awk_Input("   xterm size (COLUMNS LINES) : ", geom, '' )
+	let answer = s:UserInput("   xterm size (COLUMNS LINES) : ", geom, '' )
 	while match(answer, '^\s*\d\+\s\+\d\+\s*$' ) < 0
-		let	answer= Awk_Input(" + xterm size (COLUMNS LINES) : ", geom, '' )
+		let answer = s:UserInput(" + xterm size (COLUMNS LINES) : ", geom, '' )
 	endwhile
 	let answer  = substitute( answer, '^\s\+', "", "" )		 				" remove leading whitespaces
 	let answer  = substitute( answer, '\s\+$', "", "" )						" remove trailing whitespaces
 	let answer  = substitute( answer, '\s\+', "x", "" )						" replace inner whitespaces
 	let s:Awk_XtermDefaults	= substitute( s:Awk_XtermDefaults, regex, "-geometry ".answer , "" )
 endfunction		" ---------- end of function  Awk_XtermSize  ----------
-"
-"------------------------------------------------------------------------------
-"  Awk_SaveOption    {{{1
-"  param 1 : option name
-"  param 2 : characters to be escaped (optional)
-"------------------------------------------------------------------------------
-function! Awk_SaveOption ( option, ... )
-	exe 'let escaped =&'.a:option
-	if a:0 == 0
-		let escaped	= escape( escaped, ' |"\' )
-	else
-		let escaped	= escape( escaped, ' |"\'.a:1 )
-	endif
-	let s:Awk_saved_option[a:option]	= escaped
-endfunction    " ----------  end of function Awk_SaveOption  ----------
-"
-let s:Awk_saved_option					= {}
-"
-"------------------------------------------------------------------------------
-"  Awk_RestoreOption    {{{1
-"------------------------------------------------------------------------------
-function! Awk_RestoreOption ( option )
-	exe ':setlocal '.a:option.'='.s:Awk_saved_option[a:option]
-endfunction    " ----------  end of function Awk_RestoreOption  ----------
-"
+
 "------------------------------------------------------------------------------
 "  Run : Command line arguments    {{{1
 "------------------------------------------------------------------------------
@@ -1612,62 +1560,56 @@ function! Awk_SyntaxCheck ( check )
   let l:currentbuffer   = bufname("%")
 	let l:fullname        = expand("%:p")
   silent exe  ":update"
-  "
-	let	l:arguments				= exists("b:Awk_ScriptCmdLineArgs") ? " ".b:Awk_ScriptCmdLineArgs : ""
-	call s:Awk_SaveGlobalOption('errorformat')
-	call s:Awk_SaveGlobalOption('makeprg')
-	"
+
+	let l:arguments   = exists("b:Awk_ScriptCmdLineArgs") ? " ".b:Awk_ScriptCmdLineArgs : ""
+	let errorf_saved  = &l:errorformat
+	let makeprg_saved = &l:makeprg
+
+	let &l:errorformat = s:Awk_Errorformat
+
 	if a:check == 'syntax'
 		if s:MSWIN && ( l:fullname =~ ' '  )
-			"
+			" :TODO:29.06.2017 21:13:WM: tmpfile seems to serve no purpose
 			let tmpfile = tempname()
-			exe	':setlocal errorformat='.s:Awk_Errorformat
 			silent exe  ":make -e 'BEGIN { exit(0) } END { exit(0) }' -f ".l:fullname
 			exe ":cfile ".tmpfile
 		else
-			"
-			" no whitespaces
-			"
-			exe	":setlocal makeprg=".s:Awk_Executable
-			exe	':setlocal errorformat='.s:Awk_Errorformat
-			let	l:fullname	= fnameescape( l:fullname )
+			" not Windows or no whitespaces
+
+			let &l:makeprg = s:Awk_Executable
+			let l:fullname = fnameescape( l:fullname )
 			silent exe  ":make -e 'BEGIN { exit(0) } END { exit(0) }' -f ".l:fullname
 		endif
 	endif
 	"
 	if a:check == 'lint'
 		if s:MSWIN && ( l:fullname =~ ' '  )
-			"
+			" :TODO:29.06.2017 21:13:WM: tmpfile seems to serve no purpose
 			let tmpfile = tempname()
-			exe	':setlocal errorformat='.s:Awk_Errorformat
 			silent exe  ":make --lint -f ".l:fullname.' '.l:arguments
 			exe ":cfile ".tmpfile
 		else
-			"
-			" no whitespaces
-			"
-			exe	":setlocal makeprg=".s:Awk_Executable
-			exe	':setlocal errorformat='.s:Awk_Errorformat
-			let	l:fullname	= fnameescape( l:fullname )
+			" not Windows or no whitespaces
+
+			let &l:makeprg = s:Awk_Executable
+			let l:fullname = fnameescape( l:fullname )
 			exe  ":make --lint -f ".l:fullname.' '.l:arguments
 		endif
 	endif
 
-  exe ":botright cwindow"
-	call s:Awk_RestoreGlobalOption('makeprg')
-	call s:Awk_RestoreGlobalOption('errorformat')
-  "
-  " message in case of success
-  "
+	let &l:errorformat = errorf_saved
+	let &l:makeprg     = makeprg_saved
+
+	botright cwindow
+
 	redraw!
 	if l:currentbuffer ==  bufname("%")
-		echohl Search
+		" message in case of success
 		if a:check == 'lint'
-			echomsg l:currentbuffer." : lint check is OK"
+			call s:ImportantMsg ( l:currentbuffer." : lint check is OK" )
 		else
-			echomsg l:currentbuffer." : Syntax is OK"
+			call s:ImportantMsg ( l:currentbuffer." : syntax is OK" )
 		endif
-		echohl None
 		return 0
 	else
 		setlocal wrap
@@ -1687,7 +1629,7 @@ function! Awk_MakeScriptExecutable ()
 		"
 		" not executable -> executable
 		"
-		if Awk_Input( '"'.filename.'" NOT executable. Make it executable [y/n] : ', 'y' ) == 'y'
+		if s:UserInput( '"'.filename.'" NOT executable. Make it executable [y/n] : ', 'y' ) == 'y'
 			silent exe "!chmod u+x ".shellescape(filename)
 			if v:shell_error
 				" confirmation for the user
@@ -1708,7 +1650,7 @@ function! Awk_MakeScriptExecutable ()
 		"
 		" executable -> not executable
 		"
-		if Awk_Input( '"'.filename.'" is executable. Make it NOT executable [y/n] : ', 'y' ) == 'y'
+		if s:UserInput( '"'.filename.'" is executable. Make it NOT executable [y/n] : ', 'y' ) == 'y'
 			silent exe "!chmod u-x ".shellescape(filename)
 			if v:shell_error
 				" confirmation for the user
@@ -1729,7 +1671,7 @@ function! Awk_MakeScriptExecutable ()
 endfunction   " ---------- end of function  Awk_MakeScriptExecutable  ----------
 
 "----------------------------------------------------------------------
-"  *** SETUP PLUGIN ***  {{{1
+" === Setup: Templates and menus ===   {{{1
 "----------------------------------------------------------------------
 
 call Awk_ToolMenu()
@@ -1740,6 +1682,7 @@ endif
 "
 if has( 'autocmd' )
 
+	" create menues and maps
   autocmd FileType *
         \ if &filetype == 'awk' |
         \   if ! exists( 'g:Awk_Templates' ) |
@@ -1751,9 +1694,10 @@ if has( 'autocmd' )
 				\		call s:CheckTemplatePersonalization() |
         \ endif
 
-  if s:Awk_InsertFileHeader == 'yes'
-    autocmd BufNewFile  *.awk  call s:InsertFileHeader()
-  endif
+	" insert file header
+	if s:Awk_InsertFileHeader == 'yes'
+		autocmd BufNewFile  *.awk  call s:InsertFileHeader()
+	endif
 
 endif
 " }}}1
