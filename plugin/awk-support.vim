@@ -210,6 +210,242 @@ endfunction    " ----------  end of function s:WarningMsg  ----------
 "-------------------------------------------------------------------------------
 
 "-------------------------------------------------------------------------------
+" === Common functions ===   {{{1
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:CodeSnippet : Code snippets.   {{{2
+"
+" Parameters:
+"   action - "insert", "create", "vcreate", "view", or "edit" (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:CodeSnippet ( action )
+
+	"-------------------------------------------------------------------------------
+	" setup
+	"-------------------------------------------------------------------------------
+
+	" the snippet directory
+	let cs_dir    = s:Awk_CodeSnippets
+	let cs_browse = s:Awk_GuiSnippetBrowser
+
+	" check directory
+	if ! isdirectory ( cs_dir )
+		return s:ErrorMsg (
+					\ 'Code snippet directory '.cs_dir.' does not exist.',
+					\ '(Please create it.)' )
+	endif
+
+	" save option 'browsefilter'
+	if has( 'browsefilter' ) && exists( 'b:browsefilter' )
+		let browsefilter_save = b:browsefilter
+		let b:browsefilter    = '*'
+	endif
+
+	"-------------------------------------------------------------------------------
+	" do action
+	"-------------------------------------------------------------------------------
+
+	if a:action == 'insert'
+
+		"-------------------------------------------------------------------------------
+		" action "insert"
+		"-------------------------------------------------------------------------------
+
+		" select file
+		if has('browse') && cs_browse == 'gui'
+			let snippetfile = browse ( 0, 'insert a code snippet', cs_dir, '' )
+		else
+			let snippetfile = s:UserInput ( 'insert snippet ', cs_dir, 'file' )
+		endif
+
+		" insert snippet
+		if filereadable(snippetfile)
+			let linesread = line('$')
+
+			let old_cpoptions = &cpoptions            " prevent the alternate buffer from being set to this files
+			setlocal cpoptions-=a
+
+			exe 'read '.snippetfile
+
+			let &cpoptions = old_cpoptions            " restore previous options
+
+			let linesread = line('$') - linesread - 1 " number of lines inserted
+
+			" indent lines
+			if linesread >= 0 && match( snippetfile, '\.\(ni\|noindent\)$' ) < 0
+				silent exe 'normal! ='.linesread.'+'
+			endif
+		endif
+
+		" delete first line if empty
+		if line('.') == 2 && getline(1) =~ '^$'
+			silent exe ':1,1d'
+		endif
+
+	elseif a:action == 'create' || a:action == 'vcreate'
+
+		"-------------------------------------------------------------------------------
+		" action "create" or "vcreate"
+		"-------------------------------------------------------------------------------
+
+		" select file
+		if has('browse') && cs_browse == 'gui'
+			let snippetfile = browse ( 1, 'create a code snippet', cs_dir, '' )
+		else
+			let snippetfile = s:UserInput ( 'create snippet ', cs_dir, 'file' )
+		endif
+
+		" create snippet
+		if ! empty( snippetfile )
+			" new file or overwrite?
+			if ! filereadable( snippetfile ) || confirm( 'File '.snippetfile.' exists! Overwrite? ', "&Cancel\n&No\n&Yes" ) == 3
+				if a:action == 'create' && confirm( 'Write whole file as a snippet? ', "&Cancel\n&No\n&Yes" ) == 3
+					exe 'write! '.fnameescape( snippetfile )
+				elseif a:action == 'vcreate'
+					exe "'<,'>write! ".fnameescape( snippetfile )
+				endif
+			endif
+		endif
+
+	elseif a:action == 'view' || a:action == 'edit'
+
+		"-------------------------------------------------------------------------------
+		" action "view" or "edit"
+		"-------------------------------------------------------------------------------
+		if a:action == 'view' | let saving = 0
+		else                  | let saving = 1 | endif
+
+		" select file
+		if has('browse') && cs_browse == 'gui'
+			let snippetfile = browse ( saving, a:action.' a code snippet', cs_dir, '' )
+		else
+			let snippetfile = s:UserInput ( a:action.' snippet ', cs_dir, 'file' )
+		endif
+
+		" open file
+		if ! empty( snippetfile )
+			exe 'split | '.a:action.' '.fnameescape( snippetfile )
+		endif
+	else
+		call s:ErrorMsg ( 'Unknown action "'.a:action.'".' )
+	endif
+
+	"-------------------------------------------------------------------------------
+	" wrap up
+	"-------------------------------------------------------------------------------
+
+	" restore option 'browsefilter'
+	if has( 'browsefilter' ) && exists( 'b:browsefilter' )
+		let b:browsefilter = browsefilter_save
+	endif
+
+endfunction   " ----------  end of function s:CodeSnippet  ----------
+
+"-------------------------------------------------------------------------------
+" s:Hardcopy : Generate PostScript document from current buffer.   {{{2
+"
+" Under windows, display the printer dialog.
+"
+" Parameters:
+"   mode - "n" : print complete buffer, "v" : print marked area (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:Hardcopy ( mode )
+
+	let outfile = expand("%:t")
+
+	" check the buffer
+	if ! s:MSWIN && empty ( outfile )
+		return s:ImportantMsg ( 'The buffer has no filename.' )
+	endif
+
+	" save current settings
+	let printheader_saved = &g:printheader
+
+	let &g:printheader = g:Lua_Printheader
+
+	if s:MSWIN
+		" we simply call hardcopy, which will open the systems printing dialog
+		if a:mode == 'n'
+			silent exe  'hardcopy'
+		elseif a:mode == 'v'
+			silent exe  "'<,'>hardcopy"
+		endif
+	else
+
+		" directory to print to
+		let outdir = getcwd()
+		if filewritable ( outdir ) != 2
+			let outdir = $HOME
+		endif
+
+		let psfile = outdir.'/'.outfile.'.ps'
+
+		if a:mode == 'n'
+			silent exe  'hardcopy > '.psfile
+			call s:ImportantMsg ( 'file "'.outfile.'" printed to "'.psfile.'"' )
+		elseif a:mode == 'v'
+			silent exe  "'<,'>hardcopy > ".psfile
+			call s:ImportantMsg ( 'file "'.outfile.'" (lines '.line("'<").'-'.line("'>").') printed to "'.psfile.'"' )
+		endif
+	endif
+
+	" restore current settings
+	let &g:printheader = printheader_saved
+
+endfunction   " ----------  end of function s:Hardcopy  ----------
+
+"-------------------------------------------------------------------------------
+" s:MakeExecutable : Make the script executable.   {{{2
+"-------------------------------------------------------------------------------
+function! s:MakeExecutable ()
+
+	if ! executable ( 'chmod' )
+		return s:ErrorMsg ( 'Command "chmod" not executable.' )
+	endif
+
+	let filename = expand("%:p")
+
+	if executable ( filename )
+		let from_state = 'executable'
+		let to_state   = 'NOT executable'
+		let cmd        = 'chmod -x'
+	else
+		let from_state = 'NOT executable'
+		let to_state   = 'executable'
+		let cmd        = 'chmod u+x'
+	endif
+
+	if s:UserInput( '"'.filename.'" is '.from_state.'. Make it '.to_state.' [y/n] : ', 'y' ) == 'y'
+
+		" run the command
+		silent exe '!'.cmd.' '.shellescape(filename)
+
+		" successful?
+		if v:shell_error
+			" confirmation for the user
+			call s:ErrorMsg ( 'Could not make "'.filename.'" '.to_state.'!' )
+		else
+			" reload the file, otherwise the message will not be visible
+			if &autoread && ! &l:modified
+				silent exe "edit"
+			endif
+			" confirmation for the user
+			call s:ImportantMsg ( 'Made "'.filename.'" '.to_state.'.' )
+		endif
+		"
+	endif
+
+endfunction   " ----------  end of function s:MakeExecutable  ----------
+
+" }}}2
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
 " === Module setup ===   {{{1
 "-------------------------------------------------------------------------------
 
@@ -221,7 +457,7 @@ let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
 let s:UNIX  = has("unix")  || has("macunix") || has("win32unix")
 
 let s:installation           = '*undefined*'
-let g:Awk_PluginDir          = ''
+let s:plugin_dir             = ''
 let s:Awk_GlobalTemplateFile = ''
 let s:Awk_LocalTemplateFile  = ''
 let s:Awk_CustomTemplateFile = ''                " the custom templates
@@ -231,7 +467,7 @@ let s:Awk_XtermDefaults      = '-fa courier -fs 12 -geometry 80x24'
 if s:MSWIN
 	" ==========  MS Windows  ======================================================
 
-	let s:Awk_PluginDir = substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
+	let s:plugin_dir = substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
 
 	" change '\' to '/' to avoid interpretation as escape character
 	if match(	substitute( expand("<sfile>"), '\', '/', 'g' ),
@@ -239,13 +475,13 @@ if s:MSWIN
 		"
 		" USER INSTALLATION ASSUMED
 		let s:installation           = 'local'
-		let s:Awk_LocalTemplateFile  = s:Awk_PluginDir.'/awk-support/templates/Templates'
+		let s:Awk_LocalTemplateFile  = s:plugin_dir.'/awk-support/templates/Templates'
 		let s:Awk_CustomTemplateFile = $HOME.'/vimfiles/templates/awk.templates'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
 		let s:installation           = 'system'
-		let s:Awk_GlobalTemplateFile = s:Awk_PluginDir.'/awk-support/templates/Templates'
+		let s:Awk_GlobalTemplateFile = s:plugin_dir.'/awk-support/templates/Templates'
 		let s:Awk_LocalTemplateFile  = $HOME.'/vimfiles/awk-support/templates/Templates'
 		let s:Awk_CustomTemplateFile = $HOME.'/vimfiles/templates/awk.templates'
 	endif
@@ -258,19 +494,19 @@ if s:MSWIN
 else
 	" ==========  Linux/Unix  ======================================================
 
-	let s:Awk_PluginDir = expand('<sfile>:p:h:h')
+	let s:plugin_dir = expand('<sfile>:p:h:h')
 
 	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
 		let s:installation           = 'local'
-		let s:Awk_LocalTemplateFile  = s:Awk_PluginDir.'/awk-support/templates/Templates'
+		let s:Awk_LocalTemplateFile  = s:plugin_dir.'/awk-support/templates/Templates'
 		let s:Awk_CustomTemplateFile = $HOME.'/.vim/templates/awk.templates'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
 		let s:installation           = 'system'
-		let s:Awk_GlobalTemplateFile = s:Awk_PluginDir.'/awk-support/templates/Templates'
+		let s:Awk_GlobalTemplateFile = s:plugin_dir.'/awk-support/templates/Templates'
 		let s:Awk_LocalTemplateFile  = $HOME.'/.vim/awk-support/templates/Templates'
 		let s:Awk_CustomTemplateFile = $HOME.'/.vim/templates/awk.templates'
 	endif
@@ -283,8 +519,7 @@ else
 endif
 
 let s:Awk_AdditionalTemplates = mmtemplates#config#GetFt ( 'awk' )
-let s:Awk_CodeSnippets        = s:Awk_PluginDir.'/awk-support/codesnippets/'
-call s:ApplyDefaultSetting ( 'Awk_CodeSnippets', s:Awk_CodeSnippets )
+let s:Awk_CodeSnippets        = s:plugin_dir.'/awk-support/codesnippets/'
 
 "-------------------------------------------------------------------------------
 " == Various settings ==   {{{2
@@ -297,7 +532,7 @@ call s:ApplyDefaultSetting ( 'Awk_CodeSnippets', s:Awk_CodeSnippets )
 "-------------------------------------------------------------------------------
 
 if !exists("g:Awk_Dictionary_File")
-	let g:Awk_Dictionary_File     = s:Awk_PluginDir.'/awk-support/wordlists/awk-keywords.list'
+	let g:Awk_Dictionary_File = s:plugin_dir.'/awk-support/wordlists/awk-keywords.list'
 endif
 
 "-------------------------------------------------------------------------------
@@ -315,8 +550,8 @@ let s:Awk_LineEndCommColDefault = 49
 let s:Awk_Printheader   				= "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
 let s:Awk_TemplateJumpTarget 		= ''
 let s:Awk_Errorformat           = 'awk: %f:%l: %m'
-let s:Awk_Wrapper               = s:Awk_PluginDir.'/awk-support/scripts/wrapper.sh'
-let s:Awk_InsertFileHeader			= 'yes'
+let s:Awk_Wrapper               = s:plugin_dir.'/awk-support/scripts/wrapper.sh'
+let s:Awk_InsertFileHeader      = 'yes'
 let s:Awk_Ctrl_j                = 'yes'
 let s:Awk_Ctrl_d                = 'yes'
 
@@ -329,6 +564,7 @@ call s:GetGlobalSetting ( 'Awk_Executable' )
 call s:GetGlobalSetting ( 'Awk_InsertFileHeader' )
 call s:GetGlobalSetting ( 'Awk_Ctrl_j' )
 call s:GetGlobalSetting ( 'Awk_Ctrl_d' )
+call s:GetGlobalSetting ( 'Awk_CodeSnippets' )
 call s:GetGlobalSetting ( 'Awk_GuiSnippetBrowser' )
 call s:GetGlobalSetting ( 'Awk_LoadMenus' )
 call s:GetGlobalSetting ( 'Awk_RootMenu' )
@@ -540,6 +776,95 @@ function! s:CommentCode( toggle ) range
 endfunction    " ----------  end of function s:CommentCode  ----------
 
 "-------------------------------------------------------------------------------
+" s:HelpManual : Open the AWK manpage.   {{{1
+"
+" Parameters:
+"   topic - 'awk' (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+let s:DocBufferName       = "AWK_HELP"
+let s:DocHelpBufferNumber = -1
+
+function! s:HelpManual( topic )
+
+	" jump to an already open AWK manual window or create one
+	if bufloaded(s:DocBufferName) != 0 && bufwinnr(s:DocHelpBufferNumber) != -1
+		exe bufwinnr(s:DocHelpBufferNumber) . "wincmd w"
+		" buffer number may have changed, e.g. after a 'save as'
+		if bufnr("%") != s:DocHelpBufferNumber
+			let s:DocHelpBufferNumber=bufnr(s:Awk_OutputBufferName)
+			exe "bn ".s:DocHelpBufferNumber
+		endif
+	else
+		exe "new ".s:DocBufferName
+		let s:DocHelpBufferNumber=bufnr("%")
+		setlocal buftype=nofile
+		setlocal noswapfile
+		setlocal bufhidden=delete
+		setlocal syntax=OFF
+	endif
+	setlocal modifiable
+
+	" :WORKAROUND:05.04.2016 21:05:WM: setting the filetype changes the global tabstop,
+	" handle this manually
+	let ts_save = &g:tabstop
+
+	setlocal filetype=man
+
+	let &g:tabstop = ts_save
+
+	" open the manual
+	let win_w = winwidth( winnr() )
+	if s:UNIX && win_w > 0
+		silent exe 'read! MANWIDTH='.win_w.' '.s:Awk_ManualReader.' 1 '.a:topic
+	else
+		silent exe 'read!'.s:Awk_ManualReader.' 1 awk'.a:topic
+	endif
+
+	if s:MSWIN
+		call s:RemoveSpecialCharacters()
+	endif
+
+	setlocal nomodifiable
+	exe '1'
+endfunction   " ---------- end of function s:HelpManual  ----------
+
+"-------------------------------------------------------------------------------
+" s:RemoveSpecialCharacters : Clean CYGWIN output   {{{1
+"
+" Clean CYGWIN man(1) output:
+" remove <backspace><any character>
+" remove           _<any character>
+"-------------------------------------------------------------------------------
+function! s:RemoveSpecialCharacters ( )
+	let patternunderline = '_\%x08'
+	let patternbold      = '\%x08.'
+	setlocal modifiable
+	if search(patternunderline) != 0
+		silent exe ':%s/'.patternunderline.'//g'
+	endif
+	if search(patternbold) != 0
+		silent exe ':%s/'.patternbold.'//g'
+	endif
+	setlocal nomodifiable
+	silent normal! gg
+endfunction   " ---------- end of function s:RemoveSpecialCharacters   ----------
+
+"-------------------------------------------------------------------------------
+" s:HelpPlugin : Plug-in help.   {{{1
+"-------------------------------------------------------------------------------
+function! s:HelpPlugin ()
+	try
+		help awksupport
+	catch
+		exe 'helptags '.s:plugin_dir.'/doc'
+		help awksupport
+	endtry
+endfunction   " ----------  end of function s:HelpPlugin  ----------
+
+"-------------------------------------------------------------------------------
 " s:RereadTemplates : Initial loading of the templates.   {{{1
 "-------------------------------------------------------------------------------
 function! s:RereadTemplates ()
@@ -559,9 +884,9 @@ function! s:RereadTemplates ()
 	" some metainfo
 	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Wizard::PluginName',   'Awk' )
 	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Wizard::FiletypeName', 'Awk' )
-	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Wizard::FileCustomNoPersonal',   s:Awk_PluginDir.'/awk-support/rc/custom.templates' )
-	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Wizard::FileCustomWithPersonal', s:Awk_PluginDir.'/awk-support/rc/custom_with_personal.templates' )
-	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Wizard::FilePersonal',           s:Awk_PluginDir.'/awk-support/rc/personal.templates' )
+	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Wizard::FileCustomNoPersonal',   s:plugin_dir.'/awk-support/rc/custom.templates' )
+	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Wizard::FileCustomWithPersonal', s:plugin_dir.'/awk-support/rc/custom_with_personal.templates' )
+	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Wizard::FilePersonal',           s:plugin_dir.'/awk-support/rc/personal.templates' )
 	call mmtemplates#core#Resource ( g:Awk_Templates, 'set', 'property', 'Templates::Wizard::CustomFileVariable',     'g:Awk_CustomTemplateFile' )
 
 	" maps: special operations
@@ -764,24 +1089,26 @@ function! s:InitMenus()
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------
-	"
+
 	if !empty(s:Awk_CodeSnippets)
-		"
-		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>'.esc_mapl.'nr       :call Awk_CodeSnippet("read")<CR>'
-		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>'.esc_mapl.'nr  <C-C>:call Awk_CodeSnippet("read")<CR>'
-		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&view\ code\ snippet<Tab>'.esc_mapl.'nv       :call Awk_CodeSnippet("view")<CR>'
-		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&view\ code\ snippet<Tab>'.esc_mapl.'nv  <C-C>:call Awk_CodeSnippet("view")<CR>'
-		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw      :call Awk_CodeSnippet("write")<CR>'
-		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Awk_CodeSnippet("write")<CR>'
-		exe "vmenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Awk_CodeSnippet("writemarked")<CR>'
-		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne       :call Awk_CodeSnippet("edit")<CR>'
-		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call Awk_CodeSnippet("edit")<CR>'
+		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>'.esc_mapl.'nr        :call <SID>CodeSnippet("insert")<CR>'
+		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>'.esc_mapl.'nr   <C-C>:call <SID>CodeSnippet("insert")<CR>'
+		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&view\ code\ snippet<Tab>'.esc_mapl.'nv        :call <SID>CodeSnippet("view")<CR>'
+		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&view\ code\ snippet<Tab>'.esc_mapl.'nv   <C-C>:call <SID>CodeSnippet("view")<CR>'
+		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw       :call <SID>CodeSnippet("create")<CR>'
+		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw  <C-C>:call <SID>CodeSnippet("create")<CR>'
+		exe "vmenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw  <C-C>:call <SID>CodeSnippet("vcreate")<CR>'
+		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne        :call <SID>CodeSnippet("edit")<CR>'
+		exe "imenu  <silent> ".s:Awk_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne   <C-C>:call <SID>CodeSnippet("edit")<CR>'
 		exe "amenu  <silent> ".s:Awk_RootMenu.'.S&nippets.-SepSnippets-                       :'
-		"
 	endif
-	"
+
+	"-------------------------------------------------------------------------------
+	" templates
+	"-------------------------------------------------------------------------------
+
 	call mmtemplates#core#CreateMenus ( 'g:Awk_Templates', s:Awk_RootMenu, 'do_specials', 'specials_menu', 'S&nippets' )
-	"
+
 	"-------------------------------------------------------------------------------
 	" run
 	"-------------------------------------------------------------------------------
@@ -801,18 +1128,18 @@ function! s:InitMenus()
 	"
 	let ahead = 'amenu <silent> '.s:Awk_RootMenu.'.Run.'
 	let vhead = 'vmenu <silent> '.s:Awk_RootMenu.'.Run.'
-  "
-  if !s:MSWIN
-		exe ahead.'make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re      :call Awk_MakeScriptExecutable()<CR>'
-  endif
-	"
+
+	if !s:MSWIN
+		exe ahead.'make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re      :call <SID>MakeExecutable()<CR>'
+	endif
+
 	exe ahead.'-SEP1-   :'
-	if	s:MSWIN
-		exe ahead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call Awk_Hardcopy("n")<CR>'
-		exe vhead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call Awk_Hardcopy("v")<CR>'
+	if s:MSWIN
+		exe ahead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call <SID>Hardcopy("n")<CR>'
+		exe vhead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call <SID>Hardcopy("v")<CR>'
 	else
-		exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call Awk_Hardcopy("n")<CR>'
-		exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call Awk_Hardcopy("v")<CR>'
+		exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call <SID>Hardcopy("n")<CR>'
+		exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call <SID>Hardcopy("v")<CR>'
 	endif
 	"
 	exe ahead.'-SEP2-                                                :'
@@ -852,141 +1179,15 @@ function! s:InitMenus()
  	"
 	let ahead = 'amenu <silent> '.s:Awk_RootMenu.'.Help.'
 	let ihead = 'imenu <silent> '.s:Awk_RootMenu.'.Help.'
-	"
-	exe ahead.'&AWK\ manual<Tab>'.esc_mapl.'hm             :call Awk_help("awk")<CR>'
-	exe ihead.'&AWK\ manual<Tab>'.esc_mapl.'hm        <C-C>:call Awk_help("awk")<CR>'
+
+	exe ahead.'&AWK\ manual<Tab>'.esc_mapl.'hm               :call <SID>HelpManual("awk")<CR>'
+	exe ihead.'&AWK\ manual<Tab>'.esc_mapl.'hm          <C-C>:call <SID>HelpManual("awk")<CR>'
 	exe ahead.'-SEP1- :'
-	exe ahead.'&help\ (Awk-Support)<Tab>'.esc_mapl.'hp        :call Awk_HelpAwkSupport()<CR>'
-	exe ihead.'&help\ (Awk-Support)<Tab>'.esc_mapl.'hp   <C-C>:call Awk_HelpAwkSupport()<CR>'
-	"
+	exe ahead.'&help\ (Awk-Support)<Tab>'.esc_mapl.'hp       :call <SID>HelpPlugin()<CR>'
+	exe ihead.'&help\ (Awk-Support)<Tab>'.esc_mapl.'hp  <C-C>:call <SID>HelpPlugin()<CR>'
+
 endfunction    " ----------  end of function s:InitMenus  ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  Awk_CodeSnippet     {{{1
-"   DESCRIPTION:  read / write / edit code sni
-"    PARAMETERS:  mode - edit, read, write, writemarked, view
-"===============================================================================
-function! Awk_CodeSnippet(mode)
-  if isdirectory(g:Awk_CodeSnippets)
-    "
-    " read snippet file, put content below current line
-    "
-    if a:mode == "read"
-			if has("gui_running") && s:Awk_GuiSnippetBrowser == 'gui'
-				let l:snippetfile=browse(0,"read a code snippet",g:Awk_CodeSnippets,"")
-			else
-				let	l:snippetfile=input("read snippet ", g:Awk_CodeSnippets, "file" )
-			endif
-      if filereadable(l:snippetfile)
-        let linesread= line("$")
-        let l:old_cpoptions = &cpoptions " Prevent the alternate buffer from being set to this files
-        setlocal cpoptions-=a
-        :execute "read ".l:snippetfile
-        let &cpoptions  = l:old_cpoptions   " restore previous options
-        "
-        let linesread= line("$")-linesread-1
-        if linesread>=0 && match( l:snippetfile, '\.\(ni\|noindent\)$' ) < 0
-          silent exe "normal! =".linesread."+"
-        endif
-      endif
-    endif
-    "
-    " update current buffer / split window / edit snippet file
-    "
-    if a:mode == "edit"
-			if has("gui_running") && s:Awk_GuiSnippetBrowser == 'gui'
-				let l:snippetfile=browse(0,"edit a code snippet",g:Awk_CodeSnippets,"")
-			else
-				let	l:snippetfile=input("edit snippet ", g:Awk_CodeSnippets, "file" )
-			endif
-      if !empty(l:snippetfile)
-        :execute "update! | split | edit ".l:snippetfile
-      endif
-    endif
-    "
-    " update current buffer / split window / view snippet file
-    "
-    if a:mode == "view"
-			if has("gui_running") && s:Awk_GuiSnippetBrowser == 'gui'
-				let l:snippetfile=browse(0,"view a code snippet",g:Awk_CodeSnippets,"")
-			else
-				let	l:snippetfile=input("view snippet ", g:Awk_CodeSnippets, "file" )
-			endif
-      if !empty(l:snippetfile)
-        :execute "update! | split | view ".l:snippetfile
-      endif
-    endif
-    "
-    " write whole buffer or marked area into snippet file
-    "
-    if a:mode == "write" || a:mode == "writemarked"
-			if has("gui_running") && s:Awk_GuiSnippetBrowser == 'gui'
-				let l:snippetfile=browse(1,"write a code snippet",g:Awk_CodeSnippets,"")
-			else
-				let	l:snippetfile=input("write snippet ", g:Awk_CodeSnippets, "file" )
-			endif
-      if !empty(l:snippetfile)
-        if filereadable(l:snippetfile)
-          if confirm("File ".l:snippetfile." exists ! Overwrite ? ", "&Cancel\n&No\n&Yes") != 3
-            return
-          endif
-        endif
-				if a:mode == "write"
-					:execute ":write! ".l:snippetfile
-				else
-					:execute ":*write! ".l:snippetfile
-				endif
-      endif
-    endif
-
-  else
-    redraw!
-    echohl ErrorMsg
-    echo "code snippet directory ".g:Awk_CodeSnippets." does not exist"
-    echohl None
-  endif
-endfunction   " ---------- end of function  Awk_CodeSnippet  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Awk_Hardcopy     {{{1
-"   DESCRIPTION:  Make PostScript document from current buffer
-"                 MSWIN : display printer dialog
-"    PARAMETERS:  mode - n : print complete buffer, v : print marked area
-"       RETURNS:
-"===============================================================================
-function! Awk_Hardcopy (mode)
-  let outfile = expand("%")
-  if outfile == ""
-    redraw
-    echohl WarningMsg | echo " no file name " | echohl None
-    return
-  endif
-	let outdir	= getcwd()
-	if filewritable(outdir) != 2
-		let outdir	= $HOME
-	endif
-	if  !s:MSWIN
-		let outdir	= outdir.'/'
-	endif
-  let old_printheader=&printheader
-  exe  ':set printheader='.s:Awk_Printheader
-  " ----- normal mode ----------------
-  if a:mode=="n"
-    silent exe  'hardcopy > '.outdir.outfile.'.ps'
-    if  !s:MSWIN
-      echo 'file "'.outfile.'" printed to "'.outdir.outfile.'.ps"'
-    endif
-  endif
-  " ----- visual mode ----------------
-  if a:mode=="v"
-    silent exe  "*hardcopy > ".outdir.outfile.".ps"
-    if  !s:MSWIN
-      echo 'file "'.outfile.'" (lines '.line("'<").'-'.line("'>").') printed to "'.outdir.outfile.'.ps"'
-    endif
-  endif
-  exe  ':set printheader='.escape( old_printheader, ' %' )
-endfunction   " ---------- end of function  Awk_Hardcopy  ----------
-"
 "===  FUNCTION  ================================================================
 "          NAME:  s:CreateAdditionalMaps     {{{1
 "   DESCRIPTION:  create additional maps
@@ -1051,17 +1252,17 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------
-	"
-	nnoremap    <buffer>  <silent>  <LocalLeader>nr         :call Awk_CodeSnippet("read")<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>nr    <Esc>:call Awk_CodeSnippet("read")<CR>
-	nnoremap    <buffer>  <silent>  <LocalLeader>nw         :call Awk_CodeSnippet("write")<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>nw    <Esc>:call Awk_CodeSnippet("write")<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>nw    <Esc>:call Awk_CodeSnippet("writemarked")<CR>
-	nnoremap    <buffer>  <silent>  <LocalLeader>ne         :call Awk_CodeSnippet("edit")<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>ne    <Esc>:call Awk_CodeSnippet("edit")<CR>
-	nnoremap    <buffer>  <silent>  <LocalLeader>nv         :call Awk_CodeSnippet("view")<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>nv    <Esc>:call Awk_CodeSnippet("view")<CR>
-	"
+
+	nnoremap    <buffer>  <silent>  <LocalLeader>nr         :call <SID>CodeSnippet("insert")<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>nr    <Esc>:call <SID>CodeSnippet("insert")<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>nw         :call <SID>CodeSnippet("create")<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>nw    <Esc>:call <SID>CodeSnippet("create")<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>nw    <Esc>:call <SID>CodeSnippet("vcreate")<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>ne         :call <SID>CodeSnippet("edit")<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>ne    <Esc>:call <SID>CodeSnippet("edit")<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>nv         :call <SID>CodeSnippet("view")<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>nv    <Esc>:call <SID>CodeSnippet("view")<CR>
+
 	"-------------------------------------------------------------------------------
 	"   run
 	"-------------------------------------------------------------------------------
@@ -1076,13 +1277,13 @@ function! s:CreateAdditionalMaps ()
 	inoremap    <buffer>            <LocalLeader>ra   <Esc>:AwkScriptArguments<Space>
    noremap    <buffer>            <LocalLeader>raa       :AwkArguments<Space>
  	inoremap    <buffer>            <LocalLeader>raa  <Esc>:AwkArguments<Space>
-	"
+
 	if s:UNIX
-		 noremap    <buffer>  <silent>  <LocalLeader>re        :call Awk_MakeScriptExecutable()<CR>
-		inoremap    <buffer>  <silent>  <LocalLeader>re   <C-C>:call Awk_MakeScriptExecutable()<CR>
+		 noremap    <buffer>  <silent>  <LocalLeader>re        :call <SID>MakeExecutable()<CR>
+		inoremap    <buffer>  <silent>  <LocalLeader>re   <C-C>:call <SID>MakeExecutable()<CR>
 	endif
-	nnoremap    <buffer>  <silent>  <LocalLeader>rh        :call Awk_Hardcopy("n")<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>rh   <C-C>:call Awk_Hardcopy("v")<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>rh        :call <SID>Hardcopy("n")<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>rh   <C-C>:call <SID>Hardcopy("v")<CR>
 
 	nnoremap    <buffer>  <silent>  <LocalLeader>rx        :call Awk_XtermSize()<CR>
 	vnoremap    <buffer>  <silent>  <LocalLeader>rx   <C-C>:call Awk_XtermSize()<CR>
@@ -1108,11 +1309,11 @@ function! s:CreateAdditionalMaps ()
 	"   help
 	"-------------------------------------------------------------------------------
 	nnoremap    <buffer>  <silent>  <LocalLeader>rse         :call Awk_Settings(0)<CR>
-  "
-   noremap  <buffer>  <silent>  <LocalLeader>hm            :call Awk_help('awk')<CR>
-  inoremap  <buffer>  <silent>  <LocalLeader>hm       <Esc>:call Awk_help('awk')<CR>
-	 noremap  <buffer>  <silent>  <LocalLeader>hp         :call Awk_HelpAwkSupport()<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>hp    <C-C>:call Awk_HelpAwkSupport()<CR>
+
+	 noremap  <buffer>  <silent>  <LocalLeader>hm       :call <SID>HelpManual('awk')<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>hm  <Esc>:call <SID>HelpManual('awk')<CR>
+	 noremap  <buffer>  <silent>  <LocalLeader>hp       :call <SID>HelpPlugin()<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>hp  <C-C>:call <SID>HelpPlugin()<CR>
 
 	"-------------------------------------------------------------------------------
 	" settings - reset local leader
@@ -1140,96 +1341,6 @@ function! s:CreateAdditionalMaps ()
 	endif
 
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
-"
-"------------------------------------------------------------------------------
-"  Awk_HelpAwkSupport : help awksupport     {{{1
-"------------------------------------------------------------------------------
-function! Awk_HelpAwkSupport ()
-	try
-		:help awksupport
-	catch
-		exe ':helptags '.s:Awk_PluginDir.'/doc'
-		:help awksupport
-	endtry
-endfunction    " ----------  end of function Awk_HelpAwkSupport ----------
-"
-"------------------------------------------------------------------------------
-"  Awk_help : lookup word under the cursor or ask    {{{1
-"------------------------------------------------------------------------------
-let s:Awk_DocBufferName       = "AWK_HELP"
-let s:Awk_DocHelpBufferNumber = -1
-"
-function! Awk_help( type )
-	"
-	" jump to an already open AWK manual window or create one
-	"
-	if bufloaded(s:Awk_DocBufferName) != 0 && bufwinnr(s:Awk_DocHelpBufferNumber) != -1
-		exe bufwinnr(s:Awk_DocHelpBufferNumber) . "wincmd w"
-		" buffer number may have changed, e.g. after a 'save as'
-		if bufnr("%") != s:Awk_DocHelpBufferNumber
-			let s:Awk_DocHelpBufferNumber=bufnr(s:Awk_OutputBufferName)
-			exe ":bn ".s:Awk_DocHelpBufferNumber
-		endif
-	else
-		exe ":new ".s:Awk_DocBufferName
-		let s:Awk_DocHelpBufferNumber=bufnr("%")
-		setlocal buftype=nofile
-		setlocal noswapfile
-		setlocal bufhidden=delete
-		setlocal syntax=OFF
-	endif
-	setlocal	modifiable
-
-	" :WORKAROUND:05.04.2016 21:05:WM: setting the filetype changes the global tabstop,
-	" handle this manually
-	let ts_save = &g:tabstop
-
-	setlocal filetype=man
-
-	let &g:tabstop = ts_save
-
-	"-------------------------------------------------------------------------------
-	" open the AWK manual
-	"-------------------------------------------------------------------------------
-	let win_w = winwidth( winnr() )
-	if a:type == 'awk'
-		if s:UNIX && win_w > 0
-			silent exe ":%! MANWIDTH=".win_w." ".s:Awk_ManualReader." 1 awk"
-		else
-			silent exe ":%!".s:Awk_ManualReader." 1 awk"
-		endif
-
-		if s:MSWIN
-			call s:RemoveSpecialCharacters()
-		endif
-	endif
-
-	setlocal nomodifiable
-endfunction		" ---------- end of function  Awk_help  ----------
-"
-"------------------------------------------------------------------------------
-"------------------------------------------------------------------------------
-
-"-------------------------------------------------------------------------------
-" s:RemoveSpecialCharacters : Clean CYGWIN output   {{{1
-"
-" Clean CYGWIN man(1) output:
-" remove <backspace><any character>
-" remove           _<any character>
-"-------------------------------------------------------------------------------
-function! s:RemoveSpecialCharacters ( )
-	let	patternunderline	= '_\%x08'
-	let	patternbold				= '\%x08.'
-	setlocal modifiable
-	if search(patternunderline) != 0
-		silent exe ':%s/'.patternunderline.'//g'
-	endif
-	if search(patternbold) != 0
-		silent exe ':%s/'.patternbold.'//g'
-	endif
-	setlocal nomodifiable
-	silent normal! gg
-endfunction		" ---------- end of function  s:RemoveSpecialCharacters   ----------
 
 "===  FUNCTION  ================================================================
 "          NAME:  Awk_Settings     {{{1
@@ -1616,59 +1727,6 @@ function! Awk_SyntaxCheck ( check )
 		setlocal linebreak
 	endif
 endfunction   " ---------- end of function  Awk_SyntaxCheck  ----------
-
-"===  FUNCTION  ================================================================
-"          NAME:  Awk_MakeScriptExecutable     {{{1
-"   DESCRIPTION:  make script executable
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! Awk_MakeScriptExecutable ()
-	let filename	= expand("%:p")
-	if executable(filename) == 0
-		"
-		" not executable -> executable
-		"
-		if s:UserInput( '"'.filename.'" NOT executable. Make it executable [y/n] : ', 'y' ) == 'y'
-			silent exe "!chmod u+x ".shellescape(filename)
-			if v:shell_error
-				" confirmation for the user
-				echohl WarningMsg
-				echo 'Could not make "'.filename.'" executable!'
-			else
-				" reload the file, otherwise the message will not be visible
-				if &autoread && ! &l:modified
-					silent exe "edit"
-				endif
-				" confirmation for the user
-				echohl Search
-				echo 'Made "'.filename.'" executable.'
-			endif
-			echohl None
-		endif
-	else
-		"
-		" executable -> not executable
-		"
-		if s:UserInput( '"'.filename.'" is executable. Make it NOT executable [y/n] : ', 'y' ) == 'y'
-			silent exe "!chmod u-x ".shellescape(filename)
-			if v:shell_error
-				" confirmation for the user
-				echohl WarningMsg
-				echo 'Could not make "'.filename.'" not executable!'
-			else
-				" reload the file, otherwise the message will not be visible
-				if &autoread && ! &l:modified
-					silent exe "edit"
-				endif
-				" confirmation for the user
-				echohl Search
-				echo 'Made "'.filename.'" not executable.'
-			endif
-			echohl None
-		endif
-	endif
-endfunction   " ---------- end of function  Awk_MakeScriptExecutable  ----------
 
 "----------------------------------------------------------------------
 " === Setup: Templates and menus ===   {{{1
