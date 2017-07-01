@@ -4856,11 +4856,11 @@ function! mmtemplates#core#Resource ( library, mode, ... )
 		"
 		" get
 		if resource == 'list'
-			return [ get( t_lib.resources, 'list!'.key ), '' ]
+			return [ get( t_lib.resources, 'list!'.key ), has_key( t_lib.resources, 'list!'.key ) ? '' : 'List "'.key.'" does not exist.' ]
 		elseif resource == 'macro'
-			return [ get( t_lib.macros, key ), '' ]
+			return [ get( t_lib.macros, key ), has_key( t_lib.macros, key ) ? '' : 'Macro "'.key.'" does not exist.' ]
 		elseif resource == 'path'
-			return [ get( t_lib.resources, 'path!'.key ), '' ]
+			return [ get( t_lib.resources, 'path!'.key ),  has_key( t_lib.resources, 'path!'.key ) ? '' : 'Path "'.key.'" does not exist.' ]
 		elseif resource == 'property'
 			if has_key ( t_lib.properties, key )
 				return [ t_lib.properties[ key ], '' ]
