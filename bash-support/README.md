@@ -181,8 +181,8 @@ RELEASE NOTES FOR VERSION 4.4pre
 - The templates which are inserted into new files as file skeletons can be
   specified in the templates library, via the property:
     Bash::FileSkeleton::Script
-- Add configuration variable 'g:BASH_Ctrl_j' to control the creation of the
-  Ctrl+J map.
+- Add configuration variables 'g:BASH_Ctrl_j' and 'g:BASH_Ctrl_d' to control the
+  creation of the CTRL+J and CTRL+D maps.
 - New and reworked templates.
 - Minor corrections and improvements.
 

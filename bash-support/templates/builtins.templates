@@ -2,6 +2,8 @@
 §  Builtins
 § =============================================================
 
+§ This list is used by the menu entry 'Help->help (Bash builtins)'
+§ for tab-completion. Please do not change the name.
 == LIST: builtins == list ==
 'alias',
 'bg',

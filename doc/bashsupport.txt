@@ -876,6 +876,7 @@ g:BASH_SyntaxCheckOptionsGlob  ''
 g:BASH_Printheader             '%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N'
 g:BASH_InsertFileHeader        'yes'
 g:BASH_Ctrl_j                  'yes'
+g:BASH_Ctrl_d                  'yes'
 g:BASH_Executable              $SHELL         (Linux/U**X)
                                'bash.exe'     (Windows)
 g:BASH_ManualReader            'man'          (Linux/U**X)
@@ -916,6 +917,7 @@ g:BASH_AlsoBash                []
            g:BASH_Printheader            : hardcopy header format
            g:BASH_InsertFileHeader       : suppress file header comment for new files
            g:BASH_Ctrl_j                 : hotkey Ctrl-J 'yes'/'no' (see |bashsupport-Ctrl-j|)
+           g:BASH_Ctrl_d                 : hotkey Ctrl-D 'yes'/'no' (see |bashsupport-templates-jumptags|)
            g:BASH_Executable             : the shell used
            g:BASH_ManualReader           : the interface to the on-line manuals
            g:BASH_MapLeader              : the map leader for hotkeys 
