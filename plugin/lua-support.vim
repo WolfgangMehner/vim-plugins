@@ -637,6 +637,8 @@ call s:GetGlobalSetting ( 'Xterm_Executable' )
 call s:ApplyDefaultSetting ( 'Lua_CompiledExtension', 'luac' )         " default: 'luac'
 call s:ApplyDefaultSetting ( 'Lua_InsertFileHeader', 'yes' )           " default: do insert a file header
 call s:ApplyDefaultSetting ( 'Lua_MapLeader', '' )                     " default: do not overwrite 'maplocalleader'
+call s:ApplyDefaultSetting ( 'Lua_Ctrl_j', 'yes' )                     " default: generate the CTRL+J map when loading a buffer
+call s:ApplyDefaultSetting ( 'Lua_Ctrl_d', 'yes' )                     " default: generate the CTRL+D map when loading a buffer
 call s:ApplyDefaultSetting ( 'Lua_Printheader', "%<%f%h%m%<  %=%{strftime('%x %H:%M')}     Page %N" )
 call s:ApplyDefaultSetting ( 'Lua_UseTool_make', 'yes' )
 call s:ApplyDefaultSetting ( 'Xterm_Options', '-fa courier -fs 12 -geometry 80x24' )
@@ -1758,10 +1760,19 @@ function! s:CreateMaps ()
 	"-------------------------------------------------------------------------------
 	" templates
 	"-------------------------------------------------------------------------------
-	call mmtemplates#core#CreateMaps ( 'g:Lua_Templates', g:Lua_MapLeader, 'do_special_maps', 'do_jump_map', 'do_del_opt_map' )
-	"
-endfunction    " ----------  end of function s:CreateMaps  ----------
-"
+
+	let args = [ 'g:Lua_Templates', g:Lua_MapLeader, 'do_special_maps' ]
+	if g:Lua_Ctrl_j == 'yes'
+		call add ( args, 'do_jump_map' )
+	endif
+	if g:Lua_Ctrl_d == 'yes'
+		call add ( args, 'do_del_opt_map' )
+	endif
+
+	call call ( function ( 'mmtemplates#core#CreateMaps' ), args )
+
+endfunction   " ----------  end of function s:CreateMaps  ----------
+
 "-------------------------------------------------------------------------------
 " s:InitMenus : Initialize menus.   {{{1
 "-------------------------------------------------------------------------------

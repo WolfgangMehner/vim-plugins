@@ -1,4 +1,4 @@
-README for lua-support.vim (Version 1.0.1pre) / April 14 2017
+README for lua-support.vim (Version 1.0.1pre) / July 02 2017
 ================================================================================
 
   *  INSTALLATION
@@ -203,6 +203,8 @@ RELEASE NOTES FOR VERSION 1.0.1pre
 - The templates which are inserted into new files as file skeletons can be
   specified in the templates library, via the property:
     Lua::FileSkeleton::Script
+- Add configuration variables 'g:Lua_Ctrl_j' and 'g:Lua_Ctrl_d' to control the
+  creation of the CTRL+J and CTRL+D maps.
 - Update Lua's reference manual to 5.3.4.
 - Minor changes and bugfixes.
 

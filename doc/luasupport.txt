@@ -1,4 +1,4 @@
-*luasupport.txt*                 Lua Support                       Apr 14 2017
+*luasupport.txt*                 Lua Support                       Jul 02 2017
 
 Lua Support                                          *lua-support* *luasupport*
 
@@ -606,6 +606,8 @@ set in the .vimrc file.
                                             'auto' or 'manual')
   |g:Lua_RootMenu|            '&Lua'        name and shortcut of the root menu
   |g:Lua_MapLeader|           ''            the |maplocalleader| used for maps
+  |g:Lua_Ctrl_j|              'yes'         generate the <CTRL-J> map
+  |g:Lua_Ctrl_d|              'yes'         generate the <CTRL-D> map
 
   |g:Lua_InsertFileHeader|    'yes'         insert a file header automatically
   |g:Lua_LineEndCommentColumn|              standard column used for end-of-
@@ -806,6 +808,12 @@ between the two calls will use |g:Lua_MapLeader| as the |<LocalLeader>|:
   map  <buffer>  <LocalLeader>eg  :echo "Example Map :)"<CR>
 
   call Lua_ResetMapLeader ()
+<
+                                                   *g:Lua_Ctrl_j* *g:Lua_Ctrl_d*
+The creation of the <CTRL-J> and <CTRL-D> maps is controlled by the variables
+g:Lua_Ctrl_j and g:Lua_Ctrl_d, respectively. To disable <CTRL-D>, set the
+variable to "no": >
+  let g:Lua_Ctrl_d = 'no'
 <
 ------------------------------------------------------------------------------
 4.4  COMMENTS                                     *luasupport-config-comments*
