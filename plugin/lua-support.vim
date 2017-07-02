@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Lua_Version below
 "       Created:  26.03.2014
-"      Revision:  14.04.2017
+"      Revision:  02.07.2017
 "       License:  Copyright (c) 2014-2017, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -256,6 +256,243 @@ endfunction    " ----------  end of function s:WarningMsg  ----------
 "-------------------------------------------------------------------------------
 
 "-------------------------------------------------------------------------------
+" === Common functions ===   {{{1
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:CodeSnippet : Code snippets.   {{{2
+"
+" Parameters:
+"   action - "insert", "create", "vcreate", "view", or "edit" (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:CodeSnippet ( action )
+
+	"-------------------------------------------------------------------------------
+	" setup
+	"-------------------------------------------------------------------------------
+
+	" the snippet directory
+	let cs_dir    = s:Lua_SnippetDir
+	let cs_browse = s:Lua_SnippetBrowser
+
+	" check directory
+	if ! isdirectory ( cs_dir )
+		return s:ErrorMsg (
+					\ 'Code snippet directory '.cs_dir.' does not exist.',
+					\ '(Please create it.)' )
+	endif
+
+	" save option 'browsefilter'
+	if has( 'browsefilter' ) && exists( 'b:browsefilter' )
+		let browsefilter_save = b:browsefilter
+		let b:browsefilter    = '*'
+	endif
+
+	"-------------------------------------------------------------------------------
+	" do action
+	"-------------------------------------------------------------------------------
+
+	if a:action == 'insert'
+
+		"-------------------------------------------------------------------------------
+		" action "insert"
+		"-------------------------------------------------------------------------------
+
+		" select file
+		if has('browse') && cs_browse == 'gui'
+			let snippetfile = browse ( 0, 'insert a code snippet', cs_dir, '' )
+		else
+			let snippetfile = s:UserInput ( 'insert snippet ', cs_dir, 'file' )
+		endif
+
+		" insert snippet
+		if filereadable(snippetfile)
+			let linesread = line('$')
+
+			let old_cpoptions = &cpoptions            " prevent the alternate buffer from being set to this files
+			setlocal cpoptions-=a
+
+			exe 'read '.snippetfile
+
+			let &cpoptions = old_cpoptions            " restore previous options
+
+			let linesread = line('$') - linesread - 1 " number of lines inserted
+
+			" :TODO:03.12.2013 14:29:WM: indent here?
+			" indent lines
+			if linesread >= 0 && match( snippetfile, '\.\(ni\|noindent\)$' ) < 0
+				silent exe 'normal! ='.linesread.'+'
+			endif
+		endif
+
+		" delete first line if empty
+		if line('.') == 2 && getline(1) =~ '^$'
+			silent exe ':1,1d'
+		endif
+
+	elseif a:action == 'create' || a:action == 'vcreate'
+
+		"-------------------------------------------------------------------------------
+		" action "create" or "vcreate"
+		"-------------------------------------------------------------------------------
+
+		" select file
+		if has('browse') && cs_browse == 'gui'
+			let snippetfile = browse ( 1, 'create a code snippet', cs_dir, '' )
+		else
+			let snippetfile = s:UserInput ( 'create snippet ', cs_dir, 'file' )
+		endif
+
+		" create snippet
+		if ! empty( snippetfile )
+			" new file or overwrite?
+			if ! filereadable( snippetfile ) || confirm( 'File '.snippetfile.' exists! Overwrite? ', "&Cancel\n&No\n&Yes" ) == 3
+				if a:action == 'create' && confirm( 'Write whole file as a snippet? ', "&Cancel\n&No\n&Yes" ) == 3
+					exe 'write! '.fnameescape( snippetfile )
+				elseif a:action == 'vcreate'
+					exe "'<,'>write! ".fnameescape( snippetfile )
+				endif
+			endif
+		endif
+
+	elseif a:action == 'view' || a:action == 'edit'
+
+		"-------------------------------------------------------------------------------
+		" action "view" or "edit"
+		"-------------------------------------------------------------------------------
+		if a:action == 'view' | let saving = 0
+		else                  | let saving = 1 | endif
+
+		" select file
+		if has('browse') && cs_browse == 'gui'
+			let snippetfile = browse ( saving, a:action.' a code snippet', cs_dir, '' )
+		else
+			let snippetfile = s:UserInput ( a:action.' snippet ', cs_dir, 'file' )
+		endif
+
+		" open file
+		if ! empty( snippetfile )
+			exe 'split | '.a:action.' '.fnameescape( snippetfile )
+		endif
+	else
+		call s:ErrorMsg ( 'Unknown action "'.a:action.'".' )
+	endif
+
+	"-------------------------------------------------------------------------------
+	" wrap up
+	"-------------------------------------------------------------------------------
+
+	" restore option 'browsefilter'
+	if has( 'browsefilter' ) && exists( 'b:browsefilter' )
+		let b:browsefilter = browsefilter_save
+	endif
+
+endfunction   " ----------  end of function s:CodeSnippet  ----------
+
+"-------------------------------------------------------------------------------
+" s:Hardcopy : Generate PostScript document from current buffer.   {{{2
+"
+" Under windows, display the printer dialog.
+"
+" Parameters:
+"   mode - "n" : print complete buffer, "v" : print marked area (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:Hardcopy ( mode )
+
+	let outfile = expand("%:t")
+
+	" check the buffer
+	if ! s:MSWIN && empty ( outfile )
+		return s:ImportantMsg ( 'The buffer has no filename.' )
+	endif
+
+	" save current settings
+	let printheader_saved = &g:printheader
+
+	let &g:printheader = g:Lua_Printheader
+
+	if s:MSWIN
+		" we simply call hardcopy, which will open the systems printing dialog
+		if a:mode == 'n'
+			silent exe  'hardcopy'
+		elseif a:mode == 'v'
+			silent exe  "'<,'>hardcopy"
+		endif
+	else
+
+		" directory to print to
+		let outdir = getcwd()
+		if filewritable ( outdir ) != 2
+			let outdir = $HOME
+		endif
+
+		let psfile = outdir.'/'.outfile.'.ps'
+
+		if a:mode == 'n'
+			silent exe  'hardcopy > '.psfile
+			call s:ImportantMsg ( 'file "'.outfile.'" printed to "'.psfile.'"' )
+		elseif a:mode == 'v'
+			silent exe  "'<,'>hardcopy > ".psfile
+			call s:ImportantMsg ( 'file "'.outfile.'" (lines '.line("'<").'-'.line("'>").') printed to "'.psfile.'"' )
+		endif
+	endif
+
+	" restore current settings
+	let &g:printheader = printheader_saved
+
+endfunction   " ----------  end of function s:Hardcopy  ----------
+
+"-------------------------------------------------------------------------------
+" s:MakeExecutable : Make the script executable.   {{{2
+"-------------------------------------------------------------------------------
+function! s:MakeExecutable ()
+
+	if ! executable ( 'chmod' )
+		return s:ErrorMsg ( 'Command "chmod" not executable.' )
+	endif
+
+	let filename = expand("%:p")
+
+	if executable ( filename )
+		let from_state = 'executable'
+		let to_state   = 'NOT executable'
+		let cmd        = 'chmod -x'
+	else
+		let from_state = 'NOT executable'
+		let to_state   = 'executable'
+		let cmd        = 'chmod u+x'
+	endif
+
+	if s:UserInput( '"'.filename.'" is '.from_state.'. Make it '.to_state.' [y/n] : ', 'y' ) == 'y'
+
+		" run the command
+		silent exe '!'.cmd.' '.shellescape(filename)
+
+		" successful?
+		if v:shell_error
+			" confirmation for the user
+			call s:ErrorMsg ( 'Could not make "'.filename.'" '.to_state.'!' )
+		else
+			" reload the file, otherwise the message will not be visible
+			if &autoread && ! &l:modified
+				silent exe "edit"
+			endif
+			" confirmation for the user
+			call s:ImportantMsg ( 'Made "'.filename.'" '.to_state.'.' )
+		endif
+		"
+	endif
+
+endfunction   " ----------  end of function s:MakeExecutable  ----------
+
+" }}}2
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
 " === Module setup ===   {{{1
 "-------------------------------------------------------------------------------
 
@@ -263,9 +500,9 @@ endfunction    " ----------  end of function s:WarningMsg  ----------
 " == Platform specific items ==   {{{2
 "-------------------------------------------------------------------------------
 
-let s:MSWIN = has("win16") || has("win32")   || has("win64")    || has("win95")
-let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
-"
+let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
+let s:UNIX  = has("unix")  || has("macunix") || has("win32unix")
+
 let s:installation           = '*undefined*'    " 'local' or 'system'
 let s:plugin_dir             = ''               " the directory hosting ftplugin/ plugin/ lua-support/ ...
 let s:Lua_GlobalTemplateFile = ''               " the global templates, undefined for s:installation == 'local'
@@ -538,9 +775,9 @@ function! s:AdjustEndOfLineComm () range
 	"
 	" restore the cursor position
 	call setpos ( '.', save_cursor )
-	"
-endfunction    " ----------  end of function s:AdjustEndOfLineComm  ----------
-"
+
+endfunction   " ----------  end of function s:AdjustEndOfLineComm  ----------
+
 "-------------------------------------------------------------------------------
 " s:SetEndOfLineCommPos : Set end-of-line comment position.   {{{1
 "-------------------------------------------------------------------------------
@@ -839,133 +1076,6 @@ function! s:EscMagicChar()
 	"
 	return ''
 endfunction    " ----------  end of function s:EscMagicChar  ----------
-"
-"-------------------------------------------------------------------------------
-" s:CodeSnippet : Code snippets.   {{{1
-"
-" Parameters:
-"   action - "insert", "create", "vcreate", "view" or "edit" (string)
-"-------------------------------------------------------------------------------
-
-function! s:CodeSnippet ( action )
-	"
-	"-------------------------------------------------------------------------------
-	" setup
-	"-------------------------------------------------------------------------------
-	"
-	" check directory
-	if ! isdirectory( s:Lua_SnippetDir )
-		return s:ErrorMsg (
-					\ 'Code snippet directory '.s:Lua_SnippetDir.' does not exist.',
-					\ '(Please create it.)' )
-	endif
-	"
-	" save option 'browsefilter'
-	if has( 'browsefilter' ) && exists( 'b:browsefilter' )
-		let browsefilter_save = b:browsefilter
-		let b:browsefilter    = '*'
-	endif
-	"
-	"-------------------------------------------------------------------------------
-	" do action
-	"-------------------------------------------------------------------------------
-	"
-	if a:action == 'insert'
-		"
-		"-------------------------------------------------------------------------------
-		" action "insert"
-		"-------------------------------------------------------------------------------
-		"
-		" select file
-		if has('browse') && s:Lua_SnippetBrowser == 'gui'
-			let snippetfile = browse ( 0, 'insert a code snippet', s:Lua_SnippetDir, '' )
-		else
-			let snippetfile = input ( 'insert snippet ', s:Lua_SnippetDir, 'file' )
-		endif
-		"
-		" insert snippet
-		if filereadable(snippetfile)
-			let linesread = line('$')
-			"
-			let old_cpoptions = &cpoptions            " prevent the alternate buffer from being set to this files
-			setlocal cpoptions-=a
-			"
-			exe 'read '.snippetfile
-			"
-			let &cpoptions = old_cpoptions            " restore previous options
-			"
-			let linesread = line('$') - linesread - 1 " number of lines inserted
-			"
-			" :TODO:03.12.2013 14:29:WM: indent here?
-			" indent lines
-			if linesread >= 0 && match( snippetfile, '\.\(ni\|noindent\)$' ) < 0
-				silent exe 'normal! ='.linesread.'+'
-			endif
-		endif
-		"
-		" delete first line if empty
-		if line('.') == 2 && getline(1) =~ '^$'
-			silent exe ':1,1d'
-		endif
-		"
-	elseif a:action == 'create' || a:action == 'vcreate'
-		"
-		"-------------------------------------------------------------------------------
-		" action "create" or "vcreate"
-		"-------------------------------------------------------------------------------
-		"
-		" select file
-		if has('browse') && s:Lua_SnippetBrowser == 'gui'
-			let snippetfile = browse ( 1, 'create a code snippet', s:Lua_SnippetDir, '' )
-		else
-			let snippetfile = input ( 'create snippet ', s:Lua_SnippetDir, 'file' )
-		endif
-		"
-		" create snippet
-		if ! empty( snippetfile )
-			" new file or overwrite?
-			if ! filereadable( snippetfile ) || confirm( 'File '.snippetfile.' exists! Overwrite? ', "&Cancel\n&No\n&Yes" ) == 3
-				if a:action == 'create' && confirm( 'Write whole file as a snippet? ', "&Cancel\n&No\n&Yes" ) == 3
-					exe 'write! '.fnameescape( snippetfile )
-				elseif a:action == 'vcreate'
-					exe "'<,'>write! ".fnameescape( snippetfile )
-				endif
-			endif
-		endif
-		"
-	elseif a:action == 'view' || a:action == 'edit'
-		"
-		"-------------------------------------------------------------------------------
-		" action "view" or "edit"
-		"-------------------------------------------------------------------------------
-		if a:action == 'view' | let saving = 0
-		else                  | let saving = 1 | endif
-		"
-		" select file
-		if has('browse') && s:Lua_SnippetBrowser == 'gui'
-			let snippetfile = browse ( saving, a:action.' a code snippet', s:Lua_SnippetDir, '' )
-		else
-			let snippetfile = input ( a:action.' snippet ', s:Lua_SnippetDir, 'file' )
-		endif
-		"
-		" open file
-		if ! empty( snippetfile )
-			exe 'split | '.a:action.' '.fnameescape( snippetfile )
-		endif
-	else
-		call s:ErrorMsg ( 'Unknown action "'.a:action.'".' )
-	endif
-	"
-	"-------------------------------------------------------------------------------
-	" wrap up
-	"-------------------------------------------------------------------------------
-	"
-	" restore option 'browsefilter'
-	if has( 'browsefilter' ) && exists( 'b:browsefilter' )
-		let b:browsefilter = browsefilter_save
-	endif
-	"
-endfunction    " ----------  end of function s:CodeSnippet  ----------
 
 "-------------------------------------------------------------------------------
 " s:OutputBufferErrors : Load the "Lua Output" buffer into quickfix.   {{{1
@@ -1228,101 +1338,16 @@ function! s:Compile( mode ) range
 endfunction    " ----------  end of function s:Compile  ----------
 
 "-------------------------------------------------------------------------------
-" s:MakeExecutable : Make the script executable.   {{{1
+" s:HelpPlugin : Plug-in help.   {{{1
 "-------------------------------------------------------------------------------
-
-function! s:MakeExecutable ()
-	"
-	if ! executable ( 'chmod' )
-		return s:ErrorMsg ( 'Command "chmod" not executable.' )
-	endif
-	"
-	let filename = expand("%:p")
-	"
-	if executable ( filename )
-		let from_state = 'executable'
-		let to_state   = 'NOT executable'
-		let cmd        = 'chmod -x'
-	else
-		let from_state = 'NOT executable'
-		let to_state   = 'executable'
-		let cmd        = 'chmod u+x'
-	endif
-	"
-	if s:UserInput( '"'.filename.'" is '.from_state.'. Make it '.to_state.' [y/n] : ', 'y' ) == 'y'
-		"
-		" run the command
-		silent exe '!'.cmd.' '.shellescape(filename)
-		"
-		" successful?
-		if v:shell_error
-			" confirmation for the user
-			call s:ErrorMsg ( 'Could not make "'.filename.'" '.to_state.'!' )
-		else
-			" reload the file, otherwise the message will not be visible
-			if &autoread && ! &l:modified
-				silent exe "edit"
-			endif
-			" confirmation for the user
-			call s:ImportantMsg ( 'Made "'.filename.'" '.to_state.'.' )
-		endif
-		"
-	endif
-
-endfunction    " ----------  end of function s:MakeExecutable  ----------
-
-"-------------------------------------------------------------------------------
-" s:Hardcopy : Print the code to a file.   {{{1
-"
-" Parameters:
-"   mode - "n" or "v", normal or visual mode (string)
-"-------------------------------------------------------------------------------
-
-function! s:Hardcopy ( mode )
-	"
-  let outfile = expand("%:t")
-	"
-	" check the buffer
-  if ! s:MSWIN && empty ( outfile )
-		return s:ImportantMsg ( 'The buffer has no filename.' )
-  endif
-	"
-	" save current settings
-	let printheader_saved = &g:printheader
-	"
-	let &g:printheader = g:Lua_Printheader
-	"
-	if s:MSWIN
-		" we simply call hardcopy, which will open the systems printing dialog
-		if a:mode == 'n'
-			silent exe  'hardcopy'
-		elseif a:mode == 'v'
-			silent exe  "'<,'>hardcopy"
-		endif
-	else
-		"
-		" directory to print to
-		let outdir = getcwd()
-		if filewritable ( outdir ) != 2
-			let outdir = $HOME
-		endif
-		"
-		let psfile = outdir.'/'.outfile.'.ps'
-		"
-		if a:mode == 'n'
-			silent exe  'hardcopy > '.psfile
-			call s:ImportantMsg ( 'file "'.outfile.'" printed to "'.psfile.'"' )
-		elseif a:mode == 'v'
-			silent exe  "'<,'>hardcopy > ".psfile
-			call s:ImportantMsg ( 'file "'.outfile.'" (lines '.line("'<").'-'.line("'>").') printed to "'.psfile.'"' )
-		endif
-	endif
-	"
-	" restore current settings
-	let &g:printheader = printheader_saved
-	"
-	return
-endfunction    " ----------  end of function s:Hardcopy  ----------
+function! s:HelpPlugin ()
+	try
+		help lua-support
+	catch
+		exe 'helptags '.s:plugin_dir.'/doc'
+		help lua-support
+	endtry
+endfunction   " ----------  end of function s:HelpPlugin  ----------
 
 "------------------------------------------------------------------------------
 " === Templates API ===   {{{1
@@ -1455,7 +1480,7 @@ function! s:InsertFileHeader ()
 	if g:Lua_InsertFileHeader == 'yes'
 		let templ_s = mmtemplates#core#Resource ( g:Lua_Templates, 'get', 'property', 'Lua::FileSkeleton::Script' )[0]
 
-		" insert templates in reverse order, always above the firs line
+		" insert templates in reverse order, always above the first line
 		" the last one to insert (the first in the list), will determine the
 		" placement of the cursor
 		let templ_l = split ( templ_s, ';' )
@@ -1473,19 +1498,6 @@ function! s:InsertFileHeader ()
 	endif
 endfunction    " ----------  end of function s:InsertFileHeader  ----------
 
-"-------------------------------------------------------------------------------
-" s:HelpPlugin : Plug-in help.   {{{1
-"-------------------------------------------------------------------------------
-"
-function! s:HelpPlugin ()
-	try
-		help lua-support
-	catch
-		exe 'helptags '.s:plugin_dir.'/doc'
-		help lua-support
-	endtry
-endfunction    " ----------  end of function s:HelpPlugin  ----------
-"
 "-------------------------------------------------------------------------------
 " s:SetExecutable : Set s:Lua_Executable or s:Lua_CompilerExec   {{{1
 "-------------------------------------------------------------------------------
