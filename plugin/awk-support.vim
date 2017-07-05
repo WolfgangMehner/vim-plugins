@@ -366,7 +366,7 @@ function! s:Hardcopy ( mode )
 	" save current settings
 	let printheader_saved = &g:printheader
 
-	let &g:printheader = g:Lua_Printheader
+	let &g:printheader = g:Awk_Printheader
 
 	if s:MSWIN
 		" we simply call hardcopy, which will open the systems printing dialog
@@ -540,7 +540,6 @@ endif
 "-------------------------------------------------------------------------------
 
 let s:Awk_CreateMenusDelayed= 'yes'
-let s:Awk_MenuVisible				= 'no'
 let s:Awk_GuiSnippetBrowser = 'gui'             " gui / commandline
 let s:Awk_LoadMenus         = 'yes'             " load the menus?
 let s:Awk_RootMenu          = '&Awk'            " name of the root menu
@@ -554,6 +553,10 @@ let s:Awk_Wrapper               = s:plugin_dir.'/awk-support/scripts/wrapper.sh'
 let s:Awk_InsertFileHeader      = 'yes'
 let s:Awk_Ctrl_j                = 'yes'
 let s:Awk_Ctrl_d                = 'yes'
+
+if ! exists ( 's:MenuVisible' )
+	let s:MenuVisible = 0                         " menus are not visible at the moment
+endif
 
 "-------------------------------------------------------------------------------
 " Get user configuration   {{{3
@@ -615,7 +618,7 @@ function! s:AdjustLineEndComm ( ) range
 	let cc = '#'                       " start of an Awk comment
 	"
 	" patterns to ignore when adjusting line-end comments (maybe incomplete):
- 	let align_regex	= join( s:AlignRegex, '\|' )
+	let align_regex = join( s:AlignRegex, '\|' )
 	"
 	" local position
 	if !exists( 'b:Awk_LineEndCommentColumn' )
@@ -1420,45 +1423,7 @@ function! Awk_Settings ( verbose )
 		echo txt
 	endif
 endfunction    " ----------  end of function Awk_Settings ----------
-"
-"------------------------------------------------------------------------------
-"  Awk_CreateGuiMenus     {{{1
-"------------------------------------------------------------------------------
-function! Awk_CreateGuiMenus ()
-	if s:Awk_MenuVisible == 'no'
-		aunmenu <silent> &Tools.Load\ Awk\ Support
-		amenu   <silent> 40.1000 &Tools.-SEP100- :
-		amenu   <silent> 40.1010 &Tools.Unload\ Awk\ Support :call Awk_RemoveGuiMenus()<CR>
-		"
-		call s:RereadTemplates()
-		call s:InitMenus ()
-		"
-		let s:Awk_MenuVisible = 'yes'
-	endif
-endfunction    " ----------  end of function Awk_CreateGuiMenus  ----------
-"
-"------------------------------------------------------------------------------
-"  Awk_ToolMenu     {{{1
-"------------------------------------------------------------------------------
-function! Awk_ToolMenu ()
-	amenu   <silent> 40.1000 &Tools.-SEP100- :
-	amenu   <silent> 40.1010 &Tools.Load\ Awk\ Support :call Awk_CreateGuiMenus()<CR>
-endfunction    " ----------  end of function Awk_ToolMenu  ----------
 
-"------------------------------------------------------------------------------
-"  Awk_RemoveGuiMenus     {{{1
-"------------------------------------------------------------------------------
-function! Awk_RemoveGuiMenus ()
-	if s:Awk_MenuVisible == 'yes'
-		exe "aunmenu <silent> ".s:Awk_RootMenu
-		"
-		aunmenu <silent> &Tools.Unload\ Awk\ Support
-		call Awk_ToolMenu()
-		"
-		let s:Awk_MenuVisible = 'no'
-	endif
-endfunction    " ----------  end of function Awk_RemoveGuiMenus  ----------
-"
 "----------------------------------------------------------------------
 "  Run : toggle output destination (Linux/Unix)    {{{1
 "----------------------------------------------------------------------
@@ -1728,23 +1693,76 @@ function! Awk_SyntaxCheck ( check )
 	endif
 endfunction   " ---------- end of function  Awk_SyntaxCheck  ----------
 
+"-------------------------------------------------------------------------------
+" s:ToolMenu : Add or remove tool menu entries.   {{{1
+"-------------------------------------------------------------------------------
+function! s:ToolMenu( action )
+
+	if ! has ( 'menu' )
+		return
+	endif
+
+	if a:action == 'setup'
+		anoremenu <silent> 40.1000 &Tools.-SEP100- :
+		anoremenu <silent> 40.1010 &Tools.Load\ Awk\ Support   :call <SID>AddMenus()<CR>
+	elseif a:action == 'load'
+		aunmenu   <silent> &Tools.Load\ Awk\ Support
+		anoremenu <silent> 40.1010 &Tools.Unload\ Awk\ Support :call <SID>RemoveMenus()<CR>
+	elseif a:action == 'unload'
+		aunmenu   <silent> &Tools.Unload\ Awk\ Support
+		anoremenu <silent> 40.1010 &Tools.Load\ Awk\ Support   :call <SID>AddMenus()<CR>
+		exe 'aunmenu <silent> '.s:Awk_RootMenu
+	endif
+
+endfunction    " ----------  end of function s:ToolMenu  ----------
+
+"-------------------------------------------------------------------------------
+" s:AddMenus : Add menus.   {{{1
+"-------------------------------------------------------------------------------
+function! s:AddMenus()
+	if s:MenuVisible == 0
+		" the menu is becoming visible
+		let s:MenuVisible = 2
+		" make sure the templates are loaded
+		call s:RereadTemplates ()
+		" initialize if not existing
+		call s:ToolMenu ( 'load' )
+		call s:InitMenus ()
+		" the menu is now visible
+		let s:MenuVisible = 1
+	endif
+endfunction    " ----------  end of function s:AddMenus  ----------
+
+"-------------------------------------------------------------------------------
+" s:RemoveMenus : Remove menus.   {{{1
+"-------------------------------------------------------------------------------
+function! s:RemoveMenus()
+	if s:MenuVisible == 1
+		" destroy if visible
+		call s:ToolMenu ( 'unload' )
+		" the menu is now invisible
+		let s:MenuVisible = 0
+	endif
+endfunction    " ----------  end of function s:RemoveMenus  ----------
+
 "----------------------------------------------------------------------
 " === Setup: Templates and menus ===   {{{1
 "----------------------------------------------------------------------
 
-call Awk_ToolMenu()
+" tool menu entry
+call s:ToolMenu ( 'setup' )
 
 if s:Awk_LoadMenus == 'yes' && s:Awk_CreateMenusDelayed == 'no'
-	call Awk_CreateGuiMenus()
+	call s:AddMenus ()
 endif
-"
+
 if has( 'autocmd' )
 
 	" create menues and maps
   autocmd FileType *
         \ if &filetype == 'awk' |
         \   if ! exists( 'g:Awk_Templates' ) |
-        \     if s:Awk_LoadMenus == 'yes' | call Awk_CreateGuiMenus ()  |
+        \     if s:Awk_LoadMenus == 'yes' | call s:AddMenus ()  |
         \     else                        | call s:RereadTemplates () |
         \     endif |
         \   endif |
