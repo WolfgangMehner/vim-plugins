@@ -62,6 +62,7 @@ SetMacro( 'BASH_INTERPRETER', '/bin/bash' )
 
 §== Skeleton.script-set == nomenu, below ==
 §set -o nounset                                  # Treat unset variables as an error
+§shopt -s extglob                                # Extended pattern matching
 §== ENDTEMPLATE ==
 
 § -------------------------------------------------------------

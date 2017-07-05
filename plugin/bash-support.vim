@@ -366,7 +366,7 @@ function! s:Hardcopy ( mode )
 	" save current settings
 	let printheader_saved = &g:printheader
 
-	let &g:printheader = g:Lua_Printheader
+	let &g:printheader = g:BASH_Printheader
 
 	if s:MSWIN
 		" we simply call hardcopy, which will open the systems printing dialog
@@ -540,7 +540,6 @@ endif
 "-------------------------------------------------------------------------------
 
 let s:BASH_CreateMenusDelayed	= 'yes'
-let s:BASH_MenuVisible				= 'no'
 let s:BASH_GuiSnippetBrowser 	= 'gui'             " gui / commandline
 let s:BASH_LoadMenus         	= 'yes'             " load the menus?
 let s:BASH_RootMenu          	= '&Bash'           " name of the root menu
@@ -556,6 +555,10 @@ let s:BASH_InsertFileHeader       = 'yes'
 let s:BASH_Ctrl_j                 = 'yes'
 let s:BASH_Ctrl_d                 = 'yes'
 let s:BASH_SyntaxCheckOptionsGlob = ''
+
+if ! exists ( 's:MenuVisible' )
+	let s:MenuVisible = 0                         " menus are not visible at the moment
+endif
 
 "-------------------------------------------------------------------------------
 " Get user configuration   {{{3
@@ -1681,53 +1684,6 @@ function! BASH_Settings ( verbose )
 endfunction    " ----------  end of function BASH_Settings ----------
 
 "===  FUNCTION  ================================================================
-"          NAME:  BASH_CreateGuiMenus     {{{1
-"   DESCRIPTION:
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! BASH_CreateGuiMenus ()
-	if s:BASH_MenuVisible == 'no'
-		aunmenu <silent> &Tools.Load\ Bash\ Support
-		amenu   <silent> 40.1000 &Tools.-SEP100- :
-		amenu   <silent> 40.1020 &Tools.Unload\ Bash\ Support :call BASH_RemoveGuiMenus()<CR>
-		"
-		call s:RereadTemplates()
-		call s:InitMenus ()
-		"
-		let s:BASH_MenuVisible = 'yes'
-	endif
-endfunction    " ----------  end of function BASH_CreateGuiMenus  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  BASH_ToolMenu     {{{1
-"   DESCRIPTION:
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! BASH_ToolMenu ()
-	amenu   <silent> 40.1000 &Tools.-SEP100- :
-	amenu   <silent> 40.1020 &Tools.Load\ Bash\ Support :call BASH_CreateGuiMenus()<CR>
-endfunction    " ----------  end of function BASH_ToolMenu  ----------
-
-"===  FUNCTION  ================================================================
-"          NAME:  BASH_RemoveGuiMenus     {{{1
-"   DESCRIPTION:
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! BASH_RemoveGuiMenus ()
-	if s:BASH_MenuVisible == 'yes'
-		exe "aunmenu <silent> ".s:BASH_RootMenu
-		"
-		aunmenu <silent> &Tools.Unload\ Bash\ Support
-		call BASH_ToolMenu()
-		"
-		let s:BASH_MenuVisible = 'no'
-	endif
-endfunction    " ----------  end of function BASH_RemoveGuiMenus  ----------
-"
-"===  FUNCTION  ================================================================
 "          NAME:  BASH_Toggle_Gvim_Xterm     {{{1
 "   DESCRIPTION:  toggle output destination (Linux/Unix)
 "    PARAMETERS:  -
@@ -2100,16 +2056,69 @@ function! BASH_Debugger ()
 	endif
 endfunction		" ---------- end of function  BASH_Debugger  ----------
 
+"-------------------------------------------------------------------------------
+" s:ToolMenu : Add or remove tool menu entries.   {{{1
+"-------------------------------------------------------------------------------
+function! s:ToolMenu( action )
+
+	if ! has ( 'menu' )
+		return
+	endif
+
+	if a:action == 'setup'
+		anoremenu <silent> 40.1000 &Tools.-SEP100- :
+		anoremenu <silent> 40.1020 &Tools.Load\ Bash\ Support   :call <SID>AddMenus()<CR>
+	elseif a:action == 'load'
+		aunmenu   <silent> &Tools.Load\ Bash\ Support
+		anoremenu <silent> 40.1020 &Tools.Unload\ Bash\ Support :call <SID>RemoveMenus()<CR>
+	elseif a:action == 'unload'
+		aunmenu   <silent> &Tools.Unload\ Bash\ Support
+		anoremenu <silent> 40.1020 &Tools.Load\ Bash\ Support   :call <SID>AddMenus()<CR>
+		exe 'aunmenu <silent> '.s:BASH_RootMenu
+	endif
+
+endfunction    " ----------  end of function s:ToolMenu  ----------
+
+"-------------------------------------------------------------------------------
+" s:AddMenus : Add menus.   {{{1
+"-------------------------------------------------------------------------------
+function! s:AddMenus()
+	if s:MenuVisible == 0
+		" the menu is becoming visible
+		let s:MenuVisible = 2
+		" make sure the templates are loaded
+		call s:RereadTemplates ()
+		" initialize if not existing
+		call s:ToolMenu ( 'load' )
+		call s:InitMenus ()
+		" the menu is now visible
+		let s:MenuVisible = 1
+	endif
+endfunction    " ----------  end of function s:AddMenus  ----------
+
+"-------------------------------------------------------------------------------
+" s:RemoveMenus : Remove menus.   {{{1
+"-------------------------------------------------------------------------------
+function! s:RemoveMenus()
+	if s:MenuVisible == 1
+		" destroy if visible
+		call s:ToolMenu ( 'unload' )
+		" the menu is now invisible
+		let s:MenuVisible = 0
+	endif
+endfunction    " ----------  end of function s:RemoveMenus  ----------
+
 "----------------------------------------------------------------------
 " === Setup: Templates and menus ===   {{{1
 "----------------------------------------------------------------------
 
-call BASH_ToolMenu()
+" tool menu entry
+call s:ToolMenu ( 'setup' )
 
 if s:BASH_LoadMenus == 'yes' && s:BASH_CreateMenusDelayed == 'no'
-	call BASH_CreateGuiMenus()
+	call s:AddMenus ()
 endif
-"
+
 if has( 'autocmd' )
 	"
 	"-------------------------------------------------------------------------------
@@ -2127,7 +2136,7 @@ if has( 'autocmd' )
   autocmd FileType *
         \ if &filetype == 'sh' |
         \   if ! exists( 'g:BASH_Templates' ) |
-        \     if s:BASH_LoadMenus == 'yes' | call BASH_CreateGuiMenus ()  |
+        \     if s:BASH_LoadMenus == 'yes' | call s:AddMenus ()  |
         \     else                         | call s:RereadTemplates () |
         \     endif |
         \   endif |

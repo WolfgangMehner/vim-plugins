@@ -321,7 +321,7 @@ with the 4 items
  'write code snippet'
  'edit  code snippet'
 <
-from the Snipptes submenu.
+from the Snippets submenu.
 
 Creating a new snippet:
 -----------------------
