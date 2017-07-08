@@ -65,7 +65,7 @@ Returns:
 == Documentation.example == below, noindent, map:de, sc:e ==
 Example:
 >
-	<CURSOR><SPLIT>
+	<CURSOR><SHIFT>
 <
 == ENDTEMPLATE ==
 

@@ -16,7 +16,7 @@
 "
 "       Version:  see variable g:VimSupportVersion below
 "       Created:  14.01.2012
-"      Revision:  12.11.2016
+"      Revision:  08.07.2017
 "       License:  Copyright (c) 2012-2015, Fritz Mehner
 "                 Copyright (c) 2016-2017, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
@@ -221,70 +221,75 @@ endfunction    " ----------  end of function s:WarningMsg  ----------
 " == Platform specific items ==   {{{2
 "-------------------------------------------------------------------------------
 
-let s:MSWIN = has("win16") || has("win32") || has("win64") || has("win95")
-let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
-"
-let s:installation						= '*undefined*'
-let s:Vim_GlobalTemplateFile	= ''
-let s:Vim_LocalTemplateFile		= ''
-let s:Vim_CustomTemplateFile = ''              " the custom templates
-let s:Vim_FilenameEscChar 		= ''
+let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
+let s:UNIX  = has("unix")  || has("macunix") || has("win32unix")
+
+let s:installation           = '*undefined*'
+let s:plugin_dir             = ''
+let s:Vim_GlobalTemplateFile = ''
+let s:Vim_LocalTemplateFile  = ''
+let s:Vim_CustomTemplateFile = ''                " the custom templates
+let s:Vim_FilenameEscChar    = ''
 
 if	s:MSWIN
   " ==========  MS Windows  ======================================================
 	"
 	let s:plugin_dir = substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
-	"
+
 	" change '\' to '/' to avoid interpretation as escape character
-	if match(	substitute( expand("<sfile>"), '\', '/', 'g' ), 
+	if match(	substitute( expand("<sfile>"), '\', '/', 'g' ),
 				\		substitute( expand("$HOME"),   '\', '/', 'g' ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
-		let s:installation					 = 'local'
-		let s:Vim_LocalTemplateFile	 = s:plugin_dir.'/vim-support/templates/Templates'
+		let s:installation           = 'local'
+		let s:Vim_LocalTemplateFile  = s:plugin_dir.'/vim-support/templates/Templates'
 		let s:Vim_CustomTemplateFile = $HOME.'/vimfiles/templates/vim.templates'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
-		let s:installation					 = 'system'
+		let s:installation           = 'system'
 		let s:Vim_GlobalTemplateFile = s:plugin_dir.'/vim-support/templates/Templates'
-		let s:Vim_LocalTemplateFile	 = $HOME.'/vimfiles/vim-support/templates/Templates'
+		let s:Vim_LocalTemplateFile  = $HOME.'/vimfiles/vim-support/templates/Templates'
 		let s:Vim_CustomTemplateFile = $HOME.'/vimfiles/templates/vim.templates'
 	endif
-	"
-  let s:Vim_FilenameEscChar 		= ''
-	let s:Vim_Display    					= ''
-	"
+
+	let s:Vim_FilenameEscChar    = ''
+	let s:Vim_Display            = ''
+
 else
-  " ==========  Linux/Unix  ======================================================
-	"
+	" ==========  Linux/Unix  ======================================================
+
 	let s:plugin_dir = expand('<sfile>:p:h:h')
-	"
+
 	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		"
 		" USER INSTALLATION ASSUMED
-		let s:installation					 = 'local'
-		let s:Vim_LocalTemplateFile	 = s:plugin_dir.'/vim-support/templates/Templates'
+		let s:installation           = 'local'
+		let s:Vim_LocalTemplateFile  = s:plugin_dir.'/vim-support/templates/Templates'
 		let s:Vim_CustomTemplateFile = $HOME.'/.vim/templates/vim.templates'
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
-		let s:installation					 = 'system'
+		let s:installation           = 'system'
 		let s:Vim_GlobalTemplateFile = s:plugin_dir.'/vim-support/templates/Templates'
-		let s:Vim_LocalTemplateFile	 = $HOME.'/.vim/vim-support/templates/Templates'
+		let s:Vim_LocalTemplateFile  = $HOME.'/.vim/vim-support/templates/Templates'
 		let s:Vim_CustomTemplateFile = $HOME.'/.vim/templates/vim.templates'
 	endif
-	"
-  let s:Vim_FilenameEscChar 		= ' \%#[]'
-	let s:Vim_Display							= $DISPLAY
-	"
+
+	let s:Vim_FilenameEscChar     = ' \%#[]'
+	let s:Vim_Display             = $DISPLAY
+
 endif
-"
+
 let s:Vim_AdditionalTemplates   = mmtemplates#config#GetFt ( 'vim' )
 let s:Vim_CodeSnippets  				= s:plugin_dir.'/vim-support/codesnippets/'
 
 "-------------------------------------------------------------------------------
 " == Various settings ==   {{{2
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" User configurable options   {{{3
 "-------------------------------------------------------------------------------
 
 let s:Vim_CreateMenusDelayed= 'yes'
@@ -298,6 +303,10 @@ let s:Vim_LineEndCommColDefault = 49
 let s:VimStartComment						= '"'
 let s:Vim_Printheader   				= "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
 let s:Vim_TemplateJumpTarget 		= '<+\i\++>\|{+\i\++}\|<-\i\+->\|{-\i\+-}'
+
+"-------------------------------------------------------------------------------
+" Get user configuration   {{{3
+"-------------------------------------------------------------------------------
 
 call s:GetGlobalSetting ( 'Vim_GuiSnippetBrowser' )
 call s:GetGlobalSetting ( 'Vim_LoadMenus' )
@@ -315,17 +324,17 @@ call s:ApplyDefaultSetting ( 'Vim_MapLeader', '' )                " default: do 
 
 let s:Vim_Printheader = escape( s:Vim_Printheader, ' %' )
 
+" }}}3
+"-------------------------------------------------------------------------------
+
 " }}}2
 "-------------------------------------------------------------------------------
 
-"===  FUNCTION  ================================================================
-"          NAME:  Vim_AdjustLineEndComm     {{{1
-"   DESCRIPTION:  adjust end-of-line comments
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Vim_AdjustLineEndComm ( ) range
-	"
+"-------------------------------------------------------------------------------
+" s:AdjustLineEndComm : Adjust end-of-line comments.   {{{1
+"-------------------------------------------------------------------------------
+function! s:AdjustLineEndComm ( ) range
+
 	" comment character (for use in regular expression)
 	let cc = '"'
 	"
@@ -417,35 +426,29 @@ function! Vim_AdjustLineEndComm ( ) range
 	"
 	" restore the cursor position
 	call setpos ( '.', save_cursor )
-	"
-endfunction		" ---------- end of function  Vim_AdjustLineEndComm  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Vim_GetLineEndCommCol     {{{1
-"   DESCRIPTION:  get end-of-line comment position
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Vim_GetLineEndCommCol ()
-	let actcol	= virtcol(".")
+
+endfunction   " ---------- end of function s:AdjustLineEndComm  ----------
+
+"-------------------------------------------------------------------------------
+" s:GetLineEndCommCol : Set end-of-line comment position.   {{{1
+"-------------------------------------------------------------------------------
+function! s:GetLineEndCommCol ()
+	let actcol = virtcol(".")
 	if actcol+1 == virtcol("$")
-		let	b:Vim_LineEndCommentColumn	= ''
+		let b:Vim_LineEndCommentColumn = ''
 		while match( b:Vim_LineEndCommentColumn, '^\s*\d\+\s*$' ) < 0
 			let b:Vim_LineEndCommentColumn = s:UserInput( 'start line-end comment at virtual column : ', actcol, '' )
 		endwhile
 	else
-		let	b:Vim_LineEndCommentColumn	= virtcol(".")
+		let b:Vim_LineEndCommentColumn = virtcol(".")
 	endif
-  echomsg "line end comments will start at column  ".b:Vim_LineEndCommentColumn
-endfunction		" ---------- end of function  Vim_GetLineEndCommCol  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Vim_EndOfLineComment     {{{1
-"   DESCRIPTION:  single end-of-line comment
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Vim_EndOfLineComment ( ) range
+	echomsg "line end comments will start at column  ".b:Vim_LineEndCommentColumn
+endfunction   " ---------- end of function s:GetLineEndCommCol  ----------
+
+"-------------------------------------------------------------------------------
+" s:EndOfLineComment : Append end-of-line comments.   {{{1
+"-------------------------------------------------------------------------------
+function! s:EndOfLineComment ( ) range
 	if !exists("b:Vim_LineEndCommentColumn")
 		let	b:Vim_LineEndCommentColumn	= s:Vim_LineEndCommColDefault
 	endif
@@ -465,15 +468,12 @@ function! Vim_EndOfLineComment ( ) range
 			normal! k
 		endif
 	endfor
-endfunction		" ---------- end of function  Vim_EndOfLineComment  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Vim_MultiLineEndComments     {{{1
-"   DESCRIPTION:  multiple end-of-line comment
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Vim_MultiLineEndComments ( )
+endfunction   " ---------- end of function s:EndOfLineComment  ----------
+
+"-------------------------------------------------------------------------------
+" s:MultiLineEndComments : Append multiple end-of-line comments.   {{{1
+"-------------------------------------------------------------------------------
+function! s:MultiLineEndComments ( )
 	"
   if !exists("b:Vim_LineEndCommentColumn")
 		let	b:Vim_LineEndCommentColumn	= s:Vim_LineEndCommColDefault
@@ -513,28 +513,25 @@ function! Vim_MultiLineEndComments ( )
 	else
 		normal! $
 	endif
-endfunction		" ---------- end of function  Vim_MultiLineEndComments  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Vim_CodeComment     {{{1
-"   DESCRIPTION:  Code -> Comment
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Vim_CodeComment() range
-	" add '" ' at the beginning of the lines
+endfunction   " ---------- end of function s:MultiLineEndComments  ----------
+
+"-------------------------------------------------------------------------------
+" s:CodeComment : Code -> Comment   {{{1
+"-------------------------------------------------------------------------------
+function! s:CodeComment() range
+	" add '"' at the beginning of the lines
 	for line in range( a:firstline, a:lastline )
 		exe line.'s/^/"/'
 	endfor
-endfunction    " ----------  end of function Vim_CodeComment  ----------
+endfunction    " ----------  end of function s:CodeComment  ----------
+
+"-------------------------------------------------------------------------------
+" s:CommentCode : Comment -> Code   {{{1
 "
-"===  FUNCTION  ================================================================
-"          NAME:  Vim_CommentCode     {{{1
-"   DESCRIPTION:  Comment -> Code
-"    PARAMETERS:  toggle - 0 : uncomment, 1 : toggle comment
-"       RETURNS:  
-"===============================================================================
-function! Vim_CommentCode( toggle ) range
+" Parameters:
+"   toggle - 0 : uncomment, 1 : toggle comment (integer)
+"-------------------------------------------------------------------------------
+function! s:CommentCode( toggle ) range
 	for i in range( a:firstline, a:lastline )
 		" :TRICKY:15.08.2014 17:17:WM:
 		" Older version prior to 2.3 inserted a space after the quote when turning
@@ -549,8 +546,7 @@ function! Vim_CommentCode( toggle ) range
 			silent exe i.'s/^/"/'
 		endif
 	endfor
-	"
-endfunction    " ----------  end of function Vim_CommentCode  ----------
+endfunction    " ----------  end of function s:CommentCode  ----------
 
 "-------------------------------------------------------------------------------
 " s:GetFunctionParameters : Get function name and parameters.   {{{1
@@ -596,16 +592,13 @@ function! s:GetFunctionParameters ( fun_line )
 	endif
 	"
 endfunction    " ----------  end of function s:GetFunctionParameters  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Vim_FunctionComment {{{1
-"   DESCRIPTION:  Add a comment to a function.
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Vim_FunctionComment () range
-	"
- " :TODO:11.08.2013 19:02:wm: multiple lines (is that possible?): remove continuation '\'
+
+"-------------------------------------------------------------------------------
+" s:FunctionComment : Add a comment to a function.   {{{1
+"-------------------------------------------------------------------------------
+function! s:FunctionComment () range
+
+	" :TODO:11.08.2013 19:02:wm: multiple lines (is that possible?): remove continuation '\'
 	let	linestring = getline(a:firstline)
 	for i in range(a:firstline+1,a:lastline)
 		let	linestring = linestring.' '.getline(i)
@@ -631,16 +624,13 @@ function! Vim_FunctionComment () range
 	call mmtemplates#core#InsertTemplate ( g:Vim_Templates, 'Comments.function',
 				\ '|FUNCTION_NAME|', scope.fun_name, '|PARAMETERS|', param_list,
 				\ 'placement', placement, 'range', a:firstline, a:lastline )
-	"
-endfunction    " ----------  end of function Vim_FunctionComment  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Vim_Help     {{{1
-"   DESCRIPTION:  read help for word under cursor
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
-function! Vim_Help ()
+
+endfunction    " ----------  end of function s:FunctionComment  ----------
+
+"-------------------------------------------------------------------------------
+" s:KeywordHelp : Help for word under cursor.   {{{1
+"-------------------------------------------------------------------------------
+function! s:KeywordHelp ()
 	let  word = expand("<cword>")
 	if word=='' || match(word, '^\s' )==0
 			exe ':help function-list'
@@ -652,7 +642,7 @@ function! Vim_Help ()
 			exe ':help '.word
 		endif
 	endif
-endfunction    " ----------  end of function Vim_Help  ----------
+endfunction    " ----------  end of function s:KeywordHelp  ----------
 
 "-------------------------------------------------------------------------------
 " s:HelpPlugin : Plug-in help.   {{{1
@@ -827,33 +817,34 @@ function! s:InitMenus()
 	"-------------------------------------------------------------------------------
 	" comments
  	"-------------------------------------------------------------------------------
-	"
+
 	let  head =  'noremenu <silent> '.s:Vim_RootMenu.'.Comments.'
 	let ahead = 'anoremenu <silent> '.s:Vim_RootMenu.'.Comments.'
 	let vhead = 'vnoremenu <silent> '.s:Vim_RootMenu.'.Comments.'
-	"
-	exe ahead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl                    :call Vim_EndOfLineComment()<CR>'
-	exe vhead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl               <Esc>:call Vim_MultiLineEndComments()<CR>A'
-	exe ahead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call Vim_AdjustLineEndComm()<CR>'
-	exe vhead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call Vim_AdjustLineEndComm()<CR>'
-	exe  head.'&set\ end-of-line\ com\.\ col\.<Tab>'.esc_mapl.'cs     <Esc>:call Vim_GetLineEndCommCol()<CR>'
-	exe ahead.'-Sep00-						<Nop>'
-	"
-	exe ahead.'&comment<TAB>'.esc_mapl.'cc		:call Vim_CodeComment()<CR>'
-	exe vhead.'&comment<TAB>'.esc_mapl.'cc		:call Vim_CodeComment()<CR>'
-	exe ahead.'&uncomment<TAB>'.esc_mapl.'co	:call Vim_CommentCode(0)<CR>'
-	exe vhead.'&uncomment<TAB>'.esc_mapl.'co	:call Vim_CommentCode(0)<CR>'
-	exe ahead.'-Sep01-						<Nop>'
-	"
-	exe ahead.'&function\ description\ (auto)<TAB>'.esc_mapl.'ca	     :call Vim_FunctionComment()<CR>'
-	exe vhead.'&function\ description\ (auto)<TAB>'.esc_mapl.'ca	<Esc>:call Vim_FunctionComment()<CR>'
-	exe ahead.'-Sep02-												             <Nop>'
-	"
- 	"-------------------------------------------------------------------------------
+
+	exe ahead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl                    :call <SID>EndOfLineComment()<CR>'
+	exe vhead.'end-of-&line\ comment<Tab>'.esc_mapl.'cl               <Esc>:call <SID>MultiLineEndComments()<CR>A'
+	exe ahead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call <SID>AdjustLineEndComm()<CR>'
+	exe vhead.'ad&just\ end-of-line\ com\.<Tab>'.esc_mapl.'cj              :call <SID>AdjustLineEndComm()<CR>'
+	exe  head.'&set\ end-of-line\ com\.\ col\.<Tab>'.esc_mapl.'cs     <Esc>:call <SID>GetLineEndCommCol()<CR>'
+	exe ahead.'-Sep00-     <Nop>'
+
+	exe ahead.'&comment<TAB>'.esc_mapl.'cc		:call <SID>CodeComment()<CR>'
+	exe vhead.'&comment<TAB>'.esc_mapl.'cc		:call <SID>CodeComment()<CR>'
+	exe ahead.'&uncomment<TAB>'.esc_mapl.'co	:call <SID>CommentCode(0)<CR>'
+	exe vhead.'&uncomment<TAB>'.esc_mapl.'co	:call <SID>CommentCode(0)<CR>'
+	exe ahead.'-Sep01-     <Nop>'
+
+	exe ahead.'&function\ description\ (auto)<TAB>'.esc_mapl.'ca	     :call <SID>FunctionComment()<CR>'
+	exe vhead.'&function\ description\ (auto)<TAB>'.esc_mapl.'ca	<Esc>:call <SID>FunctionComment()<CR>'
+	exe ahead.'-Sep02-     <Nop>'
+
+	"-------------------------------------------------------------------------------
 	" generate menus from the templates
  	"-------------------------------------------------------------------------------
+
 	call mmtemplates#core#CreateMenus ( 'g:Vim_Templates', s:Vim_RootMenu, 'do_templates' )
-	"
+
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------
@@ -894,14 +885,14 @@ function! s:InitMenus()
  	"-------------------------------------------------------------------------------
  	" help
  	"-------------------------------------------------------------------------------
- 	"
+
 	let ahead = 'anoremenu <silent> '.s:Vim_RootMenu.'.Help.'
 	let ihead = 'inoremenu <silent> '.s:Vim_RootMenu.'.Help.'
-	"
-  exe ahead.'&keyword\ help<Tab>'.esc_mapl.'hk\ \ <S-F1>    :call Vim_Help()<CR>'
-	exe ahead.'-SEP1- :'
+
+	exe ahead.'&keyword\ help<Tab>'.esc_mapl.'hk\ \ <S-F1>    :call <SID>KeywordHelp()<CR>'
+	exe ahead.'-SEP1-     <Nop>'
 	exe ahead.'&help\ (Vim-Support)<Tab>'.esc_mapl.'hp        :call <SID>HelpPlugin()<CR>'
-	"
+
 endfunction    " ----------  end of function s:InitMenus  ----------
 
 "===  FUNCTION  ================================================================
@@ -1039,35 +1030,35 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" comments
 	"-------------------------------------------------------------------------------
-	nnoremap    <buffer>  <silent>  <LocalLeader>cl         :call Vim_EndOfLineComment()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>cl    <C-C>:call Vim_EndOfLineComment()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>cl    <C-C>:call Vim_MultiLineEndComments()<CR>A
-	"
-	nnoremap    <buffer>  <silent>  <LocalLeader>cj         :call Vim_AdjustLineEndComm()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>cj    <C-C>:call Vim_AdjustLineEndComm()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>cj         :call Vim_AdjustLineEndComm()<CR>
-	"
-	nnoremap    <buffer>  <silent>  <LocalLeader>cs         :call Vim_GetLineEndCommCol()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>cs    <C-C>:call Vim_GetLineEndCommCol()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>cs    <C-C>:call Vim_GetLineEndCommCol()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>cl         :call <SID>EndOfLineComment()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cl    <C-C>:call <SID>EndOfLineComment()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>cl    <C-C>:call <SID>MultiLineEndComments()<CR>A
 
-	nnoremap    <buffer>  <silent>  <LocalLeader>cc         :call Vim_CodeComment()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>cc    <C-C>:call Vim_CodeComment()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>cc         :call Vim_CodeComment()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>cj         :call <SID>AdjustLineEndComm()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cj    <C-C>:call <SID>AdjustLineEndComm()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>cj         :call <SID>AdjustLineEndComm()<CR>
 
-	nnoremap    <buffer>  <silent>  <LocalLeader>co         :call Vim_CommentCode(0)<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>co    <C-C>:call Vim_CommentCode(0)<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>co         :call Vim_CommentCode(0)<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>cs         :call <SID>GetLineEndCommCol()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cs    <C-C>:call <SID>GetLineEndCommCol()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>cs    <C-C>:call <SID>GetLineEndCommCol()<CR>
+
+	nnoremap    <buffer>  <silent>  <LocalLeader>cc         :call <SID>CodeComment()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cc    <C-C>:call <SID>CodeComment()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>cc         :call <SID>CodeComment()<CR>
+
+	nnoremap    <buffer>  <silent>  <LocalLeader>co         :call <SID>CommentCode(0)<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>co    <C-C>:call <SID>CommentCode(0)<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>co         :call <SID>CommentCode(0)<CR>
 
 	" :TODO:17.03.2016 12:16:WM: old maps '\cu' for backwards compatibility,
 	" deprecate this eventually
-	nnoremap    <buffer>  <silent>  <LocalLeader>cu         :call Vim_CommentCode(0)<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>cu    <C-C>:call Vim_CommentCode(0)<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>cu         :call Vim_CommentCode(0)<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>cu         :call <SID>CommentCode(0)<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>cu    <C-C>:call <SID>CommentCode(0)<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>cu         :call <SID>CommentCode(0)<CR>
 
-  nnoremap    <buffer>  <silent>  <LocalLeader>ca         :call Vim_FunctionComment()<CR>
-  inoremap    <buffer>  <silent>  <LocalLeader>ca    <Esc>:call Vim_FunctionComment()<CR>
-  vnoremap    <buffer>  <silent>  <LocalLeader>ca         :call Vim_FunctionComment()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>ca         :call <SID>FunctionComment()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>ca    <Esc>:call <SID>FunctionComment()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>ca         :call <SID>FunctionComment()<CR>
 
 	"-------------------------------------------------------------------------------
 	" snippets
@@ -1091,16 +1082,16 @@ function! s:CreateAdditionalMaps ()
 	"   help
 	"-------------------------------------------------------------------------------
 	nnoremap    <buffer>  <silent>  <LocalLeader>rs         :call Vim_Settings(0)<CR>
-	nnoremap    <buffer>  <silent>  <LocalLeader>hk          :call Vim_Help()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>hk     <C-C>:call Vim_Help()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>hk         :call <SID>KeywordHelp()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>hk    <C-C>:call <SID>KeywordHelp()<CR>
 	 noremap    <buffer>  <silent>  <LocalLeader>hp         :call <SID>HelpPlugin()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>hp    <C-C>:call <SID>HelpPlugin()<CR>
-	" 
+
 	if has("gui_running")
-		nnoremap    <buffer>  <silent>  <S-F1>             :call Vim_Help()<CR>
-		inoremap    <buffer>  <silent>  <S-F1>        <C-C>:call Vim_Help()<CR>
+		nnoremap    <buffer>  <silent>  <S-F1>             :call <SID>KeywordHelp()<CR>
+		inoremap    <buffer>  <silent>  <S-F1>        <C-C>:call <SID>KeywordHelp()<CR>
 	endif
-	"
+
 	"-------------------------------------------------------------------------------
 	" settings - reset local leader
 	"-------------------------------------------------------------------------------
