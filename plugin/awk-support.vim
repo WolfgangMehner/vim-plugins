@@ -546,7 +546,6 @@ let s:Awk_RootMenu          = '&Awk'            " name of the root menu
 "
 let s:Awk_MapLeader             = ''            " default: do not overwrite 'maplocalleader'
 let s:Awk_LineEndCommColDefault = 49
-let s:Awk_Printheader   				= "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
 let s:Awk_TemplateJumpTarget 		= ''
 let s:Awk_Errorformat           = 'awk: %f:%l: %m'
 let s:Awk_Wrapper               = s:plugin_dir.'/awk-support/scripts/wrapper.sh'
@@ -571,7 +570,6 @@ call s:GetGlobalSetting ( 'Awk_CodeSnippets' )
 call s:GetGlobalSetting ( 'Awk_GuiSnippetBrowser' )
 call s:GetGlobalSetting ( 'Awk_LoadMenus' )
 call s:GetGlobalSetting ( 'Awk_RootMenu' )
-call s:GetGlobalSetting ( 'Awk_Printheader' )
 call s:GetGlobalSetting ( 'Awk_ManualReader' )
 call s:GetGlobalSetting ( 'Awk_OutputGvim' )
 call s:GetGlobalSetting ( 'Awk_XtermDefaults' )
@@ -582,8 +580,7 @@ call s:GetGlobalSetting ( 'Awk_CreateMenusDelayed' )
 call s:GetGlobalSetting ( 'Awk_LineEndCommColDefault' )
 
 call s:ApplyDefaultSetting ( 'Awk_MapLeader', '' )       " default: do not overwrite 'maplocalleader'
-
-let s:Awk_Printheader = escape( s:Awk_Printheader, ' %' )
+call s:ApplyDefaultSetting ( 'Awk_Printheader', "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N" )
 
 "-------------------------------------------------------------------------------
 " Xterm   {{{3

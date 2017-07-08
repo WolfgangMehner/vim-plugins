@@ -436,18 +436,19 @@ If the buffer gets a new name with "save as" the arguments will now belong to
 the buffer with the new name.
 
 1.8.6 Hardcopy                                           *awksupport-hardcopy*
+--------------
 
-Generates a PostScript file from the whole buffer or from a marked region.
-The hardcopy goes to the current working directory.  If the buffer contains
+Generates a PostScript file from the whole buffer or from a marked region. The
+hardcopy is written to the current working directory. If the buffer contains
 documentation or other material from non-writable directories the hardcopy
 goes to the HOME directory. The output destination will be shown in a message.
 
 The print header contains date and time according the current locale. The
-definition used is
+definition used is:
 >
-  let s:Awk_Printheader = "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
+  let g:Awk_Printheader = "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
 <
-The current locale can be overwritten by changing the language, e.g.
+The current locale can be overwritten by changing the language, e.g. :
 >
   :language C
 <
@@ -455,7 +456,7 @@ or by setting a global variable in the file '.vimrc', e.g. :
 >
   let g:Awk_Printheader = "%<%f%h%m%<  %=%{strftime('%x %X')}     SEITE %N"
 <
-See :h printheader and :h strftime()  for more details.
+See |printheader| and |strftime()| for more details.
 
 1.8.7 Settings                                           *awksupport-settings*
 --------------
