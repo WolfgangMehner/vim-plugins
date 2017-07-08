@@ -1853,7 +1853,7 @@ you can type on.
 5.4  FILE SKELETONS                                   *csupport-file-skeleton*
 ------------------------------------------------------------------------------
 
-If g:InsertFileHeader is set to "yes", templates are automatically inserted
+If g:C_InsertFileHeader is set to "yes", templates are automatically inserted
 into new C and C++ files. The lists of templates used to create these file
 skeletons are specified in the template library. They can for example be set
 in the customization file (see |csupport-templates|).

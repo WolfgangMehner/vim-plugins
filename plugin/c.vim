@@ -50,7 +50,7 @@ if exists("g:C_Version") || &cp
 	finish
 endif
 
-let g:C_Version= "6.2.1pre"								" version number of this script; do not change
+let g:C_Version= "6.2.1pre"                  " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " === Auxiliary functions ===   {{{1
@@ -226,9 +226,9 @@ endfunction    " ----------  end of function s:WarningMsg  ----------
 " - characters that must be escaped for filenames
 "-------------------------------------------------------------------------------
 
-let s:MSWIN = has("win16") || has("win32")   || has("win64")    || has("win95")
-let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
-"
+let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
+let s:UNIX  = has("unix")  || has("macunix") || has("win32unix")
+
 let g:C_Installation				= '*undefined*'
 let s:plugin_dir						= ''
 "
@@ -242,7 +242,7 @@ let s:C_ToolboxDir					= []
 if	s:MSWIN
   " ==========  MS Windows  ======================================================
 	"
-	let s:plugin_dir	= substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
+	let s:plugin_dir = substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
 	"
 	" change '\' to '/' to avoid interpretation as escape character
 	if match(	substitute( expand("<sfile>"), '\', '/', 'g' ), 
@@ -304,8 +304,7 @@ let s:C_IndentErrorLog				= $HOME.'/.indent.errorlog'
 "-------------------------------------------------------------------------------
 " Use of dictionaries   {{{3
 "
-" - Keyword completion is enabled by the filetype plugin 'c.vim'
-" - 'g:C_Dictionary_File' must be global
+" - keyword completion is enabled by the function 's:CreateAdditionalMaps' below
 "-------------------------------------------------------------------------------
 
 if !exists("g:C_Dictionary_File")
@@ -2646,7 +2645,7 @@ function! s:InsertFileHeader ()
 			let templ_s = mmtemplates#core#Resource ( g:C_Templates, 'get', 'property', ft.'::FileSkeleton::Header' )[0]
 		endif
 
-		" insert templates in reverse order, always above the firs line
+		" insert templates in reverse order, always above the first line
 		" the last one to insert (the first in the list), will determine the
 		" placement of the cursor
 		let templ_l = split ( templ_s, ';' )
