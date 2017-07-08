@@ -547,7 +547,6 @@ let s:BASH_Debugger           = 'term'
 let s:BASH_bashdb             = 'bashdb'
 "
 let s:BASH_LineEndCommColDefault	= 49
-let s:BASH_Printheader   					= "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
 let s:BASH_TemplateJumpTarget 		= ''
 let s:BASH_Errorformat            = '%f: %[%^0-9]%# %l:%m,%f: %l:%m,%f:%l:%m,%f[%l]:%m'
 let s:BASH_Wrapper                = s:plugin_dir.'/bash-support/scripts/wrapper.sh'
@@ -575,7 +574,6 @@ call s:GetGlobalSetting ( 'BASH_CodeSnippets' )
 call s:GetGlobalSetting ( 'BASH_GuiSnippetBrowser' )
 call s:GetGlobalSetting ( 'BASH_LoadMenus' )
 call s:GetGlobalSetting ( 'BASH_RootMenu' )
-call s:GetGlobalSetting ( 'BASH_Printheader' )
 call s:GetGlobalSetting ( 'BASH_ManualReader' )
 call s:GetGlobalSetting ( 'BASH_OutputGvim' )
 call s:GetGlobalSetting ( 'BASH_XtermDefaults' )
@@ -586,8 +584,7 @@ call s:GetGlobalSetting ( 'BASH_CreateMenusDelayed' )
 call s:GetGlobalSetting ( 'BASH_LineEndCommColDefault' )
 
 call s:ApplyDefaultSetting ( 'BASH_MapLeader', '' )       " default: do not overwrite 'maplocalleader'
-
-let s:BASH_Printheader = escape( s:BASH_Printheader, ' %' )
+call s:ApplyDefaultSetting ( 'BASH_Printheader', "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N" )
 
 "-------------------------------------------------------------------------------
 " Xterm   {{{3
