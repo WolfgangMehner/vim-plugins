@@ -214,6 +214,199 @@ endfunction    " ----------  end of function s:WarningMsg  ----------
 "-------------------------------------------------------------------------------
 
 "-------------------------------------------------------------------------------
+" === Common functions ===   {{{1
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:CodeSnippet : Code snippets.   {{{2
+"
+" Parameters:
+"   action - "insert", "create", "vcreate", "view", or "edit" (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:CodeSnippet ( action )
+
+	"-------------------------------------------------------------------------------
+	" setup
+	"-------------------------------------------------------------------------------
+
+	" the snippet directory
+	let cs_dir    = s:Vim_CodeSnippets
+	let cs_browse = s:Vim_GuiSnippetBrowser
+
+	" check directory
+	if ! isdirectory ( cs_dir )
+		return s:ErrorMsg (
+					\ 'Code snippet directory '.cs_dir.' does not exist.',
+					\ '(Please create it.)' )
+	endif
+
+	" save option 'browsefilter'
+	if has( 'browsefilter' ) && exists( 'b:browsefilter' )
+		let browsefilter_save = b:browsefilter
+		let b:browsefilter    = '*'
+	endif
+
+	"-------------------------------------------------------------------------------
+	" do action
+	"-------------------------------------------------------------------------------
+
+	if a:action == 'insert'
+
+		"-------------------------------------------------------------------------------
+		" action "insert"
+		"-------------------------------------------------------------------------------
+
+		" select file
+		if has('browse') && cs_browse == 'gui'
+			let snippetfile = browse ( 0, 'insert a code snippet', cs_dir, '' )
+		else
+			let snippetfile = s:UserInput ( 'insert snippet ', cs_dir, 'file' )
+		endif
+
+		" insert snippet
+		if filereadable(snippetfile)
+			let linesread = line('$')
+
+			let old_cpoptions = &cpoptions            " prevent the alternate buffer from being set to this files
+			setlocal cpoptions-=a
+
+			exe 'read '.snippetfile
+
+			let &cpoptions = old_cpoptions            " restore previous options
+
+			let linesread = line('$') - linesread - 1 " number of lines inserted
+
+			" indent lines
+			if linesread >= 0 && match( snippetfile, '\.\(ni\|noindent\)$' ) < 0
+				silent exe 'normal! ='.linesread.'+'
+			endif
+		endif
+
+		" delete first line if empty
+		if line('.') == 2 && getline(1) =~ '^$'
+			silent exe ':1,1d'
+		endif
+
+	elseif a:action == 'create' || a:action == 'vcreate'
+
+		"-------------------------------------------------------------------------------
+		" action "create" or "vcreate"
+		"-------------------------------------------------------------------------------
+
+		" select file
+		if has('browse') && cs_browse == 'gui'
+			let snippetfile = browse ( 1, 'create a code snippet', cs_dir, '' )
+		else
+			let snippetfile = s:UserInput ( 'create snippet ', cs_dir, 'file' )
+		endif
+
+		" create snippet
+		if ! empty( snippetfile )
+			" new file or overwrite?
+			if ! filereadable( snippetfile ) || confirm( 'File '.snippetfile.' exists! Overwrite? ', "&Cancel\n&No\n&Yes" ) == 3
+				if a:action == 'create' && confirm( 'Write whole file as a snippet? ', "&Cancel\n&No\n&Yes" ) == 3
+					exe 'write! '.fnameescape( snippetfile )
+				elseif a:action == 'vcreate'
+					exe "'<,'>write! ".fnameescape( snippetfile )
+				endif
+			endif
+		endif
+
+	elseif a:action == 'view' || a:action == 'edit'
+
+		"-------------------------------------------------------------------------------
+		" action "view" or "edit"
+		"-------------------------------------------------------------------------------
+		if a:action == 'view' | let saving = 0
+		else                  | let saving = 1 | endif
+
+		" select file
+		if has('browse') && cs_browse == 'gui'
+			let snippetfile = browse ( saving, a:action.' a code snippet', cs_dir, '' )
+		else
+			let snippetfile = s:UserInput ( a:action.' snippet ', cs_dir, 'file' )
+		endif
+
+		" open file
+		if ! empty( snippetfile )
+			exe 'split | '.a:action.' '.fnameescape( snippetfile )
+		endif
+	else
+		call s:ErrorMsg ( 'Unknown action "'.a:action.'".' )
+	endif
+
+	"-------------------------------------------------------------------------------
+	" wrap up
+	"-------------------------------------------------------------------------------
+
+	" restore option 'browsefilter'
+	if has( 'browsefilter' ) && exists( 'b:browsefilter' )
+		let b:browsefilter = browsefilter_save
+	endif
+
+endfunction   " ----------  end of function s:CodeSnippet  ----------
+
+"-------------------------------------------------------------------------------
+" s:Hardcopy : Generate PostScript document from current buffer.   {{{2
+"
+" Under windows, display the printer dialog.
+"
+" Parameters:
+"   mode - "n" : print complete buffer, "v" : print marked area (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:Hardcopy ( mode )
+
+	let outfile = expand("%:t")
+
+	" check the buffer
+	if ! s:MSWIN && empty ( outfile )
+		return s:ImportantMsg ( 'The buffer has no filename.' )
+	endif
+
+	" save current settings
+	let printheader_saved = &g:printheader
+
+	let &g:printheader = g:Vim_Printheader
+
+	if s:MSWIN
+		" we simply call hardcopy, which will open the systems printing dialog
+		if a:mode == 'n'
+			silent exe  'hardcopy'
+		elseif a:mode == 'v'
+			silent exe  "'<,'>hardcopy"
+		endif
+	else
+
+		" directory to print to
+		let outdir = getcwd()
+		if filewritable ( outdir ) != 2
+			let outdir = $HOME
+		endif
+
+		let psfile = outdir.'/'.outfile.'.ps'
+
+		if a:mode == 'n'
+			silent exe  'hardcopy > '.psfile
+			call s:ImportantMsg ( 'file "'.outfile.'" printed to "'.psfile.'"' )
+		elseif a:mode == 'v'
+			silent exe  "'<,'>hardcopy > ".psfile
+			call s:ImportantMsg ( 'file "'.outfile.'" (lines '.line("'<").'-'.line("'>").') printed to "'.psfile.'"' )
+		endif
+	endif
+
+	" restore current settings
+	let &g:printheader = printheader_saved
+
+endfunction   " ----------  end of function s:Hardcopy  ----------
+
+" }}}2
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
 " === Module setup ===   {{{1
 "-------------------------------------------------------------------------------
 
@@ -301,7 +494,6 @@ let s:Vim_CreateMapsForHelp = 'no'              " create maps for modifiable hel
 
 let s:Vim_LineEndCommColDefault = 49
 let s:VimStartComment						= '"'
-let s:Vim_Printheader   				= "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
 let s:Vim_TemplateJumpTarget 		= '<+\i\++>\|{+\i\++}\|<-\i\+->\|{-\i\+-}'
 
 "-------------------------------------------------------------------------------
@@ -312,7 +504,6 @@ call s:GetGlobalSetting ( 'Vim_GuiSnippetBrowser' )
 call s:GetGlobalSetting ( 'Vim_LoadMenus' )
 call s:GetGlobalSetting ( 'Vim_RootMenu' )
 call s:GetGlobalSetting ( 'Vim_CreateMapsForHelp' )
-call s:GetGlobalSetting ( 'Vim_Printheader' )
 call s:GetGlobalSetting ( 'Vim_LocalTemplateFile' )
 call s:GetGlobalSetting ( 'Vim_GlobalTemplateFile' )
 call s:GetGlobalSetting ( 'Vim_CustomTemplateFile' )
@@ -321,8 +512,7 @@ call s:GetGlobalSetting ( 'Vim_CreateMenusDelayed' )
 call s:GetGlobalSetting ( 'Vim_LineEndCommColDefault' )
 
 call s:ApplyDefaultSetting ( 'Vim_MapLeader', '' )                " default: do not overwrite 'maplocalleader'
-
-let s:Vim_Printheader = escape( s:Vim_Printheader, ' %' )
+call s:ApplyDefaultSetting ( 'Vim_Printheader', "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N" )
 
 " }}}3
 "-------------------------------------------------------------------------------
@@ -781,12 +971,9 @@ function! s:JumpForward ()
 	return ''
 endfunction    " ----------  end of function s:JumpForward  ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  InitMenus     {{{1
-"   DESCRIPTION:  Initialize menus.
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
+"-------------------------------------------------------------------------------
+" s:InitMenus : Initialize menus.   {{{1
+"-------------------------------------------------------------------------------
 function! s:InitMenus()
 	"
 	if ! has ( 'menu' )
@@ -848,40 +1035,40 @@ function! s:InitMenus()
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------
-	"
+
 	if !empty(s:Vim_CodeSnippets)
-		"
-		exe "anoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>'.esc_mapl.'nr       :call Vim_CodeSnippet("r")<CR>'
-		exe "inoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>'.esc_mapl.'nr  <C-C>:call Vim_CodeSnippet("r")<CR>'
-		exe "anoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw      :call Vim_CodeSnippet("w")<CR>'
-		exe "vnoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Vim_CodeSnippet("wv")<CR>'
-		exe "inoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call Vim_CodeSnippet("w")<CR>'
-		exe "anoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne       :call Vim_CodeSnippet("e")<CR>'
-		exe "inoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call Vim_CodeSnippet("e")<CR>'
+		exe "anoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>'.esc_mapl.'nr       :call <SID>CodeSnippet("insert")<CR>'
+		exe "inoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&read\ code\ snippet<Tab>'.esc_mapl.'nr  <C-C>:call <SID>CodeSnippet("insert")<CR>'
+		exe "anoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw      :call <SID>CodeSnippet("create")<CR>'
+		exe "inoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call <SID>CodeSnippet("create")<CR>'
+		exe "vnoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call <SID>CodeSnippet("vcreate")<CR>'
+		exe "anoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&view\ code\ snippet<Tab>'.esc_mapl.'ne       :call <SID>CodeSnippet("view")<CR>'
+		exe "inoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&view\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call <SID>CodeSnippet("view")<CR>'
+		exe "anoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne       :call <SID>CodeSnippet("edit")<CR>'
+		exe "inoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.&edit\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call <SID>CodeSnippet("edit")<CR>'
 		exe "anoremenu  <silent> ".s:Vim_RootMenu.'.S&nippets.-SepSnippets-                       :'
-		"
 	endif
-	"
+
 	" templates: edit and reload templates, styles
 	call mmtemplates#core#CreateMenus ( 'g:Vim_Templates', s:Vim_RootMenu, 'do_specials', 'specials_menu', 'S&nippets' )
-	"
+
 	"-------------------------------------------------------------------------------
 	" run
 	"-------------------------------------------------------------------------------
-	" 
+
 	let ahead = 'anoremenu <silent> '.s:Vim_RootMenu.'.Run.'
 	let vhead = 'vnoremenu <silent> '.s:Vim_RootMenu.'.Run.'
-	"
-	if	s:MSWIN
-		exe ahead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call Vim_Hardcopy("n")<CR>'
-		exe vhead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call Vim_Hardcopy("v")<CR>'
+
+	if s:MSWIN
+		exe ahead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call <SID>Hardcopy("n")<CR>'
+		exe vhead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call <SID>Hardcopy("v")<CR>'
 	else
-		exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call Vim_Hardcopy("n")<CR>'
-		exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call Vim_Hardcopy("v")<CR>'
+		exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call <SID>Hardcopy("n")<CR>'
+		exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call <SID>Hardcopy("v")<CR>'
 	endif
-	"
+
 	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rs                 :call Vim_Settings(0)<CR>'
-	"
+
  	"-------------------------------------------------------------------------------
  	" help
  	"-------------------------------------------------------------------------------
@@ -895,128 +1082,11 @@ function! s:InitMenus()
 
 endfunction    " ----------  end of function s:InitMenus  ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  Vim_CodeSnippet     {{{1
-"   DESCRIPTION:  read / edit code snippet
-"    PARAMETERS:  mode - r : read, e : edit, w : write file, 
-"                        wv : write marked area
-"       RETURNS:  
-"===============================================================================
-function! Vim_CodeSnippet(mode)
-
-	if isdirectory(s:Vim_CodeSnippets)
-		"
-		" read snippet file, put content below current line and indent
-		"
-		if a:mode == "r"
-			if has("browse") && s:Vim_GuiSnippetBrowser == 'gui'
-				let	l:snippetfile=browse(0,"read a code snippet",s:Vim_CodeSnippets,"")
-			else
-				let	l:snippetfile=input("read snippet ", s:Vim_CodeSnippets, "file" )
-			endif
-			if filereadable(l:snippetfile)
-				let	linesread= line("$")
-				let l:old_cpoptions	= &cpoptions " Prevent the alternate buffer from being set to this files
-				setlocal cpoptions-=a
-				:execute "read ".l:snippetfile
-				let &cpoptions	= l:old_cpoptions		" restore previous options
-				let	linesread= line("$")-linesread-1
-				if linesread>=0 && match( l:snippetfile, '\.\(ni\|noindent\)$' ) < 0
-				endif
-			endif
-			if line(".")==2 && getline(1)=~"^$"
-				silent exe ":1,1d"
-			endif
-		endif
-		"
-		" update current buffer / split window / edit snippet file
-		"
-		if a:mode == "e"
-			if has("browse") && s:Vim_GuiSnippetBrowser == 'gui'
-				let	l:snippetfile	= browse(0,"edit a code snippet",s:Vim_CodeSnippets,"")
-			else
-				let	l:snippetfile=input("edit snippet ", s:Vim_CodeSnippets, "file" )
-			endif
-			if !empty(l:snippetfile)
-				:execute "update! | split | edit ".l:snippetfile
-			endif
-		endif
-		"
-		" write whole buffer into snippet file
-		"
-		if a:mode == "w" || a:mode == "wv"
-			if has("browse") && s:Vim_GuiSnippetBrowser == 'gui'
-				let	l:snippetfile	= browse(0,"write a code snippet",s:Vim_CodeSnippets,"")
-			else
-				let	l:snippetfile=input("write snippet ", s:Vim_CodeSnippets, "file" )
-			endif
-			if !empty(l:snippetfile)
-				if filereadable(l:snippetfile)
-					if confirm("File ".l:snippetfile." exists ! Overwrite ? ", "&Cancel\n&No\n&Yes") != 3
-						return
-					endif
-				endif
-				if a:mode == "w"
-					:execute ":write! ".l:snippetfile
-				else
-					:execute ":*write! ".l:snippetfile
-				endif
-			endif
-		endif
-
-	else
-		echo "code snippet directory ".s:Vim_CodeSnippets." does not exist (please create it)"
-	endif
-endfunction    " ----------  end of function Vim_CodeSnippets  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Vim_Hardcopy     {{{1
-"   DESCRIPTION:  Make PostScript document from current buffer
-"                 MSWIN : display printer dialog
-"    PARAMETERS:  mode - n : print complete buffer, v : print marked area
-"       RETURNS:  
-"===============================================================================
-function! Vim_Hardcopy (mode)
-  let outfile = expand("%")
-  if outfile == ""
-    redraw
-    echohl WarningMsg | echo " no file name " | echohl None
-    return
-  endif
-	let outdir	= getcwd()
-	if filewritable(outdir) != 2
-		let outdir	= $HOME
-	endif
-	if  !s:MSWIN
-		let outdir	= outdir.'/'
-	endif
-  let old_printheader=&printheader
-  exe  ':set printheader='.s:Vim_Printheader
-  " ----- normal mode ----------------
-  if a:mode=="n"
-    silent exe  'hardcopy > '.outdir.outfile.'.ps'
-    if  !s:MSWIN
-      echo 'file "'.outfile.'" printed to "'.outdir.outfile.'.ps"'
-    endif
-  endif
-  " ----- visual mode ----------------
-  if a:mode=="v"
-    silent exe  "*hardcopy > ".outdir.outfile.".ps"
-    if  !s:MSWIN
-      echo 'file "'.outfile.'" (lines '.line("'<").'-'.line("'>").') printed to "'.outdir.outfile.'.ps"'
-    endif
-  endif
-  exe  ':set printheader='.escape( old_printheader, ' %' )
-endfunction   " ---------- end of function  Vim_Hardcopy  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  CreateAdditionalMaps     {{{1
-"   DESCRIPTION:  create additional maps
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
+"-------------------------------------------------------------------------------
+" s:CreateAdditionalMaps : Create additional maps.   {{{1
+"-------------------------------------------------------------------------------
 function! s:CreateAdditionalMaps ()
-	"
+
 	"-------------------------------------------------------------------------------
 	" settings - local leader
 	"-------------------------------------------------------------------------------
@@ -1026,7 +1096,7 @@ function! s:CreateAdditionalMaps ()
 		endif
 		let g:maplocalleader = g:Vim_MapLeader
 	endif
-	"
+
 	"-------------------------------------------------------------------------------
 	" comments
 	"-------------------------------------------------------------------------------
@@ -1063,28 +1133,37 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------
-	 noremap    <buffer>  <silent>  <LocalLeader>nr         :call Vim_CodeSnippet("r")<CR>
-	 noremap    <buffer>  <silent>  <LocalLeader>nw         :call Vim_CodeSnippet("w")<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>nw    <Esc>:call Vim_CodeSnippet("wv")<CR>
-	 noremap    <buffer>  <silent>  <LocalLeader>ne         :call Vim_CodeSnippet("e")<CR>
-	"
-	inoremap    <buffer>  <silent>  <LocalLeader>nr    <Esc>:call Vim_CodeSnippet("r")<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>nw    <Esc>:call Vim_CodeSnippet("w")<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>ne    <Esc>:call Vim_CodeSnippet("e")<CR>
-	"
+
+	nnoremap    <buffer>  <silent>  <LocalLeader>nr         :call <SID>CodeSnippet("insert")<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>nr    <Esc>:call <SID>CodeSnippet("insert")<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>nr    <Esc>:call <SID>CodeSnippet("insert")<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>nw         :call <SID>CodeSnippet("create")<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>nw    <Esc>:call <SID>CodeSnippet("create")<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>nw    <Esc>:call <SID>CodeSnippet("vcreate")<CR>
+
+	nnoremap    <buffer>  <silent>  <LocalLeader>nv         :call <SID>CodeSnippet("view")<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>nv    <Esc>:call <SID>CodeSnippet("view")<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>nv    <Esc>:call <SID>CodeSnippet("view")<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>ne         :call <SID>CodeSnippet("edit")<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>ne    <Esc>:call <SID>CodeSnippet("edit")<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>ne    <Esc>:call <SID>CodeSnippet("edit")<CR>
+
 	"-------------------------------------------------------------------------------
 	"   run
 	"-------------------------------------------------------------------------------
-	nnoremap    <buffer>  <silent>  <LocalLeader>rh        :call Vim_Hardcopy("n")<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>rh   <C-C>:call Vim_Hardcopy("v")<CR>
-	"
+	nnoremap    <buffer>  <silent>  <LocalLeader>rh        :call <SID>Hardcopy("n")<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rh   <C-C>:call <SID>Hardcopy("n")<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>rh   <C-C>:call <SID>Hardcopy("v")<CR>
+
+	nnoremap    <buffer>  <silent>  <LocalLeader>rs        :call Vim_Settings(0)<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rs   <C-C>:call Vim_Settings(0)<CR>
+
 	"-------------------------------------------------------------------------------
 	"   help
 	"-------------------------------------------------------------------------------
-	nnoremap    <buffer>  <silent>  <LocalLeader>rs         :call Vim_Settings(0)<CR>
 	nnoremap    <buffer>  <silent>  <LocalLeader>hk         :call <SID>KeywordHelp()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>hk    <C-C>:call <SID>KeywordHelp()<CR>
-	 noremap    <buffer>  <silent>  <LocalLeader>hp         :call <SID>HelpPlugin()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>hp         :call <SID>HelpPlugin()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>hp    <C-C>:call <SID>HelpPlugin()<CR>
 
 	if has("gui_running")
@@ -1115,13 +1194,15 @@ function! s:CreateAdditionalMaps ()
 	call mmtemplates#core#CreateMaps ( 'g:Vim_Templates', g:Vim_MapLeader, 'do_special_maps', 'do_del_opt_map' ) |
 	"
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
+
+"-------------------------------------------------------------------------------
+" Vim_Settings : Print the plug-in settings.   {{{1
 "
-"===  FUNCTION  ================================================================
-"          NAME:  Vim_Settings     {{{1
-"   DESCRIPTION:  Display plugin settings
-"    PARAMETERS:  -
-"       RETURNS:  
-"===============================================================================
+" Parameters:
+"   verbose - 0 : echo, 1 : echo verbose, 2 : write to buffer (integer)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
 function! Vim_Settings ( verbose )
 	"
 	if     s:MSWIN | let sys_name = 'Windows'

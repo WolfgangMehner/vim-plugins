@@ -359,25 +359,25 @@ the file(s) and to rebuild the internal representation of the templates.
 1.8.1 Hardcopy                                           *vimsupport-hardcopy*
 --------------
 
-Generates a PostScript file from the whole buffer or from a marked region.
-The hardcopy goes to the current working directory.  If the buffer contains
+Generates a PostScript file from the whole buffer or from a marked region. The
+hardcopy is written to the current working directory. If the buffer contains
 documentation or other material from non-writable directories the hardcopy
 goes to the HOME directory. The output destination will be shown in a message.
 
 The print header contains date and time according the current locale. The
-definition used is
-
-  let s:Vim_Printheader = "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
-
-The current locale can be overwritten by changing the language, e.g.
-
+definition used is:
+>
+  let g:Vim_Printheader = "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
+<
+The current locale can be overwritten by changing the language, e.g. :
+>
   :language C
-
+<
 or by setting a global variable in the file '.vimrc', e.g. :
-
+>
   let g:Vim_Printheader = "%<%f%h%m%<  %=%{strftime('%x %X')}     SEITE %N"
-
-See :h printheader and :h strftime()  for more details.
+<
+See |printheader| and |strftime()| for more details.
 
 1.8.2 Settings                                           *vimsupport-settings*
 --------------
