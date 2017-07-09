@@ -48,7 +48,7 @@ if exists("g:VimSupportVersion") || &cp
 	finish
 endif
 
-let g:VimSupportVersion= "2.5pre"                  " version number of this script; do not change
+let g:VimSupportVersion= "2.4.1beta"                  " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " === Auxiliary functions ===   {{{1
@@ -490,6 +490,8 @@ let s:Vim_MenuVisible				= 'no'
 let s:Vim_GuiSnippetBrowser = 'gui'             " gui / commandline
 let s:Vim_LoadMenus         = 'yes'             " load the menus?
 let s:Vim_RootMenu          = '&Vim'            " name of the root menu
+let s:Vim_Ctrl_j            = 'yes'
+let s:Vim_Ctrl_d            = 'yes'
 let s:Vim_CreateMapsForHelp = 'no'              " create maps for modifiable help buffers as well
 
 let s:Vim_LineEndCommColDefault = 49
@@ -507,6 +509,8 @@ endif
 call s:GetGlobalSetting ( 'Vim_GuiSnippetBrowser' )
 call s:GetGlobalSetting ( 'Vim_LoadMenus' )
 call s:GetGlobalSetting ( 'Vim_RootMenu' )
+call s:GetGlobalSetting ( 'Vim_Ctrl_j' )
+call s:GetGlobalSetting ( 'Vim_Ctrl_d' )
 call s:GetGlobalSetting ( 'Vim_CreateMapsForHelp' )
 call s:GetGlobalSetting ( 'Vim_LocalTemplateFile' )
 call s:GetGlobalSetting ( 'Vim_GlobalTemplateFile' )
@@ -1189,14 +1193,17 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" templates
 	"-------------------------------------------------------------------------------
+	if s:Vim_Ctrl_j == 'yes'
+		nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=<SID>JumpForward()<CR>
+		inoremap  <buffer>  <silent>  <C-j>  <C-G>u<C-R>=<SID>JumpForward()<CR>
+	endif
 
-	nnoremap    <buffer>  <silent>  <C-j>       i<C-R>=<SID>JumpForward()<CR>
-	inoremap    <buffer>  <silent>  <C-j>  <C-G>u<C-R>=<SID>JumpForward()<CR>
+	if s:Vim_Ctrl_d == 'yes'
+		call mmtemplates#core#CreateMaps ( 'g:Vim_Templates', g:Vim_MapLeader, 'do_special_maps', 'do_del_opt_map' )
+	else
+		call mmtemplates#core#CreateMaps ( 'g:Vim_Templates', g:Vim_MapLeader, 'do_special_maps' )
+	endif
 
-	" ----------------------------------------------------------------------------
-	"
-	call mmtemplates#core#CreateMaps ( 'g:Vim_Templates', g:Vim_MapLeader, 'do_special_maps', 'do_del_opt_map' ) |
-	"
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 
 "-------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-README for vim-support.vim (Version 2.5pre) / July 08 2017
+README for vim-support.vim (Version 2.4.1beta) / July 09 2017
 ================================================================================
 
 [INSTALLATION][sec_install]
@@ -177,8 +177,10 @@ RELEASE NOTES
 ================================================================================
   [sec_release]: #release-notes
 
-RELEASE NOTES FOR VERSION 2.5pre
+RELEASE NOTES FOR VERSION 2.4.1beta
 ----------------------------------------------------------------------
+- Add configuration variables 'g:Vim_Ctrl_j' and 'g:Vim_Ctrl_d' to control the
+  creation of the CTRL+J and CTRL+D maps.
 - Minor changes.
 
 

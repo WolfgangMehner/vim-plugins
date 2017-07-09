@@ -1,8 +1,8 @@
-*vimsupport.txt*                 Vim Support                       Apr 17 2017
+*vimsupport.txt*                 Vim Support                       Jul 09 2017
 
 Vim Support                                         *vim-support* *vimsupport*
 
-                             Plug-in version 2.5pre
+                            Plug-in version 2.4.1beta
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
@@ -589,6 +589,8 @@ g:Vim_LoadMenus             'yes'
 g:Vim_CreateMenusDelayed    'no'
 g:Vim_RootMenu              '&Vim'
 g:Vim_GuiSnippetBrowser     'gui'
+g:Vim_Ctrl_j                'yes'
+g:Vim_Ctrl_d                'yes'
 g:Vim_LineEndCommColDefault 49
 g:Vim_Printheader           '%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N'
                              'vim.exe'     (Windows)
@@ -607,6 +609,8 @@ g:Vim_CreateMenusDelayed    Load menus only with filetype 'vim'
 g:Vim_RootMenu              The name of the root menu entry of this plugin
                              (see |vimsupport-custom-root|).
 g:Vim_GuiSnippetBrowser     code snippet browser: 'gui', 'commandline'
+g:Vim_Ctrl_j                hotkey Ctrl-J 'yes'/'no' (see |vimsupport-Ctrl-j|)
+g:Vim_Ctrl_d                hotkey Ctrl-D 'yes'/'no' (see |vimsupport-Ctrl-j|)
 
 g:Vim_LineEndCommColDefault default starting column for line end comments
 g:Vim_Printheader           hardcopy header format
