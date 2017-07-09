@@ -424,9 +424,9 @@ let s:Vim_LocalTemplateFile  = ''
 let s:Vim_CustomTemplateFile = ''                " the custom templates
 let s:Vim_FilenameEscChar    = ''
 
-if	s:MSWIN
-  " ==========  MS Windows  ======================================================
-	"
+if s:MSWIN
+	" ==========  MS Windows  ======================================================
+
 	let s:plugin_dir = substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
 
 	" change '\' to '/' to avoid interpretation as escape character
@@ -495,6 +495,10 @@ let s:Vim_CreateMapsForHelp = 'no'              " create maps for modifiable hel
 let s:Vim_LineEndCommColDefault = 49
 let s:VimStartComment						= '"'
 let s:Vim_TemplateJumpTarget 		= '<+\i\++>\|{+\i\++}\|<-\i\+->\|{-\i\+-}'
+
+if ! exists ( 's:MenuVisible' )
+	let s:MenuVisible = 0                         " menus are not visible at the moment
+endif
 
 "-------------------------------------------------------------------------------
 " Get user configuration   {{{3
@@ -857,15 +861,15 @@ function! s:RereadTemplates ()
 	"-------------------------------------------------------------------------------
 	" setup template library
 	"-------------------------------------------------------------------------------
- 	let g:Vim_Templates = mmtemplates#core#NewLibrary ( 'api_version', '1.0' )
-	"
+	let g:Vim_Templates = mmtemplates#core#NewLibrary ( 'api_version', '1.0' )
+
 	" mapleader
 	if empty ( g:Vim_MapLeader )
 		call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Mapleader', '\' )
 	else
 		call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Mapleader', g:Vim_MapLeader )
 	endif
-	"
+
 	" some metainfo
 	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Wizard::PluginName',   'Vim' )
 	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Wizard::FiletypeName', 'Vim' )
@@ -873,15 +877,15 @@ function! s:RereadTemplates ()
 	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Wizard::FileCustomWithPersonal', s:plugin_dir.'/vim-support/rc/custom_with_personal.templates' )
 	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Wizard::FilePersonal',           s:plugin_dir.'/vim-support/rc/personal.templates' )
 	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::Wizard::CustomFileVariable',     'g:Vim_CustomTemplateFile' )
-	"
+
 	" maps: special operations
 	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::RereadTemplates::Map', 'ntr' )
 	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::ChooseStyle::Map',     'nts' )
 	call mmtemplates#core#Resource ( g:Vim_Templates, 'set', 'property', 'Templates::SetupWizard::Map',     'ntw' )
-	"
+
 	" syntax: comments
 	call mmtemplates#core#ChangeSyntax ( g:Vim_Templates, 'comment', '§' )
-	"
+
 	"-------------------------------------------------------------------------------
 	" load template library
 	"-------------------------------------------------------------------------------
@@ -1251,61 +1255,77 @@ function! Vim_Settings ( verbose )
 		echo txt
 	endif
 endfunction    " ----------  end of function Vim_Settings ----------
-"
-"------------------------------------------------------------------------------
-"  Vim_CreateGuiMenus     {{{1
-"------------------------------------------------------------------------------
-function! Vim_CreateGuiMenus ()
-	if s:Vim_MenuVisible == 'no'
-		aunmenu <silent> &Tools.Load\ Vim\ Support
-		anoremenu   <silent> 40.1000 &Tools.-SEP100- :
-		anoremenu   <silent> 40.1170 &Tools.Unload\ Vim\ Support :call Vim_RemoveGuiMenus()<CR>
-		"
-		call s:RereadTemplates()
-		call s:InitMenus () 
-		"
-		let s:Vim_MenuVisible = 'yes'
-	endif
-endfunction    " ----------  end of function Vim_CreateGuiMenus  ----------
-"
-"------------------------------------------------------------------------------
-"  Vim_ToolMenu     {{{1
-"------------------------------------------------------------------------------
-function! Vim_ToolMenu ()
-	anoremenu   <silent> 40.1000 &Tools.-SEP100- :
-	anoremenu   <silent> 40.1170 &Tools.Load\ Vim\ Support :call Vim_CreateGuiMenus()<CR>
-endfunction    " ----------  end of function Vim_ToolMenu  ----------
 
-"------------------------------------------------------------------------------
-"  Vim_RemoveGuiMenus     {{{1
-"------------------------------------------------------------------------------
-function! Vim_RemoveGuiMenus ()
-	if s:Vim_MenuVisible == 'yes'
-		exe "aunmenu <silent> ".s:Vim_RootMenu
-		"
-		aunmenu <silent> &Tools.Unload\ Vim\ Support
-		call Vim_ToolMenu()
-		"
-		let s:Vim_MenuVisible = 'no'
+"-------------------------------------------------------------------------------
+" s:ToolMenu : Add or remove tool menu entries.   {{{1
+"-------------------------------------------------------------------------------
+function! s:ToolMenu( action )
+
+	if ! has ( 'menu' )
+		return
 	endif
-endfunction    " ----------  end of function Vim_RemoveGuiMenus  ----------
+
+	if a:action == 'setup'
+		anoremenu <silent> 40.1000 &Tools.-SEP100- :
+		anoremenu <silent> 40.1170 &Tools.Load\ Vim\ Support   :call <SID>AddMenus()<CR>
+	elseif a:action == 'load'
+		aunmenu   <silent> &Tools.Load\ Vim\ Support
+		anoremenu <silent> 40.1170 &Tools.Unload\ Vim\ Support :call <SID>RemoveMenus()<CR>
+	elseif a:action == 'unload'
+		aunmenu   <silent> &Tools.Unload\ Vim\ Support
+		anoremenu <silent> 40.1170 &Tools.Load\ Vim\ Support   :call <SID>AddMenus()<CR>
+		exe 'aunmenu <silent> '.s:Vim_RootMenu
+	endif
+
+endfunction    " ----------  end of function s:ToolMenu  ----------
+
+"-------------------------------------------------------------------------------
+" s:AddMenus : Add menus.   {{{1
+"-------------------------------------------------------------------------------
+function! s:AddMenus()
+	if s:MenuVisible == 0
+		" the menu is becoming visible
+		let s:MenuVisible = 2
+		" make sure the templates are loaded
+		call s:RereadTemplates ()
+		" initialize if not existing
+		call s:ToolMenu ( 'load' )
+		call s:InitMenus ()
+		" the menu is now visible
+		let s:MenuVisible = 1
+	endif
+endfunction    " ----------  end of function s:AddMenus  ----------
+
+"-------------------------------------------------------------------------------
+" s:RemoveMenus : Remove menus.   {{{1
+"-------------------------------------------------------------------------------
+function! s:RemoveMenus()
+	if s:MenuVisible == 1
+		" destroy if visible
+		call s:ToolMenu ( 'unload' )
+		" the menu is now invisible
+		let s:MenuVisible = 0
+	endif
+endfunction    " ----------  end of function s:RemoveMenus  ----------
 
 "-------------------------------------------------------------------------------
 " === Setup: Templates, toolbox and menus ===   {{{1
 "-------------------------------------------------------------------------------
 
-call Vim_ToolMenu()
+" tool menu entry
+call s:ToolMenu ( 'setup' )
 
 if s:Vim_LoadMenus == 'yes' && s:Vim_CreateMenusDelayed == 'no'
-	call Vim_CreateGuiMenus()
+	call s:AddMenus ()
 endif
-"
+
 if has( 'autocmd' )
 
+	" create menues and maps
   autocmd FileType *
         \ if &filetype == 'vim' || ( &filetype == 'help' && &modifiable == 1 && s:Vim_CreateMapsForHelp == 'yes' ) |
         \   if ! exists( 'g:Vim_Templates' ) |
-        \     if s:Vim_LoadMenus == 'yes' | call Vim_CreateGuiMenus ()  |
+        \     if s:Vim_LoadMenus == 'yes' | call s:AddMenus ()  |
         \     else                        | call s:RereadTemplates () |
         \     endif |
         \   endif |
