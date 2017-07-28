@@ -474,6 +474,7 @@ if s:MSWIN
 	let s:Latex_DviPdf      = 'dvipdfm.exe'
 	let s:Latex_DviPng      = 'dvipng.exe'
 	let s:Latex_DviPs       = 'dvips.exe'
+	let s:Latex_EpsPdf      = ''
 	let s:Latex_PdfPng      = ''
 	let s:Latex_PsPdf       = 'ps2pdf.exe'
 	"
@@ -521,6 +522,7 @@ else
 	let s:Latex_DviPdf      = 'dvipdft'
 	let s:Latex_DviPng      = 'dvipng'
 	let s:Latex_DviPs       = 'dvips'
+	let s:Latex_EpsPdf      = 'ps2pdf -dEPSCrop'
 	let s:Latex_PdfPng      = 'convert'
 	let s:Latex_PsPdf       = 'ps2pdf'
 	"
@@ -604,6 +606,7 @@ call s:GetGlobalSetting( 'Latex_DviPs' )
 call s:GetGlobalSetting( 'Latex_DviViewer' )
 call s:GetGlobalSetting( 'Latex_GlobalTemplateFile' )
 call s:GetGlobalSetting( 'Latex_CodeSnippets' )
+call s:GetGlobalSetting( 'Latex_EpsPdf' )
 call s:GetGlobalSetting( 'Latex_GuiSnippetBrowser' )
 call s:GetGlobalSetting( 'Latex_InsertFileProlog' )
 call s:GetGlobalSetting( 'Latex_Latex' )
@@ -652,6 +655,7 @@ let s:Latex_ConverterCall = {
 			\ 'dvi-pdf' 	: [ s:Latex_DviPdf , "no" ],
 			\ 'dvi-png'		: [ s:Latex_DviPng , "no" ],
 			\ 'dvi-ps'		: [ s:Latex_DviPs  , "no" ],
+			\ 'eps-pdf'		: [ s:Latex_EpsPdf , "no" ],
 			\ 'pdf-png'		: [ s:Latex_PdfPng , "yes"],
 			\ 'ps-pdf'		: [ s:Latex_PsPdf  , "no" ],
 			\ }
@@ -1417,64 +1421,65 @@ function! s:View ( args )
 endfunction    " ----------  end of function s:View ----------
 
 "-------------------------------------------------------------------------------
-" s:ConvertInput : Cmd-line support for conversions.   {{{1
-"
-" Choose a conversion on the command-line, and run it on the current buffer.
-"-------------------------------------------------------------------------------
-function! s:ConvertInput ()
-	let retval = s:UserInput ( "start converter (tab exp.): ", '', 'customlist', sort( keys( s:Latex_ConverterCall ) ) )
-	redraw!
-	call s:Conversions( retval )
-	return
-endfunction    " ----------  end of function s:ConvertInput  ----------
-
-"-------------------------------------------------------------------------------
 " s:Conversions : Perform a conversion.   {{{1
 "
-" Perform the conversion s:Latex_ConverterCall[ <format> ] .
+" Perform the conversion s:Latex_ConverterCall[ <format> ] on the file
+" <filename>.
 "
 " Parameters:
-"   format - the conversion (string)
+"   filename - the file to convert (string, can be empty)
+"   format - the conversion (string, can be empty)
 "-------------------------------------------------------------------------------
-function! s:Conversions ( format )
-	if &filetype != 'tex'
-		echomsg	'The filetype of this buffer is not "tex".'
-		return
-	endif
-	if a:format == ''
-		return
+function! s:Conversions ( filename, format )
+"	if &filetype != 'tex'
+"		echomsg	'The filetype of this buffer is not "tex".'
+"		return
+"	endif
+
+	let filename = a:filename
+	let convert  = a:format
+
+	" handle the conversion
+	if convert == ''
+		let convert = s:UserInput ( "start converter (tab exp.): ", '', 'customlist', sort( keys( s:Latex_ConverterCall ) ) )
 	endif
 
-	if !has_key( s:Latex_ConverterCall, a:format )
-		echomsg 'Converter "'.a:format.'" does not exist.'
-		return
+	if ! has_key( s:Latex_ConverterCall, convert )
+		return s:WarningMsg ( 'Converter "'.convert.'" does not exist.' )
 	endif
 
-	let	converter	= s:Latex_ConverterCall[a:format][0]
-	if !executable( split(converter)[0] )
-		echomsg 'Converter "'.converter.'" does not exist or its name is not unique.'
-		return
+	let converter = s:Latex_ConverterCall[convert][0]
+	if converter == ''
+		return s:WarningMsg ( 'Converter "'.convert.'" not properly configured.' )
+	elseif ! executable( split(converter)[0] )
+		return s:WarningMsg ( 'Converter "'.converter.'" does not exist or its name is not unique.' )
 	endif
 
-	let	l:currentbuffer	= bufname("%")
-	exe	":cclose"
-	let	Sou		= expand("%")											" name of the file in the current buffer
-	let SouEsc= escape( Sou, s:escfilename )
+	cclose
 
-	let source   = expand("%:r").'.'.split( a:format, '-' )[0]
-	let logfile  = expand("%:r").'.conversion.log'
-	let target   = ''
-	if s:Latex_ConverterCall[a:format][1] == 'yes'
-		let target   = expand("%:r").'.'.split( a:format, '-' )[1]
+	" handle the input file
+	if filename == ''
+		let filename = expand("%")
 	endif
-""  silent exe '!'.s:Latex_ConverterCall[a:format][0].' '.source.' '.target.' > '.logfile
-	silent exe '!'.converter.' '.source.' '.target.' > '.logfile
+	let fileroot = fnamemodify ( filename, ':r' )
+
+	let source  = fileroot.'.'.split( convert, '-' )[0]
+	let logfile = fileroot.'.conversion.log'
+	let target  = ''
+	if s:Latex_ConverterCall[convert][1] == 'yes'
+		let target = shellescape ( fileroot.'.'.split( convert, '-' )[1] )
+	endif
+
+	silent exe '!'.converter.' '.shellescape( source ).' '.target.' > '.shellescape( logfile )
+
 	if v:shell_error
-		echohl WarningMsg
-		echo 'Conversion '.a:format.' reported errors. Please see file "'.logfile.'" !'
-		echohl None
+		call s:Redraw('r!','r')                     " redraw after cclose, before echoing
+		call s:WarningMsg (
+					\ 'Conversion '.convert.' reported errors.',
+					\ 'Please check the logfile: '.logfile )
 	else
-		echo 'Conversion '.a:format.' done.'
+		call s:Redraw('r!','r')                     " redraw after cclose, before echoing
+		call s:ImportantMsg ( 'Conversion '.convert.' done.' )
 	endif
 endfunction    " ----------  end of function s:Conversions  ----------
 
@@ -1857,9 +1862,9 @@ function! s:CreateAdditionalLatexMaps ()
 	vnoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call <SID>Hardcopy("v")<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call <SID>Hardcopy("n")<CR>
 	"
-	 noremap  <buffer>  <silent>  <LocalLeader>rc        :call <SID>ConvertInput()<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>rc   <C-C>:call <SID>ConvertInput()<CR>
-	vnoremap  <buffer>  <silent>  <LocalLeader>rc   <C-C>:call <SID>ConvertInput()<CR>
+	 noremap  <buffer>  <silent>  <LocalLeader>rc        :call <SID>Conversions("","")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>rc   <C-C>:call <SID>Conversions("","")<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>rc   <C-C>:call <SID>Conversions("","")<CR>
 	"
 	"-------------------------------------------------------------------------------
 	" tool box
@@ -2146,16 +2151,18 @@ function! s:InitMenus()
 	exe ihead.'View.&PS<Tab>'.esc_mapl.'rps    <C-C>:call <SID>View("ps" )<CR>'
 
 	call mmtemplates#core#CreateMenus ( 'g:Latex_Templates', s:Latex_RootMenu, 'sub_menu', 'Run'.'.&Convert<TAB>'.esc_mapl.'rc' )
-	exe ahead.'Convert.DVI->PDF                               :call <SID>Conversions( "dvi-pdf")<CR>'
-	exe ihead.'Convert.DVI->PDF                          <C-C>:call <SID>Conversions( "dvi-pdf")<CR>'
-	exe ahead.'Convert.DVI->PS                                :call <SID>Conversions( "dvi-ps" )<CR>'
-	exe ihead.'Convert.DVI->PS                           <C-C>:call <SID>Conversions( "dvi-ps" )<CR>'
-	exe ahead.'Convert.DVI->PNG                               :call <SID>Conversions( "dvi-png")<CR>'
-	exe ihead.'Convert.DVI->PNG                          <C-C>:call <SID>Conversions( "dvi-png")<CR>'
-	exe ahead.'Convert.PDF->PNG                               :call <SID>Conversions( "pdf-png")<CR>'
-	exe ihead.'Convert.PDF->PNG                          <C-C>:call <SID>Conversions( "pdf-png")<CR>'
-	exe ahead.'Convert.PS->PDF                                :call <SID>Conversions( "ps-pdf" )<CR>'
-	exe ihead.'Convert.PS->PDF                           <C-C>:call <SID>Conversions( "ps-pdf" )<CR>'
+	exe ahead.'Convert.DVI->PDF                               :call <SID>Conversions("","dvi-pdf")<CR>'
+	exe ihead.'Convert.DVI->PDF                          <C-C>:call <SID>Conversions("","dvi-pdf")<CR>'
+	exe ahead.'Convert.DVI->PS                                :call <SID>Conversions("","dvi-ps" )<CR>'
+	exe ihead.'Convert.DVI->PS                           <C-C>:call <SID>Conversions("","dvi-ps" )<CR>'
+	exe ahead.'Convert.DVI->PNG                               :call <SID>Conversions("","dvi-png")<CR>'
+	exe ihead.'Convert.DVI->PNG                          <C-C>:call <SID>Conversions("","dvi-png")<CR>'
+	exe ahead.'Convert.EPS->PDF                               :call <SID>Conversions("","eps-pdf")<CR>'
+	exe ihead.'Convert.EPS->PDF                          <C-C>:call <SID>Conversions("","eps-pdf")<CR>'
+	exe ahead.'Convert.PDF->PNG                               :call <SID>Conversions("","pdf-png")<CR>'
+	exe ihead.'Convert.PDF->PNG                          <C-C>:call <SID>Conversions("","pdf-png")<CR>'
+	exe ahead.'Convert.PS->PDF                                :call <SID>Conversions("","ps-pdf" )<CR>'
+	exe ihead.'Convert.PS->PDF                           <C-C>:call <SID>Conversions("","ps-pdf" )<CR>'
 
 	exe ahead.'-SEP1-                            :'
 	exe ahead.'run\ make&glossaries<Tab>'.esc_mapl.'rmg                  :call <SID>Makeglossaries("")<CR>'
@@ -2391,6 +2398,7 @@ command! -nargs=? -complete=file                       LatexBibtex          call
 command! -nargs=? -complete=file                       LatexCheck           call <SID>Lacheck(<q-args>)
 command! -nargs=? -complete=file                       LatexMakeglossaries  call <SID>Makeglossaries(<q-args>)
 command! -nargs=? -complete=file                       LatexMakeindex       call <SID>Makeindex(<q-args>)
+command! -nargs=? -complete=file                       LatexConvert         call <SID>Conversions(<q-args>,'')
 command! -nargs=* -complete=file                       LatexView            call <SID>View(<q-args>)
 
 command! -nargs=0                                      LatexErrors      call <SID>BackgroundErrors()

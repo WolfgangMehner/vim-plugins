@@ -1,4 +1,4 @@
-*latexsupport.txt*              LaTeX Support                      Apr 18 2017
+*latexsupport.txt*              LaTeX Support                      Jul 28 2017
 
 LaTeX Support                                     *latex-support* *latexsupport*
 
@@ -367,6 +367,7 @@ also be used to set different maps in the ftplugin.
   *:LatexMakeglossaries* [<base>]  run makeglossaries
   *:LatexMakeindex* [<idx-file>]   run makeindex
   *:LatexView* ...                 view an external document
+  *:LatexConvert* [<doc>]          convert a document
  ----------------------------------------------------------------------------
 
 To run the typesetter for the tex file in the current buffer, use the map ´rr ,
@@ -414,6 +415,8 @@ editing "myfile.tex" in the current buffer, then the defaults are as follows:
     (with typesetter *tex)
   :LatexView                               myfile.pdf       always (forked)
     (with typesetter *latex)
+  :LatexConvert                            myfile.FROM
+    (the default name depends on the conversion operation: FROM-TO)
  ----------------------------------------------------------------------------
 
 Some commands use background processing if it has been set as the processing
