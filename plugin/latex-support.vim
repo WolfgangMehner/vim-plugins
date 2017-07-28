@@ -377,6 +377,8 @@ let s:Latex_Processing            = 'foreground'
 let s:Latex_UseToolbox            = 'yes'
 call s:ApplyDefaultSetting ( 'Latex_UseTool_make', 'yes' )
 
+let s:Latex_MainDocument          = ''
+
 if ! exists ( 's:MenuVisible' )
 	let s:MenuVisible = 0                        " menus are not visible at the moment
 endif
@@ -864,6 +866,38 @@ endfunction    " ----------  end of function s:BackgroundErrors  ----------
 "-------------------------------------------------------------------------------
 
 "-------------------------------------------------------------------------------
+" s:SetMainDocument : Set the main document.   {{{1
+"
+" Passing an empty string as 'filename' resets the option, and the filenames
+" are taken from the current buffer again.
+"
+" Parameters:
+"   filename - the new main document (string)
+"   echo_only - if true, only echo the current setting (integer)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:SetMainDocument ( filename, echo_only )
+
+	if a:echo_only
+		echo s:Latex_MainDocument
+		return
+	endif
+
+	let new_main = expand ( a:filename )
+
+	if new_main == ''
+		let s:Latex_MainDocument = ''
+	elseif ! filereadable ( new_main )
+		return s:ErrorMsg ( '"'.new_main.'" is not readable, nothing set.' )
+	else
+		let new_main = fnamemodify ( new_main, ':p' )
+		let s:Latex_MainDocument = new_main
+	endif
+
+endfunction    " ----------  end of function s:SetMainDocument  ----------
+
+"-------------------------------------------------------------------------------
 " s:Compile : Run the typesetter.   {{{1
 "
 " Parameters:
@@ -877,9 +911,17 @@ function! s:Compile ( args )
 		return s:ErrorMsg ( 'Typesetter "'.typesetter.'" does not exist or its name is not unique.' )
 	endif
 
+	let dir = ''
+
 	" get the name of the source file
 	if a:args == ''
-		let source = expand("%")                    " name of the file in the current buffer
+		if s:Latex_MainDocument != ''
+			let source = s:Latex_MainDocument         " name of the main document
+			let dir    = fnamemodify ( source, ':p:h' )
+			exe 'lchdir '.fnameescape( dir )
+		else
+			let source = expand("%")                  " name of the file in the current buffer
+		endif
 	else
 		let source = a:args
 	endif
@@ -891,38 +933,47 @@ function! s:Compile ( args )
 
 	cclose
 
-	if s:Latex_Processing == 'background' && has ( 'job' )
-		if exists ( 's:BackgroundJob' )
-			return s:WarningMsg ( 'Job "'.s:BackgroundType.'" still running.' )
+	try
+		if s:Latex_Processing == 'background' && has ( 'job' )
+			if exists ( 's:BackgroundJob' )
+				return s:WarningMsg ( 'Job "'.s:BackgroundType.'" still running.' )
+			endif
+
+			let s:BackgroundType   = s:Latex_Typesetter
+			let s:BackgroundStatus = -1
+			let s:BackgroundOutput = []
+
+			let s:BackgroundJob = job_start (
+						\ typesettercall.' "'.( source ).'"', {
+						\ 'callback' : '<SNR>'.s:SID().'_BackgroundCB_IO',
+						\ 'exit_cb'  : '<SNR>'.s:SID().'_BackgroundCB_Exit'
+						\ } )
+
+			call s:ImportantMsg ( 'Starting "'.s:Latex_Typesetter.'" in background.' )
+
+			return
 		endif
 
-		let s:BackgroundType   = s:Latex_Typesetter
-		let s:BackgroundStatus = -1
-		let s:BackgroundOutput = []
+		" save current settings
+		let makeprg_saved = &l:makeprg
+		let errorf_saved  = &l:errorformat
 
-		let s:BackgroundJob = job_start (
-					\ typesettercall.' "'.( source ).'"', {
-					\ 'callback' : '<SNR>'.s:SID().'_BackgroundCB_IO',
-					\ 'exit_cb'  : '<SNR>'.s:SID().'_BackgroundCB_Exit'
-					\ } )
+		" run typesetter
+		let &l:makeprg     = typesettercall
+		let &l:errorformat = s:Latex_LatexErrorf
 
-		call s:ImportantMsg ( 'Starting "'.s:Latex_Typesetter.'" in background.' )
-		return
-	endif
+		exe "make ".shellescape ( source )
 
-	" save current settings
-	let makeprg_saved = &l:makeprg
-	let errorf_saved  = &l:errorformat
+		" restore current settings
+		let &l:makeprg     = makeprg_saved
+		let &l:errorformat = errorf_saved
 
-	" run typesetter
-	let &l:makeprg     = typesettercall
-	let &l:errorformat = s:Latex_LatexErrorf
-
-	exe "make ".shellescape ( source )
-
-	" restore current settings
-	let &l:makeprg     = makeprg_saved
-	let &l:errorformat = errorf_saved
+	finally
+		" jump back to the old working directory
+		if dir != ''
+			lchdir -
+		endif
+	endtry
 
 	" open error window if necessary
 	botright cwindow
@@ -1645,6 +1696,9 @@ function! s:CreateAdditionalLatexMaps ()
    noremap  <buffer>  <silent>  <LocalLeader>rla        :call <SID>Lacheck("")<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rla   <C-C>:call <SID>Lacheck("")<CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>rla   <C-C>:call <SID>Lacheck("")<CR>
+   noremap  <buffer>            <LocalLeader>rsd        :LatexMainDoc<SPACE>
+  inoremap  <buffer>            <LocalLeader>rsd   <C-C>:LatexMainDoc<SPACE>
+  vnoremap  <buffer>            <LocalLeader>rsd   <C-C>:LatexMainDoc<SPACE>
    noremap  <buffer>  <silent>  <LocalLeader>re         :call <SID>BackgroundErrors()<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>re    <C-C>:call <SID>BackgroundErrors()<CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>re    <C-C>:call <SID>BackgroundErrors()<CR>
@@ -1949,11 +2003,15 @@ function! s:InitMenus()
 	let ahead = 'anoremenu <silent> '.s:Latex_RootMenu.'.Run.'
 	let ihead = 'inoremenu <silent> '.s:Latex_RootMenu.'.Run.'
 	let vhead = 'vnoremenu <silent> '.s:Latex_RootMenu.'.Run.'
+	let ahead_loud = 'anoremenu     '.s:Latex_RootMenu.'.Run.'
+	let ihead_loud = 'inoremenu     '.s:Latex_RootMenu.'.Run.'
 
 	exe ahead.'save\ +\ &run\ typesetter<Tab>'.esc_mapl.'rr       :call <SID>Compile("")<CR><CR>'
 	exe ihead.'save\ +\ &run\ typesetter<Tab>'.esc_mapl.'rr  <C-C>:call <SID>Compile("")<CR><CR>'
 	exe ahead.'save\ +\ run\ &lacheck<Tab>'.esc_mapl.'rla         :call <SID>Lacheck("")<CR>'
 	exe ihead.'save\ +\ run\ &lacheck<Tab>'.esc_mapl.'rla    <C-C>:call <SID>Lacheck("")<CR>'
+	exe ahead_loud.'&set\ main\ document<Tab>'.esc_mapl.'rsd      :LatexMainDoc '
+	exe ihead_loud.'&set\ main\ document<Tab>'.esc_mapl.'rsd <C-C>:LatexMainDoc '
 	exe ahead.'view\ last\ &errors<Tab>'.esc_mapl.'re             :call <SID>BackgroundErrors()<CR>'
 	exe ihead.'view\ last\ &errors<Tab>'.esc_mapl.'re        <C-C>:call <SID>BackgroundErrors()<CR>'
 
@@ -2248,6 +2306,7 @@ if s:Latex_LoadMenus == 'yes' && s:Latex_CreateMenusDelayed == 'no'
 endif
 
 " user defined commands (working everywhere)
+command! -nargs=? -complete=file -bang                 LatexMainDoc         call <SID>SetMainDocument(<q-args>,'<bang>'=='!')
 command! -nargs=? -complete=file                       Latex                call <SID>Compile(<q-args>)
 command! -nargs=? -complete=file                       LatexBibtex          call <SID>Bibtex(<q-args>)
 command! -nargs=? -complete=file                       LatexCheck           call <SID>Lacheck(<q-args>)

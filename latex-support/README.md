@@ -1,4 +1,4 @@
-README for latex-support.vim (Version 1.3alpha) / January 27 2017
+README for latex-support.vim (Version 1.3alpha) / July 28 2017
 ================================================================================
 
   *  INSTALLATION
@@ -178,6 +178,7 @@ RELEASE NOTES FOR VERSION 1.3alpha
 - Add commands :Latex, :LatexBibtex, :LatexMakeindex, and :LatexCheck to run the
   external commands.
 - Add command :LatexView to start external viewers.
+- Add command :LatexMainDoc to set the document for typesetting, viewing, ...
 - Add command :LatexTypesetter to change the typesetter during runtime.
 - Add command :LatexProcessing to change between foreground and background
   processing.
