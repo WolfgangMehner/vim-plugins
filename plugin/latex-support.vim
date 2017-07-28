@@ -241,6 +241,199 @@ endfunction    " ----------  end of function s:WarningMsg  ----------
 "-------------------------------------------------------------------------------
 
 "-------------------------------------------------------------------------------
+" === Common functions ===   {{{1
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:CodeSnippet : Code snippets.   {{{2
+"
+" Parameters:
+"   action - "insert", "create", "vcreate", "view", or "edit" (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:CodeSnippet ( action )
+
+	"-------------------------------------------------------------------------------
+	" setup
+	"-------------------------------------------------------------------------------
+
+	" the snippet directory
+	let cs_dir    = s:Latex_CodeSnippets
+	let cs_browse = s:Latex_GuiSnippetBrowser
+
+	" check directory
+	if ! isdirectory ( cs_dir )
+		return s:ErrorMsg (
+					\ 'Code snippet directory '.cs_dir.' does not exist.',
+					\ '(Please create it.)' )
+	endif
+
+	" save option 'browsefilter'
+	if has( 'browsefilter' ) && exists( 'b:browsefilter' )
+		let browsefilter_save = b:browsefilter
+		let b:browsefilter    = '*'
+	endif
+
+	"-------------------------------------------------------------------------------
+	" do action
+	"-------------------------------------------------------------------------------
+
+	if a:action == 'insert'
+
+		"-------------------------------------------------------------------------------
+		" action "insert"
+		"-------------------------------------------------------------------------------
+
+		" select file
+		if has('browse') && cs_browse == 'gui'
+			let snippetfile = browse ( 0, 'insert a code snippet', cs_dir, '' )
+		else
+			let snippetfile = s:UserInput ( 'insert snippet ', cs_dir, 'file' )
+		endif
+
+		" insert snippet
+		if filereadable(snippetfile)
+			let linesread = line('$')
+
+			let old_cpoptions = &cpoptions            " prevent the alternate buffer from being set to this files
+			setlocal cpoptions-=a
+
+			exe 'read '.snippetfile
+
+			let &cpoptions = old_cpoptions            " restore previous options
+
+			let linesread = line('$') - linesread - 1 " number of lines inserted
+
+			" indent lines
+			if linesread >= 0 && match( snippetfile, '\.\(ni\|noindent\)$' ) < 0
+				silent exe 'normal! ='.linesread.'+'
+			endif
+		endif
+
+		" delete first line if empty
+		if line('.') == 2 && getline(1) =~ '^$'
+			silent exe ':1,1d'
+		endif
+
+	elseif a:action == 'create' || a:action == 'vcreate'
+
+		"-------------------------------------------------------------------------------
+		" action "create" or "vcreate"
+		"-------------------------------------------------------------------------------
+
+		" select file
+		if has('browse') && cs_browse == 'gui'
+			let snippetfile = browse ( 1, 'create a code snippet', cs_dir, '' )
+		else
+			let snippetfile = s:UserInput ( 'create snippet ', cs_dir, 'file' )
+		endif
+
+		" create snippet
+		if ! empty( snippetfile )
+			" new file or overwrite?
+			if ! filereadable( snippetfile ) || confirm( 'File '.snippetfile.' exists! Overwrite? ', "&Cancel\n&No\n&Yes" ) == 3
+				if a:action == 'create' && confirm( 'Write whole file as a snippet? ', "&Cancel\n&No\n&Yes" ) == 3
+					exe 'write! '.fnameescape( snippetfile )
+				elseif a:action == 'vcreate'
+					exe "'<,'>write! ".fnameescape( snippetfile )
+				endif
+			endif
+		endif
+
+	elseif a:action == 'view' || a:action == 'edit'
+
+		"-------------------------------------------------------------------------------
+		" action "view" or "edit"
+		"-------------------------------------------------------------------------------
+		if a:action == 'view' | let saving = 0
+		else                  | let saving = 1 | endif
+
+		" select file
+		if has('browse') && cs_browse == 'gui'
+			let snippetfile = browse ( saving, a:action.' a code snippet', cs_dir, '' )
+		else
+			let snippetfile = s:UserInput ( a:action.' snippet ', cs_dir, 'file' )
+		endif
+
+		" open file
+		if ! empty( snippetfile )
+			exe 'split | '.a:action.' '.fnameescape( snippetfile )
+		endif
+	else
+		call s:ErrorMsg ( 'Unknown action "'.a:action.'".' )
+	endif
+
+	"-------------------------------------------------------------------------------
+	" wrap up
+	"-------------------------------------------------------------------------------
+
+	" restore option 'browsefilter'
+	if has( 'browsefilter' ) && exists( 'b:browsefilter' )
+		let b:browsefilter = browsefilter_save
+	endif
+
+endfunction   " ----------  end of function s:CodeSnippet  ----------
+
+"-------------------------------------------------------------------------------
+" s:Hardcopy : Generate PostScript document from current buffer.   {{{2
+"
+" Under windows, display the printer dialog.
+"
+" Parameters:
+"   mode - "n" : print complete buffer, "v" : print marked area (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:Hardcopy ( mode )
+
+	let outfile = expand("%:t")
+
+	" check the buffer
+	if ! s:MSWIN && empty ( outfile )
+		return s:ImportantMsg ( 'The buffer has no filename.' )
+	endif
+
+	" save current settings
+	let printheader_saved = &g:printheader
+
+	let &g:printheader = g:Latex_Printheader
+
+	if s:MSWIN
+		" we simply call hardcopy, which will open the systems printing dialog
+		if a:mode == 'n'
+			silent exe  'hardcopy'
+		elseif a:mode == 'v'
+			silent exe  "'<,'>hardcopy"
+		endif
+	else
+
+		" directory to print to
+		let outdir = getcwd()
+		if filewritable ( outdir ) != 2
+			let outdir = $HOME
+		endif
+
+		let psfile = outdir.'/'.outfile.'.ps'
+
+		if a:mode == 'n'
+			silent exe  'hardcopy > '.psfile
+			call s:ImportantMsg ( 'file "'.outfile.'" printed to "'.psfile.'"' )
+		elseif a:mode == 'v'
+			silent exe  "'<,'>hardcopy > ".psfile
+			call s:ImportantMsg ( 'file "'.outfile.'" (lines '.line("'<").'-'.line("'>").') printed to "'.psfile.'"' )
+		endif
+	endif
+
+	" restore current settings
+	let &g:printheader = printheader_saved
+
+endfunction   " ----------  end of function s:Hardcopy  ----------
+
+" }}}2
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
 " === Module setup ===   {{{1
 "-------------------------------------------------------------------------------
 
@@ -355,7 +548,7 @@ else
 endif
 
 let s:Latex_AdditionalTemplates = mmtemplates#config#GetFt ( 'latex' )
-call s:ApplyDefaultSetting ( 'Latex_CodeSnippets', s:plugin_dir.'/latex-support/codesnippets/' )
+let s:Latex_CodeSnippets        = s:plugin_dir.'/latex-support/codesnippets/'
 
 "  g:Latex_Dictionary_File  must be global
 "
@@ -365,6 +558,10 @@ endif
 
 "-------------------------------------------------------------------------------
 " == Various settings ==   {{{2
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" User configurable options   {{{3
 "-------------------------------------------------------------------------------
 
 let s:escfilename 								= ' \%#[]'
@@ -384,7 +581,6 @@ if ! exists ( 's:MenuVisible' )
 endif
 "
 let s:Latex_LineEndCommColDefault = 49
-let s:Latex_Printheader   				= "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
 let s:Latex_TemplateJumpTarget 		= ''
 let s:Latex_Wrapper               = s:plugin_dir.'/latex-support/scripts/wrapper.sh'
 let s:Latex_InsertFileProlog			= 'yes'
@@ -396,8 +592,9 @@ let s:Latex_BibtexErrorf =
 			\ .','.'Warning--%m'
 			\ .','.'--line %l of file %f'
 
-" overwrite the mapleader, we should not use use "\" in LaTeX
-call s:ApplyDefaultSetting ( 'Latex_MapLeader', '´' )
+"-------------------------------------------------------------------------------
+" Get user configuration   {{{3
+"-------------------------------------------------------------------------------
 
 call s:GetGlobalSetting( 'Latex_CustomTemplateFile' )
 call s:GetGlobalSetting( 'Latex_CreateMenusDelayed' )
@@ -406,6 +603,7 @@ call s:GetGlobalSetting( 'Latex_DviPng' )
 call s:GetGlobalSetting( 'Latex_DviPs' )
 call s:GetGlobalSetting( 'Latex_DviViewer' )
 call s:GetGlobalSetting( 'Latex_GlobalTemplateFile' )
+call s:GetGlobalSetting( 'Latex_CodeSnippets' )
 call s:GetGlobalSetting( 'Latex_GuiSnippetBrowser' )
 call s:GetGlobalSetting( 'Latex_InsertFileProlog' )
 call s:GetGlobalSetting( 'Latex_Latex' )
@@ -418,7 +616,6 @@ call s:GetGlobalSetting( 'Latex_PdfPng' )
 call s:GetGlobalSetting( 'Latex_PdfViewer' )
 call s:GetGlobalSetting( 'Latex_Pdflatex' )
 call s:GetGlobalSetting( 'Latex_Pdftex' )
-call s:GetGlobalSetting( 'Latex_Printheader' )
 call s:GetGlobalSetting( 'Latex_Processing' )
 call s:GetGlobalSetting( 'Latex_PsPdf' )
 call s:GetGlobalSetting( 'Latex_PsViewer' )
@@ -427,6 +624,14 @@ call s:GetGlobalSetting( 'Latex_Tex' )
 call s:GetGlobalSetting( 'Latex_TexFlavor' )
 call s:GetGlobalSetting( 'Latex_Typesetter' )
 call s:GetGlobalSetting( 'Latex_UseToolbox' )
+
+" overwrite the mapleader, we should not use use "\" in LaTeX
+call s:ApplyDefaultSetting ( 'Latex_MapLeader', '´' )
+call s:ApplyDefaultSetting ( 'Latex_Printheader',  "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N" )
+
+"-------------------------------------------------------------------------------
+" Internal variables   {{{3
+"-------------------------------------------------------------------------------
 
 let s:Latex_TypesetterCall = {
 			\ 'latex'    : s:Latex_Latex   ,
@@ -463,7 +668,8 @@ if has('job')
 	call add ( s:Latex_ProcessingList, 'background' )
 endif
 
-let s:Latex_Printheader = escape( s:Latex_Printheader, ' %' )
+" }}}3
+"-------------------------------------------------------------------------------
 
 " }}}2
 "-------------------------------------------------------------------------------
@@ -1538,93 +1744,6 @@ function! s:JumpForward ()
 endfunction    " ----------  end of function s:JumpForward  ----------
 
 "-------------------------------------------------------------------------------
-" s:CodeSnippet : Code snippets.   {{{1
-"
-" Parameters:
-"   mode - view, edit, read, write, writemarked (string)
-"-------------------------------------------------------------------------------
-function! s:CodeSnippet ( mode )
-  if isdirectory(g:Latex_CodeSnippets)
-    "
-    " read snippet file, put content below current line
-    "
-    if a:mode == "read"
-			if has("gui_running") && s:Latex_GuiSnippetBrowser == 'gui'
-				let l:snippetfile=browse(0,"read a code snippet",g:Latex_CodeSnippets,"")
-			else
-				let	l:snippetfile=input("read snippet ", g:Latex_CodeSnippets, "file" )
-			endif
-      if filereadable(l:snippetfile)
-        let linesread= line("$")
-        let l:old_cpoptions = &cpoptions " Prevent the alternate buffer from being set to this files
-        setlocal cpoptions-=a
-        :execute "read ".l:snippetfile
-        let &cpoptions  = l:old_cpoptions   " restore previous options
-        "
-        let linesread= line("$")-linesread-1
-        if linesread>=0 && match( l:snippetfile, '\.\(ni\|noindent\)$' ) < 0
-          silent exe "normal! =".linesread."+"
-        endif
-      endif
-    endif
-    "
-    " update current buffer / split window / edit snippet file
-    "
-    if a:mode == "edit"
-			if has("gui_running") && s:Latex_GuiSnippetBrowser == 'gui'
-				let l:snippetfile=browse(0,"edit a code snippet",g:Latex_CodeSnippets,"")
-			else
-				let	l:snippetfile=input("edit snippet ", g:Latex_CodeSnippets, "file" )
-			endif
-      if !empty(l:snippetfile)
-        :execute "update! | split | edit ".l:snippetfile
-      endif
-    endif
-    "
-    " update current buffer / split window / view snippet file
-    "
-    if a:mode == "view"
-			if has("gui_running") && s:Latex_GuiSnippetBrowser == 'gui'
-				let l:snippetfile=browse(0,"view a code snippet",g:Latex_CodeSnippets,"")
-			else
-				let	l:snippetfile=input("view snippet ", g:Latex_CodeSnippets, "file" )
-			endif
-      if !empty(l:snippetfile)
-        :execute "update! | split | view ".l:snippetfile
-      endif
-    endif
-    "
-    " write whole buffer or marked area into snippet file
-    "
-    if a:mode == "write" || a:mode == "writemarked"
-			if has("gui_running") && s:Latex_GuiSnippetBrowser == 'gui'
-				let l:snippetfile=browse(1,"write a code snippet",g:Latex_CodeSnippets,"")
-			else
-				let	l:snippetfile=input("write snippet ", g:Latex_CodeSnippets, "file" )
-			endif
-      if !empty(l:snippetfile)
-        if filereadable(l:snippetfile)
-          if confirm("File ".l:snippetfile." exists ! Overwrite ? ", "&Cancel\n&No\n&Yes") != 3
-            return
-          endif
-        endif
-				if a:mode == "write"
-					:execute ":write! ".l:snippetfile
-				else
-					:execute ":'<,'>write! ".l:snippetfile
-				endif
-      endif
-    endif
-
-  else
-    redraw!
-    echohl ErrorMsg
-    echo "code snippet directory ".g:Latex_CodeSnippets." does not exist"
-    echohl None
-  endif
-endfunction   " ---------- end of function s:CodeSnippet  ----------
-
-"-------------------------------------------------------------------------------
 " s:CreateAdditionalLatexMaps : Create additional maps for LaTeX.   {{{1
 "-------------------------------------------------------------------------------
 function! s:CreateAdditionalLatexMaps ()
@@ -1669,16 +1788,17 @@ function! s:CreateAdditionalLatexMaps ()
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------
-	nnoremap  <buffer>  <silent>  <LocalLeader>nr         :call <SID>CodeSnippet("read")<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>nr    <Esc>:call <SID>CodeSnippet("read")<CR>
-	nnoremap  <buffer>  <silent>  <LocalLeader>nw         :call <SID>CodeSnippet("write")<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call <SID>CodeSnippet("write")<CR>
-	vnoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call <SID>CodeSnippet("writemarked")<CR>
+
+	nnoremap  <buffer>  <silent>  <LocalLeader>nr         :call <SID>CodeSnippet("insert")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>nr    <Esc>:call <SID>CodeSnippet("insert")<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>nw         :call <SID>CodeSnippet("create")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call <SID>CodeSnippet("create")<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call <SID>CodeSnippet("vcreate")<CR>
 	nnoremap  <buffer>  <silent>  <LocalLeader>ne         :call <SID>CodeSnippet("edit")<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>ne    <Esc>:call <SID>CodeSnippet("edit")<CR>
 	nnoremap  <buffer>  <silent>  <LocalLeader>nv         :call <SID>CodeSnippet("view")<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>nv    <Esc>:call <SID>CodeSnippet("view")<CR>
-	"
+
 	"-------------------------------------------------------------------------------
 	" wizard
 	"-------------------------------------------------------------------------------
@@ -1824,16 +1944,17 @@ function! s:CreateAdditionalBibtexMaps ()
 	"-------------------------------------------------------------------------------
 	" snippets
 	"-------------------------------------------------------------------------------
-	nnoremap  <buffer>  <silent>  <LocalLeader>nr         :call <SID>CodeSnippet("read")<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>nr    <Esc>:call <SID>CodeSnippet("read")<CR>
-	nnoremap  <buffer>  <silent>  <LocalLeader>nw         :call <SID>CodeSnippet("write")<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call <SID>CodeSnippet("write")<CR>
-	vnoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call <SID>CodeSnippet("writemarked")<CR>
+
+	nnoremap  <buffer>  <silent>  <LocalLeader>nr         :call <SID>CodeSnippet("insert")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>nr    <Esc>:call <SID>CodeSnippet("insert")<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>nw         :call <SID>CodeSnippet("create")<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call <SID>CodeSnippet("create")<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>nw    <Esc>:call <SID>CodeSnippet("vcreate")<CR>
 	nnoremap  <buffer>  <silent>  <LocalLeader>ne         :call <SID>CodeSnippet("edit")<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>ne    <Esc>:call <SID>CodeSnippet("edit")<CR>
 	nnoremap  <buffer>  <silent>  <LocalLeader>nv         :call <SID>CodeSnippet("view")<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>nv    <Esc>:call <SID>CodeSnippet("view")<CR>
-	"
+
 	"-------------------------------------------------------------------------------
 	" run
 	"-------------------------------------------------------------------------------
@@ -1964,13 +2085,13 @@ function! s:InitMenus()
 	let ihead = 'inoremenu <silent> '.s:Latex_RootMenu.'.S&nippets.'
 	let vhead = 'vnoremenu <silent> '.s:Latex_RootMenu.'.S&nippets.'
 
-	exe ahead.'&read\ code\ snippet<Tab>'.esc_mapl.'nr       :call <SID>CodeSnippet("read")<CR>'
-	exe ihead.'&read\ code\ snippet<Tab>'.esc_mapl.'nr  <C-C>:call <SID>CodeSnippet("read")<CR>'
+	exe ahead.'&read\ code\ snippet<Tab>'.esc_mapl.'nr       :call <SID>CodeSnippet("insert")<CR>'
+	exe ihead.'&read\ code\ snippet<Tab>'.esc_mapl.'nr  <C-C>:call <SID>CodeSnippet("insert")<CR>'
+	exe ahead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw      :call <SID>CodeSnippet("create")<CR>'
+	exe ihead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call <SID>CodeSnippet("create")<CR>'
+	exe vhead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call <SID>CodeSnippet("vcreate")<CR>'
 	exe ahead.'&view\ code\ snippet<Tab>'.esc_mapl.'nv       :call <SID>CodeSnippet("view")<CR>'
 	exe ihead.'&view\ code\ snippet<Tab>'.esc_mapl.'nv  <C-C>:call <SID>CodeSnippet("view")<CR>'
-	exe ahead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw      :call <SID>CodeSnippet("write")<CR>'
-	exe ihead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call <SID>CodeSnippet("write")<CR>'
-	exe vhead.'&write\ code\ snippet<Tab>'.esc_mapl.'nw <C-C>:call <SID>CodeSnippet("writemarked")<CR>'
 	exe ahead.'&edit\ code\ snippet<Tab>'.esc_mapl.'ne       :call <SID>CodeSnippet("edit")<CR>'
 	exe ihead.'&edit\ code\ snippet<Tab>'.esc_mapl.'ne  <C-C>:call <SID>CodeSnippet("edit")<CR>'
 	exe ahead.'-SepSnippets-                       :'
@@ -2237,48 +2358,6 @@ function! Latex_Settings ( verbose )
 		echo txt
 	endif
 endfunction    " ----------  end of function Latex_Settings ----------
-
-"-------------------------------------------------------------------------------
-" s:Hardcopy : Print buffer to PostScript file.   {{{1
-"
-" Parameters:
-"   mode - "n" or "v" (string)
-" Returns:
-"   <+RETURN+> - <+DESCRIPTION+> (<+TYPE+>)
-"-------------------------------------------------------------------------------
-function! s:Hardcopy ( mode )
-  let outfile = expand("%")
-  if empty(outfile)
-    redraw!
-    echohl WarningMsg | echo " no file name " | echohl None
-    return
-  endif
-	let outdir	= getcwd()
-	if filewritable(outdir) != 2
-		let outdir	= $HOME
-	endif
-	if  !s:MSWIN
-		let outdir	= outdir.'/'
-	endif
-
-	let old_printheader=&printheader
-	exe  ':set printheader='.s:Latex_Printheader
-	" ----- normal mode ----------------
-	if a:mode=="n"
-		silent exe  'hardcopy > '.outdir.outfile.'.ps'
-		if  !s:MSWIN
-			echo 'file "'.outfile.'" printed to "'.outdir.outfile.'.ps"'
-		endif
-	endif
-	" ----- visual mode ----------------
-	if a:mode=="v"
-		silent exe  "'<,'>hardcopy > ".outdir.outfile.".ps"
-		if  !s:MSWIN
-			echo 'file "'.outfile.'" (lines '.line("'<").'-'.line("'>").') printed to "'.outdir.outfile.'.ps"'
-		endif
-	endif
-	exe  ':set printheader='.escape( old_printheader, ' %' )
-endfunction   " ---------- end of function s:Hardcopy  ----------
 
 "-------------------------------------------------------------------------------
 " === Setup: Templates, toolbox and menus ===   {{{1
