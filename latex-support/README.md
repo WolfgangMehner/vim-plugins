@@ -178,6 +178,7 @@ RELEASE NOTES FOR VERSION 1.3alpha
 - Add commands :Latex, :LatexBibtex, :LatexMakeindex, and :LatexCheck to run the
   external commands.
 - Add command :LatexView to start external viewers.
+- Add command :LatexConvert to convert documents.
 - Add command :LatexMainDoc to set the document for typesetting, viewing, ...
 - Add command :LatexTypesetter to change the typesetter during runtime.
 - Add command :LatexProcessing to change between foreground and background
@@ -187,6 +188,7 @@ RELEASE NOTES FOR VERSION 1.3alpha
 - Add command :LatexMakeglossaries to run 'makeglossaries'.
 - Move the definition of the maps 'F9' and 'CTRL+F9' to the filetype plug-in.
 - BibTeX errors are recognized by quickfix.
+- Add a converter 'eps-pdf'.
 - Improve templates. (Includes the removal of some templates!)
 - Minor bugfixes.
 
@@ -232,12 +234,6 @@ ___The following files and extensions are for convenience only.___
 ___latex-support.vim will work without them.___
 ___The settings are explained in the files themselves.___
 
-    ftplugin/make.vim
-                        Access hotkeys for make(1) in makefiles.
-    ftplugin/tex.vim
-                        Suggestion for a filetype plugin:
-                          defines additional maps
-
     ftdetect/template.vim
     ftplugin/template.vim
     syntax/template.vim
@@ -263,6 +259,13 @@ ___The settings are explained in the files themselves.___
                           font, use of dictionaries, ...
                         The file is commented. Append it to your .vimrc if you
                         like.
+
+    latex-support/rc/make.vim
+                        Define maps for make(1) in makefiles.
+    latex-support/rc/tex.vim
+                        Suggestion for a filetype plugin:
+                          defines additional maps, expands keyword characters
+                          for better support of labels
 
     latex-support/rc/*.templates
                         Sample template files for customization. Used by the

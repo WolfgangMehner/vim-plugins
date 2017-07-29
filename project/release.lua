@@ -190,8 +190,6 @@ filelists.latex = {
 	'doc/toolbox.txt',
 	'doc/toolboxmake.txt',
 	'ftdetect/template.vim',
-	'ftplugin/tex.vim',
-	'ftplugin/make.vim',
 	'ftplugin/template.vim',
 	'plugin/latex-support.vim',
 	'syntax/template.vim',

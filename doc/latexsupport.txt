@@ -541,7 +541,9 @@ The tool box for make provides a menu, and several ex-commands for controlling
 running make. To switch the make tool box off add the following line to the
 file .vimrc : >
   let g:Latex_UseTool_make = 'no'
-The hotkeys for the make tool are defined in the file ~/.vim/ftplugin/tex.vim .
+The hotkeys for the make tool are can be defined in the filetype plug-in
+'~/.vim/ftplugin/tex.vim'. You will find example definitions in the file
+'latex-support/rc/tex.vim'.
 
 ==============================================================================
 3.  TEMPLATES                                         *latexsupport-templates*
@@ -761,7 +763,8 @@ latex-support/wordlists/latex-keywords.list  A file used as dictionary for
                   latex-support.vim will work without them.
                   -------------------------------------------------------------
 
-latex-support/rc/vim.tex                Additional filetype plug-in.
+latex-support/rc/make.vim               Additional filetype plug-in.
+latex-support/rc/tex.vim                Additional filetype plug-in.
 latex-support/rc/customization.ctags    Additional settings I use in ~.ctags.
 latex-support/rc/customization.gvimrc   Additional settings I use in ~.gvimrc.
 latex-support/rc/customization.vimrc    Additional settings I use in ~.vimrc:
