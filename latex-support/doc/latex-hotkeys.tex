@@ -112,7 +112,7 @@ Key mappings for Vim and gVim\\
 \hline     \Map{cfr1} & frame comment, type 1       \hfill (n, i)   \\
 \hline     \Map{cfr2} & frame comment, type 2       \hfill (n, i)   \\
 \hline     \Map{cfr3} & frame comment, type 3       \hfill (n, i)   \\
-\hline     \Map{ch}   & file prolog                 \hfill (n, i)   \\
+\hline     \Map{cp}   & file prolog                 \hfill (n, i)   \\
 \hline     \Map{cm}   & plug-in macros              \hfill (n, i, T)\\
 \hline     \Map{cd}   & date                        \hfill (n, i)   \\
 \hline     \Map{ct}   & date \& time                \hfill (n, i)   \\
@@ -237,7 +237,7 @@ Key mappings for Vim and gVim\\
 \hline \Map{bf}  & frame           \hfill (n, i, v)\\
 \hline \Map{bc}  & columns         \hfill (n, i, v, T)\\
 \hline \Map{bi}  & itemize         \hfill (n, i, v)\\
-\hline \Map{bo}  & overprint       \hfill (n, i, b)\\
+\hline \Map{bo}  & overprint       \hfill (n, i, v)\\
 \hline \Map{bg}  & includegraphics \hfill (n, i)\\
 \hline \Map{bbl} & block           \hfill (n, i, v)\\
 \hline
@@ -273,8 +273,8 @@ Key mappings for Vim and gVim\\
 \hline
 \multicolumn{2}{|r|}{\textsl{S\textbf{n}ippets}}                \\[1.0ex]
 \hline \Map{nr}  & read code snippet         \hfill (n, i)   \\
-\hline \Map{nv}  & view code snippet         \hfill (n, i)   \\
 \hline \Map{nw}  & write code snippet        \hfill (n, i, v)\\
+\hline \Map{nv}  & view code snippet         \hfill (n, i)   \\
 \hline \Map{ne}  & edit code snippet         \hfill (n, i)   \\
 \hline
 \hline \Map{ntl} & edit local templates      \hfill (n, i)   \\
@@ -300,6 +300,7 @@ Key mappings for Vim and gVim\\
 \multicolumn{2}{|r|}{\textsl{\textbf{R}un}} \\[1.0ex]
 \hline \Map{rr}   & save + run typesetter                    \hfill (n, i)\\
 \hline \Map{rla}  & save + run \texttt{lacheck}              \hfill (n, i)\\
+\hline \Map{rsd}  & set the main document                    \hfill (n, i)\\
 \hline \Map{re}   & errors from last bg.\ process            \hfill (n, i)\\
 \hline \Map{rdvi} & view DVI                                 \hfill (n, i)\\
 \hline \Map{rpdf} & view PDF                                 \hfill (n, i)\\
@@ -315,16 +316,6 @@ Key mappings for Vim and gVim\\
 \hline
 \hline \Map{rh}   & hardcopy buffer to postscript            \hfill (n, i, v)\\
 \hline \Map{rse}  & show plug-in settings                    \hfill (n, i)\\
-\hline
-%%----------------------------------------------------------------------
-%%  tool box
-%%----------------------------------------------------------------------
-\hline
-\multicolumn{2}{|r|}{\textsl{Tool Box}} \\[1.0ex]
-\hline \Map{rm}  & run \texttt{make}                        \hfill (n, i)   \\
-\hline \Map{rcm} & choose makefile                          \hfill (n, i)   \\
-\hline \Map{rmc} & \texttt{make clean}                      \hfill (n, i)   \\
-\hline \Map{rma} & command line arguments for \texttt{make} \hfill (n, i)   \\
 \hline
 \end{tabular}\\[2.5ex]
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
@@ -342,8 +333,10 @@ Run tools like \texttt{makeindex} or \texttt{bibtex} : \\[1.0ex]
 \texttt{:LatexMakeglossaries [<base>]} \\[1.0ex]
 \texttt{:LatexMakeindex [<idx-file>]} \\[1.0ex]
 \texttt{:LatexBibtex [<aux-file>]} \\[1.0ex]
-(the default arguments are derived from the name of the current buffer) \\[2.5ex]
-Get the errors from the last background process: \\[1.0ex]
+(the default arguments are derived from the name of the current buffer) \\[1.0ex]
+Set the main document: \\[1.0ex]
+\texttt{:LatexMainDoc <tex-file>} \\[1.0ex]
+View the errors of the last background process: \\[1.0ex]
 \texttt{:LatexErrors} \\[2.5ex]
 }
 %
@@ -354,15 +347,17 @@ Get the errors from the last background process: \\[1.0ex]
 \parbox[t][130mm][t]{70mm}{%
 %
 %%----------------------------------------------------------------------
-%%  View
+%%  View & Convert
 %%----------------------------------------------------------------------
-\large{\textbf{View}}\\[1.0ex]
+\large{\textbf{View \& Convert}}\\[1.0ex]
 View a document of the specified format
 (supports \texttt{dvi}, \texttt{pdf}, and \texttt{ps}): \\[1.0ex]
 \texttt{:LatexView [<format>]} \\[1.0ex]
 \texttt{:LatexView [<format>] <file>} \\[1.0ex]
 \texttt{:LatexView <file> [<format>]} \\[1.0ex]
-(the default filename is derived from the name of the current buffer.) \\[2.5ex]
+Convert a document: \\[1.0ex]
+\texttt{:LatexConvert [<file>]} \\[1.0ex]
+(the default filename is derived from the name of the current buffer) \\[2.5ex]
 %
 %%----------------------------------------------------------------------
 %%  Options

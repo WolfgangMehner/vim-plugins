@@ -108,7 +108,7 @@ Git:
 
 LaTeX:
 - (DONE) Add 'luatex' as a type setter.
-- Add :LatexConvert as an ex-command.
+- (DONE) Add :LatexConvert as an ex-command.
 
 Lua:
 - (DONE) Documentation: Add setup of C API templates.

@@ -175,8 +175,9 @@ RELEASE NOTES
 
 RELEASE NOTES FOR VERSION 1.3alpha
 ----------------------------------------------------------------------
-- Add commands :Latex, :LatexBibtex, :LatexMakeindex, and :LatexCheck to run the
+- Add commands :Latex, :LatexCheck, :LatexMakeindex, and :LatexBibtex to run the
   external commands.
+- Add command :LatexMakeglossaries to run 'makeglossaries'.
 - Add command :LatexView to start external viewers.
 - Add command :LatexConvert to convert documents.
 - Add command :LatexMainDoc to set the document for typesetting, viewing, ...
@@ -185,12 +186,17 @@ RELEASE NOTES FOR VERSION 1.3alpha
   processing.
 - Add command :LatexErrors and map ´re to view errors from background processing
   in quickfix.
-- Add command :LatexMakeglossaries to run 'makeglossaries'.
-- Move the definition of the maps 'F9' and 'CTRL+F9' to the filetype plug-in.
 - BibTeX errors are recognized by quickfix.
 - Add a converter 'eps-pdf'.
 - Improve templates. (Includes the removal of some templates!)
+- Move the filetype plug-ins for tex and make to 'latex-support/rc'.
+- Remove the definition of the maps 'CTRL+F9' and 'ALT+F9'. Add them to your
+  filetype plug-ins if you want to use them.
 - Minor bugfixes.
+
+Note: The filetype plug-ins have been moved, and are thus not loaded
+automatically anymore. Copy them from 'latex-support/rc' to 'ftplugin' or add
+the commands there to your own filetype plug-ins.
 
 
 RELEASE NOTES FOR OLDER VERSIONS

@@ -1311,7 +1311,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
          [n] range
 
   -----------------------------------------------------------------
-  Help
+   Help
   -----------------------------------------------------------------
      ´he        open an English dictionary for  (ni)
                 the word under the cursor
@@ -1319,22 +1319,24 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      ´hp        displays plugin help            (ni)
 
   -----------------------------------------------------------------
-  Comments
+   Comments
   -----------------------------------------------------------------
   [n]´cl        end-of-line comment             (niv)
   [n]´cj        adjust end-of-line comments     (niv)
      ´cs        set end-of-line comment col.    (n)
   [n]´cc        toggle comment                  (niv)
+
      ´cfr1      frame comment, type 1           (ni)
      ´cfr2      frame comment, type 2           (ni)
      ´cfr3      frame comment, type 3           (ni)
-     ´ch        file prolog                     (ni)
+     ´cp        file prolog                     (ni)
+
      ´cm        plug-in macros                  (ni)
      ´cd        date                            (ni)
      ´ct        date & time                     (ni)
 
   -----------------------------------------------------------------
-  Document
+   Document
   -----------------------------------------------------------------
      ´dc        document class                  (ni)
      ´di        indices                         (ni)
@@ -1342,8 +1344,14 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      ´dbi       bibliography                    (ni)
      ´dac       addcontentsline                 (ni)
 
+     ´dln       newlength                       (ni)
+     ´dls       setlength                       (ni)
+     ´dla       addtolength                     (ni)
+     ´dlp       print length                    (ni)
+     ´dlt       set length to                   (ni)
+
   -----------------------------------------------------------------
-  Text
+   Text
   -----------------------------------------------------------------
      ´e         environment                     (niv)
      ´to        organization                    (ni)
@@ -1361,6 +1369,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      ´tal       line alignment + spacing        (niv)
      ´tac       accents                         (niv)
      ´ttc       textcomp characters             (ni)
+
      ´tbi       bibitem                         (ni)
      ´tci       cite                            (ni)
      ´tfo       footnote                        (ni)
@@ -1374,22 +1383,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      ´tur       url                             (niv)
 
   -----------------------------------------------------------------
-  Snippets
-  -----------------------------------------------------------------
-     ´nr       read code snippet                (ni)
-     ´nv       view code snippet                (ni)
-     ´nw       write code snippet               (niv)
-     ´ne       edit code snippet                (ni)
-     ´ntg      edit global templates            (ni)
-     ´ntl      edit local templates             (ni)
-     ´ntc      edit custom templates            (ni)
-     ´ntp      edit personal templates          (ni)
-     ´ntr      reread templates                 (ni)
-     ´ntw      template setup wizard            (ni)
-     ´nts      choose style                     (ni)
-
-  -----------------------------------------------------------------
-  Math
+   Math
   -----------------------------------------------------------------
      ´msp      spaces                           (ni)
      ´mac      accents                          (ni)
@@ -1401,33 +1395,40 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      ´mo       operators                        (ni)
      ´mr       relations                        (ni)
      ´mar      arrows                           (ni)
+
      ´me       equation+label                   (niv)
      ´mea      eqnarray+label                   (niv)
-     ´mm       matrix                           (ni)
+
+     ´mca      cases                            (niv)
      ´mch      choose                           (niv)
-     ´mddt     ddot                             (niv)
-     ´mdt      dot                              (niv)
      ´mfr      frac                             (niv)
+     ´mma      matrix                           (ni)
      ´mnr      nth root                         (niv)
+     ´mon      operatorname                     (niv)
+     ´mov      overset                          (niv)
      ´mpr      prod                             (niv)
+     ´msi      sideset                          (niv)
      ´msq      sqrt                             (niv)
      ´msu      sum                              (niv)
-     ´mve      vec                              (niv)
-     ´mon      operatorname                     (niv)
+     ´mun      underset                         (niv)
 
   -----------------------------------------------------------------
-  Wizard
+   Wizard
   -----------------------------------------------------------------
      ´wll       lstlisting                      (niv)
      ´wlil      lstinputlisting                 (ni)
-     ´nls       lstset                          (ni)
+     ´wlin      lstinline                       (niv)
+     ´wls       lstset                          (ni)
+
      ´wtt       table                           (niv)
      ´wtf       table, floating                 (niv)
      ´wtg       tabbing                         (ni)
      ´wtr       tabular                         (ni)
+
      ´wf        figure                          (ni)
      ´wff       floatingfigure                  (ni)
      ´wwf       wrapfigure                      (ni)
+
      ´wbf       fbox                            (niv)
      ´wbfr      framebox                        (niv)
      ´wbm       mbox                            (niv)
@@ -1436,10 +1437,27 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      ´wbp       parbox                          (niv)
 
   -----------------------------------------------------------------
-  Run
+   Snippets
+  -----------------------------------------------------------------
+     ´nr       read code snippet                (ni)
+     ´nw       write code snippet               (niv)
+     ´nv       view code snippet                (ni)
+     ´ne       edit code snippet                (ni)
+
+     ´ntg      edit global templates            (ni)
+     ´ntl      edit local templates             (ni)
+     ´ntc      edit custom templates            (ni)
+     ´ntp      edit personal templates          (ni)
+     ´ntr      reread templates                 (ni)
+     ´ntw      template setup wizard            (ni)
+     ´nts      choose style                     (ni)
+
+  -----------------------------------------------------------------
+   Run
   -----------------------------------------------------------------
      ´rr        save + run typesetter           (ni)
      ´rla       save + run lacheck              (ni)
+     ´rsd       set main document               (ni)
      ´re        view errors from bg. process    (ni)
      ´rdvi      view DVI                        (ni)
      ´rpdf      view PDF                        (ni)
@@ -1454,7 +1472,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      ´rse       show plugin settings            (ni)
 
   -----------------------------------------------------------------
-  Tool Box
+   Tool Box
   -----------------------------------------------------------------
      ´rm        run make                        (ni)
      ´rmc       run make clean                  (ni)
