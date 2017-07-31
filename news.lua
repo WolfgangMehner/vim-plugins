@@ -33,6 +33,51 @@ function add ( item )
 end  -----  end of function add  -----
 
 add {
+	awk = true,
+	bash = true,
+	c = true,
+	lua = true,
+
+	HEADLINE = 'Customizable file skeletons',
+	DATE     = 'Jul 2017',
+	ID       = 'SKELETONS_JUL2017',
+	[[
+	The mechanism which inserts file headers into new files was been extended for various plug-ins.
+	The default behavior remains the same, but you can now automatically insert more than one templates.
+	]],
+	[[
+	The list of templates to be inserted is defined via so-called <i>properties</i>, directly inside the template library.
+	Use the set-up wizard to create a template customization file.
+	The wizard is accessible via the menu entry <code>*ROOT MENU* -> Snippets-> template setup wizard</code>.
+	]],
+	[[
+	In the template file, set the corresponding property, <i>e.g.</i>:
+	<pre>SetProperty ( 'Bash::FileSkeleton::Script', 'Comments.shebang;Comments.file header; ;Skeleton.script-set' )</pre>
+	The property is a semicolon-separated list of templates to be inserted.
+	The above example will insert a shebang, a file description comment,
+	and the default set commands from the template "Skeleton.script-set".
+	If a space appears as an entry in the list, an empty line is inserted ( <code>'...; ;...'</code> ).
+	]],
+	[[
+	You will find short examples in the template customization files delivered with the plug-ins, see <code>*-support/rc/custom.templates</code>.
+	Help is available for each property:
+	<pre>:help Bash::FileSkeleton::Script</pre>
+	For scripting languages, the following are supported:
+	<pre>Awk::FileSkeleton::Script Bash::FileSkeleton::Script Lua::FileSkeleton::Script</pre>
+	For C-Support, the list of templates can be different for headers and source files, as well as for C and C++ files:
+	<pre>C::FileSkeleton::Header Cpp::FileSkeleton::Header C::FileSkeleton::Source Cpp::FileSkeleton::Source</pre>
+	]],
+	[[
+	See
+	<a target=_blank href="https://github.com/WolfgangMehner/awk-support">WolfgangMehner/awk-support</a>,
+	<a target=_blank href="https://github.com/WolfgangMehner/bash-support">WolfgangMehner/bash-support</a>,
+	<a target=_blank href="https://github.com/WolfgangMehner/c-support">WolfgangMehner/c-support</a>, and
+	<a target=_blank href="https://github.com/WolfgangMehner/lua-support">WolfgangMehner/lua-support</a>
+	for the preview versions which already include this feature.
+	]],
+}
+
+add {
 	lua = true,
 	perl = true,
 
@@ -91,7 +136,7 @@ add {
 	DATE     = 'Jul/Aug 2016',
 	ID       = 'NEW_PLUGINS_JUL2016',
 	[[
-	New plug-in versions (C/C++ v6.2, Perl v5.4, Bash v4.3, ...) have been release.
+	New plug-in versions (C/C++ v6.2, Perl v5.4, Bash v4.3, ...) have been released.
 	The updates focus on better configurability of the template library.
 	The new releases include improved templates,
 	the highlights are much better looking menus for Bash, Perl, and LaTeX.

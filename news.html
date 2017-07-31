@@ -37,6 +37,17 @@
 		<!-- ################################## NEWS ###########################################-->
 		<!-- ###################################################################################-->
 		<div class="news">
+			<a name="NEWS_SKELETONS_JUL2017">
+			<h3>Customizable file skeletons</h3></a>
+			<i>Jul 2017</i>
+			<p>The mechanism which inserts file headers into new files was been extended for various plug-ins. The default behavior remains the same, but you can now automatically insert more than one templates.</p>
+			<p>The list of templates to be inserted is defined via so-called <i>properties</i>, directly inside the template library. Use the set-up wizard to create a template customization file. The wizard is accessible via the menu entry <code>*ROOT MENU* -> Snippets-> template setup wizard</code>.</p>
+			<p>In the template file, set the corresponding property, <i>e.g.</i>: <pre>SetProperty ( 'Bash::FileSkeleton::Script', 'Comments.shebang;Comments.file header; ;Skeleton.script-set' )</pre> The property is a semicolon-separated list of templates to be inserted. The above example will insert a shebang, a file description comment, and the default set commands from the template "Skeleton.script-set". If a space appears as an entry in the list, an empty line is inserted ( <code>'...; ;...'</code> ).</p>
+			<p>You will find short examples in the template customization files delivered with the plug-ins, see <code>*-support/rc/custom.templates</code>. Help is available for each property: <pre>:help Bash::FileSkeleton::Script</pre> For scripting languages, the following are supported: <pre>Awk::FileSkeleton::Script Bash::FileSkeleton::Script Lua::FileSkeleton::Script</pre> For C-Support, the list of templates can be different for headers and source files, as well as for C and C++ files: <pre>C::FileSkeleton::Header Cpp::FileSkeleton::Header C::FileSkeleton::Source Cpp::FileSkeleton::Source</pre></p>
+			<p>See <a target=_blank href="https://github.com/WolfgangMehner/awk-support">WolfgangMehner/awk-support</a>, <a target=_blank href="https://github.com/WolfgangMehner/bash-support">WolfgangMehner/bash-support</a>, <a target=_blank href="https://github.com/WolfgangMehner/c-support">WolfgangMehner/c-support</a>, and <a target=_blank href="https://github.com/WolfgangMehner/lua-support">WolfgangMehner/lua-support</a> for the preview versions which already include this feature.</p>
+		</div>
+		<br>
+		<div class="news">
 			<a name="NEWS_SPACE_VIM_JAN2017">
 			<h3>Lua and Perl Incorporated in SpaceVim</h3></a>
 			<i>Jan 2017</i>
@@ -64,7 +75,7 @@
 			<a name="NEWS_NEW_PLUGINS_JUL2016">
 			<h3>New Plug-in Versions Released</h3></a>
 			<i>Jul/Aug 2016</i>
-			<p>New plug-in versions (C/C++ v6.2, Perl v5.4, Bash v4.3, ...) have been release. The updates focus on better configurability of the template library. The new releases include improved templates, the highlights are much better looking menus for Bash, Perl, and LaTeX. The make and CMake tools now include tab-completion for make targets.</p>
+			<p>New plug-in versions (C/C++ v6.2, Perl v5.4, Bash v4.3, ...) have been released. The updates focus on better configurability of the template library. The new releases include improved templates, the highlights are much better looking menus for Bash, Perl, and LaTeX. The make and CMake tools now include tab-completion for make targets.</p>
 			<p>The template libraries can now be extended and configured much easier. All plug-ins come with a set-up wizard, accessible via the menu entry <code>*ROOT MENU* -> Snippets-> template setup wizard</code>. You can use it to create a personalization file which will be loaded by all plug-ins. This is a central place to set your name, mail, and your preferred date and time format.</p>
 			<p>Furthermore, every template library can be extended independently from the stock templates using template customization files. They can also be created using the wizard. Since they are located outside the plug-in directories, they will not be overwritten by future updates.</p>
 			<p>The Make Tool now comes with tab-completion for make targets. After the Makefile has been set using <code>:MakeFile</code>, you can complete the targets while typing a <code>:Make &lt;target></code> command. Similarly, <code>:CMake</code> supports the completion after setting <code>:CMakeBuildLocation &lt;dir></code>. Then, you can also use <code>:CMakeCache</code> to display your cached variables. Also try <code>:CMakeCurses</code> and <code>:CMakeGui</code></p>
@@ -74,7 +85,7 @@
 		<!-- ################################## FOOTER #########################################-->
 		<!-- ###################################################################################-->
 		<hr>
-		<p>Page updated: February 05 2017 &nbsp;&nbsp;/&nbsp;&nbsp;
+		<p>Page updated: July 31 2017 &nbsp;&nbsp;/&nbsp;&nbsp;
 		Mail to: <a href="mailto:wolfgang-mehner@web.de">Wolfgang Mehner</a></p>
 	</body>
 </html>
