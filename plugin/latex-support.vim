@@ -585,7 +585,9 @@ endif
 let s:Latex_LineEndCommColDefault = 49
 let s:Latex_TemplateJumpTarget 		= ''
 let s:Latex_Wrapper               = s:plugin_dir.'/latex-support/scripts/wrapper.sh'
-let s:Latex_InsertFileProlog			= 'yes'
+let s:Latex_InsertFileProlog      = 'yes'
+let s:Latex_Ctrl_j                = 'yes'
+let s:Latex_Ctrl_d                = 'yes'
 
 let s:Latex_LatexErrorf  = '%f:%l: %m'
 let s:Latex_BibtexErrorf =
@@ -606,6 +608,8 @@ call s:GetGlobalSetting( 'Latex_DviPs' )
 call s:GetGlobalSetting( 'Latex_DviViewer' )
 call s:GetGlobalSetting( 'Latex_GlobalTemplateFile' )
 call s:GetGlobalSetting( 'Latex_CodeSnippets' )
+call s:GetGlobalSetting( 'Latex_Ctrl_j' )
+call s:GetGlobalSetting( 'Latex_Ctrl_d' )
 call s:GetGlobalSetting( 'Latex_EpsPdf' )
 call s:GetGlobalSetting( 'Latex_GuiSnippetBrowser' )
 call s:GetGlobalSetting( 'Latex_InsertFileProlog' )
@@ -1657,7 +1661,10 @@ function! s:RereadTemplates ()
 	"
 	" syntax: comments
 	call mmtemplates#core#ChangeSyntax ( g:Latex_Templates, 'comment', '§' )
-	"
+
+	" property: file skeletons
+	call mmtemplates#core#Resource ( g:Latex_Templates, 'add', 'property', 'Latex::FileSkeleton::Script', 'Comments.file prolog' )
+
 	"-------------------------------------------------------------------------------
 	" load template library
 	"-------------------------------------------------------------------------------
@@ -1724,6 +1731,43 @@ function! s:CheckTemplatePersonalization ()
 	call s:ImportantMsg ( 'The personal details are not set in the template library. Use the map "'.maplead.'ntw".' )
 
 endfunction    " ----------  end of function s:CheckTemplatePersonalization  ----------
+
+"-------------------------------------------------------------------------------
+" s:CheckAndRereadTemplates : Make sure the templates are loaded.   {{{1
+"-------------------------------------------------------------------------------
+function! s:CheckAndRereadTemplates ()
+	if ! exists ( 'g:Latex_Templates' )
+		call s:RereadTemplates()
+	endif
+endfunction    " ----------  end of function s:CheckAndRereadTemplates  ----------
+
+"-------------------------------------------------------------------------------
+" s:InsertFileHeader : Insert a file header.   {{{1
+"-------------------------------------------------------------------------------
+function! s:InsertFileHeader ()
+	call s:CheckAndRereadTemplates()
+
+	" prevent insertion for a file generated from a some error
+	if isdirectory(expand('%:p:h')) && s:Latex_InsertFileProlog == 'yes'
+		let templ_s = mmtemplates#core#Resource ( g:Latex_Templates, 'get', 'property', 'Latex::FileSkeleton::Script' )[0]
+
+		" insert templates in reverse order, always above the first line
+		" the last one to insert (the first in the list), will determine the
+		" placement of the cursor
+		let templ_l = split ( templ_s, ';' )
+		for i in range ( len(templ_l)-1, 0, -1 )
+			exe 1
+			if -1 != match ( templ_l[i], '^\s\+$' )
+				put! =''
+			else
+				call mmtemplates#core#InsertTemplate ( g:Latex_Templates, templ_l[i], 'placement', 'above' )
+			endif
+		endfor
+		if len(templ_l) > 0
+			set modified
+		endif
+	endif
+endfunction    " ----------  end of function s:InsertFileHeader  ----------
 
 "-------------------------------------------------------------------------------
 " s:JumpForward : Jump to the next target.   {{{1
@@ -1896,13 +1940,17 @@ function! s:CreateAdditionalLatexMaps ()
 	"-------------------------------------------------------------------------------
 	" templates
 	"-------------------------------------------------------------------------------
-	nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=<SID>JumpForward()<CR>
-	inoremap  <buffer>  <silent>  <C-j>  <C-G>u<C-R>=<SID>JumpForward()<CR>
-	"
-	" ----------------------------------------------------------------------------
-	"
-	call mmtemplates#core#CreateMaps ( 'g:Latex_Templates', g:Latex_MapLeader, 'do_special_maps', 'do_del_opt_map' ) |
-	"
+	if s:Latex_Ctrl_j == 'yes'
+		nnoremap  <buffer>  <silent>  <C-j>       i<C-R>=<SID>JumpForward()<CR>
+		inoremap  <buffer>  <silent>  <C-j>  <C-G>u<C-R>=<SID>JumpForward()<CR>
+	endif
+
+	if s:Latex_Ctrl_d == 'yes'
+		call mmtemplates#core#CreateMaps ( 'g:Latex_Templates', g:Latex_MapLeader, 'do_special_maps', 'do_del_opt_map' )
+	else
+		call mmtemplates#core#CreateMaps ( 'g:Latex_Templates', g:Latex_MapLeader, 'do_special_maps' )
+	endif
+
 endfunction    " ----------  end of function s:CreateAdditionalLatexMaps  ----------
 
 "-------------------------------------------------------------------------------
@@ -2436,9 +2484,9 @@ if has( 'autocmd' )
 				\		call s:CheckTemplatePersonalization() |
         \ endif
 
-  if s:Latex_TexFlavor == 'latex' && s:Latex_InsertFileProlog == 'yes'
-    autocmd BufNewFile  *.tex  call mmtemplates#core#InsertTemplate(g:Latex_Templates, 'Comments.file prolog')
-  endif
+	if s:Latex_TexFlavor == 'latex' && s:Latex_InsertFileProlog == 'yes'
+		autocmd BufNewFile  *.tex  call s:InsertFileHeader()
+	endif
 
 endif
 " }}}1

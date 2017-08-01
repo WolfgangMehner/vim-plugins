@@ -188,6 +188,11 @@ RELEASE NOTES FOR VERSION 1.3alpha
   in quickfix.
 - BibTeX errors are recognized by quickfix.
 - Add a converter 'eps-pdf'.
+- The templates which are inserted into new files as file skeletons can be
+  specified in the templates library, via the property:
+    Latex::FileSkeleton::Script
+- Add configuration variables 'g:Latex_Ctrl_j' and 'g:Latex_Ctrl_d' to control
+  the creation of the CTRL+J and CTRL+D maps.
 - Improve templates. (Includes the removal of some templates!)
 - Move the filetype plug-ins for tex and make to 'latex-support/rc'.
 - Remove the definition of the maps 'CTRL+F9' and 'ALT+F9'. Add them to your

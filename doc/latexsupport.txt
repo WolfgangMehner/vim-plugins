@@ -55,6 +55,7 @@ conversion and running make can be done with a few keystrokes.
 5.3.1  Template definition                    |latexsupport-old-templ-definition|
 5.3.2  The jump tags <+text+> etc.            |latexsupport-old-templ-jumptags|
 5.3.3  Command Ctrl-j                         |latexsupport-Ctrl-j|
+5.4    File Skeletons                         |latexsupport-file-skeleton|
 
 6.     LaTeX Dictionary                       |latexsupport-dictionary|
 
@@ -836,6 +837,8 @@ Several global variables are checked after the plug-in has been loaded to custom
  g:Latex_Dictionary_File        ''
  g:Latex_GuiSnippetBrowser      'gui'
  g:Latex_InsertFileProlog       'yes'
+ g:Latex_Ctrl_j                 'yes'
+ g:Latex_Ctrl_d                 'yes'
  g:Latex_LineEndCommColDefault  49
  g:Latex_LoadMenus              'yes'
  g:Latex_MapLeader              '´'
@@ -918,6 +921,10 @@ Code snippet browser: 'gui', 'commandline'.
 
  *g:Latex_InsertFileProlog*
 Insert file description comment in a new file ('yes', 'no').
+
+*g:Latex_Ctrl_j* *g:Latex_Ctrl_d*
+Create maps Ctrl-J and Ctrl-D ('yes', 'no')
+(compare |latexsupport-templates-jump-tags|)
 
  *g:Latex_LineEndCommColDefault*
 Default starting column for line-end comments.
@@ -1270,6 +1277,33 @@ you jump to the target <-IF PART-> and deletes it.  When the block is written
 a Ctrl-j leads you to the else-part.  The target <+ELSE_PART+> disappears and
 you can type on.
 
+------------------------------------------------------------------------------
+5.4  FILE SKELETONS                               *latexsupport-file-skeleton*
+------------------------------------------------------------------------------
+                                                    *g:Latex_InsertFileProlog*
+If g:Latex_InsertFileProlog is set to "yes", a file skeleton is automatically
+inserted into new LaTeX documents. The list of templates used to create this
+skeleton is specified in the template library. For this purpose a property is
+used, which can for example be set in the customization file
+(see |latexsupport-templates|).
+
+                                                 *Latex::FileSkeleton::Script*
+The file skeleton is controlled via this properties, which can be set in one
+of the template files:
+>
+  SetProperty ( 'Latex::FileSkeleton::Script', 'Comments.file prolog' )
+<
+This inserts only a comment box to document the file. To disable the insertion
+completely, set the property to an empty string: >
+  SetProperty ( 'Latex::FileSkeleton::Script', '' )
+In general, this property is a semicolon-separated list of templates to be
+inserted: >
+  SetProperty ( 'Latex::FileSkeleton::Script', 'Comments.file prolog; ;Skeleton.packages; ;Skeleton.document' )
+This will insert a file description, and two file skeleton templates, one with
+"\usepackage" commands and one with a skeleton of the document environment. If
+a space appears as an entry in the list, an empty line is inserted: >
+  '...; ;...'
+<
 ==============================================================================
 6.  LATEX DICTIONARY                                 *latexsupport-dictionary*
 ==============================================================================

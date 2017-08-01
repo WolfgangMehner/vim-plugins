@@ -35,6 +35,10 @@ SetStyle( 'default' )
 § unit used in Beamer commands, such as \includegraphics[<width>]{<file>}
 §SetMacro( 'BEAMER_UNIT', 'cm' )
 
+§ templates automatically included into new files
+§ set the property to an empty string to disable the insertion
+§SetProperty ( 'Latex::FileSkeleton::Script', 'Comments.file prolog; ;Skeleton.packages; ;Skeleton.document' )
+
 § -------------------------------------------------------------
 §  A template definition is build like this:
 §    == Menu.some name == <options> ==
@@ -45,6 +49,35 @@ SetStyle( 'default' )
 §  A template ends with the line "== ENDTEMPLATE ==" or with
 §  the start of a new template.
 § -------------------------------------------------------------
+
+§ -------------------------------------------------------------
+§  Can be inserted when creating a new document.
+§  See configuration variable 'g:Latex_InsertFileProlog'
+§  and template property 'Latex::FileSkeleton::Script'.
+§
+§  - option 'nomenu': this will not create a menu entry
+§ -------------------------------------------------------------
+
+§ uncomment and edit to customize
+
+§== Skeleton.packages == nomenu, below ==
+§\documentclass[a4paper,10pt,DIV11]{scrartcl}
+§
+§\usepackage[english]{babel}
+§\usepackage[utf8]{inputenc}
+§\usepackage[T1]{fontenc}
+§\usepackage{amsmath}
+§\usepackage{amsfonts}
+§\usepackage{amssymb}
+§== Skeleton.document == nomenu, below ==
+§\begin{document}
+§	
+§\title{TODO}
+§\author{TODO}
+§\maketitle
+§
+§\end{document}
+§== ENDTEMPLATE ==
 
 § -------------------------------------------------------------
 §  Text

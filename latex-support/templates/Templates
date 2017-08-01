@@ -29,6 +29,10 @@ SetMacro( 'BEAMER_UNIT', 'cm' )
 
 SetPath( 'graphics_path', './' )
 
+§ templates automatically included into new files
+§ set the property to an empty string to disable the insertion
+SetProperty ( 'Latex::FileSkeleton::Script', 'Comments.file prolog' )
+
 § =============================================================
 §  File Includes
 § =============================================================
@@ -60,6 +64,22 @@ IncludeFile( 'bibtex.templates' )
 == ENDFILETYPES ==
 
 IncludeFile( 'wizard.templates' )
+
+§ =============================================================
+§  Can be inserted when creating a new document.
+§  See configuration variable 'g:Latex_InsertFileProlog'
+§  and template property 'Latex::FileSkeleton::Script'.
+§
+§  - option 'nomenu': this will not create a menu entry
+§ =============================================================
+
+== Skeleton.packages == nomenu, below ==
+\documentclass[a4paper,10pt,DIV11]{scrartcl}
+== Skeleton.document == nomenu, below ==
+\begin{document}
+
+\end{document}
+== ENDTEMPLATE ==
 
 § =============================================================
 §  Help
