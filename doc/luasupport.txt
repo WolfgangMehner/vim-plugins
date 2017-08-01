@@ -15,10 +15,10 @@ functions.
 See the chapter |luasupport-introduction| for a quick overview and a short
 guide to this documentation.
 
-Lua is: Copyright 1994-2016 Lua.org, PUC-Rio.
+Lua is: Copyright 1994-2017 Lua.org, PUC-Rio.
 
 ==============================================================================
-0.  TABLE OF CONTENTS                            *luasupport-support-contents*
+0.  TABLE OF CONTENTS                                    *luasupport-contents*
 ==============================================================================
 
  1.    Introduction                     |luasupport-introduction|
@@ -90,7 +90,7 @@ The features of the plug-in are:
 
 The usage of most features is described in the chapter |luasupport-usage|.
 The chapter |luasupport-templates| gives a short introduction to the template
-system. The Lua executables and some other features require some
+system. The Lua executables and some other features may require some
 configuration, which is documented in the chapter |luasupport-configuration|.
 How to do a system-wide installation is outlined in |luasupport-system-wide|.
 
@@ -302,8 +302,8 @@ The file in the current buffer can be run or compiled with a keystroke.
 (^1) Works only inside the buffer "Lua Output", where running a script echoes
   the script's output, see |luasupport-config-output|.
 
-The functionality is also available through commands. These commands can also
-be used to set different maps in the ftplugin.
+The functionality is also available through ex-commands. These commands can
+also be used to set different maps in the ftplugin.
 
   Command                       Explanation
  ----------------------------------------------------------------------------
@@ -363,10 +363,10 @@ It is controlled by the commands:
 
 The fastest way of using them is to put maps like this into your .vimrc file:
 >
-  map  <silent>  <F5>  :copen<CR>
-  map  <silent>  <F6>  :cclose<CR>
-  map  <silent>  <F7>  :cprevious<CR>
-  map  <silent>  <F8>  :cnext<CR>
+  noremap  <silent>  <F5>  :copen<CR>
+  noremap  <silent>  <F6>  :cclose<CR>
+  noremap  <silent>  <F7>  :cprevious<CR>
+  noremap  <silent>  <F8>  :cnext<CR>
 <
 You can now use F5 and F6 to open and close the quickfix window and F7 and F8
 to jump to the errors.

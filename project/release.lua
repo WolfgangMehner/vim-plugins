@@ -221,7 +221,6 @@ filelists.lua = {
 	'doc/toolbox.txt',
 	'doc/toolboxmake.txt',
 	'ftdetect/template.vim',
-	'ftplugin/lua.vim',
 	'ftplugin/template.vim',
 	'plugin/lua-support.vim',
 	'syntax/template.vim',
