@@ -1,4 +1,4 @@
-README for lua-support.vim (Version 1.0.1pre) / July 02 2017
+README for lua-support.vim (Version 1.1alpha) / September 25 2017
 ================================================================================
 
   *  INSTALLATION
@@ -198,8 +198,10 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 RELEASE NOTES
 ================================================================================
 
-RELEASE NOTES FOR VERSION 1.0.1pre
+RELEASE NOTES FOR VERSION 1.1alpha
 ----------------------------------------------------------------------
+- Add output method 'terminal' for running scripts in a terminal window
+  (requires +terminal).
 - The templates which are inserted into new files as file skeletons can be
   specified in the templates library, via the property:
     Lua::FileSkeleton::Script

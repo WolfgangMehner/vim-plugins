@@ -42,7 +42,7 @@ if &cp || ( exists('g:Lua_Version') && ! exists('g:Lua_DevelopmentOverwrite') )
 	finish
 endif
 
-let g:Lua_Version= '1.0.1pre'     " version number of this script; do not change
+let g:Lua_Version= '1.1alpha'     " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " === Auxiliary functions ===   {{{1
@@ -174,6 +174,71 @@ function! s:ShellEscExec ( exec )
 		return shellescape ( a:exec )
 	endif
 endfunction    " ----------  end of function s:ShellEscExec  ----------
+
+"-------------------------------------------------------------------------------
+" s:ShellParseArgs : Turn cmd.-line arguments into a list.   {{{1
+"
+" Parameters:
+"   line - the command-line arguments to parse (string)
+" Returns:
+"   list - the arguments as a list (list)
+"-------------------------------------------------------------------------------
+
+function! s:ShellParseArgs ( line )
+
+	let list = []
+	let curr = ''
+
+	let line = a:line
+
+	while line != ''
+
+		if match ( line, '^\s' ) != -1
+			" non-escaped space -> finishes current argument
+			let line = matchstr ( line, '^\s\+\zs.*' )
+			if curr != ''
+				call add ( list, curr )
+				let curr = ''
+			endif
+		elseif match ( line, "^'" ) != -1
+			" start of a single-quoted string, parse past next single quote
+			let mlist = matchlist ( line, "^'\\([^']*\\)'\\(.*\\)" )
+			if empty ( mlist )
+				throw "ShellParseArgs:Syntax:no matching quote '"
+			endif
+			let curr .= mlist[1]
+			let line  = mlist[2]
+		elseif match ( line, '^"' ) != -1
+			" start of a double-quoted string, parse past next double quote
+			let mlist = matchlist ( line, '^"\(\%([^\"]\|\\.\)*\)"\(.*\)' )
+			if empty ( mlist )
+				throw 'ShellParseArgs:Syntax:no matching quote "'
+			endif
+			let curr .= substitute ( mlist[1], '\\\([\"]\)', '\1', 'g' )
+			let line  = mlist[2]
+		elseif match ( line, '^\\' ) != -1
+			" escape sequence outside of a string, parse one additional character
+			let mlist = matchlist ( line, '^\\\(.\)\(.*\)' )
+			if empty ( mlist )
+				throw 'ShellParseArgs:Syntax:single backspace \'
+			endif
+			let curr .= mlist[1]
+			let line  = mlist[2]
+		else
+			" otherwise parse up to next space
+			let mlist = matchlist ( line, '^\(\S\+\)\(.*\)' )
+			let curr .= mlist[1]
+			let line  = mlist[2]
+		endif
+	endwhile
+
+	" add last argument
+	if curr != ''
+		call add ( list, curr )
+	endif
+
+	return list
+endfunction    " ----------  end of function s:ShellParseArgs  ----------
 
 "-------------------------------------------------------------------------------
 " s:SID : Return the <SID>.   {{{2
@@ -582,7 +647,11 @@ if s:MSWIN
 else
 	let s:Lua_OutputMethodList = [ 'vim-io', 'vim-qf', 'buffer', 'xterm' ]
 endif
-let s:Lua_OutputMethod          = 'vim-io'     " 'vim-io', 'vim-qf', 'buffer' or 'xterm'
+if has ( 'terminal' ) && ! s:MSWIN              " :TODO:25.09.2017 16:16:WM: enable Windows, check how to start jobs with arguments under Windows
+	let s:Lua_OutputMethodList += [ 'terminal' ]
+endif
+call sort ( s:Lua_OutputMethodList )
+let s:Lua_OutputMethod          = 'vim-io'     " 'vim-io', 'vim-qf', 'buffer', or ... (see 's:Lua_OutputMethodList')
 let s:Lua_DirectRun             = 'no'         " 'yes' or 'no'
 let s:Lua_LineEndCommColDefault = 49
 let s:Lua_CommentLabel          = "BlockCommentNo_"
@@ -1156,9 +1225,11 @@ function! s:Run ( args )
 	if s:Lua_DirectRun == 'yes' && executable ( expand ( '%:p' ) )
 		let exec   = expand ( '%:p' )
 		let script = ''
+		let arg_list = [ exec ]
 	else
 		let exec   = s:Lua_Executable
 		let script = shellescape ( expand ( '%' ) )
+		let arg_list = [ exec, expand( '%' ) ]
 	endif
 
 	let exec = s:ShellEscExec ( exec )
@@ -1262,6 +1333,27 @@ function! s:Run ( args )
 			"
 		endif
 		"
+	elseif s:Lua_OutputMethod == 'terminal'
+
+		" method : "terminal"
+
+		try
+			let arg_list += s:ShellParseArgs ( a:args )      " expand to a list
+		catch /^ShellParseArgs:Syntax:/
+			let msg = v:exception[ len( 'ShellParseArgs:Syntax:') : -1 ]
+			return s:WarningMsg ( 'syntax error while parsing arguments: '.msg )
+		catch /.*/
+			return s:WarningMsg (
+						\ "internal error (" . v:exception . ")",
+						\ " - occurred at " . v:throwpoint )
+		endtry
+
+		let title = 'Lua Terminal : '.expand( '%:t' )
+
+		let buf_nr = term_start ( arg_list, {
+					\ 'term_name' : title,
+					\ } )
+
 	elseif s:Lua_OutputMethod == 'xterm'
 		"
 		" method : "xterm"
@@ -1566,6 +1658,8 @@ function! s:SetOutputMethod ( method )
 		let current = 'vim\ qf'
 	elseif s:Lua_OutputMethod == 'buffer'
 		let current = 'buffer'
+	elseif s:Lua_OutputMethod == 'terminal'
+		let current = 'terminal'
 	elseif s:Lua_OutputMethod == 'xterm'
 		let current = 'xterm'
 	endif
@@ -1944,7 +2038,11 @@ function! s:InitMenus()
 	exe ihead.'output\ method.vim\ &qf<TAB>quickfix     <Esc>:call <SID>SetOutputMethod("vim-qf")<CR>'
 	exe ahead.'output\ method.&buffer<TAB>quickfix           :call <SID>SetOutputMethod("buffer")<CR>'
 	exe ihead.'output\ method.&buffer<TAB>quickfix      <Esc>:call <SID>SetOutputMethod("buffer")<CR>'
-	if ! s:MSWIN
+	if index ( s:Lua_OutputMethodList, 'terminal' ) > -1
+		exe ahead.'output\ method.&terminal<TAB>interactive       :call <SID>SetOutputMethod("terminal")<CR>'
+		exe ihead.'output\ method.&terminal<TAB>interactive  <Esc>:call <SID>SetOutputMethod("terminal")<CR>'
+	endif
+	if index ( s:Lua_OutputMethodList, 'xterm' ) > -1
 		exe ahead.'output\ method.&xterm<TAB>interactive       :call <SID>SetOutputMethod("xterm")<CR>'
 		exe ihead.'output\ method.&xterm<TAB>interactive  <Esc>:call <SID>SetOutputMethod("xterm")<CR>'
 	endif

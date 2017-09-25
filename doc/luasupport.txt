@@ -1,8 +1,8 @@
-*luasupport.txt*                 Lua Support                       Jul 02 2017
+*luasupport.txt*                 Lua Support                       Sep 25 2017
 
 Lua Support                                          *lua-support* *luasupport*
 
-                            Plug-in version 1.0.1pre
+                             Plug-in version 1.1alpha
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -725,6 +725,9 @@ The modes 'vim-qf' and 'buffer' do not support interactive input, but provide
 quickfix support. With 'buffer' the output is redirected into a buffer, named
 "Lua Output", and thus is available for detailed analysis afterwards.
 
+The command can be run in a |terminal| window, if Vim is compiled with the
+|+terminal| feature.
+
 The possible settings are listed below:
 
   Value               Meaning
@@ -734,6 +737,8 @@ The possible settings are listed below:
   'buffer'            redirect the output into a buffer (supports quickfix)
   'xterm'             run in a separate xterm (supports input operations;
                        UNIX only, see |luasupport-config-xterm|)
+
+  'terminal'          run in a terminal window (requires |+terminal|)
  ----------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------

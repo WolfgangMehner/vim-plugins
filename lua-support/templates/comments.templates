@@ -59,6 +59,8 @@
 --      Returns:  {+RETURNS+}
 ------------------------------------------------------------------------
 
+== Comments.shebang == start, map:cb ==
+#!|LUA_INTERPRETER|<CURSOR>
 == ENDTEMPLATE ==
 
 § -------------------------------------------------------------
@@ -104,13 +106,5 @@
 |DATE|<CURSOR>
 == Comments.date+time == insert, sc:t ==
 |DATE| |TIME|<CURSOR>
-== ENDTEMPLATE ==
-
-§ -------------------------------------------------------------
-§  Interpreter
-§ -------------------------------------------------------------
-
-== Comments.shebang == start ==
-#!|LUA_INTERPRETER|<CURSOR>
 == ENDTEMPLATE ==
 

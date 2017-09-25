@@ -18,6 +18,8 @@ Project:
 - Configure the template which is inserted automatically when a new file is
   created.
 - Use 'Xterm_Executable' and 'Xterm_Options' everywhere.
+- Check how to start jobs with arguments under Windows.
+  Important for job_start() and term_start.
 
 vim.org:
 - (DONE) Reference GitHub on plug-in pages.
@@ -111,7 +113,10 @@ LaTeX:
 - (DONE) Add :LatexConvert as an ex-command.
 
 Lua:
-- (DONE) Documentation: Add setup of C API templates.
+- Enable output method "terminal" under Windows. (:TODO:25.09.2017 16:16:WM:)
+- Change behavior of terminal output. Opens a new window every time.
+- Add maps 'qf' and 'qj' for terminal output.
+- Complete documentation with regards to terminals.
 
 Matlab:
 - The old setup of the help via "SetMacro( 'HELP_BROWSER', ... )" is still
