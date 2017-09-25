@@ -34,7 +34,7 @@
 	default
 == ENDLIST ==
 
-== Beamer.usetheme == expandmenu, below, sc:u ==
+== Beamer.usetheme == expandmenu, below, map:but, sc:u ==
 |PickList( 'theme', 'beamer_themes' )|
 \usetheme<CURSOR>{|PICK|}
 == ENDTEMPLATE ==
@@ -56,7 +56,7 @@
 \begin{frame}<CURSOR>{<+TITLE+>}{<+SUBTITLE+>}
 <SPLIT>
 \end{frame}
-== Beamer.columns == expandmenu, below, map:bc, sc:c ==
+== Beamer.columns == expandmenu, below, map:bco, sc:c ==
 |PickList( 'alignment', 'beamer_col_align' )|
 \begin{columns}[|VALUE|<CURSOR>]
 	\begin{column}{<+WIDTH+>|BEAMER_UNIT|}
@@ -74,20 +74,20 @@
 
 == SEP: Beamer.sep-overlay ==
 
-== Beamer.itemize == below, map:bi, sc:i ==
+== Beamer.itemize == below, map:bit, sc:i ==
 \begin{itemize}
 	\item<1-> <CURSOR><SPLIT>
 	\item<2-> <+ITEM+>
 	\item<3-> <+ITEM+>
 \end{itemize}
-== Beamer.overprint == below, map:bo, sc:o ==
+== Beamer.overprint == below, map:bov, sc:o ==
 \begin{overprint}
 	\onslide<1>
 		<CURSOR><SPLIT>
 	\onslide<2>
 		<+SLIDE+>
 \end{overprint}
-== Beamer.pause == below, sc:p ==
+== Beamer.pause == below, map:bpa, sc:p ==
 \pause[<CURSOR>]
 == ENDTEMPLATE ==
 
@@ -114,7 +114,7 @@
 
 == Beamer.graphicspath == below, sc:p ==
 \graphicspath{{<CURSOR>}}
-== Beamer.includegraphics == below, map:bg, sc:g ==
+== Beamer.includegraphics == below, map:bgr, sc:g ==
 |PickFile( 'image', 'graphics_path' )|
 \includegraphics[width=<CURSOR>|BEAMER_UNIT|]{|PICK|}
 == ENDTEMPLATE ==
@@ -136,13 +136,13 @@ magenta
 yellow
 == ENDLIST ==
 
-== Beamer.alert == insert ==
+== Beamer.alert == insert, map:bta ==
 \alert<CURSOR><<+ON_SLIDES+>>{<SPLIT><-TEXT->}
-== Beamer.block == below, map:bbl, sc:b ==
+== Beamer.block == below, map:bbl ==
 \begin{block}{<CURSOR>}
 	<SPLIT><-CONTENT->
 \end{block}
-== Beamer.textcolor == insert ==
+== Beamer.textcolor == insert, map:btc ==
 |PickList( 'color name', 'textcolors' )|
 \textcolor{|PICK|}{<CURSOR><SPLIT><-TEXT->}
 == ENDTEMPLATE ==

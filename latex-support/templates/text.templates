@@ -210,6 +210,8 @@ SetExpansion ( 'Text.accents', '\|KEY:T|', '|VALUE|' )
 § -------------------------------------------------------------
 == LIST: textcomp == dict ==
 	'asciiacute'  : '´',
+	'asciitilde'  : '~',
+	'backslash'   : '\',
 	'bullet'      : '•',
 	'celsius'     : '℃',
 	'copyright'   : '©',
@@ -223,6 +225,7 @@ SetExpansion ( 'Text.accents', '\|KEY:T|', '|VALUE|' )
 	'pm'          : '±',
 	'registered'  : '®',
 	'section'     : '§',
+	'tildelow'    : '~',
 	'times'       : '⨉',
 	'trademark'   : '™',
 == ENDTEMPLATE ==
