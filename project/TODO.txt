@@ -96,17 +96,17 @@ Git:
   similar to the cmd-line completion plug-in.
 - (DONE) New status buffer output (version > 1.8.5):
   Update syntax highlighting, folding function, file actions
-- (WM) Do not use "sync fromstart" in syntax highlighting,
+- Do not use "sync fromstart" in syntax highlighting,
   is extremely slow for diff and log.
-- (WM) Document map "ow" in status buffer, mention in the README.
-- (DONE) Document map "ac", "cc", and "rc" in diff buffer, mention in the README.
-- (WM) Update buffer after executing a command: :GitBranch, :GitRemote, :GitStash, ...
-- (WM) Buffer "git stash list", maps for: create
-- (WM) Feed output of "git apply" into quickfix.
-- (WM) Rename function 'GitS_FoldLog' into 'GitS_FoldLogTxt'.
-- (WM) Set 'foldmethod' individually and not in 's:OpenGitBuffer'.
-- Enable and document :GitAbove, :GitBelow, and :GitTab.
+- Rename function 'GitS_FoldLog' into 'GitS_FoldLogTxt'.
+- Set 'foldmethod' individually and not in 's:OpenGitBuffer'.
+- Document map "ow" in status buffer, mention in the README.
+- Update buffer after executing a command: :GitBranch, :GitRemote, :GitStash, ...
+- Feed output of "git apply" into quickfix.
+- Remove :GitAbove, :GitBelow, and :GitTab again and ...
+- Use modifiers to split the window or open on a new tab.
 - Document 'g:Git_Editor', and the use of '$GIT_EDITOR', and add it to :GitSupportSettings.
+- Add 'git log -L line,line:file' in visual mode.
 
 LaTeX:
 - (DONE) Add :LatexConvert as an ex-command.

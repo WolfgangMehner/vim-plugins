@@ -1,8 +1,8 @@
-*gitsupport.txt*                  Git Support                      Jul 23 2016
+*gitsupport.txt*                  Git Support                      Sep 25 2017
 
 Git Support                                          *git-support* *gitsupport*
 
-                            Plug-in version 0.9.3
+                            Plug-in version 0.9.4pre
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -118,6 +118,7 @@ run the commands in every subdirectory of the project.
 
   |:GitK| <args>                     start gitk with the given arguments
   |:GitBash| <args>                  run git in an external terminal
+  |:GitTerm| <args>                  run git in a terminal window
 
   |:GitEdit| <fileid>                edit the file referred to by <fileid>
 
@@ -715,6 +716,15 @@ example: >
 Windows: If called without arguments, starts the git bash in interactive mode.
 
 ------------------------------------------------------------------------------
+                                                                    *:GitTerm*
+  :GitTerm <args> ~
+
+Runs git in a terminal window. Useful for interactive commands, for example: >
+  :GitTerm diff --color-words %
+<
+Requires |+terminal|.
+
+------------------------------------------------------------------------------
                                                                     *:GitEdit*
   :GitEdit <fileid> ~
 
@@ -801,11 +811,12 @@ If the Git command has been recognized, such as: >
   :GitDiff
   :Git! diff
   :GitBash diff
+  :GitTerm diff
 then command-line options are completed: >
-  :GitBash diff --c
-  :GitBash diff --cached
-  :GitBash diff --color-words
-  :GitBash diff --c...
+  :GitTerm diff --c
+  :GitTerm diff --cached
+  :GitTerm diff --color-words
+  :GitTerm diff --c...
 <
 ==============================================================================
 4.  SYNTAX HIGHLIGHTING                                    *gitsupport-syntax*

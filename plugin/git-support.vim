@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:GitSupport_Version below
 "       Created:  06.10.2012
-"      Revision:  18.07.2015
+"      Revision:  25.09.2017
 "       License:  Copyright (c) 2012-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:GitSupport_Version') && ! exists('g:GitSupport_DevelopmentOverwrite') )
 	finish
 endif
-let g:GitSupport_Version= '0.9.3'     " version number of this script; do not change
+let g:GitSupport_Version= '0.9.4pre'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
@@ -59,13 +59,13 @@ let g:GitSupport_Version= '0.9.3'     " version number of this script; do not ch
 " If g:<varname> does not exists, assign:
 "   g:<varname> = value
 "-------------------------------------------------------------------------------
-"
+
 function! s:ApplyDefaultSetting ( varname, value )
 	if ! exists ( 'g:'.a:varname )
-		exe 'let g:'.a:varname.' = '.string( a:value )
+		let { 'g:'.a:varname } = a:value
 	endif
 endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
-"
+
 "-------------------------------------------------------------------------------
 " s:AssembleCmdLine : Assembles a cmd-line with the cursor in the right place.   {{{2
 "
@@ -163,7 +163,7 @@ endfunction    " ----------  end of function s:CheckCWD  ----------
 " Returns:
 "   -
 "-------------------------------------------------------------------------------
-"
+
 function! s:ErrorMsg ( ... )
 	echohl WarningMsg
 	for line in a:000
@@ -171,7 +171,7 @@ function! s:ErrorMsg ( ... )
 	endfor
 	echohl None
 endfunction    " ----------  end of function s:ErrorMsg  ----------
-"
+
 "-------------------------------------------------------------------------------
 " s:EscapeCurrent : Escape the name of the current file for the shell,   {{{2
 "     and prefix it with "--".
@@ -191,19 +191,25 @@ endfunction    " ----------  end of function s:EscapeCurrent  ----------
 "
 " Parameters:
 "   varname - name of the variable (string)
+"   glbname - name of the global variable (string, optional)
 " Returns:
 "   -
 "
-" If g:<varname> exists, assign:
-"   s:<varname> = g:<varname>
-"-------------------------------------------------------------------------------
+" If 'glbname' is given, it is used as the name of the global variable.
+" Otherwise the global variable will also be named 'varname'.
 "
-function! s:GetGlobalSetting ( varname )
-	if exists ( 'g:'.a:varname )
-		exe 'let s:'.a:varname.' = g:'.a:varname
+" If g:<glbname> exists, assign:
+"   s:<varname> = g:<glbname>
+"-------------------------------------------------------------------------------
+
+function! s:GetGlobalSetting ( varname, ... )
+	let lname = a:varname
+	let gname = a:0 >= 1 ? a:1 : lname
+	if exists ( 'g:'.gname )
+		let { 's:'.lname } = { 'g:'.gname }
 	endif
 endfunction    " ----------  end of function s:GetGlobalSetting  ----------
-"
+
 "-------------------------------------------------------------------------------
 " s:GitCmdLineArgs : Split command-line parameters into a list.   {{{2
 "
@@ -347,7 +353,7 @@ endfunction    " ----------  end of function s:GitRepoDir  ----------
 " Returns:
 "   -
 "-------------------------------------------------------------------------------
-"
+
 function! s:ImportantMsg ( ... )
 	echohl Search
 	echo join ( a:000, "\n" )
@@ -447,7 +453,85 @@ function! s:Question ( text, ... )
 	"
 	return ret
 endfunction    " ----------  end of function s:Question  ----------
+
+"-------------------------------------------------------------------------------
+" s:ShellParseArgs : Turn cmd.-line arguments into a list.   {{{1
 "
+" Parameters:
+"   line - the command-line arguments to parse (string)
+" Returns:
+"   list - the arguments as a list (list)
+"-------------------------------------------------------------------------------
+
+function! s:ShellParseArgs ( line )
+
+	let list = []
+	let curr = ''
+
+	let line = a:line
+
+	while line != ''
+
+		if match ( line, '^\s' ) != -1
+			" non-escaped space -> finishes current argument
+			let line = matchstr ( line, '^\s\+\zs.*' )
+			if curr != ''
+				call add ( list, curr )
+				let curr = ''
+			endif
+		elseif match ( line, "^'" ) != -1
+			" start of a single-quoted string, parse past next single quote
+			let mlist = matchlist ( line, "^'\\([^']*\\)'\\(.*\\)" )
+			if empty ( mlist )
+				throw "ShellParseArgs:Syntax:no matching quote '"
+			endif
+			let curr .= mlist[1]
+			let line  = mlist[2]
+		elseif match ( line, '^"' ) != -1
+			" start of a double-quoted string, parse past next double quote
+			let mlist = matchlist ( line, '^"\(\%([^\"]\|\\.\)*\)"\(.*\)' )
+			if empty ( mlist )
+				throw 'ShellParseArgs:Syntax:no matching quote "'
+			endif
+			let curr .= substitute ( mlist[1], '\\\([\"]\)', '\1', 'g' )
+			let line  = mlist[2]
+		elseif match ( line, '^\\' ) != -1
+			" escape sequence outside of a string, parse one additional character
+			let mlist = matchlist ( line, '^\\\(.\)\(.*\)' )
+			if empty ( mlist )
+				throw 'ShellParseArgs:Syntax:single backspace \'
+			endif
+			let curr .= mlist[1]
+			let line  = mlist[2]
+		else
+			" otherwise parse up to next space
+			let mlist = matchlist ( line, '^\(\S\+\)\(.*\)' )
+			let curr .= mlist[1]
+			let line  = mlist[2]
+		endif
+	endwhile
+
+	" add last argument
+	if curr != ''
+		call add ( list, curr )
+	endif
+
+	return list
+endfunction    " ----------  end of function s:ShellParseArgs  ----------
+
+"-------------------------------------------------------------------------------
+" s:SID : Return the <SID>.   {{{2
+"
+" Parameters:
+"   -
+" Returns:
+"   SID - the SID of the script (string)
+"-------------------------------------------------------------------------------
+
+function! s:SID ()
+	return matchstr ( expand('<sfile>'), '<SNR>\zs\d\+\ze_SID$' )
+endfunction    " ----------  end of function s:SID  ----------
+
 "-------------------------------------------------------------------------------
 " s:StandardRun : execute 'git <cmd> ...'   {{{2
 "
@@ -559,9 +643,27 @@ function! s:VersionLess ( v1, v2 )
 	echoerr 'Something went wrong while comparing "'.a:v1.'" and "'.a:v2.'".'
 	return -1
 endfunction    " ----------  end of function s:VersionLess  ----------
+
+"-------------------------------------------------------------------------------
+" s:WarningMsg : Print a warning/error message.   {{{2
+"
+" Parameters:
+"   line1 - a line (string)
+"   line2 - a line (string)
+"   ...   - ...
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:WarningMsg ( ... )
+	echohl WarningMsg
+	echo join ( a:000, "\n" )
+	echohl None
+endfunction    " ----------  end of function s:WarningMsg  ----------
+
 " }}}2
 "-------------------------------------------------------------------------------
-"
+
 "-------------------------------------------------------------------------------
 " Custom menus.   {{{1
 "-------------------------------------------------------------------------------
@@ -669,7 +771,7 @@ endfunction    " ----------  end of function GitS_HelpTopicsComplete  ----------
 "
 "----------------------------------------------------------------------
 " list of file IDs for :GitEdit   {{{2
-"
+
 let s:EditFileIDs = [
 			\ 'config-global', 'config-local',
 			\ 'description',
@@ -677,11 +779,11 @@ let s:EditFileIDs = [
 			\ 'ignore-global', 'ignore-local', 'ignore-private',
 			\ 'modules',
 			\ ]
-"
-function! GitS_EditFilesComplete ( ArgLead, CmdLine, CursorPos )
+
+function! s:EditFilesComplete ( ArgLead, CmdLine, CursorPos )
 	return filter( copy( s:EditFileIDs ), 'v:val =~ "\\V\\<'.escape(a:ArgLead,'\').'\\w\\*"' )
-endfunction    " ----------  end of function GitS_EditFilesComplete  ----------
-"
+endfunction    " ----------  end of function s:EditFilesComplete  ----------
+
 " configuration defaults   {{{2
 " - only defaults which are relevant for Git-Support are listed here
 "
@@ -801,7 +903,10 @@ let s:DisableGitKReason  = ""
 let s:EnabledGitBash        = 1     " git bash enabled?
 let s:DisableGitBashMessage = "git bash not avaiable:"
 let s:DisableGitBashReason  = ""
-"
+
+" :TODO:25.09.2017 19:06:WM: enable Windows, check how to start jobs with arguments under Windows
+let s:EnabledGitTerm = has ( 'terminal' ) && ! s:MSWIN
+
 let s:FoundGitKScript  = 1
 let s:GitKScriptReason = ""
 "
@@ -830,8 +935,8 @@ function! s:CheckExecutable ( name, exe )
 	let enabled = 1
 	let reason  = ""
 	"
-	if executable =~ '^LANG=\w\+\s.'
-		let [ lang, executable ] = matchlist ( executable, '^\(LANG=\w\+\)\s\+\(.\+\)$' )[1:2]
+	if executable =~ '^LANG=\S\+\s\+\S'
+		let [ lang, executable ] = matchlist ( executable, '^\(LANG=\S\+\)\s\+\(.\+\)$' )[1:2]
 		if ! executable ( executable )
 			let enabled = 0
 			let reason = a:name." not executable: ".executable
@@ -964,8 +1069,9 @@ if s:Enabled
 	command! -nargs=* -complete=file                                 GitRun             :call GitS_Run(<q-args>,'')
 	command! -nargs=* -complete=file                                 GitBuf             :call GitS_Run(<q-args>,'b')
 	command! -nargs=* -complete=file                                 GitK               :call GitS_GitK(<q-args>)
-	command! -nargs=* -complete=file                                 GitBash            :call GitS_GitBash(<q-args>)
-	command! -nargs=1 -complete=customlist,GitS_EditFilesComplete    GitEdit            :call GitS_GitEdit(<q-args>)
+	command! -nargs=* -complete=file                                 GitBash            :call <SID>GitBash(<q-args>)
+	command! -nargs=* -complete=file                                 GitTerm            :call <SID>GitTerm(<q-args>)
+	command! -nargs=1 -complete=customlist,<SID>EditFilesComplete    GitEdit            :call <SID>GitEdit(<q-args>)
 	command! -nargs=0                                                GitSupportHelp     :call GitS_PluginHelp("gitsupport")
 	command! -nargs=?                -bang                           GitSupportSettings :call GitS_PluginSettings(('<bang>'=='!')+str2nr(<q-args>))
 	"
@@ -1720,7 +1826,7 @@ function! GitS_Commit( mode, param, flags )
 			" empty parameter list
 
 			return s:ErrorMsg ( 'The command :GitCommit currently can not be used this way.',
-						\ 'Set $GIT_EDITOR properly, or use the confirmation variable "g:Git_Editor".',
+						\ 'Set $GIT_EDITOR properly, or use the configuration variable "g:Git_Editor".',
 						\ 'Alternatively, supply the message using either the -m or -F options, or by',
 						\ 'using the special commands :GitCommitFile, :GitCommitMerge, or :GitCommitMsg.' )
 
@@ -2196,7 +2302,11 @@ function! GitS_Diff( action, ... ) range
 		"
 		" :TODO:18.01.2014 13:46:WM: use own version: git diff --word-diff=porcelain
 		" :TODO:18.01.2014 13:46:WM: uncheck parameters
-		call GitS_GitBash( 'diff --word-diff=color '.a:1 )
+		if s:EnabledGitTerm
+			call s:GitTerm( 'diff --word-diff=color '.a:1 )
+		else
+			call s:GitBash( 'diff --word-diff=color '.a:1 )
+		endif
 		return
 		"
 	elseif a:action == 'update'
@@ -3590,7 +3700,7 @@ function! s:Status_FileAction( action )
 		" section "modified", action "add-patch"
 		"
 		if f_status == 'modified' || f_status =~ '^.M$'
-			call GitS_GitBash( 'add -p -- '.shellescape( f_name_old ) )
+			call s:GitBash( 'add -p -- '.shellescape( f_name_old ) )
 			return 1
 		else
 			call s:ErrorMsg ( 'No "add -p" for file status "'.f_status.'".' )
@@ -3629,7 +3739,7 @@ function! s:Status_FileAction( action )
 		" section "modified", action "checkout-patch"
 		"
 		if f_status == 'modified' || f_status =~ '^.M$'
-			call GitS_GitBash( 'checkout -p -- '.shellescape( f_name_old ) )
+			call s:GitBash( 'checkout -p -- '.shellescape( f_name_old ) )
 			return 1
 		else
 			call s:ErrorMsg ( 'No "checkout -p" for file status "'.f_status.'".' )
@@ -3666,7 +3776,7 @@ function! s:Status_FileAction( action )
 		" section "staged", action "reset-patch"
 		"
 		if f_status == 'modified' || f_status =~ '^M.$'
-			call GitS_GitBash( 'reset -p -- '.shellescape( f_name_old ) )
+			call s:GitBash( 'reset -p -- '.shellescape( f_name_old ) )
 			return 1
 		else
 			call s:ErrorMsg ( 'No "reset -p" for file status "'.f_status.'".' )
@@ -4064,19 +4174,19 @@ function! GitS_GitK( param )
 endfunction    " ----------  end of function GitS_GitK  ----------
 "
 "-------------------------------------------------------------------------------
-" GitS_GitBash : execute 'xterm git ...' or "git bash"   {{{1
+" s:GitBash : execute 'xterm git ...' or "git bash"   {{{1
 "-------------------------------------------------------------------------------
-"
-function! GitS_GitBash( param )
-	"
+
+function! s:GitBash( param )
+
 	" :TODO:10.12.2013 20:14:WM: graphics available?
 	if s:EnabledGitBash == 0
 		return s:ErrorMsg ( s:DisableGitBashMessage, s:DisableGitBashReason )
 	endif
-	"
+
 	let title = 'git '.matchstr( a:param, '\S\+' )
 	let param = escape( a:param, '%#' )
-	"
+
 	if s:MSWIN && param =~ '^\s*$'
 		" no parameters: start interactive mode in background
 		silent exe '!start '.s:Git_GitBashExecutable.' --login -i'
@@ -4089,17 +4199,70 @@ function! GitS_GitBash( param )
 					\ .' -title '.shellescape( title )
 					\ .' -e '.shellescape( s:Git_Executable.' '.param.' ; echo "" ; read -p "  ** PRESS ENTER **  " dummy ' )
 	endif
-	"
-endfunction    " ----------  end of function GitS_GitBash  ----------
-"
+
+endfunction    " ----------  end of function s:GitBash  ----------
+
 "-------------------------------------------------------------------------------
-" GitS_GitEdit : edit a Git config file   {{{1
+" s:GitTerm : execute ':terminal git ...'   {{{1
 "-------------------------------------------------------------------------------
-"
-function! GitS_GitEdit( fileid )
-	"
+
+function! s:GitTerm ( arg_list )
+
+	" :TODO:25.09.2017 19:49:WM: clean up required?
+
+	if s:EnabledGitTerm == 0
+		return s:WarningMsg ( 'can not execute git terminal' )
+	endif
+
+	let git_lang = ''
+	let git_exec = s:Git_Executable
+
+	if git_exec =~ '^LANG=\S\+\s\+\S'
+		let [ git_lang, git_exec ] = matchlist ( git_exec, '^\(LANG=\S\+\)\s\+\(.\+\)$' )[1:2]
+	endif
+	let git_exec = s:ShellParseArgs ( git_exec )
+
+	if type ( a:arg_list ) == type ( '' )
+		let arg_list = git_exec + s:ShellParseArgs ( a:arg_list )
+	else
+		let arg_list = git_exec + a:arg_list
+	endif
+
+	let title = 'git'
+	if len ( arg_list ) >= 2
+		let title = 'git '.arg_list[1]
+	endif
+
+	try
+		if git_lang != ''
+			let lang_save = $LANG
+			let $LANG = git_lang
+		endif
+
+		let buf_nr = term_start ( arg_list, {
+					\ 'term_name' : title,
+					\ } )
+	catch /.*/
+		return s:WarningMsg (
+					\ "internal error (" . v:exception . ")",
+					\ " - occurred at " . v:throwpoint )
+	finally
+		if git_lang != ''
+			let $LANG = lang_save
+		endif
+	endtry
+
+
+endfunction    " ----------  end of function s:GitTerm  ----------
+
+"-------------------------------------------------------------------------------
+" s:GitEdit : edit a Git config file   {{{1
+"-------------------------------------------------------------------------------
+
+function! s:GitEdit( fileid )
+
 	let filename = ''
-	"
+
 	if a:fileid == 'config-global'
 		let filename = expand ( '$HOME/.gitconfig' )
 	elseif a:fileid == 'config-local'
@@ -4120,15 +4283,15 @@ function! GitS_GitEdit( fileid )
 	elseif a:fileid == 'modules'
 		let filename = s:GitRepoDir ( 'top/.gitmodules' )
 	endif
-	"
+
 	if filename == ''
 		call s:ErrorMsg ( 'No file with ID "'.a:fileid.'".' )
 	else
 		exe 'spl '.fnameescape( filename )
 	endif
-	"
-endfunction    " ----------  end of function GitS_GitEdit  ----------
-"
+
+endfunction    " ----------  end of function s:GitEdit  ----------
+
 "-------------------------------------------------------------------------------
 " GitS_PluginHelp : Plug-in help.   {{{1
 "-------------------------------------------------------------------------------
@@ -4290,7 +4453,7 @@ function! s:CmdLineComplete ( mode, ... )
 			let suc      = 0                          " initialized variable 'suc' needed below
 			let use_list = s:GitCommands
 			let sub_cmd  = matchstr ( cmdline_pre,
-						\       '\c\_^Git\%(!\|Run\|Buf\|Bash\)\?\s\+\zs[a-z\-]\+\ze\s'
+						\       '\c\_^Git\%(!\|Run\|Buf\|Bash\|Term\)\?\s\+\zs[a-z\-]\+\ze\s'
 						\ .'\|'.'\c\_^Git\zs[a-z]\+\ze\s' )
 			"
 			if sub_cmd != ''
