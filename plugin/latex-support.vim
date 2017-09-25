@@ -16,7 +16,7 @@
 "
 "       Version:  see variable g:LatexSupportVersion below.
 "       Created:  27.12.2012
-"      Revision:  27.01.2017
+"      Revision:  25.09.2017
 "       License:  Copyright (c) 2012-2015, Fritz Mehner
 "                 Copyright (c) 2016-2017, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
@@ -159,6 +159,71 @@ function! s:Redraw ( cmd_term, cmd_gui )
 		silent exe cmd
 	endif
 endfunction    " ----------  end of function s:Redraw  ----------
+
+"-------------------------------------------------------------------------------
+" s:ShellParseArgs : Turn cmd.-line arguments into a list.   {{{1
+"
+" Parameters:
+"   line - the command-line arguments to parse (string)
+" Returns:
+"   list - the arguments as a list (list)
+"-------------------------------------------------------------------------------
+
+function! s:ShellParseArgs ( line )
+
+	let list = []
+	let curr = ''
+
+	let line = a:line
+
+	while line != ''
+
+		if match ( line, '^\s' ) != -1
+			" non-escaped space -> finishes current argument
+			let line = matchstr ( line, '^\s\+\zs.*' )
+			if curr != ''
+				call add ( list, curr )
+				let curr = ''
+			endif
+		elseif match ( line, "^'" ) != -1
+			" start of a single-quoted string, parse past next single quote
+			let mlist = matchlist ( line, "^'\\([^']*\\)'\\(.*\\)" )
+			if empty ( mlist )
+				throw "ShellParseArgs:Syntax:no matching quote '"
+			endif
+			let curr .= mlist[1]
+			let line  = mlist[2]
+		elseif match ( line, '^"' ) != -1
+			" start of a double-quoted string, parse past next double quote
+			let mlist = matchlist ( line, '^"\(\%([^\"]\|\\.\)*\)"\(.*\)' )
+			if empty ( mlist )
+				throw 'ShellParseArgs:Syntax:no matching quote "'
+			endif
+			let curr .= substitute ( mlist[1], '\\\([\"]\)', '\1', 'g' )
+			let line  = mlist[2]
+		elseif match ( line, '^\\' ) != -1
+			" escape sequence outside of a string, parse one additional character
+			let mlist = matchlist ( line, '^\\\(.\)\(.*\)' )
+			if empty ( mlist )
+				throw 'ShellParseArgs:Syntax:single backspace \'
+			endif
+			let curr .= mlist[1]
+			let line  = mlist[2]
+		else
+			" otherwise parse up to next space
+			let mlist = matchlist ( line, '^\(\S\+\)\(.*\)' )
+			let curr .= mlist[1]
+			let line  = mlist[2]
+		endif
+	endwhile
+
+	" add last argument
+	if curr != ''
+		call add ( list, curr )
+	endif
+
+	return list
+endfunction    " ----------  end of function s:ShellParseArgs  ----------
 
 "-------------------------------------------------------------------------------
 " s:SID : Return the <SID>.   {{{2
@@ -672,7 +737,8 @@ let s:Latex_ViewerCall = {
 
 let s:Latex_ProcessingList = [ 'foreground' ]
 
-if has('job')
+" :TODO:25.09.2017 17:17:WM: enable Windows, check how to start jobs with arguments under Windows
+if has('job') && ! s:MSWIN
 	call add ( s:Latex_ProcessingList, 'background' )
 endif
 
@@ -930,7 +996,7 @@ function! s:WizardTabbing()
 	if param == ""
 		return
 	elseif match( param, '^\s*\d\+\(\s\+\d\+\)\{0,2}\s*$' ) < 0
-		return s:WarningMsg ( 'Wrong input format.' )
+		return s:WarningMsg ( ' Wrong input format.' )
 	endif
 
 	" parse the input
@@ -975,7 +1041,7 @@ function! s:WizardTabular()
 	if param == ""
 		return
 	elseif match( param, '^\s*\d\+\(\s\+\d\+\)\{0,2}\s*$' ) < 0
-		return s:WarningMsg ( 'Wrong input format.' )
+		return s:WarningMsg ( ' Wrong input format.' )
 	endif
 
 	" parse the input
@@ -1015,6 +1081,35 @@ endfunction    " ----------  end of function s:WizardTabular  ----------
 let s:BackgroundType   = ''                     " type of the job
 let s:BackgroundStatus = -1                     " status of the last job
 let s:BackgroundOutput = []                     " output of the last job
+
+"-------------------------------------------------------------------------------
+" s:BackgroundStart : Start a background job.   {{{2
+"
+" Parameters:
+"   id - the job ID (string)
+"   cmd - the shell command to run (string, or list of strings)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:BackgroundStart ( id, cmd )
+	if exists ( 's:BackgroundJob' )
+		return s:WarningMsg ( 'Job "'.s:BackgroundType.'" still running.' )
+	endif
+
+	let s:BackgroundType   = a:id
+	let s:BackgroundStatus = -1
+	let s:BackgroundOutput = []
+
+	let s:BackgroundJob = job_start ( a:cmd,
+				\ {
+				\ 'callback' : '<SNR>'.s:SID().'_BackgroundCB_IO',
+				\ 'exit_cb'  : '<SNR>'.s:SID().'_BackgroundCB_Exit',
+				\ } )
+
+	call s:ImportantMsg ( 'Starting "'.s:Latex_Typesetter.'" in background.' )
+
+	return
+endfunction    " ----------  end of function s:BackgroundStart  ----------
 
 "-------------------------------------------------------------------------------
 " s:BackgroundCB_IO : Callback for output from the background job.   {{{2
@@ -1120,7 +1215,7 @@ endfunction    " ----------  end of function s:SetMainDocument  ----------
 function! s:Compile ( args )
 
 	let typesettercall = s:Latex_TypesetterCall[s:Latex_Typesetter]
-	let typesetter     = split( s:Latex_TypesetterCall[s:Latex_Typesetter] )[0]
+	let typesetter     = split( typesettercall )[0]
 	if ! executable( typesetter )
 		return s:ErrorMsg ( 'Typesetter "'.typesetter.'" does not exist or its name is not unique.' )
 	endif
@@ -1128,16 +1223,14 @@ function! s:Compile ( args )
 	let dir = ''
 
 	" get the name of the source file
-	if a:args == ''
-		if s:Latex_MainDocument != ''
-			let source = s:Latex_MainDocument         " name of the main document
-			let dir    = fnamemodify ( source, ':p:h' )
-			exe 'lchdir '.fnameescape( dir )
-		else
-			let source = expand("%")                  " name of the file in the current buffer
-		endif
-	else
+	if a:args != ''
 		let source = a:args
+	elseif s:Latex_MainDocument != ''
+		let source = s:Latex_MainDocument           " name of the main document
+		let dir    = fnamemodify ( source, ':p:h' )
+		exe 'lchdir '.fnameescape( dir )
+	else
+		let source = expand("%")                    " name of the file in the current buffer
 	endif
 
 	" write source file if necessary
@@ -1148,23 +1241,20 @@ function! s:Compile ( args )
 	cclose
 
 	try
-		if s:Latex_Processing == 'background' && has ( 'job' )
-			if exists ( 's:BackgroundJob' )
-				return s:WarningMsg ( 'Job "'.s:BackgroundType.'" still running.' )
-			endif
+		if s:Latex_Processing == 'background'
+			try
+				let arg_list = s:ShellParseArgs ( typesettercall ) + [ source ]
+			catch /^ShellParseArgs:Syntax:/
+				let msg = v:exception[ len( 'ShellParseArgs:Syntax:') : -1 ]
+				return s:WarningMsg ( 'syntax error while parsing typersetter arguments: '.msg,
+							\ ' - typersetter call: '.typesettercall )
+			catch /.*/
+				return s:WarningMsg (
+							\ "internal error (" . v:exception . ")",
+							\ " - occurred at " . v:throwpoint )
+			endtry
 
-			let s:BackgroundType   = s:Latex_Typesetter
-			let s:BackgroundStatus = -1
-			let s:BackgroundOutput = []
-
-			let s:BackgroundJob = job_start (
-						\ typesettercall.' "'.( source ).'"', {
-						\ 'callback' : '<SNR>'.s:SID().'_BackgroundCB_IO',
-						\ 'exit_cb'  : '<SNR>'.s:SID().'_BackgroundCB_Exit'
-						\ } )
-
-			call s:ImportantMsg ( 'Starting "'.s:Latex_Typesetter.'" in background.' )
-
+			call s:BackgroundStart ( s:Latex_Typesetter, arg_list )
 			return
 		endif
 
@@ -1435,10 +1525,6 @@ endfunction    " ----------  end of function s:View ----------
 "   format - the conversion (string, can be empty)
 "-------------------------------------------------------------------------------
 function! s:Conversions ( filename, format )
-"	if &filetype != 'tex'
-"		echomsg	'The filetype of this buffer is not "tex".'
-"		return
-"	endif
 
 	let filename = a:filename
 	let convert  = a:format
@@ -1446,18 +1532,26 @@ function! s:Conversions ( filename, format )
 	" handle the conversion
 	if convert == ''
 		let convert = s:UserInput ( "start converter (tab exp.): ", '', 'customlist', sort( keys( s:Latex_ConverterCall ) ) )
+		if convert == ''
+			return
+		endif
+		echo ' '
 	endif
 
 	if ! has_key( s:Latex_ConverterCall, convert )
 		return s:WarningMsg ( 'Converter "'.convert.'" does not exist.' )
 	endif
 
-	let converter = s:Latex_ConverterCall[convert][0]
-	if converter == ''
+	let convertercall = s:Latex_ConverterCall[convert][0]
+	if convertercall == ''
 		return s:WarningMsg ( 'Converter "'.convert.'" not properly configured.' )
-	elseif ! executable( split(converter)[0] )
+	endif
+	let converter = split( convertercall )[0]
+	if ! executable( converter )
 		return s:WarningMsg ( 'Converter "'.converter.'" does not exist or its name is not unique.' )
 	endif
+
+	let need_output_file = s:Latex_ConverterCall[convert][1] == 'yes'
 
 	cclose
 
@@ -1468,13 +1562,36 @@ function! s:Conversions ( filename, format )
 	let fileroot = fnamemodify ( filename, ':r' )
 
 	let source  = fileroot.'.'.split( convert, '-' )[0]
-	let logfile = fileroot.'.conversion.log'
 	let target  = ''
-	if s:Latex_ConverterCall[convert][1] == 'yes'
-		let target = shellescape ( fileroot.'.'.split( convert, '-' )[1] )
+	let t_ext   = split( convert, '-' )[1]
+
+	if s:Latex_Processing == 'background'
+		try
+			let arg_list = s:ShellParseArgs ( convertercall ) + [ source ]
+		catch /^ShellParseArgs:Syntax:/
+			let msg = v:exception[ len( 'ShellParseArgs:Syntax:') : -1 ]
+			return s:WarningMsg ( 'syntax error while parsing converter arguments: '.msg,
+						\ ' - converter call: '.convertercall )
+		catch /.*/
+			return s:WarningMsg (
+						\ "internal error (" . v:exception . ")",
+						\ " - occurred at " . v:throwpoint )
+		endtry
+
+		if need_output_file
+			let arg_list += [ fileroot.'.'.t_ext ]
+		endif
+
+		call s:BackgroundStart ( convert, arg_list )
+		return
 	endif
 
-	silent exe '!'.converter.' '.shellescape( source ).' '.target.' > '.shellescape( logfile )
+	if need_output_file
+		let target = shellescape ( fileroot.'.'.t_ext )
+	endif
+	let logfile = fileroot.'.conversion.log'
+
+	silent exe '!'.convertercall.' '.shellescape( source ).' '.target.' > '.shellescape( logfile )
 
 	if v:shell_error
 		call s:Redraw('r!','r')                     " redraw after cclose, before echoing
@@ -2386,7 +2503,7 @@ function! Latex_Settings ( verbose )
 	else
 		let txt .= "           template files :  -not loaded-\n"
 	endif
-	let txt = txt.'   code snippet directory :  "'.g:Latex_CodeSnippets."\"\n"
+	let txt = txt.'   code snippet directory :  "'.s:Latex_CodeSnippets."\"\n"
 	" ----- dictionaries ------------------------
   if !empty(g:Latex_Dictionary_File)
 		let ausgabe= &dictionary

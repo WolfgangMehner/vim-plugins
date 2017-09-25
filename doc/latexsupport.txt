@@ -416,7 +416,7 @@ editing "myfile.tex" in the current buffer, then the defaults are as follows:
     (with typesetter *tex)
   :LatexView                               myfile.pdf       always (forked)
     (with typesetter *latex)
-  :LatexConvert                            myfile.FROM
+  :LatexConvert                            myfile.FROM      yes (|+job|)
     (the default name depends on the conversion operation: FROM-TO)
  ----------------------------------------------------------------------------
 

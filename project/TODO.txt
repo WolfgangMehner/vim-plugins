@@ -109,8 +109,8 @@ Git:
 - Document 'g:Git_Editor', and the use of '$GIT_EDITOR', and add it to :GitSupportSettings.
 
 LaTeX:
-- (DONE) Add 'luatex' as a type setter.
 - (DONE) Add :LatexConvert as an ex-command.
+- Enable processing method "background" under Windows. (:TODO:25.09.2017 17:17:WM:)
 
 Lua:
 - Enable output method "terminal" under Windows. (:TODO:25.09.2017 16:16:WM:)
