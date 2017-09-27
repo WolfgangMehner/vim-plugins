@@ -5,11 +5,12 @@
 "   Description:  Plugin perl-support: Profiler support
 " 
 "   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
+"        Author:  Fritz Mehner <mehner.fritz@web.de>
 "       Version:  1.0
 "       Created:  22.02.2009
-"      Revision:  ---
-"       License:  Copyright (c) 2009-2014, Dr. Fritz Mehner
+"      Revision:  27.09.2017
+"       License:  Copyright (c) 2009-2016, Fritz Mehner
+"                 Copyright (c) 2017-2017, Wolfgang Mehner
 "===============================================================================
 "
 " Exit quickly when:

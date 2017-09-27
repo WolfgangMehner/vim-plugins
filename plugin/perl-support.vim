@@ -61,7 +61,7 @@
 " need at least 7.0
 if v:version < 700
 	echohl WarningMsg
-	echo 'The plugin latex-support.vim needs Vim version >= 7.'
+	echo 'The plugin perl-support.vim needs Vim version >= 7.'
 	echohl None
 	finish
 endif
@@ -72,7 +72,7 @@ if exists("g:Perl_PluginVersion") || &cp
 	finish
 endif
 
-let g:Perl_PluginVersion= "5.5pre"
+let g:Perl_PluginVersion= "5.5pre"                  " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " === Auxiliary functions ===   {{{1
@@ -237,15 +237,17 @@ endfunction    " ----------  end of function s:WarningMsg  ----------
 " }}}2
 "-------------------------------------------------------------------------------
 
-"------------------------------------------------------------------------------
-"
-" Platform specific items:   {{{1
-" - plugin directory
-" - characters that must be escaped for filenames
-"
-let s:MSWIN = has("win16") || has("win32")   || has("win64")    || has("win95")
-let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
-"
+"-------------------------------------------------------------------------------
+" === Module setup ===   {{{1
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" == Platform specific items ==   {{{2
+"-------------------------------------------------------------------------------
+
+let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
+let s:UNIX  = has("unix")  || has("macunix") || has("win32unix")
+
 let s:Perl_Executable         = ''                     " the Perl interpreter used
 let s:Perl_Perl_is_executable = 0                      " the Perl interpreter used
 let g:Perl_Installation				= '*undefined*'
@@ -257,12 +259,12 @@ let s:Perl_CustomTemplateFile = ''              " the custom templates
 let g:Perl_FilenameEscChar 		= ''
 "
 let s:Perl_ToolboxDir					= []
-"
-if  s:MSWIN
-  " ==========  MS Windows  ======================================================
-	"
+
+if s:MSWIN
+	" ==========  MS Windows  ======================================================
+
 	let g:Perl_PluginDir = substitute( expand('<sfile>:p:h:h'), '\', '/', 'g' )
-	"
+
 	" change '\' to '/' to avoid interpretation as escape character
 	if match(	substitute( expand("<sfile>"), '\', '/', 'g' ),
 				\		substitute( expand("$HOME"),   '\', '/', 'g' ) ) == 0
@@ -281,15 +283,15 @@ if  s:MSWIN
 					\	g:Perl_PluginDir.'/autoload/mmtoolbox/',
 					\	$HOME.'/vimfiles/autoload/mmtoolbox/' ]
 	end
-	"
+
 	let s:Perl_Executable           = 'C:/Perl/bin/perl.exe'
   let g:Perl_FilenameEscChar      = ''
-	"
+
 else
-  " ==========  Linux/Unix  ======================================================
-	"
+	" ==========  Linux/Unix  ======================================================
+
 	let g:Perl_PluginDir = expand("<sfile>:p:h:h")
-	"
+
 	if match( expand("<sfile>"), resolve( expand("$HOME") ) ) == 0
 		" USER INSTALLATION ASSUMED
 		let g:Perl_Installation				= 'local'
@@ -306,28 +308,37 @@ else
 					\	g:Perl_PluginDir.'/autoload/mmtoolbox/',
 					\	$HOME.'/.vim/autoload/mmtoolbox/' ]
 	endif
-	"
+
 	let s:Perl_Executable           = '/usr/bin/perl'
   let g:Perl_FilenameEscChar      = ' \%#[]'
-	"
+
   " ==============================================================================
 endif
-"
+
 " g:Perl_CodeSnippets is used in autoload/perlsupportgui.vim
-"
 let s:Perl_CodeSnippets  				= g:Perl_PluginDir.'/perl-support/codesnippets/'
 call s:ApplyDefaultSetting( 'Perl_CodeSnippets', s:Perl_CodeSnippets )
-"
-"
+
+"-------------------------------------------------------------------------------
+" == Various settings ==   {{{2
+"-------------------------------------------------------------------------------
+
 call s:ApplyDefaultSetting( 'Perl_PerlTags', 'off' )
+
+"-------------------------------------------------------------------------------
+" Use of dictionaries   {{{3
 "
+" - keyword completion is enabled by the function 's:CreateAdditionalMaps' below
+"-------------------------------------------------------------------------------
+
 if !exists("g:Perl_Dictionary_File")
-  let g:Perl_Dictionary_File       = g:Perl_PluginDir.'/perl-support/wordlists/perl.list'
+	let g:Perl_Dictionary_File = g:Perl_PluginDir.'/perl-support/wordlists/perl.list'
 endif
-"
-"
-"  Modul global variables (with default values) which can be overridden.     {{{1
-"
+
+"-------------------------------------------------------------------------------
+" User configurable options   {{{3
+"-------------------------------------------------------------------------------
+
 let s:Perl_LoadMenus             = 'yes'        " display the menus ?
 let s:Perl_TemplateOverriddenMsg = 'no'
 let s:Perl_Ctrl_j								 = 'on'
@@ -348,8 +359,6 @@ let s:Perl_GuiSnippetBrowser     = 'gui'										" gui / commandline
 let s:Perl_CreateMenusDelayed    = 'yes'
 let s:Perl_DirectRun             = 'no'
 
-let s:Xterm_Executable           = 'xterm'
-
 let s:Perl_InsertFileHeader			   = 'yes'
 let s:Perl_Wrapper                 = g:Perl_PluginDir.'/perl-support/scripts/wrapper.sh'
 let s:Perl_PerlModuleListGenerator = g:Perl_PluginDir.'/perl-support/scripts/pmdesc3.pl'
@@ -361,10 +370,10 @@ let s:Perl_RootMenu								= '&Perl'
 let s:Perl_AdditionalTemplates    = mmtemplates#config#GetFt ( 'perl' )
 let s:Perl_UseToolbox             = 'yes'
 call s:ApplyDefaultSetting ( 'Perl_UseTool_make',    'yes' )
-"
-"------------------------------------------------------------------------------
 
-" look for global variables (if any), to override the defaults
+"-------------------------------------------------------------------------------
+" Get user configuration   {{{3
+"-------------------------------------------------------------------------------
 
 call s:GetGlobalSetting('Perl_Executable','Perl_Perl')
 call s:GetGlobalSetting('Perl_Executable')
@@ -399,9 +408,12 @@ call s:GetGlobalSetting('Perl_UseToolbox')
 call s:ApplyDefaultSetting( "Perl_OutputGvim",'vim' )
 call s:ApplyDefaultSetting( "Perl_PerlRegexSubstitution",'$~' )
 
-" xterm
+"-------------------------------------------------------------------------------
+" Xterm   {{{3
+"-------------------------------------------------------------------------------
 
-let s:Perl_XtermDefaults = "-fa courier -fs 12 -geometry 80x24"
+let s:Xterm_Executable   = 'xterm'
+let s:Perl_XtermDefaults = '-fa courier -fs 12 -geometry 80x24'
 
 " check 'g:Perl_XtermDefaults' for backwards compatibility
 if ! exists ( 'g:Xterm_Options' )
@@ -415,8 +427,11 @@ endif
 call s:GetGlobalSetting ( 'Xterm_Executable' )
 call s:ApplyDefaultSetting ( 'Xterm_Options', s:Perl_XtermDefaults )
 
-" flags for perldoc
+"-------------------------------------------------------------------------------
+" Control variables (not user configurable)   {{{3
+"-------------------------------------------------------------------------------
 
+" flags for perldoc
 if has("gui_running")
   let s:Perl_perldoc_flags  = ""
 else
@@ -431,10 +446,6 @@ let s:Perl_Printheader = escape( s:Perl_Printheader, ' %' )
 let s:Perl_Perl_is_executable = executable(s:Perl_Executable)
 let s:Perl_InterfaceVersion   = ''
 
-"------------------------------------------------------------------------------
-"  Control variables (not user configurable)
-"------------------------------------------------------------------------------
-"
 let s:Perl_MenuVisible 						= 'no'
 let s:Perl_TemplateJumpTarget 		= ''
 
@@ -445,30 +456,13 @@ let s:Perl_saved_global_option		= {}
 "
 let s:PCseverityName	= [ "DUMMY", "brutal", "cruel", "harsh", "stern", "gentle" ]
 let s:PCverbosityName	= [ '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11' ]
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Perl_Input     {{{1
-"   DESCRIPTION:  Input after a highlighted prompt
-"    PARAMETERS:  prompt - prompt
-"                 text   - default reply
-"                 ...    - completion (optional)
-"       RETURNS:
-"===============================================================================
-function! Perl_Input ( prompt, text, ... )
-	echohl Search																					" highlight prompt
-	call inputsave()																			" preserve typeahead
-	if a:0 == 0 || empty(a:1)
-		let retval	=input( a:prompt, a:text )
-	else
-		let retval	=input( a:prompt, a:text, a:1 )
-	endif
-	call inputrestore()																		" restore typeahead
-	echohl None																						" reset highlighting
-	let retval  = substitute( retval, '^\s\+', "", "" )		" remove leading whitespaces
-	let retval  = substitute( retval, '\s\+$', "", "" )		" remove trailing whitespaces
-	return retval
-endfunction    " ----------  end of function Perl_Input ----------
-"
+
+" }}}3
+"-------------------------------------------------------------------------------
+
+" }}}2
+"-------------------------------------------------------------------------------
+
 "------------------------------------------------------------------------------
 "  Perl_SaveGlobalOption    {{{1
 "  param 1 : option name
@@ -2640,19 +2634,17 @@ INITIALIZE_PERL_INTERFACE
 		endif
 	endif
 endfunction    " ----------  end of function Perl_InitializePerlInterface  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  CreateAdditionalMaps     {{{1
-"   DESCRIPTION:  create additional maps
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
+
+"-------------------------------------------------------------------------------
+" s:CreateAdditionalMaps : Create additional maps.   {{{1
+"-------------------------------------------------------------------------------
 function! s:CreateAdditionalMaps ()
-	"
+
+	" we allow this, since the default is 'off'
 	if exists('g:Perl_Perltidy') && g:Perl_Perltidy == 'on' && executable("perltidy")
 		setlocal equalprg='perltidy'
 	endif
-	"
+
 	" ---------- Perl dictionary -------------------------------------------------
 	" This will enable keyword completion for Perl
 	" using Vim's dictionary feature |i_CTRL-X_CTRL-K|.
@@ -2956,14 +2948,14 @@ endif
 	"
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 
-"===============================================================================
-"
-" Plug-in setup:  {{{1
-"
+"-------------------------------------------------------------------------------
+" === Setup: Templates, toolbox and menus ===   {{{1
+"-------------------------------------------------------------------------------
+
 "------------------------------------------------------------------------------
 "  setup the toolbox
 "------------------------------------------------------------------------------
-"
+
 if s:Perl_UseToolbox == 'yes'
 	"
 	let s:Perl_Toolbox = mmtoolbox#tools#NewToolbox ( 'Perl' )

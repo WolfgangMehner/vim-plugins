@@ -6,10 +6,13 @@
 "                 Regular expression explanation and visualization.
 "
 "   VIM Version:  7.0+
-"        Author:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
+"        Author:  Wolfgang Mehner <wolfgang-mehner@web.de>
+"                 Fritz Mehner <mehner.fritz@web.de>
 "       Version:  1.0
-"       Created:  16.12.2008 18:16:55
-"       License:  Copyright 2008-2014, Dr. Fritz Mehner
+"       Created:  16.12.2008
+"      Revision:  27.09.2017
+"       License:  Copyright (c) 2008-2016, Fritz Mehner
+"                 Copyright (c) 2017-2017, Wolfgang Mehner
 "===============================================================================
 "
 " Exit quickly when:
@@ -34,6 +37,65 @@ let s:Perl_PerlRegexVisualizeFlag         = ''
 let s:Perl_PerlRegexPrematch              = ''
 let s:Perl_PerlRegexMatch                 = ''
 "
+"-------------------------------------------------------------------------------
+" s:UserInput : Input after a highlighted prompt.   {{{1
+"
+" Parameters:
+"   prompt - the prompt (string)
+"   text - the default input (string)
+"   compl - completion (string, optional)
+"   clist - list, if 'compl' is "customlist" (list, optional)
+" Returns:
+"   input - the user input, an empty sting if the user hit <ESC> (string)
+"-------------------------------------------------------------------------------
+
+function! s:UserInput ( prompt, text, ... )
+
+	echohl Search                                         " highlight prompt
+	call inputsave()                                      " preserve typeahead
+	if a:0 == 0 || a:1 == ''
+		let retval = input( a:prompt, a:text )
+	elseif a:1 == 'customlist'
+		let s:UserInputList = a:2
+		let retval = input( a:prompt, a:text, 'customlist,<SNR>'.s:SID().'_UserInputEx' )
+		let s:UserInputList = []
+	else
+		let retval = input( a:prompt, a:text, a:1 )
+	endif
+	call inputrestore()                                   " restore typeahead
+	echohl None                                           " reset highlighting
+
+	let retval  = substitute( retval, '^\s\+', "", "" )   " remove leading whitespaces
+	let retval  = substitute( retval, '\s\+$', "", "" )   " remove trailing whitespaces
+
+	return retval
+
+endfunction    " ----------  end of function s:UserInput ----------
+
+"-------------------------------------------------------------------------------
+" s:SID : Return the <SID>.   {{{2
+"
+" Parameters:
+"   -
+" Returns:
+"   SID - the SID of the script (string)
+"-------------------------------------------------------------------------------
+function! s:SID ()
+	return matchstr ( expand('<sfile>'), '<SNR>\zs\d\+\ze_SID$' )
+endfunction    " ----------  end of function s:SID  ----------
+
+"-------------------------------------------------------------------------------
+" s:UserInputEx : ex-command for s:UserInput.   {{{2
+"-------------------------------------------------------------------------------
+function! s:UserInputEx ( ArgLead, CmdLine, CursorPos )
+	if empty( a:ArgLead )
+		return copy( s:UserInputList )
+	endif
+	return filter( copy( s:UserInputList ), 'v:val =~ ''\V\<'.escape(a:ArgLead,'\').'\w\*''' )
+endfunction    " ----------  end of function s:UserInputEx  ----------
+" }}}2
+"-------------------------------------------------------------------------------
+
 "------------------------------------------------------------------------------
 "   run the regular expression analyzer YAPE::Regex::Explain     {{{1
 "------------------------------------------------------------------------------
@@ -177,10 +239,10 @@ function! perlsupportregex#Perl_RegexPickFlag ( mode )
     normal gvy
     let s:Perl_PerlRegexVisualizeFlag = eval('@"')
   else
-    let s:Perl_PerlRegexVisualizeFlag = Perl_Input("regex modifier(s) [imsxg] : ", s:Perl_PerlRegexVisualizeFlag , '')
+    let s:Perl_PerlRegexVisualizeFlag = s:UserInput("regex modifier(s) [imsxg] : ", s:Perl_PerlRegexVisualizeFlag , '')
   endif
   let s:Perl_PerlRegexVisualizeFlag=substitute(s:Perl_PerlRegexVisualizeFlag, '[^imsxg]', '', 'g')
-  echomsg "regex modifier(s) : '".s:Perl_PerlRegexVisualizeFlag."'"
+  echomsg " regex modifier(s) : '".s:Perl_PerlRegexVisualizeFlag."'"
 endfunction    " ----------  end of function perlsupportregex#Perl_RegexPickFlag  ----------
 "
 "------------------------------------------------------------------------------
