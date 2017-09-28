@@ -1,4 +1,4 @@
-README for bash-support.vim (Version 4.4pre) / June 22 2017
+README for bash-support.vim (Version 4.4pre) / September 28 2017
 ================================================================================
 
   *  INSTALLATION
@@ -177,13 +177,23 @@ RELEASE NOTES
 
 RELEASE NOTES FOR VERSION 4.4pre
 ----------------------------------------------------------------------
-- Add shell options and variables for BASH Version 4.4.
+- Add command :Bash to run the interpreter with arguments.
+- Add command :BashInterpArguments as a synonym of :BashArguments.
+- Add command :BashDirectRun to run executable scripts without g:BASH_Executable.
+- Add command :BashOutputMethod to set the output destination for :Bash.
+- Add output method 'terminal' for running scripts in a terminal window
+  (requires +terminal).
 - The templates which are inserted into new files as file skeletons can be
   specified in the templates library, via the property:
     Bash::FileSkeleton::Script
+- Use 'g:Xterm_Executable'.
+- Use 'g:Xterm_Options' instead of 'g:BASH_XtermDefaults'. The setting
+  'g:BASH_XtermDefaults' still works for backwards compatibility.
 - Add configuration variables 'g:BASH_Ctrl_j' and 'g:BASH_Ctrl_d' to control the
   creation of the CTRL+J and CTRL+D maps.
-- New and reworked templates.
+- Remove the definition of the maps 'CTRL+F9' and 'SHIFT+F9'. Add them to your
+  filetype plug-in if you want to use them.
+- Add shell options and variables for BASH Version 4.4.
 - Minor corrections and improvements.
 
 RELEASE NOTES FOR OLDER VERSIONS

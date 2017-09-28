@@ -55,7 +55,9 @@ Bash:
 - (DONE) Template library, list 'IORedirection': check "duplicate STDIN from file descr n" and "duplicate STDOUT to file descr n"
 - (DONE) Template library, list 'TestsFileTypes': "symbolic link -h".
 - (DONE) Template library, list 'TestsFileCharacteristics': "file exists -a". Is apparently deprecated.
-- Compl.-func. 'BASH_BuiltinComplete' missing.
+- (DONE) Compl.-func. 'BASH_BuiltinComplete' missing.
+  -> Solved via 's:UserInput' and built-in list from template library.
+- Still need Bash wrapper script?
 
 C/C++:
 - (FM, DONE) Documentation: Change documentation with regard to Make integration.
