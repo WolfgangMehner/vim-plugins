@@ -989,18 +989,14 @@ function! s:Run ( args, mode, ... ) range
 			"let arg_list = [ exec ] + s:ShellParseArgs ( mlist[2] )
 		"else
 			let exec = s:BASH_Executable
-			let arg_list = [ exec ]
 		"end
 		let script = tmpfile
-		let arg_list += [ tmpfile ]
 	elseif s:BASH_DirectRun == 'yes' && executable ( expand ( '%:p' ) )
 		let exec   = expand ( '%:p' )
 		let script = ''
-		let arg_list = [ exec ]
 	else
 		let exec   = s:BASH_Executable
-		let script = shellescape ( expand ( '%' ) )
-		let arg_list = [ exec, expand( '%' ) ]
+		let script = expand ( '%' )
 	endif
 
 	" the cmd.-line arguments
@@ -1022,7 +1018,7 @@ function! s:Run ( args, mode, ... ) range
 
 		" method : "vim - interactive"
 
-		exe '!'.exec.args_interp.' '.script.' '.args_script
+		exe '!'.exec.args_interp.' '.shellescape( script ).' '.args_script
 
 		if exists( 'tmpfile' )
 			call delete ( tmpfile )                   " delete the tmpfile
@@ -1032,7 +1028,7 @@ function! s:Run ( args, mode, ... ) range
 		" method : "vim - quickfix"
 
 		" run script
-		let bash_output = system ( exec.args_interp.' '.script.' '.args_script )
+		let bash_output = system ( exec.args_interp.' '.shellescape( script ).' '.args_script )
 
 		" successful?
 		if v:shell_error == 0
@@ -1092,7 +1088,7 @@ function! s:Run ( args, mode, ... ) range
 		setlocal modifiable
 
 		silent exe '%delete _'
-		silent exe '0r!'.exec.args_interp.' '.script.' '.args_script
+		silent exe '0r!'.exec.args_interp.' '.shellescape( script ).' '.args_script
 		silent exe '$delete _'
 
 		if v:shell_error == 0
@@ -1128,7 +1124,16 @@ function! s:Run ( args, mode, ... ) range
 		" method : "terminal"
 
 		try
-			let arg_list += s:ShellParseArgs ( a:args )      " expand to a list
+			let arg_list = [ exec ]
+			if args_interp != '' && script != ''
+				let arg_list += s:ShellParseArgs ( args_interp )
+			endif
+			if script != ''
+				let arg_list += [ script ]
+			endif
+			if args_script != ''
+				let arg_list += s:ShellParseArgs ( args_script )   " expand to a list
+			endif
 		catch /^ShellParseArgs:Syntax:/
 			let msg = v:exception[ len( 'ShellParseArgs:Syntax:') : -1 ]
 			return s:WarningMsg ( 'syntax error while parsing arguments: '.msg )
@@ -1164,7 +1169,7 @@ function! s:Run ( args, mode, ... ) range
 
 		silent exe '!'.s:Xterm_Executable.' '.g:Xterm_Options
 					\ .' -title '.shellescape( title )
-					\ .' -e '.shellescape( exec.args_interp.' '.script.' '.args_script.' ; echo "" ; read -p "  ** PRESS ENTER **  " dummy '.rm_tmp ).' &'
+					\ .' -e '.shellescape( exec.args_interp.' '.shellescape( script ).' '.args_script.' ; echo "" ; read -p "  ** PRESS ENTER **  " dummy '.rm_tmp ).' &'
 	endif
 
 	call s:Redraw ( 'r!', '' )                    " redraw in terminal
@@ -1569,11 +1574,11 @@ function! s:InitMenus()
 	exe vhead.'save\ +\ &run\ script<Tab>'.esc_mapl.'rr       <C-C>:call <SID>Run("","v")<CR>'
 	exe ihead.'save\ +\ &run\ script<Tab>'.esc_mapl.'rr       <C-C>:call <SID>Run("","n")<CR>'
 
-	exe " menu          ".s:BASH_RootMenu.'.&Run.script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra       :BashScriptArguments<Space>'
-	exe "imenu          ".s:BASH_RootMenu.'.&Run.script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra  <C-C>:BashScriptArguments<Space>'
+	exe " menu          ".s:BASH_RootMenu.'.&Run.script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra       <Plug>BashSupportSetBashScriptArgs'
+	exe "imenu          ".s:BASH_RootMenu.'.&Run.script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra  <C-C><Plug>BashSupportSetBashScriptArgs'
 	"
-	exe " menu          ".s:BASH_RootMenu.'.&Run.Bash\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'rba                  :BashInterpArguments<Space>'
-	exe "imenu          ".s:BASH_RootMenu.'.&Run.Bash\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'rba             <C-C>:BashInterpArguments<Space>'
+	exe " menu          ".s:BASH_RootMenu.'.&Run.Bash\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'rba                  <Plug>BashSupportSetBashInterpArgs'
+	exe "imenu          ".s:BASH_RootMenu.'.&Run.Bash\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'rba             <C-C><Plug>BashSupportSetBashInterpArgs'
 	"
   exe " menu <silent> ".s:BASH_RootMenu.'.&Run.update,\ check\ &syntax<Tab>'.esc_mapl.'rc          :call BASH_SyntaxCheck()<CR>'
   exe "imenu <silent> ".s:BASH_RootMenu.'.&Run.update,\ check\ &syntax<Tab>'.esc_mapl.'rc     <C-C>:call BASH_SyntaxCheck()<CR>'
@@ -1757,14 +1762,17 @@ function! s:CreateAdditionalMaps ()
 	nnoremap    <buffer>  <silent>  <LocalLeader>rr        :call <SID>Run("","n")<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rr   <Esc>:call <SID>Run("","n")<CR>
 	vnoremap    <buffer>  <silent>  <LocalLeader>rr   <Esc>:call <SID>Run("","v")<CR>
-	 noremap    <buffer>  <silent>  <LocalLeader>rc        :call BASH_SyntaxCheck()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>rc        :call BASH_SyntaxCheck()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rc   <C-C>:call BASH_SyntaxCheck()<CR>
-	 noremap    <buffer>  <silent>  <LocalLeader>rco       :call BASH_SyntaxCheckOptionsLocal()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>rc   <C-C>:call BASH_SyntaxCheck()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>rco       :call BASH_SyntaxCheckOptionsLocal()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rco  <C-C>:call BASH_SyntaxCheckOptionsLocal()<CR>
-	 noremap    <buffer>            <LocalLeader>ra        :BashScriptArguments<Space>
-	inoremap    <buffer>            <LocalLeader>ra   <Esc>:BashScriptArguments<Space>
-	 noremap    <buffer>            <LocalLeader>rba       :BashInterpArguments<Space>
-	inoremap    <buffer>            <LocalLeader>rba  <Esc>:BashInterpArguments<Space>
+	vnoremap    <buffer>  <silent>  <LocalLeader>rco  <C-C>:call BASH_SyntaxCheckOptionsLocal()<CR>
+	" these maps have to remap
+	 map        <buffer>            <LocalLeader>ra        <Plug>BashSupportSetBashScriptArgs
+	imap        <buffer>            <LocalLeader>ra   <Esc><Plug>BashSupportSetBashScriptArgs
+	 map        <buffer>            <LocalLeader>rba       <Plug>BashSupportSetBashInterpArgs
+	imap        <buffer>            <LocalLeader>rba  <Esc><Plug>BashSupportSetBashInterpArgs
 
 	if s:UNIX
 		nnoremap    <buffer>  <silent>  <LocalLeader>re        :call <SID>MakeExecutable()<CR>
@@ -2303,6 +2311,9 @@ endif
 " user defined commands (working everywhere)
 command! -nargs=? -complete=custom,<SID>GetOutputMethodList BashOutputMethod   call <SID>SetOutputMethod(<q-args>)
 command! -nargs=? -complete=custom,<SID>GetDirectRunList    BashDirectRun      call <SID>SetDirectRun(<q-args>)
+
+nnoremap  <expr>  <Plug>BashSupportSetBashScriptArgs  ':BashScriptArguments '.( exists( 'b:BASH_ScriptCmdLineArgs' ) ? b:BASH_ScriptCmdLineArgs : '' )
+nnoremap  <expr>  <Plug>BashSupportSetBashInterpArgs  ':BashInterpArguments '.( exists( 'b:BASH_InterpCmdLineArgs' ) ? b:BASH_InterpCmdLineArgs : '' )
 
 if has( 'autocmd' )
 	"
