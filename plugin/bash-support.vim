@@ -600,7 +600,6 @@ if s:MSWIN
 	let s:BASH_Display            = ''
 	let s:BASH_ManualReader       = 'man.exe'
 	let s:BASH_Executable         = 'bash.exe'
-	let s:BASH_OutputGvim         = 'xterm'
 else
 	" ==========  Linux/Unix  ======================================================
 
@@ -625,7 +624,6 @@ else
 	let s:BASH_FilenameEscChar    = ' \%#[]'
 	let s:BASH_Display            = $DISPLAY
 	let s:BASH_ManualReader       = '/usr/bin/man'
-	let s:BASH_OutputGvim         = 'vim'
 endif
 
 let s:BASH_AdditionalTemplates = mmtemplates#config#GetFt ( 'bash' )
@@ -665,6 +663,7 @@ if has ( 'terminal' ) && ! s:MSWIN              " :TODO:25.09.2017 16:16:WM: ena
 	let s:BASH_OutputMethodList += [ 'terminal' ]
 endif
 call sort ( s:BASH_OutputMethodList )
+" :TODO:28.09.2017 18:33:WM: Windows defaults (was 'xterm', ran shell in a separate window!?), check running under Windows,
 let s:BASH_OutputMethod           = 'vim-io'     " 'vim-io', 'vim-qf', 'buffer' or ... (see 's:BASH_OutputMethodList')
 let s:BASH_DirectRun              = 'no'         " 'yes' or 'no'
 let s:BASH_LineEndCommColDefault	= 49
@@ -1012,7 +1011,7 @@ function! s:Run ( args, mode, ... ) range
 	if a:args != ''
 		let args_script = a:args
 	elseif exists( 'b:BASH_ScriptCmdLineArgs' )
-		let args_script = 'b:BASH_ScriptCmdLineArgs'
+		let args_script = b:BASH_ScriptCmdLineArgs
 	else
 		let args_script = ''
 	endif
@@ -1566,24 +1565,24 @@ function! s:InitMenus()
 	let vhead = 'vnoremenu <silent> '.s:BASH_RootMenu.'.Run.'
 	let ihead = 'inoremenu <silent> '.s:BASH_RootMenu.'.Run.'
 
-	exe ahead.'save\ +\ &run\ script<Tab><C-F9>\ \ '.esc_mapl.'rr            :call <SID>Run("","n")<CR>'
-	exe vhead.'save\ +\ &run\ script<Tab><C-F9>\ \ '.esc_mapl.'rr       <C-C>:call <SID>Run("","v")<CR>'
-	exe ihead.'save\ +\ &run\ script<Tab><C-F9>\ \ '.esc_mapl.'rr       <C-C>:call <SID>Run("","n")<CR>'
+	exe ahead.'save\ +\ &run\ script<Tab>'.esc_mapl.'rr            :call <SID>Run("","n")<CR>'
+	exe vhead.'save\ +\ &run\ script<Tab>'.esc_mapl.'rr       <C-C>:call <SID>Run("","v")<CR>'
+	exe ihead.'save\ +\ &run\ script<Tab>'.esc_mapl.'rr       <C-C>:call <SID>Run("","n")<CR>'
 
-	exe " menu          ".s:BASH_RootMenu.'.&Run.script\ cmd\.\ line\ &arg\.<Tab><S-F9>\ \ '.esc_mapl.'ra      :BashScriptArguments<Space>'
-	exe "imenu          ".s:BASH_RootMenu.'.&Run.script\ cmd\.\ line\ &arg\.<Tab><S-F9>\ \ '.esc_mapl.'ra <C-C>:BashScriptArguments<Space>'
+	exe " menu          ".s:BASH_RootMenu.'.&Run.script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra       :BashScriptArguments<Space>'
+	exe "imenu          ".s:BASH_RootMenu.'.&Run.script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra  <C-C>:BashScriptArguments<Space>'
 	"
 	exe " menu          ".s:BASH_RootMenu.'.&Run.Bash\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'rba                  :BashInterpArguments<Space>'
 	exe "imenu          ".s:BASH_RootMenu.'.&Run.Bash\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'rba             <C-C>:BashInterpArguments<Space>'
 	"
-  exe " menu <silent> ".s:BASH_RootMenu.'.&Run.update,\ check\ &syntax<Tab><A-F9>\ \ '.esc_mapl.'rc          :call BASH_SyntaxCheck()<CR>'
-  exe "imenu <silent> ".s:BASH_RootMenu.'.&Run.update,\ check\ &syntax<Tab><A-F9>\ \ '.esc_mapl.'rc     <C-C>:call BASH_SyntaxCheck()<CR>'
-	exe " menu <silent> ".s:BASH_RootMenu.'.&Run.syntax\ check\ o&ptions<Tab>'.esc_mapl.'rco               :call BASH_SyntaxCheckOptionsLocal()<CR>'
-	exe "imenu <silent> ".s:BASH_RootMenu.'.&Run.syntax\ check\ o&ptions<Tab>'.esc_mapl.'rco          <C-C>:call BASH_SyntaxCheckOptionsLocal()<CR>'
+  exe " menu <silent> ".s:BASH_RootMenu.'.&Run.update,\ check\ &syntax<Tab>'.esc_mapl.'rc          :call BASH_SyntaxCheck()<CR>'
+  exe "imenu <silent> ".s:BASH_RootMenu.'.&Run.update,\ check\ &syntax<Tab>'.esc_mapl.'rc     <C-C>:call BASH_SyntaxCheck()<CR>'
+	exe " menu <silent> ".s:BASH_RootMenu.'.&Run.syntax\ check\ o&ptions<Tab>'.esc_mapl.'rco         :call BASH_SyntaxCheckOptionsLocal()<CR>'
+	exe "imenu <silent> ".s:BASH_RootMenu.'.&Run.syntax\ check\ o&ptions<Tab>'.esc_mapl.'rco    <C-C>:call BASH_SyntaxCheckOptionsLocal()<CR>'
 
 	if	!s:MSWIN
-		exe "amenu <silent> ".s:BASH_RootMenu.'.&Run.start\ &debugger<Tab><F9>\ \ '.esc_mapl.'rd           :call BASH_Debugger()<CR>'
-		exe "amenu <silent> ".s:BASH_RootMenu.'.&Run.make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re          :call <SID>MakeExecutable()<CR>'
+		exe "amenu <silent> ".s:BASH_RootMenu.'.&Run.start\ &debugger<Tab>'.esc_mapl.'rd                   :call BASH_Debugger()<CR>'
+		exe "amenu <silent> ".s:BASH_RootMenu.'.&Run.make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re  :call <SID>MakeExecutable()<CR>'
 	endif
 
 	exe ahead.'-SEP-SETTINGS-   :'
@@ -2125,7 +2124,7 @@ function! BASH_Settings ( verbose )
 	let txt .= 'buf. syntax check options :  "'.syn_check_args."\"\n"
 	let txt = txt."\n"
 	" ----- output ------------------------------
-	let txt = txt.'     current output dest. :  '.s:BASH_OutputGvim."\n"
+	let txt = txt.'    current output method :  '.s:BASH_OutputMethod."\n"
 	if !s:MSWIN && a:verbose >= 1
 		let txt = txt.'         xterm executable :  '.s:Xterm_Executable."\n"
 		let txt = txt.'            xterm options :  '.g:Xterm_Options."\n"
