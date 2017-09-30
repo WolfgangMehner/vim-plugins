@@ -7,23 +7,23 @@ Currently maintained by Wolfgang Mehner:
 
 __Support for Various Programming Languages__
 
-Name           | Supports            | vim.org                                                         | GitHub
----            | ---                 | ---                                                             | ---
-AWK-Support    | AWK                 | [vim.org](http://www.vim.org/scripts/script.php?script_id=4415) | [GitHub](https://github.com/WolfgangMehner/awk-support)
-Bash-Support   | Bash                | [vim.org](http://www.vim.org/scripts/script.php?script_id=365)  | [GitHub](https://github.com/WolfgangMehner/bash-support)
-C-Support      | C/C++ & Doxygen     | [vim.org](http://www.vim.org/scripts/script.php?script_id=213)  | [GitHub](https://github.com/WolfgangMehner/c-support)
-LaTeX-Support  | LaTeX/LuaTeX/BibTeX | [vim.org](http://www.vim.org/scripts/script.php?script_id=4405) | [GitHub](https://github.com/WolfgangMehner/latex-support)
-Lua-Support    | Lua & C-API         | [vim.org](http://www.vim.org/scripts/script.php?script_id=4950) | [GitHub](https://github.com/WolfgangMehner/lua-support)
-Matlab-Support | Matlab              | -                                                               | [GitHub](https://github.com/WolfgangMehner/matlab-support)
-Perl-Support   | Perl & POD          | [vim.org](http://www.vim.org/scripts/script.php?script_id=556)  | [GitHub](https://github.com/WolfgangMehner/perl-support)
-Vim-Support    | Vim-Script          | [vim.org](http://www.vim.org/scripts/script.php?script_id=3931) | [GitHub](https://github.com/WolfgangMehner/vim-support)
+Name           | Supports            | vim.org                                                         | GitHub                                                     | Screenshots
+---            | ---                 | ---                                                             | ---                                                        | ---
+AWK-Support    | AWK                 | [vim.org](http://www.vim.org/scripts/script.php?script_id=4415) | [GitHub](https://github.com/WolfgangMehner/awk-support)    | [here](https://wolfgangmehner.github.io/vim-plugins/awksupport)
+Bash-Support   | Bash                | [vim.org](http://www.vim.org/scripts/script.php?script_id=365)  | [GitHub](https://github.com/WolfgangMehner/bash-support)   | [here](https://wolfgangmehner.github.io/vim-plugins/bashsupport)
+C-Support      | C/C++ & Doxygen     | [vim.org](http://www.vim.org/scripts/script.php?script_id=213)  | [GitHub](https://github.com/WolfgangMehner/c-support)      | [here](https://wolfgangmehner.github.io/vim-plugins/csupport)
+LaTeX-Support  | LaTeX/LuaTeX/BibTeX | [vim.org](http://www.vim.org/scripts/script.php?script_id=4405) | [GitHub](https://github.com/WolfgangMehner/latex-support)  | [here](https://wolfgangmehner.github.io/vim-plugins/latexsupport)
+Lua-Support    | Lua & C-API         | [vim.org](http://www.vim.org/scripts/script.php?script_id=4950) | [GitHub](https://github.com/WolfgangMehner/lua-support)    | [here](https://wolfgangmehner.github.io/vim-plugins/luasupport)
+Matlab-Support | Matlab              | -                                                               | [GitHub](https://github.com/WolfgangMehner/matlab-support) | -
+Perl-Support   | Perl & POD          | [vim.org](http://www.vim.org/scripts/script.php?script_id=556)  | [GitHub](https://github.com/WolfgangMehner/perl-support)   | [here](https://wolfgangmehner.github.io/vim-plugins/perlsupport)
+Vim-Support    | Vim-Script          | [vim.org](http://www.vim.org/scripts/script.php?script_id=3931) | [GitHub](https://github.com/WolfgangMehner/vim-support)    | [here](https://wolfgangmehner.github.io/vim-plugins/vimsupport)
 
 __Other Tools__
 
-Name            | Description                                                  | vim.org                                                         | GitHub
----             | ---                                                          | ---                                                             | ---
-Git-Support     | Manage Git repos from within Vim                             | [vim.org](http://www.vim.org/scripts/script.php?script_id=4497) | [GitHub](https://github.com/WolfgangMehner/git-support)
-Verilog-Support | SystemVerilog & UVM by [jmcneal](https://github.com/jmcneal) | -                                                               | [GitHub](https://github.com/jmcneal/verilog-support)
+Name            | Description                                                  | vim.org                                                         | GitHub                                                  | Screenshots
+---             | ---                                                          | ---                                                             | ---                                                     | ---
+Git-Support     | Manage Git repos from within Vim                             | [vim.org](http://www.vim.org/scripts/script.php?script_id=4497) | [GitHub](https://github.com/WolfgangMehner/git-support) | [here](https://wolfgangmehner.github.io/vim-plugins/gitsupport)
+Verilog-Support | SystemVerilog & UVM by [jmcneal](https://github.com/jmcneal) | -                                                               | [GitHub](https://github.com/jmcneal/verilog-support)    | -
 
 Most of the plug-ins were originally developed by Fritz Mehner:
 [GitHub](https://github.com/FritzMehner)

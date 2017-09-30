@@ -18,8 +18,11 @@ Project:
 - Configure the template which is inserted automatically when a new file is
   created.
 - Use 'Xterm_Executable' and 'Xterm_Options' everywhere.
+- Do not use 'lchdir' for starting external jobs in a directory. This may have
+  undesired side effects. Use 'ch' instead.
 - Check how to start jobs with arguments under Windows.
   Important for job_start() and term_start.
+- Add plug-in set-up guide.
 
 vim.org:
 - (DONE) Reference GitHub on plug-in pages.
