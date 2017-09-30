@@ -1,8 +1,8 @@
-*toolbox.txt*                   MM Toolbox Support                 Oct 23 2014
+*toolbox.txt*                   MM Toolbox Support                 Sep 30 2017
 
 MM Toolbox Support                                                  *toolbox*
 
-                             Plug-in version 1.2
+                             Plug-in version 1.3
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -376,6 +376,13 @@ See also |toolbox-support-AddMenu()|.
 ==============================================================================
 A.  CHANGE LOG                                    *toolbox-support-change-log*
 ==============================================================================
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 1.3
+------------------------------------------------------------------------------
+
+- Change path handling to be more flexible with regards to file locations.
+- Minor changes.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 1.2

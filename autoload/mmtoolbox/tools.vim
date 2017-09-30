@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Toolbox_Version below
 "       Created:  29.12.2012
-"      Revision:  23.10.2014
+"      Revision:  30.09.2017
 "       License:  Copyright (c) 2012-2015, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -42,7 +42,7 @@ if &cp || ( exists('g:Toolbox_Version') && g:Toolbox_Version != 'searching' && !
 	finish
 endif
 "
-let s:Toolbox_Version= '1.2'     " version number of this script; do not change
+let s:Toolbox_Version = '1.3'     " version number of this script; do not change
 "
 "----------------------------------------------------------------------
 "  --- Find Newest Version ---   {{{2
@@ -265,24 +265,27 @@ endfunction    " ----------  end of function mmtoolbox#tools#NewToolbox  -------
 "
 " Parameters:
 "   toolbox - the toolbox (dict)
-"   name - the name of the tool (string)
+"   name_full - the full name of the tool (string)
+"   name - the short name of the tool (string)
 "   file - the script (string)
 " Returns:
 "   success - tool loaded without errors, but might still be disabled (integer)
 "-------------------------------------------------------------------------------
-function! s:LoadTool ( toolbox, name, file )
-	"
-	let toolbox = a:toolbox
-	let name    = a:name
-	"
+function! s:LoadTool ( toolbox, name_full, name, file )
+
+	let toolbox   = a:toolbox
+	let name_full = a:name_full
+	let name      = a:name
+
 	" try to load and initialize
 	try
 		"
 		" get tool information
-		let retlist = mmtoolbox#{name}#GetInfo()
+		let retlist = {name_full}#GetInfo()
 		"
 		" assemble the entry
 		let entry = {
+					\	"name_full"  : a:name_full,
 					\	"name"       : name,
 					\	"prettyname" : retlist[0],
 					\	"version"    : retlist[1],
@@ -326,17 +329,19 @@ endfunction    " ----------  end of function s:LoadTool  ----------
 "
 " Parameters:
 "   toolbox - the toolbox (dict)
-"   name - the name of the tool (string)
+"   name_full - the full name of the tool (string)
+"   name - the short name of the tool (string)
 "   file - the script (string)
 " Returns:
 "   -
 "-------------------------------------------------------------------------------
-function! s:RegisterTool ( toolbox, name, file )
+function! s:RegisterTool ( toolbox, name_full, name, file )
 	"
 	" assemble the entry
 	" - also record which tools was loaded later on, to keep creating correct
 	"   menus
 	let entry = {
+				\	"name_full"  : a:name_full,
 				\	"name"       : a:name,
 				\	"filename"   : a:file,
 				\ "loaded"     : 0,
@@ -370,10 +375,16 @@ function! mmtoolbox#tools#Load ( toolbox, directories )
 		"
 		" go through all dir/*.vim
 		for file in split( glob (dir.'/*.vim'), '\n' )
-			"
-			" the name is the basename of the file
-			let name = fnamemodify( file, ':t:r' )
-			"
+
+			if file =~ 'autoload[/\\]\(.\{-}\)[/\\]\{1,2}\([^/\\]\+\)\.vim$'
+				let mlist = matchlist( file, 'autoload[/\\]\(.\{-}\)[/\\]\{1,2}\([^/\\]\+\)\.vim$' )
+				let name_full  = substitute( mlist[1], '[/\\]', '#', 'g' ).'#'.mlist[2]
+				let name       = mlist[2]
+			else
+				" invalid name
+				continue
+			endif
+
 			" do not process 'tools.vim' (this script)
 			if name == 'tools'
 				continue
@@ -386,9 +397,9 @@ function! mmtoolbox#tools#Load ( toolbox, directories )
 			"
 			" check whether to use the tool
 			if s:GetToolConfig ( a:toolbox.plugin, name ) == 'yes'
-				call s:LoadTool ( a:toolbox, name, file )
+				call s:LoadTool ( a:toolbox, name_full, name, file )
 			else
-				call s:RegisterTool ( a:toolbox, name, file )
+				call s:RegisterTool ( a:toolbox, name_full, name, file )
 			endif
 			"
 		endfor
@@ -434,7 +445,7 @@ function! s:LoadAdditionalTool ( toolbox_name, name )
 	"
 	" load the tool
 	let toolbox.unused[name].loaded = 1
-	let success = s:LoadTool ( toolbox, name, toolbox.unused[name].filename )
+	let success = s:LoadTool ( toolbox, toolbox.unused[name].name_full, name, toolbox.unused[name].filename )
 	"
 	" create the menu entry
 	if success
@@ -463,15 +474,16 @@ function! mmtoolbox#tools#ToolEnabled ( toolbox, name )
 	if ! has_key ( a:toolbox.tools, a:name )
 		return 0
 	endif
-	"
+
+	let entry = a:toolbox.tools[ a:name ]
 	let enabled = 0
-	"
+
 	try
-		let enabled = mmtoolbox#{a:name}#Property('get','enabled')
+		let enabled = {entry.name_full}#Property('get','enabled')
 	catch /.*/
 		" fail quietly
 	endtry
-	"
+
 	return enabled
 endfunction    " ----------  end of function mmtoolbox#tools#ToolEnabled  ----------
 "
@@ -585,7 +597,7 @@ function! mmtoolbox#tools#AddMaps ( toolbox )
 		"
 		try
 			" try to create the maps
-			call mmtoolbox#{entry.name}#AddMaps()
+			call {entry.name_full}#AddMaps()
 		catch /.*/
 			" could not load the plugin: ?
 			call s:ErrorMsg ( "Could not create maps for the tool \"".name."\" (".v:exception.")",
@@ -626,7 +638,7 @@ function! s:CreateToolMenu ( toolbox, name, root, mleader )
 	"
 	try
 		" try to create the menu
-		call mmtoolbox#{entry.name}#AddMenu( menu_root, a:mleader )
+		call {entry.name_full}#AddMenu( menu_root, a:mleader )
 	catch /.*/
 		" could not load the plugin: ?
 		call s:ErrorMsg ( "Could not create menus for the tool \"".a:name."\" (".v:exception.")",
