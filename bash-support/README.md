@@ -193,6 +193,7 @@ RELEASE NOTES FOR VERSION 4.4pre
   creation of the CTRL+J and CTRL+D maps.
 - Remove the definition of the maps 'CTRL+F9' and 'SHIFT+F9'. Add them to your
   filetype plug-in if you want to use them.
+- Integration of BashDB moved into the toolbox.
 - Add shell options and variables for BASH Version 4.4.
 - Minor corrections and improvements.
 

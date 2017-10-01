@@ -51,7 +51,9 @@ writing shell scripts. This plug-in can be used for Bash up to version 4.4.
  1.7.6    Hardcopy                               |bashsupport-hardcopy|
  1.7.7    Xterm size                             |bashsupport-xterm|
  1.7.8    Output redirection                     |bashsupport-output|
- 1.8     Menu 'Help'                             |bashsupport-help|
+ 1.8     Menu 'Tool Box'                         |bashsupport-toolbox|
+ 1.8.1    BashDB                                 |bashsupport-toolbox-bashdb|
+ 1.9     Menu 'Help'                             |bashsupport-help|
  2.     Usage without GUI                        |bashsupport-usage-vim|
  3.     Hot keys                                 |bashsupport-hotkeys|
  4.     Customization and configuration          |bashsupport-customization|
@@ -568,9 +570,9 @@ The wrapper shows the complete command line and the return code of the script.
 Appearance of the xterm
 -----------------------
 The appearance of the xterm can be controlled by the global variable
-g:BASH_XtermDefaults. The assignment
+g:Xterm_Options. The assignment
 >
-  let g:BASH_XtermDefaults = "-fa courier -fs 10 -geometry 96x32"
+  let g:Xterm_Options = "-fa courier -fs 10 -geometry 96x32"
 <
 placed in '.vimrc' would override the defaults. The defaults are
 >
@@ -580,14 +582,47 @@ FreeType font 'courier', FreeType font size 12 point, window width 80
 characters, window height 24 lines.
 
 The default output method is VIM. The preferred output method can be selected
-in '.vimrc' by the global variable g:BASH_OutputGvim, e.g.
+in '.vimrc' by the global variable g:BASH_OutputMethod, e.g.
 >
-  let g:BASH_OutputGvim            = "xterm"
+  let g:BASH_OutputMethod = "xterm"
 <
-The methods are "vim", "buffer" and "xterm".
+The methods are "vim-io", "vim-qf", "buffer", "xterm", and "terminal". The
+method "xterm" requires xterm(1), and is only available under UNIX. The method
+"terminal" requires the |+terminal| feature.
 
 ------------------------------------------------------------------------------
-1.8  MENU 'Help'                                            *bashsupport-help*
+1.8  Menu 'Tool Box'                                     *bashsupport-toolbox*
+------------------------------------------------------------------------------
+
+Tools which provide related but independent functionalities are located in the
+Tool Box. An examples is the tool for BashDB integration. The Tool Box has its
+own documentation: |toolbox|.
+To switch the Tool Box off, add the following line to the file .vimrc
+>
+  let g:BASH_UseToolbox = 'no'
+<
+1.8.1 BashDB                                      *bashsupport-toolbox-bashdb*
+
+The tool box for BashDB provides a small set of menu items and ex commands
+for controlling bashdb. Please see |bashdb-integration|.
+To switch the BashDB tool box off, add the following line to the file .vimrc
+>
+  let g:Bash_UseTool_bashdb = 'no'
+<
+The hotkeys for the BashDB integration can easily be defined by the user in
+the file '~/.vim/ftplugin/sh.vim'. See 'bash-support/rc/sh.vim' for examples.
+
+These maps would (R)un the debugger, and (C)hoose the debugging method: >
+  nnoremap  <buffer>  <silent>  <LocalLeader>dr       :BashDB<CR>
+  inoremap  <buffer>  <silent>  <LocalLeader>dr  <C-C>:BashDB<CR>
+  vnoremap  <buffer>  <silent>  <LocalLeader>dr  <C-C>:BashDB<CR>
+
+  nnoremap  <buffer>            <LocalLeader>dc       :BashDBDebugger<Space>
+  inoremap  <buffer>            <LocalLeader>dc  <C-C>:BashDBDebugger<Space>
+  vnoremap  <buffer>            <LocalLeader>dc  <C-C>:BashDBDebugger<Space>
+<
+------------------------------------------------------------------------------
+1.9  MENU 'Help'                                            *bashsupport-help*
 ------------------------------------------------------------------------------
 
 Item 'Bash manual'
@@ -740,12 +775,13 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \rba    set Bash cmd. line arguments        (n, i)
      \rc     update file, check syntax           (n, i)
      \rco    syntax check options                (n, i)
-     \rd     start debugger                      (n, i)
      \re     make script executable/not exec.(*) (in )
+     \ro     change output destination           (n, i)
+     \rd     set "direct run"                    (n, i)
+     \rx     set xterm size (*)                  (n, i)
+
      \rh     hardcopy buffer to FILENAME.ps      (n, i)
      \rs     plug-in settings                    (n, i)
-     \rt     set xterm size (*)                  (n, i)
-     \ro     change output destination           (n, i)
 
   -- Bash help ----------------------------------------------
 
@@ -866,10 +902,9 @@ g:BASH_Dictionary_File         $HOME."/.vim/bash-support/wordlists/bash.list"
 g:BASH_RootMenu                '&Bash.'
 g:BASH_GuiSnippetBrowser       'gui'
 
-g:BASH_OutputGvim              'vim'   (Linux/U**X)
-                               'xterm' (Windows)
-g:BASH_XtermDefaults           '-fa courier -fs 12 -geometry 80x24'
-g:BASH_Debugger                'term'
+g:BASH_OutputMethod            'vim-io'  (Linux/U**X)
+                               'xterm'   (Windows)
+g:BASH_DirectRun               'no'
 g:BASH_LineEndCommColDefault   49
 g:BASH_SyntaxCheckOptionsGlob  ''
 g:BASH_Printheader             '%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N'
@@ -884,6 +919,21 @@ g:BASH_MapLeader               '\'
 g:BASH_Errorformat             '%f:\ line\ %l:\ %m'
 g:BASH_AlsoBash                []
 
+g:Xterm_Executable             'xterm'
+g:Xterm_Options                '-fa courier -fs 12 -geometry 80x24'
+------------------------------------------------------------------------------
+
+Several options are supported for backwards compatibility only. Use the new
+variables for new configurations.
+
+------------------------------------------------------------------------------
+  old option                new option
+------------------------------------------------------------------------------
+  g:BASH_OutputGvim         g:BASH_OutputMethod
+  g:BASH_XtermDefaults      g:Xterm_Options
+
+  g:BASH_Debugger           |g:BashDB_Debugger|   (see |bashdb-integration|)
+  g:BASH_bashdb             |g:BashDB_Executable| (see |bashdb-integration|)
 ------------------------------------------------------------------------------
 
  1. group: Defines the text which will be inserted for the tags when a
@@ -907,10 +957,11 @@ g:BASH_AlsoBash                []
                                            (see |bashsupport-custom-root|).
            g:BASH_GuiSnippetBrowser      : code snippet browser: 'gui', 'commandline'
  
- 3. group: g:BASH_OutputGvim             : Target for a script output
+ 3. group: g:BASH_OutputMethod           : target for a script output
                                            (see |bashsupport-output|).
-           g:BASH_XtermDefaults          : The xterm defaults (see |bashsupport-xterm|).
-           g:BASH_Debugger               : the debugger called by F9 (term, ddd).
+           g:BASH_DirectRun              : run executable scripts without
+                                           using 'g:BASH_Executable'
+           g:Xterm_Options               : The xterm options (see |bashsupport-xterm|).
            g:BASH_LineEndCommColDefault  : default starting column for line end comments
            g:BASH_SyntaxCheckOptionsGlob : shopt options used with syntax checking
            g:BASH_Printheader            : hardcopy header format
@@ -1368,8 +1419,8 @@ CYGWIN with the value "nodosfilewarning".
     to the file '~/.vimrc'.
 
 * Some hotkeys do not work.
-  - The hotkeys might be in use by your graphical desktop environment.  Under
-    KDE Ctrl-F9 is the hotkey which let you switch to the 9. desktop.  The key
+  - The hotkeys might be in use by your graphical desktop environment. Under
+    KDE Ctrl-F9 is the hotkey which let you switch to the 9th desktop. The key
     settings can usually be redefined.
 
 ==============================================================================

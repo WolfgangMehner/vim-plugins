@@ -51,6 +51,20 @@ vnoremap  <buffer>            <C-F9>        :Bash<CR>
 nnoremap  <buffer>            <S-F9>        :BashScriptArguments<Space>
 inoremap  <buffer>            <S-F9>   <C-C>:BashScriptArguments<Space>
 
+" use F9 to start the debugger
+"nnoremap  <buffer>  <silent>  <F9>          :BashDB<CR>
+"inoremap  <buffer>  <silent>  <F9>     <C-C>:BashDB<CR>
+"vnoremap  <buffer>  <silent>  <F9>     <C-C>:BashDB<CR>
+
+" map (D)ebugger (R)un
+"nnoremap  <buffer>  <silent>  <LocalLeader>dr       :BashDB<CR>
+"inoremap  <buffer>  <silent>  <LocalLeader>dr  <C-C>:BashDB<CR>
+"vnoremap  <buffer>  <silent>  <LocalLeader>dr  <C-C>:BashDB<CR>
+" map (D)ebugger (C)hoose method
+"nnoremap  <buffer>            <LocalLeader>dc       :BashDBDebugger<Space>
+"inoremap  <buffer>            <LocalLeader>dc  <C-C>:BashDBDebugger<Space>
+"vnoremap  <buffer>            <LocalLeader>dc  <C-C>:BashDBDebugger<Space>
+
 "-------------------------------------------------------------------------------
 " reset "maplocalleader"
 "-------------------------------------------------------------------------------

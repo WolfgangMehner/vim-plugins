@@ -574,6 +574,8 @@ let s:BASH_LocalTemplateFile  = ''
 let s:BASH_CustomTemplateFile = ''                " the custom templates
 let s:BASH_FilenameEscChar    = ''
 
+let s:BASH_ToolboxDir = []
+
 if s:MSWIN
 	" ==========  MS Windows  ======================================================
 
@@ -587,6 +589,9 @@ if s:MSWIN
 		let s:installation            = 'local'
 		let s:BASH_LocalTemplateFile  = s:plugin_dir.'/bash-support/templates/Templates'
 		let s:BASH_CustomTemplateFile = $HOME.'/vimfiles/templates/bash.templates'
+		let s:BASH_ToolboxDir        += [
+					\ s:plugin_dir.'/autoload/mmtoolbox/bash/',
+					\ s:plugin_dir.'/autoload/mmtoolbox/' ]
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
@@ -594,6 +599,10 @@ if s:MSWIN
 		let s:BASH_GlobalTemplateFile = s:plugin_dir.'/bash-support/templates/Templates'
 		let s:BASH_LocalTemplateFile  = $HOME.'/vimfiles/bash-support/templates/Templates'
 		let s:BASH_CustomTemplateFile = $HOME.'/vimfiles/templates/bash.templates'
+		let s:BASH_ToolboxDir        += [
+					\ s:plugin_dir.'/autoload/mmtoolbox/bash/',
+					\	s:plugin_dir.'/autoload/mmtoolbox/',
+					\	$HOME.'/vimfiles/autoload/mmtoolbox/' ]
 	endif
 
 	let s:BASH_FilenameEscChar    = ''
@@ -611,6 +620,9 @@ else
 		let s:installation            = 'local'
 		let s:BASH_LocalTemplateFile  = s:plugin_dir.'/bash-support/templates/Templates'
 		let s:BASH_CustomTemplateFile = $HOME.'/.vim/templates/bash.templates'
+		let s:BASH_ToolboxDir        += [
+					\ s:plugin_dir.'/autoload/mmtoolbox/bash/',
+					\ s:plugin_dir.'/autoload/mmtoolbox/' ]
 	else
 		"
 		" SYSTEM WIDE INSTALLATION
@@ -618,6 +630,10 @@ else
 		let s:BASH_GlobalTemplateFile = s:plugin_dir.'/bash-support/templates/Templates'
 		let s:BASH_LocalTemplateFile  = $HOME.'/.vim/bash-support/templates/Templates'
 		let s:BASH_CustomTemplateFile = $HOME.'/.vim/templates/bash.templates'
+		let s:BASH_ToolboxDir        += [
+					\ s:plugin_dir.'/autoload/mmtoolbox/bash/',
+					\	s:plugin_dir.'/autoload/mmtoolbox/',
+					\	$HOME.'/.vim/autoload/mmtoolbox/' ]
 	endif
 
 	let s:BASH_Executable         = $SHELL
@@ -651,8 +667,7 @@ let s:BASH_CreateMenusDelayed	= 'yes'
 let s:BASH_GuiSnippetBrowser 	= 'gui'             " gui / commandline
 let s:BASH_LoadMenus         	= 'yes'             " load the menus?
 let s:BASH_RootMenu          	= '&Bash'           " name of the root menu
-let s:BASH_Debugger           = 'term'
-let s:BASH_bashdb             = 'bashdb'
+let s:BASH_UseToolbox         = 'yes'
 
 if s:MSWIN
 	let s:BASH_OutputMethodList = [ 'vim-io', 'vim-qf', 'buffer' ]
@@ -683,8 +698,6 @@ endif
 " Get user configuration   {{{3
 "-------------------------------------------------------------------------------
 
-call s:GetGlobalSetting ( 'BASH_Debugger' )
-call s:GetGlobalSetting ( 'BASH_bashdb' )
 call s:GetGlobalSetting ( 'BASH_SyntaxCheckOptionsGlob' )
 call s:GetGlobalSetting ( 'BASH_Executable' )
 call s:GetGlobalSetting ( 'BASH_InsertFileHeader' )
@@ -705,6 +718,9 @@ call s:GetGlobalSetting ( 'BASH_LineEndCommColDefault' )
 
 call s:ApplyDefaultSetting ( 'BASH_MapLeader', '' )       " default: do not overwrite 'maplocalleader'
 call s:ApplyDefaultSetting ( 'BASH_Printheader', "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N" )
+
+call s:GetGlobalSetting ( 'BASH_UseToolbox' )
+call s:ApplyDefaultSetting ( 'Bash_UseTool_bashdb', 'yes' )
 
 if s:BASH_OutputMethod == 'vim'
 	let s:BASH_OutputMethod = 'vim-qf'
@@ -1507,7 +1523,10 @@ function! s:InitMenus()
 	" the other, automatically created menus go here; their priority is the standard priority 500
 	call mmtemplates#core#CreateMenus ( 'g:BASH_Templates', s:BASH_RootMenu, 'sub_menu', 'S&nippets', 'priority', 600 )
 	call mmtemplates#core#CreateMenus ( 'g:BASH_Templates', s:BASH_RootMenu, 'sub_menu', '&Run'     , 'priority', 700 )
-	call mmtemplates#core#CreateMenus ( 'g:BASH_Templates', s:BASH_RootMenu, 'sub_menu', '&Help'    , 'priority', 800 )
+	if s:BASH_UseToolbox == 'yes' && mmtoolbox#tools#Property ( s:BASH_Toolbox, 'empty-menu' ) == 0
+		call mmtemplates#core#CreateMenus ( 'g:BASH_Templates', s:BASH_RootMenu, 'sub_menu', '&Tool\ Box', 'priority', 800 )
+	endif
+	call mmtemplates#core#CreateMenus ( 'g:BASH_Templates', s:BASH_RootMenu, 'sub_menu', '&Help'    , 'priority', 900 )
 	"
 	"-------------------------------------------------------------------------------
 	" comments     {{{2
@@ -1585,9 +1604,9 @@ function! s:InitMenus()
 	exe " menu <silent> ".s:BASH_RootMenu.'.&Run.syntax\ check\ o&ptions<Tab>'.esc_mapl.'rco         :call BASH_SyntaxCheckOptionsLocal()<CR>'
 	exe "imenu <silent> ".s:BASH_RootMenu.'.&Run.syntax\ check\ o&ptions<Tab>'.esc_mapl.'rco    <C-C>:call BASH_SyntaxCheckOptionsLocal()<CR>'
 
-	if	!s:MSWIN
-		exe "amenu <silent> ".s:BASH_RootMenu.'.&Run.start\ &debugger<Tab>'.esc_mapl.'rd                   :call BASH_Debugger()<CR>'
-		exe "amenu <silent> ".s:BASH_RootMenu.'.&Run.make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re  :call <SID>MakeExecutable()<CR>'
+	if ! s:MSWIN
+		exe ahead.'make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re       :call <SID>MakeExecutable()<CR>'
+		exe ihead.'make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re  <C-C>:call <SID>MakeExecutable()<CR>'
 	endif
 
 	exe ahead.'-SEP-SETTINGS-   :'
@@ -1652,7 +1671,15 @@ function! s:InitMenus()
 	exe "inoremenu ".s:BASH_RootMenu.'.&Comments.&echo\ "<line>"<Tab>'.esc_mapl.'ce  <C-C>:call <SID>EchoComment()<CR>j'
 	exe " noremenu ".s:BASH_RootMenu.'.&Comments.&remove\ echo<Tab>'.esc_mapl.'cr         :call <SID>RemoveEcho()<CR>j'
 	exe "inoremenu ".s:BASH_RootMenu.'.&Comments.&remove\ echo<Tab>'.esc_mapl.'cr    <C-C>:call <SID>RemoveEcho()<CR>j'
-	"
+
+	"-------------------------------------------------------------------------------
+	" tool box
+	"-------------------------------------------------------------------------------
+
+	if s:BASH_UseToolbox == 'yes' && mmtoolbox#tools#Property ( s:BASH_Toolbox, 'empty-menu' ) == 0
+		call mmtoolbox#tools#AddMenus ( s:BASH_Toolbox, s:BASH_RootMenu.'.&Tool\ Box' )
+	endif
+
  	"-------------------------------------------------------------------------------
  	" help     {{{2
  	"-------------------------------------------------------------------------------
@@ -1798,13 +1825,6 @@ function! s:CreateAdditionalMaps ()
    noremap  <buffer>  <silent>  <A-F9>        :call BASH_SyntaxCheck()<CR>
   inoremap  <buffer>  <silent>  <A-F9>   <C-C>:call BASH_SyntaxCheck()<CR>
 
-	if !s:MSWIN
-		 noremap  <buffer>  <silent>  <LocalLeader>rd           :call BASH_Debugger()<CR>
-		inoremap  <buffer>  <silent>  <LocalLeader>rd      <Esc>:call BASH_Debugger()<CR>
-     noremap  <buffer>  <silent>    <F9>                    :call BASH_Debugger()<CR>
-    inoremap  <buffer>  <silent>    <F9>               <C-C>:call BASH_Debugger()<CR>
-	endif
-
 	"-------------------------------------------------------------------------------
 	"   help
 	"-------------------------------------------------------------------------------
@@ -1828,6 +1848,13 @@ function! s:CreateAdditionalMaps ()
 		else
 			unlet g:maplocalleader
 		endif
+	endif
+
+	"-------------------------------------------------------------------------------
+	" toolbox
+	"-------------------------------------------------------------------------------
+	if s:BASH_UseToolbox == 'yes'
+		call mmtoolbox#tools#AddMaps ( s:BASH_Toolbox )
 	endif
 
 	"-------------------------------------------------------------------------------
@@ -2089,6 +2116,17 @@ function! BASH_Settings ( verbose )
 	endif
 	" plug-in installation
 	let txt .= '      plugin installation :  '.s:installation.' on '.sys_name."\n"
+	" toolbox
+	if s:BASH_UseToolbox == 'yes'
+		let toollist = mmtoolbox#tools#GetList ( s:BASH_Toolbox )
+		if empty ( toollist )
+			let txt .= "            using toolbox :  -no tools-\n"
+		else
+			let sep  = "\n"."                             "
+			let txt .=      "            using toolbox :  "
+						\ .join ( toollist, sep )."\n"
+		endif
+	endif
 	let txt .= "\n"
 	" templates, snippets
 	if exists ( 'g:BASH_Templates' )
@@ -2198,52 +2236,6 @@ function! BASH_SyntaxCheck ()
 		nohlsearch						" delete unwanted highlighting (Vim bug?)
 	endif
 endfunction		" ---------- end of function  BASH_SyntaxCheck  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  BASH_Debugger     {{{1
-"   DESCRIPTION:  run debugger
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! BASH_Debugger ()
-	if !executable(s:BASH_bashdb)
-		echohl Search
-		echo   s:BASH_bashdb.' is not executable or not installed! '
-		echohl None
-		return
-	endif
-	"
-	silent exe	":update"
-	let	l:arguments	= exists("b:BASH_ScriptCmdLineArgs") ? " ".b:BASH_ScriptCmdLineArgs : ""
-	let	Sou					= fnameescape( expand("%:p") )
-	"
-	"
-	if has("gui_running") || &term == "xterm"
-		"
-		" debugger is ' bashdb'
-		"
-		if s:BASH_Debugger == "term"
-			let dbcommand	= "!xterm ".g:Xterm_Options.' -e '.s:BASH_bashdb.' -- '.Sou.l:arguments.' &'
-			silent exe dbcommand
-		endif
-		"
-		" debugger is 'ddd'
-		"
-		if s:BASH_Debugger == "ddd"
-			if !executable("ddd")
-				echohl WarningMsg
-				echo "The debugger 'ddd' does not exist or is not executable!"
-				echohl None
-				return
-			else
-				silent exe '!ddd --debugger '.s:BASH_bashdb.' '.Sou.l:arguments.' &'
-			endif
-		endif
-	else
-		" no GUI : debugger is ' bashdb'
-		silent exe '!'.s:BASH_bashdb.' -- '.Sou.l:arguments
-	endif
-endfunction		" ---------- end of function  BASH_Debugger  ----------
 
 "-------------------------------------------------------------------------------
 " s:ToolMenu : Add or remove tool menu entries.   {{{1
@@ -2298,9 +2290,21 @@ function! s:RemoveMenus()
 endfunction    " ----------  end of function s:RemoveMenus  ----------
 
 "----------------------------------------------------------------------
-" === Setup: Templates and menus ===   {{{1
+" === Setup: Templates, toolbox and menus ===   {{{1
 "----------------------------------------------------------------------
 
+" setup the toolbox
+if s:BASH_UseToolbox == 'yes'
+
+	let s:BASH_Toolbox = mmtoolbox#tools#NewToolbox ( 'Bash' )
+	call mmtoolbox#tools#Property ( s:BASH_Toolbox, 'mapleader', g:BASH_MapLeader )
+
+	call mmtoolbox#tools#Load ( s:BASH_Toolbox, s:BASH_ToolboxDir )
+
+	" debugging only:
+	"call mmtoolbox#tools#Info ( s:BASH_Toolbox )
+endif
+"
 " tool menu entry
 call s:ToolMenu ( 'setup' )
 

@@ -19,6 +19,8 @@ Notable new features:
   to pass arguments to the script.
 - Run Bash in a terminal window directly inside the editor.
 - The template library now has shell options and variables for BASH Version 4.4.
+- The debugger integration has been move into the toolbox, and comes with
+  extended functionality.
 
 The terminal window relies on the new `+terminal` feature, which becomes
 available with a patch level of approx. `8.0.1000`.
