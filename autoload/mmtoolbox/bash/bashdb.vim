@@ -637,8 +637,133 @@ function! s:Run ( args )
 
 		silent exe '!ddd --debugger '.s:BashDB_Executable.' '.script_name.script_args.' &'
 	elseif s:BashDB_Debugger == 'terminal'
+		call s:StartInternal ( script_name.script_args )
 	endif
 endfunction    " ----------  end of function s:Run  ----------
+
+"-------------------------------------------------------------------------------
+" === Internal BashDB execution ===   {{{1
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" == Debugger state ==   {{{2
+"
+" State of the internal debugger:
+"-------------------------------------------------------------------------------
+
+let s:debug_status   = ''
+let s:debug_buf_ctrl = -1
+let s:debug_buf_io   = -1
+
+let s:debug_buf_script = -1
+let s:debug_win_script = -1
+
+"-------------------------------------------------------------------------------
+" s:StartInternal : Start the internal debugger.   {{{2
+"
+" Parameters:
+"   args - cmd.-line arguments, script and its arguments (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:StartInternal ( args )
+
+	if s:debug_status != ''
+		return s:WarningMsg ( 'debugger already running' )
+	endif
+
+	" script buffer/window
+	let s:debug_buf_script = bufnr( '%' )
+	let s:debug_win_script = win_getid( winnr() )
+
+	" the BashDB control commands are run through this terminal
+	let s:debug_buf_ctrl = term_start ( 'NONE', {
+				\ 'term_name' : 'BashDB - CTRL',
+				\ } )
+
+	let tty = term_gettty ( s:debug_buf_ctrl )
+
+	" start bashdb in another terminal, only the script I/O appears here
+	let arg_list  = [ s:BashDB_Executable ]
+	let arg_list += [ '--tty', tty, '-x', tty ]
+	let arg_list += s:ShellParseArgs ( a:args )
+
+	belowright new
+	let s:debug_buf_io = term_start ( arg_list, {
+				\ 'term_name' : 'BashDB - I/O',
+				\ 'curwin'    : 1,
+				\ 'exit_cb'   : function ( 's:EndInternal' ),
+				\ } )
+
+	" now we're cooking
+	let s:debug_status = 'running'
+
+	" set up script buffer
+  call win_gotoid( s:debug_win_script )
+
+	command! -buffer -nargs=*  Command   :call <SID>SendCmd(<q-args>)
+	command! -buffer -nargs=0  Continue  :call <SID>SendCmd('continue')
+	command! -buffer -nargs=0  Quit      :call <SID>SendCmd('quit')
+	command! -buffer -nargs=0  Step      :call <SID>SendCmd('step')
+
+	if has( 'menu' )
+		amenu WinBar.Run    :Command run<CR>
+		amenu WinBar.Cont   :Continue<CR>
+		amenu WinBar.Step   :Step<CR>
+		amenu WinBar.Quit   :Quit<CR>
+	endif
+endfunction    " ----------  end of function s:StartInternal  ----------
+
+"-------------------------------------------------------------------------------
+" s:EndInternal : Callback for BashDB exiting.   {{{2
+"
+" Parameters:
+"   job - the job (job)
+"   status - the status (number)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:EndInternal ( job, status )
+
+	" remove the debugger buffers
+	exe 'bwipe! '.s:debug_buf_io
+	exe 'bwipe! '.s:debug_buf_ctrl
+	let s:debug_status = ''
+
+  call win_gotoid( s:debug_win_script )
+
+	" remove the menus and commands
+	if has( 'menu' )
+		aunmenu WinBar.Run
+		aunmenu WinBar.Cont
+		aunmenu WinBar.Step
+		aunmenu WinBar.Quit
+	endif
+
+	delcommand Command
+	delcommand Continue
+	delcommand Quit
+	delcommand Step
+
+	call s:Redraw ( 'r!', 'r' )
+	call s:ImportantMsg ( 'BashDB done' )
+endfunction    " ----------  end of function s:EndInternal  ----------
+
+"-------------------------------------------------------------------------------
+" s:SendCmd : Send a command to the debugger.   {{{2
+"
+" Parameters:
+"   cmd - the command (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:SendCmd ( cmd )
+	call term_sendkeys ( s:debug_buf_ctrl, a:cmd."\r" )
+endfunction    " ----------  end of function s:SendCmd  ----------
+
+" }}}2
+"-------------------------------------------------------------------------------
+
 " }}}1
 "-------------------------------------------------------------------------------
 
