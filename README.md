@@ -35,7 +35,9 @@ We recommend downloading the latest official versions published on vim.org (see 
 Or try the development snapshots in the individual GitHub repositories (see above).
 The versions available here might be buggy.
 
-If you really want to use the versions from the repository, [consult this](https://github.com/WolfgangMehner/vim-plugins/wiki/Installation).
+You can use this repository, as well as the ones linked above, with any plug-in manager.
+
+For more information, please [consult this](https://github.com/WolfgangMehner/vim-plugins/wiki/Installation).
 
 # Documentation
 
