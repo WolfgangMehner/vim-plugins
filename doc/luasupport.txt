@@ -290,8 +290,8 @@ The file in the current buffer can be run or compiled with a keystroke.
   check the code             Run.check code                 <LocalLeader>rk
   make script executable     Run.make script exec./not      <LocalLeader>re
 
-  load quickfix list (^1)    Run.buffer "Lua Output". ...   <LocalLeader>qf
-  ... and jump to error (^1) Run.buffer "Lua Output". ...   <LocalLeader>qj
+  load quickfix list (^1)    Run.buffer "Lua Output/Term"   <LocalLeader>qf
+  ... and jump to error (^1) Run.buffer "Lua Output/Term"   <LocalLeader>qj
 
   output method for "run"    Run.output method              <LocalLeader>ro
   change "direct run"        Run.direct run                 <LocalLeader>rd
@@ -299,8 +299,8 @@ The file in the current buffer can be run or compiled with a keystroke.
   change the compiler        Run.set compiler exec.         <LocalLeader>rsc
  ----------------------------------------------------------------------------
 
-(^1) Works only inside the buffer "Lua Output", where running a script echoes
-  the script's output, see |luasupport-config-output|.
+(^1) Works only inside a buffer "Lua Output" or "Lua Terminal", where running
+a script echoes the script's output, see |luasupport-config-output|.
 
 The functionality is also available through ex-commands. These commands can
 also be used to set different maps in the ftplugin.
@@ -726,20 +726,24 @@ quickfix support. With 'buffer' the output is redirected into a buffer, named
 "Lua Output", and thus is available for detailed analysis afterwards.
 
 The command can be run in a |terminal| window, if Vim is compiled with the
-|+terminal| feature.
+|+terminal| feature. The output can be loaded into quickfix, using the maps
+"\qf" or "\qj" in the terminal window.
 
 The possible settings are listed below:
 
   Value               Meaning
  ----------------------------------------------------------------------------
   'vim-io' (default)  run on the Vim command-line (supports input operations)
-  'vim-qf'            print output on the Vim cmd.-line (supports quickfix)
-  'buffer'            redirect the output into a buffer (supports quickfix)
-  'xterm'             run in a separate xterm (supports input operations;
-                       UNIX only, see |luasupport-config-xterm|)
+  'vim-qf'            print output on the Vim cmd.-line (supports |quickfix|)
+  'buffer'            redirect the output into a buffer (supports |quickfix|)
+  'xterm' (^1)        run in a separate xterm (supports input operations)
 
-  'terminal'          run in a terminal window (requires |+terminal|)
+  'terminal' (^2)     run in a terminal window (support input operations
+                       and quickfix, via the maps \qf and \qj)
  ----------------------------------------------------------------------------
+
+(^1) UNIX only, see |luasupport-config-xterm|
+(^2) requires |+terminal|
 
 ------------------------------------------------------------------------------
 

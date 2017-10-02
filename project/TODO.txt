@@ -120,7 +120,7 @@ LaTeX:
 Lua:
 - Enable output method "terminal" under Windows. (:TODO:25.09.2017 16:16:WM:)
 - Change behavior of terminal output. Opens a new window every time.
-- Add maps 'qf' and 'qj' for terminal output.
+- (DONE) Add maps 'qf' and 'qj' for terminal output.
 - Complete documentation with regards to terminals.
 
 Matlab:

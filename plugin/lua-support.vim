@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Lua_Version below
 "       Created:  26.03.2014
-"      Revision:  02.07.2017
+"      Revision:  02.10.2017
 "       License:  Copyright (c) 2014-2017, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -176,7 +176,7 @@ function! s:ShellEscExec ( exec )
 endfunction    " ----------  end of function s:ShellEscExec  ----------
 
 "-------------------------------------------------------------------------------
-" s:ShellParseArgs : Turn cmd.-line arguments into a list.   {{{1
+" s:ShellParseArgs : Turn cmd.-line arguments into a list.   {{{2
 "
 " Parameters:
 "   line - the command-line arguments to parse (string)
@@ -634,7 +634,7 @@ else
 endif
 "
 "-------------------------------------------------------------------------------
-" == Various setting ==   {{{2
+" == Various settings ==   {{{2
 "-------------------------------------------------------------------------------
 "
 let s:CmdLineEscChar = ' |"\'
@@ -1156,11 +1156,11 @@ endfunction    " ----------  end of function s:EscMagicChar  ----------
 "-------------------------------------------------------------------------------
 
 function! s:OutputBufferErrors ( jump )
-	"
-	if bufname('%') !~ 'Lua Output$'
-		return s:ImportantMsg ( 'not inside the "Lua Output" buffer' )
+
+	if bufname('%') !~ 'Lua Output$' && bufname('%') !~ 'Lua Terminal - '
+		return s:ImportantMsg ( 'not inside a Lua output buffer' )
 	endif
-	"
+
 	cclose
 	"
 	" :TODO:26.03.2014 20:54:WM: check escaping of errorformat
@@ -1249,44 +1249,41 @@ function! s:Run ( args )
 		"
 		" successful?
 		if v:shell_error == 0
-			"
 			" echo script output
 			echo lua_output
-			"
 		else
-			"
 			" save current settings
 			let errorf_saved = &g:errorformat
-			"
+
 			" run code checker
 			let &g:errorformat = errformat
-			"
+
 			silent exe 'cexpr lua_output'
-			"
+
 			" restore current settings
 			let &g:errorformat = errorf_saved
-			"
+
 			botright cwindow
 			cc
-			"
 		endif
 	elseif s:Lua_OutputMethod == 'buffer'
-		"
+
 		" method : "buffer"
-		"
+
 		if bufwinnr ( 'Lua Output$' ) == -1
 			" open buffer
 			above new
 			file Lua\ Output
-			"
+			" TODO: name might exist on a different tab page
+
 			" settings
 			setlocal buftype=nofile
 			setlocal noswapfile
 			setlocal syntax=none
 			setlocal tabstop=8
-			"
+
 			call Lua_SetMapLeader ()
-			"
+
 			" maps: quickfix list
 			nnoremap  <buffer>  <silent>  <LocalLeader>qf       :call <SID>OutputBufferErrors(0)<CR>
 			inoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call <SID>OutputBufferErrors(0)<CR>
@@ -1294,45 +1291,43 @@ function! s:Run ( args )
 			nnoremap  <buffer>  <silent>  <LocalLeader>qj       :call <SID>OutputBufferErrors(1)<CR>
 			inoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
 			vnoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
-			"
+
 			call Lua_ResetMapLeader ()
 		else
 			" jump to window
 			exe bufwinnr( 'Lua Output$' ).'wincmd w'
 		endif
-		"
+
 		setlocal modifiable
-		"
+
 		silent exe '%delete _'
 		silent exe '0r!'.exec.' '.script.' '.a:args
 		silent exe '$delete _'
-		"
+
 		if v:shell_error == 0
 			" jump to the first line of the output
 			normal! gg
-			"
+
 			setlocal nomodifiable
 			setlocal nomodified
 		else
 			" jump to the last line of the output, where the error is mentioned
 			normal! G
-			"
+
 			" save current settings
 			let errorf_saved  = &l:errorformat
-			"
+
 			" run code checker
 			let &l:errorformat = errformat
-			"
+
 			silent exe 'cgetbuffer'
-			"
+
 			" restore current settings
 			let &l:errorformat = errorf_saved
-			"
+
 			botright cwindow
 			cc
-			"
 		endif
-		"
 	elseif s:Lua_OutputMethod == 'terminal'
 
 		" method : "terminal"
@@ -1348,25 +1343,42 @@ function! s:Run ( args )
 						\ " - occurred at " . v:throwpoint )
 		endtry
 
-		let title = 'Lua Terminal : '.expand( '%:t' )
+		let title = 'Lua Terminal - '.expand( '%:t' )
 
 		let buf_nr = term_start ( arg_list, {
 					\ 'term_name' : title,
 					\ } )
 
+		call Lua_SetMapLeader ()
+
+		" maps: quickfix list
+		if empty( maparg( '<LocalLeader>qf', 'n' ) )
+			nnoremap  <buffer>  <silent>  <LocalLeader>qf       :call <SID>OutputBufferErrors(0)<CR>
+			inoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call <SID>OutputBufferErrors(0)<CR>
+			vnoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call <SID>OutputBufferErrors(0)<CR>
+		endif
+		if empty( maparg( '<LocalLeader>qj', 'n' ) )
+			nnoremap  <buffer>  <silent>  <LocalLeader>qj       :call <SID>OutputBufferErrors(1)<CR>
+			inoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
+			vnoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
+		endif
+
+		call Lua_ResetMapLeader ()
+
 	elseif s:Lua_OutputMethod == 'xterm'
-		"
+
 		" method : "xterm"
-		"
+
 		let title = 'Lua'
 		let args = a:args
-		"
+
 		silent exe '!'.s:Xterm_Executable.' '.g:Xterm_Options
 					\ .' -title '.shellescape( title )
 					\ .' -e '.shellescape( exec.' '.script.' '.args.' ; echo "" ; read -p "  ** PRESS ENTER **  " dummy ' ).' &'
-		"
 	endif
-	"
+
+	call s:Redraw ( 'r!', '' )                    " redraw in terminal
+
 endfunction    " ----------  end of function s:Run  ----------
 
 "-------------------------------------------------------------------------------
@@ -1991,21 +2003,21 @@ function! s:InitMenus()
 	let ahead_loud = 'anoremenu     '.s:Lua_RootMenu.'.Run.'
 	let ihead_loud = 'inoremenu     '.s:Lua_RootMenu.'.Run.'
 
-	exe ahead.'&run<TAB><F9>\ '.esc_mapl.'rr                 :call <SID>Run("")<CR>'
-	exe ihead.'&run<TAB><F9>\ '.esc_mapl.'rr            <Esc>:call <SID>Run("")<CR>'
-	exe ahead.'&compile<TAB><S-F9>\ '.esc_mapl.'rc           :call <SID>Compile("compile")<CR>'
-	exe ihead.'&compile<TAB><S-F9>\ '.esc_mapl.'rc      <Esc>:call <SID>Compile("compile")<CR>'
-	exe ahead.'chec&k\ code<TAB><A-F9>\ '.esc_mapl.'rk       :call <SID>Compile("check")<CR>'
-	exe ihead.'chec&k\ code<TAB><A-F9>\ '.esc_mapl.'rk  <Esc>:call <SID>Compile("check")<CR>'
+	exe ahead.'&run<TAB>'.esc_mapl.'rr                       :call <SID>Run("")<CR>'
+	exe ihead.'&run<TAB>'.esc_mapl.'rr                  <Esc>:call <SID>Run("")<CR>'
+	exe ahead.'&compile<TAB>'.esc_mapl.'rc                   :call <SID>Compile("compile")<CR>'
+	exe ihead.'&compile<TAB>'.esc_mapl.'rc              <Esc>:call <SID>Compile("compile")<CR>'
+	exe ahead.'chec&k\ code<TAB>'.esc_mapl.'rk               :call <SID>Compile("check")<CR>'
+	exe ihead.'chec&k\ code<TAB>'.esc_mapl.'rk          <Esc>:call <SID>Compile("check")<CR>'
 	exe ahead.'make\ &executable<TAB>'.esc_mapl.'re          :call <SID>MakeExecutable()<CR>'
 	exe ihead.'make\ &executable<TAB>'.esc_mapl.'re     <Esc>:call <SID>MakeExecutable()<CR>'
 
-	exe ahead.'&buffer\ "Lua\ Output".buffer\ "Lua\ Output"  :echo "This is a menu header."<CR>'
-	exe ahead.'&buffer\ "Lua\ Output".-SepHead-              :'
-	exe ahead.'&buffer\ "Lua\ Output".load\ into\ quick&fix<TAB>'.esc_mapl.'qf                    :call <SID>OutputBufferErrors(0)<CR>'
-	exe ihead.'&buffer\ "Lua\ Output".load\ into\ quick&fix<TAB>'.esc_mapl.'qf               <Esc>:call <SID>OutputBufferErrors(0)<CR>'
-	exe ahead.'&buffer\ "Lua\ Output".qf\.\ and\ &jump\ to\ first\ error<TAB>'.esc_mapl.'qj       :call <SID>OutputBufferErrors(1)<CR>'
-	exe ihead.'&buffer\ "Lua\ Output".qf\.\ and\ &jump\ to\ first\ error<TAB>'.esc_mapl.'qj  <Esc>:call <SID>OutputBufferErrors(1)<CR>'
+	exe ahead.'&buffer\ "Lua\ Output\/Term".buffer\ "Lua\ Output\/Term"  :echo "This is a menu header."<CR>'
+	exe ahead.'&buffer\ "Lua\ Output\/Term".-SepHead-              :'
+	exe ahead.'&buffer\ "Lua\ Output\/Term".load\ into\ quick&fix<TAB>'.esc_mapl.'qf                    :call <SID>OutputBufferErrors(0)<CR>'
+	exe ihead.'&buffer\ "Lua\ Output\/Term".load\ into\ quick&fix<TAB>'.esc_mapl.'qf               <Esc>:call <SID>OutputBufferErrors(0)<CR>'
+	exe ahead.'&buffer\ "Lua\ Output\/Term".qf\.\ and\ &jump\ to\ first\ error<TAB>'.esc_mapl.'qj       :call <SID>OutputBufferErrors(1)<CR>'
+	exe ihead.'&buffer\ "Lua\ Output\/Term".qf\.\ and\ &jump\ to\ first\ error<TAB>'.esc_mapl.'qj  <Esc>:call <SID>OutputBufferErrors(1)<CR>'
 
 	exe ahead.'-Sep01-                                   :'
 
@@ -2039,8 +2051,8 @@ function! s:InitMenus()
 	exe ahead.'output\ method.&buffer<TAB>quickfix           :call <SID>SetOutputMethod("buffer")<CR>'
 	exe ihead.'output\ method.&buffer<TAB>quickfix      <Esc>:call <SID>SetOutputMethod("buffer")<CR>'
 	if index ( s:Lua_OutputMethodList, 'terminal' ) > -1
-		exe ahead.'output\ method.&terminal<TAB>interactive       :call <SID>SetOutputMethod("terminal")<CR>'
-		exe ihead.'output\ method.&terminal<TAB>interactive  <Esc>:call <SID>SetOutputMethod("terminal")<CR>'
+		exe ahead.'output\ method.&terminal<TAB>interact+qf       :call <SID>SetOutputMethod("terminal")<CR>'
+		exe ihead.'output\ method.&terminal<TAB>interact+qf  <Esc>:call <SID>SetOutputMethod("terminal")<CR>'
 	endif
 	if index ( s:Lua_OutputMethodList, 'xterm' ) > -1
 		exe ahead.'output\ method.&xterm<TAB>interactive       :call <SID>SetOutputMethod("xterm")<CR>'
