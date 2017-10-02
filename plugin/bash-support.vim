@@ -44,7 +44,7 @@ if exists("g:BASH_Version") || &cp
 	finish
 endif
 
-let g:BASH_Version= "4.4pre"                  " version number of this script; do not change
+let g:BASH_Version = "5.0pre"                  " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " === Auxiliary functions ===   {{{1
@@ -722,6 +722,7 @@ call s:ApplyDefaultSetting ( 'BASH_Printheader', "%<%f%h%m%<  %=%{strftime('%x %
 call s:GetGlobalSetting ( 'BASH_UseToolbox' )
 call s:ApplyDefaultSetting ( 'Bash_UseTool_bashdb', 'yes' )
 
+" adapt for backwards compatibility
 if s:BASH_OutputMethod == 'vim'
 	let s:BASH_OutputMethod = 'vim-qf'
 endif
@@ -954,6 +955,39 @@ function! s:RemoveEcho ()
 endfunction   " ---------- end of function s:RemoveEcho  ----------
 
 "-------------------------------------------------------------------------------
+" s:OutputBufferErrors : Load the "Bash Output" buffer into quickfix.   {{{1
+"
+" Parameters:
+"   jump - if non-zero, also jump to the first error (integer)
+"-------------------------------------------------------------------------------
+
+function! s:OutputBufferErrors ( jump )
+
+	if bufname('%') !~ 'Bash Output$' && bufname('%') !~ 'Bash Terminal - '
+		return s:ImportantMsg ( 'not inside a Bash output buffer' )
+	endif
+
+	cclose
+
+	" save current settings
+	let errorf_saved  = &l:errorformat
+
+	" run code checker
+	let &l:errorformat = s:BASH_Errorformat
+
+	silent exe 'cgetbuffer'
+
+	" restore current settings
+	let &l:errorformat = errorf_saved
+
+	botright cwindow
+
+	if a:jump != 0
+		cc
+	endif
+endfunction    " ----------  end of function s:OutputBufferErrors  ----------
+
+"-------------------------------------------------------------------------------
 " s:Run : Run the current buffer.   {{{1
 "
 " Parameters:
@@ -991,7 +1025,12 @@ function! s:Run ( args, mode, ... ) range
 		let line_l = a:lastline
 	endif
 
+	" the interpreter arguments
 	let args_interp = ''
+
+	if exists( 'b:BASH_InterpCmdLineArgs' )
+		let args_interp = ' '.b:BASH_InterpCmdLineArgs
+	endif
 
 	" prepare the file (and handle visual mode)
 	if mode == 'v'
@@ -1006,20 +1045,20 @@ function! s:Run ( args, mode, ... ) range
 		"else
 			let exec = s:BASH_Executable
 		"end
-		let script = tmpfile
+		let script_orig = tmpfile
+		let script_esc  = tmpfile
 	elseif s:BASH_DirectRun == 'yes' && executable ( expand ( '%:p' ) )
-		let exec   = expand ( '%:p' )
-		let script = ''
+		let exec        = expand ( '%:p' )
+		let args_interp = ''                        " not possible with direct run
+		let script_orig = ''
+		let script_esc  = ''
 	else
-		let exec   = s:BASH_Executable
-		let script = expand ( '%' )
+		let exec        = s:BASH_Executable
+		let script_orig = expand ( '%' )
+		let script_esc  = shellescape ( script_orig )
 	endif
 
 	" the cmd.-line arguments
-	if exists( 'b:BASH_InterpCmdLineArgs' )
-		let args_interp .= ' '.b:BASH_InterpCmdLineArgs
-	endif
-
 	if a:args != ''
 		let args_script = a:args
 	elseif exists( 'b:BASH_ScriptCmdLineArgs' )
@@ -1034,7 +1073,7 @@ function! s:Run ( args, mode, ... ) range
 
 		" method : "vim - interactive"
 
-		exe '!'.exec.args_interp.' '.shellescape( script ).' '.args_script
+		exe '!'.exec.args_interp.' '.script_esc.' '.args_script
 
 		if exists( 'tmpfile' )
 			call delete ( tmpfile )                   " delete the tmpfile
@@ -1044,7 +1083,7 @@ function! s:Run ( args, mode, ... ) range
 		" method : "vim - quickfix"
 
 		" run script
-		let bash_output = system ( exec.args_interp.' '.shellescape( script ).' '.args_script )
+		let bash_output = system ( exec.args_interp.' '.script_esc.' '.args_script )
 
 		" successful?
 		if v:shell_error == 0
@@ -1085,17 +1124,17 @@ function! s:Run ( args, mode, ... ) range
 			setlocal syntax=none
 			setlocal tabstop=8
 
-"			call Bash_SetMapLeader ()
-"
-"			" maps: quickfix list
-"			nnoremap  <buffer>  <silent>  <LocalLeader>qf       :call <SID>OutputBufferErrors(0)<CR>
-"			inoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call <SID>OutputBufferErrors(0)<CR>
-"			vnoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call <SID>OutputBufferErrors(0)<CR>
-"			nnoremap  <buffer>  <silent>  <LocalLeader>qj       :call <SID>OutputBufferErrors(1)<CR>
-"			inoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
-"			vnoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
-"
-"			call Bash_ResetMapLeader ()
+			call Bash_SetMapLeader ()
+
+			" maps: quickfix list
+			nnoremap  <buffer>  <silent>  <LocalLeader>qf       :call <SID>OutputBufferErrors(0)<CR>
+			inoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call <SID>OutputBufferErrors(0)<CR>
+			vnoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call <SID>OutputBufferErrors(0)<CR>
+			nnoremap  <buffer>  <silent>  <LocalLeader>qj       :call <SID>OutputBufferErrors(1)<CR>
+			inoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
+			vnoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
+
+			call Bash_ResetMapLeader ()
 		else
 			" jump to window
 			exe bufwinnr( 'Bash Output$' ).'wincmd w'
@@ -1104,7 +1143,7 @@ function! s:Run ( args, mode, ... ) range
 		setlocal modifiable
 
 		silent exe '%delete _'
-		silent exe '0r!'.exec.args_interp.' '.shellescape( script ).' '.args_script
+		silent exe '0r!'.exec.args_interp.' '.script_esc.' '.args_script
 		silent exe '$delete _'
 
 		if v:shell_error == 0
@@ -1141,11 +1180,11 @@ function! s:Run ( args, mode, ... ) range
 
 		try
 			let arg_list = [ exec ]
-			if args_interp != '' && script != ''
+			if args_interp != '' && script_orig != ''
 				let arg_list += s:ShellParseArgs ( args_interp )
 			endif
-			if script != ''
-				let arg_list += [ script ]
+			if script_orig != ''
+				let arg_list += [ script_orig ]
 			endif
 			if args_script != ''
 				let arg_list += s:ShellParseArgs ( args_script )   " expand to a list
@@ -1170,6 +1209,22 @@ function! s:Run ( args, mode, ... ) range
 
 		" :TODO:27.09.2017 23:39:WM: needs to handle the tmpfile, use exit callback
 
+		call Bash_SetMapLeader ()
+
+		" maps: quickfix list
+		if empty( maparg( '<LocalLeader>qf', 'n' ) )
+			nnoremap  <buffer>  <silent>  <LocalLeader>qf       :call <SID>OutputBufferErrors(0)<CR>
+			inoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call <SID>OutputBufferErrors(0)<CR>
+			vnoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call <SID>OutputBufferErrors(0)<CR>
+		endif
+		if empty( maparg( '<LocalLeader>qj', 'n' ) )
+			nnoremap  <buffer>  <silent>  <LocalLeader>qj       :call <SID>OutputBufferErrors(1)<CR>
+			inoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
+			vnoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
+		endif
+
+		call Bash_ResetMapLeader ()
+
 	elseif s:BASH_OutputMethod == 'xterm'
 
 		" method : "xterm"
@@ -1185,7 +1240,7 @@ function! s:Run ( args, mode, ... ) range
 
 		silent exe '!'.s:Xterm_Executable.' '.g:Xterm_Options
 					\ .' -title '.shellescape( title )
-					\ .' -e '.shellescape( exec.args_interp.' '.shellescape( script ).' '.args_script.' ; echo "" ; read -p "  ** PRESS ENTER **  " dummy '.rm_tmp ).' &'
+					\ .' -e '.shellescape( exec.args_interp.' '.script_esc.' '.args_script.' ; echo "" ; read -p "  ** PRESS ENTER **  " dummy '.rm_tmp ).' &'
 	endif
 
 	call s:Redraw ( 'r!', '' )                    " redraw in terminal
@@ -1590,7 +1645,7 @@ function! s:InitMenus()
 	let ihead = 'inoremenu <silent> '.s:BASH_RootMenu.'.Run.'
 
 	exe ahead.'save\ +\ &run\ script<Tab>'.esc_mapl.'rr            :call <SID>Run("","n")<CR>'
-	exe vhead.'save\ +\ &run\ script<Tab>'.esc_mapl.'rr       <C-C>:call <SID>Run("","v")<CR>'
+	exe vhead.'save\ +\ &run\ script<Tab>'.esc_mapl.'rr            :call <SID>Run("","v")<CR>'
 	exe ihead.'save\ +\ &run\ script<Tab>'.esc_mapl.'rr       <C-C>:call <SID>Run("","n")<CR>'
 
 	exe " menu          ".s:BASH_RootMenu.'.&Run.script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra       <Plug>BashSupportSetBashScriptArgs'
@@ -1608,6 +1663,13 @@ function! s:InitMenus()
 		exe ahead.'make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re       :call <SID>MakeExecutable()<CR>'
 		exe ihead.'make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re  <C-C>:call <SID>MakeExecutable()<CR>'
 	endif
+
+	exe ahead.'&buffer\ "Bash\ Output\/Term".buffer\ "Bash\ Output\/Term"  :echo "This is a menu header."<CR>'
+	exe ahead.'&buffer\ "Bash\ Output\/Term".-SepHead-              :'
+	exe ahead.'&buffer\ "Bash\ Output\/Term".load\ into\ quick&fix<TAB>'.esc_mapl.'qf                    :call <SID>OutputBufferErrors(0)<CR>'
+	exe ihead.'&buffer\ "Bash\ Output\/Term".load\ into\ quick&fix<TAB>'.esc_mapl.'qf               <Esc>:call <SID>OutputBufferErrors(0)<CR>'
+	exe ahead.'&buffer\ "Bash\ Output\/Term".qf\.\ and\ &jump\ to\ first\ error<TAB>'.esc_mapl.'qj       :call <SID>OutputBufferErrors(1)<CR>'
+	exe ihead.'&buffer\ "Bash\ Output\/Term".qf\.\ and\ &jump\ to\ first\ error<TAB>'.esc_mapl.'qj  <Esc>:call <SID>OutputBufferErrors(1)<CR>'
 
 	exe ahead.'-SEP-SETTINGS-   :'
 
@@ -1788,7 +1850,7 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	nnoremap    <buffer>  <silent>  <LocalLeader>rr        :call <SID>Run("","n")<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rr   <Esc>:call <SID>Run("","n")<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>rr   <Esc>:call <SID>Run("","v")<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>rr        :call <SID>Run("","v")<CR>
 	nnoremap    <buffer>  <silent>  <LocalLeader>rc        :call BASH_SyntaxCheck()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rc   <C-C>:call BASH_SyntaxCheck()<CR>
 	vnoremap    <buffer>  <silent>  <LocalLeader>rc   <C-C>:call BASH_SyntaxCheck()<CR>
@@ -1810,9 +1872,9 @@ function! s:CreateAdditionalMaps ()
 	nnoremap    <buffer>            <LocalLeader>ro         :BashOutputMethod<SPACE>
 	inoremap    <buffer>            <LocalLeader>ro    <Esc>:BashOutputMethod<SPACE>
 	vnoremap    <buffer>            <LocalLeader>ro    <Esc>:BashOutputMethod<SPACE>
-"	nnoremap    <buffer>            <LocalLeader>rd         :BashDirectRun<SPACE>
-"	inoremap    <buffer>            <LocalLeader>rd    <Esc>:BashDirectRun<SPACE>
-"	vnoremap    <buffer>            <LocalLeader>rd    <Esc>:BashDirectRun<SPACE>
+	nnoremap    <buffer>            <LocalLeader>rd         :BashDirectRun<SPACE>
+	inoremap    <buffer>            <LocalLeader>rd    <Esc>:BashDirectRun<SPACE>
+	vnoremap    <buffer>            <LocalLeader>rd    <Esc>:BashDirectRun<SPACE>
 	if index ( s:BASH_OutputMethodList, 'xterm' ) > -1
 		nnoremap  <buffer>  <silent>  <LocalLeader>rx         :call <SID>XtermSize()<CR>
 		inoremap  <buffer>  <silent>  <LocalLeader>rx    <Esc>:call <SID>XtermSize()<CR>

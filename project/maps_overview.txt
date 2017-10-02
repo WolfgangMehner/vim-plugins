@@ -15,10 +15,10 @@ Run
   syntax check	rs>rk	rc>rk	-		rk	rk	rs>rk
   s.c. options	-	rco	-		-	-	-
   lint check	rl	-	-		-	-	-
-  debugger	-	rd	rd		-	-	rd
+  debugger	-	-	rd		-	-	rd
   script args	ra	ra	ra		-	-	ra
   interp. args	raa	rba			-	-	rw
-  direct run			-	-	rd	-	-	-
+  direct run		rd	-	-	rd	-	-	-
  --------------------------------------------------------------------------
   make exec.	re	re	-	-	re	-	re	-
   hardcopy	rh	rh	rh	rh	rh	-	rh	rh

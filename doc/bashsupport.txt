@@ -1,8 +1,8 @@
-*bashsupport.txt*                Bash Support                      Jun 20 2017
+*bashsupport.txt*                Bash Support                      Oct 01 2017
 
 Bash Support                                      *bash-support* *bashsupport*
 
-                             Plug-in version 4.4pre
+                             Plug-in version 5.0pre
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
@@ -14,14 +14,9 @@ running a script, starting a debugger  can be done with a keystroke.  There
 are many additional hints and options which can improve speed and comfort when
 writing shell scripts. This plug-in can be used for Bash up to version 4.4.
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-++  The plug-in version 4.0+ is a rewriting of version 3.12.1.              ++
-++  The versions 4.0+ are based on a new and more powerful template system  ++
-++  (please see |template-support|for more information).                    ++
-++  The template syntax has changed!                                        ++
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+==============================================================================
+0.  TABLE OF CONTENTS                                   *bashsupport-contents*
+==============================================================================
 
  1.     Usage with GUI                           |bashsupport-usage-gvim|
  1.1     Menu 'Comments'                         |bashsupport-comments|
