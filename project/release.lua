@@ -139,8 +139,6 @@ filelists.c = {
 	'doc/toolboxdoxygen.txt',
 	'doc/toolboxmake.txt',
 	'ftdetect/template.vim',
-	'ftplugin/c.vim',
-	'ftplugin/make.vim',
 	'ftplugin/template.vim',
 	'plugin/c.vim',
 	'syntax/template.vim',

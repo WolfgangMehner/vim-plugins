@@ -6,7 +6,7 @@
 %%
 %%        Version:  1.0
 %%        Created:  10.11.2006
-%%       Revision:  none
+%%       Revision:  03.10.2017
 %%
 %%         Author:  Wolfgang Mehner, wolfgang-mehner@web.de
 %%                  (formerly Dr. Fritz Mehner (fgm), mehner.fritz@web.de)
@@ -141,8 +141,8 @@ Key mappings for Vim and gVim.\\
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{S}tatements}} \\
-\hline \verb'\sfo' & \verb'for { ; ; }'         \hfill \textit{standard} (n,v,i)\\
-\hline \verb'\sfr' & \verb'for { : }'           \hfill \textit{range-based} (n,v,i)\\
+\hline \verb'\sfo' & \verb'for ( ; ; )'         \hfill \textit{standard} (n,v,i)\\
+\hline \verb'\sfr' & \verb'for ( : )'           \hfill \textit{range-based} (n,v,i)\\
 \hline \verb'\sd'  & \verb'do { } while'        \hfill (n,v,i)\\
 \hline \verb'\sw'  & \verb'while { }'           \hfill (n,v,i)\\
 \hline \verb'\sif' & \verb'if { }'              \hfill (n,v,i)\\
@@ -302,15 +302,15 @@ Key mappings for Vim and gVim.\\
 \hline \verb'\rr'  & run                                     \hfill (n,i)\\
 \hline \verb'\ra'  & set comand line arguments               \hfill (n,i)\\
 \hline \verb'\rd'  & start debugger                          \hfill (n,i)\\
-\hline \verb'\re'  & executable to run$^1$                   \hfill (n,i)\\
+\hline \verb'\re'  & executable to run                       \hfill (n,i)\\
 %
-\hline \verb'\rp'  & run \texttt{splint}$^2$                 \hfill (n,i)\\
+\hline \verb'\rp'  & run \texttt{splint}$^1$                 \hfill (n,i)\\
 \hline \verb'\rpa' & cmd. line arg. for \texttt{splint}      \hfill (n,i)\\
 %
-\hline \verb'\rcc' & run \texttt{cppcheck}$^3$               \hfill (n,i)\\
+\hline \verb'\rcc' & run \texttt{cppcheck}$^2$               \hfill (n,i)\\
 \hline \verb'\rccs'& severity for \texttt{cppcheck}          \hfill (n,i)\\
 %
-\hline \verb'\rk'  & run \texttt{ CodeCheck}$^4$             \hfill (n,i)\\
+\hline \verb'\rk'  & run \texttt{ CodeCheck}$^3$             \hfill (n,i)\\
 \hline \verb'\rka' & cmd. line arg. for \texttt{CodeCheck}   \hfill (n,i)\\
 %
 \hline \verb'\ri'  & run \texttt{ indent}        \hfill (n,i)\\
@@ -330,18 +330,18 @@ Key mappings for Vim and gVim.\\
 %%  Tool Box : Make
 %%----------------------------------------------------------------------
 \hline
-\multicolumn{2}{|r|}{\textsl{Tool Box : \textbf{M}ake}} \\
-\hline \verb'\rm'  & run \texttt{ make}$^1$                  \hfill (n,i)\\
-\hline \verb'\rmc' & run \texttt{ make clean}$^1$            \hfill (n,i)\\
-\hline \verb'\rmd' & run \texttt{ make doc}$^1$              \hfill (n,i)\\
-\hline \verb'\rcm' & choose a makefile $^1$                  \hfill (n,i)\\
-\hline \verb'\rma' & cmd. line arg. for \texttt{make}$^1$    \hfill (n,i)\\
+\multicolumn{2}{|r|}{\textsl{Tool Box : \textbf{M}ake}$^{4,5}$} \\
+\hline \verb'\rm'  & run \texttt{ make}                  \hfill (n,i)\\
+\hline \verb'\rmc' & run \texttt{ make clean}            \hfill (n,i)\\
+\hline \verb'\rmd' & run \texttt{ make doc}              \hfill (n,i)\\
+\hline \verb'\rcm' & choose a makefile                   \hfill (n,i)\\
+\hline \verb'\rma' & cmd. line arg. for \texttt{make}    \hfill (n,i)\\
 \hline
 %%----------------------------------------------------------------------
 %%  Additional mappings
 %%----------------------------------------------------------------------
 \hline
-\multicolumn{2}{|r|}{\textbf{Additional Mappings}$^5$}\\
+\multicolumn{2}{|r|}{\textbf{Additional Mappings}$^4$}\\
 \hline
 \hline \textbf{typing}& \textbf{expansion}\\
 \hline \verb'/*'      & \verb'/*  */' \hfill (i)\\
@@ -368,11 +368,11 @@ Set severity for \texttt{cppcheck} (same as \textbackslash\texttt{rccs})\\[1.0ex
 %
 \scriptsize{%
 \hrulefill\\
-$^1$ also working for filetype \textbf{make}\\
-$^2$ \textit{www.splint.org}\\
-$^3$ \textit{cppcheck.sourceforge.net}\\
-$^4$ \textbf{CodeCheck}$^{TM}$ is a product of Abraxas Software, Inc.\\
-$^5$ defined in \verb'~/ftplugin/c.vim'
+$^1$ \textit{www.splint.org}\\
+$^2$ \textit{cppcheck.sourceforge.net}\\
+$^3$ \textbf{CodeCheck}$^{TM}$ is a product of Abraxas Software, Inc.\\
+$^4$ see \verb'c-support/rc/c.vim' for how to define them \\
+$^5$ see \verb'c-support/rc/make.vim' for how to define them for filetype \textbf{make}
 }%
 %
 \end{minipage}

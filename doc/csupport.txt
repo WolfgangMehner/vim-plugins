@@ -1,4 +1,4 @@
-*csupport.txt*                  C/C++ Support                      Feb 05 2017
+*csupport.txt*                  C/C++ Support                      Oct 03 2017
 
 C/C++ Support                                            *c-support* *csupport*
 
@@ -1067,7 +1067,8 @@ To switch the make tool box off add the following line to the file .vimrc
 >
   let g:C_UseTool_make  = 'no'
 <
-The hotkeys for the make tool are defined in the file ~/.vim/ftplugin/c.vim .
+The maps for the make tool can be defined in the file '~/.vim/ftplugin/c.vim'.
+Compare the example filetype plug-in 'c-support/rc/c.vim'.
 
 1.8.2 Other Tools                                   *csupport-toolbox-others*
 
@@ -2038,8 +2039,8 @@ See |folding| for more information on folding.
 9.  Additional Mappings                                 *csupport-ad-mappings*
 ==============================================================================
 
-There are a few additional filetype specific key mappings defined in
-'~/.vim/ftplugin/c.vim'.
+Additional mappings can be defined in the file '~/.vim/ftplugin/c.vim'.
+Compare the example filetype plug-in 'c-support/rc/c.vim'.
 
 Complete a classical C comment: '/*' => '/* | */' (modes: i,v).
 
@@ -2054,15 +2055,16 @@ Open a block (modes: i,v):
               }
 In visual mode the content of the new block will be indented.
 
-The file customization.cpp.vim provides additional insert mode mappings to
-facilitate writting cin and cout statements, e.g.
+The file 'c-support/rc/cpp.vim' provides additional insert mode mappings to
+facilitate writing cin and cout statements, e.g.
 >
-  '<<'    -> ' << |'
-  '<<"'   -> ' << "|" '
-  '<<;'   -> ' << "|\n";'
-  '>>'    -> ' >> |'
+  '<<'   ->  ' << |'
+  '<<"'  ->  ' << "|" '
+  '<<;'  ->  ' << "|\n";'
+  '>>'   ->  ' >> |'
 <
-Copy this file to ~/.vim/ftplugin and rename it to 'cpp.vim'.
+Copy the files 'c-support/rc/c.vim' or 'c-support/rc/cpp.vim'
+to '~/.vim/ftplugin'.
 
 ==============================================================================
 10.  WINDOWS PARTICULARITIES                                *csupport-windows*
