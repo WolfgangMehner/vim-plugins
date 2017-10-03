@@ -5,8 +5,26 @@
 § set the template style used after loading the library
 SetStyle( 'default' )
 
+§ date format:
+§SetFormat ( "TIME_LOCALE", "en_US.UTF-8" )
+
+§ pretty dates:
+§ - DATE_PRETTY1 is a nicer date formatting, such as "January 06 2016"
+§ - DATE_PRETTY2 is a shorter version, such as "Jan 06 2016"
+SetFormat( 'DATE_PRETTY1', '%B %d %Y' )
+SetFormat( 'DATE_PRETTY2', '%b %d %Y' )
+
 § used by the template "Comments.file description pl":
 SetMacro( 'PERL_INTERPRETER', '/usr/bin/env perl' )
+
+§ templates automatically included into new files
+§ set the property to an empty string to disable the insertion
+§SetProperty ( 'Perl::FileSkeleton::Script', 'Comments.shebang;Comments.file description pl; ;Skeleton.script-use' )
+§SetProperty ( 'Perl::FileSkeleton::Module', 'Comments.file description pm; ;Skeleton.module-use' )
+§SetProperty ( 'Perl::FileSkeleton::Module', 'Comments.file description pm; ;Skeleton.module-pod; ;Skeleton.module-use' )
+§SetProperty ( 'Perl::FileSkeleton::Test',   'Comments.file description t; ;Skeleton.test-use' )
+§SetProperty ( 'Perl::FileSkeleton::POD',    '' )
+§SetProperty ( 'Perl::FileSkeleton::POD',    'Comments.file description pod' )
 
 § -------------------------------------------------------------
 §  A template definition is build like this:
@@ -18,6 +36,57 @@ SetMacro( 'PERL_INTERPRETER', '/usr/bin/env perl' )
 §  A template ends with the line "== ENDTEMPLATE ==" or with
 §  the start of a new template.
 § -------------------------------------------------------------
+
+§ -------------------------------------------------------------
+§  Inserted when creating a new script.
+§  See configuration variable 'g:Perl_InsertFileHeader'
+§  and template properties:
+§  - Perl::FileSkeleton::Script
+§  - Perl::FileSkeleton::Module
+§  - Perl::FileSkeleton::Test
+§  - Perl::FileSkeleton::POD
+§
+§  - option 'nomenu': this will not create a menu entry
+§ -------------------------------------------------------------
+
+§ uncomment and edit to customize
+
+§== Skeleton.script-use == nomenu, below ==
+§use strict;
+§use warnings;
+§use utf8;
+§== ENDTEMPLATE ==
+
+§== Skeleton.module-use == nomenu, below ==
+§use strict;
+§use warnings;
+§== ENDTEMPLATE ==
+
+§== Skeleton.test-use == nomenu, below ==
+§use strict;
+§use warnings;
+§
+§use Test::More tests => 1;                      # last test to print
+§== ENDTEMPLATE ==
+
+§== Skeleton.module-pod == nomenu, below ==
+§=pod
+§
+§=head2 SYNOPSIS
+§
+§PACKAGE NAME: |BASENAME|
+§
+§AUTHOR: |AUTHOR|
+§
+§DATE: |DATE_PRETTY1|
+§
+§DESCRIPTION:
+§Version:
+§
+§=head2 USE
+§
+§=cut
+§== ENDTEMPLATE ==
 
 § -------------------------------------------------------------
 §  Statements

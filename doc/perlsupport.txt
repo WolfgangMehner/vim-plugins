@@ -1,4 +1,4 @@
-*perlsupport.txt*                Perl Support                      Feb 12 2017
+*perlsupport.txt*                Perl Support                      Oct 02 2017
 
 Perl Support                                      *perl-support* *perlsupport*
 
@@ -98,6 +98,7 @@ profiler can be done with a keystroke.
  5.3.1    Template definition             |perlsupport-templates-definition|
  5.3.2    The jump tags                   |perlsupport-templates-jumptags|
  5.3.3    Command Ctrl-j                  |perlsupport-Ctrl-j|
+ 5.4     File Skeletons                   |perlsupport-file-skeleton|
  6       Perl::Tags                       |perlsupport-perltags|
  7.      Perl Dictionary                  |perlsupport-dictionary|
  8.      Optional Dependencies            |perlsupport-dependencies|
@@ -1756,7 +1757,8 @@ global variable                default value               tag (see below)
 g:Perl_GlobalTemplateFile      root_dir.'perl-support/templates/Templates'
 g:Perl_LocalTemplateFile       $HOME.'/.vim/perl-support/templates/Templates'
 g:Perl_CustomTemplateFile      $HOME.'/.vim/templates/perl.templates'
-g:Perl_Ctrl_j                  'on'
+g:Perl_Ctrl_j                  'yes'
+g:Perl_Ctrl_d                  'yes'
 
 g:Perl_CodeSnippets            root_dir.'perl-support/codesnippets/'
 g:Perl_LoadMenus               'yes'
@@ -1802,7 +1804,8 @@ The variable root_dir will automatically be set to one of the following values:
            g:Perl_GlobalTemplateFile      : sets the global template file  (see|perlsupport-templates|)
            g:Perl_LocalTemplateFile       : sets the local template file  (see|perlsupport-templates|)
            g:Perl_CustomTemplateFile      : sets the custom template file  (see|perlsupport-templates|)
-           g:Perl_Ctrl_j                  : hotkey Ctrl-j  'on'/'off' (see|perlsupport-Ctrl-j|)
+           g:Perl_Ctrl_j                  : hotkey Ctrl-j  'yes'/'no' (see |perlsupport-Ctrl-j|)
+           g:Perl_Ctrl_d                  : hotkey Ctrl-d  'yes'/'no' (see |perlsupport-templates-jumptags|)
 
  2. group: g:Perl_CodeSnippets       : The name of the (non-standard) code snippet directory (see below).
            g:Perl_LoadMenus          : Load menus and mappings ("yes", "no") at startup.
@@ -2280,6 +2283,38 @@ you jump to the target <-IF PART-> and deletes it.  When the block is written
 a Ctrl-j leads you to the else-part.  The target <+ELSE_PART+> disappears and
 you can type on.
 
+------------------------------------------------------------------------------
+5.4  FILE SKELETONS                                *perlsupport-file-skeleton*
+------------------------------------------------------------------------------
+                                                     *g:Perl_InsertFileHeader*
+If g:Perl_InsertFileHeader is set to "yes", a file skeleton is automatically
+inserted into new Perl scripts. The list of templates used to create this
+skeleton is specified in the template library. For this purpose a property is
+used, which can for example be set in the customization file
+(see |perlsupport-templates|).
+
+                         *Perl::FileSkeleton::Script* *Perl::FileSkeleton::Test*
+                         *Perl::FileSkeleton::Module* *Perl::FileSkeleton::POD*
+The file skeletons are controlled via these properties, which can be set in
+one of the template files. There are different skeletons for scripts (*.pl),
+modules (*.pm), test (*.t), and POD (*.pod):
+>
+  SetProperty ( 'Perl::FileSkeleton::Script', 'Comments.file description pl' )
+  SetProperty ( 'Perl::FileSkeleton::Module', 'Comments.file description pm' )
+  SetProperty ( 'Perl::FileSkeleton::Test',   'Comments.file description t' )
+  SetProperty ( 'Perl::FileSkeleton::POD',    '' )
+<
+This inserts only a comment boxes to document the files. To disable the
+insertion completely, set the property to an empty string: >
+  SetProperty ( 'Perl::FileSkeleton::Script', '' )
+In general, this property is a semicolon-separated list of templates to be
+inserted: >
+  SetProperty ( 'Perl::FileSkeleton::Script', 'Comments.shebang;Comments.file description pl; ;Skeleton.script-use' )
+This will insert a shebang, a file description, and the default use commands
+from the template "Skeleton.script-use". If a space appears as an entry in the
+list, an empty line is inserted: >
+  '...; ;...'
+<
 ==============================================================================
 6.  Perl::Tags                                          *perlsupport-perltags*
 ==============================================================================

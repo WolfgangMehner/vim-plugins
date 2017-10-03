@@ -340,9 +340,9 @@ endif
 "-------------------------------------------------------------------------------
 
 let s:Perl_LoadMenus             = 'yes'        " display the menus ?
-let s:Perl_TemplateOverriddenMsg = 'no'
-let s:Perl_Ctrl_j								 = 'on'
-"
+let s:Perl_Ctrl_j                = 'yes'
+let s:Perl_Ctrl_d                = 'yes'
+
 let s:Perl_TimestampFormat       = '%Y%m%d.%H%M%S'
 
 let s:Perl_PerlModuleList        = g:Perl_PluginDir.'/perl-support/modules/perl-modules.list'
@@ -381,6 +381,7 @@ call s:GetGlobalSetting('Perl_DirectRun')
 call s:GetGlobalSetting('Perl_InsertFileHeader')
 call s:GetGlobalSetting('Perl_CreateMenusDelayed')
 call s:GetGlobalSetting('Perl_Ctrl_j')
+call s:GetGlobalSetting('Perl_Ctrl_d')
 call s:GetGlobalSetting('Perl_Debugger')
 call s:GetGlobalSetting('Perl_GlobalTemplateFile')
 call s:GetGlobalSetting('Perl_LocalTemplateFile')
@@ -399,7 +400,6 @@ call s:GetGlobalSetting('Perl_PerltidyBackup')
 call s:GetGlobalSetting('Perl_PodcheckerWarnings')
 call s:GetGlobalSetting('Perl_Printheader')
 call s:GetGlobalSetting('Perl_ProfilerTimestamp')
-call s:GetGlobalSetting('Perl_TemplateOverriddenMsg')
 call s:GetGlobalSetting('Perl_TimestampFormat')
 call s:GetGlobalSetting('Perl_UseToolbox')
 
@@ -2170,7 +2170,13 @@ function! s:RereadTemplates ()
 	"
 	" syntax: comments
 	call mmtemplates#core#ChangeSyntax ( g:Perl_Templates, 'comment', '§' )
-	"
+
+	" property: file skeletons (use safe defaults here, more sensible settings are applied in the template library)
+	call mmtemplates#core#Resource ( g:Perl_Templates, 'add', 'property', 'Perl::FileSkeleton::Script', 'Comments.file description pl' )
+	call mmtemplates#core#Resource ( g:Perl_Templates, 'add', 'property', 'Perl::FileSkeleton::Module', 'Comments.file description pm' )
+	call mmtemplates#core#Resource ( g:Perl_Templates, 'add', 'property', 'Perl::FileSkeleton::Test',   'Comments.file description t' )
+	call mmtemplates#core#Resource ( g:Perl_Templates, 'add', 'property', 'Perl::FileSkeleton::POD',    '' )
+
 	"-------------------------------------------------------------------------------
 	" load template library
 	"-------------------------------------------------------------------------------
@@ -2239,10 +2245,53 @@ function! s:CheckTemplatePersonalization ()
 endfunction    " ----------  end of function s:CheckTemplatePersonalization  ----------
 
 "-------------------------------------------------------------------------------
+" s:CheckAndRereadTemplates : Make sure the templates are loaded.   {{{1
+"-------------------------------------------------------------------------------
+function! s:CheckAndRereadTemplates ()
+	if ! exists ( 'g:Perl_Templates' )
+		call s:RereadTemplates()
+	endif
+endfunction    " ----------  end of function s:CheckAndRereadTemplates  ----------
+
+"-------------------------------------------------------------------------------
+" s:InsertFileHeader : Insert a file header.   {{{1
+"
+" The type must be one for which a property exists:
+"   Perl::FileSkeleton::<script_type>
+"
+" Parameters:
+"   script_type - type (string)
+"-------------------------------------------------------------------------------
+function! s:InsertFileHeader ( script_type )
+	call s:CheckAndRereadTemplates()
+
+	" prevent insertion for a file generated from a some error
+	if isdirectory(expand('%:p:h')) && s:Perl_InsertFileHeader == 'yes'
+		let templ_s = mmtemplates#core#Resource ( g:Perl_Templates, 'get', 'property', 'Perl::FileSkeleton::'.a:script_type )[0]
+
+		" insert templates in reverse order, always above the first line
+		" the last one to insert (the first in the list), will determine the
+		" placement of the cursor
+		let templ_l = split ( templ_s, ';' )
+		for i in range ( len(templ_l)-1, 0, -1 )
+			exe 1
+			if -1 != match ( templ_l[i], '^\s\+$' )
+				put! =''
+			else
+				call mmtemplates#core#InsertTemplate ( g:Perl_Templates, templ_l[i], 'placement', 'above' )
+			endif
+		endfor
+		if len(templ_l) > 0
+			set modified
+		endif
+	endif
+endfunction    " ----------  end of function s:InsertFileHeader  ----------
+
+"-------------------------------------------------------------------------------
 " s:HighlightJumpTargets : Highlight the jump targets.   {{{1
 "-------------------------------------------------------------------------------
 function! s:HighlightJumpTargets ()
-	if s:Perl_Ctrl_j == 'on'
+	if s:Perl_Ctrl_j == 'yes'
 		exe 'match Search /'.s:Perl_TemplateJumpTarget.'/'
 	endif
 endfunction    " ----------  end of function s:HighlightJumpTargets  ----------
@@ -2896,16 +2945,17 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" templates
 	"-------------------------------------------------------------------------------
-	"
-	if s:Perl_Ctrl_j == 'on'
+	if s:Perl_Ctrl_j == 'yes' || s:Perl_Ctrl_j == 'on'
 		nnoremap    <buffer>  <silent>  <C-j>       i<C-R>=<SID>JumpForward()<CR>
 		inoremap    <buffer>  <silent>  <C-j>  <C-g>u<C-R>=<SID>JumpForward()<CR>
 	endif
-	"
-	" ----------------------------------------------------------------------------
-	"
-	call mmtemplates#core#CreateMaps ( 'g:Perl_Templates', g:Perl_MapLeader, 'do_special_maps', 'do_del_opt_map' ) |
-	"
+
+	if s:Perl_Ctrl_d == 'yes'
+		call mmtemplates#core#CreateMaps ( 'g:Perl_Templates', g:Perl_MapLeader, 'do_special_maps', 'do_del_opt_map' )
+	else
+		call mmtemplates#core#CreateMaps ( 'g:Perl_Templates', g:Perl_MapLeader, 'do_special_maps' )
+	endif
+
 	" ----------------------------------------------------------------------------
 	"  Generate (possibly exuberant) Ctags style tags for Perl sourcecode.
 	"  Controlled by g:Perl_PerlTags, disabled by default.
@@ -2992,11 +3042,12 @@ if has("autocmd")
 	"
 	autocmd BufNewFile,BufRead *.pod  setlocal  syntax=perl
   autocmd BufNewFile,BufRead *.t    setlocal  filetype=perl
-	"
+
 	if s:Perl_InsertFileHeader == 'yes'
-		autocmd BufNewFile  *.pl  call mmtemplates#core#InsertTemplate(g:Perl_Templates, 'Comments.file description pl')
-		autocmd BufNewFile  *.pm  call mmtemplates#core#InsertTemplate(g:Perl_Templates, 'Comments.file description pm')
-		autocmd BufNewFile  *.t   call mmtemplates#core#InsertTemplate(g:Perl_Templates, 'Comments.file description t')
+		autocmd BufNewFile  *.pl   call s:InsertFileHeader('Script')
+		autocmd BufNewFile  *.pm   call s:InsertFileHeader('Module')
+		autocmd BufNewFile  *.t    call s:InsertFileHeader('Test')
+		autocmd BufNewFile  *.pod  call s:InsertFileHeader('POD')
 	endif
 
 	autocmd BufNew   *.pl,*.pm,*.t,*.pod  call Perl_InitializePerlInterface()
