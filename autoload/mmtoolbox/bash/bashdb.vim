@@ -437,8 +437,10 @@ endfunction    " ----------  end of function s:DebuggerList  ----------
 " }}}3
 
 if s:Enabled == 1
-	command! -bang -nargs=* -complete=file                      BashDB          :call <SID>Run(<q-args>)
-	command! -bang -nargs=? -complete=custom,<SID>DebuggerList  BashDBDebugger  :call mmtoolbox#bash#bashdb#Property('<bang>'=='!'?'echo':'set','debugger',<q-args>)
+	command!       -nargs=* -complete=file                      BashDB            :call <SID>Run(<q-args>)
+	command!       -nargs=*                                     BashDBCommand     :call <SID>SendCmd(<q-args>)
+	command! -bang -nargs=? -complete=custom,<SID>DebuggerList  BashDBDebugger    :call mmtoolbox#bash#bashdb#Property('<bang>'=='!'?'echo':'set','debugger',<q-args>)
+	command! -bang -nargs=? -complete=shellcmd                  BashDBExecutable  :call mmtoolbox#bash#bashdb#Property('<bang>'=='!'?'echo':'set','executable',<q-args>)
 
 	command!       -nargs=0                BashDBHelp          :call <SID>HelpPlugin()
 	command! -bang -nargs=?                BashDBSettings      :call <SID>Settings(('<bang>'=='!')+str2nr(<q-args>))
@@ -490,16 +492,17 @@ endfunction    " ----------  end of function mmtoolbox#bash#bashdb#AddMaps  ----
 "-------------------------------------------------------------------------------
 function! mmtoolbox#bash#bashdb#AddMenu ( root, esc_mapl )
 
-	exe 'amenu '.a:root.'.&run\ debugger<Tab>:BashDB   :BashDB<CR>'
+	exe 'amenu <silent> '.a:root.'.&run\ debugger<Tab>:BashDB   :BashDB<CR>'
 
 	exe 'amenu '.a:root.'.-Sep01- <Nop>'
 
-	exe 'amenu '.a:root.'.set\ &debugger<Tab>:BashDBDebugger     :BashDBDebugger '
+	exe 'amenu '.a:root.'.set\ &debugger<Tab>:BashDBDebugger      :BashDBDebugger '
+	exe 'amenu '.a:root.'.set\ &executable<Tab>:BashDBExecutable  :BashDBExecutable '
 
 	exe 'amenu '.a:root.'.-Sep02- <Nop>'
 
-	exe 'amenu '.a:root.'.&settings<Tab>:BashDBSettings      :BashDBSettings<CR>'
-	exe 'amenu '.a:root.'.&help<Tab>:BashDBHelp              :BashDBHelp<CR>'
+	exe 'amenu <silent> '.a:root.'.&settings<Tab>:BashDBSettings      :BashDBSettings<CR>'
+	exe 'amenu <silent> '.a:root.'.tool\ &help<Tab>:BashDBHelp        :BashDBHelp<CR>'
 
 endfunction    " ----------  end of function mmtoolbox#bash#bashdb#AddMenu  ----------
 "
@@ -526,6 +529,8 @@ function! mmtoolbox#bash#bashdb#Property ( mode, key, ... )
 		let var = 's:Enabled'
 	elseif a:key == 'debugger'
 		let var = 's:BashDB_Debugger'
+	elseif a:key == 'executable'
+		let var = 's:BashDB_Executable'
 	else
 		return s:ErrorMsg ( 'BashDB : Unknown option: '.a:key )
 	endif
@@ -542,6 +547,13 @@ function! mmtoolbox#bash#bashdb#Property ( mode, key, ... )
 			let s:BashDB_Debugger = val
 		else
 			return s:ErrorMsg ( 'BashDB : Debugger unknown or not not enabled: '.val )
+		endif
+	elseif a:key == 'executable'
+		" check against the list of debuggers
+		if executable ( val )
+			let s:BashDB_Executable = val
+		else
+			return s:ErrorMsg ( 'BashDB : Not executable: '.val )
 		endif
 	else
 		" action is 'set', but key is non of the above
@@ -701,16 +713,21 @@ function! s:StartInternal ( args )
 	" set up script buffer
   call win_gotoid( s:debug_win_script )
 
-	command! -buffer -nargs=*  Command   :call <SID>SendCmd(<q-args>)
 	command! -buffer -nargs=0  Continue  :call <SID>SendCmd('continue')
-	command! -buffer -nargs=0  Quit      :call <SID>SendCmd('quit')
 	command! -buffer -nargs=0  Step      :call <SID>SendCmd('step')
 
+	command! -buffer -bang -nargs=0  Break    :call <SID>Breakpoint('<bang>'=='!')
+	command! -buffer       -nargs=0  Display  :call <SID>DisplayVariable()
+
 	if has( 'menu' )
-		amenu WinBar.Run    :Command run<CR>
-		amenu WinBar.Cont   :Continue<CR>
-		amenu WinBar.Step   :Step<CR>
-		amenu WinBar.Quit   :Quit<CR>
+		anoremenu <silent> WinBar.Run    :BashDBCommand run<CR>
+		anoremenu <silent> WinBar.Cont   :Continue<CR>
+		anoremenu <silent> WinBar.Step   :Step<CR>
+		anoremenu <silent> WinBar.Quit   :BashDBCommand quit<CR>
+
+		anoremenu <silent> WinBar.Breakpoint   :Break<CR>
+		anoremenu <silent> WinBar.Break\ Once  :Break!<CR>
+		anoremenu <silent> WinBar.Display      :Display<CR>
 	endif
 endfunction    " ----------  end of function s:StartInternal  ----------
 
@@ -727,7 +744,10 @@ function! s:EndInternal ( job, status )
 
 	" remove the debugger buffers
 	exe 'bwipe! '.s:debug_buf_io
-	exe 'bwipe! '.s:debug_buf_ctrl
+	if a:status == 0
+		exe 'bwipe! '.s:debug_buf_ctrl
+	endif
+
 	let s:debug_status = ''
 
   call win_gotoid( s:debug_win_script )
@@ -738,15 +758,26 @@ function! s:EndInternal ( job, status )
 		aunmenu WinBar.Cont
 		aunmenu WinBar.Step
 		aunmenu WinBar.Quit
+
+		aunmenu WinBar.Breakpoint
+		aunmenu WinBar.Break\ Once
+		aunmenu WinBar.Display
 	endif
 
-	delcommand Command
 	delcommand Continue
-	delcommand Quit
 	delcommand Step
 
+	delcommand Break
+	delcommand Display
+
 	call s:Redraw ( 'r!', 'r' )
-	call s:ImportantMsg ( 'BashDB done' )
+
+	if a:status == 0
+		call s:ImportantMsg ( s:BashDB_Executable.' done' )
+	else
+		call s:ImportantMsg ( s:BashDB_Executable.' returned with error code '.a:status, '  use :bwipe! in the debugger buffer to properly close it' )
+	endif
+
 endfunction    " ----------  end of function s:EndInternal  ----------
 
 "-------------------------------------------------------------------------------
@@ -758,8 +789,75 @@ endfunction    " ----------  end of function s:EndInternal  ----------
 "   -
 "-------------------------------------------------------------------------------
 function! s:SendCmd ( cmd )
+	if s:debug_status == ''
+		return s:WarningMsg ( 'debugger not running' )
+	endif
+
 	call term_sendkeys ( s:debug_buf_ctrl, a:cmd."\r" )
 endfunction    " ----------  end of function s:SendCmd  ----------
+
+"-------------------------------------------------------------------------------
+" s:Breakpoint : Send a break commands   {{{2
+"
+" Send a 'break' or 'tbreak' command.
+"
+" Parameters:
+"   once - if true, send tbreak, otherwise send break (integer)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:Breakpoint ( once )
+
+	let filename = expand ( '%:p' )
+	let fileline = line ( '.' )
+
+	if a:once
+		call s:SendCmd ( 'tbreak '.filename.':'.fileline )
+	else
+		call s:SendCmd ( 'break  '.filename.':'.fileline )
+	endif
+endfunction    " ----------  end of function s:Breakpoint  ----------
+
+"-------------------------------------------------------------------------------
+" s:DisplayVariable : Send a display command.   {{{2
+"
+" Send a 'display' command for the variable under the cursor.
+"
+" Parameters:
+"   -
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:DisplayVariable ()
+
+	let buf_line = getline('.')
+	let buf_pos  = col('.') - 1
+	let pattern  = '$\?\k\+\|${.}\|$.'
+	let cnt      = 1
+	let pick     = ''
+
+	while 1
+		let m_end = matchend ( buf_line, pattern, 0, cnt ) - 1
+		if m_end < 0
+			let pick = ''
+			break
+		elseif m_end >= buf_pos
+			let m_start = match ( buf_line, pattern, 0, cnt )
+			if m_start <= buf_pos | let pick = buf_line[ m_start : m_end ]
+			else                  | let pick = ''                          | endif
+			break
+		endif
+		let cnt += 1
+	endwhile
+
+	if pick == ''
+		return s:ImportantMsg ( 'no variable under the cursor' )
+	endif
+
+	let pick = substitute ( pick, '^[^$]', '$&', '' )
+
+	call s:SendCmd ( 'display '.pick )
+endfunction    " ----------  end of function s:DisplayVariable  ----------
 
 " }}}2
 "-------------------------------------------------------------------------------
