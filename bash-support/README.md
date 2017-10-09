@@ -155,16 +155,9 @@ There are a lot of features and options which can be used and influenced:
   *  removing the root menu
   *  using additional plug-ins
 
-Look at the Bash Support help with:
+Actions differ for different modes. Please read the documentation:
 
       :help bashsupport
-
-               +-----------------------------------------------+
-               | +-------------------------------------------+ |
-               | |    ** Please read the documentation **    | |
-               | |    Actions differ for different modes!    | |
-               | +-------------------------------------------+ |
-               +-----------------------------------------------+
 
 Any problems? See the TROUBLESHOOTING section at the end of the help file
 `doc/bashsupport.txt`.
@@ -177,25 +170,30 @@ RELEASE NOTES
 
 RELEASE NOTES FOR VERSION 5.0pre
 ----------------------------------------------------------------------
-- Add command :Bash to run the interpreter with arguments.
-- Add command :BashInterpArguments as a synonym of :BashArguments.
-- Add command :BashDirectRun to run executable scripts without g:BASH_Executable.
-- Add command :BashOutputMethod to set the output destination for :Bash.
+- Add command `:Bash` to run the interpreter with arguments.
+- Add command `:BashInterpArguments` as a synonym of `:BashArguments`.
+- Add command `:BashDirectRun` to run executable scripts without `g:BASH_Executable`.
+- Add command `:BashOutputMethod` to set the output destination for :Bash.
 - Add output method 'terminal' for running scripts in a terminal window
   (requires +terminal).
 - The templates which are inserted into new files as file skeletons can be
   specified in the templates library, via the property:
-    Bash::FileSkeleton::Script
-- Use 'g:Xterm_Executable'.
-- Use 'g:Xterm_Options' instead of 'g:BASH_XtermDefaults'. The setting
-  'g:BASH_XtermDefaults' still works for backwards compatibility.
-- Add configuration variables 'g:BASH_Ctrl_j' and 'g:BASH_Ctrl_d' to control the
-  creation of the CTRL+J and CTRL+D maps.
-- Remove the definition of the maps 'CTRL+F9' and 'SHIFT+F9'. Add them to your
+    `Bash::FileSkeleton::Script`
+- Use `g:Xterm_Executable`.
+- Use `g:Xterm_Options` instead of `g:BASH_XtermDefaults`. The setting
+  `g:BASH_XtermDefaults` still works for backwards compatibility.
+- Add configuration variables `g:BASH_Ctrl_j` and `g:BASH_Ctrl_d` to control the
+  creation of the `CTRL+J` and `CTRL+D` maps.
+- Remove the definition of the maps `CTRL+F9` and `SHIFT+F9`. Add them to your
   filetype plug-in if you want to use them.
 - Integration of BashDB moved into the toolbox.
 - Add shell options and variables for BASH Version 4.4.
 - Minor corrections and improvements.
+
+Note: The filetype plug-in has been moved, and is thus not loaded automatically
+anymore. Copy it from `bash-support/rc` to `ftplugin`, or add the commands there
+to your own filetype plug-in.
+
 
 RELEASE NOTES FOR OLDER VERSIONS
 ----------------------------------------------------------------------
@@ -240,10 +238,6 @@ ___The following files and extensions are for convenience only.___
 ___bash-support.vim will work without them.___
 ___The settings are explained in the files themselves.___
 
-    ftplugin/sh.vim
-                        Suggestion for a filetype plugin:
-                          defines additional maps
-
     ftdetect/template.vim
     ftplugin/template.vim
     syntax/template.vim
@@ -270,6 +264,10 @@ ___The settings are explained in the files themselves.___
                           font, use of dictionaries, ...
                         The file is commented. Append it to your .vimrc if you
                         like.
+
+    bash-support/rc/sh.vim
+                        Example filetype plug-ins for Bash:
+                          defines additional maps
 
     bash-support/rc/*.templates
                         Sample template files for customization. Used by the

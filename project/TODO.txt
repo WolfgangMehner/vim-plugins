@@ -60,6 +60,7 @@ Bash:
 - (DONE) Template library, list 'TestsFileCharacteristics': "file exists -a". Is apparently deprecated.
 - (DONE) Compl.-func. 'BASH_BuiltinComplete' missing.
   -> Solved via 's:UserInput' and built-in list from template library.
+- (DONE) Move 'ftplugin/sh.vim'.
 - Still need Bash wrapper script?
 
 C/C++:

@@ -885,15 +885,15 @@ g:Xterm_Options                '-fa courier -fs 12 -geometry 80x24'
 Several options are supported for backwards compatibility only. Use the new
 variables for new configurations.
 
-------------------------------------------------------------------------------
+ ----------------------------------------------------------------------------
   old option                new option
-------------------------------------------------------------------------------
+ ----------------------------------------------------------------------------
   g:BASH_OutputGvim         g:BASH_OutputMethod
   g:BASH_XtermDefaults      g:Xterm_Options
 
   g:BASH_Debugger           |g:BashDB_Debugger|   (see |bashdb-integration|)
   g:BASH_bashdb             |g:BashDB_Executable| (see |bashdb-integration|)
-------------------------------------------------------------------------------
+ ----------------------------------------------------------------------------
 
  1. group: Defines the text which will be inserted for the tags when a
            template is read in (see |bashsupport-templates|).
@@ -1297,8 +1297,8 @@ You can use Vim's dictionary feature CTRL-X, CTRL-K (and CTRL-P, CTRL-N).
 7.  ADDITIONAL MAPPINGS                              *bashsupport-ad-mappings*
 ==============================================================================
 
-Some suggestions are in 'bash-support/rc/sh.vim'. This is a filetype plug-in
-and would go to '$HOME/.vim/ftplugin/'.
+Additional mappings can be defined in the file '~/.vim/ftplugin/sh.vim'. Some
+suggestions can be found in 'bash-support/rc/sh.vim'.
 
 ==============================================================================
 8.  WINDOWS PARTICULARITIES                              *bashsupport-windows*
@@ -1356,26 +1356,18 @@ CYGWIN with the value "nodosfilewarning".
 ==============================================================================
 
 * I do not see any new main menu item.
+  - The menu is only created upon opening the first Bash file (*.sh).
+    This behavior can be changed:
+      :help |bashsupport-custom-variables|
   - Was the archive extracted into the right directory?
-
-* How can I see what was loaded?
-  - Use ':scriptnames' from the Vim command line.
-
-* No main menu item.
+    See the section INSTALLATION in bash-support/README.md.
   - Loading of plug-in files must be enabled. If not use
->
-     :filetype plugin on
-<
+      :filetype plugin on
     This is the minimal content of the file '$HOME/.vimrc'. Create one if
     there is none, or better use customization.vimrc.
 
-* Most key mappings do not work.
-  - They are defined in a filetype plugin in '$HOME/.vim/ftplugin/'. Use
-    ':filetype' to check if filetype plug-ins are enabled. If not, add the line
->
-      filetype plugin on
-<
-    to the file '~/.vimrc'.
+* How can I see what was loaded?
+  - Use ':scriptnames' from the Vim command line.
 
 * Some hotkeys do not work.
   - The hotkeys might be in use by your graphical desktop environment. Under
@@ -1386,7 +1378,7 @@ CYGWIN with the value "nodosfilewarning".
 10.  Release Notes                                  *bashsupport-release-notes*
 ==============================================================================
 
-See files 'README.md' and 'ChangeLog'.
+See file 'bash-support/doc/ChangeLog'.
 
 ==============================================================================
 vim:tw=78:expandtab:ts=2:ft=help:norl:
