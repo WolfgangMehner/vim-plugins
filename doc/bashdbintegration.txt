@@ -1,0 +1,253 @@
+*bashdbintegration.txt*       BashDB Integration                   Oct 08 2017
+
+BashDB Integration                                        *bashdb-integration*
+
+                             Plug-in version 0.5  
+                        for Vim version 7.0 and above
+                 Wolfgang Mehner <wolfgang-mehner at web.de>
+
+The BashDB integration can run bashdb inside Vim/gVim. It is modelled after
+the GDB integration |:Termdebug|.
+
+==============================================================================
+0.  TABLE OF CONTENTS                            *bashdb-integration-contents*
+==============================================================================
+
+ 1.    Introduction                             |bashdb-integration-intro|
+ 2.    Commands                                 |bashdb-integration-commands|
+ 2.1    Debugger Control                        |bashdb-integration-db-control|
+ 3.    Configuration                            |bashdb-integration-config|
+
+ A.    Change Log                               |bashdb-integration-change-log|
+
+==============================================================================
+1.  INTRODUCTION                                    *bashdb-integration-intro*
+==============================================================================
+
+This tool starts the debugger 'bashdb' or the frontend 'ddd'. Your version of
+the bash must be prepared for debugging and the debugger must be installed
+(see http://bashdb.sourceforge.net/). When Vim is compiled with the |+terminal|
+feature, the debugger can be run inside the editor.
+
+The debugger can be run right inside Vim (requires |+terminal|), by setting >
+  :BashDBDebugger terminal
+and then starting the debugging for the script in the current buffer via  >
+  :BashDB [<args>]
+The optional arguments are passed on the debugged script.
+
+The output is split into two terminal windows. The debugging can be controlled
+from the buffer containing the script. E.g. breakpoints can be set for the
+line under the cursor.
+
+Furthermore, the debugger can be run in the frontend ddd >
+  :BashDBDebugger ddd
+or in a separate xterm >
+  :BashDBDebugger xterm
+<
+The debugger integration is controlled via a number of ex-commands, see below.
+
+  Command                       Short Description
+ ----------------------------------------------------------------------------
+  |:BashDB| [<args>]              run the debugger
+  |:BashDBCommand| [<args>]       send a command to the debugger
+                                  (only with the method "terminal")
+
+  |:BashDBDebugger| <method>      set the debugging method:
+                                  xterm, ddd, or terminal
+  |:BashDBExecutable| <exec>      set the debugger executable:
+                                  bashdb, zshdb, ...
+
+  |:BashDBSettings|               shows the plug-in settings
+  |:BashDBHelp|                   help for the BashDB integration
+ ----------------------------------------------------------------------------
+
+Detailed explanations are given in the section |bashdb-integration-commands|.
+
+==============================================================================
+2.  COMMANDS                                     *bashdb-integration-commands*
+==============================================================================
+
+This chapter provides detailed explanations of all the commands.
+
+------------------------------------------------------------------------------
+                                                                     *:BashDB*
+  :BashDB [<args>] ~
+
+Run the debugger for the script in the current buffer. The arguments are
+passed to the script.
+
+Cooperates with |bash-support|. When arguments are set for the current buffer
+via |:BashScriptArguments| and none are given on the command line, then the
+arguments set with Bash Support are passed to the script.
+
+------------------------------------------------------------------------------
+                                                             *:BashDBDebugger*
+  :BashDBDebugger <method> ~
+  :BashDBDebugger! ~
+
+Set the debugging method. The 2nd version echoes the current method.
+
+The method "terminal" runs the debugger inside Vim. This enables further
+commands to control the compiler, see |bashdb-integration-db-control|.
+
+The other two methods are mostly for backwards compatibility with the old
+debugger features of |bash-support| (before version 4.4).
+
+  Method          Short Description
+ ----------------------------------------------------------------------------
+  terminal        Run in a |terminal| window.
+  xterm           Run bashdb in an external xterm.
+  ddd             Run in DDD.
+ ----------------------------------------------------------------------------
+
+Set the default using |g:BashDB_Debugger|.
+
+------------------------------------------------------------------------------
+                                                           *:BashDBExecutable*
+  :BashDBExecutable <exec> ~
+  :BashDBExecutable! ~
+
+Set the debugger executable. The 2nd version echoes the current executable.
+
+This look peculiar, but sort of works: >
+  :BashDBExecutable zshdb
+Use bashdb again: >
+  :BashDBExecutable bashdb
+<
+Set the default using |g:BashDB_Executable|.
+
+------------------------------------------------------------------------------
+                                                                 *:BashDBHelp*
+  :BashDBHelp ~
+
+Open the help for the BashDB integration.
+
+------------------------------------------------------------------------------
+                                                             *:BashDBSettings*
+  :BashDBSettings ~
+  :BashDBSettings! ~
+
+Show the plug-in settings. The second version is verbose.
+
+------------------------------------------------------------------------------
+2.1  DEBUGGER CONTROL                          *bashdb-integration-db-control*
+------------------------------------------------------------------------------
+
+When running the integrated debugger, various commands can be used to send
+control commands to it.
+
+------------------------------------------------------------------------------
+                                                              *:BashDBCommand*
+  :BashDBCommand [<args>] ~
+
+Send the command to the debugger. Since you can enter commands in the debugger
+buffer itself, this is mainly for creating mappings, e.g.:
+
+Use CTRL-d t to display a backtrace, and CTRL-d ib to list the breakpoints: >
+  :nnoremap  <buffer>  <c-d>t   :BashDBCommand backtrace<CR>
+  :nnoremap  <buffer>  <c-d>ib  :BashDBCommand info breakpoints<CR>
+These maps should be placed in the shell filetype plug-in "ftplugin/sh.vim".
+
+------------------------------------------------------------------------------
+
+These commands are only available while running the debugger, and only in the
+buffer from which the debugger was started.
+
+Sends the "continue" and "step" commands:
+  :Continue ~
+  :Step ~
+
+Set a breakpoint for the line under the cursor ("!" for a one-time breakpoint):
+  :Break ~
+  :Break! ~
+Add the variable under the cursor to the "display" list:
+  :Display ~
+
+These commands can also be used to create custom mappings, e.g.:
+
+Use CTRL-d s to step, CTRL-d c to continue, and CTRL-d b to set a breakpoints: >
+  :nnoremap  <buffer>  <c-d>s   :Step<CR>
+  :nnoremap  <buffer>  <c-d>c   :Continue<CR>
+  :nnoremap  <buffer>  <c-d>b   :Break<CR>
+These maps should be placed in the shell filetype plug-in "ftplugin/sh.vim".
+
+==============================================================================
+3.  CONFIGURATION                                  *bashdb-integration-config*
+==============================================================================
+
+The tool is configured via a number of global variables, which can be set in
+the .vimrc file.
+
+  Variable                  Default       Description and further information
+ ----------------------------------------------------------------------------
+  |g:BashDB_Debugger|         'xterm'       the debugging method
+  |g:BashDB_Executable|       'bashdb'      the debugger executable
+  |g:BashDB_DDD_Exec|         'ddd'         the DDD executable
+
+  g:Xterm_Executable        'xterm'       the xterm executable (^1)
+  g:Xterm_Options           '...'         the xterm default settings (^1)
+
+  g:BASH_Debugger           n/a           the method, deprecated (^2)
+  g:BASH_bashdb             n/a           the executable, deprecated (^2)
+ ----------------------------------------------------------------------------
+
+(^1) UNIX only, see |bashdb-integration-xterm|
+(^2) *g:BASH_Debugger* and *g:BASH_bashdb* are deprecated, and only included
+for backwards compatibility with the old debugger features of |bash-support|
+(before version 4.4)
+
+------------------------------------------------------------------------------
+                                                           *g:BashDB_Debugger*
+The default debugging method is set by g:BashDB_Debugger: >
+  let g:BashDB_Debugger = 'terminal'
+<
+The possible settings are listed below:
+
+  Value           Short Description
+ ----------------------------------------------------------------------------
+  terminal        Run in a |terminal| window.
+  xterm           Run bashdb in an external xterm.
+  ddd             Run in DDD.
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+                                       *g:BashDB_Executable* *g:BashDB_DDD_Exec*
+The debugger executable is set by g:BashDB_Executable: >
+  let g:BashDB_Executable = 'zshdb'
+<
+The debugger executable is set by g:BashDB_DDD_Exec: >
+  let g:BashDB_DDD_Exec = '/usr/local/bin/ddd'
+<
+------------------------------------------------------------------------------
+                                                    *bashdb-integration-xterm*
+The xterm related functionality is only available under UNIX. It is used to
+run interactive commands.
+
+                                                          g:Xterm_Executable
+The xterm executable is set by g:Xterm_Executable, for example: >
+  let g:Xterm_Executable = '/usr/local/bin/xterm'
+<
+                                                             g:Xterm_Options
+Set additional options for xterm. The default is: >
+  let g:Xterm_Options = '-fa courier -fs 12 -geometry 80x24'
+<
+For example, use these arguments for black letters on a white background: >
+  let g:Xterm_Options = '-fg black -bg white -fs 12 -geometry 80x24'
+<
+See the man-page of xterm for the possible options.
+
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
+==============================================================================
+A.  CHANGE LOG                                 *bashdb-integration-change-log*
+==============================================================================
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 0.5
+------------------------------------------------------------------------------
+
+- Initial upload.
+
+==============================================================================
+vim:filetype=help:textwidth=78:expandtab:tabstop=2:norl:

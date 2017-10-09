@@ -6,7 +6,7 @@
 "
 "                 Vim/gVim integration of BashDB.
 "
-"                 See help file toolboxbashdb.txt .
+"                 See help file bashdbintegration.txt .
 " 
 "   VIM Version:  7.0+
 "        Author:  Wolfgang Mehner, wolfgang-mehner@web.de
@@ -567,10 +567,10 @@ endfunction    " ----------  end of function mmtoolbox#bash#bashdb#Property  ---
 "-------------------------------------------------------------------------------
 function! s:HelpPlugin ()
 	try
-		help toolbox-bashdb
+		help bashdb-integration
 	catch
 		exe 'helptags '.s:plugin_dir.'/doc'
-		help toolbox-bashdb
+		help bashdb-integration
 	endtry
 endfunction    " ----------  end of function s:HelpPlugin  ----------
 "

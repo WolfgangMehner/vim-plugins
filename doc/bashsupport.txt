@@ -42,10 +42,9 @@ writing shell scripts. This plug-in can be used for Bash up to version 4.4.
  1.7.4    Save and check syntax                  |bashsupport-syntax-check|
  1.7.4.1   Error format                          |bashsupport-errorformat|
  1.7.4.2   Syntax check options                  |bashsupport-syntax-check-options|
- 1.7.5    Start debugger                         |bashsupport-debugger|
- 1.7.6    Hardcopy                               |bashsupport-hardcopy|
- 1.7.7    Xterm size                             |bashsupport-xterm|
- 1.7.8    Output redirection                     |bashsupport-output|
+ 1.7.5    Hardcopy                               |bashsupport-hardcopy|
+ 1.7.6    Xterm size                             |bashsupport-xterm|
+ 1.7.7    Output redirection                     |bashsupport-output|
  1.8     Menu 'Tool Box'                         |bashsupport-toolbox|
  1.8.1    BashDB                                 |bashsupport-toolbox-bashdb|
  1.9     Menu 'Help'                             |bashsupport-help|
@@ -397,14 +396,12 @@ The default is the value of $SHELL (Linux/U**X) or 'bash.exe' (Windows).
 
 1.7.2 Script command line arguments                 *bashsupport-cmdline-args*
 -----------------------------------
-
+                                                        *:BashScriptArguments*
 The item 'script cmd. line arg.' calls an input dialog which asks for command
 line arguments. These arguments are forwarded to the script which is run by
 the 'run' item. The arguments are kept until you change them. For file names
-tab-expansion will work.  The ex command
->
+tab-expansion will work.  The ex command >
   :BashScriptArguments ...
-<
 can also be used to set the command line arguments for the current script.
 
 The arguments belong to the current buffer (that is, each buffer can have its
@@ -456,40 +453,7 @@ options' typing for instance
 after the prompt. The options entered this way are buffer related.  The global
 options set in '.vimrc' and the buffer related options are checked.
 
-
-1.7.5 START DEBUGGER                                    *bashsupport-debugger*
---------------------
-
-Start the debugger 'bashdb' or the frontend 'ddd' from the menu entry
-Run->debug (GUI), with hotkey \rd or F9.  Your version of the bash must be
-prepared for debugging and the debugger must be installed (see
-http://bashdb.sourceforge.net/).
-
-(1) Using bashdb
-When using gvim or vim running under a GUI the debugger will be started in an
-independent xterm. This is done because the shell integration in gvim has
-deficiencies (see also :h shell-window).
-
-When using vim from a console terminal the debugger will be started as
->
-  :!xterm <xterm defaults>  -e bashdb -- <script> <arguments> &
-<
-The debugger now will be run inside vim.
-
-(2) Using ddd
-The frontend ddd can be started via the menu or the hotkeys instead of bashdb
-as described above.  The preference can be set with the global variable
-g:BASH_Debugger (possible values: 'term', 'ddd' ) in '.vimrc' :
->
-  let g:BASH_Debugger     = 'ddd'
-<
-The default is 'term'.
-
-In all cases the command line arguments from the argument setting
-(|bashsupport-cmdline-args|) are passed to the debugger.
-
-
-1.7.6 Hardcopy                                          *bashsupport-hardcopy*
+1.7.5 Hardcopy                                          *bashsupport-hardcopy*
 --------------
 
 Generates a PostScript file from the whole buffer or from a marked region. The
@@ -512,13 +476,13 @@ or by setting a global variable in the file '.vimrc', e.g. :
 <
 See |printheader| and |strftime()| for more details.
 
-1.7.7 Xterm size                                           *bashsupport-xterm*
+1.7.6 Xterm size                                           *bashsupport-xterm*
 ----------------
 
 The size of the xterm (see below) can be changes for the current session.  The
 size has to be specified as COLUMNS LINES (e.g. 96 32 ).
 
-1.7.8 Output redirection                                  *bashsupport-output*
+1.7.7 Output redirection                                  *bashsupport-output*
 ------------------------
 
 The last menu entry 'output: ... ' has 3 states:
