@@ -170,10 +170,10 @@ RELEASE NOTES
 
 RELEASE NOTES FOR VERSION 5.0pre
 ----------------------------------------------------------------------
-- Add command `:Bash` to run the interpreter with arguments.
-- Add command `:BashInterpArguments` as a synonym of `:BashArguments`.
+- Add command `:Bash [<args>]` to run the interpreter with arguments.
 - Add command `:BashDirectRun` to run executable scripts without `g:BASH_Executable`.
-- Add command `:BashOutputMethod` to set the output destination for :Bash.
+- Add command `:BashOutputMethod` to set the output destination for `:Bash`.
+- Add command `:BashExecutable` to set the executable during runtime.
 - Add output method 'terminal' for running scripts in a terminal window
   (requires +terminal).
 - The templates which are inserted into new files as file skeletons can be
@@ -184,8 +184,8 @@ RELEASE NOTES FOR VERSION 5.0pre
   `g:BASH_XtermDefaults` still works for backwards compatibility.
 - Add configuration variables `g:BASH_Ctrl_j` and `g:BASH_Ctrl_d` to control the
   creation of the `CTRL+J` and `CTRL+D` maps.
-- Remove the definition of the maps `CTRL+F9` and `SHIFT+F9`. Add them to your
-  filetype plug-in if you want to use them.
+- Remove the definition of the maps `CTRL+F9`, `SHIFT+F9`, and `ALT+F9`.
+  Add them to your filetype plug-in if you want to use them.
 - Integration of BashDB moved into the toolbox.
 - Add shell options and variables for BASH Version 4.4.
 - Minor corrections and improvements.

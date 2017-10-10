@@ -1040,7 +1040,7 @@ function! s:Run ( args, mode, ... ) range
 		"if s:BASH_DirectRun == 'yes'
 		" :TODO:27.09.2017 23:33:WM: implement this, parse the shebang
 			"let exec        = mlist[1]
-			"let args_interp = ' '.mlist[2]
+			"let args_interp = ' '.mlist[2]           " overwrite the value of 'b:BASH_InterpCmdLineArgs'
 			"let arg_list = [ exec ] + s:ShellParseArgs ( mlist[2] )
 		"else
 			let exec = s:BASH_Executable
@@ -1247,29 +1247,49 @@ function! s:Run ( args, mode, ... ) range
 
 endfunction    " ----------  end of function s:Run  ----------
 
+"----------------------------------------------------------------------
+" === Run: Executable, arguments, output, ... ===   {{{1
+"----------------------------------------------------------------------
+
 "-------------------------------------------------------------------------------
-" s:ScriptCmdLineArguments : Set cmd.-line arguments for the script.   {{{1
+" s:SetExecutable : Set s:BASH_Executable   {{{2
+"-------------------------------------------------------------------------------
+function! s:SetExecutable ( new_exec )
+
+	let new_exec = expand ( a:new_exec )
+
+	if new_exec == ''
+		echo s:BASH_Executable
+	elseif ! executable ( new_exec )
+		return s:ErrorMsg ( '"'.new_exec.'" is not executable, nothing set.' )
+	else
+		let s:BASH_Executable = new_exec
+	endif
+endfunction    " ----------  end of function s:SetExecutable  ----------
+
+"-------------------------------------------------------------------------------
+" s:ScriptCmdLineArguments : Set cmd.-line arguments for the script.   {{{2
 "-------------------------------------------------------------------------------
 function! s:ScriptCmdLineArguments ( args )
 	let b:BASH_ScriptCmdLineArgs = a:args
 endfunction    " ---------- end of function  s:ScriptCmdLineArguments  ----------
 
 "-------------------------------------------------------------------------------
-" s:InterpCmdLineArguments : Set cmd.-line arguments for the interpreter.   {{{1
+" s:InterpCmdLineArguments : Set cmd.-line arguments for the interpreter.   {{{2
 "-------------------------------------------------------------------------------
 function! s:InterpCmdLineArguments ( args )
 	let b:BASH_InterpCmdLineArgs = a:args
 endfunction    " ----------  end of function s:InterpCmdLineArguments ----------
 
 "-------------------------------------------------------------------------------
-" s:GetOutputMethodList : For cmd.-line completion.   {{{1
+" s:GetOutputMethodList : For cmd.-line completion.   {{{2
 "-------------------------------------------------------------------------------
 function! s:GetOutputMethodList (...)
 	return join ( s:BASH_OutputMethodList, "\n" )
 endfunction    " ----------  end of function s:GetOutputMethodList  ----------
 
 "-------------------------------------------------------------------------------
-" s:SetOutputMethod : Set s:BASH_OutputMethod   {{{1
+" s:SetOutputMethod : Set s:BASH_OutputMethod   {{{2
 "-------------------------------------------------------------------------------
 function! s:SetOutputMethod ( method )
 
@@ -1309,14 +1329,14 @@ function! s:SetOutputMethod ( method )
 endfunction    " ----------  end of function s:SetOutputMethod  ----------
 
 "-------------------------------------------------------------------------------
-" s:GetDirectRunList : For cmd.-line completion.   {{{1
+" s:GetDirectRunList : For cmd.-line completion.   {{{2
 "-------------------------------------------------------------------------------
 function! s:GetDirectRunList (...)
 	return "yes\nno"
 endfunction    " ----------  end of function s:GetDirectRunList  ----------
 
 "-------------------------------------------------------------------------------
-" s:SetDirectRun : Set s:BASH_DirectRun   {{{1
+" s:SetDirectRun : Set s:BASH_DirectRun   {{{2
 "-------------------------------------------------------------------------------
 function! s:SetDirectRun ( option )
 
@@ -1344,6 +1364,64 @@ function! s:SetDirectRun ( option )
 	exe 'anoremenu ...400 '.s:BASH_RootMenu.'.Run.direct\ run.Direct\ Run<TAB>(currently\:\ '.current.') :echo "This is a menu header."<CR>'
 
 endfunction    " ----------  end of function s:SetDirectRun  ----------
+" }}}2
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:SyntaxCheck : Run syntax check.   {{{1
+"-------------------------------------------------------------------------------
+function! s:SyntaxCheck ()
+
+	silent exe 'update'   | " write source file if necessary
+	cclose
+
+	let currentbuffer = bufname("%")
+	let fullname      = expand("%:p")
+
+	" save current settings
+	let makeprg_saved = &l:makeprg
+	let errorf_saved  = &l:errorformat
+
+	" assemble the options
+	let options = s:BASH_SyntaxCheckOptionsGlob
+	if exists( 'b:BASH_SyntaxCheckOptionsLocal' )
+		let options .= ' '.b:BASH_SyntaxCheckOptionsLocal
+	endif
+
+	" match the Bash error messages (quickfix commands)
+	" ignore any lines that didn't match one of the patterns
+	let &l:makeprg     = s:BASH_Executable
+	let &l:errorformat = s:BASH_Errorformat
+
+	silent exe ':make! -n '.options.' -- '.fnameescape( fullname )
+
+	" restore current settings
+	let &l:makeprg     = makeprg_saved
+	let &l:errorformat = errorf_saved
+
+	call s:Redraw('r!','')                        " redraw after cclose, before opening the new window
+	botright cwindow
+
+	" any errors?
+	if currentbuffer == bufname("%")
+		call s:Redraw('','r')                       " redraw after cclose, before echoing
+		call s:ImportantMsg ( currentbuffer." : Syntax is OK" )
+	endif
+endfunction    " ---------- end of function s:SyntaxCheck  ----------
+
+"----------------------------------------------------------------------
+" === Syntax Check: Arguments, ... ===   {{{1
+"----------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:ScriptSyntaxCheckOptions : Set cmd.-line arguments for the script.   {{{2
+"-------------------------------------------------------------------------------
+function! s:ScriptSyntaxCheckOptions ( args )
+	let b:BASH_SyntaxCheckOptionsLocal = a:args
+endfunction    " ---------- end of function  s:ScriptSyntaxCheckOptions  ----------
+
+" }}}2
+"-------------------------------------------------------------------------------
 
 "-------------------------------------------------------------------------------
 " s:HelpPlugin : Plug-in help.   {{{1
@@ -1413,8 +1491,8 @@ function! s:RereadTemplates ()
 	" syntax: comments
 	call mmtemplates#core#ChangeSyntax ( g:BASH_Templates, 'comment', '§' )
 
-	" property: file skeletons
-	call mmtemplates#core#Resource ( g:BASH_Templates, 'add', 'property', 'Bash::FileSkeleton::Script', 'Comments.shebang;Comments.file header; ;Skeleton.script-set' )
+	" property: file skeletons (use a safe default here, more sensible settings are applied in the template library)
+	call mmtemplates#core#Resource ( g:BASH_Templates, 'add', 'property', 'Bash::FileSkeleton::Script', 'Comments.file header' )
 
 	"-------------------------------------------------------------------------------
 	" load template library
@@ -1554,12 +1632,12 @@ endfunction    " ----------  end of function s:JumpForward  ----------
 " s:InitMenus : Initialize menus.   {{{1
 "-------------------------------------------------------------------------------
 function! s:InitMenus()
-	"
+
 	if ! has ( 'menu' )
 		return
 	endif
-	"
- 	"-------------------------------------------------------------------------------
+
+	"-------------------------------------------------------------------------------
 	" preparation      {{{2
 	"-------------------------------------------------------------------------------
 	call mmtemplates#core#CreateMenus ( 'g:BASH_Templates', s:BASH_RootMenu, 'do_reset' )
@@ -1608,7 +1686,7 @@ function! s:InitMenus()
 	exe ahead.'-Sep02-						<Nop>'
 	"
 	"-------------------------------------------------------------------------------
-	" generate menus from the templates
+	" generate menus from the templates     {{{2
  	"-------------------------------------------------------------------------------
 	"
 	call mmtemplates#core#CreateMenus ( 'g:BASH_Templates', s:BASH_RootMenu, 'do_templates' )
@@ -1643,26 +1721,23 @@ function! s:InitMenus()
 	let ahead = 'anoremenu <silent> '.s:BASH_RootMenu.'.Run.'
 	let vhead = 'vnoremenu <silent> '.s:BASH_RootMenu.'.Run.'
 	let ihead = 'inoremenu <silent> '.s:BASH_RootMenu.'.Run.'
+	let ahead_loud = 'amenu         '.s:BASH_RootMenu.'.Run.'   " these have to remap.
+	let ihead_loud = 'imenu         '.s:BASH_RootMenu.'.Run.'   " ... so we can use <Plug>Map
 
 	exe ahead.'save\ +\ &run\ script<Tab>'.esc_mapl.'rr            :call <SID>Run("","n")<CR>'
 	exe vhead.'save\ +\ &run\ script<Tab>'.esc_mapl.'rr            :call <SID>Run("","v")<CR>'
 	exe ihead.'save\ +\ &run\ script<Tab>'.esc_mapl.'rr       <C-C>:call <SID>Run("","n")<CR>'
 
-	exe " menu          ".s:BASH_RootMenu.'.&Run.script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra       <Plug>BashSupportSetBashScriptArgs'
-	exe "imenu          ".s:BASH_RootMenu.'.&Run.script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra  <C-C><Plug>BashSupportSetBashScriptArgs'
-	"
-	exe " menu          ".s:BASH_RootMenu.'.&Run.Bash\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'rba                  <Plug>BashSupportSetBashInterpArgs'
-	exe "imenu          ".s:BASH_RootMenu.'.&Run.Bash\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'rba             <C-C><Plug>BashSupportSetBashInterpArgs'
-	"
-  exe " menu <silent> ".s:BASH_RootMenu.'.&Run.update,\ check\ &syntax<Tab>'.esc_mapl.'rc          :call BASH_SyntaxCheck()<CR>'
-  exe "imenu <silent> ".s:BASH_RootMenu.'.&Run.update,\ check\ &syntax<Tab>'.esc_mapl.'rc     <C-C>:call BASH_SyntaxCheck()<CR>'
-	exe " menu <silent> ".s:BASH_RootMenu.'.&Run.syntax\ check\ o&ptions<Tab>'.esc_mapl.'rco         :call BASH_SyntaxCheckOptionsLocal()<CR>'
-	exe "imenu <silent> ".s:BASH_RootMenu.'.&Run.syntax\ check\ o&ptions<Tab>'.esc_mapl.'rco    <C-C>:call BASH_SyntaxCheckOptionsLocal()<CR>'
+	exe ahead_loud.'script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra             <Plug>BashSupportSetBashScriptArgs'
+	exe ihead_loud.'script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra        <C-C><Plug>BashSupportSetBashScriptArgs'
+	exe ahead_loud.'interpreter\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'rba       <Plug>BashSupportSetBashInterpArgs'
+	exe ihead_loud.'interpreter\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'rba  <C-C><Plug>BashSupportSetBashInterpArgs'
 
-	if ! s:MSWIN
-		exe ahead.'make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re       :call <SID>MakeExecutable()<CR>'
-		exe ihead.'make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re  <C-C>:call <SID>MakeExecutable()<CR>'
-	endif
+  exe ahead.'check\ &syntax<Tab>'.esc_mapl.'rc       :call <SID>SyntaxCheck()<CR>'
+  exe ihead.'check\ &syntax<Tab>'.esc_mapl.'rc  <C-C>:call <SID>SyntaxCheck()<CR>'
+
+	exe ahead_loud.'syntax\ check\ o&ptions<Tab>'.esc_mapl.'rco       <Plug>BashSupportSetBashSyntaxOpts'
+	exe ihead_loud.'syntax\ check\ o&ptions<Tab>'.esc_mapl.'rco  <C-C><Plug>BashSupportSetBashSyntaxOpts'
 
 	exe ahead.'&buffer\ "Bash\ Output\/Term".buffer\ "Bash\ Output\/Term"  :echo "This is a menu header."<CR>'
 	exe ahead.'&buffer\ "Bash\ Output\/Term".-SepHead-              :'
@@ -1680,6 +1755,9 @@ function! s:InitMenus()
 	exe ahead.'&direct\ run<TAB>'.esc_mapl.'rd.Direct\ Run   :'
 	exe ahead.'&direct\ run<TAB>'.esc_mapl.'rd.-SepHead-     :'
 
+	exe ahead_loud.'set\ &executable<Tab>'.esc_mapl.'rse       :BashExecutable<Space>'
+	exe ihead_loud.'set\ &executable<Tab>'.esc_mapl.'rse  <C-C>:BashExecutable<Space>'
+
 	if index ( s:BASH_OutputMethodList, 'xterm' ) > -1
 		exe ahead.'x&term\ size<Tab>'.esc_mapl.'rx                       :call <SID>XtermSize()<CR>'
 		exe ihead.'x&term\ size<Tab>'.esc_mapl.'rx                  <C-C>:call <SID>XtermSize()<CR>'
@@ -1690,6 +1768,8 @@ function! s:InitMenus()
 		exe ahead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call <SID>Hardcopy("n")<CR>'
 		exe vhead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call <SID>Hardcopy("v")<CR>'
 	else
+		exe ahead.'make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re       :call <SID>MakeExecutable()<CR>'
+		exe ihead.'make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re  <C-C>:call <SID>MakeExecutable()<CR>'
 		exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call <SID>Hardcopy("n")<CR>'
 		exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call <SID>Hardcopy("v")<CR>'
 	endif
@@ -1706,8 +1786,8 @@ function! s:InitMenus()
 	exe ahead.'output\ method.&buffer<TAB>quickfix           :call <SID>SetOutputMethod("buffer")<CR>'
 	exe ihead.'output\ method.&buffer<TAB>quickfix      <Esc>:call <SID>SetOutputMethod("buffer")<CR>'
 	if index ( s:BASH_OutputMethodList, 'terminal' ) > -1
-		exe ahead.'output\ method.&terminal<TAB>interactive       :call <SID>SetOutputMethod("terminal")<CR>'
-		exe ihead.'output\ method.&terminal<TAB>interactive  <Esc>:call <SID>SetOutputMethod("terminal")<CR>'
+		exe ahead.'output\ method.&terminal<TAB>interact+qf       :call <SID>SetOutputMethod("terminal")<CR>'
+		exe ihead.'output\ method.&terminal<TAB>interact+qf  <Esc>:call <SID>SetOutputMethod("terminal")<CR>'
 	endif
 	if index ( s:BASH_OutputMethodList, 'xterm' ) > -1
 		exe ahead.'output\ method.&xterm<TAB>interactive       :call <SID>SetOutputMethod("xterm")<CR>'
@@ -1729,13 +1809,17 @@ function! s:InitMenus()
 	"-------------------------------------------------------------------------------
  	" comments     {{{2
  	"-------------------------------------------------------------------------------
-	exe " noremenu ".s:BASH_RootMenu.'.&Comments.&echo\ "<line>"<Tab>'.esc_mapl.'ce       :call <SID>EchoComment()<CR>j'
-	exe "inoremenu ".s:BASH_RootMenu.'.&Comments.&echo\ "<line>"<Tab>'.esc_mapl.'ce  <C-C>:call <SID>EchoComment()<CR>j'
-	exe " noremenu ".s:BASH_RootMenu.'.&Comments.&remove\ echo<Tab>'.esc_mapl.'cr         :call <SID>RemoveEcho()<CR>j'
-	exe "inoremenu ".s:BASH_RootMenu.'.&Comments.&remove\ echo<Tab>'.esc_mapl.'cr    <C-C>:call <SID>RemoveEcho()<CR>j'
+
+	let  head = ' noremenu <silent> '.s:BASH_RootMenu.'.Comments.'
+	let ihead = 'inoremenu <silent> '.s:BASH_RootMenu.'.Comments.'
+
+	exe  head.'&echo\ "<line>"<Tab>'.esc_mapl.'ce       :call <SID>EchoComment()<CR>j'
+	exe ihead.'&echo\ "<line>"<Tab>'.esc_mapl.'ce  <C-C>:call <SID>EchoComment()<CR>j'
+	exe  head.'&remove\ echo<Tab>'.esc_mapl.'cr         :call <SID>RemoveEcho()<CR>j'
+	exe ihead.'&remove\ echo<Tab>'.esc_mapl.'cr    <C-C>:call <SID>RemoveEcho()<CR>j'
 
 	"-------------------------------------------------------------------------------
-	" tool box
+	" tool box     {{{2
 	"-------------------------------------------------------------------------------
 
 	if s:BASH_UseToolbox == 'yes' && mmtoolbox#tools#Property ( s:BASH_Toolbox, 'empty-menu' ) == 0
@@ -1782,10 +1866,13 @@ function! s:CreateAdditionalMaps ()
 	" user defined commands (only working in Bash buffers)
 	"-------------------------------------------------------------------------------
 	command! -nargs=* -buffer -complete=file -range=0 Bash        call <SID>Run(<q-args>,'c',<line1>,<line2>)
+	command! -nargs=0 -buffer                         BashCheck   call <SID>SyntaxCheck()
 
 	command! -buffer -nargs=* -complete=file BashScriptArguments  call <SID>ScriptCmdLineArguments(<q-args>)
 	command! -buffer -nargs=* -complete=file BashInterpArguments  call <SID>InterpCmdLineArguments(<q-args>)
 	command! -buffer -nargs=* -complete=file BashArguments        call <SID>InterpCmdLineArguments(<q-args>)
+
+	command! -buffer -nargs=* -complete=file BashSyntaxCheckOptions  call <SID>ScriptSyntaxCheckOptions(<q-args>)
 
 	"-------------------------------------------------------------------------------
 	" settings - local leader
@@ -1830,6 +1917,7 @@ function! s:CreateAdditionalMaps ()
   inoremap  <buffer>  <silent>  <LocalLeader>ce    <C-C>:call <SID>EchoComment()<CR>j'
    noremap  <buffer>  <silent>  <LocalLeader>cr         :call <SID>RemoveEcho()<CR>j'
   inoremap  <buffer>  <silent>  <LocalLeader>cr    <C-C>:call <SID>RemoveEcho()<CR>j'
+	" EchoComment and RemoveEcho are run once per line, do not escape visual mode
 
 	"-------------------------------------------------------------------------------
 	" snippets
@@ -1851,17 +1939,19 @@ function! s:CreateAdditionalMaps ()
 	nnoremap    <buffer>  <silent>  <LocalLeader>rr        :call <SID>Run("","n")<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rr   <Esc>:call <SID>Run("","n")<CR>
 	vnoremap    <buffer>  <silent>  <LocalLeader>rr        :call <SID>Run("","v")<CR>
-	nnoremap    <buffer>  <silent>  <LocalLeader>rc        :call BASH_SyntaxCheck()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>rc   <C-C>:call BASH_SyntaxCheck()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>rc   <C-C>:call BASH_SyntaxCheck()<CR>
-	nnoremap    <buffer>  <silent>  <LocalLeader>rco       :call BASH_SyntaxCheckOptionsLocal()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>rco  <C-C>:call BASH_SyntaxCheckOptionsLocal()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>rco  <C-C>:call BASH_SyntaxCheckOptionsLocal()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>rc        :call <SID>SyntaxCheck()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rc   <C-C>:call <SID>SyntaxCheck()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>rc   <C-C>:call <SID>SyntaxCheck()<CR>
+
 	" these maps have to remap
 	 map        <buffer>            <LocalLeader>ra        <Plug>BashSupportSetBashScriptArgs
 	imap        <buffer>            <LocalLeader>ra   <Esc><Plug>BashSupportSetBashScriptArgs
 	 map        <buffer>            <LocalLeader>rba       <Plug>BashSupportSetBashInterpArgs
 	imap        <buffer>            <LocalLeader>rba  <Esc><Plug>BashSupportSetBashInterpArgs
+
+	nmap        <buffer>            <LocalLeader>rco       <Plug>BashSupportSetBashSyntaxOpts
+	imap        <buffer>            <LocalLeader>rco  <C-C><Plug>BashSupportSetBashSyntaxOpts
+	vmap        <buffer>            <LocalLeader>rco  <C-C><Plug>BashSupportSetBashSyntaxOpts
 
 	if s:UNIX
 		nnoremap    <buffer>  <silent>  <LocalLeader>re        :call <SID>MakeExecutable()<CR>
@@ -1875,6 +1965,9 @@ function! s:CreateAdditionalMaps ()
 	nnoremap    <buffer>            <LocalLeader>rd         :BashDirectRun<SPACE>
 	inoremap    <buffer>            <LocalLeader>rd    <Esc>:BashDirectRun<SPACE>
 	vnoremap    <buffer>            <LocalLeader>rd    <Esc>:BashDirectRun<SPACE>
+	nnoremap    <buffer>            <LocalLeader>rse        :BashExecutable<SPACE>
+	inoremap    <buffer>            <LocalLeader>rse   <Esc>:BashExecutable<SPACE>
+	vnoremap    <buffer>            <LocalLeader>rse   <Esc>:BashExecutable<SPACE>
 	if index ( s:BASH_OutputMethodList, 'xterm' ) > -1
 		nnoremap  <buffer>  <silent>  <LocalLeader>rx         :call <SID>XtermSize()<CR>
 		inoremap  <buffer>  <silent>  <LocalLeader>rx    <Esc>:call <SID>XtermSize()<CR>
@@ -1883,9 +1976,6 @@ function! s:CreateAdditionalMaps ()
 	nnoremap    <buffer>  <silent>  <LocalLeader>rh        :call <SID>Hardcopy("n")<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rh   <C-C>:call <SID>Hardcopy("n")<CR>
 	vnoremap    <buffer>  <silent>  <LocalLeader>rh   <C-C>:call <SID>Hardcopy("v")<CR>
-
-   noremap  <buffer>  <silent>  <A-F9>        :call BASH_SyntaxCheck()<CR>
-  inoremap  <buffer>  <silent>  <A-F9>   <C-C>:call BASH_SyntaxCheck()<CR>
 
 	"-------------------------------------------------------------------------------
 	"   help
@@ -2101,61 +2191,17 @@ function! s:bash_RemoveSpecialCharacters ( )
 	setlocal nomodifiable
 	silent normal! gg
 endfunction		" ---------- end of function  s:bash_RemoveSpecialCharacters   ----------
-
-"===  FUNCTION  ================================================================
-"          NAME:  BASH_SyntaxCheckOptions     {{{1
-"   DESCRIPTION:  Syntax Check, options
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! BASH_SyntaxCheckOptions( options )
-	let startpos=0
-	while startpos < strlen( a:options )
-		" match option switch ' -O ' or ' +O '
-		let startpos		= matchend ( a:options, '\s*[+-]O\s\+', startpos )
-		" match option name
-		let optionname	= matchstr ( a:options, '\h\w*\s*', startpos )
-		" remove trailing whitespaces
-		let optionname  = substitute ( optionname, '\s\+$', "", "" )
-		" check name
-		" increment start position for next search
-		let startpos		=  matchend  ( a:options, '\h\w*\s*', startpos )
-	endwhile
-	return 0
-endfunction		" ---------- end of function  BASH_SyntaxCheckOptions----------
+"-------------------------------------------------------------------------------
+" BASH_Settings : Display plug-in settings.   {{{1
 "
-"===  FUNCTION  ================================================================
-"          NAME:  BASH_SyntaxCheckOptionsLocal     {{{1
-"   DESCRIPTION:  Syntax Check, local options
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! BASH_SyntaxCheckOptionsLocal ()
-	let filename = expand("%")
-  if empty(filename)
-		redraw
-		echohl WarningMsg | echo " no file name or not a shell file " | echohl None
-		return
-  endif
-	let	prompt	= 'syntax check options for "'.filename.'" : '
-
-	if exists("b:BASH_SyntaxCheckOptionsLocal")
-		let b:BASH_SyntaxCheckOptionsLocal = s:UserInput( prompt, b:BASH_SyntaxCheckOptionsLocal, '' )
-	else
-		let b:BASH_SyntaxCheckOptionsLocal = s:UserInput( prompt , "", '' )
-	endif
-
-	if BASH_SyntaxCheckOptions( b:BASH_SyntaxCheckOptionsLocal ) != 0
-		let b:BASH_SyntaxCheckOptionsLocal	= ""
-	endif
-endfunction		" ---------- end of function  BASH_SyntaxCheckOptionsLocal  ----------
+" verbosity:
+"   0 - basic settings
+"   1 - all setting
+"   2 - print all settings into buffer
 "
-"===  FUNCTION  ================================================================
-"          NAME:  BASH_Settings     {{{1
-"   DESCRIPTION:  Display plugin settings
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
+" Parameters:
+"   verbose - verbosity (integer)
+"-------------------------------------------------------------------------------
 function! BASH_Settings ( verbose )
 
 	if     s:MSWIN | let sys_name = 'Windows'
@@ -2248,57 +2294,6 @@ function! BASH_Settings ( verbose )
 	endif
 endfunction    " ----------  end of function BASH_Settings ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  BASH_SyntaxCheck     {{{1
-"   DESCRIPTION:  run syntax check
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! BASH_SyntaxCheck ()
-
-	silent exe 'update'   | " write source file if necessary
-	cclose
-
-	" save current settings
-	let	makeprg_saved	= &l:makeprg
-	let errorf_saved  = &l:errorformat
-
-	let	l:currentbuffer=bufname("%")
-	let l:fullname				= expand("%:p")
-	"
-	" check global syntax check options / reset in case of an error
-	if BASH_SyntaxCheckOptions( s:BASH_SyntaxCheckOptionsGlob ) != 0
-		let s:BASH_SyntaxCheckOptionsGlob	= ""
-	endif
-	"
-	let	options=s:BASH_SyntaxCheckOptionsGlob
-	if exists("b:BASH_SyntaxCheckOptionsLocal")
-		let	options=options." ".b:BASH_SyntaxCheckOptionsLocal
-	endif
-	"
-	" match the Bash error messages (quickfix commands)
-	" errorformat will be reset by function BASH_Handle()
-	" ignore any lines that didn't match one of the patterns
-
-	let &l:makeprg     = s:BASH_Executable
-	let &l:errorformat = s:BASH_Errorformat
-
-	silent exe ":make! -n ".options.' -- "'.l:fullname.'"'
-
-	" restore current settings
-	let &l:makeprg     = makeprg_saved
-	let &l:errorformat = errorf_saved
-
-	botright cwindow
-
-	" message in case of success
-	redraw!
-	if l:currentbuffer ==  bufname("%")
-		echohl Search | echo l:currentbuffer." : Syntax is OK" | echohl None
-		nohlsearch						" delete unwanted highlighting (Vim bug?)
-	endif
-endfunction		" ---------- end of function  BASH_SyntaxCheck  ----------
-
 "-------------------------------------------------------------------------------
 " s:ToolMenu : Add or remove tool menu entries.   {{{1
 "-------------------------------------------------------------------------------
@@ -2377,9 +2372,11 @@ endif
 " user defined commands (working everywhere)
 command! -nargs=? -complete=custom,<SID>GetOutputMethodList BashOutputMethod   call <SID>SetOutputMethod(<q-args>)
 command! -nargs=? -complete=custom,<SID>GetDirectRunList    BashDirectRun      call <SID>SetDirectRun(<q-args>)
+command! -nargs=? -complete=shellcmd                        BashExecutable     call <SID>SetExecutable(<q-args>)
 
-nnoremap  <expr>  <Plug>BashSupportSetBashScriptArgs  ':BashScriptArguments '.( exists( 'b:BASH_ScriptCmdLineArgs' ) ? b:BASH_ScriptCmdLineArgs : '' )
-nnoremap  <expr>  <Plug>BashSupportSetBashInterpArgs  ':BashInterpArguments '.( exists( 'b:BASH_InterpCmdLineArgs' ) ? b:BASH_InterpCmdLineArgs : '' )
+nnoremap  <expr>  <Plug>BashSupportSetBashScriptArgs  ':BashScriptArguments '.   ( exists( 'b:BASH_ScriptCmdLineArgs' )       ? b:BASH_ScriptCmdLineArgs       : '' )
+nnoremap  <expr>  <Plug>BashSupportSetBashInterpArgs  ':BashInterpArguments '.   ( exists( 'b:BASH_InterpCmdLineArgs' )       ? b:BASH_InterpCmdLineArgs       : '' )
+nnoremap  <expr>  <Plug>BashSupportSetBashSyntaxOpts  ':BashSyntaxCheckOptions '.( exists( 'b:BASH_SyntaxCheckOptionsLocal' ) ? b:BASH_SyntaxCheckOptionsLocal : '' )
 
 if has( 'autocmd' )
 	"

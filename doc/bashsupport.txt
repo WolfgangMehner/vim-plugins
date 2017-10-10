@@ -734,11 +734,12 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \rba    set Bash cmd. line arguments        (n, i)
      \rc     update file, check syntax           (n, i)
      \rco    syntax check options                (n, i)
-     \re     make script executable/not exec.(*) (in )
      \ro     change output destination           (n, i)
      \rd     set "direct run"                    (n, i)
+     \rse    set shell executable                (n, i)
      \rx     set xterm size (*)                  (n, i)
 
+     \re     make script executable/not exec.(*) (in )
      \rh     hardcopy buffer to FILENAME.ps      (n, i)
      \rs     plug-in settings                    (n, i)
 

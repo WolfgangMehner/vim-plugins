@@ -51,6 +51,9 @@ vnoremap  <buffer>            <C-F9>        :Bash<CR>
 nnoremap  <buffer>            <S-F9>        :BashScriptArguments<Space>
 inoremap  <buffer>            <S-F9>   <C-C>:BashScriptArguments<Space>
 
+nnoremap  <buffer>            <A-F9>        :BashCheck<CR>
+inoremap  <buffer>            <A-F9>   <C-C>:BashCheck<CR>
+
 " ---------- Debugger --------------------------------------------------------
 
 " use F9 to start the debugger
