@@ -44,7 +44,7 @@ if exists("g:BASH_Version") || &cp
 	finish
 endif
 
-let g:BASH_Version = "5.0pre"                  " version number of this script; do not change
+let g:BASH_Version = "5.0alpha"                  " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " === Auxiliary functions ===   {{{1
@@ -1424,6 +1424,176 @@ endfunction    " ---------- end of function  s:ScriptSyntaxCheckOptions  -------
 "-------------------------------------------------------------------------------
 
 "-------------------------------------------------------------------------------
+" s:HelpBash : Look up word under the cursor.   {{{1
+"
+" Parameters:
+"   type - the type (string)
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:RemoveSpecialCharacters : Clean CYGWIN output.   {{{2
+"
+" Clean CYGWIN man(1) output:
+" remove           _<backspace>
+" remove <backspace><any character>
+"-------------------------------------------------------------------------------
+function! s:RemoveSpecialCharacters ( )
+	let	patternunderline	= '_\%x08'
+	let	patternbold				= '\%x08.'
+	setlocal modifiable
+	if search(patternunderline) != 0
+		silent exe ':%s/'.patternunderline.'//g'
+	endif
+	if search(patternbold) != 0
+		silent exe ':%s/'.patternbold.'//g'
+	endif
+	setlocal nomodifiable
+	silent normal! gg
+endfunction   " ---------- end of function s:RemoveSpecialCharacters   ----------
+" }}}2
+"-------------------------------------------------------------------------------
+
+let s:BASH_DocBufferName       = "BASH_HELP"
+let s:BASH_DocHelpBufferNumber = -1
+
+let s:BASH_OutputBufferName   = "Bash-Output" " :BUG:28.09.2017 10:41:WM: this is used in s:HelpBash(), check that!
+
+let s:BuiltinList = []
+
+function! s:HelpBash ( type )
+
+	let cuc  = getline(".")[col(".") - 1]         " character under the cursor
+	let item = expand("<cword>")                  " word under the cursor
+	if empty(item) || match( item, cuc ) == -1
+		if a:type == 'man'
+			let item = s:UserInput('[tab compl. on] name of command line utility : ', '', 'shellcmd' )
+		endif
+		if a:type == 'help'
+			let item = s:UserInput('[tab compl. on] name of bash builtin : ', '', 'customlist', s:BuiltinList )
+		endif
+	endif
+
+	if empty(item) &&  a:type != 'bash'
+		return
+	endif
+
+	"------------------------------------------------------------------------------
+	"  replace buffer content with bash help text
+	"------------------------------------------------------------------------------
+
+	" jump to an already open bash help window or create one
+	if bufloaded(s:BASH_DocBufferName) != 0 && bufwinnr(s:BASH_DocHelpBufferNumber) != -1
+		exe bufwinnr(s:BASH_DocHelpBufferNumber) . "wincmd w"
+		" buffer number may have changed, e.g. after a 'save as'
+		if bufnr("%") != s:BASH_DocHelpBufferNumber
+			let s:BASH_DocHelpBufferNumber=bufnr(s:BASH_OutputBufferName)
+			exe ":bn ".s:BASH_DocHelpBufferNumber
+		endif
+	else
+		exe ":new ".s:BASH_DocBufferName
+		let s:BASH_DocHelpBufferNumber=bufnr("%")
+		setlocal buftype=nofile
+		setlocal noswapfile
+		setlocal bufhidden=delete
+		setlocal syntax=OFF
+	endif
+	setlocal modifiable
+
+	" :WORKAROUND:05.04.2016 21:05:WM: setting the filetype changes the global tabstop,
+	" handle this manually
+	let ts_save = &g:tabstop
+
+	setlocal filetype=man
+
+	let &g:tabstop = ts_save
+
+	"-------------------------------------------------------------------------------
+	" read Bash help
+	"-------------------------------------------------------------------------------
+	if a:type == 'help'
+		setlocal wrap
+		if s:UNIX
+			silent exe ":%!help -m ".item
+		else
+			silent exe ":%!".s:BASH_Executable." -c 'help -m ".item."'"
+		endif
+		setlocal nomodifiable
+		return
+	endif
+
+	"-------------------------------------------------------------------------------
+	" open a manual (utilities)
+	"-------------------------------------------------------------------------------
+	if a:type == 'man'
+
+		" Is there more than one manual?
+		let manpages = system( s:BASH_ManualReader.' -k '.item )
+		if v:shell_error
+			close
+			call s:Redraw('r!','r')
+			return s:ErrorMsg ( "shell command '".s:BASH_ManualReader." -k ".item."' failed" )
+		endif
+		let catalogs = split( manpages, '\n', )
+		let manual   = {}
+
+		" Select manuals where the name exactly matches
+		for line in catalogs
+			if line =~ '^'.item.'\s\+('
+				let itempart = split( line, '\s\+' )
+				let catalog  = itempart[1][1:-2]
+				let manual[catalog] = catalog
+			endif
+		endfor
+
+		" Build a selection list if there are more than one manual
+		let catalog = ""
+		if len(keys(manual)) > 1
+			for key in keys(manual)
+				echo ' '.item.'  '.key
+			endfor
+			let defaultcatalog = ''
+			if has_key( manual, '1' )
+				let defaultcatalog = '1'
+			else
+				if has_key( manual, '8' )
+					let defaultcatalog = '8'
+				endif
+			endif
+			let catalog = input( 'select manual section (<Enter> cancels) : ', defaultcatalog )
+			if ! has_key( manual, catalog )
+				close
+				call s:Redraw('r!','r')
+				return s:WarningMsg ( "no appropriate manual section '".catalog."'" )
+			endif
+		endif
+	endif
+
+	"-------------------------------------------------------------------------------
+	" open the bash manual
+	"-------------------------------------------------------------------------------
+	if a:type == 'bash'
+		let catalog = 1
+		let item    = 'bash'
+	endif
+
+	"-------------------------------------------------------------------------------
+	" run man(1) to obtain the text
+	"-------------------------------------------------------------------------------
+	let win_w = winwidth( winnr() )
+	if s:UNIX && win_w > 0
+		silent exe ":%! MANWIDTH=".win_w." ".s:BASH_ManualReader." ".catalog." ".item
+	else
+		silent exe ":%!".s:BASH_ManualReader." ".catalog." ".item
+	endif
+
+	if s:MSWIN
+		call s:RemoveSpecialCharacters()
+	endif
+
+	setlocal nomodifiable
+endfunction    " ---------- end of function s:HelpBash  ----------
+
+"-------------------------------------------------------------------------------
 " s:HelpPlugin : Plug-in help.   {{{1
 "-------------------------------------------------------------------------------
 function! s:HelpPlugin ()
@@ -1829,19 +1999,21 @@ function! s:InitMenus()
  	"-------------------------------------------------------------------------------
  	" help     {{{2
  	"-------------------------------------------------------------------------------
-	"
-	exe " menu  <silent>  ".s:BASH_RootMenu.'.&Help.&Bash\ manual<Tab>'.esc_mapl.'hb                    :call BASH_help("bash")<CR>'
-	exe "imenu  <silent>  ".s:BASH_RootMenu.'.&Help.&Bash\ manual<Tab>'.esc_mapl.'hb               <C-C>:call BASH_help("bash")<CR>'
-	"
-	exe " menu  <silent>  ".s:BASH_RootMenu.'.&Help.&help\ (Bash\ builtins)<Tab>'.esc_mapl.'hh          :call BASH_help("help")<CR>'
-	exe "imenu  <silent>  ".s:BASH_RootMenu.'.&Help.&help\ (Bash\ builtins)<Tab>'.esc_mapl.'hh     <C-C>:call BASH_help("help")<CR>'
-	"
-	exe " menu  <silent>  ".s:BASH_RootMenu.'.&Help.&manual\ (utilities)<Tab>'.esc_mapl.'hm             :call BASH_help("man")<CR>'
-	exe "imenu  <silent>  ".s:BASH_RootMenu.'.&Help.&manual\ (utilities)<Tab>'.esc_mapl.'hm        <C-C>:call BASH_help("man")<CR>'
-	"
-	exe " menu  <silent>  ".s:BASH_RootMenu.'.&Help.-SEP1-                                              :'
-	exe " menu  <silent>  ".s:BASH_RootMenu.'.&Help.help\ (Bash-&Support)<Tab>'.esc_mapl.'hbs           :call <SID>HelpPlugin()<CR>'
-	exe "imenu  <silent>  ".s:BASH_RootMenu.'.&Help.help\ (Bash-&Support)<Tab>'.esc_mapl.'hbs      <C-C>:call <SID>HelpPlugin()<CR>'
+
+	let ahead = 'anoremenu <silent> '.s:BASH_RootMenu.'.Help.'
+	let ihead = 'inoremenu <silent> '.s:BASH_RootMenu.'.Help.'
+
+	exe ahead.'&Bash\ manual<Tab>'.esc_mapl.'hb                    :call <SID>HelpBash("bash")<CR>'
+	exe ihead.'&Bash\ manual<Tab>'.esc_mapl.'hb               <C-C>:call <SID>HelpBash("bash")<CR>'
+	exe ahead.'&help\ (Bash\ builtins)<Tab>'.esc_mapl.'hh          :call <SID>HelpBash("help")<CR>'
+	exe ihead.'&help\ (Bash\ builtins)<Tab>'.esc_mapl.'hh     <C-C>:call <SID>HelpBash("help")<CR>'
+	exe ahead.'&manual\ (utilities)<Tab>'.esc_mapl.'hm             :call <SID>HelpBash("man")<CR>'
+	exe ihead.'&manual\ (utilities)<Tab>'.esc_mapl.'hm        <C-C>:call <SID>HelpBash("man")<CR>'
+
+	exe ahead.'-SEP1-                                              :'
+	exe ahead.'help\ (Bash-&Support)<Tab>'.esc_mapl.'hp            :call <SID>HelpPlugin()<CR>'
+	exe ihead.'help\ (Bash-&Support)<Tab>'.esc_mapl.'hp       <C-C>:call <SID>HelpPlugin()<CR>'
+
 	" }}}2
 	"-------------------------------------------------------------------------------
 
@@ -1981,15 +2153,15 @@ function! s:CreateAdditionalMaps ()
 	"   help
 	"-------------------------------------------------------------------------------
 	nnoremap  <buffer>  <silent>  <LocalLeader>rs         :call BASH_Settings(0)<CR>
-  "
-   noremap  <buffer>  <silent>  <LocalLeader>hb         :call BASH_help('bash')<CR>
-  inoremap  <buffer>  <silent>  <LocalLeader>hb    <Esc>:call BASH_help('bash')<CR>
-   noremap  <buffer>  <silent>  <LocalLeader>hh         :call BASH_help('help')<CR>
-  inoremap  <buffer>  <silent>  <LocalLeader>hh    <Esc>:call BASH_help('help')<CR>
-   noremap  <buffer>  <silent>  <LocalLeader>hm         :call BASH_help('man')<CR>
-  inoremap  <buffer>  <silent>  <LocalLeader>hm    <Esc>:call BASH_help('man')<CR>
-	 noremap  <buffer>  <silent>  <LocalLeader>hbs        :call <SID>HelpPlugin()<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>hbs   <C-C>:call <SID>HelpPlugin()<CR>
+
+	nnoremap  <buffer>  <silent>  <LocalLeader>hb         :call <SID>HelpBash('bash')<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>hb    <Esc>:call <SID>HelpBash('bash')<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>hh         :call <SID>HelpBash('help')<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>hh    <Esc>:call <SID>HelpBash('help')<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>hm         :call <SID>HelpBash('man')<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>hm    <Esc>:call <SID>HelpBash('man')<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>hp         :call <SID>HelpPlugin()<CR>
+	inoremap  <buffer>  <silent>  <LocalLeader>hp    <C-C>:call <SID>HelpPlugin()<CR>
 
 	"-------------------------------------------------------------------------------
 	" settings - reset local leader
@@ -2025,172 +2197,6 @@ function! s:CreateAdditionalMaps ()
 
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  BASH_help     {{{1
-"   DESCRIPTION:  lookup word under the cursor or ask
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-let s:BASH_DocBufferName       = "BASH_HELP"
-let s:BASH_DocHelpBufferNumber = -1
-
-let s:BASH_OutputBufferName   = "Bash-Output" " :BUG:28.09.2017 10:41:WM: this is used in BASH_help, check that!
-
-let s:BuiltinList = []
-
-function! BASH_help( type )
-
-	let cuc		= getline(".")[col(".") - 1]		" character under the cursor
-	let	item	= expand("<cword>")							" word under the cursor
-	if empty(item) || match( item, cuc ) == -1
-		if a:type == 'man'
-			let item = s:UserInput('[tab compl. on] name of command line utility : ', '', 'shellcmd' )
-		endif
-		if a:type == 'help'
-			let item = s:UserInput('[tab compl. on] name of bash builtin : ', '', 'customlist', s:BuiltinList )
-		endif
-	endif
-
-	if empty(item) &&  a:type != 'bash'
-		return
-	endif
-	"------------------------------------------------------------------------------
-	"  replace buffer content with bash help text
-	"------------------------------------------------------------------------------
-	"
-	" jump to an already open bash help window or create one
-	"
-	if bufloaded(s:BASH_DocBufferName) != 0 && bufwinnr(s:BASH_DocHelpBufferNumber) != -1
-		exe bufwinnr(s:BASH_DocHelpBufferNumber) . "wincmd w"
-		" buffer number may have changed, e.g. after a 'save as'
-		if bufnr("%") != s:BASH_DocHelpBufferNumber
-			let s:BASH_DocHelpBufferNumber=bufnr(s:BASH_OutputBufferName)
-			exe ":bn ".s:BASH_DocHelpBufferNumber
-		endif
-	else
-		exe ":new ".s:BASH_DocBufferName
-		let s:BASH_DocHelpBufferNumber=bufnr("%")
-		setlocal buftype=nofile
-		setlocal noswapfile
-		setlocal bufhidden=delete
-		setlocal syntax=OFF
-	endif
-	setlocal	modifiable
-
-	" :WORKAROUND:05.04.2016 21:05:WM: setting the filetype changes the global tabstop,
-	" handle this manually
-	let ts_save = &g:tabstop
-
-	setlocal filetype=man
-
-	let &g:tabstop = ts_save
-
-	"-------------------------------------------------------------------------------
-	" read Bash help
-	"-------------------------------------------------------------------------------
-	if a:type == 'help'
-		setlocal wrap
-		if s:UNIX 
-			silent exe ":%!help -m ".item
-		else
-			silent exe ":%!".s:BASH_Executable." -c 'help -m ".item."'"
-		endif
-		setlocal nomodifiable
-		return
-	endif
-	"
-	"-------------------------------------------------------------------------------
-	" open a manual (utilities)
-	"-------------------------------------------------------------------------------
-	if a:type == 'man'
-		"
-		" Is there more than one manual ?
-		"
-		let manpages	= system( s:BASH_ManualReader.' -k '.item )
-		if v:shell_error
-			echomsg	"shell command '".s:BASH_ManualReader." -k ".item."' failed"
-			:close
-			return
-		endif
-		let	catalogs	= split( manpages, '\n', )
-		let	manual		= {}
-		"
-		" Select manuals where the name exactly matches
-		"
-		for line in catalogs
-			if line =~ '^'.item.'\s\+('
-				let	itempart	= split( line, '\s\+' )
-				let	catalog		= itempart[1][1:-2]
-				let	manual[catalog]	= catalog
-			endif
-		endfor
-		"
-		" Build a selection list if there are more than one manual
-		"
-		let	catalog	= ""
-		if len(keys(manual)) > 1
-			for key in keys(manual)
-				echo ' '.item.'  '.key
-			endfor
-			let defaultcatalog	= ''
-			if has_key( manual, '1' )
-				let defaultcatalog	= '1'
-			else
-				if has_key( manual, '8' )
-					let defaultcatalog	= '8'
-				endif
-			endif
-			let	catalog	= input( 'select manual section (<Enter> cancels) : ', defaultcatalog )
-			if ! has_key( manual, catalog )
-				:close
-				:redraw
-				echomsg	"no appropriate manual section '".catalog."'"
-				return
-			endif
-		endif
-	endif
-
-	"-------------------------------------------------------------------------------
-	" open the bash manual
-	"-------------------------------------------------------------------------------
-	if a:type == 'bash'
-		let	catalog	= 1
-		let	item		= 'bash'
-	endif
-
-	let win_w = winwidth( winnr() )
-	if s:UNIX && win_w > 0
-			silent exe ":%! MANWIDTH=".win_w." ".s:BASH_ManualReader." ".catalog." ".item
-		else
-			silent exe ":%!".s:BASH_ManualReader." ".catalog." ".item
-		endif
-
-	if s:MSWIN
-		call s:bash_RemoveSpecialCharacters()
-	endif
-
-	setlocal nomodifiable
-endfunction		" ---------- end of function  BASH_help  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Bash_RemoveSpecialCharacters     {{{1
-"   DESCRIPTION:  remove <backspace><any character> in CYGWIN man(1) output
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! s:bash_RemoveSpecialCharacters ( )
-	let	patternunderline	= '_\%x08'
-	let	patternbold				= '\%x08.'
-	setlocal modifiable
-	if search(patternunderline) != 0
-		silent exe ':%s/'.patternunderline.'//g'
-	endif
-	if search(patternbold) != 0
-		silent exe ':%s/'.patternbold.'//g'
-	endif
-	setlocal nomodifiable
-	silent normal! gg
-endfunction		" ---------- end of function  s:bash_RemoveSpecialCharacters   ----------
 "-------------------------------------------------------------------------------
 " BASH_Settings : Display plug-in settings.   {{{1
 "

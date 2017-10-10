@@ -1,4 +1,4 @@
-README for bash-support.vim (Version 5.0pre) / September 28 2017
+README for bash-support.vim (Version 5.0alpha) / October 10 2017
 ================================================================================
 
   *  INSTALLATION
@@ -168,7 +168,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 RELEASE NOTES
 ================================================================================
 
-RELEASE NOTES FOR VERSION 5.0pre
+RELEASE NOTES FOR VERSION 5.0alpha
 ----------------------------------------------------------------------
 - Add command `:Bash [<args>]` to run the interpreter with arguments.
 - Add command `:BashDirectRun` to run executable scripts without `g:BASH_Executable`.

@@ -18,19 +18,21 @@ Run
   debugger	-	-	rd		-	-	rd
   script args	ra	ra	ra		-	-	ra
   interp. args	raa	rba			-	-	rw
+  output dest.	ro	ro	ro	-	ro	-	ro	-
   direct run		rd	-	-	rd	-	-	-
+  set exec.	-	rse	-	-	rse	-	-	-
+  set compiler	-	-	-	-	rsc	-	-	-
+  xterm size	rx	rx	rx	-	-	-	rx	-
  --------------------------------------------------------------------------
   make exec.	re	re	-	-	re	-	re	-
   hardcopy	rh	rh	rh	rh	rh	-	rh	rh
   timestamped	-	-	-	-	-	-	rt	-
-  output dest.	ro	ro	ro	-	ro	-	ro	-
-  xterm size	rx	rx	rx	-	-	-	rx	-
  --------------------------------------------------------------------------
   settings	rse>rs	rs	rs	rse	rs	rs	rk>rs	rs
  --------------------------------------------------------------------------
 Help
  --------------------------------------------------------------------------
-  plug-in	hp	hbs	hp	hp	hs	hs	hp	hp
+  plug-in	hp	hp	hp	hp	hs	hs	hp	hp
  --------------------------------------------------------------------------
 
 # vim: tabstop=8

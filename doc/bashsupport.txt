@@ -2,7 +2,7 @@
 
 Bash Support                                      *bash-support* *bashsupport*
 
-                             Plug-in version 5.0pre
+                             Plug-in version 5.0alpha
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
@@ -752,7 +752,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      \hm     displays the manual for the         (n, i)
              Bash command under the cursor
              The tab expansion is active.
-     \hbs    Displays the Vim help page for      (n, i)
+     \hp     Displays the Vim help page for      (n, i)
              this plug-in.
 
 (*) Linux/UNIX only
