@@ -442,6 +442,25 @@ function! s:MakeExecutable ()
 
 endfunction   " ----------  end of function s:MakeExecutable  ----------
 
+"-------------------------------------------------------------------------------
+" s:XtermSize : Set xterm size.   {{{2
+"-------------------------------------------------------------------------------
+function! s:XtermSize ()
+	let regex = '-geometry\s\+\zs\d\+x\d\+'
+	let geom = matchstr ( g:Xterm_Options, regex )
+	let geom = substitute ( geom, 'x', ' ', "" )
+
+	let answer = s:UserInput ( "   xterm size (COLUMNS LINES) : ", geom, '' )
+	while match( answer, '^\s*\d\+\s\+\d\+\s*$' ) < 0
+		let answer = s:UserInput ( " + xterm size (COLUMNS LINES) : ", geom, '' )
+	endwhile
+
+	let answer  = substitute ( answer, '^\s\+', '', '' )   " remove leading whitespaces
+	let answer  = substitute ( answer, '\s\+$', '', '' )   " remove trailing whitespaces
+	let answer  = substitute ( answer, '\s\+', 'x', '' )   " replace inner whitespaces
+	let g:Xterm_Options = substitute ( g:Xterm_Options, regex, answer , 'g' )
+endfunction    " ----------  end of function  s:XtermSize  ----------
+
 " }}}2
 "-------------------------------------------------------------------------------
 
@@ -462,7 +481,6 @@ let s:Awk_GlobalTemplateFile = ''
 let s:Awk_LocalTemplateFile  = ''
 let s:Awk_CustomTemplateFile = ''                " the custom templates
 let s:Awk_FilenameEscChar    = ''
-let s:Awk_XtermDefaults      = '-fa courier -fs 12 -geometry 80x24'
 
 if s:MSWIN
 	" ==========  MS Windows  ======================================================
@@ -572,7 +590,6 @@ call s:GetGlobalSetting ( 'Awk_LoadMenus' )
 call s:GetGlobalSetting ( 'Awk_RootMenu' )
 call s:GetGlobalSetting ( 'Awk_ManualReader' )
 call s:GetGlobalSetting ( 'Awk_OutputGvim' )
-call s:GetGlobalSetting ( 'Awk_XtermDefaults' )
 call s:GetGlobalSetting ( 'Awk_GlobalTemplateFile' )
 call s:GetGlobalSetting ( 'Awk_LocalTemplateFile' )
 call s:GetGlobalSetting ( 'Awk_CustomTemplateFile' )
@@ -586,10 +603,20 @@ call s:ApplyDefaultSetting ( 'Awk_Printheader', "%<%f%h%m%<  %=%{strftime('%x %X
 " Xterm   {{{3
 "-------------------------------------------------------------------------------
 
-" set default geometry if not specified
-if match( s:Awk_XtermDefaults, "-geometry\\s\\+\\d\\+x\\d\\+" ) < 0
-	let s:Awk_XtermDefaults	= s:Awk_XtermDefaults." -geometry 80x24"
+let s:Xterm_Executable   = 'xterm'
+let s:Awk_XtermDefaults  = '-fa courier -fs 12 -geometry 80x24'
+
+" check 'g:Awk_XtermDefaults' for backwards compatibility
+if ! exists ( 'g:Xterm_Options' )
+	call s:GetGlobalSetting ( 'Awk_XtermDefaults' )
+	" set default geometry if not specified
+	if match( s:Awk_XtermDefaults, "-geometry\\s\\+\\d\\+x\\d\\+" ) < 0
+		let s:Awk_XtermDefaults	= s:Awk_XtermDefaults." -geometry 80x24"
+	endif
 endif
+
+call s:GetGlobalSetting ( 'Xterm_Executable' )
+call s:ApplyDefaultSetting ( 'Xterm_Options', s:Awk_XtermDefaults )
 
 " }}}3
 "-------------------------------------------------------------------------------
@@ -832,11 +859,11 @@ function! s:HelpManual( topic )
 endfunction   " ---------- end of function s:HelpManual  ----------
 
 "-------------------------------------------------------------------------------
-" s:RemoveSpecialCharacters : Clean CYGWIN output   {{{1
+" s:RemoveSpecialCharacters : Clean CYGWIN output.   {{{1
 "
 " Clean CYGWIN man(1) output:
+" remove           _<backspace>
 " remove <backspace><any character>
-" remove           _<any character>
 "-------------------------------------------------------------------------------
 function! s:RemoveSpecialCharacters ( )
 	let patternunderline = '_\%x08'
@@ -897,8 +924,8 @@ function! s:RereadTemplates ()
 	" syntax: comments
 	call mmtemplates#core#ChangeSyntax ( g:Awk_Templates, 'comment', '§' )
 
-	" property: file skeletons
-	call mmtemplates#core#Resource ( g:Awk_Templates, 'add', 'property', 'Awk::FileSkeleton::Script', 'Comments.shebang;Comments.file description' )
+	" property: file skeletons (use a safe default here, more sensible settings are applied in the template library)
+	call mmtemplates#core#Resource ( g:Awk_Templates, 'add', 'property', 'Awk::FileSkeleton::Script', 'Comments.file description' )
 
 	"-------------------------------------------------------------------------------
 	" load template library
@@ -1025,12 +1052,9 @@ function! s:JumpForward ()
 	return ''
 endfunction    " ----------  end of function s:JumpForward  ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  InitMenus     {{{1
-"   DESCRIPTION:  Initialize menus.
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
+"-------------------------------------------------------------------------------
+" s:InitMenus : Initialize menus.   {{{1
+"-------------------------------------------------------------------------------
 function! s:InitMenus()
 	"
 	if ! has ( 'menu' )
@@ -1112,7 +1136,11 @@ function! s:InitMenus()
 	"-------------------------------------------------------------------------------
 	" run
 	"-------------------------------------------------------------------------------
-	"
+
+	let ahead = 'anoremenu <silent> '.s:Awk_RootMenu.'.Run.'
+	let vhead = 'vnoremenu <silent> '.s:Awk_RootMenu.'.Run.'
+	let ihead = 'inoremenu <silent> '.s:Awk_RootMenu.'.Run.'
+
 	exe " menu <silent> ".s:Awk_RootMenu.'.&Run.save\ +\ &run\ script<Tab>'.esc_mapl.'rr\ \ <C-F9>            :call Awk_Run("n")<CR>'
 	exe "imenu <silent> ".s:Awk_RootMenu.'.&Run.save\ +\ &run\ script<Tab>'.esc_mapl.'rr\ \ <C-F9>       <C-C>:call Awk_Run("n")<CR>'
   exe " menu <silent> ".s:Awk_RootMenu.'.&Run.update,\ check\ &syntax<Tab>'.esc_mapl.'rs\ \ <A-F9>          :call Awk_SyntaxCheck("syntax")<CR>'
@@ -1125,31 +1153,28 @@ function! s:InitMenus()
 	"
 	exe " menu          ".s:Awk_RootMenu.'.&Run.AWK\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'raa                  :AwkArguments<Space>'
 	exe "imenu          ".s:Awk_RootMenu.'.&Run.AWK\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'raa             <C-C>:AwkArguments<Space>'
-	"
-	let ahead = 'amenu <silent> '.s:Awk_RootMenu.'.Run.'
-	let vhead = 'vmenu <silent> '.s:Awk_RootMenu.'.Run.'
-
-	if !s:MSWIN
-		exe ahead.'make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re      :call <SID>MakeExecutable()<CR>'
-	endif
 
 	exe ahead.'-SEP1-   :'
 	if s:MSWIN
-		exe ahead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call <SID>Hardcopy("n")<CR>'
+		exe ahead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh             :call <SID>Hardcopy("n")<CR>'
 		exe vhead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call <SID>Hardcopy("v")<CR>'
+		exe ihead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call <SID>Hardcopy("v")<CR>'
 	else
-		exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call <SID>Hardcopy("n")<CR>'
+		exe ahead.'make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re       :call <SID>MakeExecutable()<CR>'
+		exe ihead.'make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re  <C-C>:call <SID>MakeExecutable()<CR>'
+		exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh        :call <SID>Hardcopy("n")<CR>'
 		exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call <SID>Hardcopy("v")<CR>'
+		exe ihead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call <SID>Hardcopy("v")<CR>'
 	endif
-	"
+
 	exe ahead.'-SEP2-                                                :'
 	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rse                 :call Awk_Settings(0)<CR>'
 	"
 	if	!s:MSWIN
-		exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.x&term\ size<Tab>'.esc_mapl.'rx                       :call Awk_XtermSize()<CR>'
-		exe "imenu  <silent>  ".s:Awk_RootMenu.'.&Run.x&term\ size<Tab>'.esc_mapl.'rx                  <C-C>:call Awk_XtermSize()<CR>'
+		exe ahead.'&xterm\ size<Tab>'.esc_mapl.'rx                       :call <SID>XtermSize()<CR>'
+		exe ihead.'&xterm\ size<Tab>'.esc_mapl.'rx                  <C-C>:call <SID>XtermSize()<CR>'
 	endif
-	"
+
 	if	s:MSWIN
 		if s:Awk_OutputGvim == "buffer"
 			exe " menu  <silent>  ".s:Awk_RootMenu.'.&Run.&output:\ BUFFER->term<Tab>'.esc_mapl.'ro          :call Awk_Toggle_Gvim_Xterm_MS()<CR>'
@@ -1172,13 +1197,13 @@ function! s:InitMenus()
 			endif
 		endif
 	endif
-	"
- 	"-------------------------------------------------------------------------------
- 	" help
- 	"-------------------------------------------------------------------------------
- 	"
-	let ahead = 'amenu <silent> '.s:Awk_RootMenu.'.Help.'
-	let ihead = 'imenu <silent> '.s:Awk_RootMenu.'.Help.'
+
+	"-------------------------------------------------------------------------------
+	" help
+	"-------------------------------------------------------------------------------
+
+	let ahead = 'anoremenu <silent> '.s:Awk_RootMenu.'.Help.'
+	let ihead = 'inoremenu <silent> '.s:Awk_RootMenu.'.Help.'
 
 	exe ahead.'&AWK\ manual<Tab>'.esc_mapl.'hm               :call <SID>HelpManual("awk")<CR>'
 	exe ihead.'&AWK\ manual<Tab>'.esc_mapl.'hm          <C-C>:call <SID>HelpManual("awk")<CR>'
@@ -1188,24 +1213,23 @@ function! s:InitMenus()
 
 endfunction    " ----------  end of function s:InitMenus  ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  s:CreateAdditionalMaps     {{{1
-"   DESCRIPTION:  create additional maps
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
+"-------------------------------------------------------------------------------
+" s:CreateAdditionalMaps : Create additional maps.   {{{1
+"-------------------------------------------------------------------------------
 function! s:CreateAdditionalMaps ()
+
+	"-------------------------------------------------------------------------------
+	" AWK dictionary
 	"
-	" ---------- Awk dictionary -------------------------------------------------
 	" This will enable keyword completion for Awk
 	" using Vim's dictionary feature |i_CTRL-X_CTRL-K|.
-	"
+	"-------------------------------------------------------------------------------
 	if exists("g:Awk_Dictionary_File")
 		silent! exe 'setlocal dictionary+='.g:Awk_Dictionary_File
 	endif
-	"
+
 	"-------------------------------------------------------------------------------
-	" USER DEFINED COMMANDS
+	" user defined commands (only working in AWK buffers)
 	"-------------------------------------------------------------------------------
 	command! -buffer -nargs=* -complete=file AwkScriptArguments  call Awk_ScriptCmdLineArguments(<q-args>)
 	command! -buffer -nargs=* -complete=file AwkArguments        call Awk_AwkCmdLineArguments(<q-args>)
@@ -1285,8 +1309,8 @@ function! s:CreateAdditionalMaps ()
 	nnoremap    <buffer>  <silent>  <LocalLeader>rh        :call <SID>Hardcopy("n")<CR>
 	vnoremap    <buffer>  <silent>  <LocalLeader>rh   <C-C>:call <SID>Hardcopy("v")<CR>
 
-	nnoremap    <buffer>  <silent>  <LocalLeader>rx        :call Awk_XtermSize()<CR>
-	vnoremap    <buffer>  <silent>  <LocalLeader>rx   <C-C>:call Awk_XtermSize()<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>rx        :call <SID>XtermSize()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rx   <C-C>:call <SID>XtermSize()<CR>
 
    noremap  <buffer>  <silent>  <C-F9>        :call Awk_Run("n")<CR>
   inoremap  <buffer>  <silent>  <C-F9>   <C-C>:call Awk_Run("n")<CR>
@@ -1408,7 +1432,8 @@ function! Awk_Settings ( verbose )
 	" ----- output ------------------------------
 	let txt = txt.'     current output dest. :  '.s:Awk_OutputGvim."\n"
 	if !s:MSWIN
-		let txt = txt.'           xterm defaults :  '.s:Awk_XtermDefaults."\n"
+		let txt = txt.'         xterm executable :  '.s:Xterm_Executable."\n"
+		let txt = txt.'            xterm options :  '.g:Xterm_Options."\n"
 	endif
 	let	txt = txt."__________________________________________________________________________\n"
 	let	txt = txt." Awk-Support, Version ".g:AwkSupportVersion." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
@@ -1477,24 +1502,6 @@ function! Awk_Toggle_Gvim_Xterm_MS ()
 		endif
 	endif
 endfunction    " ----------  end of function Awk_Toggle_Gvim_Xterm_MS ----------
-"
-"------------------------------------------------------------------------------
-"  Run : xterm geometry    {{{1
-"------------------------------------------------------------------------------
-function! Awk_XtermSize ()
-	let regex	= '-geometry\s\+\d\+x\d\+'
-	let geom	= matchstr( s:Awk_XtermDefaults, regex )
-	let geom	= matchstr( geom, '\d\+x\d\+' )
-	let geom	= substitute( geom, 'x', ' ', "" )
-	let answer = s:UserInput("   xterm size (COLUMNS LINES) : ", geom, '' )
-	while match(answer, '^\s*\d\+\s\+\d\+\s*$' ) < 0
-		let answer = s:UserInput(" + xterm size (COLUMNS LINES) : ", geom, '' )
-	endwhile
-	let answer  = substitute( answer, '^\s\+', "", "" )		 				" remove leading whitespaces
-	let answer  = substitute( answer, '\s\+$', "", "" )						" remove trailing whitespaces
-	let answer  = substitute( answer, '\s\+', "x", "" )						" replace inner whitespaces
-	let s:Awk_XtermDefaults	= substitute( s:Awk_XtermDefaults, regex, "-geometry ".answer , "" )
-endfunction		" ---------- end of function  Awk_XtermSize  ----------
 
 "------------------------------------------------------------------------------
 "  Run : Command line arguments    {{{1
@@ -1611,7 +1618,7 @@ function! Awk_Run ( mode ) range
 		if	s:MSWIN
 			exe ':!'.s:Awk_Executable.l:awkCmdLineArgs.' -f "'.l:fullname.'" '.l:arguments
 		else
-			silent exe '!xterm -title '.l:fullnameesc.' '.s:Awk_XtermDefaults
+			silent exe '!xterm -title '.l:fullnameesc.' '.g:Xterm_Options
 						\			.' -e '.s:Awk_Wrapper.' '.l:awkCmdLineArgs.l:fullnameesc.l:arguments.' &'
 		endif
 		"
@@ -1742,9 +1749,9 @@ function! s:RemoveMenus()
 	endif
 endfunction    " ----------  end of function s:RemoveMenus  ----------
 
-"----------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 " === Setup: Templates and menus ===   {{{1
-"----------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 
 " tool menu entry
 call s:ToolMenu ( 'setup' )

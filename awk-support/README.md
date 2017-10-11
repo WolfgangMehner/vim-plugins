@@ -1,4 +1,4 @@
-README for awk-support.vim (Version 1.4pre) / June 28 2017
+README for awk-support.vim (Version 1.4pre) / October 11 2017
 ================================================================================
 
   *  INSTALLATION
@@ -176,13 +176,17 @@ RELEASE NOTES FOR VERSION 1.4pre
 ----------------------------------------------------------------------
 - The templates which are inserted into new files as file skeletons can be
   specified in the templates library, via the property:
-    Awk::FileSkeleton::Script
-- Add configuration variables 'g:Awk_Ctrl_j' and 'g:Awk_Ctrl_d' to control the
-  creation of the CTRL+J and CTRL+D maps.
-- Rename setting 'g:Awk_Awk' into 'g:Awk_Executable'.
-  ('g:Awk_Awk' still works for backwards compatibility.)
+    `Awk::FileSkeleton::Script`
+- Use `g:Xterm_Executable`.
+- Use `g:Xterm_Options` instead of `g:Awk_XtermDefaults`. The setting
+  `g:Awk_XtermDefaults` still works for backwards compatibility.
+- Add configuration variables `g:Awk_Ctrl_j` and `g:Awk_Ctrl_d` to control the
+  creation of the `CTRL+J` and `CTRL+D` maps.
+- Rename setting `g:Awk_Awk` into `g:Awk_Executable`.
+  (`g:Awk_Awk` still works for backwards compatibility.)
 - New and reworked templates.
 - Minor corrections and improvements.
+
 
 RELEASE NOTES FOR OLDER VERSIONS
 ----------------------------------------------------------------------

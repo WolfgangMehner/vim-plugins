@@ -1,4 +1,4 @@
-*awksupport.txt*                 Awk Support                       Jun 28 2017
+*awksupport.txt*                 Awk Support                       Oct 11 2017
 
 Awk Support                                         *awk-support* *awksupport*
 
@@ -495,7 +495,7 @@ value.  Possible values are 'vim', 'buffer' and 'xterm'.
 Vim (non-GUI) : The output destination can be toggled between (1) and (2)
                 using the hotkey \ro .
 
-The xterm defaults can be set in .vimrc by the variable g:Awk_XtermDefaults .
+The xterm defaults can be set in .vimrc by the variable g:Xterm_Options .
 The default is "-fa courier -fs 12 -geometry 80x24" :
   font name     : -fa courier
   font size     : -fs 12
@@ -711,6 +711,9 @@ g:Awk_Printheader           '%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N'
                              'vim.exe'     (Windows)
 g:Awk_MapLeader             '\'
 
+g:Xterm_Executable          'xterm'
+g:Xterm_Options             '-fa courier -fs 12 -geometry 80x24'
+
 ------------------------------------------------------------------------------
 Global Variable              Description
 ------------------------------------------------------------------------------
@@ -733,6 +736,9 @@ g:Awk_Ctrl_d                hotkey Ctrl-D 'yes'/'no' (see |awksupport-templates-
 g:Awk_LineEndCommColDefault default starting column for line end comments
 g:Awk_Printheader           hardcopy header format
 g:Awk_MapLeader             the map leader for hotkeys (see|awksupport-usage-vim|)
+
+g:Xterm_Executable          The xterm executable (see |awksupport-xterm|).
+g:Xterm_Options             The xterm options (see |awksupport-xterm|).
 
 To override the defaults add appropriate assignments in '.vimrc', e.g.
 >

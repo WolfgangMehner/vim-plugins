@@ -3,8 +3,9 @@ Preface
 
 This repository is mainly for the use with plug-in managers.
 
-The development happens here:
-[WolfgangMehner/vim-plugins](https://github.com/WolfgangMehner/vim-plugins)
+Have a look at the [Screenshot Page](https://wolfgangmehner.github.io/vim-plugins/awksupport.html).
+
+The development happens in [WolfgangMehner/vim-plugins](https://github.com/WolfgangMehner/vim-plugins).
 
 
 --------------------------------------------------------------------------------
