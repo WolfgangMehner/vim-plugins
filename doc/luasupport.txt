@@ -628,11 +628,13 @@ set in the .vimrc file.
 
   g:Xterm_Executable        'xterm'       the xterm executable (^2)
   g:Xterm_Options           '...'         the xterm default settings (^2)
+
+  |g:Templates_InternetBrowserExec|         the browser executable
+  |g:Templates_InternetBrowserFlags|        additional browser flags
  ----------------------------------------------------------------------------
 
-Further customization is carried out in the template library:
-- |luasupport-config-template-cstm|
-- |luasupport-config-browser|
+Further customization is carried out in the template library, see
+|luasupport-config-template-cstm| and |luasupport-config-comments|.
 
 (^1)
   The Unix defaults are as follows:
@@ -1081,9 +1083,9 @@ A.  TROUBLESHOOTING - KNOWN ISSUES                *luasupport-troubleshooting*
 ==============================================================================
 
 * I do not see any new main menu item.
-  - The menu is only created upon opening the first Lua file (*.m).
+  - The menu is only created upon opening the first Lua file (*.lua).
     This behavior can be changed:
-      :help luasupport-config-menus
+      :help |luasupport-config-menus|
   - Was the archive extracted into the right directory?
     See the section INSTALLATION in lua-support/README.md.
   - Loading of plug-in files must be enabled. If not use
@@ -1122,7 +1124,7 @@ Fritz Mehner (vim.org user name: mehner) for a number of things:
   well
 
 Luis Carvalho (Kozure):
-- the idea for suppling Lua's reference manual in Vim's help format is taken
+- the idea for supplying Lua's reference manual in Vim's help format is taken
   from his plug-in "luarefvim", which contains previous versions of the
   reference manual
   ( http://vim.sourceforge.net/scripts/script.php?script_id=1291 )

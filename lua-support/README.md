@@ -200,19 +200,20 @@ RELEASE NOTES
 
 RELEASE NOTES FOR VERSION 1.1alpha
 ----------------------------------------------------------------------
+- Adapt for running under Neovim more smoothly.
 - Add output method 'terminal' for running scripts in a terminal window
   (requires +terminal).
 - The templates which are inserted into new files as file skeletons can be
   specified in the templates library, via the property:
-    Lua::FileSkeleton::Script
-- Add configuration variables 'g:Lua_Ctrl_j' and 'g:Lua_Ctrl_d' to control the
-  creation of the CTRL+J and CTRL+D maps.
+    `Lua::FileSkeleton::Script`
+- Add configuration variables `g:Lua_Ctrl_j` and `g:Lua_Ctrl_d` to control the
+  creation of the `CTRL+J` and `CTRL+D` maps.
 - Update Lua's reference manual to 5.3.4.
-- Move the filetype plug-in for lua to 'lua-support/rc'.
+- Move the filetype plug-in for lua to `lua-support/rc`.
 - Minor changes and bugfixes.
 
 Note: The filetype plug-in has been moved, and is thus not loaded automatically
-anymore. Copy it from 'lua-support/rc/' to 'ftplugin' or add the commands there
+anymore. Copy it from `lua-support/rc/` to `ftplugin`, or add the commands there
 to your own filetype plug-in.
 
 
