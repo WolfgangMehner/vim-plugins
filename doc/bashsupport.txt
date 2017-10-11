@@ -921,6 +921,7 @@ variables for new configurations.
                                            (see |bashsupport-output|).
            g:BASH_DirectRun              : run executable scripts without
                                            using 'g:BASH_Executable'
+           g:Xterm_Executable            : The xterm executable (see |bashsupport-xterm|).
            g:Xterm_Options               : The xterm options (see |bashsupport-xterm|).
            g:BASH_LineEndCommColDefault  : default starting column for line end comments
            g:BASH_SyntaxCheckOptionsGlob : shopt options used with syntax checking

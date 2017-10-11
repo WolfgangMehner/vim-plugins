@@ -170,6 +170,7 @@ RELEASE NOTES
 
 RELEASE NOTES FOR VERSION 5.0alpha
 ----------------------------------------------------------------------
+- Adapt for running under Neovim more smoothly.
 - Add command `:Bash [<args>]` to run the interpreter with arguments.
 - Add command `:BashDirectRun` to run executable scripts without `g:BASH_Executable`.
 - Add command `:BashOutputMethod` to set the output destination for `:Bash`.

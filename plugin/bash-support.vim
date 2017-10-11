@@ -567,6 +567,8 @@ endfunction    " ----------  end of function  s:XtermSize  ----------
 let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
 let s:UNIX  = has("unix")  || has("macunix") || has("win32unix")
 
+let s:NEOVIM = has("nvim")
+
 let s:installation            = '*undefined*'
 let s:plugin_dir              = ''
 let s:BASH_GlobalTemplateFile = ''
@@ -669,17 +671,21 @@ let s:BASH_LoadMenus         	= 'yes'             " load the menus?
 let s:BASH_RootMenu          	= '&Bash'           " name of the root menu
 let s:BASH_UseToolbox         = 'yes'
 
-if s:MSWIN
-	let s:BASH_OutputMethodList = [ 'vim-io', 'vim-qf', 'buffer' ]
+if s:NEOVIM
+	let s:BASH_OutputMethodList = [ 'vim-io', 'vim-qf', 'buffer', 'terminal' ]
+	let s:BASH_OutputMethod     = 'vim-io'         " one of 's:BASH_OutputMethodList'
 else
-	let s:BASH_OutputMethodList = [ 'vim-io', 'vim-qf', 'buffer', 'xterm' ]
+	let s:BASH_OutputMethodList = [ 'vim-io', 'vim-qf', 'buffer' ]
+	let s:BASH_OutputMethod     = 'vim-io'         " one of 's:BASH_OutputMethodList'
+	" :TODO:28.09.2017 18:33:WM: Windows defaults (was 'xterm', ran shell in a separate window!?), check running under Windows,
+endif
+if ! s:MSWIN
+	let s:BASH_OutputMethodList += [ 'xterm' ]
 endif
 if has ( 'terminal' ) && ! s:MSWIN              " :TODO:25.09.2017 16:16:WM: enable Windows, check how to start jobs with arguments under Windows
 	let s:BASH_OutputMethodList += [ 'terminal' ]
 endif
 call sort ( s:BASH_OutputMethodList )
-" :TODO:28.09.2017 18:33:WM: Windows defaults (was 'xterm', ran shell in a separate window!?), check running under Windows,
-let s:BASH_OutputMethod           = 'vim-io'     " 'vim-io', 'vim-qf', 'buffer' or ... (see 's:BASH_OutputMethodList')
 let s:BASH_DirectRun              = 'no'         " 'yes' or 'no'
 let s:BASH_LineEndCommColDefault	= 49
 let s:BASH_TemplateJumpTarget 		= ''
@@ -1203,9 +1209,16 @@ function! s:Run ( args, mode, ... ) range
 			let title  = title.' - lines '.line_f.'-'.line_l
 		endif
 
-		let buf_nr = term_start ( arg_list, {
-					\ 'term_name' : title,
-					\ } )
+		if s:NEOVIM
+			" :TODO:11.10.2017 18:03:WM: better handling than using 'job_id', but ensures
+			" successful operation for know
+			above new
+			let job_id = termopen ( arg_list, {} )
+
+			silent exe 'file '.fnameescape( title.' -'.job_id.'-' )
+		else
+			call term_start ( arg_list, { 'term_name' : title, } )
+		endif
 
 		" :TODO:27.09.2017 23:39:WM: needs to handle the tmpfile, use exit callback
 
@@ -1229,7 +1242,11 @@ function! s:Run ( args, mode, ... ) range
 
 		" method : "xterm"
 
-		let title  = 'Bash'
+		if s:Xterm_Executable =~ '\cxterm'
+			let title = ' -title Bash'
+		else
+			let title = ''
+		endif
 		let rm_tmp = ''
 		if mode == 'v'
 			let title  = title.' - lines '.line_f.'-'.line_l
@@ -1238,13 +1255,11 @@ function! s:Run ( args, mode, ... ) range
 
 		" :TODO:27.09.2017 23:39:WM: needs to handle the tmpfile, but Linux only so use 'rm'
 
-		silent exe '!'.s:Xterm_Executable.' '.g:Xterm_Options
-					\ .' -title '.shellescape( title )
+		silent exe '!'.s:Xterm_Executable.' '.g:Xterm_Options.title
 					\ .' -e '.shellescape( exec.args_interp.' '.script_esc.' '.args_script.' ; echo "" ; read -p "  ** PRESS ENTER **  " dummy '.rm_tmp ).' &'
+
+		call s:Redraw ( 'r!', '' )                  " redraw in terminal
 	endif
-
-	call s:Redraw ( 'r!', '' )                    " redraw in terminal
-
 endfunction    " ----------  end of function s:Run  ----------
 
 "----------------------------------------------------------------------
@@ -1929,40 +1944,41 @@ function! s:InitMenus()
 	exe ihead_loud.'set\ &executable<Tab>'.esc_mapl.'rse  <C-C>:BashExecutable<Space>'
 
 	if index ( s:BASH_OutputMethodList, 'xterm' ) > -1
-		exe ahead.'x&term\ size<Tab>'.esc_mapl.'rx                       :call <SID>XtermSize()<CR>'
-		exe ihead.'x&term\ size<Tab>'.esc_mapl.'rx                  <C-C>:call <SID>XtermSize()<CR>'
+		exe ahead.'&xterm\ size<Tab>'.esc_mapl.'rx                       :call <SID>XtermSize()<CR>'
+		exe ihead.'&xterm\ size<Tab>'.esc_mapl.'rx                  <C-C>:call <SID>XtermSize()<CR>'
 	endif
 
 	exe ahead.'-SEP1-   :'
 	if s:MSWIN
-		exe ahead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call <SID>Hardcopy("n")<CR>'
+		exe ahead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh             :call <SID>Hardcopy("n")<CR>'
 		exe vhead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call <SID>Hardcopy("v")<CR>'
+		exe ihead.'&hardcopy\ to\ printer<Tab>'.esc_mapl.'rh        <C-C>:call <SID>Hardcopy("v")<CR>'
 	else
 		exe ahead.'make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re       :call <SID>MakeExecutable()<CR>'
 		exe ihead.'make\ script\ &exec\./not\ exec\.<Tab>'.esc_mapl.'re  <C-C>:call <SID>MakeExecutable()<CR>'
-		exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call <SID>Hardcopy("n")<CR>'
+		exe ahead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh        :call <SID>Hardcopy("n")<CR>'
 		exe vhead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call <SID>Hardcopy("v")<CR>'
+		exe ihead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call <SID>Hardcopy("v")<CR>'
 	endif
 
 	exe ahead.'-SEP2-   :'
 	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rs                   :call BASH_Settings(0)<CR>'
 
 	" run -> output method
+	let method_menu_entries = [
+				\ [ 'vim-io',   'vim\ &io',  'interactive', ],
+				\ [ 'vim-qf',   'vim\ &qf',  'quickfix',    ],
+				\ [ 'buffer',   '&buffer',   'quickfix',    ],
+				\ [ 'terminal', '&terminal', 'interact+qf', ],
+				\ [ 'xterm',    '&xterm',    'interactive', ],
+				\ ]
 
-	exe ahead.'output\ method.vim\ &io<TAB>interactive       :call <SID>SetOutputMethod("vim-io")<CR>'
-	exe ihead.'output\ method.vim\ &io<TAB>interactive  <Esc>:call <SID>SetOutputMethod("vim-io")<CR>'
-	exe ahead.'output\ method.vim\ &qf<TAB>quickfix          :call <SID>SetOutputMethod("vim-qf")<CR>'
-	exe ihead.'output\ method.vim\ &qf<TAB>quickfix     <Esc>:call <SID>SetOutputMethod("vim-qf")<CR>'
-	exe ahead.'output\ method.&buffer<TAB>quickfix           :call <SID>SetOutputMethod("buffer")<CR>'
-	exe ihead.'output\ method.&buffer<TAB>quickfix      <Esc>:call <SID>SetOutputMethod("buffer")<CR>'
-	if index ( s:BASH_OutputMethodList, 'terminal' ) > -1
-		exe ahead.'output\ method.&terminal<TAB>interact+qf       :call <SID>SetOutputMethod("terminal")<CR>'
-		exe ihead.'output\ method.&terminal<TAB>interact+qf  <Esc>:call <SID>SetOutputMethod("terminal")<CR>'
-	endif
-	if index ( s:BASH_OutputMethodList, 'xterm' ) > -1
-		exe ahead.'output\ method.&xterm<TAB>interactive       :call <SID>SetOutputMethod("xterm")<CR>'
-		exe ihead.'output\ method.&xterm<TAB>interactive  <Esc>:call <SID>SetOutputMethod("xterm")<CR>'
-	endif
+	for [ method, left, right ] in method_menu_entries
+		if index ( s:BASH_OutputMethodList, method ) > -1
+			exe ahead.'output\ method.'.left.'<TAB>'.right.'       :call <SID>SetOutputMethod("'.method.'")<CR>'
+			exe ihead.'output\ method.'.left.'<TAB>'.right.'  <Esc>:call <SID>SetOutputMethod("'.method.'")<CR>'
+		endif
+	endfor
 
 	" run -> direct run
 
@@ -2213,6 +2229,8 @@ function! BASH_Settings ( verbose )
 	if     s:MSWIN | let sys_name = 'Windows'
 	elseif s:UNIX  | let sys_name = 'UN*X'
 	else           | let sys_name = 'unknown' | endif
+	if    s:NEOVIM | let vim_name = 'nvim'
+	else           | let vim_name = has('gui_running') ? 'gvim' : 'vim' | endif
 
 	let	txt = " Bash-Support settings\n\n"
 	" template settings: macros, style, ...
@@ -2229,7 +2247,7 @@ function! BASH_Settings ( verbose )
 		let txt .= "                templates :  -not loaded-\n\n"
 	endif
 	" plug-in installation
-	let txt .= '      plugin installation :  '.s:installation.' on '.sys_name."\n"
+	let txt .= '      plugin installation :  '.s:installation.' in '.vim_name.' on '.sys_name."\n"
 	" toolbox
 	if s:BASH_UseToolbox == 'yes'
 		let toollist = mmtoolbox#tools#GetList ( s:BASH_Toolbox )
