@@ -16,7 +16,7 @@
 "
 "       Version:  see variable g:VimSupportVersion below
 "       Created:  14.01.2012
-"      Revision:  08.07.2017
+"      Revision:  12.10.2017
 "       License:  Copyright (c) 2012-2015, Fritz Mehner
 "                 Copyright (c) 2016-2017, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
@@ -48,7 +48,7 @@ if exists("g:VimSupportVersion") || &cp
 	finish
 endif
 
-let g:VimSupportVersion= "2.4.1beta"                  " version number of this script; do not change
+let g:VimSupportVersion= "2.5alpha"                  " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " === Auxiliary functions ===   {{{1
@@ -416,6 +416,8 @@ endfunction   " ----------  end of function s:Hardcopy  ----------
 
 let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
 let s:UNIX  = has("unix")  || has("macunix") || has("win32unix")
+
+let s:NEOVIM = has("nvim")
 
 let s:installation           = '*undefined*'
 let s:plugin_dir             = ''
@@ -854,6 +856,30 @@ function! s:HelpPlugin ()
 	endtry
 endfunction    " ----------  end of function s:HelpPlugin ----------
 
+"------------------------------------------------------------------------------
+"  === Templates API ===   {{{1
+"------------------------------------------------------------------------------
+
+"------------------------------------------------------------------------------
+"  Vim_SetMapLeader: Set the local mapleader to 'g:Vim_MapLeader'.   {{{2
+"------------------------------------------------------------------------------
+function! Vim_SetMapLeader ()
+	if exists ( 'g:Vim_MapLeader' )
+		call mmtemplates#core#SetMapleader ( g:Vim_MapLeader )
+	endif
+endfunction    " ----------  end of function Vim_SetMapLeader  ----------
+
+"------------------------------------------------------------------------------
+"  Vim_ResetMapLeader: Reset the mapleader.   {{{2
+"------------------------------------------------------------------------------
+function! Vim_ResetMapLeader ()
+	if exists ( 'g:Vim_MapLeader' )
+		call mmtemplates#core#ResetMapleader ()
+	endif
+endfunction    " ----------  end of function Vim_ResetMapLeader  ----------
+" }}}2
+"------------------------------------------------------------------------------
+
 "-------------------------------------------------------------------------------
 " s:RereadTemplates : Initial loading of the templates.   {{{1
 "
@@ -1077,16 +1103,18 @@ function! s:InitMenus()
 
 	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rs                 :call Vim_Settings(0)<CR>'
 
- 	"-------------------------------------------------------------------------------
- 	" help
- 	"-------------------------------------------------------------------------------
+	"-------------------------------------------------------------------------------
+	" help
+	"-------------------------------------------------------------------------------
 
 	let ahead = 'anoremenu <silent> '.s:Vim_RootMenu.'.Help.'
 	let ihead = 'inoremenu <silent> '.s:Vim_RootMenu.'.Help.'
 
-	exe ahead.'&keyword\ help<Tab>'.esc_mapl.'hk\ \ <S-F1>    :call <SID>KeywordHelp()<CR>'
+	exe ahead.'&keyword\ help<Tab>'.esc_mapl.'hk              :call <SID>KeywordHelp()<CR>'
+	exe ihead.'&keyword\ help<Tab>'.esc_mapl.'hk         <C-C>:call <SID>KeywordHelp()<CR>'
 	exe ahead.'-SEP1-     <Nop>'
 	exe ahead.'&help\ (Vim-Support)<Tab>'.esc_mapl.'hp        :call <SID>HelpPlugin()<CR>'
+	exe ihead.'&help\ (Vim-Support)<Tab>'.esc_mapl.'hp   <C-C>:call <SID>HelpPlugin()<CR>'
 
 endfunction    " ----------  end of function s:InitMenus  ----------
 
@@ -1174,11 +1202,6 @@ function! s:CreateAdditionalMaps ()
 	nnoremap    <buffer>  <silent>  <LocalLeader>hp         :call <SID>HelpPlugin()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>hp    <C-C>:call <SID>HelpPlugin()<CR>
 
-	if has("gui_running")
-		nnoremap    <buffer>  <silent>  <S-F1>             :call <SID>KeywordHelp()<CR>
-		inoremap    <buffer>  <silent>  <S-F1>        <C-C>:call <SID>KeywordHelp()<CR>
-	endif
-
 	"-------------------------------------------------------------------------------
 	" settings - reset local leader
 	"-------------------------------------------------------------------------------
@@ -1215,11 +1238,13 @@ endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 "   -
 "-------------------------------------------------------------------------------
 function! Vim_Settings ( verbose )
-	"
+
 	if     s:MSWIN | let sys_name = 'Windows'
 	elseif s:UNIX  | let sys_name = 'UN*X'
 	else           | let sys_name = 'unknown' | endif
-	"
+	if    s:NEOVIM | let vim_name = 'nvim'
+	else           | let vim_name = has('gui_running') ? 'gvim' : 'vim' | endif
+
 	let	txt =     " Vim-Support settings\n\n"
 	" template settings: macros, style, ...
 	if exists ( 'g:Vim_Templates' )
@@ -1234,7 +1259,7 @@ function! Vim_Settings ( verbose )
 		let txt .= "                templates :  -not loaded-\n\n"
 	endif
 	" plug-in installation
-	let txt .= '      plugin installation :  '.s:installation.' on '.sys_name."\n"
+	let txt .= '      plugin installation :  '.s:installation.' in '.vim_name.' on '.sys_name."\n"
 	let txt .= "\n"
 	" templates, snippets
 	if exists ( 'g:Vim_Templates' )
@@ -1325,6 +1350,10 @@ call s:ToolMenu ( 'setup' )
 if s:Vim_LoadMenus == 'yes' && s:Vim_CreateMenusDelayed == 'no'
 	call s:AddMenus ()
 endif
+
+" user interface for remapping
+nnoremap  <silent>  <Plug>VimSupportKeywordHelp       :call <SID>KeywordHelp()<CR>
+inoremap  <silent>  <Plug>VimSupportKeywordHelp  <C-C>:call <SID>KeywordHelp()<CR>
 
 if has( 'autocmd' )
 

@@ -1,17 +1,21 @@
-*vimsupport.txt*                 Vim Support                       Jul 09 2017
+*vimsupport.txt*                 Vim Support                       Oct 12 2017
 
 Vim Support                                         *vim-support* *vimsupport*
 
-                            Plug-in version 2.4.1beta
+                             Plug-in version 2.5alpha
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
 
-Vim Support implements a Vim-IDE for Vim/gVim. It is written to considerably
-speed up writing Vim script code in a consistent style.  This is done by
-inserting complete statements, comments, idioms, and code snippets.    There
-are many additional hints and options which can improve speed and comfort when
-writing Vim scripts.
+Vim Support implements a Vim-IDE for Vim/gVim/Neovim. It is written to
+considerably speed up writing Vim script code in a consistent style. This is
+done by inserting complete statements, comments, idioms, and code snippets.
+There are many additional hints and options which can improve speed and
+comfort when writing Vim scripts.
+
+==============================================================================
+0.  TABLE OF CONTENTS                                    *vimsupport-contents*
+==============================================================================
 
  1.     Usage with GUI                      |vimsupport-usage-gvim|
  1.1     Menu 'Comments'                    |vimsupport-comments|
