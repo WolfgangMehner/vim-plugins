@@ -177,7 +177,7 @@ RELEASE NOTES FOR VERSION 1.3alpha
 ----------------------------------------------------------------------
 - Add commands :Latex, :LatexCheck, :LatexMakeindex, and :LatexBibtex to run the
   external commands.
-- Add command :LatexMakeglossaries to run 'makeglossaries'.
+- Add command :LatexMakeglossaries to run `makeglossaries`.
 - Add command :LatexView to start external viewers.
 - Add command :LatexConvert to convert documents.
 - Add command :LatexMainDoc to set the document for typesetting, viewing, ...
@@ -190,18 +190,18 @@ RELEASE NOTES FOR VERSION 1.3alpha
 - Add a converter 'eps-pdf'.
 - The templates which are inserted into new files as file skeletons can be
   specified in the templates library, via the property:
-    Latex::FileSkeleton::Script
-- Add configuration variables 'g:Latex_Ctrl_j' and 'g:Latex_Ctrl_d' to control
-  the creation of the CTRL+J and CTRL+D maps.
+    `Latex::FileSkeleton::Script`
+- Add configuration variables `g:Latex_Ctrl_j` and `g:Latex_Ctrl_d` to control
+  the creation of the `CTRL+J` and `CTRL+D` maps.
 - Improve templates. (Includes the removal of some templates!)
-- Move the filetype plug-ins for tex and make to 'latex-support/rc'.
-- Remove the definition of the maps 'CTRL+F9' and 'ALT+F9'. Add them to your
+- Move the filetype plug-ins for tex and make to `latex-support/rc`.
+- Remove the definition of the maps `CTRL+F9` and `ALT+F9`. Add them to your
   filetype plug-ins if you want to use them.
 - Minor bugfixes.
 
 Note: The filetype plug-ins have been moved, and are thus not loaded
-automatically anymore. Copy them from 'latex-support/rc' to 'ftplugin' or add
-the commands there to your own filetype plug-ins.
+automatically anymore. Copy them from `latex-support/rc` to `ftplugin`,
+or add the commands there to your own filetype plug-ins.
 
 
 RELEASE NOTES FOR OLDER VERSIONS

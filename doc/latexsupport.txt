@@ -1,4 +1,4 @@
-*latexsupport.txt*              LaTeX Support                      Jul 28 2017
+*latexsupport.txt*               LaTeX Support                     Oct 12 2017
 
 LaTeX Support                                     *latex-support* *latexsupport*
 
@@ -335,7 +335,7 @@ External tools like the typesetters and BibTeX can be run with a keystroke.
  ----------------------------------------------------------------------------
   run the typesetter         Run.save + run typesetter      <LocalLeader>rr
   run lacheck                Run.save + run lacheck         <LocalLeader>rla
-  set the main document      Run.set main document          <LocalLeader>rsd
+  set the main document      Run.set main document          <LocalLeader>rmd
   view errors from last BG   Run.view last errors           <LocalLeader>re
 
   open the resulting DVI     Run.View.DVI                   <LocalLeader>rdvi
@@ -413,9 +413,9 @@ editing "myfile.tex" in the current buffer, then the defaults are as follows:
   :LatexMakeglossaries                     myfile
   :LatexMakeindex                          myfile.idx
   :LatexView                               myfile.dvi       always (forked)
-    (with typesetter *tex)
+    (with typesetter tex or latex)
   :LatexView                               myfile.pdf       always (forked)
-    (with typesetter *latex)
+    (with typesetter pdf[la]tex or lua[la]tex)
   :LatexConvert                            myfile.FROM      yes (|+job|)
     (the default name depends on the conversion operation: FROM-TO)
  ----------------------------------------------------------------------------
@@ -919,7 +919,7 @@ Sets the global template file, path+name  (see|latexsupport-templates|).
  *g:Latex_GuiSnippetBrowser*
 Code snippet browser: 'gui', 'commandline'.
 
- *g:Latex_InsertFileProlog*
+ |g:Latex_InsertFileProlog|
 Insert file description comment in a new file ('yes', 'no').
 
 *g:Latex_Ctrl_j* *g:Latex_Ctrl_d*
@@ -1491,7 +1491,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
   -----------------------------------------------------------------
      ´rr        save + run typesetter           (ni)
      ´rla       save + run lacheck              (ni)
-     ´rsd       set main document               (ni)
+     ´rmd       set main document               (ni)
      ´re        view errors from bg. process    (ni)
      ´rdvi      view DVI                        (ni)
      ´rpdf      view PDF                        (ni)
@@ -1503,7 +1503,7 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      ´rt        choose the typesetter           (ni)
      ´rp        method for external processing  (ni)
      ´rh        hardcopy buffer to postscript   (niv)
-     ´rse       show plugin settings            (ni)
+     ´rs        show plugin settings            (ni)
 
   -----------------------------------------------------------------
    Tool Box

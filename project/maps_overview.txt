@@ -6,6 +6,7 @@ Run
   typesetter				rr
   lacheck				rla
   convert				rc
+  set main doc				rmd
  --------------------------------------------------------------------------
   compile			rc		rc
   link				rl		-
@@ -28,7 +29,7 @@ Run
   hardcopy	rh	rh	rh	rh	rh	-	rh	rh
   timestamped	-	-	-	-	-	-	rt	-
  --------------------------------------------------------------------------
-  settings	rse>rs	rs	rs	rse	rs	rs	rk>rs	rs
+  settings	rse>rs	rs	rs	rs	rs	rs	rk>rs	rs
  --------------------------------------------------------------------------
 Help
  --------------------------------------------------------------------------

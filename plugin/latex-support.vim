@@ -161,7 +161,7 @@ function! s:Redraw ( cmd_term, cmd_gui )
 endfunction    " ----------  end of function s:Redraw  ----------
 
 "-------------------------------------------------------------------------------
-" s:ShellParseArgs : Turn cmd.-line arguments into a list.   {{{1
+" s:ShellParseArgs : Turn cmd.-line arguments into a list.   {{{2
 "
 " Parameters:
 "   line - the command-line arguments to parse (string)
@@ -1106,7 +1106,12 @@ function! s:BackgroundStart ( id, cmd )
 				\ 'exit_cb'  : '<SNR>'.s:SID().'_BackgroundCB_Exit',
 				\ } )
 
-	call s:ImportantMsg ( 'Starting "'.s:Latex_Typesetter.'" in background.' )
+	if job_status ( s:BackgroundJob ) == 'fail'
+		call s:WarningMsg ( 'Starting "'.s:BackgroundType.'" failed!' )
+		unlet s:BackgroundJob
+	else
+		call s:ImportantMsg ( 'Starting "'.s:BackgroundType.'" in background.' )
+	endif
 
 	return
 endfunction    " ----------  end of function s:BackgroundStart  ----------
@@ -1228,7 +1233,7 @@ function! s:Compile ( args )
 	elseif s:Latex_MainDocument != ''
 		let source = s:Latex_MainDocument           " name of the main document
 		let dir    = fnamemodify ( source, ':p:h' )
-		exe 'lchdir '.fnameescape( dir )
+		exe 'cd '.fnameescape( dir )
 	else
 		let source = expand("%")                    " name of the file in the current buffer
 	endif
@@ -1242,20 +1247,10 @@ function! s:Compile ( args )
 
 	try
 		if s:Latex_Processing == 'background'
-			try
-				let arg_list = s:ShellParseArgs ( typesettercall ) + [ source ]
-			catch /^ShellParseArgs:Syntax:/
-				let msg = v:exception[ len( 'ShellParseArgs:Syntax:') : -1 ]
-				return s:WarningMsg ( 'syntax error while parsing typersetter arguments: '.msg,
-							\ ' - typersetter call: '.typesettercall )
-			catch /.*/
-				return s:WarningMsg (
-							\ "internal error (" . v:exception . ")",
-							\ " - occurred at " . v:throwpoint )
-			endtry
+			let arg_list = s:ShellParseArgs ( typesettercall ) + [ source ]
 
 			call s:BackgroundStart ( s:Latex_Typesetter, arg_list )
-			return
+			return       | " continue with 'finally' below
 		endif
 
 		" save current settings
@@ -1272,10 +1267,18 @@ function! s:Compile ( args )
 		let &l:makeprg     = makeprg_saved
 		let &l:errorformat = errorf_saved
 
+	catch /^ShellParseArgs:Syntax:/
+		let msg = v:exception[ len( 'ShellParseArgs:Syntax:') : -1 ]
+		return s:WarningMsg ( 'syntax error while parsing typersetter arguments: '.msg,
+					\ ' - typersetter call: '.typesettercall )
+	catch /.*/
+		return s:WarningMsg (
+					\ "internal error (" . v:exception . ")",
+					\ " - occurred at " . v:throwpoint )
 	finally
 		" jump back to the old working directory
 		if dir != ''
-			lchdir -
+			cd -
 		endif
 	endtry
 
@@ -1982,9 +1985,9 @@ function! s:CreateAdditionalLatexMaps ()
    noremap  <buffer>  <silent>  <LocalLeader>rla        :call <SID>Lacheck("")<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>rla   <C-C>:call <SID>Lacheck("")<CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>rla   <C-C>:call <SID>Lacheck("")<CR>
-   noremap  <buffer>            <LocalLeader>rsd        :LatexMainDoc<SPACE>
-  inoremap  <buffer>            <LocalLeader>rsd   <C-C>:LatexMainDoc<SPACE>
-  vnoremap  <buffer>            <LocalLeader>rsd   <C-C>:LatexMainDoc<SPACE>
+   noremap  <buffer>            <LocalLeader>rmd        :LatexMainDoc<SPACE>
+  inoremap  <buffer>            <LocalLeader>rmd   <C-C>:LatexMainDoc<SPACE>
+  vnoremap  <buffer>            <LocalLeader>rmd   <C-C>:LatexMainDoc<SPACE>
    noremap  <buffer>  <silent>  <LocalLeader>re         :call <SID>BackgroundErrors()<CR>
   inoremap  <buffer>  <silent>  <LocalLeader>re    <C-C>:call <SID>BackgroundErrors()<CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>re    <C-C>:call <SID>BackgroundErrors()<CR>
@@ -2017,8 +2020,8 @@ function! s:CreateAdditionalLatexMaps ()
 	inoremap  <buffer>            <LocalLeader>rp    <Esc>:LatexProcessing<SPACE>
 	vnoremap  <buffer>            <LocalLeader>rp    <Esc>:LatexProcessing<SPACE>
 
-	nnoremap  <buffer>  <silent>  <LocalLeader>rse        :call Latex_Settings(0)<CR>
-  "
+	nnoremap  <buffer>  <silent>  <LocalLeader>rs         :call Latex_Settings(0)<CR>
+
 	 noremap  <buffer>  <silent>  <LocalLeader>rh         :call <SID>Hardcopy("n")<CR>
 	vnoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call <SID>Hardcopy("v")<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call <SID>Hardcopy("n")<CR>
@@ -2142,7 +2145,7 @@ function! s:CreateAdditionalBibtexMaps ()
   inoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call <SID>Bibtex("")<CR>
   vnoremap  <buffer>  <silent>  <LocalLeader>rbi   <C-C>:call <SID>Bibtex("")<CR>
 	"
-	nnoremap  <buffer>  <silent>  <LocalLeader>rse        :call Latex_Settings(0)<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>rs         :call Latex_Settings(0)<CR>
   "
 	 noremap  <buffer>  <silent>  <LocalLeader>rh         :call <SID>Hardcopy("n")<CR>
 	vnoremap  <buffer>  <silent>  <LocalLeader>rh    <C-C>:call <SID>Hardcopy("v")<CR>
@@ -2301,8 +2304,8 @@ function! s:InitMenus()
 	exe ihead.'save\ +\ &run\ typesetter<Tab>'.esc_mapl.'rr  <C-C>:call <SID>Compile("")<CR><CR>'
 	exe ahead.'save\ +\ run\ &lacheck<Tab>'.esc_mapl.'rla         :call <SID>Lacheck("")<CR>'
 	exe ihead.'save\ +\ run\ &lacheck<Tab>'.esc_mapl.'rla    <C-C>:call <SID>Lacheck("")<CR>'
-	exe ahead_loud.'&set\ main\ document<Tab>'.esc_mapl.'rsd      :LatexMainDoc '
-	exe ihead_loud.'&set\ main\ document<Tab>'.esc_mapl.'rsd <C-C>:LatexMainDoc '
+	exe ahead_loud.'&set\ main\ document<Tab>'.esc_mapl.'rmd      :LatexMainDoc '
+	exe ihead_loud.'&set\ main\ document<Tab>'.esc_mapl.'rmd <C-C>:LatexMainDoc '
 	exe ahead.'view\ last\ &errors<Tab>'.esc_mapl.'re             :call <SID>BackgroundErrors()<CR>'
 	exe ihead.'view\ last\ &errors<Tab>'.esc_mapl.'re        <C-C>:call <SID>BackgroundErrors()<CR>'
 
@@ -2352,8 +2355,8 @@ function! s:InitMenus()
 	exe ihead.'&hardcopy\ to\ FILENAME\.ps<Tab>'.esc_mapl.'rh   <C-C>:call <SID>Hardcopy("n")<CR>'
 
 	exe ahead.'-SEP4-                            :'
-	exe ahead.'plug-in\ &settings<Tab>'.esc_mapl.'rse                :call Latex_Settings(0)<CR>'
-	exe ihead.'plug-in\ &settings<Tab>'.esc_mapl.'rse           <C-C>:call Latex_Settings(0)<CR>'
+	exe ahead.'plug-in\ &settings<Tab>'.esc_mapl.'rs                 :call Latex_Settings(0)<CR>'
+	exe ihead.'plug-in\ &settings<Tab>'.esc_mapl.'rs            <C-C>:call Latex_Settings(0)<CR>'
 
 	" run -> choose typesetter
 	for ts in s:Latex_TypesetterList
