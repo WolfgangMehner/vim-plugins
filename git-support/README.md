@@ -128,6 +128,7 @@ RELEASE NOTES
 RELEASE NOTES FOR VERSION 0.9.4pre
 ----------------------------------------------------------------------
 - Add command :GitTerm to execute Git in a terminal window (requires +terminal).
+- Improve :GitGrep (in case +conceal is available).
 - Minor changes.
 
 
