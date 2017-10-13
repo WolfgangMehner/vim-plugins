@@ -359,7 +359,34 @@ function! s:ImportantMsg ( ... )
 	echo join ( a:000, "\n" )
 	echohl None
 endfunction    " ----------  end of function s:ImportantMsg  ----------
+
+"-------------------------------------------------------------------------------
+" s:Redraw : Redraw depending on whether a GUI is running.   {{{2
 "
+" Example:
+"   call s:Redraw ( 'r!', '' )
+" Clear the screen and redraw in a terminal, do nothing when a GUI is running.
+"
+" Parameters:
+"   cmd_term - redraw command in terminal mode (string)
+"   cmd_gui -  redraw command in GUI mode (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:Redraw ( cmd_term, cmd_gui )
+	if has('gui_running')
+		let cmd = a:cmd_gui
+	else
+		let cmd = a:cmd_term
+	endif
+
+	let cmd = substitute ( cmd, 'r\%[edraw]', 'redraw', '' )
+	if cmd != ''
+		silent exe cmd
+	endif
+endfunction    " ----------  end of function s:Redraw  ----------
+
 "-------------------------------------------------------------------------------
 " s:OpenFile : Open a file or jump to its window.   {{{2
 "
@@ -791,12 +818,16 @@ let s:Config_DefaultValues = {
 			\ 'help.format'          : 'man',
 			\ 'status.relativePaths' : 'true'
 			\ }
-"
-" platform specifics   {{{2
-"
+
+"-------------------------------------------------------------------------------
+" == Platform specific items ==   {{{2
+"-------------------------------------------------------------------------------
+
 let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
-"
+
+let s:NEOVIM = has("nvim")
+
 if s:MSWIN
 	"
 	"-------------------------------------------------------------------------------
@@ -831,9 +862,11 @@ else
 	let s:plugin_dir = expand('<sfile>:p:h:h')
 	"
 endif
-"
-" settings   {{{2
-"
+
+"-------------------------------------------------------------------------------
+" == Various settings ==   {{{2
+"-------------------------------------------------------------------------------
+
 let s:Git_LoadMenus      = 'yes'    " load the menus?
 let s:Git_RootMenu       = '&Git'   " name of the root menu
 "
@@ -905,7 +938,7 @@ let s:DisableGitBashMessage = "git bash not avaiable:"
 let s:DisableGitBashReason  = ""
 
 " :TODO:25.09.2017 19:06:WM: enable Windows, check how to start jobs with arguments under Windows
-let s:EnabledGitTerm = has ( 'terminal' ) && ! s:MSWIN
+let s:EnabledGitTerm = has ( 'terminal' ) && ! s:MSWIN || has ( 'nvim' )
 
 let s:FoundGitKScript  = 1
 let s:GitKScriptReason = ""
@@ -1073,7 +1106,7 @@ if s:Enabled
 	command! -nargs=* -complete=file                                 GitTerm            :call <SID>GitTerm(<q-args>)
 	command! -nargs=1 -complete=customlist,<SID>EditFilesComplete    GitEdit            :call <SID>GitEdit(<q-args>)
 	command! -nargs=0                                                GitSupportHelp     :call <SID>PluginHelp("gitsupport")
-	command! -nargs=?                -bang                           GitSupportSettings :call GitS_PluginSettings(('<bang>'=='!')+str2nr(<q-args>))
+	command! -nargs=?                -bang                           GitSupportSettings :call <SID>PluginSettings(('<bang>'=='!')+str2nr(<q-args>))
 	"
 else
 	command  -nargs=*                -bang                           Git                :call <SID>Help('disabled')
@@ -1081,7 +1114,7 @@ else
 	command! -nargs=*                                                GitBuf             :call <SID>Help('disabled')
 	command! -nargs=*                                                GitHelp            :call <SID>Help('disabled')
 	command! -nargs=0                                                GitSupportHelp     :call <SID>PluginHelp("gitsupport")
-	command! -nargs=?                -bang                           GitSupportSettings :call GitS_PluginSettings(('<bang>'=='!')+str2nr(<q-args>))
+	command! -nargs=?                -bang                           GitSupportSettings :call <SID>PluginSettings(('<bang>'=='!')+str2nr(<q-args>))
 endif
 "
 " syntax highlighting   {{{2
@@ -1893,7 +1926,11 @@ function! GitS_Commit( mode, param, flags )
 			let git_edit_save = $GIT_EDITOR
 		endif
 		if g:Git_Editor == 'vim'
-			let $GIT_EDITOR = s:Git_GitBashExecutable.' '.g:Xterm_Options.' -title "git commit" -e vim '
+			if s:Git_GitBashExecutable =~ '\cxterm'
+				let $GIT_EDITOR = s:Git_GitBashExecutable.' '.g:Xterm_Options.' -title "git commit" -e vim '
+			else
+				let $GIT_EDITOR = s:Git_GitBashExecutable.' '.g:Xterm_Options.' -e vim '
+			endif
 		elseif g:Git_Editor == 'gvim'
 			let $GIT_EDITOR = 'gvim -f'
 		else
@@ -4215,10 +4252,17 @@ function! s:GitBash( param )
 		" otherwise: block editor and execute command
 		silent exe '!'.s:Git_GitBashExecutable.' --login -c '.shellescape ( 'git '.param )
 	else
-		" UNIX: block editor and execute command, wait for confirmation afterwards
-		silent exe '!'.s:Git_GitBashExecutable.' '.g:Xterm_Options
-					\ .' -title '.shellescape( title )
-					\ .' -e '.shellescape( s:Git_Executable.' '.param.' ; echo "" ; read -p "  ** PRESS ENTER **  " dummy ' )
+		" UNIX: execute command in background, wait for confirmation afterwards
+		if s:Git_GitBashExecutable =~ '\cxterm'
+			let title = ' -title '.shellescape( title )
+		else
+			let title = ''
+		endif
+
+		silent exe '!'.s:Git_GitBashExecutable.' '.g:Xterm_Options.title
+					\ .' -e '.shellescape( s:Git_Executable.' '.param.' ; echo "" ; read -p "  ** PRESS ENTER **  " dummy ' ).' &'
+
+		call s:Redraw ( 'r!', '' )                  " redraw in terminal
 	endif
 
 endfunction    " ----------  end of function s:GitBash  ----------
@@ -4238,31 +4282,38 @@ function! s:GitTerm ( arg_list )
 	let git_lang = ''
 	let git_exec = s:Git_Executable
 
-	if git_exec =~ '^LANG=\S\+\s\+\S'
-		let [ git_lang, git_exec ] = matchlist ( git_exec, '^\(LANG=\S\+\)\s\+\(.\+\)$' )[1:2]
-	endif
-	let git_exec = s:ShellParseArgs ( git_exec )
-
-	if type ( a:arg_list ) == type ( '' )
-		let arg_list = git_exec + s:ShellParseArgs ( a:arg_list )
-	else
-		let arg_list = git_exec + a:arg_list
-	endif
-
-	let title = 'git'
-	if len ( arg_list ) >= 2
-		let title = 'git '.arg_list[1]
-	endif
-
 	try
+		if git_exec =~ '^LANG=\S\+\s\+\S'
+			let [ git_lang, git_exec ] = matchlist ( git_exec, '^\(LANG=\S\+\)\s\+\(.\+\)$' )[1:2]
+		endif
+		let git_exec = s:ShellParseArgs ( git_exec )
+
+		if type ( a:arg_list ) == type ( '' )
+			let arg_list = git_exec + s:ShellParseArgs ( a:arg_list )
+		else
+			let arg_list = git_exec + a:arg_list
+		endif
+
+		let title = 'git'
+		if len ( arg_list ) >= 2
+			let title = 'git '.arg_list[1]
+		endif
+
 		if git_lang != ''
 			let lang_save = $LANG
 			let $LANG = git_lang
 		endif
 
-		let buf_nr = term_start ( arg_list, {
-					\ 'term_name' : title,
-					\ } )
+		if s:NEOVIM
+			" :TODO:11.10.2017 18:03:WM: better handling than using 'job_id', but ensures
+			" successful operation for know
+			above new
+			let job_id = termopen ( arg_list, {} )
+
+			silent exe 'file '.fnameescape( title.' -'.job_id.'-' )
+		else
+			let buf_nr = term_start ( arg_list, { 'term_name' : title, } )
+		endif
 	catch /.*/
 		return s:WarningMsg (
 					\ "internal error (" . v:exception . ")",
@@ -4327,15 +4378,17 @@ function! s:PluginHelp( topic )
 endfunction    " ----------  end of function s:PluginHelp  ----------
 
 "-------------------------------------------------------------------------------
-" GitS_PluginSettings : Print the settings on the command line.   {{{1
+" s:PluginSettings : Print the settings on the command line.   {{{1
 "-------------------------------------------------------------------------------
 "
-function! GitS_PluginSettings( verbose )
+function! s:PluginSettings( verbose )
 	"
 	if     s:MSWIN | let sys_name = 'Windows'
 	elseif s:UNIX  | let sys_name = 'UNIX'
 	else           | let sys_name = 'unknown' | endif
-	"
+	if    s:NEOVIM | let vim_name = 'nvim'
+	else           | let vim_name = has('gui_running') ? 'gvim' : 'vim' | endif
+
 	if s:Enabled | let git_e_status = ' (version '.s:GitVersion.')'
 	else         | let git_e_status = ' (not executable)'
 	endif
@@ -4346,7 +4399,7 @@ function! GitS_PluginSettings( verbose )
 	let file_options_status = filereadable ( s:Git_CmdLineOptionsFile ) ? '' : ' (not readable)'
 	"
 	let	txt = " Git-Support settings\n\n"
-				\ .'     plug-in installation :  '.s:installation.' on '.sys_name."\n"
+				\ .'     plug-in installation :  '.s:installation.' in '.vim_name.' on '.sys_name."\n"
 				\ .'           git executable :  '.s:Git_Executable.git_e_status."\n"
 				\ .'          gitk executable :  '.s:Git_GitKExecutable.gitk_e_status."\n"
 	if ! empty ( s:Git_GitKScript )
@@ -4376,7 +4429,7 @@ function! GitS_PluginSettings( verbose )
 	else
 		echo txt
 	endif
-endfunction    " ----------  end of function GitS_PluginSettings  ----------
+endfunction    " ----------  end of function s:PluginSettings  ----------
 "
 "-------------------------------------------------------------------------------
 " s:LoadCmdLineOptions : Load s:CmdLineOptions   {{{1
@@ -4655,7 +4708,7 @@ function! s:InitMenus()
 	exe ahead.'-Sep00-      :'
 
 	exe shead.'help\ (Git-Support)<TAB>:GitSupportHelp     :call <SID>PluginHelp("gitsupport")<CR>'
-	exe shead.'plug-in\ settings<TAB>:GitSupportSettings   :call GitS_PluginSettings(0)<CR>'
+	exe shead.'plug-in\ settings<TAB>:GitSupportSettings   :call <SID>PluginSettings(0)<CR>'
 
 	" Main Menu - open buffers   {{{2
 	let ahead = 'anoremenu          '.s:Git_RootMenu.'.'
