@@ -1,4 +1,4 @@
-README for lua-support.vim (Version 1.1alpha) / September 25 2017
+README for lua-support.vim (Version 1.1alpha) / October 13 2017
 ================================================================================
 
   *  INSTALLATION
@@ -8,15 +8,15 @@ README for lua-support.vim (Version 1.1alpha) / September 25 2017
   *  CREDITS
 
 
-Lua-IDE for Vim/gVim. It is written to considerably speed up writing code in
-a consistent style. This is done by inserting complete statements, idioms and
+Lua-IDE for Vim/gVim/Neovim. It is written to considerably speed up writing code
+in a consistent style. This is done by inserting complete statements, idioms and
 comments. These code fragments are provided in an extendible template library.
 This plug-in helps with running and compiling Lua scripts, applying the code
 checker, and provides quick access to the online documentation of the Lua
 functions.
 Please read the documentation.
 
-This plug-in can be used with Vim version 7.x.
+This plug-in can be used with Vim version 7.3+ and Neovim 0.2.1+.
 
 Lua is: Copyright 1994-2016 Lua.org, PUC-Rio.
 
@@ -29,7 +29,7 @@ INSTALLATION
 A system-wide installation for all users can also be done. This will have
 further effects on how the plug-in works. For a step-by-step instruction, as
 well as an explanation of the other consequences, please see the help file
-'doc/luasupport.txt' or look up the documentation via:
+`doc/luasupport.txt` or look up the documentation via:
 
       :help luasupport-system-wide
 
@@ -38,16 +38,13 @@ well as an explanation of the other consequences, please see the help file
 ----------------------------------------------------------------------
 
 The subdirectories in the zip archive lua-support.zip mirror the directory
-structure which is needed below the local installation directory
+structure which is needed below the local installation directory `$HOME/.vim/`
+(find the value of `$HOME` with `:echo $HOME` from inside Vim).
 
-      $HOME/.vim/
-
-(find the value of $HOME with `:echo $HOME` from inside Vim).
-
-(1.0) Save the template files in '$HOME/.vim/lua-support/templates/' if you
+(1.0) Save the template files in `$HOME/.vim/lua-support/templates/` if you
    have changed any of them.
 
-(1.1) Copy the zip archive lua-support.zip to $HOME/.vim and run
+(1.1) Copy the zip archive `lua-support.zip` to `$HOME/.vim` and run
 
       unzip lua-support.zip
 
@@ -61,8 +58,8 @@ structure which is needed below the local installation directory
 
       :filetype plugin on
 
-   This is the minimal content of the file '$HOME/.vimrc'. Create one if there
-   is none or use the file in $HOME/.vim/lua-support/rc as a starting point.
+   This is the minimal content of the file `$HOME/.vimrc`. Create one if there
+   is none or use the file in `$HOME/.vim/lua-support/rc` as a starting point.
 
 (1.3) Make the plug-in help accessible by typing the following command on the
    Vim command line:
@@ -74,7 +71,7 @@ structure which is needed below the local installation directory
 
       Lua -> Snippets -> template setup wizard
 
-   It will help you set up the file _runtimepath_/templates/personal.templates .
+   It will help you set up the file `_runtimepath_/templates/personal.templates`.
    The file is read by all plug-ins supporting this feature to get your personal
    details. Here is the minimal personalization (my settings as an example):
 
@@ -84,7 +81,7 @@ structure which is needed below the local installation directory
       SetMacro( 'ORGANIZATION', '' )
       SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
 
-   Use the file $HOME/.vim/templates/lua.templates to customize or add to your
+   Use the file `$HOME/.vim/templates/lua.templates` to customize or add to your
    Lua template library. It can also be set up via the wizard.
 
    This plug-in ships with templates for Lua's C-API. If you want to use them,
@@ -92,26 +89,28 @@ structure which is needed below the local installation directory
 
    (Read more about the template system in the plug-in documentation.)
 
-(1.5) Consider additional settings in the file '$HOME/.vimrc'. The files
-   customization.vimrc and customization.gvimrc are replacements or extensions
-   for your .vimrc and .gvimrc. You may want to use parts of them. The files
-   are documented.
+(1.5) Consider additional settings in the file `$HOME/.vimrc`. The files
+   `customization.vimrc` and `customization.gvimrc` are replacements or
+   extensions for your `.vimrc` and `.gvimrc`. You may want to use parts of
+   them. The files are documented.
+
+   Some settings are specifically for Lua buffers and should be placed in the
+   filetype plug-in. You may copy the file `lua-support/rc/lua.vim` into the
+   directory `$HOME/.vim/ftplugin/`, or use the settings there as additions to
+   your own filetype plug-in.
 
 
 (2) WINDOWS
 ----------------------------------------------------------------------
 
 The subdirectories in the zip archive lua-support.zip mirror the directory
-structure which is needed below the local installation directory
+structure which is needed below the local installation directory `$HOME/vimfiles/`
+(find the value of `$HOME` with `:echo $HOME` from inside Vim).
 
-      $HOME/vimfiles/
-
-(find the value of $HOME with `:echo $HOME` from inside Vim).
-
-(2.0) Save the template files in '$HOME/vimfiles/lua-support/templates/' if you
+(2.0) Save the template files in `$HOME/vimfiles/lua-support/templates/` if you
    have changed any of them.
 
-(2.1) Copy the zip archive lua-support.zip to $HOME/vimfiles and run
+(2.1) Copy the zip archive `lua-support.zip` to `$HOME/vimfiles` and run
 
       unzip lua-support.zip
 
@@ -125,9 +124,8 @@ structure which is needed below the local installation directory
 
       :filetype plugin on
 
-   This is the minimal content of the file '$HOME/_vimrc'. Create one if there
-   is none or use the file in $HOME/vimfiles/lua-support/rc as a starting
-   point.
+   This is the minimal content of the file `$HOME/_vimrc`. Create one if there
+   is none or use the file in `$HOME/vimfiles/lua-support/rc` as a starting point.
 
 (2.3) Make the plug-in help accessible by typing the following command on the
    Vim command line:
@@ -139,7 +137,7 @@ structure which is needed below the local installation directory
 
       Lua -> Snippets -> template setup wizard
 
-   It will help you set up the file _runtimepath_/templates/personal.templates .
+   It will help you set up the file `_runtimepath_/templates/personal.templates`.
    The file is read by all plug-ins supporting this feature to get your personal
    details. Here is the minimal personalization (my settings as an example):
 
@@ -149,7 +147,7 @@ structure which is needed below the local installation directory
       SetMacro( 'ORGANIZATION', '' )
       SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
 
-   Use the file $HOME/vimfiles/templates/lua.templates to customize or add to
+   Use the file `$HOME/vimfiles/templates/lua.templates` to customize or add to
    your Lua template library. It can also be set up via the wizard.
 
    This plug-in ships with templates for Lua's C-API. If you want to use them,
@@ -157,13 +155,18 @@ structure which is needed below the local installation directory
 
    (Read more about the template system in the plug-in documentation.)
 
-(2.5) Consider additional settings in the file '$HOME/_vimrc'. The files
-   customization.vimrc and customization.gvimrc are replacements or extensions
-   for your _vimrc and _gvimrc. You may want to use parts of them. The files
-   are documented.
+(2.5) Consider additional settings in the file `$HOME/_vimrc`. The files
+   `customization.vimrc` and `customization.gvimrc` are replacements or
+   extensions for your `_vimrc` and `_gvimrc`. You may want to use parts of
+   them. The files are documented.
 
-(2.6) Make sure the shell is set up correctly. The options 'shell',
-   'shellcmdflag', 'shellquote', and 'shellxquote' must be set consistently.
+   Some settings are specifically for Lua buffers and should be placed in the
+   filetype plug-in. You may copy the file `lua-support/rc/lua.vim` into the
+   directory `$HOME/vimfiles/ftplugin/`, or use the settings there as additions
+   to your own filetype plug-in.
+
+(2.6) Make sure the shell is set up correctly. The options `shell`,
+   `shellcmdflag`, `shellquote`, and `shellxquote` must be set consistently.
    Compare `:help luasupport-troubleshooting`.
 
 
@@ -178,19 +181,12 @@ There are a lot of features and options which can be used and influenced:
   *  quick access to the online documentation
   *  removing the Lua menu
 
-Look at the Lua-Support help with:
+Actions differ for different modes. Please read the documentation:
 
       :help luasupport
 
-               +-----------------------------------------------+
-               | +-------------------------------------------+ |
-               | |    ** PLEASE READ THE DOCUMENTATION **    | |
-               | |    Actions differ for different modes!    | |
-               | +-------------------------------------------+ |
-               +-----------------------------------------------+
-
 Any problems? See the TROUBLESHOOTING section at the end of the help file
-'doc/luasupport.txt'.
+`doc/luasupport.txt`.
 
 
 --------------------------------------------------------------------------------
@@ -203,6 +199,8 @@ RELEASE NOTES FOR VERSION 1.1alpha
 - Adapt for running under Neovim more smoothly.
 - Add output method 'terminal' for running scripts in a terminal window
   (requires +terminal).
+- Rename output methods 'vim-io' to 'cmd-line', and 'vim-qf' to 'quickfix',
+  for more consistency (old settings will still work).
 - The templates which are inserted into new files as file skeletons can be
   specified in the templates library, via the property:
     `Lua::FileSkeleton::Script`
@@ -219,7 +217,7 @@ to your own filetype plug-in.
 
 RELEASE NOTES FOR OLDER VERSIONS
 ----------------------------------------------------------------------
--> see file 'lua-support/doc/ChangeLog'
+-> see file `lua-support/doc/ChangeLog`
 
 
 --------------------------------------------------------------------------------

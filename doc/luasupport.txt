@@ -1,4 +1,4 @@
-*luasupport.txt*                 Lua Support                       Sep 25 2017
+*luasupport.txt*                 Lua Support                       Oct 13 2017
 
 Lua Support                                          *lua-support* *luasupport*
 
@@ -598,7 +598,7 @@ set in the .vimrc file.
  ----------------------------------------------------------------------------
   |g:Lua_BinPath|             ''            the path to the Lua binaries (^1)
   |g:Lua_Executable|          'lua'         the lua executable (^1)
-  |g:Lua_OutputMethod|        'vim-io'      the method for running Lua
+  |g:Lua_OutputMethod|        'cmd-line'    the method for running Lua
   |g:Lua_CompilerExec|        'luac'        the luac executable (^1)
   |g:Lua_CompiledExtension|   'luac'        extension used for compile chunks
 
@@ -720,12 +720,13 @@ The initial method for output redirection can be set via g:Lua_OutputMethod: >
 Afterwards, it can be changed on the fly using the menu entries or the map
 "\ro" (see |luasupport-usage-run|).
 
-Use the mode 'vim-io' for scripts with little input and output. The mode
+Use the mode 'cmd-line' for scripts with little input and output. The mode
 'xterm' runs the command in a separate xterm, which also supports input, but
 does not block the editor. The output is available until the window is closed.
-The modes 'vim-qf' and 'buffer' do not support interactive input, but provide
-quickfix support. With 'buffer' the output is redirected into a buffer, named
-"Lua Output", and thus is available for detailed analysis afterwards.
+The modes 'quickfix' and 'buffer' do not support interactive input, but
+provide quickfix support. With 'buffer' the output is redirected into a
+buffer, named "Lua Output", and thus is available for detailed analysis
+afterwards.
 
 The command can be run in a |terminal| window, if Vim is compiled with the
 |+terminal| feature. The output can be loaded into quickfix, using the maps
@@ -735,8 +736,8 @@ The possible settings are listed below:
 
   Value               Meaning
  ----------------------------------------------------------------------------
-  'vim-io' (default)  run on the Vim command-line (supports input operations)
-  'vim-qf'            print output on the Vim cmd.-line (supports |quickfix|)
+  'cmd-line' (deflt)  run on the Vim command-line (supports input operations)
+  'quickfix'          print output or start quickfix (supports |quickfix|)
   'buffer'            redirect the output into a buffer (supports |quickfix|)
   'xterm' (^1)        run in a separate xterm (supports input operations)
 
