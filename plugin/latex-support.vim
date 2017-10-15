@@ -508,7 +508,9 @@ endfunction   " ----------  end of function s:Hardcopy  ----------
 
 let s:MSWIN = has("win16") || has("win32")   || has("win64") || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
-"
+
+let s:NEOVIM = has("nvim")
+
 let s:installation             = '*undefined*'
 let s:Latex_GlobalTemplateFile = ''
 let s:Latex_LocalTemplateFile  = ''
@@ -738,7 +740,7 @@ let s:Latex_ViewerCall = {
 let s:Latex_ProcessingList = [ 'foreground' ]
 
 " :TODO:25.09.2017 17:17:WM: enable Windows, check how to start jobs with arguments under Windows
-if has('job') && ! s:MSWIN
+if has('job') && ! s:MSWIN || s:NEOVIM
 	call add ( s:Latex_ProcessingList, 'background' )
 endif
 
@@ -1080,10 +1082,16 @@ endfunction    " ----------  end of function s:WizardTabular  ----------
 
 let s:BackgroundType   = ''                     " type of the job
 let s:BackgroundStatus = -1                     " status of the last job
-let s:BackgroundOutput = []                     " output of the last job
+let s:BackgroundOutStd = []                     " output of the last job
+let s:BackgroundOutErr = []                     " output of the last job
 
 "-------------------------------------------------------------------------------
-" s:BackgroundStart : Start a background job.   {{{2
+" Neovim   {{{2
+"-------------------------------------------------------------------------------
+if s:NEOVIM
+
+"-------------------------------------------------------------------------------
+" s:BackgroundStart : Start a background job.   {{{3
 "
 " Parameters:
 "   id - the job ID (string)
@@ -1098,7 +1106,84 @@ function! s:BackgroundStart ( id, cmd )
 
 	let s:BackgroundType   = a:id
 	let s:BackgroundStatus = -1
-	let s:BackgroundOutput = []
+	let s:BackgroundOutStd = []
+	let s:BackgroundOutErr = []
+
+	let s:BackgroundJob = jobstart ( a:cmd,
+				\ {
+				\ 'on_stdout' : '<SNR>'.s:SID().'_BackgroundCB_IO',
+				\ 'on_stderr' : '<SNR>'.s:SID().'_BackgroundCB_IO',
+				\ 'on_exit'   : '<SNR>'.s:SID().'_BackgroundCB_Exit',
+				\ } )
+
+	if s:BackgroundJob <= 0
+		call s:WarningMsg ( 'Starting "'.s:BackgroundType.'" failed!' )
+		unlet s:BackgroundJob
+	else
+		call s:ImportantMsg ( 'Starting "'.s:BackgroundType.'" in background.' )
+	endif
+
+	return
+endfunction    " ----------  end of function s:BackgroundStart  ----------
+
+"-------------------------------------------------------------------------------
+" s:BackgroundCB_IO : Callback for output from the background job.   {{{3
+"
+" Parameters:
+"   chn - the channel (channel)
+"   msg - the new line (string)
+"-------------------------------------------------------------------------------
+function! s:BackgroundCB_IO ( job_id, data, event )
+	if a:event == 'stdout'
+		let s:BackgroundOutStd += a:data
+	elseif a:event == 'stdout'
+		let s:BackgroundOutErr += a:data
+	endif
+endfunction    " ----------  end of function s:BackgroundCB_IO  ----------
+
+"-------------------------------------------------------------------------------
+" s:BackgroundCB_Exit : Callback for a finished background job.   {{{3
+"
+" Parameters:
+"   job - the job (job)
+"   status - the status (number)
+"-------------------------------------------------------------------------------
+function! s:BackgroundCB_Exit ( job_id, data, event )
+	if a:data == 0
+		call s:ImportantMsg ( 'Job "'.s:BackgroundType.'" finished successfully.' )
+	else
+		call s:ImportantMsg ( 'Job "'.s:BackgroundType.'" failed (exit status '.a:data.').' )
+	endif
+
+	let s:BackgroundStatus = a:data
+	unlet s:BackgroundJob
+endfunction    " ----------  end of function s:BackgroundCB_Exit  ----------
+
+" }}}3
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" Vim/gVim   {{{2
+"-------------------------------------------------------------------------------
+else   " ! s:NEOVIM
+
+"-------------------------------------------------------------------------------
+" s:BackgroundStart : Start a background job.   {{{3
+"
+" Parameters:
+"   id - the job ID (string)
+"   cmd - the shell command to run (string, or list of strings)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:BackgroundStart ( id, cmd )
+	if exists ( 's:BackgroundJob' )
+		return s:WarningMsg ( 'Job "'.s:BackgroundType.'" still running.' )
+	endif
+
+	let s:BackgroundType   = a:id
+	let s:BackgroundStatus = -1
+	let s:BackgroundOutStd = []
 
 	let s:BackgroundJob = job_start ( a:cmd,
 				\ {
@@ -1117,18 +1202,18 @@ function! s:BackgroundStart ( id, cmd )
 endfunction    " ----------  end of function s:BackgroundStart  ----------
 
 "-------------------------------------------------------------------------------
-" s:BackgroundCB_IO : Callback for output from the background job.   {{{2
+" s:BackgroundCB_IO : Callback for output from the background job.   {{{3
 "
 " Parameters:
 "   chn - the channel (channel)
 "   msg - the new line (string)
 "-------------------------------------------------------------------------------
 function! s:BackgroundCB_IO ( chn, msg )
-	call add ( s:BackgroundOutput, a:msg )
+	call add ( s:BackgroundOutStd, a:msg )
 endfunction    " ----------  end of function s:BackgroundCB_IO  ----------
 
 "-------------------------------------------------------------------------------
-" s:BackgroundCB_Exit : Callback for a finished background job.   {{{2
+" s:BackgroundCB_Exit : Callback for a finished background job.   {{{3
 "
 " Parameters:
 "   job - the job (job)
@@ -1145,6 +1230,10 @@ function! s:BackgroundCB_Exit ( job, status )
 	unlet s:BackgroundJob
 endfunction    " ----------  end of function s:BackgroundCB_Exit  ----------
 
+" }}}3
+"-------------------------------------------------------------------------------
+endif
+
 "-------------------------------------------------------------------------------
 " s:BackgroundErrors : Quickfix background errors.   {{{2
 "-------------------------------------------------------------------------------
@@ -1152,7 +1241,7 @@ function! s:BackgroundErrors ()
 
 	if exists ( 's:BackgroundJob' )
 		return s:WarningMsg ( 'Job "'.s:BackgroundType.'" still running.' )
-	elseif len ( s:BackgroundOutput ) == 0
+	elseif len ( s:BackgroundOutStd ) == 0 && len ( s:BackgroundOutErr ) == 0
 		return s:WarningMsg ( 'Not output for last job.' )
 	endif
 
@@ -1164,7 +1253,7 @@ function! s:BackgroundErrors ()
 	" run typesetter
 	let &g:errorformat = s:Latex_LatexErrorf
 
-	let errors = join ( s:BackgroundOutput, "\n" )
+	let errors = join ( s:BackgroundOutStd + s:BackgroundOutErr, "\n" )
 	silent exe 'cgetexpr errors'
 
 	" restore current settings
@@ -2469,7 +2558,9 @@ function! Latex_Settings ( verbose )
 	if     s:MSWIN | let sys_name = 'Windows'
 	elseif s:UNIX  | let sys_name = 'UN*X'
 	else           | let sys_name = 'unknown' | endif
-	"
+	if    s:NEOVIM | let vim_name = 'nvim'
+	else           | let vim_name = has('gui_running') ? 'gvim' : 'vim' | endif
+
 	let	txt = " LaTeX-Support settings\n\n"
 	" template settings: macros, style, ...
 	if exists ( 'g:Latex_Templates' )
@@ -2484,7 +2575,7 @@ function! Latex_Settings ( verbose )
 		let txt .= "                templates :  -not loaded-\n\n"
 	endif
 	" plug-in installation
-	let txt .= '      plugin installation :  '.s:installation.' on '.sys_name."\n"
+	let txt .= '      plugin installation :  '.s:installation.' in '.vim_name.' on '.sys_name."\n"
 	" toolbox
 	if s:Latex_UseToolbox == 'yes'
 		let toollist = mmtoolbox#tools#GetList ( s:Latex_Toolbox )

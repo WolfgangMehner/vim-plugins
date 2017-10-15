@@ -1,4 +1,4 @@
-README for latex-support.vim (Version 1.3alpha) / July 28 2017
+README for latex-support.vim (Version 1.3alpha) / October 15 2017
 ================================================================================
 
   *  INSTALLATION
@@ -175,6 +175,7 @@ RELEASE NOTES
 
 RELEASE NOTES FOR VERSION 1.3alpha
 ----------------------------------------------------------------------
+- Adapt for running under Neovim more smoothly.
 - Add commands :Latex, :LatexCheck, :LatexMakeindex, and :LatexBibtex to run the
   external commands.
 - Add command :LatexMakeglossaries to run `makeglossaries`.
