@@ -43,7 +43,7 @@ endif
 if &cp || ( exists('g:CMake_Version') && ! exists('g:CMake_DevelopmentOverwrite') )
 	finish
 endif
-let g:CMake_Version= '0.9.2'     " version number of this script; do not change
+let g:CMake_Version= '0.9.3'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions   {{{1
@@ -291,7 +291,7 @@ let s:ErrorFormat_MakeAdditions =
 "
 " policy list {{{2
 "
-let s:Policies_Version = '2.8.12'
+let s:Policies_Version = '3.10'
 let s:Policies_List = [
 			\ [ 'CMP0000', 'A minimum required CMake version must be specified.', '2.6.0' ],
 			\ [ 'CMP0001', 'CMAKE_BACKWARDS_COMPATIBILITY should no longer be used.', '2.6.0' ],
@@ -309,7 +309,7 @@ let s:Policies_List = [
 			\ [ 'CMP0013', 'Duplicate binary directories are not allowed.', '2.8.0' ],
 			\ [ 'CMP0014', 'Input directories must have CMakeLists.txt.', '2.8.0' ],
 			\ [ 'CMP0015', 'link_directories() treats paths relative to the source dir.', '2.8.1' ],
-			\ [ 'CMP0016', 'target_link_libraries() reports error if only argument is not a target.', '2.8.3' ],
+			\ [ 'CMP0016', 'target_link_libraries() reports error if its only argument is not a target.', '2.8.3' ],
 			\ [ 'CMP0017', 'Prefer files from the CMake module directory when including from there.', '2.8.4' ],
 			\ [ 'CMP0018', 'Ignore CMAKE_SHARED_LIBRARY_<Lang>_FLAGS variable.', '2.8.9' ],
 			\ [ 'CMP0019', 'Do not re-expand variables in include and link information.', '2.8.11' ],
@@ -317,6 +317,54 @@ let s:Policies_List = [
 			\ [ 'CMP0021', 'Fatal error on relative paths in INCLUDE_DIRECTORIES target property.', '2.8.12' ],
 			\ [ 'CMP0022', 'INTERFACE_LINK_LIBRARIES defines the link interface.', '2.8.12' ],
 			\ [ 'CMP0023', 'Plain and keyword target_link_libraries signatures cannot be mixed.', '2.8.12' ],
+			\ [ 'CMP0024', 'Disallow include export result.', '3.0' ],
+			\ [ 'CMP0025', 'Compiler id for Apple Clang is now AppleClang.', '3.0' ],
+			\ [ 'CMP0026', 'Disallow use of the LOCATION property for build targets.', '3.0' ],
+			\ [ 'CMP0027', 'Conditionally linked imported targets with missing include directories.', '3.0' ],
+			\ [ 'CMP0028', 'Double colon in target name means ALIAS or IMPORTED target.', '3.0' ],
+			\ [ 'CMP0029', 'The subdir_depends() command should not be called.', '3.0.' ],
+			\ [ 'CMP0030', 'The use_mangled_mesa() command should not be called.', '3.0' ],
+			\ [ 'CMP0031', 'The load_command() command should not be called.', '3.0' ],
+			\ [ 'CMP0032', 'The output_required_files() command should not be called.', '3.0' ],
+			\ [ 'CMP0033', 'The export_library_dependencies()command should not be called.', '3.0' ],
+			\ [ 'CMP0034', 'The utility_source() command should not be called.', '3.0' ],
+			\ [ 'CMP0035', 'The variable_requires() command should not be called.', '3.0' ],
+			\ [ 'CMP0036', 'The build_name() command should not be called.', '3.0' ],
+			\ [ 'CMP0037', 'Target names should not be reserved and should match a validity pattern.', '3.0' ],
+			\ [ 'CMP0038', 'Targets may not link directly to themselves.', '3.0' ],
+			\ [ 'CMP0039', 'Utility targets may not have link dependencies.', '3.0' ],
+			\ [ 'CMP0040', 'The target in the TARGET signature of add_custom_command() must exist and must be defined in current directory.', '3.0' ],
+			\ [ 'CMP0041', 'Error on relative include with generator expression.', '3.0' ],
+			\ [ 'CMP0042', 'MACOSX_RPATH is enabled by default.', '3.0' ],
+			\ [ 'CMP0043', 'Ignore COMPILE_DEFINITIONS_<Config> properties', '3.0' ],
+			\ [ 'CMP0044', 'Case sensitive <LANG>_COMPILER_ID generator expressions', '3.0' ],
+			\ [ 'CMP0045', 'Error on non-existent target in get_target_property.', '3.0' ],
+			\ [ 'CMP0046', 'Error on non-existent dependency in add_dependencies.', '3.0' ],
+			\ [ 'CMP0047', 'Use QCC compiler id for the qcc drivers on QNX.', '3.0' ],
+			\ [ 'CMP0048', 'The project() command manages VERSION variables.', '3.0' ],
+			\ [ 'CMP0049', 'Do not expand variables in target source entries.', '3.0' ],
+			\ [ 'CMP0050', 'Disallow add_custom_command SOURCE signatures.', '3.0' ],
+			\ [ 'CMP0051', 'List TARGET_OBJECTS in SOURCES target property.', '3.1' ],
+			\ [ 'CMP0052', 'Reject source and build dirs in installed INTERFACE_INCLUDE_DIRECTORIES.', '3.1' ],
+			\ [ 'CMP0053', 'Simplify variable reference and escape sequence evaluation.', '3.1' ],
+			\ [ 'CMP0054', 'Only interpret if() arguments as variables or keywords when unquoted.', '3.1' ],
+			\ [ 'CMP0055', 'Strict checking for the break() command.', '3.2' ],
+			\ [ 'CMP0056', 'Honor link flags in try_compile() source-file signature.', '3.2' ],
+			\ [ 'CMP0057', 'Support new if() IN_LIST operator.', '3.3' ],
+			\ [ 'CMP0058', 'Ninja requires custom command byproducts to be explicit.', '3.3' ],
+			\ [ 'CMP0059', 'Do not treat DEFINITIONS as a built-in directory property.', '3.3' ],
+			\ [ 'CMP0060', 'Link libraries by full path even in implicit directories.', '3.3' ],
+			\ [ 'CMP0061', 'CTest does not by default tell make to ignore errors (-i).', '3.3' ],
+			\ [ 'CMP0062', 'Disallow install() of export() result.', '3.3' ],
+			\ [ 'CMP0063', 'Honor visibility properties for all target types.', '3.3' ],
+			\ [ 'CMP0064', 'Recognize TEST as a operator for the if() command.', '3.4' ],
+			\ [ 'CMP0065', 'Do not add flags to export symbols from executables without the ENABLE_EXPORTS target property.', '3.4' ],
+			\ [ 'CMP0066', 'Honor per-config flags in try_compile() source-file signature.', '3.7' ],
+			\ [ 'CMP0067', 'Honor language standard in try_compile() source-file signature.', '3.8' ],
+			\ [ 'CMP0068', 'RPATH settings on macOS do not affect install_name.', '3.9' ],
+			\ [ 'CMP0069', 'INTERPROCEDURAL_OPTIMIZATION is enforced when enabled.', '3.9' ],
+			\ [ 'CMP0070', 'Define file(GENERATE) behavior for relative paths.', '3.10' ],
+			\ [ 'CMP0071', 'Let AUTOMOC and AUTOUIC process GENERATED files.', '3.10' ],
 			\ [ 'CMP????', 'There might be more policies not mentioned here, since this list is not maintained automatically.', '?.?.?' ],
 			\ ]
 "
@@ -605,9 +653,9 @@ function! s:Run ( args, cmake_only )
 	"
 	silent exe 'update'   | " write source file if necessary
 	cclose
-	"
-	exe	'lchdir '.fnameescape( s:BuildLocation )
-	"
+
+	exe	'cd '.fnameescape( s:BuildLocation )
+
 	if a:cmake_only == 1
 		"
 		let g:CMakeDebugStr .= 'CMake only, '   " debug
@@ -729,11 +777,11 @@ function! s:Run ( args, cmake_only )
 		endif
 		"
 	endif
-	"
-	lchdir -
-	"
+
+	cd -
+
 	let g:CMakeDebugStr .= 'done'   " debug
-	"
+
 endfunction    " ----------  end of function s:Run  ----------
 "
 "-------------------------------------------------------------------------------
@@ -766,11 +814,41 @@ endfunction    " ----------  end of function s:PolicyListText  ----------
 
 "-------------------------------------------------------------------------------
 " s:OpenBuffer : Open a scratch buffer.   {{{1
+"
+" If a buffer called 'buf_name' already exists, jump to that buffer. Otherwise,
+" open a buffer of the given name an set it up as a scratch buffer. It is
+" deleted after the window is closed.
+"
+" Options:
+" - showdir: the directory will be shown in the buffer list (set buf=nowrite)
+"
+" Settings:
+" - buftype=nofile/nowrite (depending on the option 'showdir')
+" - bufhidden=wipe
+" - swapfile=0
+" - tabstop=8
+"
+" Parameters:
+"   buf_name - name of the buffer (string)
+"   ... - options (string)
+" Returns:
+"   opened -  true, if a new buffer was opened (integer)
 "-------------------------------------------------------------------------------
-function! s:OpenBuffer ( buf_name )
+function! s:OpenBuffer ( buf_name, ... )
 
-	" a buffer like this already existing?
-	if bufnr ( a:buf_name ) != -1
+	" options
+	let btype = 'nofile'
+
+	for val in a:000
+		if val == 'showdir'
+			let btype = 'nowrite'                     " like 'nofile', but the directory is shown in the buffer list
+		else
+			call s:ErrorMsg ( 'CMake : Unknown buffer option: '.val )
+		endif
+	endfor
+
+	" a buffer like this already opened on the current tab page?
+	if bufwinnr ( a:buf_name ) != -1
 		" yes -> go to the window containing the buffer
 		exe bufwinnr( a:buf_name ).'wincmd w'
 		return 0
@@ -781,15 +859,16 @@ function! s:OpenBuffer ( buf_name )
 
 	" buffer exists elsewhere?
 	if bufnr ( a:buf_name ) != -1
-		" yes -> settings of the new buffer
+		" yes -> reuse it
 		silent exe 'edit #'.bufnr( a:buf_name )
 		return 0
 	else
 		" no -> settings of the new buffer
-		silent exe 'file '.escape( a:buf_name, ' ' )
-		setlocal noswapfile
-		setlocal bufhidden=wipe
-		setlocal tabstop=8
+		silent exe 'file '.fnameescape( a:buf_name )
+		let &l:buftype   = btype
+		let &l:bufhidden = 'wipe'
+		let &l:swapfile  = 0
+		let &l:tabstop   = 8
 	endif
 
 	return 1
@@ -797,6 +876,13 @@ endfunction    " ----------  end of function s:OpenBuffer  ----------
 
 "-------------------------------------------------------------------------------
 " s:UpdateBuffer : Update a scratch buffer.   {{{1
+"
+" Replace the text in the buffer with 'text'.
+"
+" Parameters:
+"   text - the text to place in the buffer (string)
+" Returns:
+"   -
 "-------------------------------------------------------------------------------
 function! s:UpdateBuffer ( text )
 
@@ -957,22 +1043,22 @@ function! s:ShowCache ( args )
 	endif
 
 	" get the cache
-	exe	'lchdir '.fnameescape( s:BuildLocation )
+	exe	'cd '.fnameescape( s:BuildLocation )
 
 	let [ success, text ] = s:TextFromSystem ( shellescape( s:CMake_Executable ).' -N '.args )
-
-	lchdir -
 
 	if success == 0
 		call s:WarningMsg ( 'CMake : Could not obtain the cache.' )
 		return
 	endif
 
-	if s:OpenBuffer ( 'CMake - cache' )
+	if s:OpenBuffer ( 'CMake - cache', 'showdir' )
 		silent exe 'nmap <silent> <buffer> q             :close<CR>'
 	endif
 
 	call s:UpdateBuffer ( text )
+
+	cd -
 endfunction    " ----------  end of function s:ShowCache  ----------
 
 "-------------------------------------------------------------------------------
