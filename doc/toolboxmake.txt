@@ -1,4 +1,4 @@
-*toolboxmake.txt*                  Make Tool                       Oct 07 2016
+*toolboxmake.txt*                  Make Tool                       Oct 16 2017
 
 Make Tool                                                       *toolbox-make*
 
@@ -178,6 +178,8 @@ A.  CHANGE LOG                                       *toolbox-make-change-log*
 
 - Change: If make is not executable, still provide the functionality for
   finding targets in a Makefile.
+- Change: Do not use :lchdir internally, switch to :cd, which has less
+  side-effects.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 1.1

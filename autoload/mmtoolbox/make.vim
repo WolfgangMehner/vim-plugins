@@ -13,7 +13,7 @@
 "  Organization:  
 "       Version:  see variable g:Make_Version below
 "       Created:  06.05.2013
-"      Revision:  07.10.2016
+"      Revision:  17.10.2017
 "       License:  Copyright (c) 2013-2015, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -367,11 +367,11 @@ function! s:Run ( args )
 	if s:Makefile == ''
 		exe 'make '.cmdlinearg
 	else
-		exe 'lchdir '.fnameescape( fnamemodify( s:Makefile, ':p:h' ) )
-		"
+		exe 'cd '.fnameescape( fnamemodify( s:Makefile, ':p:h' ) )
+
 		exe 'make -f '.shellescape( s:Makefile ).' '.cmdlinearg
-		"
-		lchdir -
+
+		cd -
 	endif
 	"
 	botright cwindow
