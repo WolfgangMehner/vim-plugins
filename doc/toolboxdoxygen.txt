@@ -1,8 +1,8 @@
-*toolboxdoxygen.txt*              Doxygen Tool                     Feb 14 2016
+*toolboxdoxygen.txt*              Doxygen Tool                     Oct 16 2017
 
 Doxygen Tool                                                 *toolbox-doxygen*
 
-                            Plug-in version 0.9.2
+                            Plug-in version 0.9.3
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -289,6 +289,13 @@ The executable of doxywizard is set by g:Doxygen_WizardExec: >
 ==============================================================================
 A.  CHANGE LOG                                    *toolbox-doxygen-change-log*
 ==============================================================================
+
+------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 0.9.3
+------------------------------------------------------------------------------
+
+- Change: Do not use :lchdir internally, switch to :cd, which has less
+  side-effects.
 
 ------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.2

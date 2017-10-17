@@ -13,7 +13,7 @@
 "  Organization:  
 "       Version:  see variable g:Doxygen_Version below
 "       Created:  10.06.2012
-"      Revision:  30.06.2014
+"      Revision:  17.10.2017
 "       License:  Copyright (c) 2012-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -29,7 +29,7 @@
 "-------------------------------------------------------------------------------
 " Basic checks.   {{{1
 "-------------------------------------------------------------------------------
-"
+
 " need at least 7.0
 if v:version < 700
   echohl WarningMsg
@@ -37,14 +37,14 @@ if v:version < 700
 	echohl None
   finish
 endif
-"
+
 " prevent duplicate loading
 " need compatible
 if &cp || ( exists('g:Doxygen_Version') && ! exists('g:Doxygen_DevelopmentOverwrite') )
 	finish
 endif
-let g:Doxygen_Version= '0.9.2'     " version number of this script; do not change
-"
+let g:Doxygen_Version= '0.9.3'     " version number of this script; do not change
+
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
 "-------------------------------------------------------------------------------
@@ -509,9 +509,9 @@ function! s:Run ( args )
 		let cmdlinearg = a:args
 	endif
 	" :TODO:27.10.2013 19:28:WM: 'cmdlinearg' is not correctly escaped for use under Windows
-	"
-	exe	'lchdir '.fnameescape( fnamemodify( s:ConfigFile, ':p:h' ) )
-	"
+
+	exe	'cd '.fnameescape( fnamemodify( s:ConfigFile, ':p:h' ) )
+
 	let warn_log_file_configured = ''
 	"
 	if ! filereadable( s:ConfigFile )
@@ -535,12 +535,12 @@ function! s:Run ( args )
 		" write both the log and the warning file
 		silent exe ':!'.shellescape( s:Doxygen_Executable ).' '.cmdlinearg.' 1> '.shellescape( s:LogFile ).' 2> '.shellescape( s:WarningFile )
 	endif
-	"
-	lchdir -
-	"
+
+	cd -
+
 	" process the warnings
 	call s:Warnings ()
-	"
+
 endfunction    " ----------  end of function s:Run  ----------
 "
 "-------------------------------------------------------------------------------
@@ -589,18 +589,18 @@ endfunction    " ----------  end of function s:EditConfig  ----------
 " s:ViewLog : Edit the Doxygen configuration file.   {{{1
 "-------------------------------------------------------------------------------
 function! s:ViewLog ()
-	"
+
 	" go to the directory of 's:ConfigFile', so that the standard for 's:LogFile' works
-	exe	'lchdir '.fnameescape( fnamemodify( s:ConfigFile, ':p:h' ) )
-	"
+	exe	'cd '.fnameescape( fnamemodify( s:ConfigFile, ':p:h' ) )
+
 	if ! filereadable ( s:LogFile )
 		return s:ErrorMsg ( 'Doxygen : File not readable: '.s:LogFile )
 	endif
-	"
+
 	let logfile = fnamemodify( s:LogFile, ":p" )
-	"
-	lchdir -
-	"
+
+	cd -
+
 	exe 'sview '.fnameescape( logfile )
 endfunction    " ----------  end of function s:ViewLog  ----------
 "
@@ -608,13 +608,13 @@ endfunction    " ----------  end of function s:ViewLog  ----------
 " s:Warnings : Send the warning file through QuickFix.   {{{1
 "-------------------------------------------------------------------------------
 function! s:Warnings ()
-	"
+
 	silent exe 'update'   | " write source file if necessary
 	cclose
-	"
+
 	" go to the directory of 's:ConfigFile', so that the standard for " 's:WarningFile' works
-	exe	'lchdir '.fnameescape( fnamemodify( s:ConfigFile, ':p:h' ) )
-	"
+	exe	'cd '.fnameescape( fnamemodify( s:ConfigFile, ':p:h' ) )
+
 	" any errors?
 	if getfsize( s:WarningFile ) > 0
 		"
@@ -634,9 +634,9 @@ function! s:Warnings ()
 		redraw                                      " redraw after cclose, before echoing
 		call s:ImportantMsg ( "Doxygen : no warnings/errors" )
 	endif
-	"
-	lchdir -
-	"
+
+	cd -
+
 endfunction    " ----------  end of function s:Warnings  ----------
 
 "-------------------------------------------------------------------------------
