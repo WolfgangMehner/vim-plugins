@@ -33,6 +33,11 @@ Vim
 
 for NAME in $LIST; do
 	cd $NAME"Support"
+
+	if [ ${?} -ne 0 ] ; then
+		continue
+	fi
+
 	printf "%-6s : %s (%s )\n" $NAME "$(git log -n1 --date=short --pretty=format:"%ad : %s")" "$(git diff --shortstat)"
 	cd ..
 done | sort -k 2

@@ -40,7 +40,8 @@ for NAME in $LIST; do
 		echo ""
 		continue
 	fi
-	#git fetch
+
+	git fetch
 
 	echo ""
 	cd ..
@@ -49,6 +50,11 @@ done
 for NAME in $LIST; do
 	echo $NAME"Support"
 	cd $NAME"Support"
+
+	if [ ${?} -ne 0 ] ; then
+		echo ""
+		continue
+	fi
 
 	SHORT_STAT=$(git diff --shortstat)
 	SHA_MASTER=$(git for-each-ref --format='%(objectname)' refs/heads/master)
