@@ -684,7 +684,9 @@ function! s:Run ( args, cmake_only )
 		let &g:errorformat = errorf_saved
 		"
 		let g:CMakeDebugStr .= 'success: '.( v:shell_error == 0 ).', '   " debug
-		"
+
+		cd -
+
 		" errors occurred?
 		if v:shell_error != 0
 			botright cwindow
@@ -692,7 +694,6 @@ function! s:Run ( args, cmake_only )
 			redraw                                    " redraw after cclose, before echoing
 			call s:ImportantMsg ( 'CMake : CMake finished successfully.' )
 		endif
-		"
 	else
 		"
 		let g:CMakeDebugStr .= 'CMake & make, '   " debug
@@ -753,7 +754,9 @@ function! s:Run ( args, cmake_only )
 		endif
 		"
 		let g:CMakeDebugStr .= 'success: '.( v:shell_error == 0 ).', '   " debug
-		"
+
+		cd -
+
 		" errors occurred?
 		if v:shell_error != 0
 			botright cwindow
@@ -775,10 +778,7 @@ function! s:Run ( args, cmake_only )
 				call s:ImportantMsg ( 'CMake : make finished successfully.' )
 			endif
 		endif
-		"
 	endif
-
-	cd -
 
 	let g:CMakeDebugStr .= 'done'   " debug
 
@@ -864,15 +864,29 @@ function! s:OpenBuffer ( buf_name, ... )
 		return 0
 	else
 		" no -> settings of the new buffer
-		silent exe 'file '.fnameescape( a:buf_name )
 		let &l:buftype   = btype
 		let &l:bufhidden = 'wipe'
 		let &l:swapfile  = 0
 		let &l:tabstop   = 8
+		call s:RenameBuffer( a:buf_name )
 	endif
 
 	return 1
 endfunction    " ----------  end of function s:OpenBuffer  ----------
+
+"-------------------------------------------------------------------------------
+" s:RenameBuffer : Rename a scratch buffer.   {{{1
+"
+" Parameters:
+"   name - the new name (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+function! s:RenameBuffer ( name )
+
+	silent exe 'keepalt file '.fnameescape( a:name )
+
+endfunction    " ----------  end of function s:RenameBuffer  ----------
 
 "-------------------------------------------------------------------------------
 " s:UpdateBuffer : Update a scratch buffer.   {{{1
@@ -1042,23 +1056,28 @@ function! s:ShowCache ( args )
 		return
 	endif
 
-	" get the cache
-	exe	'cd '.fnameescape( s:BuildLocation )
-
-	let [ success, text ] = s:TextFromSystem ( shellescape( s:CMake_Executable ).' -N '.args )
-
-	if success == 0
-		call s:WarningMsg ( 'CMake : Could not obtain the cache.' )
-		return
-	endif
-
 	if s:OpenBuffer ( 'CMake - cache', 'showdir' )
 		silent exe 'nmap <silent> <buffer> q             :close<CR>'
 	endif
 
-	call s:UpdateBuffer ( text )
+	" get the cache
+	exe	'cd '.fnameescape( s:BuildLocation )
+
+	let [ success, text ] = s:TextFromSystem ( shellescape( s:CMake_Executable ).' -N '.args )
+	let location = fnamemodify ( s:BuildLocation, ':p' )
 
 	cd -
+
+	if success == 0
+		close
+		redraw                                      " redraw after cclose, before echoing
+		call s:WarningMsg ( 'CMake : Could not obtain the cache.' )
+		return
+	endif
+
+	call s:RenameBuffer ( location.'/CMake - cache' )
+	call s:UpdateBuffer ( text )
+
 endfunction    " ----------  end of function s:ShowCache  ----------
 
 "-------------------------------------------------------------------------------

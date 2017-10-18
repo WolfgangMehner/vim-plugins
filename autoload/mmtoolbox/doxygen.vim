@@ -593,13 +593,13 @@ function! s:ViewLog ()
 	" go to the directory of 's:ConfigFile', so that the standard for 's:LogFile' works
 	exe	'cd '.fnameescape( fnamemodify( s:ConfigFile, ':p:h' ) )
 
-	if ! filereadable ( s:LogFile )
-		return s:ErrorMsg ( 'Doxygen : File not readable: '.s:LogFile )
-	endif
-
 	let logfile = fnamemodify( s:LogFile, ":p" )
 
 	cd -
+
+	if ! filereadable ( logfile )
+		return s:ErrorMsg ( 'Doxygen : File not readable: '.logfile )
+	endif
 
 	exe 'sview '.fnameescape( logfile )
 endfunction    " ----------  end of function s:ViewLog  ----------
@@ -615,8 +615,12 @@ function! s:Warnings ()
 	" go to the directory of 's:ConfigFile', so that the standard for " 's:WarningFile' works
 	exe	'cd '.fnameescape( fnamemodify( s:ConfigFile, ':p:h' ) )
 
+	let warnfile = fnamemodify( s:WarningFile, ":p" )
+
+	cd -
+
 	" any errors?
-	if getfsize( s:WarningFile ) > 0
+	if getfsize( warnfile ) > 0
 		"
 		" save the current settings
 		let errorf_saved = &l:errorformat
@@ -624,7 +628,7 @@ function! s:Warnings ()
 		" read the file and process the errors
 		let &l:errorformat = s:ErrorFormat
 		"
-		exe 'cgetfile '.fnameescape( s:WarningFile )
+		exe 'cgetfile '.fnameescape( warnfile )
 		"
 		" restore the old settings
 		let &l:errorformat = errorf_saved
@@ -634,8 +638,6 @@ function! s:Warnings ()
 		redraw                                      " redraw after cclose, before echoing
 		call s:ImportantMsg ( "Doxygen : no warnings/errors" )
 	endif
-
-	cd -
 
 endfunction    " ----------  end of function s:Warnings  ----------
 
