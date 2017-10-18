@@ -569,6 +569,7 @@ let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
 let s:UNIX  = has("unix")  || has("macunix") || has("win32unix")
 
 let s:NEOVIM = has("nvim")
+let s:VIM8   = ! s:NEOVIM && v:version >= 800
 
 let s:installation           = '*undefined*'    " 'local' or 'system'
 let s:plugin_dir             = ''               " the directory hosting ftplugin/ plugin/ lua-support/ ...
@@ -711,8 +712,9 @@ let s:Lua_SnippetDir         = expand ( s:Lua_SnippetDir )
 "-------------------------------------------------------------------------------
 
 if s:NEOVIM
-	let s:Lua_OutputMethodList = [ 'cmd-line', 'quickfix', 'buffer', 'terminal' ]
-	let s:Lua_OutputMethod     = 'cmd-line'       " one of 's:Lua_OutputMethodList'
+	" can not use 'cmd-line' in Neovim, since :! is not interactive
+	let s:Lua_OutputMethodList = [ 'quickfix', 'buffer', 'terminal' ]
+	let s:Lua_OutputMethod     = 'terminal'       " one of 's:Lua_OutputMethodList'
 else
 	let s:Lua_OutputMethodList = [ 'cmd-line', 'quickfix', 'buffer' ]
 	let s:Lua_OutputMethod     = 'cmd-line'       " one of 's:Lua_OutputMethodList'
@@ -730,7 +732,9 @@ call s:GetGlobalSetting ( 'Lua_DirectRun' )
 call s:GetGlobalSetting ( 'Lua_OutputMethod' )
 
 " adapt for backwards compatibility
-if s:Lua_OutputMethod == 'vim-io'
+if s:Lua_OutputMethod == 'vim-io' && s:NEOVIM
+	let s:Lua_OutputMethod = 'terminal'
+elseif s:Lua_OutputMethod == 'vim-io'
 	let s:Lua_OutputMethod = 'cmd-line'
 elseif s:Lua_OutputMethod == 'vim-qf'
 	let s:Lua_OutputMethod = 'quickfix'
@@ -2182,8 +2186,14 @@ function! Lua_Settings( verbose )
 	if     s:MSWIN | let sys_name = 'Windows'
 	elseif s:UNIX  | let sys_name = 'UN*X'
 	else           | let sys_name = 'unknown' | endif
-	if    s:NEOVIM | let vim_name = 'nvim'
-	else           | let vim_name = has('gui_running') ? 'gvim' : 'vim' | endif
+	if s:NEOVIM
+		let vim_name = 'nvim'
+	else
+		let vim_name = has('gui_running') ? 'gvim' : 'vim'
+		if s:VIM8
+			let vim_name .= '(v8.0)'
+		endif
+	endif
 
 	let lua_exe_status = executable( s:Lua_Executable ) ? '' : ' (not executable)'
 	let luac_exe_status = executable( s:Lua_CompilerExec ) ? '' : ' (not executable)'

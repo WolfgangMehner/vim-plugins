@@ -598,7 +598,7 @@ set in the .vimrc file.
  ----------------------------------------------------------------------------
   |g:Lua_BinPath|             ''            the path to the Lua binaries (^1)
   |g:Lua_Executable|          'lua'         the lua executable (^1)
-  |g:Lua_OutputMethod|        'cmd-line'    the method for running Lua
+  |g:Lua_OutputMethod|        (see below)   the method for running Lua
   |g:Lua_CompilerExec|        'luac'        the luac executable (^1)
   |g:Lua_CompiledExtension|   'luac'        extension used for compile chunks
 
@@ -736,17 +736,17 @@ The possible settings are listed below:
 
   Value               Meaning
  ----------------------------------------------------------------------------
-  'cmd-line' (deflt)  run on the Vim command-line (supports input operations)
-  'quickfix'          print output or start quickfix (supports |quickfix|)
   'buffer'            redirect the output into a buffer (supports |quickfix|)
-  'xterm' (^1)        run in a separate xterm (supports input operations)
-
+  'cmd-line' (^1)     run on the Vim command-line (supports input operations)
+  'quickfix'          print output or start quickfix (supports |quickfix|)
   'terminal' (^2)     run in a terminal window (support input operations
                        and quickfix, via the maps \qf and \qj)
+  'xterm' (^3)        run in a separate xterm (supports input operations)
  ----------------------------------------------------------------------------
 
-(^1) UNIX only, see |luasupport-config-xterm|
-(^2) requires |+terminal|
+(^1) default for Vim/gVim, not in Neovim
+(^2) default for Neovim, requires |+terminal| or Neovim
+(^3) UNIX only, see |luasupport-config-xterm|
 
 ------------------------------------------------------------------------------
 
