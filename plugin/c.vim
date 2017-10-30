@@ -2546,10 +2546,10 @@ function! s:RereadTemplates ()
 	call mmtemplates#core#ChangeSyntax ( g:C_Templates, 'comment', '§' )
 
 	" property: file skeletons
-	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'C::FileSkeleton::Header',   'Comments.file description impl' )
-	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'C::FileSkeleton::Source',   'Comments.file description header' )
-	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'Cpp::FileSkeleton::Header', 'Comments.file description impl' )
-	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'Cpp::FileSkeleton::Source', 'Comments.file description header' )
+	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'C::FileSkeleton::Header',   'Comments.file description header' )
+	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'C::FileSkeleton::Source',   'Comments.file description impl' )
+	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'Cpp::FileSkeleton::Header', 'Comments.file description header' )
+	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'Cpp::FileSkeleton::Source', 'Comments.file description impl' )
 
 	" property: Doxygen menu
 	call mmtemplates#core#Resource ( g:C_Templates, 'add', 'property', 'Doxygen::BriefAM::Menu', '' )
