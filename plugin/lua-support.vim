@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:Lua_Version below
 "       Created:  26.03.2014
-"      Revision:  02.10.2017
+"      Revision:  07.11.2017
 "       License:  Copyright (c) 2014-2017, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -1476,6 +1476,120 @@ function! s:Compile( mode ) range
 endfunction    " ----------  end of function s:Compile  ----------
 
 "-------------------------------------------------------------------------------
+" === Run: Executable, arguments, output, ... ===   {{{1
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" s:SetExecutable : Set s:Lua_Executable or s:Lua_CompilerExec   {{{2
+"-------------------------------------------------------------------------------
+function! s:SetExecutable ( exe_type, new_exec )
+
+	if a:exe_type == 'exe'
+		let var = 's:Lua_Executable'
+	elseif a:exe_type == 'compile'
+		let var = 's:Lua_CompilerExec'
+	else
+		return s:ErrorMsg ( 'Unknown type "'.a:exe_type.'".' )
+	endif
+
+	let new_exec = expand ( a:new_exec )
+
+	if new_exec == ''
+		echo {var}
+	elseif ! executable ( new_exec )
+		return s:ErrorMsg ( '"'.new_exec.'" is not executable, nothing set.' )
+	else
+		let {var} = new_exec
+	endif
+endfunction    " ----------  end of function s:SetExecutable  ----------
+
+"-------------------------------------------------------------------------------
+" s:GetOutputMethodList : For cmd.-line completion.   {{{2
+"-------------------------------------------------------------------------------
+function! s:GetOutputMethodList (...)
+	return join ( s:Lua_OutputMethodList, "\n" )
+endfunction    " ----------  end of function s:GetOutputMethodList  ----------
+
+"-------------------------------------------------------------------------------
+" s:SetOutputMethod : Set s:Lua_OutputMethod   {{{2
+"-------------------------------------------------------------------------------
+function! s:SetOutputMethod ( method )
+
+	if a:method == ''
+		echo s:Lua_OutputMethod
+		return
+	endif
+
+	" 'method' gives the output method
+	if index ( s:Lua_OutputMethodList, a:method ) == -1
+		return s:ErrorMsg ( 'Invalid option for output method: "'.a:method.'".' )
+	endif
+
+	let s:Lua_OutputMethod = a:method
+
+	" update the menu header
+	if ! has ( 'menu' ) || s:MenuVisible == 0
+		return
+	endif
+
+	exe 'aunmenu '.s:Lua_RootMenu.'.Run.output\ method.Output\ Method'
+
+	if s:Lua_OutputMethod == 'cmd-line'
+		let current = 'cmd\.-line'
+	elseif s:Lua_OutputMethod == 'quickfix'
+		let current = 'quickfix'
+	elseif s:Lua_OutputMethod == 'buffer'
+		let current = 'buffer'
+	elseif s:Lua_OutputMethod == 'terminal'
+		let current = 'terminal'
+	elseif s:Lua_OutputMethod == 'xterm'
+		let current = 'xterm'
+	endif
+
+	exe 'anoremenu ...400 '.s:Lua_RootMenu.'.Run.output\ method.Output\ Method<TAB>(current\:\ '.current.') :echo "This is a menu header."<CR>'
+
+endfunction    " ----------  end of function s:SetOutputMethod  ----------
+
+"-------------------------------------------------------------------------------
+" s:GetDirectRunList : For cmd.-line completion.   {{{2
+"-------------------------------------------------------------------------------
+function! s:GetDirectRunList (...)
+	return "yes\nno"
+endfunction    " ----------  end of function s:GetDirectRunList  ----------
+
+"-------------------------------------------------------------------------------
+" s:SetDirectRun : Set s:Lua_DirectRun   {{{2
+"-------------------------------------------------------------------------------
+function! s:SetDirectRun ( option )
+
+	if a:option == ''
+		echo s:Lua_DirectRun
+		return
+	endif
+
+	" 'option' gives the setting
+	if a:option != 'yes' && a:option != 'no'
+		return s:ErrorMsg ( 'Invalid option for direct run: "'.a:option.'".' )
+	endif
+
+	let s:Lua_DirectRun = a:option
+
+	" update the menu header
+	if ! has ( 'menu' ) || s:MenuVisible == 0
+		return
+	endif
+
+	exe 'aunmenu '.s:Lua_RootMenu.'.Run.direct\ run.Direct\ Run'
+
+	let current = s:Lua_DirectRun
+
+	exe 'anoremenu ...400 '.s:Lua_RootMenu.'.Run.direct\ run.Direct\ Run<TAB>(currently\:\ '.current.') :echo "This is a menu header."<CR>'
+
+endfunction    " ----------  end of function s:SetDirectRun  ----------
+" }}}2
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
 " s:HelpPlugin : Plug-in help.   {{{1
 "-------------------------------------------------------------------------------
 function! s:HelpPlugin ()
@@ -1636,121 +1750,6 @@ function! s:InsertFileHeader ()
 	endif
 endfunction    " ----------  end of function s:InsertFileHeader  ----------
 
-"-------------------------------------------------------------------------------
-" s:SetExecutable : Set s:Lua_Executable or s:Lua_CompilerExec   {{{1
-"-------------------------------------------------------------------------------
-"
-function! s:SetExecutable ( exe_type, new_exec )
-	"
-	if a:exe_type == 'exe'
-		let var = 's:Lua_Executable'
-	elseif a:exe_type == 'compile'
-		let var = 's:Lua_CompilerExec'
-	else
-		return s:ErrorMsg ( 'Unknown type "'.a:exe_type.'".' )
-	endif
-	"
-	let new_exec = expand ( a:new_exec )
-	"
-	if new_exec == ''
-		echo {var}
-	elseif ! executable ( new_exec )
-		return s:ErrorMsg ( '"'.new_exec.'" is not executable, nothing set.' )
-	else
-		let {var} = new_exec
-	endif
-	"
-	return
-endfunction    " ----------  end of function s:SetExecutable  ----------
-"
-"-------------------------------------------------------------------------------
-" s:GetOutputMethodList : For cmd.-line completion.   {{{1
-"-------------------------------------------------------------------------------
-"
-function! s:GetOutputMethodList (...)
-	return join ( s:Lua_OutputMethodList, "\n" )
-endfunction    " ----------  end of function s:GetOutputMethodList  ----------
-"
-"-------------------------------------------------------------------------------
-" s:SetOutputMethod : Set s:Lua_OutputMethod   {{{1
-"-------------------------------------------------------------------------------
-"
-function! s:SetOutputMethod ( method )
-	"
-	if a:method == ''
-		echo s:Lua_OutputMethod
-		return
-	endif
-	"
-	" 'method' gives the output method
-	if index ( s:Lua_OutputMethodList, a:method ) == -1
-		return s:ErrorMsg ( 'Invalid option for output method: "'.a:method.'".' )
-	endif
-	"
-	let s:Lua_OutputMethod = a:method
-	"
-	" update the menu header
-	if ! has ( 'menu' ) || s:MenuVisible == 0
-		return
-	endif
-	"
-	exe 'aunmenu '.s:Lua_RootMenu.'.Run.output\ method.Output\ Method'
-	"
-	if s:Lua_OutputMethod == 'cmd-line'
-		let current = 'cmd\.-line'
-	elseif s:Lua_OutputMethod == 'quickfix'
-		let current = 'quickfix'
-	elseif s:Lua_OutputMethod == 'buffer'
-		let current = 'buffer'
-	elseif s:Lua_OutputMethod == 'terminal'
-		let current = 'terminal'
-	elseif s:Lua_OutputMethod == 'xterm'
-		let current = 'xterm'
-	endif
-	"
-	exe 'anoremenu ...400 '.s:Lua_RootMenu.'.Run.output\ method.Output\ Method<TAB>(current\:\ '.current.') :echo "This is a menu header."<CR>'
-	"
-endfunction    " ----------  end of function s:SetOutputMethod  ----------
-"
-"-------------------------------------------------------------------------------
-" s:GetDirectRunList : For cmd.-line completion.   {{{1
-"-------------------------------------------------------------------------------
-"
-function! s:GetDirectRunList (...)
-	return "yes\nno"
-endfunction    " ----------  end of function s:GetDirectRunList  ----------
-"
-"-------------------------------------------------------------------------------
-" s:SetDirectRun : Set s:Lua_DirectRun   {{{1
-"-------------------------------------------------------------------------------
-"
-function! s:SetDirectRun ( option )
-	"
-	if a:option == ''
-		echo s:Lua_DirectRun
-		return
-	endif
-	"
-	" 'option' gives the setting
-	if a:option != 'yes' && a:option != 'no'
-		return s:ErrorMsg ( 'Invalid option for direct run: "'.a:option.'".' )
-	endif
-	"
-	let s:Lua_DirectRun = a:option
-	"
-	" update the menu header
-	if ! has ( 'menu' ) || s:MenuVisible == 0
-		return
-	endif
-	"
-	exe 'aunmenu '.s:Lua_RootMenu.'.Run.direct\ run.Direct\ Run'
-	"
-	let current = s:Lua_DirectRun
-	"
-	exe 'anoremenu ...400 '.s:Lua_RootMenu.'.Run.direct\ run.Direct\ Run<TAB>(currently\:\ '.current.') :echo "This is a menu header."<CR>'
-	"
-endfunction    " ----------  end of function s:SetDirectRun  ----------
-"
 "-------------------------------------------------------------------------------
 " s:CreateMaps : Create additional maps.   {{{1
 "-------------------------------------------------------------------------------
@@ -2176,7 +2175,20 @@ function! s:RemoveMenus()
 		let s:MenuVisible = 0
 	endif
 endfunction    " ----------  end of function s:RemoveMenus  ----------
-"
+
+"-------------------------------------------------------------------------------
+" s:Initialize : Initialize templates, menus, and maps.   {{{1
+"-------------------------------------------------------------------------------
+function! s:Initialize ( ftype )
+	if ! exists( 'g:Lua_Templates' )
+		if s:Lua_LoadMenus == 'auto' | call s:AddMenus()
+		else                         | call s:SetupTemplates()
+		endif
+	endif
+	call s:CreateMaps()
+	call s:CheckTemplatePersonalization()
+endfunction    " ----------  end of function s:Initialize  ----------
+
 "-------------------------------------------------------------------------------
 " Lua_Settings : Print the settings on the command line.   {{{1
 "-------------------------------------------------------------------------------
@@ -2309,20 +2321,12 @@ command! -nargs=? -complete=custom,<SID>GetOutputMethodList LuaOutputMethod   ca
 command! -nargs=? -complete=custom,<SID>GetDirectRunList    LuaDirectRun      call <SID>SetDirectRun(<q-args>)
 command! -nargs=? -complete=shellcmd                        LuaExecutable     call <SID>SetExecutable('exe',<q-args>)
 command! -nargs=? -complete=shellcmd                        LuaCompilerExec   call <SID>SetExecutable('compile',<q-args>)
-"
+
 if has( 'autocmd' )
-	autocmd FileType *
-				\	if &filetype == 'lua' && ! exists( 'g:Lua_Templates' ) |
-				\		if s:Lua_LoadMenus == 'auto' | call s:AddMenus () |
-				\		else                         | call s:SetupTemplates () |
-				\		endif |
-				\	endif
-	autocmd FileType *
-				\	if &filetype == 'lua' |
-				\		call s:CreateMaps() |
-				\		call s:CheckTemplatePersonalization() |
-				\	endif
-	autocmd BufNewFile  *.lua  call s:InsertFileHeader()
+	augroup LuaSupport
+	autocmd FileType   lua    call s:Initialize('lua')
+	autocmd BufNewFile *.lua  call s:InsertFileHeader()
+	augroup END
 endif
 " }}}1
 "-------------------------------------------------------------------------------
