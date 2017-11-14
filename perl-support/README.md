@@ -193,6 +193,9 @@ RELEASE NOTES FOR VERSION 5.5pre
   of the `CTRL+D` map.
 - Minor changes.
 
+Note: The filetype plug-ins have been moved, and are thus not loaded
+automatically anymore. Copy them from `perl-support/rc` to `ftplugin`,
+or add the commands there to your own filetype plug-ins.
 Note: Some configuration for `*.t` and `*.pod` files has been removed.
 See `perl-support/rc/customization.vimrc` for how to add them to your
 configuration files.
@@ -252,16 +255,6 @@ ___The following files and extensions are for convenience only.___
 ___perl-support.vim will work without them.___
 ___The settings are explained in the files themselves.___
 
-    ftplugin/make.vim
-                        Access hotkeys for make(1) in makefiles.
-    ftplugin/perl.vim
-                        A filetype plugin. Define hotkeys, create a local
-                        dictionary for each Perl file.
-    ftplugin/pod.vim
-                        A filetype plugin. Define hotkeys for filetype 'pod'.
-    ftplugin/qf.vim
-                        A filetype plugin used by the profilers.
-
     ftdetect/template.vim
     ftplugin/template.vim
     syntax/template.vim
@@ -287,6 +280,17 @@ ___The settings are explained in the files themselves.___
                           font, use of dictionaries, ...
                         The file is commented. Append it to your .vimrc if you
                         like.
+
+    perl-support/rc/make.vim
+                        Access hotkeys for make(1) in makefiles.
+    perl-support/rc/perl.vim
+    perl-support/rc/pod.vim
+                        Example filetype plug-ins for Perl and POD:
+                          defines additional maps,
+                          set tabs according to Perl Style Guide
+                          expands keyword characters for better support of tokens,
+    perl-support/rc/qf.vim
+                        Some maps to help with the profilers' output.
 
     perl-support/rc/*.templates
                         Sample template files for customization. Used by the

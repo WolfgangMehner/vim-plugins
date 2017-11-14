@@ -41,7 +41,7 @@
 --  Auxiliary Functions   {{{1
 ------------------------------------------------------------------------
 
-function escape_shell ( text )
+local function escape_shell ( text )
 	return string.gsub ( text, '[%(%);&=\' ]', function ( m ) return '\\' .. m end )
 end  ----------  end of function escape_shell  ----------
 
@@ -278,10 +278,6 @@ filelists.perl = {
 	'doc/toolbox.txt',
 	'doc/toolboxmake.txt',
 	'ftdetect/template.vim',
-	'ftplugin/make.vim',
-	'ftplugin/perl.vim',
-	'ftplugin/pod.vim',
-	'ftplugin/qf.vim',
 	'ftplugin/template.vim',
 	'plugin/perl-support.vim',
 	'syntax/template.vim',
@@ -448,7 +444,7 @@ elseif args[2] == 'cp-repo' then
 	if #args >= 3 then
 
 		local dest_dir = args[3]
-		filelist_compl = {}
+		local filelist_compl = {}
 
 		for key, val in pairs ( filelist ) do
 			table.insert ( filelist_compl, val )

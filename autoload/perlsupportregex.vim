@@ -717,7 +717,6 @@ endfunction    " ----------  end of function perlsupportregex#Perl_RegexMatchSev
 "
 "-------------------------------------------------------------------------------
 "   read the substitution characters for \n, \t,  ... from the command line
-"   used in ftplugin/perl.vim
 "-------------------------------------------------------------------------------
 function! perlsupportregex#Perl_PerlRegexSubstitutions ( string )
   let result  = a:string

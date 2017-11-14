@@ -9,6 +9,9 @@
   of the 'CTRL+D' map.
 - Minor changes.
 
+Note: The filetype plug-ins have been moved, and are thus not loaded automatically
+anymore. Copy them from 'perl-support/rc' to 'ftplugin', or add the commands there to
+your own filetype plug-ins.
 Note: Some configuration for *.t and *.pod files has been removed. See
 'perl-support/rc/customization.vimrc' for how to add them to your configuration files.
 

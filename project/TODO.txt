@@ -135,6 +135,10 @@ Perl:
 - Documentation: Check that maps are introduced properly.
 - (DONE) Documentation: Adding additional template files.
 - (DONE) Remove old release script.
+- (DONE) Move 'ftplugin/make.vim'.
+- (DONE) Move 'ftplugin/perl.vim'.
+- (DONE) Move 'ftplugin/pod.vim'.
+- (DONE) Move 'ftplugin/qf.vim'.
 
 Vim:
 - (DONE) Documentation: Adding additional template files.
