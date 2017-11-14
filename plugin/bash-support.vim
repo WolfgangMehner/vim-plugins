@@ -1962,7 +1962,8 @@ function! s:InitMenus()
 	endif
 
 	exe ahead.'-SEP2-   :'
-	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rs                   :call BASH_Settings(0)<CR>'
+	exe ahead.'plugin\ &settings<Tab>'.esc_mapl.'rs       :call Bash_Settings(0)<CR>'
+	exe ihead.'plugin\ &settings<Tab>'.esc_mapl.'rs  <C-C>:call Bash_Settings(0)<CR>'
 
 	" run -> output method
 	let method_menu_entries = [
@@ -2168,7 +2169,7 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	"   help
 	"-------------------------------------------------------------------------------
-	nnoremap  <buffer>  <silent>  <LocalLeader>rs         :call BASH_Settings(0)<CR>
+	nnoremap  <buffer>  <silent>  <LocalLeader>rs         :call Bash_Settings(0)<CR>
 
 	nnoremap  <buffer>  <silent>  <LocalLeader>hb         :call <SID>HelpBash('bash')<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>hb    <Esc>:call <SID>HelpBash('bash')<CR>
@@ -2214,7 +2215,7 @@ function! s:CreateAdditionalMaps ()
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 
 "-------------------------------------------------------------------------------
-" BASH_Settings : Display plug-in settings.   {{{1
+" Bash_Settings : Display plug-in settings.   {{{1
 "
 " verbosity:
 "   0 - basic settings
@@ -2224,7 +2225,7 @@ endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
 " Parameters:
 "   verbose - verbosity (integer)
 "-------------------------------------------------------------------------------
-function! BASH_Settings ( verbose )
+function! Bash_Settings ( verbose )
 
 	if     s:MSWIN | let sys_name = 'Windows'
 	elseif s:UNIX  | let sys_name = 'UN*X'
@@ -2316,7 +2317,7 @@ function! BASH_Settings ( verbose )
 	else
 		echo txt
 	endif
-endfunction    " ----------  end of function BASH_Settings ----------
+endfunction    " ----------  end of function Bash_Settings ----------
 
 "-------------------------------------------------------------------------------
 " s:ToolMenu : Add or remove tool menu entries.   {{{1
@@ -2370,6 +2371,19 @@ function! s:RemoveMenus()
 	endif
 endfunction    " ----------  end of function s:RemoveMenus  ----------
 
+"-------------------------------------------------------------------------------
+" s:Initialize : Initialize templates, menus, and maps.   {{{1
+"-------------------------------------------------------------------------------
+function! s:Initialize ( ftype )
+	if ! exists( 'g:BASH_Templates' )
+		if s:BASH_LoadMenus == 'yes' | call s:AddMenus()
+		else                         | call s:RereadTemplates()
+		endif
+	endif
+	call s:CreateAdditionalMaps()
+	call s:CheckTemplatePersonalization()
+endfunction    " ----------  end of function s:Initialize  ----------
+
 "----------------------------------------------------------------------
 " === Setup: Templates, toolbox and menus ===   {{{1
 "----------------------------------------------------------------------
@@ -2403,7 +2417,8 @@ nnoremap  <expr>  <Plug>BashSupportSetBashInterpArgs  ':BashInterpArguments '.  
 nnoremap  <expr>  <Plug>BashSupportSetBashSyntaxOpts  ':BashSyntaxCheckOptions '.( exists( 'b:BASH_SyntaxCheckOptionsLocal' ) ? b:BASH_SyntaxCheckOptionsLocal : '' )
 
 if has( 'autocmd' )
-	"
+	augroup BashSupport
+
 	"-------------------------------------------------------------------------------
 	" shell files with extensions other than 'sh'
 	"-------------------------------------------------------------------------------
@@ -2412,33 +2427,23 @@ if has( 'autocmd' )
 			exe "autocmd BufNewFile,BufRead  ".item." set filetype=sh"
 		endfor
 	endif
-	"
+
 	"-------------------------------------------------------------------------------
-	" create menues and maps
+	" create menus and maps
 	"-------------------------------------------------------------------------------
-  autocmd FileType *
-        \ if &filetype == 'sh' |
-        \   if ! exists( 'g:BASH_Templates' ) |
-        \     if s:BASH_LoadMenus == 'yes' | call s:AddMenus ()  |
-        \     else                         | call s:RereadTemplates () |
-        \     endif |
-        \   endif |
-        \   call s:CreateAdditionalMaps () |
-				\		call s:CheckTemplatePersonalization() |
-        \ endif
+	autocmd FileType sh  call s:Initialize('bash')
 
 	"-------------------------------------------------------------------------------
 	" insert file header
 	"-------------------------------------------------------------------------------
-	if s:BASH_InsertFileHeader == 'yes'
-		autocmd BufNewFile  *.sh  call s:InsertFileHeader()
-		if exists( 'g:BASH_AlsoBash' )
-			for item in g:BASH_AlsoBash
-				exe "autocmd BufNewFile ".item." call s:InsertFileHeader()"
-			endfor
-		endif
+	autocmd BufNewFile *.sh  call s:InsertFileHeader()
+	if exists( 'g:BASH_AlsoBash' )
+		for item in g:BASH_AlsoBash
+			exe "autocmd BufNewFile ".item."  call s:InsertFileHeader()"
+		endfor
 	endif
 
+	augroup END
 endif
 " }}}1
 "-------------------------------------------------------------------------------
