@@ -152,8 +152,12 @@ inoremap  <silent> <s-tab>  <C-C>:if &modifiable && !&readonly &&
 " Leave the editor with Ctrl-q (KDE): Write all changed buffers and exit Vim
 "-------------------------------------------------------------------------------
 nnoremap  <C-q>    :wqall<CR>
-"
-"
+
+"-------------------------------------------------------------------------------
+" Always wrap lines in the quickfix buffer
+"-------------------------------------------------------------------------------
+"autocmd BufReadPost quickfix  setlocal wrap | setlocal linebreak
+
 "===================================================================================
 " VARIOUS PLUGIN CONFIGURATIONS
 "===================================================================================
@@ -161,9 +165,12 @@ nnoremap  <C-q>    :wqall<CR>
 "-------------------------------------------------------------------------------
 " perl-support.vim
 "-------------------------------------------------------------------------------
-"            
-" --empty --
-"
+
+" use Perl syntax highlighting for POD
+"autocmd BufNewFile,BufReadPost *.pod  setlocal syntax=perl
+" always use filetype 'perl' for files *.t
+"autocmd BufNewFile,BufReadPost *.t    setlocal filetype=perl
+
 "-------------------------------------------------------------------------------
 " plugin taglist.vim : toggle the taglist window
 " plugin taglist.vim : define the tag file entry for Perl

@@ -187,11 +187,16 @@ RELEASE NOTES FOR VERSION 5.5pre
 ----------------------------------------------------------------------
 - The templates which are inserted into new files as file skeletons can be
   specified in the templates library, via the properties:
-    Perl::FileSkeleton::Script, Perl::FileSkeleton::Module,
-    Perl::FileSkeleton::Test,   Perl::FileSkeleton::POD
-- Add configuration variable and 'g:Perl_Ctrl_d' to control the creation
-  of the CTRL+D map.
+    `Perl::FileSkeleton::Script`, `Perl::FileSkeleton::Module`,
+    `Perl::FileSkeleton::Test`,   `Perl::FileSkeleton::POD`
+- Add configuration variable `g:Perl_Ctrl_d` to control the creation
+  of the `CTRL+D` map.
 - Minor changes.
+
+Note: Some configuration for `*.t` and `*.pod` files has been removed.
+See `perl-support/rc/customization.vimrc` for how to add them to your
+configuration files.
+
 
 RELEASE NOTES FOR OLDER VERSIONS
 ----------------------------------------------------------------------
