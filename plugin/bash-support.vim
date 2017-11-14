@@ -672,8 +672,9 @@ let s:BASH_RootMenu          	= '&Bash'           " name of the root menu
 let s:BASH_UseToolbox         = 'yes'
 
 if s:NEOVIM
-	let s:BASH_OutputMethodList = [ 'vim-io', 'vim-qf', 'buffer', 'terminal' ]
-	let s:BASH_OutputMethod     = 'vim-io'         " one of 's:BASH_OutputMethodList'
+	" can not use 'vim-io' in Neovim, since :! is not interactive
+	let s:BASH_OutputMethodList = [ 'vim-qf', 'buffer', 'terminal' ]
+	let s:BASH_OutputMethod     = 'terminal'       " one of 's:BASH_OutputMethodList'
 else
 	let s:BASH_OutputMethodList = [ 'vim-io', 'vim-qf', 'buffer' ]
 	let s:BASH_OutputMethod     = 'vim-io'         " one of 's:BASH_OutputMethodList'
@@ -1017,9 +1018,9 @@ function! s:Run ( args, mode, ... ) range
 	" get the mode (normal/visual) and the range
 	let mode = a:mode
 
-	if mode == 'c' && a:0 == 2
+	if mode == 'c' && a:0 == 3
 		" Vim command-line
-		if a:1 <= a:2 && ! ( a:1 == 1 && a:2 == 1 )
+		if a:3 > 0
 			let line_f = a:1
 			let line_l = a:2
 			let mode = 'v'
@@ -1041,7 +1042,7 @@ function! s:Run ( args, mode, ... ) range
 	" prepare the file (and handle visual mode)
 	if mode == 'v'
 		let tmpfile = tempname()
-		silent exe ":'<,'>write ".tmpfile
+		silent exe ":".line_f.",".line_l."write ".tmpfile
 
 		"if s:BASH_DirectRun == 'yes'
 		" :TODO:27.09.2017 23:33:WM: implement this, parse the shebang
@@ -1249,7 +1250,7 @@ function! s:Run ( args, mode, ... ) range
 		endif
 		let rm_tmp = ''
 		if mode == 'v'
-			let title  = title.' - lines '.line_f.'-'.line_l
+			let title  = title.shellescape( ' - lines '.line_f.'-'.line_l )
 			let rm_tmp = '; rm '.tmpfile
 		endif
 
@@ -2054,8 +2055,8 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	" user defined commands (only working in Bash buffers)
 	"-------------------------------------------------------------------------------
-	command! -nargs=* -buffer -complete=file -range=0 Bash        call <SID>Run(<q-args>,'c',<line1>,<line2>)
-	command! -nargs=0 -buffer                         BashCheck   call <SID>SyntaxCheck()
+	command! -nargs=* -buffer -complete=file -range=-1 Bash       call <SID>Run(<q-args>,'c',<line1>,<line2>,<count>)
+	command! -nargs=0 -buffer                          BashCheck  call <SID>SyntaxCheck()
 
 	command! -buffer -nargs=* -complete=file BashScriptArguments  call <SID>ScriptCmdLineArguments(<q-args>)
 	command! -buffer -nargs=* -complete=file BashInterpArguments  call <SID>InterpCmdLineArguments(<q-args>)
