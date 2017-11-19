@@ -5,7 +5,7 @@
 
 # Sun Feb 24 14:49:17 CET 2002
 #
-# Modified by Fritz Mehner and Wolfgang Mehner 15.11.2014 18:32:13
+# Modified by Fritz Mehner and Wolfgang Mehner 19.11.2017
 
 use strict;
 use vars qw/%url $date/;
@@ -102,8 +102,9 @@ EOF
 	while( <IN> ) {
 		chop;
 #		if ( /^\s*[-=]+\s*$/ ) {
-		if ( /^[-=]+\s*$/ ) {                   # :CHANGE:15.11.2014 18:32:23:WM: <hr> only for lines which start with "-" or "="
-			print OUT "</pre><hr><pre>";
+#			print OUT "</pre><hr><pre>";
+		if ( /^[-=]+\s*$/ ) {                   # :CHANGE:17.10.2017 18:46:WM: lines which start with "-" or "=": print the separator as it is and use highlighting
+			print OUT "<code class='section'>".$_."<\/code>\n";
 			next;
 		}
 
@@ -128,7 +129,8 @@ EOF
 		foreach my $token ( split /((?:\|[^\|]+\|)|(?:\*[^\*]+\*))/ ) {
 			if ( $token =~ /^\|([^\|]+)\|/ ) {
 				# link
-				push( @out, "|".maplink( $1 )."|" );
+#				push( @out, "|".maplink( $1 )."|" );
+				push( @out, maplink( $1 ) );   # :CHANGE:17.10.2017 18:48:WM: do not output the bars, to emulate Vim's conceal feature
 				next LOOP;
 			}
 #			elsif ( $token =~ /^\*([^\*]+)\*/ ) {

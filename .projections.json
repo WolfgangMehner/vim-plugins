@@ -1,0 +1,34 @@
+{
+	"doc/*support.txt": {
+		"alternate" : "plugin/{}-support.vim"
+	},
+	"plugin/*-support.vim": {
+		"alternate" : "doc/{}support.txt"
+	},
+
+	"*-support/" : {
+		"type" : "plug_dir"
+	},
+	"*-support/README.md" : {
+		"type" : "readme"
+	},
+	"**-support/templates/*" : {
+		"type" : "templates"
+	},
+	"**-support/doc/*.tex" : {
+		"type" : "hotkeys"
+	},
+	"**-support/doc/ChangeLog" : {
+		"setlocal" : {
+			"textwidth" : 87
+		}
+	},
+
+	"project/commit_*.txt" : {
+		"type" : "commit",
+		"setlocal" : {
+			"spell"     : 1,
+			"spelllang" : "en"
+		}
+	}
+}

@@ -38,6 +38,6 @@ for NAME in $LIST; do
 		continue
 	fi
 
-	printf "%-6s : %s (%s )\n" $NAME "$(git log -n1 --date=short --pretty=format:"%ad : %s")" "$(git diff --shortstat)"
+	printf "%-6s : %s (%s )\n" $NAME "$(git log -n1 --date=short --pretty=format:"%ad : %s")" "$(git diff --shortstat HEAD)"
 	cd ..
 done | sort -k 2

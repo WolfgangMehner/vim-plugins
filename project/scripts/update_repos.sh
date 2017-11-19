@@ -97,7 +97,7 @@ for NAME in $LIST; do
 
 		if [ "${ANSWER,,}" == 'y' ] ; then
 			echo "  setting tag .."
-			git tag $TAG_NAME $SHA_ORIGINAL
+			git tag -f $TAG_NAME $SHA_ORIGINAL
 		fi
 	fi
 

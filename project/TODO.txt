@@ -52,6 +52,8 @@ Templates:
 
 Awk:
 - (DONE) 'code->comment' should not insert a space following the hash?
+- Add example filetype plug-in.
+- Still need Awk wrapper script?
 
 Bash:
 - (DONE) 'code->comment' should not insert a space following the hash?
@@ -84,6 +86,8 @@ C/C++:
 - Configure the template which is inserted automatically when a new file is
   created.
 - (DONE) Add a template to insert all section comments into a file at once.
+- (DONE) Move 'ftplugin/c.vim'.
+- (DONE) Move 'ftplugin/make.vim'.
 
 Git:
 - Add more suggestions for custom menu entries to 's:Git_CustomMenu'.
@@ -128,6 +132,7 @@ Matlab:
 - The old setup of the help via "SetMacro( 'HELP_BROWSER', ... )" is still
   mentioned in the documentations.
 - Remove old release script 'release.lua'.
+- Move 'ftplugin/matlab.vim'.
 
 Perl:
 - (DONE?) 'perldoc' does not print the correct error message if it is not installed.
