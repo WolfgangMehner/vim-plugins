@@ -15,7 +15,7 @@ the GDB integration |:Termdebug|.
 
  1.    Introduction                             |bashdb-integration-intro|
  2.    Commands                                 |bashdb-integration-commands|
- 2.1    Debugger Control                        |bashdb-integration-db-control|
+ 2.1    Debugger Integration                    |bashdb-integration-db-control|
  3.    Configuration                            |bashdb-integration-config|
 
  A.    Change Log                               |bashdb-integration-change-log|
@@ -30,7 +30,7 @@ the bash must be prepared for debugging and the debugger must be installed
 feature, the debugger can be run inside the editor.
 
 The debugger can be run right inside Vim (requires |+terminal|), by setting >
-  :BashDBDebugger terminal
+  :BashDBDebugger integrated
 and then starting the debugging for the script in the current buffer via  >
   :BashDB [<args>]
 The optional arguments are passed on the debugged script.
@@ -39,10 +39,13 @@ The output is split into two terminal windows. The debugging can be controlled
 from the buffer containing the script. E.g. breakpoints can be set for the
 line under the cursor.
 
-Furthermore, the debugger can be run in the frontend ddd >
-  :BashDBDebugger ddd
+Furthermore, the debugger can be run in a terminal window, but without further
+integration >
+  :BashDBDebugger terminal
 or in a separate xterm >
   :BashDBDebugger xterm
+or in the frontend ddd >
+  :BashDBDebugger ddd
 <
 The debugger integration is controlled via a number of ex-commands, see below.
 
@@ -50,10 +53,10 @@ The debugger integration is controlled via a number of ex-commands, see below.
  ----------------------------------------------------------------------------
   |:BashDB| [<args>]              run the debugger
   |:BashDBCommand| [<args>]       send a command to the debugger
-                                  (only with the method "terminal")
+                                  (only with the method "integrated")
 
   |:BashDBDebugger| <method>      set the debugging method:
-                                  xterm, ddd, or terminal
+                                  ddd, terminal, xterm, or integrated
   |:BashDBExecutable| <exec>      set the debugger executable:
                                   bashdb, zshdb, ...
 
@@ -87,14 +90,18 @@ arguments set with Bash Support are passed to the script.
 
 Set the debugging method. The 2nd version echoes the current method.
 
-The method "terminal" runs the debugger inside Vim. This enables further
+The method "integrated" runs the debugger inside Vim. This enables further
 commands to control the compiler, see |bashdb-integration-db-control|.
+
+The method "terminal" runs the debugger in a terminal window, but without
+further integration.
 
 The other two methods are mostly for backwards compatibility with the old
 debugger features of |bash-support| (before version 4.4).
 
   Method          Short Description
  ----------------------------------------------------------------------------
+  integrated      Run in integrated mode.
   terminal        Run in a |terminal| window.
   xterm           Run bashdb in an external xterm.
   ddd             Run in DDD.
@@ -130,7 +137,7 @@ Open the help for the BashDB integration.
 Show the plug-in settings. The second version is verbose.
 
 ------------------------------------------------------------------------------
-2.1  DEBUGGER CONTROL                          *bashdb-integration-db-control*
+2.1  DEBUGGER INTEGRATION                      *bashdb-integration-db-control*
 ------------------------------------------------------------------------------
 
 When running the integrated debugger, various commands can be used to send
@@ -199,12 +206,13 @@ for backwards compatibility with the old debugger features of |bash-support|
 ------------------------------------------------------------------------------
                                                            *g:BashDB_Debugger*
 The default debugging method is set by g:BashDB_Debugger: >
-  let g:BashDB_Debugger = 'terminal'
+  let g:BashDB_Debugger = 'integrated'
 <
 The possible settings are listed below:
 
   Value           Short Description
  ----------------------------------------------------------------------------
+  integrated      Run in integrated mode.
   terminal        Run in a |terminal| window.
   xterm           Run bashdb in an external xterm.
   ddd             Run in DDD.

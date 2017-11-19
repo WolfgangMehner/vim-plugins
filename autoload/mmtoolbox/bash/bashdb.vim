@@ -395,7 +395,7 @@ if executable ( s:BashDB_DDD_Exec )
 	let s:BashDB_DebuggerList += [ 'ddd' ]
 endif
 if has ( 'terminal' )
-	let s:BashDB_DebuggerList += [ 'terminal' ]
+	let s:BashDB_DebuggerList += [ 'terminal', 'integrated' ]
 endif
 call sort ( s:BashDB_DebuggerList )
 
@@ -649,6 +649,8 @@ function! s:Run ( args )
 
 		silent exe '!ddd --debugger '.s:BashDB_Executable.' '.script_name.script_args.' &'
 	elseif s:BashDB_Debugger == 'terminal'
+		call s:ImportantMsg ( 'not implemented yet' )
+	elseif s:BashDB_Debugger == 'integrated'
 		call s:StartInternal ( script_name.script_args )
 	endif
 endfunction    " ----------  end of function s:Run  ----------
@@ -684,28 +686,47 @@ function! s:StartInternal ( args )
 		return s:WarningMsg ( 'debugger already running' )
 	endif
 
+	" bashdb: uses --tty the other way around
+	let is_bashdb = 0
+	let name_pty = 'BashDB - I/O'
+	let name_job = 'BashDB - CTRL'
+	if s:BashDB_Executable =~? '\cbashdb'
+		let is_bashdb = 1
+		let name_pty = 'BashDB - CTRL'
+		let name_job = 'BashDB - I/O'
+	endif
+
 	" script buffer/window
 	let s:debug_buf_script = bufnr( '%' )
 	let s:debug_win_script = win_getid( winnr() )
 
-	" the BashDB control commands are run through this terminal
-	let s:debug_buf_ctrl = term_start ( 'NONE', {
-				\ 'term_name' : 'BashDB - CTRL',
+	" only the script I/O appears here
+	let s:debug_buf_io = term_start ( 'NONE', {
+				\ 'term_name' : name_pty,
 				\ } )
 
-	let tty = term_gettty ( s:debug_buf_ctrl )
+	let tty = term_gettty ( s:debug_buf_io )
 
-	" start bashdb in another terminal, only the script I/O appears here
+	" start in another terminal, the control commands are run through this terminal
 	let arg_list  = [ s:BashDB_Executable ]
 	let arg_list += [ '--tty', tty, '-x', tty ]
 	let arg_list += s:ShellParseArgs ( a:args )
 
-	belowright new
-	let s:debug_buf_io = term_start ( arg_list, {
-				\ 'term_name' : 'BashDB - I/O',
-				\ 'curwin'    : 1,
+	" bashdb: switch order of windows (also see 'curwin' below)
+	if is_bashdb
+		belowright new
+	endif
+
+	let s:debug_buf_ctrl = term_start ( arg_list, {
+				\ 'term_name' : name_job,
+				\ 'curwin'    : is_bashdb,
 				\ 'exit_cb'   : function ( 's:EndInternal' ),
 				\ } )
+
+	" bashdb: switch the buffers
+	if is_bashdb
+		let [ s:debug_buf_io, s:debug_buf_ctrl ] = [ s:debug_buf_ctrl, s:debug_buf_io ]
+	endif
 
 	" now we're cooking
 	let s:debug_status = 'running'
