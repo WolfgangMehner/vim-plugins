@@ -12,7 +12,7 @@
 "                 Fritz Mehner <mehner.fritz@web.de>
 "       Version:  see g:AwkSupportVersion below
 "       Created:  14.01.2012
-"      Revision:  28.06.2017
+"      Revision:  20.12.2017
 "       License:  Copyright (c) 2001-2015, Dr. Fritz Mehner
 "                 Copyright (c) 2016-2017, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
@@ -474,6 +474,8 @@ endfunction    " ----------  end of function  s:XtermSize  ----------
 
 let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
 let s:UNIX  = has("unix")  || has("macunix") || has("win32unix")
+
+let s:NEOVIM = has("nvim")
 
 let s:installation           = '*undefined*'
 let s:plugin_dir             = ''
@@ -1205,8 +1207,13 @@ function! s:InitMenus()
 	let ahead = 'anoremenu <silent> '.s:Awk_RootMenu.'.Help.'
 	let ihead = 'inoremenu <silent> '.s:Awk_RootMenu.'.Help.'
 
-	exe ahead.'&AWK\ manual<Tab>'.esc_mapl.'hm               :call <SID>HelpManual("awk")<CR>'
-	exe ihead.'&AWK\ manual<Tab>'.esc_mapl.'hm          <C-C>:call <SID>HelpManual("awk")<CR>'
+	if s:NEOVIM
+		exe ahead.'&AWK\ manual<Tab>'.esc_mapl.'hm               :Man awk(1)<CR>'
+		exe ihead.'&AWK\ manual<Tab>'.esc_mapl.'hm          <C-C>:Man awk(1)<CR>'
+	else
+		exe ahead.'&AWK\ manual<Tab>'.esc_mapl.'hm               :call <SID>HelpManual("awk")<CR>'
+		exe ihead.'&AWK\ manual<Tab>'.esc_mapl.'hm          <C-C>:call <SID>HelpManual("awk")<CR>'
+	endif
 	exe ahead.'-SEP1- :'
 	exe ahead.'&help\ (Awk-Support)<Tab>'.esc_mapl.'hp       :call <SID>HelpPlugin()<CR>'
 	exe ihead.'&help\ (Awk-Support)<Tab>'.esc_mapl.'hp  <C-C>:call <SID>HelpPlugin()<CR>'
@@ -1334,9 +1341,17 @@ function! s:CreateAdditionalMaps ()
 	"-------------------------------------------------------------------------------
 	nnoremap    <buffer>  <silent>  <LocalLeader>rse         :call Awk_Settings(0)<CR>
 
-	 noremap  <buffer>  <silent>  <LocalLeader>hm       :call <SID>HelpManual('awk')<CR>
-	inoremap  <buffer>  <silent>  <LocalLeader>hm  <Esc>:call <SID>HelpManual('awk')<CR>
-	 noremap  <buffer>  <silent>  <LocalLeader>hp       :call <SID>HelpPlugin()<CR>
+	if s:NEOVIM
+		nnoremap  <buffer>  <silent>  <LocalLeader>hm       :Man awk(1)<CR>
+		vnoremap  <buffer>  <silent>  <LocalLeader>hm  <Esc>:Man awk(1)<CR>
+		inoremap  <buffer>  <silent>  <LocalLeader>hm  <Esc>:Man awk(1)<CR>
+	else
+		nnoremap  <buffer>  <silent>  <LocalLeader>hm       :call <SID>HelpManual('awk')<CR>
+		vnoremap  <buffer>  <silent>  <LocalLeader>hm  <Esc>:call <SID>HelpManual('awk')<CR>
+		inoremap  <buffer>  <silent>  <LocalLeader>hm  <Esc>:call <SID>HelpManual('awk')<CR>
+	endif
+	nnoremap  <buffer>  <silent>  <LocalLeader>hp       :call <SID>HelpPlugin()<CR>
+	vnoremap  <buffer>  <silent>  <LocalLeader>hp  <C-C>:call <SID>HelpPlugin()<CR>
 	inoremap  <buffer>  <silent>  <LocalLeader>hp  <C-C>:call <SID>HelpPlugin()<CR>
 
 	"-------------------------------------------------------------------------------
@@ -1377,6 +1392,8 @@ function! Awk_Settings ( verbose )
 	if     s:MSWIN | let sys_name = 'Windows'
 	elseif s:UNIX  | let sys_name = 'UN*X'
 	else           | let sys_name = 'unknown' | endif
+	if    s:NEOVIM | let vim_name = 'nvim'
+	else           | let vim_name = has('gui_running') ? 'gvim' : 'vim' | endif
 
 	let	txt = " Awk-Support settings\n\n"
 	" template settings: macros, style, ...
@@ -1393,7 +1410,7 @@ function! Awk_Settings ( verbose )
 		let txt .= "                templates :  -not loaded-\n\n"
 	endif
 	" plug-in installation
-	let txt .= '      plugin installation :  '.s:installation.' on '.sys_name."\n"
+	let txt .= '      plugin installation :  '.s:installation.' in '.vim_name.' on '.sys_name."\n"
 	let txt .= "\n"
 	" templates, snippets
 	if exists ( 'g:Awk_Templates' )
