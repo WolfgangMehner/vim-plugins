@@ -1,4 +1,4 @@
-README for c.vim (Version 6.2.1pre) / February 05 2017
+README for c.vim (Version 6.2.1pre) / December 20 2017
 ================================================================================
 
   *  INSTALLATION
@@ -206,14 +206,17 @@ RELEASE NOTES FOR VERSION 6.2.1
 ----------------------------------------------------------------------
 - The templates which are inserted into new files as file skeletons can be
   specified in the templates library, via properties:
-    C::FileSkeleton::Header, Cpp::FileSkeleton::Header,
-    C::FileSkeleton::Source, Cpp::FileSkeleton::Source
-- Fix a problem with the path when setting 'Run->executable to run'.
+    `C::FileSkeleton::Header`, `Cpp::FileSkeleton::Header`,
+    `C::FileSkeleton::Source`, `Cpp::FileSkeleton::Source`
+- Fix a problem with the path when setting `Run->executable to run`.
 - New and reworked templates. Change statement templates.
 
 Note: The filetype plug-ins have been moved, and are thus not loaded
-automatically anymore. Copy them from 'c-support/rc' to 'ftplugin',
+automatically anymore. Copy them from `c-support/rc` to `ftplugin`,
 or add the commands there to your own filetype plug-ins.
+Note: Some configuration for `*.i`, `*.ii`, and quickfix files has been removed.
+See `c-support/rc/customization.vimrc` for how to add them to your configuration
+files.
 
 Note: This reworks most of the statement templates. The loop and if templates
 which do not introduce a block have been remove entirely, since the templates

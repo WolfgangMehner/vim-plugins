@@ -2950,9 +2950,24 @@ function! s:CreateAdditionalMaps ()
 	call mmtemplates#core#CreateMaps ( 'g:C_Templates', g:C_MapLeader, 'do_special_maps', 'do_del_opt_map' )
 	"
 endfunction    " ----------  end of function s:CreateAdditionalMaps  ----------
-"
-" Plug-in setup:  {{{1
-"
+
+"-------------------------------------------------------------------------------
+" s:Initialize : Initialize templates, menus, and maps.   {{{1
+"-------------------------------------------------------------------------------
+function! s:Initialize ( ftype )
+	if ! exists( 'g:C_Templates' ) |
+		if s:C_LoadMenus == 'yes' | call C_CreateGuiMenus()
+		else                      | call s:RereadTemplates()
+		endif |
+	endif |
+	call s:CreateAdditionalMaps()
+	call s:CheckTemplatePersonalization()
+endfunction    " ----------  end of function s:Initialize  ----------
+
+"-------------------------------------------------------------------------------
+" === Setup: Templates, toolbox and menus ===   {{{1
+"-------------------------------------------------------------------------------
+
 "------------------------------------------------------------------------------
 "  setup the toolbox
 "------------------------------------------------------------------------------
@@ -2968,79 +2983,55 @@ if s:C_UseToolbox == 'yes'
 	"call mmtoolbox#tools#Info ( s:C_Toolbox )
 	"
 endif
-"
+
 "------------------------------------------------------------------------------
-"  show / hide the c-support menus
-"  define key mappings (gVim only)
+"  show / hide the C-Support menus
 "------------------------------------------------------------------------------
-"
+
 call C_ToolMenu()
-"
+
 if s:C_LoadMenus == 'yes' && s:C_CreateMenusDelayed == 'no'
 	call C_CreateGuiMenus()
 endif
-"
+
 "------------------------------------------------------------------------------
 "  Automated header insertion
-"  Local settings for the quickfix window
 "
 "			Vim always adds the {cmd} after existing autocommands,
 "			so that the autocommands execute in the order in which
 "			they were given. The order matters!
 "------------------------------------------------------------------------------
 if has("autocmd")
-	"
-	"  *.h has filetype 'cpp' by default; this can be changed to 'c' :
-	"
-	if s:C_TypeOfH=='c'
-		autocmd BufNewFile,BufEnter  *.h  :set filetype=c
-	endif
-	"
-	" C/C++ source code files which should not be preprocessed.
-	"
-	autocmd BufNewFile,BufRead  *.i  :set filetype=c
-	autocmd BufNewFile,BufRead  *.ii :set filetype=cpp
-	"
-	" DELAYED LOADING OF THE TEMPLATE DEFINITIONS
-	"
-	autocmd FileType *
-				\	if ( &filetype == 'cpp' || &filetype == 'c') |
-				\		if ! exists( 'g:C_Templates' ) |
-				\			if s:C_LoadMenus == 'yes' | call C_CreateGuiMenus ()    |
-				\			else                      | call s:RereadTemplates () |
-				\			endif |
-				\		endif |
-				\		call s:CreateAdditionalMaps() |
-				\		call s:CheckTemplatePersonalization() |
-				\	endif
+	augroup CSupport
 
-		"-------------------------------------------------------------------------------
-		" style switching :Automated header insertion (suffixes from the gcc manual)
-		"-------------------------------------------------------------------------------
-			if !exists( 'g:C_Styles' )
-				"-------------------------------------------------------------------------------
-				" template styles are the default settings
-				"-------------------------------------------------------------------------------
-				autocmd BufNewFile  * if &filetype =~ '^\(c\|cpp\)$' && expand("%:e") !~ 'ii\?' |
-							\     call s:InsertFileHeader() | endif
-				"
-			else
-				"-------------------------------------------------------------------------------
-				" template styles are related to file extensions 
-				"-------------------------------------------------------------------------------
-				for [ pattern, stl ] in items( g:C_Styles )
-					exe "autocmd BufNewFile,BufRead,BufEnter ".pattern." call mmtemplates#core#ChooseStyle ( g:C_Templates, '".stl."')"
-					exe "autocmd BufNewFile                  ".pattern." call s:InsertFileHeader()"
-				endfor
-				"
-			endif
-	"
-	" Wrap error descriptions in the quickfix window.
-	"
-	autocmd BufReadPost quickfix  setlocal wrap | setlocal linebreak
-	"
-	exe 'autocmd BufRead *.'.join( s:C_SourceCodeExtensionsList, '\|*.' )
+	" adjust header filetype:
+	" *.h has filetype 'cpp' by default, this can be changed to 'c'
+	if s:C_TypeOfH=='c'
+		autocmd BufNewFile,BufEnter  *.h  set filetype=c | " COMMENT: g:C_TypeOfH == 'c'
+	endif
+
+	" create menus and maps
+	autocmd FileType c    call s:Initialize('c')
+	autocmd FileType cpp  call s:Initialize('cpp')
+
+	" insert file header
+	if !exists( 'g:C_Styles' )
+		" template styles are the default settings
+		autocmd BufNewFile c    if expand("%:e") !~ 'ii\?' | call s:InsertFileHeader() | endif
+		autocmd BufNewFile cpp  if expand("%:e") !~ 'ii\?' | call s:InsertFileHeader() | endif
+	else
+		" template styles are related to file extensions
+		for [ pattern, stl ] in items( g:C_Styles )
+			exe "autocmd BufNewFile,BufReadPost ".pattern." call mmtemplates#core#ChooseStyle ( g:C_Templates, '".stl."')"
+			exe "autocmd BufNewFile             ".pattern." call s:InsertFileHeader()"
+		endfor
+	endif
+
+	" highlight jump targets after opening file
+	exe 'autocmd BufReadPost *.'.join( s:C_SourceCodeExtensionsList, '\|*.' )
 				\     .' call C_HighlightJumpTargets()'
+
+	augroup END
 endif " has("autocmd")
 " }}}1
 "-------------------------------------------------------------------------------

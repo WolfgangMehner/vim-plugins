@@ -1,13 +1,13 @@
-"===================================================================================
+"===============================================================================
 "         FILE:  .vimrc
 "  DESCRIPTION:  suggestion for a personal configuration file ~/.vimrc
 "       AUTHOR:  Dr.-Ing. Fritz Mehner
 "      CREATED:  04.04.2009
-"===================================================================================
-"
-"===================================================================================
+"===============================================================================
+
+"===============================================================================
 " GENERAL SETTINGS
-"===================================================================================
+"===============================================================================
 
 "-------------------------------------------------------------------------------
 " Use Vim settings, rather then Vi settings.
@@ -33,13 +33,12 @@ syntax    on
 " Uncomment your choice.  
 if  has("win16") || has("win32")     || has("win64") || 
   \ has("win95") || has("win32unix")
-    "
-"    runtime mswin.vim
-"    set backupdir =$VIM\vimfiles\backupdir
-"    set dictionary=$VIM\vimfiles\wordlists/german.list
+"  runtime mswin.vim
+"  set backupdir =$VIM\vimfiles\backupdir
+"  set dictionary=$VIM\vimfiles\wordlists/german.list
 else
-"    set backupdir =$HOME/.vim.backupdir
-"    set dictionary=$HOME/.vim/wordlists/german.list
+"  set backupdir =$HOME/.vim.backupdir
+"  set dictionary=$HOME/.vim/wordlists/german.list
 endif
 "
 " Using a backupdir under UNIX/Linux: you may want to include a line similar to
@@ -103,7 +102,7 @@ inoremap  <silent> <s-tab>  <C-C>:if &modifiable && !&readonly &&
 " Leave the editor with Ctrl-q (KDE): Write all changed buffers and exit Vim
 "-------------------------------------------------------------------------------
 nnoremap  <C-q>    :wqall<CR>
-"
+
 "-------------------------------------------------------------------------------
 " When editing a file, always jump to the last known cursor position.
 " Don't do it when the position is invalid or when inside an event handler
@@ -128,38 +127,37 @@ endif " has("autocmd")
 "    F8   -  display next error   
 "-------------------------------------------------------------------------------
 "
-map   <silent> <F2>        :write<CR>
-map   <silent> <F3>        :Explore<CR>
-nmap  <silent> <F4>        :exe ":ptag ".expand("<cword>")<CR>
-map   <silent> <F5>        :copen<CR>
-map   <silent> <F6>        :cclose<CR>
-map   <silent> <F7>        :cp<CR>
-map   <silent> <F8>        :cn<CR>
+noremap   <silent> <F2>        :write<CR>
+noremap   <silent> <F3>        :Explore<CR>
+nnoremap  <silent> <F4>        :exe ":ptag ".expand("<cword>")<CR>
+noremap   <silent> <F5>        :copen<CR>
+noremap   <silent> <F6>        :cclose<CR>
+noremap   <silent> <F7>        :cp<CR>
+noremap   <silent> <F8>        :cn<CR>
 "
-imap  <silent> <F2>   <Esc>:write<CR>
-imap  <silent> <F3>   <Esc>:Explore<CR>
-imap  <silent> <F4>   <Esc>:exe ":ptag ".expand("<cword>")<CR>
-imap  <silent> <F5>   <Esc>:copen<CR>
-imap  <silent> <F6>   <Esc>:cclose<CR>
-imap  <silent> <F7>   <Esc>:cp<CR>
-imap  <silent> <F8>   <Esc>:cn<CR>
+inoremap  <silent> <F2>   <Esc>:write<CR>
+inoremap  <silent> <F3>   <Esc>:Explore<CR>
+inoremap  <silent> <F4>   <Esc>:exe ":ptag ".expand("<cword>")<CR>
+inoremap  <silent> <F5>   <Esc>:copen<CR>
+inoremap  <silent> <F6>   <Esc>:cclose<CR>
+inoremap  <silent> <F7>   <Esc>:cp<CR>
+inoremap  <silent> <F8>   <Esc>:cn<CR>
 "
 "-------------------------------------------------------------------------------
 " Fast switching between buffers
 " The current buffer will be saved before switching to the next one.
 " Choose :bprevious or :bnext
 "-------------------------------------------------------------------------------
-"
- map  <silent> <s-tab>  <Esc>:if &modifiable && !&readonly && 
-     \                  &modified <CR> :write<CR> :endif<CR>:bprevious<CR>
-imap  <silent> <s-tab>  <Esc>:if &modifiable && !&readonly && 
-     \                  &modified <CR> :write<CR> :endif<CR>:bprevious<CR>
+ noremap  <silent> <s-tab>       :if &modifiable && !&readonly && 
+     \                      &modified <CR> :write<CR> :endif<CR>:bprevious<CR>
+inoremap  <silent> <s-tab>  <C-C>:if &modifiable && !&readonly && 
+     \                      &modified <CR> :write<CR> :endif<CR>:bprevious<CR>
 "
 "-------------------------------------------------------------------------------
 " Leave the editor with Ctrl-q : Write all changed buffers and exit Vim
 "-------------------------------------------------------------------------------
-nmap  <C-q>    :wqa<CR>
-"
+nnoremap  <C-q>    :wqall<CR>
+
 "-------------------------------------------------------------------------------
 " comma always followed by a space
 "-------------------------------------------------------------------------------
@@ -179,34 +177,34 @@ vnoremap { s{}<Esc>P<Right>%
 "-------------------------------------------------------------------------------
 " autocomplete quotes (visual and select mode)
 "-------------------------------------------------------------------------------
-xnoremap  '  s''<Esc>P<Right>
-xnoremap  "  s""<Esc>P<Right>
-xnoremap  `  s``<Esc>P<Right>
-"
+vnoremap  '  s''<Esc>P<Right>
+vnoremap  "  s""<Esc>P<Right>
+vnoremap  `  s``<Esc>P<Right>
+
 "-------------------------------------------------------------------------------
-" Change the working directory to the directory containing the current file
+" Always wrap lines in the quickfix buffer
 "-------------------------------------------------------------------------------
-if has("autocmd")
-  autocmd BufEnter * :lchdir %:p:h
-endif " has("autocmd")
-"
-"===================================================================================
+"autocmd BufReadPost quickfix  setlocal wrap | setlocal linebreak
+
+"===============================================================================
 " VARIOUS PLUGIN CONFIGURATIONS
-"===================================================================================
-"
+"===============================================================================
+
 "-------------------------------------------------------------------------------
 " c.vim
 "-------------------------------------------------------------------------------
-"            
-" --empty --
-"                         
+
+" use C syntax highlightinh for *.i ; use CPP for *.ii
+"autocmd BufNewFile,BufReadPost  *.i   set filetype=c
+"autocmd BufNewFile,BufReadPost  *.ii  set filetype=cpp
+
 "-------------------------------------------------------------------------------
 " taglist.vim : toggle the taglist window
 " taglist.vim : define the title texts for make
 " taglist.vim : define the title texts for qmake
 "-------------------------------------------------------------------------------
- noremap <silent> <F11>  <Esc><Esc>:Tlist<CR>
-inoremap <silent> <F11>  <Esc><Esc>:Tlist<CR>
+ noremap <silent> <F11>       :TlistToggle<CR>
+inoremap <silent> <F11>  <C-C>:TlistToggle<CR>
 
 let Tlist_GainFocus_On_ToggleOpen = 1
 let Tlist_Close_On_Select 				= 1
