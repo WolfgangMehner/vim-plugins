@@ -1341,6 +1341,19 @@ function! s:RemoveMenus()
 endfunction    " ----------  end of function s:RemoveMenus  ----------
 
 "-------------------------------------------------------------------------------
+" s:Initialize : Initialize templates, menus, and maps.   {{{1
+"-------------------------------------------------------------------------------
+function! s:Initialize ( ftype )
+	if ! exists( 'g:Vim_Templates' )
+		if s:Vim_LoadMenus == 'yes' | call s:AddMenus()
+		else                        | call s:RereadTemplates()
+		endif
+	endif
+	call s:CreateAdditionalMaps()
+	call s:CheckTemplatePersonalization()
+endfunction    " ----------  end of function s:CreateTemplAndMenu  ----------
+
+"-------------------------------------------------------------------------------
 " === Setup: Templates, toolbox and menus ===   {{{1
 "-------------------------------------------------------------------------------
 
@@ -1356,19 +1369,15 @@ nnoremap  <silent>  <Plug>VimSupportKeywordHelp       :call <SID>KeywordHelp()<C
 inoremap  <silent>  <Plug>VimSupportKeywordHelp  <C-C>:call <SID>KeywordHelp()<CR>
 
 if has( 'autocmd' )
+	augroup VimSupport
 
-	" create menues and maps
-  autocmd FileType *
-        \ if &filetype == 'vim' || ( &filetype == 'help' && &modifiable == 1 && s:Vim_CreateMapsForHelp == 'yes' ) |
-        \   if ! exists( 'g:Vim_Templates' ) |
-        \     if s:Vim_LoadMenus == 'yes' | call s:AddMenus ()  |
-        \     else                        | call s:RereadTemplates () |
-        \     endif |
-        \   endif |
-        \   call s:CreateAdditionalMaps() |
-				\		call s:CheckTemplatePersonalization() |
-        \ endif
+	" create menus and maps
+	autocmd FileType vim  call s:Initialize('vim')
+	if s:Vim_CreateMapsForHelp == 'yes'
+		autocmd FileType help  if &modifiable == 1 | call s:Initialize('help') | endif | " COMMENT: g:Vim_CreateMapsForHelp == 'yes'
+	endif
 
+	augroup END
 endif
 " }}}1
 "-------------------------------------------------------------------------------
