@@ -13,9 +13,9 @@ comments, and code snippets. These code fragments are provided in an extendible
 template library. Syntax checking, compiling, running a program, running indent
 or code checkers can be done with a keystroke. There are many additional hints
 and options which can improve speed and comfort when writing C/C++.
-See the help file csupport.txt for more information.
+See the help file `csupport.txt` for more information.
 
-This plugin can be used with Vim version 7.x.
+This plug-in can be used with Vim version 7.x.
 
 
 --------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ INSTALLATION
 A system-wide installation for all users can also be done. This will have
 further effects on how the plug-in works. For a step-by-step instruction, as
 well as an explanation of the other consequences, please see the help file
-'doc/csupport.txt' or look up the documentation via:
+`doc/csupport.txt` or look up the documentation via:
 
       :help csupport-system-wide
 
@@ -34,14 +34,14 @@ well as an explanation of the other consequences, please see the help file
 (1) LINUX
 ----------------------------------------------------------------------
 
-The subdirectories in the zip archive c-support.zip mirror the directory
-structure which is needed below the local installation directory $HOME/.vim/
-(find the value of $HOME with `:echo $HOME` from inside Vim).
+The subdirectories in the zip archive `c-support.zip` mirror the directory
+structure which is needed below the local installation directory `$HOME/.vim/`
+(find the value of `$HOME` with `:echo $HOME` from inside Vim).
 
-(1.0) Save the template files in '$HOME/.vim/c-support/templates/Templates' if
-   you have changed any of them.
+(1.0) Save the template files in `$HOME/.vim/c-support/templates/Templates`
+   if you have changed any of them.
 
-(1.1) Copy the zip archive c-support.zip to $HOME/.vim and run
+(1.1) Copy the zip archive `c-support.zip` to `$HOME/.vim` and run
 
       unzip c-support.zip
 
@@ -51,19 +51,19 @@ structure which is needed below the local installation directory $HOME/.vim/
       $HOME/.vim/doc/...
       $HOME/.vim/plugin/c.vim
 
-(1.2) Loading of plugin files must be enabled. If not use
+(1.2) Loading of plug-in files must be enabled. If not use
 
       :filetype plugin on
 
-   This is the minimal content of the file '$HOME/.vimrc'. Create one if there
-   is none or use the files in $HOME/.vim/c-support/rc as a starting point.
+   This is the minimal content of the file `$HOME/.vimrc`. Create one if there
+   is none or use the files in `$HOME/.vim/c-support/rc` as a starting point.
 
-(1.3) Set at least some personal details. Use the map \ntw inside a C/C++ buffer
+(1.3) Set at least some personal details. Use the map `\ntw` inside a C/C++ buffer
    or the menu entry:
 
       C/C++ -> Snippets -> template setup wizard
 
-   It will help you set up the file _runtimepath_/templates/personal.templates .
+   It will help you set up the file `_runtimepath_/templates/personal.templates`.
    The file is read by all plug-ins supporting this feature to get your personal
    details. Here is the minimal personalization (my settings as an example):
 
@@ -72,22 +72,22 @@ structure which is needed below the local installation directory $HOME/.vim/
       SetMacro( 'EMAIL',       'wolfgang-mehner@web.de' )
       SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 
-   Use the file $HOME/.vim/templates/c.templates to customize or add to your
+   Use the file `$HOME/.vim/templates/c.templates` to customize or add to your
    C/C++ template library. It can also be set up via the wizard.
 
-   (Read more about the template system in the plugin documentation)
+   (Read more about the template system in the plug-in documentation)
 
-(1.4) Make the plugin help accessible by typing the following command on the
+(1.4) Make the plug-in help accessible by typing the following command on the
    Vim command line:
 
       :helptags $HOME/.vim/doc/
 
-(1.5) Consider additional settings in the file '$HOME/.vimrc'. The files
-   customization.vimrc and customization.gvimrc are replacements or extensions
-   for your .vimrc and .gvimrc. You may want to use parts of them. The files
+(1.5) Consider additional settings in the file `$HOME/.vimrc`. The files
+   `customization.vimrc` and `customization.gvimrc` are replacements or extensions
+   for your `.vimrc` and `.gvimrc`. You may want to use parts of them. The files
    are documented.
 
-(1.6) To enable additional tools, add these lines to your '$HOME/.vimrc'. To
+(1.6) To enable additional tools, add these lines to your `$HOME/.vimrc`. To
    enable the CMake and Doxygen tools, use:
 
       let g:C_UseTool_cmake    = 'yes'
@@ -101,14 +101,14 @@ structure which is needed below the local installation directory $HOME/.vim/
 (2) WINDOWS
 ----------------------------------------------------------------------
 
-The subdirectories in the zip archive c-support.zip mirror the directory
-structure which is needed below the local installation directory $HOME/vimfiles/
-(find the value of $HOME with `:echo $HOME` from inside Vim).
+The subdirectories in the zip archive `c-support.zip` mirror the directory
+structure which is needed below the local installation directory `$HOME/vimfiles/`
+(find the value of `$HOME` with `:echo $HOME` from inside Vim).
 
-(2.0) Save the template files in '$HOME/vimfiles/c-support/templates/Templates' if
+(2.0) Save the template files in `$HOME/vimfiles/c-support/templates/Templates` if
    you have changed any of them.
 
-(2.1) Copy the zip archive c-support.zip to $HOME/vimfiles and run
+(2.1) Copy the zip archive `c-support.zip` to `$HOME/vimfiles` and run
 
       unzip c-support.zip
 
@@ -118,19 +118,19 @@ structure which is needed below the local installation directory $HOME/vimfiles/
       $HOME/vimfiles/doc/...
       $HOME/vimfiles/plugin/c.vim
 
-(2.2) Loading of plugin files must be enabled. If not use
+(2.2) Loading of plug-in files must be enabled. If not use
 
       :filetype plugin on
 
-   This is the minimal content of the file '$HOME/_vimrc'. Create one if there
-   is none or use the files in $HOME/vimfiles/c-support/rc as a starting point.
+   This is the minimal content of the file `$HOME/_vimrc`. Create one if there
+   is none or use the files in `$HOME/vimfiles/c-support/rc` as a starting point.
 
-(2.3) Set at least some personal details. Use the map \ntw inside a C/C++ buffer
+(2.3) Set at least some personal details. Use the map `\ntw` inside a C/C++ buffer
    or the menu entry:
 
       C/C++ -> Snippets -> template setup wizard
 
-   It will help you set up the file _runtimepath_/templates/personal.templates .
+   It will help you set up the file `_runtimepath_/templates/personal.templates`.
    The file is read by all plug-ins supporting this feature to get your personal
    details. Here is the minimal personalization (my settings as an example):
 
@@ -139,22 +139,22 @@ structure which is needed below the local installation directory $HOME/vimfiles/
       SetMacro( 'EMAIL',       'wolfgang-mehner@web.de' )
       SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 
-   Use the file $HOME/vimfiles/templates/c.templates to customize or add to
+   Use the file `$HOME/vimfiles/templates/c.templates` to customize or add to
    your C/C++ template library. It can also be set up via the wizard.
 
-   (Read more about the template system in the plugin documentation)
+   (Read more about the template system in the plug-in documentation)
 
-(2.4) Make the plugin help accessible by typing the following command on the
+(2.4) Make the plug-in help accessible by typing the following command on the
    Vim command line:
 
       :helptags $HOME\vimfiles\doc\
 
-(2.5) Consider additional settings in the file '$HOME/_vimrc'. The files
-   customization.vimrc and customization.gvimrc are replacements or extensions
-   for your _vimrc and _gvimrc. You may want to use parts of them. The files
+(2.5) Consider additional settings in the file `$HOME/_vimrc`. The files
+   `customization.vimrc` and `customization.gvimrc` are replacements or extensions
+   for your `_vimrc` and `_gvimrc`. You may want to use parts of them. The files
    are documented.
 
-(2.6) To enable additional tools, add these lines to your '$HOME/_vimrc'. To
+(2.6) To enable additional tools, add these lines to your `$HOME/_vimrc`. To
    enable the CMake and Doxygen tools, use:
 
       let g:C_UseTool_cmake    = 'yes'
@@ -164,8 +164,8 @@ structure which is needed below the local installation directory $HOME/vimfiles/
 
       :help csupport-doxygen-enable
 
-(2.7) Make sure the shell is set up correctly. The options 'shell',
-   'shellcmdflag', 'shellquote', and 'shellxquote' must be set consistently.
+(2.7) Make sure the shell is set up correctly. The options `shell`,
+   `shellcmdflag`, `shellquote`, and `shellxquote` must be set consistently.
    Compare `:help csupport-troubleshooting`.
 
 
@@ -182,19 +182,12 @@ There are a lot of features and options which can be used and influenced:
   *  C/C++ dictionaries for keyword completion
   *  (re)moving the root menu
 
-Look at the C-Support help with:
+Actions differ for different modes. Please read the documentation:
 
       :help csupport
 
-               +-----------------------------------------------+
-               | +-------------------------------------------+ |
-               | |    ** PLEASE READ THE DOCUMENTATION **    | |
-               | |    Actions differ for different modes!    | |
-               | +-------------------------------------------+ |
-               +-----------------------------------------------+
-
 Any problems? See the TROUBLESHOOTING section at the end of the help file
-'doc/csupport.txt'.
+`doc/csupport.txt`.
 
 
 --------------------------------------------------------------------------------
@@ -227,7 +220,7 @@ maps.
 
 RELEASE NOTES FOR OLDER VERSIONS
 ----------------------------------------------------------------------
--> see file 'c-support/doc/ChangeLog'
+-> see file `c-support/doc/ChangeLog`
 
 
 --------------------------------------------------------------------------------
