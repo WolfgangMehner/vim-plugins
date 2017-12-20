@@ -1750,6 +1750,19 @@ function! s:RemoveMenus()
 endfunction    " ----------  end of function s:RemoveMenus  ----------
 
 "-------------------------------------------------------------------------------
+" s:Initialize : Initialize templates, menus, and maps.   {{{1
+"-------------------------------------------------------------------------------
+function! s:Initialize ( ftype )
+	if ! exists( 'g:Awk_Templates' )
+		if s:Awk_LoadMenus == 'yes' | call s:AddMenus()
+		else                        | call s:RereadTemplates()
+		endif
+	endif
+	call s:CreateAdditionalMaps()
+	call s:CheckTemplatePersonalization()
+endfunction    " ----------  end of function s:Initialize  ----------
+
+"-------------------------------------------------------------------------------
 " === Setup: Templates and menus ===   {{{1
 "-------------------------------------------------------------------------------
 
@@ -1761,24 +1774,15 @@ if s:Awk_LoadMenus == 'yes' && s:Awk_CreateMenusDelayed == 'no'
 endif
 
 if has( 'autocmd' )
+	augroup AwkSupport
 
-	" create menues and maps
-  autocmd FileType *
-        \ if &filetype == 'awk' |
-        \   if ! exists( 'g:Awk_Templates' ) |
-        \     if s:Awk_LoadMenus == 'yes' | call s:AddMenus ()  |
-        \     else                        | call s:RereadTemplates () |
-        \     endif |
-        \   endif |
-        \   call s:CreateAdditionalMaps () |
-				\		call s:CheckTemplatePersonalization() |
-        \ endif
+	" create menus and maps
+	autocmd FileType awk  call s:Initialize('awk')
 
 	" insert file header
-	if s:Awk_InsertFileHeader == 'yes'
-		autocmd BufNewFile  *.awk  call s:InsertFileHeader()
-	endif
+	autocmd BufNewFile *.awk  call s:InsertFileHeader()
 
+	augroup END
 endif
 " }}}1
 "-------------------------------------------------------------------------------
