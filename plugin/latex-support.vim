@@ -2543,6 +2543,23 @@ function! s:RemoveMenus()
 endfunction    " ----------  end of function s:RemoveMenus  ----------
 
 "-------------------------------------------------------------------------------
+" s:Initialize : Initialize templates, menus, and maps.   {{{1
+"-------------------------------------------------------------------------------
+function! s:Initialize ( ftype )
+	if ! exists( 'g:Latex_Templates' )
+		if s:Latex_LoadMenus == 'yes' | call s:AddMenus()
+		else                          | call s:RereadTemplates()
+		endif
+	endif
+	if a:ftype == 'latex'
+		call s:CreateAdditionalLatexMaps()
+	elseif a:ftype == 'bib'
+		call s:CreateAdditionalBibtexMaps()
+	endif
+	call s:CheckTemplatePersonalization()
+endfunction    " ----------  end of function s:Initialize  ----------
+
+"-------------------------------------------------------------------------------
 " Latex_Settings : Display plug-in settings.   {{{1
 "
 " verbosity:
@@ -2666,39 +2683,24 @@ command! -nargs=? -complete=custom,<SID>GetTypesetterList  LatexTypesetter   cal
 command! -nargs=? -complete=custom,<SID>GetProcessingList  LatexProcessing   call <SID>SetProcessing(<q-args>)
 
 if has( 'autocmd' )
+	augroup LatexSupport
 
-  " In the absence of any LaTeX keywords, the default filetype for *.tex files is 'plaintex'.
-  " This means new files have this filetype.
-
-  autocmd FileType *
-        \ if &filetype == 'plaintex' && s:Latex_TexFlavor == 'latex' |
-        \   set filetype=tex |
-        \ endif |
-        \ if &filetype == 'tex' |
-        \   if ! exists( 'g:Latex_Templates' ) |
-        \     if s:Latex_LoadMenus == 'yes' | call s:AddMenus () |
-        \     else                          | call s:RereadTemplates ()    |
-        \     endif |
-        \   endif |
-        \   call s:CreateAdditionalLatexMaps () |
-				\		call s:CheckTemplatePersonalization() |
-        \ endif
-
-  autocmd FileType *
-        \ if &filetype == 'bib' |
-        \   if ! exists( 'g:Latex_Templates' ) |
-        \     if s:Latex_LoadMenus == 'yes' | call s:AddMenus () |
-        \     else                          | call s:RereadTemplates ()    |
-        \     endif |
-        \   endif |
-        \   call s:CreateAdditionalBibtexMaps () |
-				\		call s:CheckTemplatePersonalization() |
-        \ endif
-
-	if s:Latex_TexFlavor == 'latex' && s:Latex_InsertFileProlog == 'yes'
-		autocmd BufNewFile  *.tex  call s:InsertFileHeader()
+	" In the absence of any LaTeX keywords, the default filetype for *.tex files is 'plaintex'.
+	" This means new files have this filetype.
+	if s:Latex_TexFlavor == 'latex'
+		autocmd FileType plaintex  set filetype=tex | " COMMENT: g:Latex_TexFlavor == 'latex'
 	endif
 
+	" create menus and maps
+	autocmd FileType tex  call s:Initialize('latex')
+	autocmd FileType bib  call s:Initialize('bib')
+
+	" insert file header
+	if s:Latex_TexFlavor == 'latex'
+		autocmd BufNewFile  *.tex  call s:InsertFileHeader() | " COMMENT: g:Latex_TexFlavor == 'latex'
+	endif
+
+	augroup END
 endif
 " }}}1
 "-------------------------------------------------------------------------------
