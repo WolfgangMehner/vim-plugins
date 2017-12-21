@@ -340,9 +340,11 @@ endfunction    " ----------  end of function s:HandleFiletype  ----------
 "-------------------------------------------------------------------------------
 
 if has( 'autocmd' )
-  for ft in s:filetype_names
-    exe 'autocmd FileType '.ft.' call <SID>HandleFiletype ( '.string( ft ).' )'
-  endfor
+	augroup TemplateSupport
+	for ft in s:filetype_names
+		exe 'autocmd FileType '.ft.' call <SID>HandleFiletype ( '.string( ft ).' )'
+	endfor
+	augroup END
 endif
 " }}}1
 "-------------------------------------------------------------------------------
