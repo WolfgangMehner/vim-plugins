@@ -12,17 +12,18 @@ Project:
   somewhere?
 - (DONE?) Improve 'adjust end-of-line comment' to change the line if the comment
   itself contains ignored sections?
-- Remove old ".../rc/sample_template_file".
 - Do not always jump to errors automatically from the quickfix list. Make this
   configurable.
 - Configure the template which is inserted automatically when a new file is
   created.
 - Use 'Xterm_Executable' and 'Xterm_Options' everywhere.
 - Do not use 'lchdir' for starting external jobs in a directory. This may have
-  undesired side effects. Use 'ch' instead.
+  undesired side effects. Use 'ch' instead, and use haslocaldir() when
+  available.
 - Check how to start jobs with arguments under Windows.
-  Important for job_start() and term_start.
+  Important for job_start() and term_start().
 - Add plug-in set-up guide.
+- Remove mailing list links from plug-in pages and GitHub README.
 
 vim.org:
 - (DONE) Reference GitHub on plug-in pages.
@@ -131,6 +132,7 @@ Lua:
 Matlab:
 - The old setup of the help via "SetMacro( 'HELP_BROWSER', ... )" is still
   mentioned in the documentations.
+- Remove old ".../rc/sample_template_file".
 - Remove old release script 'release.lua'.
 - Move 'ftplugin/matlab.vim'.
 

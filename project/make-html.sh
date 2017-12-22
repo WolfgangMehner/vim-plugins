@@ -14,7 +14,8 @@
 #  REQUIREMENTS:  ---
 #          BUGS:  ---
 #         NOTES:  ---
-#        AUTHOR:  Dr.-Ing. Fritz Mehner (fgm), mehner@web.de
+#        AUTHOR:  Wolfgang Mehner <wolfgang-mehner@web.de>
+#                 Fritz Mehner <mehner.fritz@web.de>
 #       VERSION:  1.0
 #       CREATED:  20.03.2009
 #      REVISION:  15.11.2014
