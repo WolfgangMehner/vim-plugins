@@ -77,14 +77,12 @@
 \vspace{1mm}%
 \textbf{\textsc{\Huge{Hot keys}}}\\ 
 \vspace{1mm}%
-Key mappings for Vim and gVim.\\
+Key mappings for Vim/gVim/Neovim.\\
 {\tiny  \texttt{http://www.vim.org}\hspace{1.5mm}---\hspace{1.5mm}\textbf{Wolfgang Mehner},  \texttt{wolfgang-mehner@web.de}}\\
-\vspace{1.0mm}
-{\normalsize (i)} insert mode, {\normalsize (n)} normal mode, {\normalsize (v)} visual mode\\
 \vspace{1.0mm}
 %
 %%======================================================================
-%%  table, left part				[[[1
+%%  page 1 / table, left part				[[[1
 %%======================================================================
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{60mm}|}
@@ -93,95 +91,94 @@ Key mappings for Vim and gVim.\\
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{H}elp}}\\[1.0ex]
-\hline \verb'\he'   & English dictionary                \hfill (n,i)\\
-\hline \verb'\hb'   & display the Bash manual           \hfill (n,i)\\
-\hline \verb'\hh'   & help (Bash builtins)              \hfill (n,i)\\
-\hline \verb'\hm'   & show manual (cmd. line utilities) \hfill (n,i)\\
-\hline \verb'\hp'   & help (plug-in)                    \hfill (n,i)\\
+\hline \verb'\he'   & English dictionary                \\
+\hline \verb'\hb'   & display the Bash manual           \\
+\hline \verb'\hh'   & help (Bash builtins)              \hfill (T)\\
+\hline \verb'\hm'   & show manual (cmd. line utilities) \\
+\hline \verb'\hp'   & help (plug-in)                    \\
 \hline
 %%----------------------------------------------------------------------
 %%  main menu				[[[2
 %%----------------------------------------------------------------------
 \hline 
 \multicolumn{2}{|r|}{\textsl{\textbf{B}ash}}\\[1.0ex]
-\hline \verb'\bps'   & \textbf{p}arameter \textbf{s}ubstitution (list) \hfill (n, i)\\
-\hline \verb'\bsp'   & \textbf{s}pecial \textbf{p}arameters (list)     \hfill (n, i)\\
-\hline \verb'\ben'   & \textbf{en}vironment (list)                     \hfill (n, i)\\
-\hline \verb'\bbu'   & \textbf{bu}iltins (list)                        \hfill (n, i)\\
-\hline \verb'\bse'   & \textbf{se}t options (list)                     \hfill (n, i)\\
-\hline \verb'\bso'   & \textbf{s}h\textbf{o}pts (list)                 \hfill (n, i)\\
+\hline \verb'\bps'   & \textbf{p}arameter \textbf{s}ubstitution (list) \hfill (T)\\
+\hline \verb'\bsp'   & \textbf{s}pecial \textbf{p}arameters (list)     \hfill (T)\\
+\hline \verb'\ben'   & \textbf{en}vironment (list)                     \hfill (T)\\
+\hline \verb'\bbu'   & \textbf{bu}iltins (list)                        \hfill (T)\\
+\hline \verb'\bse'   & \textbf{se}t options (list)                     \hfill (T)\\
+\hline \verb'\bso'   & \textbf{s}h\textbf{o}pts (list)                 \hfill (T)\\
 \hline 
 %%----------------------------------------------------------------------
 %%  menu Comments				[[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{C}omments}}                       \\[1.0ex]
-\hline \Rep\verb'\cl'   & end-of-line comment               \hfill (n, i, v)\\
-\hline \Rep\verb'\cj'   & adjust end-of-line comments       \hfill (n, i, v)\\
-\hline     \verb'\cs'   & set end-of-line comment col.      \hfill (n)\\
+\hline \Rep\verb'\cl'   & end-of-line comment               \hfill (v)\\
+\hline \Rep\verb'\cj'   & adjust end-of-line comments       \hfill (v)\\
+\hline     \verb'\cs'   & set end-of-line comment col.      \\
 %
-\hline \Rep\verb'\cc'   & code $\rightarrow$ comment        \hfill (n, i, v)\\
-\hline \Rep\verb'\co'   & uncomment code                    \hfill (n, i, v)\\
+\hline \Rep\verb'\cc'   & code $\rightarrow$ comment        \hfill (v)\\
+\hline \Rep\verb'\co'   & uncomment code                    \hfill (v)\\
 %
-\hline     \verb'\cfr'  & frame comment                     \hfill (n, i)\\
-\hline     \verb'\cfu'  & function description              \hfill (n, i)\\
-\hline     \verb'\ch'   & file header                       \hfill (n, i)\\
-\hline     \verb'\csh'  & shebang                           \hfill (n, i)\\
-\hline     \verb'\cd'   & date                              \hfill (n, i)\\
-\hline     \verb'\ct'   & date \& time                      \hfill (n, i)\\
+\hline     \verb'\cfr'  & frame comment                     \\
+\hline     \verb'\cfu'  & function description              \\
+\hline     \verb'\ch'   & file header                       \\
+\hline     \verb'\csh'  & shebang                           \\
+\hline     \verb'\cd'   & date                              \\
+\hline     \verb'\ct'   & date \& time                      \\
 \hline
-\end{tabular}\\
+\end{tabular}\\[1.0ex]
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
-%%
-%\vfill
-%%
-%\begin{minipage}[b]{75mm}%
-%\scriptsize{%
-%\vspace{1mm}
-%%\hrulefill\\
-%	$^1$ {Linux/U**x only} \hspace{3mm} $^2$ {GUI only}
-%}%
-%\end{minipage}\\
+%
+%
+\parbox[t][5mm][t]{0.33\textwidth}{%
+\scriptsize%
+visual mode: {\normalsize (v)} use the range, 
+{\normalsize (s)} surround range \\
+tab-completion: {\normalsize (T)} specialized,
+{\normalsize (F)} filenames
+}\\%
 %
 %%======================================================================
-%%  table, middle part				[[[1
+%%  page 1 / table, middle part				[[[1
 %%======================================================================
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{60mm}|}
 \hline
 	\multicolumn{2}{|r|}{\textsl{\textbf{C}omments (cont)}}                       \\[1.0ex]
-\hline     \verb'\css'  & script sections                   \hfill (n, i)\\
-\hline     \verb'\ckc'  & keyword comments                  \hfill (n, i)\\
-\hline     \verb'\cma'  & plug-in macros                    \hfill (n, i)\\
+\hline     \verb'\css'  & script sections                       \hfill (T)\\
+\hline     \verb'\ckc'  & keyword comments                      \hfill (T)\\
+\hline     \verb'\cma'  & plug-in macros                        \hfill (T)\\
 %
-\hline     \verb'\ce'   & \texttt{echo} "\textsl{actual line}"  \hfill (n, i)\\
-\hline     \verb'\cr'   & remove \texttt{echo} from actual line \hfill (n, i)\\
+\hline     \verb'\ce'   & \texttt{echo} "\textsl{actual line}"  \hfill (v)\\
+\hline     \verb'\cr'   & remove \texttt{echo} from actual line \hfill (v)\\
 \hline
 %%----------------------------------------------------------------------
 %%  menu Statements				[[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{S}tatements}}                    \\[1.0ex]
-\hline \verb'\sc'  & \verb'case in ... esac'               \hfill (n, i)\\
-\hline \verb'\sei' & \verb'elif then'                      \hfill (n, i)\\
-\hline \verb'\sf'  & \verb'for in do done'                 \hfill (n, i, v)\\
-\hline \verb'\sfo' & \verb'for ((...)) do done'            \hfill (n, i, v)\\
-\hline \verb'\si'  & \verb'if then fi'                     \hfill (n, i, v)\\
-\hline \verb'\sie' & \verb'if then else fi'                \hfill (n, i, v)\\
-\hline \verb'\ss'  & \verb'select in do done'              \hfill (n, i, v)\\
-\hline \verb'\su'  & \verb'until do done'                  \hfill (n, i, v)\\
-\hline \verb'\sw'  & \verb'while do done'                  \hfill (n, i, v)\\
-\hline \verb'\sfu' & \verb'function'                       \hfill (n, i, v)\\
+\hline \verb'\sc'  & \verb'case in ... esac'               \\
+\hline \verb'\sei' & \verb'elif then'                      \\
+\hline \verb'\sf'  & \verb'for in do done'                 \hfill (s)\\
+\hline \verb'\sfo' & \verb'for ((...)) do done'            \hfill (s)\\
+\hline \verb'\si'  & \verb'if then fi'                     \hfill (s)\\
+\hline \verb'\sie' & \verb'if then else fi'                \hfill (s)\\
+\hline \verb'\ss'  & \verb'select in do done'              \hfill (s)\\
+\hline \verb'\su'  & \verb'until do done'                  \hfill (s)\\
+\hline \verb'\sw'  & \verb'while do done'                  \hfill (s)\\
+\hline \verb'\sfu' & \verb'function'                       \hfill (s)\\
 %
-\hline \verb'\se'  & \verb'echo -e ""'                     \hfill (n, i, v)\\
-\hline \verb'\sp'  & \verb'printf  "%s"'                   \hfill (n, i, v)\\
+\hline \verb'\se'  & \verb'echo -e ""'                     \hfill (s)\\
+\hline \verb'\sp'  & \verb'printf  "%s"'                   \hfill (s)\\
 %
-\hline \verb'\sae' & array element\ \ \ \verb'${.[.]}'     \hfill (n, i, v)\\
-\hline \verb'\saa' & arr. elem.s (all) \ \verb'${.[@]}'    \hfill (n, i, v)\\
-\hline \verb'\sas' & arr. elem.s (1 word) \ \verb'${.[*]}' \hfill (n, i, v)\\
-\hline \verb'\ssa' & subarray \ \verb'${.[@]::}'           \hfill (n, i, v)\\
-\hline \verb'\san' & no. of arr. elem.s \ \verb'${.[@]}'   \hfill (n, i, v)\\
-\hline \verb'\sai' & list of indices \ \verb'${.[*]}'      \hfill (n, i, v)\\
+\hline \verb'\sae' & array element\ \ \ \verb'${.[.]}'     \hfill (s)\\
+\hline \verb'\saa' & arr. elem.s (all) \ \verb'${.[@]}'    \hfill (s)\\
+\hline \verb'\sas' & arr. elem.s (1 word) \ \verb'${.[*]}' \hfill (s)\\
+\hline \verb'\ssa' & subarray \ \verb'${.[@]::}'           \hfill (s)\\
+\hline \verb'\san' & no. of arr. elem.s \ \verb'${.[@]}'   \hfill (s)\\
+\hline \verb'\sai' & list of indices \ \verb'${.[*]}'      \hfill (s)\\
 \hline
 %%
 %%----------------------------------------------------------------------
@@ -189,32 +186,32 @@ Key mappings for Vim and gVim.\\
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{T}ests}}                 \\[1.0ex]
-\hline \verb'\ta'  & arithmetic tests                  \hfill (n, i)\\
-\hline \verb'\tfp' & file permissions                  \hfill (n, i)\\
-\hline \verb'\tft' & file types                        \hfill (n, i)\\
-\hline \verb'\tfc' & file characteristics              \hfill (n, i)\\
-\hline \verb'\ts'  & string comparisons                \hfill (n, i)\\
-\hline \verb'\toe' & option is enabled                 \hfill (n, i)\\
-\hline \verb'\tvs' & variables has been set            \hfill (n, i)\\
-\hline \verb'\tfd' & file descr.  refers to a terminal \hfill (n, i)\\
-\hline \verb'\tm'  & string matches regexp             \hfill (n, i)\\
+\hline \verb'\ta'  & arithmetic tests                  \hfill (T)\\
+\hline \verb'\tfp' & file permissions                  \hfill (T)\\
+\hline \verb'\tft' & file types                        \hfill (T)\\
+\hline \verb'\tfc' & file characteristics              \hfill (T)\\
+\hline \verb'\ts'  & string comparisons                \hfill (T)\\
+\hline \verb'\toe' & option is enabled                 \\
+\hline \verb'\tvs' & variables has been set            \\
+\hline \verb'\tfd' & file descr.  refers to a terminal \\
+\hline \verb'\tm'  & string matches regexp             \\
 \hline
 %%
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
 %%======================================================================
-%%  table, right part				[[[1
+%%  page 1 / table, right part				[[[1
 %%======================================================================
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
-\begin{tabular}[]{|p{11mm}|p{62mm}|}
+\begin{tabular}[]{|p{11mm}|p{60mm}|}
 %%----------------------------------------------------------------------
 %%  menu IO-Redirection				[[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{I}O-Redirection}}                 \\[1.0ex]
-\hline \verb'\ior'   & IO-redirections (list)           \hfill (n, i)\\
-\hline \verb'\ioh'   & here-document                    \hfill (n, i)\\
+\hline \verb'\ior'   & IO-redirections (list)           \hfill (T)\\
+\hline \verb'\ioh'   & here-document                    \hfill (s)\\
 \hline
 %
 %%----------------------------------------------------------------------
@@ -222,13 +219,13 @@ Key mappings for Vim and gVim.\\
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{P}attern Matching}}     \\[1.0ex]
-\hline     \verb'pzo' & zero or one,      \verb' ?( | )'  \hfill (n, i)\\ 
-\hline     \verb'pzm' & zero or more,     \verb' *( | )'  \hfill (n, i)\\ 
-\hline     \verb'pom' & one or more,      \verb' +( | )'  \hfill (n, i)\\ 
-\hline     \verb'peo' & exactly one,      \verb' @( | )'  \hfill (n, i)\\ 
-\hline     \verb'pae' & anything except,  \verb' !( | )'  \hfill (n, i)\\ 
-\hline     \verb'ppc' & POSIX classes                     \hfill (n, i)\\ 
-\hline     \verb'pbr' &  \verb'${BASH_REMATCH[0'$\ldots$\verb'3]}'  \hfill (n, i)\\ 
+\hline     \verb'pzo' & zero or one,      \verb' ?( | )'  \hfill (s)\\ 
+\hline     \verb'pzm' & zero or more,     \verb' *( | )'  \hfill (s)\\ 
+\hline     \verb'pom' & one or more,      \verb' +( | )'  \hfill (s)\\ 
+\hline     \verb'peo' & exactly one,      \verb' @( | )'  \hfill (s)\\ 
+\hline     \verb'pae' & anything except,  \verb' !( | )'  \hfill (s)\\ 
+\hline     \verb'ppc' & POSIX classes                     \hfill (T)\\ 
+\hline     \verb'pbr' &  \verb'${BASH_REMATCH[0'$\ldots$\verb'3]}'  \hfill (T)\\ 
 \hline
 %
 %%----------------------------------------------------------------------
@@ -236,39 +233,108 @@ Key mappings for Vim and gVim.\\
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{S\textbf{n}ippets}}               \\[1.0ex]
-\hline \verb'\nr'  & read code snippet         \hfill (n, i)\\
-\hline \verb'\nv'  & view code snippet         \hfill (n, i)\\
-\hline \verb'\nw'  & write code snippet        \hfill (n, i, v)\\
-\hline \verb'\ne'  & edit code snippet         \hfill (n, i)\\
+\hline \verb'\nr'  & read code snippet         \\
+\hline \verb'\nv'  & view code snippet         \\
+\hline \verb'\nw'  & write code snippet        \hfill (v)\\
+\hline \verb'\ne'  & edit code snippet         \\
 %
-\hline \verb'\ntl' & edit local templates      \hfill (n, i)\\
-\hline \verb'\ntc' & edit custom templates     \hfill (n, i)\\
-\hline \verb'\ntp' & edit personal templates   \hfill (n, i)\\
-\hline \verb'\ntr' & reread the templates      \hfill (n, i)\\
-\hline \verb'\ntw' & template setup wizard     \hfill (n, i)\\
-\hline \verb'\nts' & choose style              \hfill (n, i)\\
+\hline \verb'\ntl' & edit local templates      \\
+\hline \verb'\ntc' & edit custom templates     \\
+\hline \verb'\ntp' & edit personal templates   \\
+\hline \verb'\ntr' & reread the templates      \\
+\hline \verb'\ntw' & template setup wizard     \\
+\hline \verb'\nts' & choose style              \hfill (T)\\
 \hline
 %%----------------------------------------------------------------------
 %%  menu Run				[[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{R}un}} \\[1.0ex]
-\hline \verb'\rr'  & run script                           \hfill (n, i, v)\\
-\hline \verb'\ra'  & set script cmd. line arguments       \hfill (n, i)\\
-\hline \verb'\rba' & set interp. cmd. line arguments      \hfill (n, i)\\
-\hline \verb'\rc'  & check syntax                         \hfill (n, i)\\
-\hline \verb'\rco' & syntax check options                 \hfill (n, i)\\
-\hline \verb'\ro'  & change output destination            \hfill (n, i)\\
-\hline \verb'\rd'  & set ``direct run''                   \hfill (n, i)\\
-\hline \verb'\rse' & set shell executable                 \hfill (n, i)\\
-\hline \verb'\rx'  & set xterm size                       \hfill (n, i)\\
-\hline \verb'\re'  & make script executable/not exec.     \hfill (n, i)\\
-\hline \verb'\rh'  & hardcopy buffer                      \hfill (n, i, v)\\
-\hline \verb'\rs'  & plug-in settings                     \hfill (n, i)\\
+\hline \verb'\rr'  & run script                           \hfill (v)\\
+\hline \verb'\rsa' & set script cmd. line arguments       \hfill (F)\\
+\hline \verb'\ria' & set interp. cmd. line arguments      \hfill (F)\\
+\hline \verb'\rk'  & check syntax                         \\
+\hline \verb'\rso' & syntax check options                 \\
+\hline \verb'\ro'  & change output destination            \hfill (T)\\
+\hline \verb'\rd'  & set ``direct run''                   \hfill (T)\\
+\hline \verb'\rse' & set shell executable                 \hfill (T)\\
+\hline \verb'\rx'  & set xterm size                       \\
+\hline \verb'\re'  & make script executable/not exec.     \\
+\hline \verb'\rh'  & hardcopy buffer                      \hfill (v)\\
+\hline \verb'\rs'  & plug-in settings                     \\
 \hline
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
+\newpage
+%
+%%======================================================================
+%%  page 2 / table, left part				[[[1
+%%======================================================================
+%
+%%----------------------------------------------------------------------
+%%  buffer "Bash Output"				[[[2
+%%----------------------------------------------------------------------
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{60mm}|}
+\hline
+\multicolumn{2}{|r|}{\textsl{Buffer ``Bash Output''}} \\[1.0ex]
+\hline \verb'\qf'  & load errors into quickfix             \\
+\hline \verb'\qj'  & load into qf.~and jump to first error \\
+\hline
+\end{tabular}\\[2.5ex]
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+\parbox[t][72mm][t]{69mm}{%
+%
+%%----------------------------------------------------------------------
+%%  Run Bash
+%%----------------------------------------------------------------------
+\large{\textbf{Run}}\\[1.0ex]
+Run \textit{bash} with optional arguments: \\[0.5ex]
+\texttt{:Bash [<args>]} \\[1.0ex]
+Memorize script arguments: \\[0.5ex]
+\texttt{:BashScriptArguments [<args>]} \\[0.5ex]
+The memorize arguments are used if \texttt{:Bash} is invoked without arguments. \\[1.0ex]
+Set interpreter arguments: \\[0.5ex]
+\texttt{:BashInterpArguments [<args>]} \\[2.5ex]
+%
+}\\%
+%
+\parbox[t][42mm][t]{69mm}{%
+%%----------------------------------------------------------------------
+%%  Check Syntax
+%%----------------------------------------------------------------------
+\large{\textbf{Syntax}}\\[1.0ex]
+Run syntax checking: \\[0.5ex]
+\texttt{:BashCheck} \\[1.0ex]
+Set syntax checking options: \\[0.5ex]
+\texttt{:BashSyntaxCheckOptions <opts>} \\[2.5ex]
+%
+}\\%
+%
+\parbox[t][72mm][t]{69mm}{%
+%%----------------------------------------------------------------------
+%%  Options
+%%----------------------------------------------------------------------
+\large{\textbf{Options}}\\[1.0ex]
+Set the output method: \\[0.5ex]
+\texttt{:BashOutputMethod [<method>]} \\[1.0ex]
+Set the shell executable: \\[0.5ex]
+\texttt{:BashExecutable [<exec>]} \\[1.0ex]
+Set ``direct run'': \\[0.5ex]
+\texttt{:BashExecutable [ yes | no ]} \\[0.5ex]
+When set to \texttt{yes}, executable scripts will be run as the executable, instead of using \texttt{:BashExecutable}. \\[1.0ex]
+}
+%
+\parbox[t][72mm][t]{69mm}{%
+%%----------------------------------------------------------------------
+%%  Debugger
+%%----------------------------------------------------------------------
+\large{\textbf{BashDB}}\\[1.0ex]
+\textit{TODO} \\[0.5ex]
+\texttt{:BashDB} \\[1.0ex]
+}
 %
 \end{center}%
 \end{multicols}%
