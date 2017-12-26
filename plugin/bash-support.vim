@@ -130,6 +130,125 @@ function! s:ImportantMsg ( ... )
 endfunction    " ----------  end of function s:ImportantMsg  ----------
 
 "-------------------------------------------------------------------------------
+" s:OpenBuffer : Open a scratch buffer.   {{{2
+"
+" If a buffer called 'name' already exists, jump to that buffer. Otherwise,
+" open a buffer of the given name an set it up as a scratch buffer. It is
+" deleted after the window is closed.
+"
+" Options:
+" - showdir:       the directory will be shown in the buffer list (set buf=nowrite)
+" - reuse_ontab:   reuse a buffer of the same name on this tab page
+" - reuse_other:   reuse a buffer of the same name from another tab page
+" - topic <tname>: set a topic name
+"
+" Settings:
+" - buftype=nofile/nowrite (depending on the option 'showdir')
+" - bufhidden=wipe
+" - swapfile=0
+" - tabstop=8
+"
+" Parameters:
+"   name - name of the buffer (string)
+"   ... - options (string)
+" Returns:
+"   opened -  true, if a new buffer was opened (integer)
+"-------------------------------------------------------------------------------
+
+function! s:OpenBuffer ( name, ... )
+
+	" options
+	let btype = 'nofile'
+	let reuse_ontab = 1
+	let reuse_other = 0
+	let topic = ''
+
+	let idx = 0
+	while idx < a:0
+		let val = a:000[idx]
+		if val == 'showdir'
+			let btype = 'nowrite'                     " like 'nofile', but the directory is shown in the buffer list
+			let idx += 1
+		elseif val == 'reuse_ontab'
+			let reuse_ontab = a:000[idx+1]
+			let idx += 2
+		elseif val == 'reuse_other'
+			let reuse_other = a:000[idx+1]
+			let idx += 2
+		elseif val == 'topic'
+			let topic = a:000[idx+1]
+			let idx += 2
+		else
+			call s:ErrorMsg ( 'Unknown buffer option: '.val )
+		endif
+	endwhile
+
+	let buf_name  = a:name
+	let buf_regex = a:name
+	if topic != ''
+		let buf_name  .= ' ('.topic.')'
+		let buf_regex .= ' ([a-zA-Z0-9_: ]\+)'
+	endif
+	let buf_regex = '{'.buf_regex.','.buf_regex.' -[0-9]\+-'.'}'
+
+	" a buffer like this already opened on the current tab page?
+	if reuse_ontab && bufwinnr ( buf_regex ) != -1
+		" yes -> go to the window containing the buffer
+		exe bufwinnr( buf_regex ).'wincmd w'
+		call s:RenameBuffer( buf_name, 1 )
+		return 0
+	endif
+
+	" no -> open a new window
+	aboveleft new
+
+	" buffer exists elsewhere?
+	if reuse_other && bufnr ( buf_regex ) != -1
+		" yes -> reuse it
+		silent exe 'edit #'.bufnr( buf_regex )
+		call s:RenameBuffer( buf_name, 1 )
+		return 0
+	endif
+
+	" no -> settings of the new buffer
+	let &l:buftype   = btype
+	let &l:bufhidden = 'wipe'
+	let &l:swapfile  = 0
+	let &l:tabstop   = 8
+	call s:RenameBuffer( buf_name, 1 )
+
+	return 1
+endfunction    " ----------  end of function s:OpenBuffer  ----------
+
+"-------------------------------------------------------------------------------
+" s:RenameBuffer : Rename a scratch buffer.   {{{2
+"
+" Parameters:
+"   name - the new name (string)
+"   unique - make the name unique (boolean, optional)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:RenameBuffer ( name, ... )
+	if bufname ( '%' ) =~# '\V'.a:name.'\$'
+		return
+	elseif bufname ( '%' ) =~# '\V'.a:name.' -\[0-9]\+-\$'
+		return
+	endif
+
+	let buf_name = a:name
+	if a:0 >= 1 && a:1 && bufnr ( buf_name ) != -1
+		let nr = 2
+		while bufnr ( buf_name.' -'.nr.'-' ) != -1
+			let nr += 1
+		endwhile
+		let buf_name = buf_name.' -'.nr.'-'
+	endif
+	silent exe 'keepalt file '.fnameescape( buf_name )
+endfunction    " ----------  end of function s:RenameBuffer  ----------
+
+"-------------------------------------------------------------------------------
 " s:Redraw : Redraw depending on whether a GUI is running.   {{{2
 "
 " Example:
@@ -691,7 +810,6 @@ let s:BASH_DirectRun              = 'no'         " 'yes' or 'no'
 let s:BASH_LineEndCommColDefault	= 49
 let s:BASH_TemplateJumpTarget 		= ''
 let s:BASH_Errorformat            = '%f: %[%^0-9]%# %l:%m,%f: %l:%m,%f:%l:%m,%f[%l]:%m'
-let s:BASH_Wrapper                = s:plugin_dir.'/bash-support/scripts/wrapper.sh'
 let s:BASH_InsertFileHeader       = 'yes'
 let s:BASH_Ctrl_j                 = 'yes'
 let s:BASH_Ctrl_d                 = 'yes'
@@ -970,7 +1088,7 @@ endfunction   " ---------- end of function s:RemoveEcho  ----------
 
 function! s:OutputBufferErrors ( jump )
 
-	if bufname('%') !~ 'Bash Output$' && bufname('%') !~ 'Bash Terminal - '
+	if bufname('%') !~# 'Bash Output\%( -\d\+-\)\?$' && bufname('%') !~# 'Bash Terminal - '
 		return s:ImportantMsg ( 'not inside a Bash output buffer' )
 	endif
 
@@ -1119,17 +1237,10 @@ function! s:Run ( args, mode, ... ) range
 
 		" method : "buffer"
 
-		if bufwinnr ( 'Bash Output$' ) == -1
+		if s:OpenBuffer ( 'Bash Output' )
 			" open buffer
-			above new
-			file Bash\ Output
-			" TODO: name might exist on a different tab page
 
-			" settings
-			setlocal buftype=nofile
-			setlocal noswapfile
 			setlocal syntax=none
-			setlocal tabstop=8
 
 			call Bash_SetMapLeader ()
 
@@ -1142,9 +1253,6 @@ function! s:Run ( args, mode, ... ) range
 			vnoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
 
 			call Bash_ResetMapLeader ()
-		else
-			" jump to window
-			exe bufwinnr( 'Bash Output$' ).'wincmd w'
 		endif
 
 		setlocal modifiable
@@ -1469,11 +1577,6 @@ endfunction   " ---------- end of function s:RemoveSpecialCharacters   ---------
 " }}}2
 "-------------------------------------------------------------------------------
 
-let s:BASH_DocBufferName       = "BASH_HELP"
-let s:BASH_DocHelpBufferNumber = -1
-
-let s:BASH_OutputBufferName   = "Bash-Output" " :BUG:28.09.2017 10:41:WM: this is used in s:HelpMan(), check that!
-
 function! s:HelpMan ( type )
 
 	let cuc  = getline(".")[col(".") - 1]         " character under the cursor
@@ -1493,19 +1596,8 @@ function! s:HelpMan ( type )
 	"------------------------------------------------------------------------------
 
 	" jump to an already open bash help window or create one
-	if bufloaded(s:BASH_DocBufferName) != 0 && bufwinnr(s:BASH_DocHelpBufferNumber) != -1
-		exe bufwinnr(s:BASH_DocHelpBufferNumber) . "wincmd w"
-		" buffer number may have changed, e.g. after a 'save as'
-		if bufnr("%") != s:BASH_DocHelpBufferNumber
-			let s:BASH_DocHelpBufferNumber=bufnr(s:BASH_OutputBufferName)
-			exe ":bn ".s:BASH_DocHelpBufferNumber
-		endif
-	else
-		exe ":new ".s:BASH_DocBufferName
-		let s:BASH_DocHelpBufferNumber=bufnr("%")
-		setlocal buftype=nofile
-		setlocal noswapfile
-		setlocal bufhidden=delete
+	if a:type == 'bash' && s:OpenBuffer ( 'Bash Manual', 'reuse_other', 1 )
+				\ || a:type != 'bash' && s:OpenBuffer ( 'Bash Help', 'topic', 'man: '.item )
 		setlocal syntax=OFF
 	endif
 
@@ -1616,20 +1708,8 @@ function! s:HelpBuiltin ()
 		return
 	endif
 
-	" jump to an already open bash help window or create one
-	if bufloaded(s:BASH_DocBufferName) != 0 && bufwinnr(s:BASH_DocHelpBufferNumber) != -1
-		exe bufwinnr(s:BASH_DocHelpBufferNumber) . "wincmd w"
-		" buffer number may have changed, e.g. after a 'save as'
-		if bufnr("%") != s:BASH_DocHelpBufferNumber
-			let s:BASH_DocHelpBufferNumber=bufnr(s:BASH_OutputBufferName)
-			exe ":bn ".s:BASH_DocHelpBufferNumber
-		endif
-	else
-		exe ":new ".s:BASH_DocBufferName
-		let s:BASH_DocHelpBufferNumber=bufnr("%")
-		setlocal buftype=nofile
-		setlocal noswapfile
-		setlocal bufhidden=delete
+	" jump to an already open Bash help window or create one
+	if s:OpenBuffer ( 'Bash Help', 'topic', 'builtin: '.item )
 		setlocal syntax=OFF
 	endif
 
