@@ -545,7 +545,7 @@ in '.vimrc' by the global variable g:BASH_OutputMethod, e.g.
 >
   let g:BASH_OutputMethod = "xterm"
 <
-The methods are "vim-io", "vim-qf", "buffer", "xterm", and "terminal". The
+The methods are "cmd-line", "quickfix", "buffer", "xterm", and "terminal". The
 method "xterm" requires xterm(1), and is only available under UNIX. The method
 "terminal" requires the |+terminal| feature.
 
@@ -862,8 +862,8 @@ g:BASH_Dictionary_File         $HOME."/.vim/bash-support/wordlists/bash.list"
 g:BASH_RootMenu                '&Bash.'
 g:BASH_GuiSnippetBrowser       'gui'
 
-g:BASH_OutputMethod            'vim-io'  (Linux/U**X)
-                               'xterm'   (Windows)
+g:BASH_OutputMethod            'cmd-line'  (Vim/gVim)
+                               'terminal'  (Neovim)
 g:BASH_DirectRun               'no'
 g:BASH_LineEndCommColDefault   49
 g:BASH_SyntaxCheckOptionsGlob  ''

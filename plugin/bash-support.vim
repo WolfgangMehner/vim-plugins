@@ -791,12 +791,12 @@ let s:BASH_RootMenu          	= '&Bash'           " name of the root menu
 let s:BASH_UseToolbox         = 'yes'
 
 if s:NEOVIM
-	" can not use 'vim-io' in Neovim, since :! is not interactive
-	let s:BASH_OutputMethodList = [ 'vim-qf', 'buffer', 'terminal' ]
+	" can not use 'cmd-line' in Neovim, since :! is not interactive
+	let s:BASH_OutputMethodList = [ 'quickfix', 'buffer', 'terminal' ]
 	let s:BASH_OutputMethod     = 'terminal'       " one of 's:BASH_OutputMethodList'
 else
-	let s:BASH_OutputMethodList = [ 'vim-io', 'vim-qf', 'buffer' ]
-	let s:BASH_OutputMethod     = 'vim-io'         " one of 's:BASH_OutputMethodList'
+	let s:BASH_OutputMethodList = [ 'cmd-line', 'quickfix', 'buffer' ]
+	let s:BASH_OutputMethod     = 'cmd-line'         " one of 's:BASH_OutputMethodList'
 	" :TODO:28.09.2017 18:33:WM: Windows defaults (was 'xterm', ran shell in a separate window!?), check running under Windows,
 endif
 if ! s:MSWIN
@@ -849,7 +849,7 @@ call s:ApplyDefaultSetting ( 'Bash_UseTool_bashdb', 'yes' )
 
 " adapt for backwards compatibility
 if s:BASH_OutputMethod == 'vim'
-	let s:BASH_OutputMethod = 'vim-qf'
+	let s:BASH_OutputMethod = 'quickfix'
 endif
 
 "-------------------------------------------------------------------------------
@@ -1179,7 +1179,7 @@ function! s:Run ( args, mode, ... ) range
 		let script_esc  = ''
 	else
 		let exec        = s:BASH_Executable
-		let script_orig = expand ( '%' )
+		let script_orig = expand ( '%:p' )
 		let script_esc  = shellescape ( script_orig )
 	endif
 
@@ -1194,18 +1194,18 @@ function! s:Run ( args, mode, ... ) range
 
 	let errformat = s:BASH_Errorformat
 
-	if s:BASH_OutputMethod == 'vim-io'
+	if s:BASH_OutputMethod == 'cmd-line'
 
-		" method : "vim - interactive"
+		" method : "cmd.-line"
 
 		exe '!'.exec.args_interp.' '.script_esc.' '.args_script
 
 		if exists( 'tmpfile' )
 			call delete ( tmpfile )                   " delete the tmpfile
 		endif
-	elseif s:BASH_OutputMethod == 'vim-qf'
+	elseif s:BASH_OutputMethod == 'quickfix'
 
-		" method : "vim - quickfix"
+		" method : "quickfix"
 
 		" run script
 		let bash_output = system ( exec.args_interp.' '.script_esc.' '.args_script )
@@ -1436,10 +1436,10 @@ function! s:SetOutputMethod ( method )
 
 	exe 'aunmenu '.s:BASH_RootMenu.'.Run.output\ method.Output\ Method'
 
-	if s:BASH_OutputMethod == 'vim-io'
-		let current = 'vim\ io'
-	elseif s:BASH_OutputMethod == 'vim-qf'
-		let current = 'vim\ qf'
+	if s:BASH_OutputMethod == 'cmd-line'
+		let current = 'cmd\.-line'
+	elseif s:BASH_OutputMethod == 'quickfix'
+		let current = 'quickfix'
 	elseif s:BASH_OutputMethod == 'buffer'
 		let current = 'buffer'
 	elseif s:BASH_OutputMethod == 'terminal'
@@ -2093,11 +2093,11 @@ function! s:InitMenus()
 
 	" run -> output method
 	let method_menu_entries = [
-				\ [ 'vim-io',   'vim\ &io',  'interactive', ],
-				\ [ 'vim-qf',   'vim\ &qf',  'quickfix',    ],
-				\ [ 'buffer',   '&buffer',   'quickfix',    ],
-				\ [ 'terminal', '&terminal', 'interact+qf', ],
-				\ [ 'xterm',    '&xterm',    'interactive', ],
+				\ [ 'cmd-line', '&cmd\.-line', 'interactive', ],
+				\ [ 'quickfix', '&quickfix',   'quickfix',    ],
+				\ [ 'buffer',   '&buffer',     'quickfix',    ],
+				\ [ 'terminal', '&terminal',   'interact+qf', ],
+				\ [ 'xterm',    '&xterm',      'interactive', ],
 				\ ]
 
 	for [ method, left, right ] in method_menu_entries
