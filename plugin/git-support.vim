@@ -1070,7 +1070,7 @@ if s:Enabled
 "	command! -nargs=* -complete=file                                 GitBelow           :call GitS_Split('below',<count>,<q-args>)
 "	command! -nargs=* -complete=file -count=1000                     GitTab             :call GitS_Split('tab',<count>,<q-args>)
 	command! -nargs=* -complete=file -bang                           GitAdd             :call GitS_Add(<q-args>,'<bang>'=='!'?'ef':'e')
-	command! -nargs=* -complete=file -range=0                        GitBlame           :call GitS_Blame('update',<q-args>,<line1>,<line2>)
+	command! -nargs=* -complete=file -range=-1                       GitBlame           :call <SID>Blame('update',<q-args>,<line1>,<line2>,<count>)
 	command! -nargs=* -complete=file                                 GitBranch          :call GitS_Branch(<q-args>,'')
 	command! -nargs=* -complete=file                                 GitCheckout        :call GitS_Checkout(<q-args>,'c')
 	command! -nargs=* -complete=file                                 GitCommit          :call GitS_Commit('direct',<q-args>,'')
@@ -1082,7 +1082,7 @@ if s:Enabled
 	command! -nargs=+ -complete=file                                 GitGrep            :call <SID>Grep('update',<q-args>)
 	command! -nargs=+ -complete=file                                 GitGrepTop         :call <SID>Grep('top',<q-args>)
 	command! -nargs=* -complete=customlist,GitS_HelpTopicsComplete   GitHelp            :call <SID>Help('update',<q-args>)
-	command! -nargs=* -complete=file                                 GitLog             :call GitS_Log('update',<q-args>)
+	command! -nargs=* -complete=file -range=-1                       GitLog             :call <SID>Log('update',<q-args>,<line1>,<line2>,<count>)
 	command! -nargs=*                                                GitMerge           :call GitS_Merge('direct',<q-args>,'')
 	command! -nargs=*                                                GitMergeUpstream   :call GitS_Merge('upstream',<q-args>,'')
 	command! -nargs=* -complete=file                                 GitMove            :call GitS_Move(<q-args>,'')
@@ -1450,7 +1450,7 @@ function! GitS_Add( param, flags )
 endfunction    " ----------  end of function GitS_Add  ----------
 "
 "-------------------------------------------------------------------------------
-" GitS_Blame : execute 'git blame ...'   {{{1
+" s:Blame : execute 'git blame ...'   {{{1
 "-------------------------------------------------------------------------------
 "
 "-------------------------------------------------------------------------------
@@ -1520,7 +1520,7 @@ endfunction    " ----------  end of function s:Blame_GetFile  ----------
 " }}}2
 "-------------------------------------------------------------------------------
 "
-function! GitS_Blame( action, ... )
+function! s:Blame( action, ... )
 	"
 	let update_only = 0
 	let param = ''
@@ -1546,11 +1546,11 @@ function! GitS_Blame( action, ... )
 			if   empty( a:1 ) | let param = s:EscapeCurrent()
 			else              | let param = a:1
 			endif
-			"
-			if a:0 >= 3 && a:2 <= a:3 && ! ( a:2 == 1 && a:3 == 1 )
+
+			if a:0 >= 4 && a:4 > 0
+				" run range-based
 				let param = '-L '.a:2.','.a:3.' '.param
 			endif
-			"
 		endif
 		"
 	elseif a:action =~ '\<\%(\|edit\|jump\)\>'
@@ -1597,14 +1597,14 @@ function! GitS_Blame( action, ... )
 		"
 " 		setlocal filetype=gitsdiff
 		"
-		exe 'nnoremap          <buffer> <S-F1> :call GitS_Blame("help")<CR>'
-		exe 'nnoremap <silent> <buffer> q      :call GitS_Blame("quit")<CR>'
-		exe 'nnoremap <silent> <buffer> u      :call GitS_Blame("update")<CR>'
+		exe 'nnoremap          <buffer> <S-F1> :call <SID>Blame("help")<CR>'
+		exe 'nnoremap <silent> <buffer> q      :call <SID>Blame("quit")<CR>'
+		exe 'nnoremap <silent> <buffer> u      :call <SID>Blame("update")<CR>'
 		"
-		exe 'nnoremap <silent> <buffer> of      :call GitS_Blame("edit")<CR>'
-		exe 'nnoremap <silent> <buffer> oj      :call GitS_Blame("jump")<CR>'
+		exe 'nnoremap <silent> <buffer> of      :call <SID>Blame("edit")<CR>'
+		exe 'nnoremap <silent> <buffer> oj      :call <SID>Blame("jump")<CR>'
 		"
-		exe 'nnoremap <silent> <buffer> cs      :call GitS_Blame("show")<CR>'
+		exe 'nnoremap <silent> <buffer> cs      :call <SID>Blame("show")<CR>'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -1619,7 +1619,7 @@ function! GitS_Blame( action, ... )
 	"
 	call s:UpdateGitBuffer ( cmd, update_only )
 	"
-endfunction    " ----------  end of function GitS_Blame  ----------
+endfunction    " ----------  end of function s:Blame  ----------
 "
 "-------------------------------------------------------------------------------
 " GitS_Branch : execute 'git branch ...'   {{{1
@@ -2686,7 +2686,7 @@ function! s:Help( action, ... )
 endfunction    " ----------  end of function s:Help  ----------
 
 "-------------------------------------------------------------------------------
-" GitS_Log : execute 'git log ...'   {{{1
+" s:Log : execute 'git log ...'   {{{1
 "-------------------------------------------------------------------------------
 "
 "-------------------------------------------------------------------------------
@@ -2720,7 +2720,7 @@ endfunction    " ----------  end of function s:Log_GetCommit  ----------
 " }}}2
 "-------------------------------------------------------------------------------
 "
-function! GitS_Log( action, ... )
+function! s:Log( action, ... )
 	"
 	let param = ''
 	"
@@ -2737,12 +2737,22 @@ function! GitS_Log( action, ... )
 		close
 		return
 	elseif a:action == 'update'
-		"
-		if a:0 == 0         | " run again with old parameters
-		elseif empty( a:1 ) | let param = ''
-		else                | let param = a:1
+
+		let update_only = a:0 == 0
+
+		if update_only
+			" run again with old parameters
+		else
+			if   empty( a:1 ) | let param = ''
+			else              | let param = a:1
+			endif
+
+			if a:0 >= 4 && a:4 > 0
+				" run range-based
+				let param = '-L '.a:2.','.a:3.':'.shellescape ( expand ( '%' ) ).' '.param
+			endif
 		endif
-		"
+
 	elseif -1 != index ( [ 'checkout', 'create', 'show', 'tag' ], a:action )
 		"
 		let c_name = s:Log_GetCommit ()
@@ -2776,15 +2786,15 @@ function! GitS_Log( action, ... )
 		setlocal filetype=gitslog
 		setlocal foldtext=GitS_FoldLog()
 		"
-		exe 'nnoremap          <buffer> <S-F1> :call GitS_Log("help")<CR>'
-		exe 'nnoremap <silent> <buffer> q      :call GitS_Log("quit")<CR>'
-		exe 'nnoremap <silent> <buffer> u      :call GitS_Log("update")<CR>'
+		exe 'nnoremap          <buffer> <S-F1> :call <SID>Log("help")<CR>'
+		exe 'nnoremap <silent> <buffer> q      :call <SID>Log("quit")<CR>'
+		exe 'nnoremap <silent> <buffer> u      :call <SID>Log("update")<CR>'
 		"
-		exe 'nnoremap <silent> <buffer> ch     :call GitS_Log("checkout")<CR>'
-		exe 'nnoremap <expr>   <buffer> cr     GitS_Log("create")'
-		exe 'nnoremap <silent> <buffer> sh     :call GitS_Log("show")<CR>'
-		exe 'nnoremap <silent> <buffer> cs     :call GitS_Log("show")<CR>'
-		exe 'nnoremap <expr>   <buffer> ta     GitS_Log("tag")'
+		exe 'nnoremap <silent> <buffer> ch     :call <SID>Log("checkout")<CR>'
+		exe 'nnoremap <expr>   <buffer> cr     <SID>Log("create")'
+		exe 'nnoremap <silent> <buffer> sh     :call <SID>Log("show")<CR>'
+		exe 'nnoremap <silent> <buffer> cs     :call <SID>Log("show")<CR>'
+		exe 'nnoremap <expr>   <buffer> ta     <SID>Log("tag")'
 	endif
 	"
 	call s:ChangeCWD ( buf )
@@ -2799,7 +2809,7 @@ function! GitS_Log( action, ... )
 	"
 	call s:UpdateGitBuffer ( cmd )
 	"
-endfunction    " ----------  end of function GitS_Log  ----------
+endfunction    " ----------  end of function s:Log  ----------
 "
 "-------------------------------------------------------------------------------
 " GitS_Merge : execute 'git merge ...'   {{{1
@@ -3715,7 +3725,7 @@ function! s:Status_FileAction( action )
 	elseif s_code =~ '[bsmcd]' && a:action == 'log'
 		"
 		" section "staged", "modified", "conflict" or "diff", action "log"
-		call GitS_Log( 'update', '--stat -- '.shellescape( f_name_old ) )
+		call s:Log( 'update', '--stat -- '.shellescape( f_name_old ) )
 		"
 	elseif s_code == 'i' && a:action == 'add'
 		"

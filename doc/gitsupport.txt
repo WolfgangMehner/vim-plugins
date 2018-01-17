@@ -1,4 +1,4 @@
-*gitsupport.txt*                  Git Support                      Sep 25 2017
+*gitsupport.txt*                  Git Support                      Jan 17 2018
 
 Git Support                                          *git-support* *gitsupport*
 
@@ -95,7 +95,7 @@ run the commands in every subdirectory of the project.
   |:GitGrep| <args>                  (buf) git grep <args>
   |:GitGrepTop| <args>               (buf) git grep <args> (^1)
   |:GitHelp| [<args>]                (buf) git help <args>
-  |:GitLog| [<args>]                 (buf) git log <args>
+  |:GitLog| [<args>]                 (buf) git log <args> (supports ranges)
   |:GitMerge| [<args>]               (run) git merge <args>
   |:GitMergeUpstream| [<args>]       (run) git merge <args> <upstream-branch>
   |:GitMove| [<args>]                (run) git mv <args>
@@ -467,6 +467,12 @@ Is equivalent to: >
 
 The first version opens a buffer containing the log for the current branch.
 The second version runs log for the given arguments.
+
+  :[range]GitLog <args> ~
+
+The third version shows the log for the given range. In this case the
+arguments can not list further files.
+(this version uses the cmd.-line option `git log -L line1,line2:buffername`)
 
   Map       Meaning
  ----------------------------------------------------------------------------
@@ -1308,16 +1314,6 @@ A.  TROUBLESHOOTING - KNOWN ISSUES                *gitsupport-troubleshooting*
       :GitAdd "help 1.txt"
   - If you already are in the corresponding buffer, simply use:
       :GitAdd
-
-------------------------------------------------------------------------------
-
-* :GitBlame does not work correctly when the visual area consists only of the
-  first line.
-  - This seems to be a weakness with Vim's support for ranges. At least I
-    could not find a way around this.
-  - Workaround: Run :GitBlame on the first two lines.
-  - The usefulness of :GitBlame supporting ranges by far outweighs this
-    downside, in my opinion.
 
 ==============================================================================
 B.  RELEASE NOTES - CHANGE LOG                      *gitsupport-release-notes*

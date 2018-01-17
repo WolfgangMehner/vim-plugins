@@ -26,7 +26,7 @@ syn case match
 syn region GitLogCommit  start=/^commit\s/ end=/^\%(commit\s\)\@=/ contains=GitLogHash,GitLogInfo,GitDiffRegion fold keepend
 syn match  GitLogHash    "^commit\s.\+$" contained contains=GitLogDeco
 syn match  GitLogDeco    "(\zs.*\ze)" contained contains=GitLogRef
-syn match  GitLogRef     "[^,%s]" contained
+syn match  GitLogRef     "tag: \zs[^,[:space:]]\+" contained
 syn match  GitLogInfo    "^\w\+:\s.\+$"  contained
 syn match  GitLogInfo    "^Notes:\s*$"  contained
 syn match  GitLogInfo    "^Notes\s(.*):\s*$"  contained
