@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:GitSupport_Version below
 "       Created:  06.10.2012
-"      Revision:  25.09.2017
+"      Revision:  17.01.2018
 "       License:  Copyright (c) 2012-2016, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -1014,36 +1014,45 @@ endif
 let [ s:Git_GitBashExecutable, s:EnabledGitBash, s:DisableGitBashReason ] = s:CheckExecutable ( 'git bash', s:Git_GitBashExecutable )
 "
 " check Git version   {{{2
-"
+
 " added in 1.7.2:
 " - "git status --ignored"
 " - "git status -s -b"
-let s:HasStatusIgnore = 0
-let s:HasStatusBranch = 0
-"
+let s:HasStatusIgnore = 1
+let s:HasStatusBranch = 1
+
+" changed in 1.8.0:
+" - "git branch --set-upstream" is deprecated,
+"   use "git branch --set-upstream-to="
+let s:HasBranchSetUpstreamTo = 1
+
 " changed in 1.8.5:
 " - output of "git status" without leading "#" char.
-let s:HasStatus185Format = 0
-"
+let s:HasStatus185Format = 1
+
 if s:Enabled
 	let s:GitVersion = s:StandardRun( '', ' --version', 't' )[1]
-	if s:GitVersion =~ 'git version [0-9.]\+'
+	if s:GitVersion =~? 'git version [0-9.]\+'
 		let s:GitVersion = matchstr( s:GitVersion, 'git version \zs[0-9.]\+' )
-		"
-		if ! s:VersionLess ( s:GitVersion, '1.7.2' )
-			let s:HasStatusIgnore = 1
-			let s:HasStatusBranch = 1
+
+		if s:VersionLess ( s:GitVersion, '1.7.2' )
+			let s:HasStatusIgnore = 0
+			let s:HasStatusBranch = 0
 		endif
-		"
-		if ! s:VersionLess ( s:GitVersion, '1.8.5' )
-			let s:HasStatus185Format = 1
+
+		if s:VersionLess ( s:GitVersion, '1.8.0' )
+			let s:HasBranchSetUpstreamTo = 0
 		endif
-		"
+
+		if s:VersionLess ( s:GitVersion, '1.8.5' )
+			let s:HasStatus185Format = 0
+		endif
+
 	else
 		call s:ErrorMsg ( 'Can not obtain the version number of Git.' )
 	endif
 endif
-"
+
 " check Git help.format   {{{2
 "
 if s:Enabled
@@ -1737,8 +1746,12 @@ function! GitS_BranchList( action )
 			" get short name of current HEAD
 			let b_current = s:StandardRun ( 'symbolic-ref', '-q HEAD', 't' )[1]
 			let b_current = s:StandardRun ( 'for-each-ref', " --format='%(refname:short)' ".shellescape( b_current ), 't' )[1]
-			"
-			return s:AssembleCmdLine ( ':GitBranch --set-upstream '.b_current, ' '.b_name )
+
+			if s:HasBranchSetUpstreamTo
+				return s:AssembleCmdLine ( ':GitBranch --set-upstream-to='.b_name.' '.b_current, '' )
+			else
+				return s:AssembleCmdLine ( ':GitBranch --set-upstream '.b_current, ' '.b_name )
+			endif
 		elseif a:action == 'show'
 			call GitS_Show( 'update', shellescape(b_name), '' )
 		endif
