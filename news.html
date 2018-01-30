@@ -37,6 +37,16 @@
 		<!-- ################################## NEWS ###########################################-->
 		<!-- ###################################################################################-->
 		<div class="news">
+			<a name="NEWS_TERMINALS_JAN2018">
+			<h3>Run scripts in terminal windows</h3></a>
+			<i>Jan 2018</i>
+			<p>The preview versions of Bash-Support and Lua-Support can now run code asynchronously inside the editor, using a terminal window. This relies on Vim's new <code>+terminal</code> feature, or Neovim's terminal integration.</p>
+			<p>Set the output method using: <pre>:BashOutputMethod terminal<br>:LuaOutputMethod terminal</pre> Then the script will be run inside a terminal window. The interpreter can be started the usual way, using the map <code>\rr</code>, the menu entry <code>Bash/Lua -> Run -> run</code>, the ex-command <code>:Bash</code>, or <code>:Lua</code>.</p>
+			<p>Once the script execution finished, the map <code>\qf</code> can be used inside the terminal window to load its contents into quickfix. The map <code>\qj</code> loads quickfix and immediately jumps to the first error.</p>
+			<p>See <a target=_blank href="https://github.com/WolfgangMehner/bash-support">WolfgangMehner/bash-support</a> and <a target=_blank href="https://github.com/WolfgangMehner/lua-support">WolfgangMehner/lua-support</a> for the preview versions which already include this feature. Up to now, a new window is opened every time, which will still need to be improved.</p>
+		</div>
+		<br>
+		<div class="news">
 			<a name="NEWS_SKELETONS_JUL2017">
 			<h3>Customizable file skeletons</h3></a>
 			<i>Jul 2017</i>
@@ -85,7 +95,7 @@
 		<!-- ################################## FOOTER #########################################-->
 		<!-- ###################################################################################-->
 		<hr>
-		<p>Page updated: July 31 2017 &nbsp;&nbsp;/&nbsp;&nbsp;
+		<p>Page updated: January 30 2018 &nbsp;&nbsp;/&nbsp;&nbsp;
 		Mail to: <a href="mailto:wolfgang-mehner@web.de">Wolfgang Mehner</a></p>
 	</body>
 </html>

@@ -33,6 +33,37 @@ function add ( item )
 end  -----  end of function add  -----
 
 add {
+	bash = true,
+	lua = true,
+
+	HEADLINE = 'Run scripts in terminal windows',
+	DATE     = 'Jan 2018',
+	ID       = 'TERMINALS_JAN2018',
+	[[
+	The preview versions of Bash-Support and Lua-Support can now run code asynchronously inside the editor, using a terminal window.
+	This relies on Vim's new <code>+terminal</code> feature, or Neovim's terminal integration.
+	]],
+	[[
+	Set the output method using:
+	<pre>:BashOutputMethod terminal<br>:LuaOutputMethod terminal</pre>
+	Then the script will be run inside a terminal window.
+	The interpreter can be started the usual way, using the map <code>\rr</code>, the menu entry <code>Bash/Lua -> Run -> run</code>,
+	the ex-command <code>:Bash</code>, or <code>:Lua</code>.
+	]],
+	[[
+	Once the script execution finished, the map <code>\qf</code> can be used inside the terminal window to load its contents into quickfix.
+	The map <code>\qj</code> loads quickfix and immediately jumps to the first error.
+	]],
+	[[
+	See
+	<a target=_blank href="https://github.com/WolfgangMehner/bash-support">WolfgangMehner/bash-support</a> and
+	<a target=_blank href="https://github.com/WolfgangMehner/lua-support">WolfgangMehner/lua-support</a>
+	for the preview versions which already include this feature.
+	Up to now, a new window is opened every time, which will still need to be improved.
+	]],
+}
+
+add {
 	awk = true,
 	bash = true,
 	c = true,
