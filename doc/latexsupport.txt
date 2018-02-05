@@ -1,4 +1,4 @@
-*latexsupport.txt*               LaTeX Support                     Oct 12 2017
+*latexsupport.txt*               LaTeX Support                     Feb 05 2018
 
 LaTeX Support                                     *latex-support* *latexsupport*
 
@@ -17,6 +17,7 @@ conversion and running make can be done with a few keystrokes.
 ==============================================================================
 
  1.    Introduction                           |latexsupport-introduction|
+
  2.    Usage                                  |latexsupport-usage|
  2.1    Comments                              |latexsupport-usage-comments|
  2.1.1   End-of-Line Comments                 |latexsupport-usage-comments-eol|
@@ -33,29 +34,22 @@ conversion and running make can be done with a few keystrokes.
  2.6    Hardcopy                              |latexsupport-usage-hardcopy|
  2.7    Help                                  |latexsupport-usage-help|
  2.8    Toolbox                               |latexsupport-usage-toolbox|
+
  3.    Templates                              |latexsupport-templates|
  3.1    Introduction                          |latexsupport-templates-introduction|
- 3.2    Jump Tags                             |latexsupport-templates-jump-tags|
- 3.3    Split Tags                            |latexsupport-templates-split-tags|
- 3.4    Macros                                |latexsupport-templates-macros|
- 3.5    Template Files                        |latexsupport-templates-files|
- 3.6    Template Libraries                    |latexsupport-templates-libs|
+ 3.2    Customization                         |latexsupport-templates-custom|
+ 3.3    Jump Tags                             |latexsupport-templates-jump-tags|
+ 3.4    Split Tags                            |latexsupport-templates-split-tags|
+ 3.5    Macros                                |latexsupport-templates-macros|
+ 3.6    Template Files                        |latexsupport-templates-files|
+ 3.7    Template Libraries                    |latexsupport-templates-libs|
+ 3.8    File Skeletons                        |latexsupport-file-skeleton|
 
 4.     Customization                          |latexsupport-customization|
 4.1    Files                                  |latexsupport-custom-files|
 4.2    Global Variables                       |latexsupport-custom-variables|
 4.3    The Root Menu                          |latexsupport-custom-root|
 4.4    System-wide installation               |latexsupport-system-wide|
-
-5.     Template Files and Tags                |latexsupport-old-templ|
-5.1    Template Files                         |latexsupport-old-templ-files|
-5.2    Macros                                 |latexsupport-old-templ-macros|
-5.2.1  Formating Date and Time                |latexsupport-old-templ-date|
-5.3    Templates                              |latexsupport-old-templ-names|
-5.3.1  Template definition                    |latexsupport-old-templ-definition|
-5.3.2  The jump tags <+text+> etc.            |latexsupport-old-templ-jumptags|
-5.3.3  Command Ctrl-j                         |latexsupport-Ctrl-j|
-5.4    File Skeletons                         |latexsupport-file-skeleton|
 
 6.     LaTeX Dictionary                       |latexsupport-dictionary|
 
@@ -80,7 +74,7 @@ auto completion.)
 The features of the plug-in are:
 - Turn code lines into comments and vice versa.
     |latexsupport-usage-comments-lines|
-- Open the online documentation for a given function.
+- Open the online documentation for a given package or command.
     |latexsupport-usage-help|
 - Run the typesetter. |latexsupport-usage-run|
 - Change the typesetter on-the-fly. |latexsupport-usage-run|
@@ -94,7 +88,7 @@ The usage of most features is described in the chapter |latexsupport-usage|.
 The chapter |latexsupport-templates| gives a short introduction to the template
 system. The LaTeX executables and some other features may require some
 configuration, which is documented in the chapter |luasupport-configuration|.
-How to do a system-wide installation is outlined in |luasupport-system-wide|.
+How to do a system-wide installation is outlined in |latexsupport-system-wide|.
 
 The template system comes with its own documentation, which mainly aims at the
 advanced user (see |templatesupport.txt|).
@@ -432,7 +426,7 @@ The default typesetter is 'pdflatex'. This can be changed by assigning one of
 the values 'tex', 'latex', 'pdftex', 'luatex', and 'lualatex' to the variable
 |g:Latex_Typesetter| in your .vimrc file: >
   let g:Latex_Typesetter = 'latex'
-The typesetter can be changes on-the-fly using: >
+The typesetter can be changed on-the-fly using: >
   :LatexTypesetter <typesetter>
 The way the typesetters are called can be changed in the .vimrc file,
 by using one of these configuration variables:
@@ -572,7 +566,8 @@ This plug-in makes heavy use of an extendible template library. A template
 library can assist in speeding up the writing of code, while at the same time
 ensuring a consistent style. The templates are written in an easy to use
 markup language, which enables the user to customize templates without much
-hassle.
+hassle. The menu shortcuts (e.g. 'c' for the Comments menu) and the maps
+(e.g. `´ct` to insert date and time) are also defined in the template library.
 
 Templates are short pieces of text which can be included into source code or
 text of any other kind. But they are not just plain text, they can be extended
@@ -586,7 +581,39 @@ replacement text will then be used in the template while it is inserted.
 Hitting <ESC> or entering an empty text will abort template insertion.
 
 ------------------------------------------------------------------------------
-3.2  JUMP TAGS                              *latexsupport-templates-jump-tags*
+3.2  CUSTOMIZATION                             *latexsupport-templates-custom*
+------------------------------------------------------------------------------
+
+The master template file is `$HOME/.vim/latex-support/templates/Templates` for
+a user installation and `$VIM/vimfiles/latex-support/templates/Templates` for
+a system-wide installation (see |latexsupport-system-wide|).
+
+The template library is customized via your local template files. Use the menu
+entries "Snippets -> edit local templates", "Snippets -> edit custom
+templates", or "Snippets -> edit personal templates" to get there.
+
+The master template file can be edited itself to adapt the templates/menus to
+the users need. Alternatively, a custom template file can be added (see
+|g:Latex_CustomTemplateFile|), which eliminates the need to edit stock
+templates.
+
+The personalization (name, email, ..., date and time format) can be done in a
+special personalization template file (see |g:Templates_PersonalizationFile|).
+It will be read by all plug-ins which support this feature, so it should only
+contain basic information not pertaining to a specific programming language.
+It can be set up using a wizard, which is run by the map `´ntw` or the menu
+entry "Snippets -> template setup wizard". Afterwards, use the menu entry
+"Snippets -> reread templates" to apply the changes.
+
+Further template files can be added using the call: >
+  call mmtemplates#config#Add ( 'latex', '<PATH>/some.templates', 'example', 'nte' )
+The first parameter adds the file to your LaTeX templates, the second is the
+path. The remaining two optional parameters specify the symbolic name for
+these templates and the map to edit them. The map is `´nte` in this example,
+if the standard mapleader is set.
+
+------------------------------------------------------------------------------
+3.3  JUMP TAGS                              *latexsupport-templates-jump-tags*
 ------------------------------------------------------------------------------
 
 Templates can include special tags, which mark positions where text needs to
@@ -607,21 +634,30 @@ mode. Use <CTRL-D> to delete optional tags on the same line, for example: >
 The optional argument "init" can be written down after jumping to the tag
 using <CTRL-J> or deleted together with the comma using <CTRL-D>.
 
+The tags written with minus signs are removed when the template is used in
+visual mode: `{-TAGNAME-}` `<-TAGNAME->` `[-TAGNAME-]`
+
 ------------------------------------------------------------------------------
-3.3  SPLIT TAGS                            *latexsupport-templates-split-tags*
+3.4  SPLIT TAGS                            *latexsupport-templates-split-tags*
 ------------------------------------------------------------------------------
 
-Some templates include so-called split tags and therefore can use to surround
-some lines of code, or to surround a part of the current line.
+Some templates include so-called split tags and can use to surround some lines
+of code, or to surround a part of the current line.
 
 Example:
 
+The template "Math.frac" contains a split tag for the nominator:
+>
+  == Math.frac == insert, map:mfr, sc:f ==
+  \frac{<CURSOR><SPLIT>}{<+denominator+>}
+  == ENDTEMPLATE ==
+<
 Consider the formula:
 >
   $ c = a + b $
 <
-The template "Math.frac" contains a split tag for the nominator. After
-selecting "a + b" and inserting the template, the result looks like this:
+After selecting "a + b" and inserting the template, the result looks like
+this:
 >
   $ c = \frac{a + b}{<+denominator+>} $
 <
@@ -629,7 +665,7 @@ The cursor is placed within the first pair of brackets, use <CTRL-J> to jump
 to the denominator.
 
 ------------------------------------------------------------------------------
-3.4  MACROS                                    *latexsupport-templates-macros*
+3.5  MACROS                                    *latexsupport-templates-macros*
 ------------------------------------------------------------------------------
 
 Macros are placeholder which get replace while a template is inserted. The
@@ -667,8 +703,11 @@ for the format specifiers:
   SetFormat( 'YEAR', 'year %Y' )
 <
 ------------------------------------------------------------------------------
-3.5  TEMPLATE FILES                             *latexsupport-templates-files*
+3.6  TEMPLATE FILES                             *latexsupport-templates-files*
 ------------------------------------------------------------------------------
+
+The template definitions are spread out over several template files. These can
+contain comments, lines starting with a section sign (§) are ignored.
 
 Template files can include several further files: >
   IncludeFile( 'comments.templates' )
@@ -683,7 +722,7 @@ A template definition starts with a template header with the following syntax:
 The options are described here: |template-support-options|
 
 ------------------------------------------------------------------------------
-3.6  TEMPLATE LIBRARIES                          *latexsupport-templates-libs*
+3.7  TEMPLATE LIBRARIES                          *latexsupport-templates-libs*
 ------------------------------------------------------------------------------
 
 The template system comes with several auxiliary functions.
@@ -715,10 +754,9 @@ you want, save it, and click on the menu item "reread templates" to read in
 the file(s) and to rebuild the internal representation of the templates.
 
 For how to use these files to configure and personalize the template library,
-see |luasupport-config-template-cstm|.
-
-For help with setting up the template library, use the setup wizard
-"Snippets -> template setup wizard".
+see |latexsupport-templates-custom|. For help with setting up the template
+library, use the setup wizard:
+  Latex -> Snippets -> template setup wizard
 
 Template Style
 --------------
@@ -732,6 +770,33 @@ this behavior by setting a global variable in your ~/.vimrc (see
 |g:Templates_TemplateBrowser|):
 >
   let g:Templates_TemplateBrowser = 'browse'
+<
+------------------------------------------------------------------------------
+3.8  FILE SKELETONS                               *latexsupport-file-skeleton*
+------------------------------------------------------------------------------
+                                                    *g:Latex_InsertFileProlog*
+If g:Latex_InsertFileProlog is set to "yes", a file skeleton is automatically
+inserted into new LaTeX documents. The list of templates used to create this
+skeleton is specified in the template library. For this purpose a property is
+used, which can for example be set in the customization file
+(see |latexsupport-templates|).
+
+                                                 *Latex::FileSkeleton::Script*
+The file skeleton is controlled via this properties, which can be set in one
+of the template files:
+>
+  SetProperty ( 'Latex::FileSkeleton::Script', 'Comments.file prolog' )
+<
+This inserts only a comment box to document the file. To disable the insertion
+completely, set the property to an empty string: >
+  SetProperty ( 'Latex::FileSkeleton::Script', '' )
+In general, this property is a semicolon-separated list of templates to be
+inserted: >
+  SetProperty ( 'Latex::FileSkeleton::Script', 'Comments.file prolog; ;Skeleton.packages; ;Skeleton.document' )
+This will insert a file description, and two file skeleton templates, one with
+"\usepackage" commands and one with a skeleton of the document environment. If
+a space appears as an entry in the list, an empty line is inserted: >
+  '...; ;...'
 <
 ==============================================================================
 4.  CUSTOMIZATION                                 *latexsupport-customization*
@@ -1070,241 +1135,6 @@ $VIM/vimfiles/latex-support/codesnippets) into the new directory or to set a
 link to the global directory.
 
 ==============================================================================
-5.  TEMPLATE FILES AND TAGS                           *latexsupport-old-templ*
-==============================================================================
-
-Nearly all menu items insert code snippets or comments. All of these are
-contained within template files and can be changed by the user to meet their
-requirements. The menu shortcuts (e.g. 'c' for the Comments menu) and the
-menu item hotkeys (e.g. '´ct' insert date and time) are also defined in the
-templates.
-The template engine comes as a separate plug-in contributed by Wolfgang Mehner.
-This section is a short introduction to this template system. Please see
-|templatesupport.txt| for more information.
-
-The master template file is '$HOME/.vim/latex-support/templates/Templates' for
-a user installation and  '$VIM/vimfiles/latex-support/templates/Templates' for
-a system-wide installation (see |latexsupport-system-wide|).
-
-The master template file can be edited itself to adapt the templates/menus to
-the users need.  Alternatively, a custom template file can be added (see
-|g:Latex_CustomTemplateFile|), which eliminates the need to edit stock
-templates. The personalization (name, email, ..., date and time format) can be
-done in a special personalization template file. It will be read by all
-plug-ins which support this feature, so it should only contain basic
-information not pertaining to a specific programming language. It can be set
-up using a wizard, which is run by the map \ntw or the menu entry:
-  LaTeX -> Snippets -> template setup wizard
-
-Further template files can be added using the call: >
-  call mmtemplates#config#Add ( 'latex', '<PATH>/some.templates', 'example', 'nte' )
-The first parameter adds the file to your LaTeX templates, the second is the
-path. The remaining two optional parameters specify the symbolic name for
-these templates and the map to edit them. The map is '\nte' in this example,
-if the standard mapleader is set.
-
-------------------------------------------------------------------------------
-5.1  TEMPLATE FILES                             *latexsupport-old-templ-files*
-------------------------------------------------------------------------------
-
-The master template file starts with various settings followed by templates
-for single menu items or better by including other template files grouping the
-templates according to the menu structure of this plug-in. The master file
-usually looks like this:
-
-Example:
->
- § ==========================================================
- §  Settings
- § ==========================================================
-
- SetMacro( 'AUTHOR',       'YOUR NAME' )
- SetMacro( 'AUTHORREF',    '' )
- SetMacro( 'EMAIL',        '' )
- SetMacro( 'ORGANIZATION', '' )
- SetMacro( 'COMPANY',      '' )
- SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
- SetMacro( 'LICENSE',      'GNU General Public License' )
-
- § =============================================================
- §  File Includes
- § =============================================================
-
- MenuShortcut( 'Comments', 'c' )
- MenuShortcut( 'Text',     't' )
- MenuShortcut( 'Math',     'm' )
- MenuShortcut( 'Document', 'd' )
- MenuShortcut( 'BibTeX',   'b' )
- MenuShortcut( 'Wizard',   'w' )
- MenuShortcut( 'Help',     'h' )
-
- IncludeFile( 'comments.templates' )
- IncludeFile( 'text.templates' )
- IncludeFile( 'math.templates' )
- IncludeFile( 'document.templates' )
- IncludeFile( 'bibtex.templates' )
- IncludeFile( 'wizard.templates' )
-<
-Lines starting with a section sign (§) are comments. The section starting with
->
-  SetMacro( 'AUTHOR',       'YOUR NAME' )
-<
-assigns values to predefined tags (macros). Arbitrary user-defined macros are
-possible. The macro name must follows the rules for a C language identifier:
-first character letter or underscore; case matters; digits are allowed
-beginning with the second character.
-Some of the macros assigned here are placeholders, they will be overwritten by
-template files read later on, which contain the user's configuration.
-
-The statement
->
-  IncludeFile( 'comments.templates' )
-<
-includes the templates from the file 'comments.templates' (in the same
-directory). An absolute path would also be possible. The statement
->
-  MenuShortcut( 'Comments',      'c' )
-<
-sets 'c' as the shortcut for the Comments menu.
-
-------------------------------------------------------------------------------
-5.2  MACROS                                    *latexsupport-old-templ-macros*
-------------------------------------------------------------------------------
-
-The following macro names are predefined. The first group is used to
-personalize templates.
->
- |BASENAME|        filename without path and suffix
- |DATE|            the preferred date representation for the current locale
-                    without the time
- |FILENAME|        filename without path
- |PATH|            path without filename
- |SUFFIX|          filename suffix
- |TIME|            the preferred time representation for the current locale
-                    without the date and the time zone or name or abbreviation
- |YEAR|            the year as a decimal number including the century
-<
- ----------------------------------------------------------------------------
- PREDEFINED TAGS USED IN TEMPLATES
- ----------------------------------------------------------------------------
- <CURSOR>           The cursor position after insertion of a template.
- <+text+>,<-text->  See |latexsupport-old-templ-jumptags|.
- {+text+},{-text-}
- [+text+],[-text-]
-
- <SPLIT>            The split point when inserting in visual mode
-                    (see|latexsupport-old-templ|)
-
-A dependent template file can start with its own command section. There is no
-need to have all user defined macros in the master file.
-
-------------------------------------------------------------------------------
-
-5.2.1  Formating Date and Time                   *latexsupport-old-templ-date*
-
-The format for *|DATE|* ,*|TIME|* , and*|YEAR|* can be set by the user. The
-defaults are:
->
-  |DATE|        '%x'
-  |TIME|        '%X'
-  |YEAR|        '%Y'
-<
-See the manual page of the C function strftime() for the format.  The accepted
-format depends on your system, thus this is not portable!  The maximum length
-of the result is 80 characters.
-
-User defined formats can be set using the following function calls in the
-master template file is '$HOME/.vim/latex-support/templates/Templates',  e.g.
->
-  SetFormat( 'DATE', '%D'      )
-  SetFormat( 'TIME', '%H:%M'   )
-  SetFormat( 'YEAR', 'year %Y' )
-
-------------------------------------------------------------------------------
-5.3  TEMPLATES                                  *latexsupport-old-templ-names*
-------------------------------------------------------------------------------
-
-------------------------------------------------------------------------------
-
-5.3.1  Template definition                 *latexsupport-old-templ-definition*
-
-The template behind a menu item is identified by a given name. The first part
-of the name identifies the menu name, the second part identifies the item.
-A template definition starts with a template header with the following syntax:
-
-  == menu_name.template_name == options ==
-
-The options are described here: |template-support-options|.
-
-------------------------------------------------------------------------------
-
-5.3.2  The jump tags <+text+> etc.           *latexsupport-old-templ-jumptags*
-
-There are four jump tag types which can be used as jump targets in templates:
-
- <+text+>   Can be jumped to by hitting Ctrl-j.
- {+text+}   Same as <+text+>. Used in cases where indentation gives unwanted
-            results with the first one.
-
- <-text->   Same as the two above. Will be removed if the template is used
- {-text-}   in visual mode.
-
- [+text+]   The "optional" tag. Serves as a jump tag, but can be deleted using
-            Ctrl-d.
- [-text-]   Same as above, removed in visual mode.
-
-The text inside the brackets is userdefined and can be empty. The text can be
-composed from letters (uppercase and lowercase), digits, and underscores.
-After the insertion of an template these jump targets will be highlighted.
-
-------------------------------------------------------------------------------
-
-5.3.3  Command Ctrl-j                                    *latexsupport-Ctrl-j*
-
-Use the command Ctrl-j to jump to the next target. The target will be removed
-and the mode will switched to insertion. Ctrl-j works in normal and in insert
-mode.  The template for an if-else-statement can be written as follows:
->
-  == Statements.if, else == map:sie, sc:i ==
-  if <CURSOR>
-    <SPLIT><-IF_PART->
-  else
-    <+ELSE_PART+>
-  endif
-<
-The cursor will be set as shown. When the condition is specified a Ctrl-j let
-you jump to the target <-IF PART-> and deletes it.  When the block is written
-a Ctrl-j leads you to the else-part.  The target <+ELSE_PART+> disappears and
-you can type on.
-
-------------------------------------------------------------------------------
-5.4  FILE SKELETONS                               *latexsupport-file-skeleton*
-------------------------------------------------------------------------------
-                                                    *g:Latex_InsertFileProlog*
-If g:Latex_InsertFileProlog is set to "yes", a file skeleton is automatically
-inserted into new LaTeX documents. The list of templates used to create this
-skeleton is specified in the template library. For this purpose a property is
-used, which can for example be set in the customization file
-(see |latexsupport-templates|).
-
-                                                 *Latex::FileSkeleton::Script*
-The file skeleton is controlled via this properties, which can be set in one
-of the template files:
->
-  SetProperty ( 'Latex::FileSkeleton::Script', 'Comments.file prolog' )
-<
-This inserts only a comment box to document the file. To disable the insertion
-completely, set the property to an empty string: >
-  SetProperty ( 'Latex::FileSkeleton::Script', '' )
-In general, this property is a semicolon-separated list of templates to be
-inserted: >
-  SetProperty ( 'Latex::FileSkeleton::Script', 'Comments.file prolog; ;Skeleton.packages; ;Skeleton.document' )
-This will insert a file description, and two file skeleton templates, one with
-"\usepackage" commands and one with a skeleton of the document environment. If
-a space appears as an entry in the list, an empty line is inserted: >
-  '...; ;...'
-<
-==============================================================================
 6.  LATEX DICTIONARY                                 *latexsupport-dictionary*
 ==============================================================================
 
@@ -1336,9 +1166,9 @@ filetype 'tex' to minimize conflicts with mappings from other plug-ins.
 Furthermore, the mapleader can be changed using the setting |g:Latex_MapLeader|.
 
 Some mappings can be used with a range (of lines). In normal mode >
-  \cl
+  ´cl
 appends a end-of-line comment to the current line,  whereas >
-  4\cl
+  4´cl
 appends end-of-line comments to the 4 lines starting with the current line.
 
 Legend:  (i) insert mode, (n) normal mode, (v) visual mode
