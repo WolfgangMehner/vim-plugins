@@ -45,17 +45,22 @@ conversion and running make can be done with a few keystrokes.
  3.7    Template Libraries                    |latexsupport-templates-libs|
  3.8    File Skeletons                        |latexsupport-file-skeleton|
 
-4.     Customization                          |latexsupport-customization|
-4.1    Files                                  |latexsupport-custom-files|
-4.2    Global Variables                       |latexsupport-custom-variables|
-4.3    The Root Menu                          |latexsupport-custom-root|
-4.4    System-wide installation               |latexsupport-system-wide|
+ 4.    Configuration                          |latexsupport-configuration|
+ 4.1    Typesetters, Viewers, Converters      |latexsupport-config-external|
+ 4.2    Menus                                 |latexsupport-config-menus|
+ 4.3    Maps                                  |latexsupport-config-maps|
+ 4.4    Comments                              |latexsupport-config-comments|
+ 4.5    Snippets                              |latexsupport-config-snippets|
+ 4.6    Dictionary                            |latexsupport-config-dictionary|
+ 4.7    Hardcopy                              |latexsupport-config-hardcopy|
+ 4.8    Toolbox                               |latexsupport-config-toolbox|
 
-6.     LaTeX Dictionary                       |latexsupport-dictionary|
+ 5.    System-wide Installation               |latexsupport-system-wide|
 
  A.    Overview of Mappings                   |latexsupport-mappings|
- B.    Troubleshooting - Known Issues         |latexsupport-troubleshooting|
- C.    Release Notes - Change Log             |latexsupport-release-notes|
+ B.    Files                                  |latexsupport-files|
+ C.    Troubleshooting - Known Issues         |latexsupport-troubleshooting|
+ D.    Release Notes - Change Log             |latexsupport-release-notes|
 
 ==============================================================================
 1.  INTRODUCTION                                   *latexsupport-introduction*
@@ -87,7 +92,7 @@ The features of the plug-in are:
 The usage of most features is described in the chapter |latexsupport-usage|.
 The chapter |latexsupport-templates| gives a short introduction to the template
 system. The LaTeX executables and some other features may require some
-configuration, which is documented in the chapter |luasupport-configuration|.
+configuration, which is documented in the chapter |latexsupport-configuration|.
 How to do a system-wide installation is outlined in |latexsupport-system-wide|.
 
 The template system comes with its own documentation, which mainly aims at the
@@ -105,7 +110,7 @@ choice for typesetting in LaTeX.)
 If the root menu 'LaTeX' is not visible you also can load it with the item
 "Load LaTeX Support" from the "Tools" menu. The item "Unload LaTeX Support"
 can be used to unload the LaTeX root menu.
-(Compare |latexsupport-custom-root|.)
+(Compare |latexsupport-config-menus|.)
 
 ------------------------------------------------------------------------------
 2.1  COMMENTS                                    *latexsupport-usage-comments*
@@ -323,7 +328,7 @@ them if appropriate.
 ------------------------------------------------------------------------------
 
 External tools like the typesetters and BibTeX can be run with a keystroke.
-(See Section |luasupport-config-executable| for the configuration.)
+(See Section |latexsupport-config-external| for the configuration.)
 
   Feature                    Menu Entry                     Map
  ----------------------------------------------------------------------------
@@ -476,7 +481,7 @@ The fastest way of using them is to put maps like this into your .vimrc file:
 <
 You can now use F5 and F6 to open and close the quickfix window and F7 and F8
 to jump to the errors.
-Compare the file 'customization.vimrc', see |latexsupport-custom-files|.
+Compare the file 'customization.vimrc', see |latexsupport-files|.
 
 ------------------------------------------------------------------------------
 2.6  HARDCOPY                                    *latexsupport-usage-hardcopy*
@@ -526,7 +531,7 @@ can be configured by setting a global variable in your ~/.vimrc (see
 
 More functionality, not directly related to LaTeX, is provided in the
 so-called "Toolbox". By default, an integration for Make is inserted into the
-toolbox. For the configuration, see |luasupport-config-toolbox|. The toolbox
+toolbox. For the configuration, see |latexsupport-config-toolbox|. The toolbox
 comes with its own documentation, see |toolbox| and |toolbox-make|.
 
 To switch the Tool Box off add the following line to the file .vimrc : >
@@ -779,10 +784,13 @@ If g:Latex_InsertFileProlog is set to "yes", a file skeleton is automatically
 inserted into new LaTeX documents. The list of templates used to create this
 skeleton is specified in the template library. For this purpose a property is
 used, which can for example be set in the customization file
-(see |latexsupport-templates|).
+(see |latexsupport-templates-custom|).
 
+This automatic insertion can be switched off by adding this to the `.vimrc`: >
+  let g:Latex_InsertFileProlog = 'no'
+<
                                                  *Latex::FileSkeleton::Script*
-The file skeleton is controlled via this properties, which can be set in one
+The file skeleton is controlled via this property, which can be set in one
 of the template files:
 >
   SetProperty ( 'Latex::FileSkeleton::Script', 'Comments.file prolog' )
@@ -799,244 +807,144 @@ a space appears as an entry in the list, an empty line is inserted: >
   '...; ;...'
 <
 ==============================================================================
-4.  CUSTOMIZATION                                 *latexsupport-customization*
+4.  CONFIGURATION                                 *latexsupport-configuration*
 ==============================================================================
 
-------------------------------------------------------------------------------
-4.1  FILES                                         *latexsupport-custom-files*
-------------------------------------------------------------------------------
+The basic configuration is done via a number of global variables, which can be
+set in the `.vimrc` file. All the typesetters, viewers, and converters calls can
+also be adapted, see below.
 
-README.md                         The starting point.
+  Variable                   Default       Description
+ ----------------------------------------------------------------------------
+  |g:Latex_TexFlavor|          'latex'       filetype when starting to edit
+                                             an empty file *.tex
+  |g:Latex_Typesetter|         'pdflatex'    the typesetter used on start-up
+  |g:Latex_Processing|         'foreground'  how to run external processes
 
-autoload/mmtemplates/core         The template system plug-in.
+  |g:Latex_LoadMenus|          'yes'         ...
+  |g:Latex_CreateMenusDelayed| 'yes'         when to load the menus
+  |g:Latex_RootMenu|           'LaTe&X'      name and shortcut of the root menu
+  |g:Latex_MapLeader|          '´'           the |maplocalleader| used for maps
+  |g:Latex_Ctrl_j|             'yes'         generate the <CTRL-J> map
+  |g:Latex_Ctrl_d|             'yes'         generate the <CTRL-D> map
 
-doc/latexsupport.txt              The latex-support help file for the local help.
-doc/templatesupport.txt           The template system help file for the local help.
+  |g:Latex_InsertFileProlog|   'yes'         insert a file header automatically
+  |g:Latex_LineEndCommColDefault|            standard column used for end-of-
+                             49              line comments
 
-plugin/latex-support.vim          The LaTeX plug-in for Vim/gVim.
+  |g:Latex_CodeSnippets|       (see below)   directory with code snippets
+  |g:Latex_GuiSnippetBrowser|  'gui'         browser to select code snippets
 
-latex-support/codesnippets/       The code snippets directory.
+  |g:Latex_LocalTemplateFile|  (see below)   the local top-level template file
+  |g:Latex_GlobalTemplateFile| (see below)   the global top-level template file
+  |g:Latex_CustomTemplateFile| (see below)   the optional custom template file
+  |g:Templates_PersonalizationFile|
+                             (see below)   the personalization template file
 
-latex-support/templates/*         The template files.
+  |g:Latex_Dictionary_File|    ''            word list used for completion
+  |g:Latex_Printheader|        '...'         printheader used for hardcopy
 
+  |g:Latex_UseToolbox|         'yes'         use the toolbox
+  |g:Latex_UseTool_make|       'yes'         use the make tool
 
-latex-support/wordlists/latex-keywords.list  A file used as dictionary for
-                                  automatic word completion.  This file is referenced
-                                  in the file customization.vimrc.
+  |g:Templates_InternetBrowserExec|          the browser executable
+  |g:Templates_InternetBrowserFlags|         additional browser flags
+ ----------------------------------------------------------------------------
 
----------------   -------------------------------------------------------------
----------------   The following files and extensions are for convenience only.
-                  latex-support.vim will work without them.
-                  -------------------------------------------------------------
-
-latex-support/rc/make.vim               Additional filetype plug-in.
-latex-support/rc/tex.vim                Additional filetype plug-in.
-latex-support/rc/customization.ctags    Additional settings I use in ~.ctags.
-latex-support/rc/customization.gvimrc   Additional settings I use in ~.gvimrc.
-latex-support/rc/customization.vimrc    Additional settings I use in ~.vimrc:
-                                        incremental search, tabstop, hot keys, font,
-                                        use of dictionaries, ... The file is commented.
-                                        Append it to your .vimrc if you like.
-latex-support/doc/latex-hotkeys.pdf     Reference card for the key mappings.
-                                        The mappings can also be used with the non-GUI Vim,
-                                        where the menus are not available.
-latex-support/doc/ChangeLog             The change log.
-
-------------------------------------------------------------------------------
-4.2  GLOBAL VARIABLES                          *latexsupport-custom-variables*
-------------------------------------------------------------------------------
-
-Several global variables are checked after the plug-in has been loaded to customize it:
+Further customization is carried out in the template library, see
+|latexsupport-templates-custom| and |latexsupport-file-skeleton|.
 
 ------------------------------------------------------------------------------
- global variable                default value
-------------------------------------------------------------------------------
-
- -- Linux/Unix ---------------------------------------------------------------
- g:Latex_Latex       'latex    -src-specials -file-line-error -interaction=nonstopmode'
- g:Latex_Tex         'tex      -src-specials -file-line-error -interaction=nonstopmode'
- g:Latex_Pdflatex    'pdflatex -src-specials -file-line-error -interaction=nonstopmode'
- g:Latex_Pdftex      'pdftex   -src-specials -file-line-error -interaction=nonstopmode'
- g:Latex_Lualatex    'lualatex --file-line-error --interaction=nonstopmode'
- g:Latex_Luatex      'luatex   --file-line-error --interaction=nonstopmode'
- g:Latex_Bibtex      "bibtex"
-
- g:Latex_DviViewer   "xdvi"
- g:Latex_PsViewer    "gv"
- g:Latex_PdfViewer   "acroread"
-
- g:Latex_DviPdf      'dvipdft'
- g:Latex_DviPng      'dvipng'
- g:Latex_DviPs       'dvips'
- g:Latex_PdfPng      'convert'
- g:Latex_PsPdf       'ps2pdf'
-
- g:Latex_CustomTemplateFile     $HOME.'/.vim/templates/latex.templates'
- g:Latex_GlobalTemplateFile     $VIMRUNTIME.'/latex-support/templates/Templates'
- g:Latex_LocalTemplateFile      $HOME.'/.vim/latex-support/templates/Templates'
-
- -- MS Windows ---------------------------------------------------------------
- g:Latex_Latex       'latex.exe    -src-specials -file-line-error -interaction=nonstopmode'
- g:Latex_Tex         'tex.exe      -src-specials -file-line-error -interaction=nonstopmode'
- g:Latex_Pdflatex    'pdflatex.exe -src-specials -file-line-error -interaction=nonstopmode'
- g:Latex_Bibtex      'bibtex.exe'
-
- g:Latex_Pdftex      'pdftex.exe   -src-specials -file-line-error -interaction=nonstopmode'
- g:Latex_DviViewer   'dviout.exe'
- g:Latex_PsViewer    ''
- g:Latex_PdfViewer   ''
-
- g:Latex_DviPdf      'dvipdfm.exe'
- g:Latex_DviPng      'dvipng.exe'
- g:Latex_DviPs       'dvips.exe'
- g:Latex_PdfPng      ''
- g:Latex_PsPdf       'ps2pdf.exe'
-
- g:Latex_CustomTemplateFile     $HOME.'/vimfiles/templates/latex.templates'
- g:Latex_GlobalTemplateFile     $VIMRUNTIME.'/latex-support/templates/Templates'
- g:Latex_LocalTemplateFile      $HOME.'/vimfiles/latex-support/templates/Templates'
-
- -- all ----------------------------------------------------------------------
- g:Latex_CodeSnippets           root_dir.'latex-support/codesnippets/'
- g:Latex_CreateMenusDelayed     'yes'
- g:Latex_Dictionary_File        ''
- g:Latex_GuiSnippetBrowser      'gui'
- g:Latex_InsertFileProlog       'yes'
- g:Latex_Ctrl_j                 'yes'
- g:Latex_Ctrl_d                 'yes'
- g:Latex_LineEndCommColDefault  49
- g:Latex_LoadMenus              'yes'
- g:Latex_MapLeader              '´'
- g:Latex_Printheader            "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
- g:Latex_RootMenu               'LaTe&X'
- g:Latex_TexFlavor              'latex'
- g:Latex_Typesetter             'pdflatex'
- g:Latex_Processing             'foreground'
-
-The variable root_dir will automatically be set to one of the following values:
-  $HOME.'/.vim/'        for Linux/Unix
-  $VIM.'/vimfiles/'     for MS-Windows
-
-------------------------------------------------------------------------------
-  DESCRIPTION
-------------------------------------------------------------------------------
- *g:Latex_Latex*
-The command line used to call the LaTeX typesetter.
-
- *g:Latex_Tex*
-The command line used to call the TeX typesetter.
-
- *g:Latex_Pdflatex*
-The command line used to call the pdfLaTeX typesetter.
-
- *g:Latex_Pdftex*
-The command line used to call the pdfTeX typesetter.
-
- *g:Latex_Lualatex*
-The command line used to call the luaLaTeX typesetter.
-
- *g:Latex_Luatex*
-The command line used to call the luaTeX typesetter.
-
- *g:Latex_Bibtex*
-The command line used to call bibtex.
-
- *g:Latex_DviViewer*
-The command line used to call a DVi viewer.
-
- *g:Latex_PsViewer*
-The command line used to call a PS viewer.
-
- *g:Latex_PdfViewer*
-The command line used to call a PDF viewer.
-
- *g:Latex_DviPdf*
-The command line used to call a DVI to PDF converter.
-
- *g:Latex_DviPng*
-The command line used to call a DVI to Png converter.
-
- *g:Latex_DviPs*
-The command line used to call a DVI to PS converter.
-
- *g:Latex_PdfPng*
-The command line used to call a PDF to Png converter.
-
- *g:Latex_PsPdf*
-The command line used to call a PS to PDF converter.
-
- *g:Latex_CodeSnippets*
-The name of the (non-standard) code snippet directory (see below).
-
- *g:Latex_CreateMenusDelayed*
-Delaying the initialization until the first TeX/LaTeX file is opened.
-
- *g:Latex_CustomTemplateFile*
-Sets the custom template file, path+name, used to overwrite stock templates
-(see|latexsupport-templates|).
-
- *g:Latex_Dictionary_File*
-Path and filename of the LaTeX word list used for dictionary completion.
-
- *g:Latex_GlobalTemplateFile*
-Sets the global template file, path+name  (see|latexsupport-templates|).
-
- *g:Latex_GuiSnippetBrowser*
-Code snippet browser: 'gui', 'commandline'.
-
- |g:Latex_InsertFileProlog|
-Insert file description comment in a new file ('yes', 'no').
-
-*g:Latex_Ctrl_j* *g:Latex_Ctrl_d*
-Create maps Ctrl-J and Ctrl-D ('yes', 'no')
-(compare |latexsupport-templates-jump-tags|)
-
- *g:Latex_LineEndCommColDefault*
-Default starting column for line-end comments.
-
- *g:Latex_LoadMenus*
-Load menus and mappings ("yes", "no") at startup.
-
- *g:Latex_LocalTemplateFile*
-Sets the local template file, path+name  (see|latexsupport-templates|).
-
- *g:Latex_MapLeader*
-Map leader for hotkeys (|latexsupport-mappings|).
-
-The mapleader can also be used in the ftplugin, by calling the functions
-*Latex_SetMapLeader()* and *Latex_ResetMapLeader()* . The maps created between
-the two calls will use |g:Latex_MapLeader| as the |<LocalLeader>|:
->
-  call Latex_SetMapLeader ()
-
-  map  <buffer>  <LocalLeader>eg  :echo "Example Map :)"<CR>
-
-  call Latex_ResetMapLeader ()
+                                                           *g:Latex_TexFlavor*
+When a new file `*.tex` is created, Vim sets its filetype to 'plaintex'. The
+maps and automations this plug-in provides only work for the filetype 'latex'.
+The plug-in therefore automatically adjusts the filetype of newly created
+`*.tex` files to 'latex'. This behavior can be switched off by setting: >
+  g:Latex_TexFlavor = 'plaintex'
 <
-
- *g:Latex_Printheader*
-Hardcopy header format.
-
- *g:Latex_RootMenu*
-The name of the plug-in root menu.
-
- *g:Latex_TexFlavor*
-The filetype when starting with an empty file ('latex', 'plaintex') 
-
- *g:Latex_Typesetter*
-The typesetter used by the run command ('<mapleader>rr', or menu item):
-'pdflatex', 'pdftex', 'latex', or 'tex'.
-
- *g:Latex_Processing*
-The way external programs such as the typesetter are run:
-'foreground' blocks the editor until the external process is done.
-'background' runs the process asynchronously and displays a message once it is
-done. Requires the |+job| feature.
-
 ------------------------------------------------------------------------------
-4.3  THE ROOT MENU                                  *latexsupport-custom-root*
+4.1  Typesetters, Viewers, Converters           *latexsupport-config-external*
 ------------------------------------------------------------------------------
 
+The typesetter are configured using the variables `g:Latex_<typesetter>`:
+
+  Variable            Default Linux
+ ----------------------------------------------------------------------------
+  *g:Latex_Latex*       latex    -src-specials -file-line-error -interaction=nonstopmode
+  *g:Latex_Tex*         tex      -src-specials -file-line-error -interaction=nonstopmode
+  *g:Latex_Pdflatex*    pdflatex -src-specials -file-line-error -interaction=nonstopmode
+  *g:Latex_Pdftex*      pdftex   -src-specials -file-line-error -interaction=nonstopmode
+  *g:Latex_Lualatex*    lualatex --file-line-error --interaction=nonstopmode
+  *g:Latex_Luatex*      luatex   --file-line-error --interaction=nonstopmode
+  *g:Latex_Bibtex*      bibtex
+ ----------------------------------------------------------------------------
+
+  Variable            Default Windows
+ ----------------------------------------------------------------------------
+  g:Latex_Latex       latex.exe    -src-specials -file-line-error -interaction=nonstopmode
+  g:Latex_Tex         tex.exe      -src-specials -file-line-error -interaction=nonstopmode
+  g:Latex_Pdflatex    pdflatex.exe -src-specials -file-line-error -interaction=nonstopmode
+  g:Latex_Pdftex      pdftex.exe   -src-specials -file-line-error -interaction=nonstopmode
+  g:Latex_Bibtex      bibtex.exe
+ ----------------------------------------------------------------------------
+
+                                                          *g:Latex_Typesetter*
+The typesetter used on start-up is set via `g:Latex_Typesetter`: >
+  let g:Latex_Typesetter = 'lualatex'
+Possible values are 'pdflatex', 'pdftex', 'latex', 'tex', 'lualatex', or
+'luatex', corresponding to the typesetters listed above. The typesetter can be
+changed on-the-fly using: >
+  :LatexTypesetter <typesetter>
+<
+------------------------------------------------------------------------------
+
+The converters are configured using the variables `g:Latex_<format>Viewer`:
+
+  Variable            Default Linux          Default Windows
+ ----------------------------------------------------------------------------
+  *g:Latex_DviViewer*   xdvi                   dviout.exe
+  *g:Latex_PdfViewer*   acroread
+  *g:Latex_PsViewer*    gv
+ ----------------------------------------------------------------------------
+
+For example: >
+  let g:Latex_PdfViewer = 'evince'
+<
+------------------------------------------------------------------------------
+
+The converters are configured using the variables `g:Latex_<from><to>`:
+
+  Variable            Default Linux          Default Windows
+ ----------------------------------------------------------------------------
+  *g:Latex_DviPdf*      dvipdft                dvipdfm.exe
+  *g:Latex_DviPng*      dvipng                 dvipng.exe
+  *g:Latex_DviPs*       dvips                  dvips.exe
+  *g:Latex_EpsPdf*      ps2pdf -dEPSCrop       n/a
+  *g:Latex_PdfPng*      convert                n/a
+  *g:Latex_PsPdf*       ps2pdf                 ps2pdf.exe
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+                                                          *g:Latex_Processing*
+External programs such as the typesetter can be run in the background by
+setting the variable: >
+ g:Latex_Processing = 'background'
+<
+  Value          Meaning
+ ----------------------------------------------------------------------------
+  'foreground'   blocks the editor until the external process is done
+  'background'   runs the process asynchronously and displays a message
+                 once it is done (requires the |+job| feature)
+ ----------------------------------------------------------------------------
+
+The behavior can be changed on-the-fly using the menu entry or the ex-command: >
+  :LatexProcessing <typesetter>
+<
+------------------------------------------------------------------------------
+4.2  MENUS                                         *latexsupport-config-menus*
+------------------------------------------------------------------------------
+                                                           *g:Latex_LoadMenus*
+                                                  *g:Latex_CreateMenusDelayed*
 The root menu is not visible by default.  The root menu 'LaTeX' will appear
 after the first file with extension 'tex' has been opened.
 When the root menu is visible all templates have been loaded and the internal
@@ -1047,19 +955,7 @@ To load the menu anyway when the editor starts add the following line to
 ~/.vimrc :
 >
   let g:Latex_CreateMenusDelayed = 'no'
-<
-The variable g:Latex_RootMenu, if set in .vimrc or in .gvimrc, gives the name of
-the single gVim root menu item in which the LaTeX submenus are contained. The
-default is
->
-                  'LaTe&X'
-<
-If you want to set the plug-in root menu as a submenu into another menu, e.g.
-your own with the name 'Plugin', this is done by the following line in
-'.vimrc'
->
-  let g:Latex_RootMenu = '&Plugin.LaTe&X'
-<
+
 The appearance of the root menu item can also be controlled by the global
 variable g:Latex_LoadMenus. The line
 >
@@ -1069,9 +965,141 @@ prevents the root menu item from appearing when the editor starts. You can
 switch it on (and off again) from the tools menu. The default for this
 variable is 'yes'.
 
+                                                            *g:Latex_RootMenu*
+The name and shortcut of the root menu is set via `g:Latex_RootMenu`. The
+character prefixed by '&' will be the shortcut.
+>
+Example: >
+  let g:Latex_RootMenu = '&Plugin.&LaTeX'
+Creates the LaTeX menu as a submenu of "Plugin", and sets the shortcut to 'l'.
+
 ------------------------------------------------------------------------------
-4.4  System-wide installation                       *latexsupport-system-wide*
+4.3  MAPS                                           *latexsupport-config-maps*
 ------------------------------------------------------------------------------
+                                                           *g:Latex_MapLeader*
+All the maps the plug-in creates use |maplocalleader|. It can be changed by
+setting the variable `g:Latex_MapLeader`. If it contains the empty string,
+Vim's default (backslash) is used.
+
+Example: >
+  let g:Latex_MapLeader = '#'
+Sets the mapleader to '#'.
+
+                                                        *Latex_SetMapLeader()*
+                                                      *Latex_ResetMapLeader()*
+The mapleader can also be used in the ftplugin, by calling the functions
+`Latex_SetMapLeader()` and `Latex_ResetMapLeader()`. The maps created between
+the two calls will use |g:Latex_MapLeader| as the |<LocalLeader>|:
+>
+  call Latex_SetMapLeader ()
+
+  map  <buffer>  <LocalLeader>eg  :echo "Example Map :)"<CR>
+
+  call Latex_ResetMapLeader ()
+<
+                                               *g:Latex_Ctrl_j* *g:Latex_Ctrl_d*
+The creation of the <CTRL-J> and <CTRL-D> maps is controlled by the variables
+`g:Latex_Ctrl_j` and `g:Latex_Ctrl_d`, respectively. To disable <CTRL-D>, set the
+variable to "no": >
+  let g:Latex_Ctrl_d = 'no'
+<
+------------------------------------------------------------------------------
+4.4  COMMENTS                                   *latexsupport-config-comments*
+------------------------------------------------------------------------------
+
+When a new TeX file is opened, the plug-in automatically inserts a file
+header, which is the template "Comments -> file prolog". This behavior can be
+switched off by adding this to the .vimrc: >
+  let g:Latex_InsertFileProlog = 'no'
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
+Further customization the file skeletons is possible through use of the
+template library (see |latexsupport-file-skeleton|).
+
+                                               *g:Latex_LineEndCommColDefault*
+The standard column used for end-of-line comments is configured using
+`g:Latex_LineEndCommentColumn`. The column can then be set individually for each
+buffer, using the menu entry "Comments -> set end-of-line com. col.".
+
+Example: >
+  g:Latex_LineEndCommColDefault = 59
+<
+------------------------------------------------------------------------------
+4.5  SNIPPETS                                   *latexsupport-config-snippets*
+------------------------------------------------------------------------------
+                                                        *g:Latex_CodeSnippets*
+The variable `g:Latex_Snippets` sets the location of the code snippet directory.
+The default value depends on the type of installation and the operating
+system.
+
+(Path separators are always written as slashes '/', even for Windows.)
+
+For a local installation, the default will be (UNIX/Linux): >
+  s:Latex_Snippets = $HOME.'/.vim/latex-support/codesnippets/'
+or (Windows): >
+  s:Latex_Snippets = $HOME.'/vimfiles/latex-support/codesnippets'
+<
+For a sytem-wide installation, the default will be: >
+  s:Latex_Snippets = $VIM.'/vimfiles/latex-support/codesnippets'
+<
+Example:
+
+To set a different code snippet directory, add this line to your vimrc: >
+  let g:Latex_Snippets = $HOME.'/myvim/tex/codesnippets/'
+<
+                                                   *g:Latex_GuiSnippetBrowser*
+Code snippets can either be selected in a file browser, by setting: >
+  let g:Latex_GuiSnippetBrowser = 'gui'
+or on the command line by setting: >
+  let g:Latex_GuiSnippetBrowser = 'commandline'
+<
+------------------------------------------------------------------------------
+4.6  DICTIONARY                               *latexsupport-config-dictionary*
+------------------------------------------------------------------------------
+                                                     *g:Latex_Dictionary_File*
+The file "latex-keywords.list" contains words used as dictionary for automatic
+word completion.  This feature is enabled by default. The default word list is >
+  $HOME/.vim/latex-support/wordlists/latex-keywords.list
+If you want to use an additional list MyLatex.List put the following line into
+the vimrc:
+>
+ let g:Latex_Dictionary_File = "$HOME/.vim/latex-support/wordlists/latex-keywords.list,".
+                           \   "$HOME/any_of_my_directories/MyLatex.List"
+<
+The right side is a comma separated list of files. Note the point at the end
+of the first line (string concatenation) and the backslash in front of the
+second line (continuation line).
+You can then use Vim's dictionary feature |i_CTRL-X_CTRL-K| inside tex-files,
+and also |i_CTRL-P| and |i_CTRL-N|, depending on how 'complete' is set.
+
+------------------------------------------------------------------------------
+4.7  HARDCOPY                                   *latexsupport-config-hardcopy*
+------------------------------------------------------------------------------
+                                                         *g:Latex_Printheader*
+The printheader used by "Run -> hardcopy to filename.ps" is set via the
+variable `g:Latex_Printheader`. It is temporarily set as the value of
+'printheader' while printing the hardcopy. See the documentation of the
+option 'printheader' for the possible contents of `g:Latex_Printheader`.
+
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
+------------------------------------------------------------------------------
+4.8  TOOLBOX                                     *latexsupport-config-toolbox*
+------------------------------------------------------------------------------
+                                                          *g:Latex_UseToolbox*
+                                                        *g:Latex_UseTool_make*
+The loading of the toolbox can be prevented by adding this setting to the
+vimrc: >
+  let g:Latex_UseToolbox = 'no'
+A single tool can be disabled by setting `g:Latex_UseTool_<toolname>`, in case
+of the "make" tool: >
+  let g:Latex_UseTool_make = 'no'
+<
+==============================================================================
+5.  SYSTEM-WIDE INSTALLATION                        *latexsupport-system-wide*
+==============================================================================
 
 A system-wide installation (one installation for all users) is done as
 follows.
@@ -1133,26 +1161,6 @@ Create your private snippet directory: >
 You may want to copy the snippets comming with this plug-in (in
 $VIM/vimfiles/latex-support/codesnippets) into the new directory or to set a
 link to the global directory.
-
-==============================================================================
-6.  LATEX DICTIONARY                                 *latexsupport-dictionary*
-==============================================================================
-
-The file  latex-keywords.list  contains words used as dictionary for automatic
-word completion.  This feature is enabled by default. The default word list is
->
-  $HOME/.vim/latex-support/wordlists/latex-keywords.list
-<
-If you want to use an additional list MyLatex.List put the following line into
- .vimrc :
->
- let g:Latex_Dictionary_File = "$HOME/.vim/latex-support/wordlists/latex-keywords.list,".
-                           \   "$HOME/any_of_my_directories/MyLatex.List"
-<
-The right side is a comma separated list of files. Note the point at the end
-of the first line (string concatenation) and the backslash in front of the
-second line (continuation line).
-You can use Vim's dictionary feature CTRL-X, CTRL-K (and CTRL-P, CTRL-N).
 
 ==============================================================================
 A.  OVERVIEW OF MAPPINGS                               *latexsupport-mappings*
@@ -1344,7 +1352,57 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
      ´rcm       choose make file                (ni)
 
 ==============================================================================
-B.  TROUBLESHOOTING - KNOWN ISSUES              *latexsupport-troubleshooting*
+B.  FILES                                                 *latexsupport-files*
+==============================================================================
+
+README.md                         The starting point.
+
+autoload/mmtemplates/*            The template system.
+autoload/mmtoolbox/*              The toolbox (make, ...).
+
+doc/latexsupport.txt              The help file for LaTeX support.
+doc/templatesupport.txt           The help file for the template system.
+doc/toolbox*.txt                  The help files for the toolbox.
+
+plugin/latex-support.vim          The LaTeX plug-in for Vim/gVim.
+
+latex-support/codesnippets/       The code snippets directory.
+
+latex-support/templates/*         The template files.
+
+latex-support/wordlists/latex-keywords.list
+                                  A file used as the dictionary
+                                  for automatic word completion.
+
+--------------------------------------------------------------
+ The following files and extensions are for convenience only.
+ `latex-support.vim` will work without them.
+--------------------------------------------------------------
+
+ftdetect/template.vim
+ftplugin/template.vim
+syntax/template.vim               Additional files for working with templates.
+
+latex-support/...
+  .../doc/latex-hotkeys.pdf       Reference card for the key mappings.
+  .../doc/ChangeLog               The change log.
+
+latex-support/...
+  .../rc/customization.ctags      Additional settings for use in .ctags.
+  .../rc/customization.gvimrc     Additional settings for use in .gvimrc.
+  .../rc/customization.vimrc      Additional settings for use in .vimrc:
+                                    incremental search, tabstop, hot keys,
+                                    font, use of dictionaries, ...
+                                  The file is commented. Append it to your
+                                  .vimrc if you like.
+
+  .../rc/make.vim                 Suggestion for a filetype plug-in.
+  .../rc/tex.vim                  Suggestion for a filetype plug-in.
+  .../rc/*.templates              Sample template files for customization.
+                                  Used by the customization template setup wizard.
+
+==============================================================================
+C.  TROUBLESHOOTING - KNOWN ISSUES              *latexsupport-troubleshooting*
 ==============================================================================
 
 * Some menus, such as "LaTeX -> Math -> greek lowercase" are not displayed
@@ -1356,7 +1414,7 @@ B.  TROUBLESHOOTING - KNOWN ISSUES              *latexsupport-troubleshooting*
     Create one if there is none, or better use customization.vimrc.
 
 ==============================================================================
-C.  RELEASE NOTES - CHANGE LOG                    *latexsupport-release-notes*
+D.  RELEASE NOTES - CHANGE LOG                    *latexsupport-release-notes*
 ==============================================================================
 
 See files 'latex-support/README.md' and 'latex-support/doc/ChangeLog'.
