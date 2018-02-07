@@ -16,7 +16,7 @@
 "
 "       Version:  see variable g:LatexSupportVersion below.
 "       Created:  27.12.2012
-"      Revision:  25.09.2017
+"      Revision:  07.02.2018
 "       License:  Copyright (c) 2012-2015, Fritz Mehner
 "                 Copyright (c) 2016-2017, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
@@ -635,10 +635,9 @@ endif
 
 let s:escfilename 								= ' \%#[]'
 let s:Latex_TexFlavor							= 'latex'
-let s:Latex_CreateMenusDelayed		= 'yes'
 let s:Latex_GuiSnippetBrowser 		= 'gui'             " gui / commandline
-let s:Latex_LoadMenus         		= 'yes'             " load the menus?
-let s:Latex_RootMenu          		= 'LaTe&X'          " name of the root menu
+let s:Latex_LoadMenus             = 'auto'            " load the menus?
+let s:Latex_RootMenu              = 'LaTe&X'          " name of the root menu
 let s:Latex_Processing            = 'foreground'
 let s:Latex_UseToolbox            = 'yes'
 call s:ApplyDefaultSetting ( 'Latex_UseTool_make', 'yes' )
@@ -668,7 +667,6 @@ let s:Latex_BibtexErrorf =
 "-------------------------------------------------------------------------------
 
 call s:GetGlobalSetting( 'Latex_CustomTemplateFile' )
-call s:GetGlobalSetting( 'Latex_CreateMenusDelayed' )
 call s:GetGlobalSetting( 'Latex_DviPdf' )
 call s:GetGlobalSetting( 'Latex_DviPng' )
 call s:GetGlobalSetting( 'Latex_DviPs' )
@@ -702,6 +700,18 @@ call s:GetGlobalSetting( 'Latex_UseToolbox' )
 " overwrite the mapleader, we should not use use "\" in LaTeX
 call s:ApplyDefaultSetting ( 'Latex_MapLeader', '´' )
 call s:ApplyDefaultSetting ( 'Latex_Printheader',  "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N" )
+
+" adapt for backwards compatibility
+if s:Latex_LoadMenus == 'no'
+	let s:Latex_LoadMenus = 'manual'
+elseif s:Latex_LoadMenus == 'yes'
+	if exists ( 'g:Latex_CreateMenusDelayed' )
+		let s:Latex_LoadMenus = g:Latex_CreateMenusDelayed == 'yes' ? 'auto' : 'startup'
+	else
+		" old default for 'Latex_CreateMenusDelayed' is 'yes'
+		let s:Latex_LoadMenus = 'auto'
+	endif
+endif
 
 "-------------------------------------------------------------------------------
 " Internal variables   {{{3
@@ -2547,8 +2557,8 @@ endfunction    " ----------  end of function s:RemoveMenus  ----------
 "-------------------------------------------------------------------------------
 function! s:Initialize ( ftype )
 	if ! exists( 'g:Latex_Templates' )
-		if s:Latex_LoadMenus == 'yes' | call s:AddMenus()
-		else                          | call s:RereadTemplates()
+		if s:Latex_LoadMenus == 'auto' | call s:AddMenus()
+		else                           | call s:RereadTemplates()
 		endif
 	endif
 	if a:ftype == 'latex'
@@ -2625,7 +2635,7 @@ function! Latex_Settings ( verbose )
 	if a:verbose >= 1
 		let	txt .= "\n"
 					\ .'                mapleader :  "'.g:Latex_MapLeader."\"\n"
-					\ .'     load menus / delayed :  "'.s:Latex_LoadMenus.'" / "'.s:Latex_CreateMenusDelayed."\"\n"
+					\ .'               load menus :  "'.s:Latex_LoadMenus."\"\n"
 					\ .'       insert file prolog :  "'.s:Latex_InsertFileProlog."\"\n"
 	endif
 	let txt = txt."\n"
@@ -2663,7 +2673,7 @@ endif
 call s:ToolMenu ( 'setup' )
 
 " load the menu right now?
-if s:Latex_LoadMenus == 'yes' && s:Latex_CreateMenusDelayed == 'no'
+if s:Latex_LoadMenus == 'startup'
 	call s:AddMenus ()
 endif
 

@@ -1,4 +1,4 @@
-README for latex-support.vim (Version 1.3alpha) / October 15 2017
+README for latex-support.vim (Version 1.3alpha) / February 07 2018
 ================================================================================
 
   *  INSTALLATION
@@ -194,6 +194,7 @@ RELEASE NOTES FOR VERSION 1.3alpha
     `Latex::FileSkeleton::Script`
 - Add configuration variables `g:Latex_Ctrl_j` and `g:Latex_Ctrl_d` to control
   the creation of the `CTRL+J` and `CTRL+D` maps.
+- Remove `g:Latex_CreateMenusDelayed`, use `g:Latex_LoadMenus` instead.
 - Improve templates. (Includes the removal of some templates!)
 - Move the filetype plug-ins for tex and make to `latex-support/rc`.
 - Remove the definition of the maps `CTRL+F9` and `ALT+F9`. Add them to your

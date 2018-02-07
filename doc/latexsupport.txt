@@ -821,8 +821,8 @@ also be adapted, see below.
   |g:Latex_Typesetter|         'pdflatex'    the typesetter used on start-up
   |g:Latex_Processing|         'foreground'  how to run external processes
 
-  |g:Latex_LoadMenus|          'yes'         ...
-  |g:Latex_CreateMenusDelayed| 'yes'         when to load the menus
+  |g:Latex_LoadMenus|          'auto'        when to load the menus ('startup',
+                                            'auto' or 'manual')
   |g:Latex_RootMenu|           'LaTe&X'      name and shortcut of the root menu
   |g:Latex_MapLeader|          '´'           the |maplocalleader| used for maps
   |g:Latex_Ctrl_j|             'yes'         generate the <CTRL-J> map
@@ -944,26 +944,23 @@ The behavior can be changed on-the-fly using the menu entry or the ex-command: >
 4.2  MENUS                                         *latexsupport-config-menus*
 ------------------------------------------------------------------------------
                                                            *g:Latex_LoadMenus*
-                                                  *g:Latex_CreateMenusDelayed*
-The root menu is not visible by default.  The root menu 'LaTeX' will appear
-after the first file with extension 'tex' has been opened.
-When the root menu is visible all templates have been loaded and the internal
-data structures are built.  On a slow computer this may cause a noticeable
-delay when starting the editor.  Therefor loading the templates is delayed to
-the point where the first TeX/LaTeX file will be loaded.
-To load the menu anyway when the editor starts add the following line to
-~/.vimrc :
->
-  let g:Latex_CreateMenusDelayed = 'no'
+The creation of the menus is controlled by `g:Latex_LoadMenus`. The default
+setting: >
+  let g:Latex_LoadMenus = 'auto'
+causes the templates to be loaded and the menus to be created when the first
+LaTeX file is opened.
+The menus appear right away after starting Vim with the setting: >
+  let g:Latex_LoadMenus = 'startup'
+This has the disadvantage that the templates have to be loaded during the
+startup of Vim, which might cause a noticeable slowdown on older systems.
+The automatic creation of the menus is prevented by: >
+  let g:Latex_LoadMenus = 'manual'
+Now the menus can only be loaded by using the tool menu entry "Tools -> Load
+LaTeX Support".
 
-The appearance of the root menu item can also be controlled by the global
-variable g:Latex_LoadMenus. The line
->
-  let g:Latex_LoadMenus    = 'no'
-<
-prevents the root menu item from appearing when the editor starts. You can
-switch it on (and off again) from the tools menu. The default for this
-variable is 'yes'.
+                                                  *g:Latex_CreateMenusDelayed*
+The old setting `g:Latex_CreateMenusDelayed` still works for backwards
+compatibility, use the above values for |g:Latex_LoadMenus| instead.
 
                                                             *g:Latex_RootMenu*
 The name and shortcut of the root menu is set via `g:Latex_RootMenu`. The
