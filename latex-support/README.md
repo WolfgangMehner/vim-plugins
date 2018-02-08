@@ -1,4 +1,4 @@
-README for latex-support.vim (Version 1.3alpha) / February 07 2018
+README for latex-support.vim (Version 1.3alpha) / February 08 2018
 ================================================================================
 
   *  INSTALLATION
@@ -7,14 +7,14 @@ README for latex-support.vim (Version 1.3alpha) / February 07 2018
   *  ADDITIONAL TIPS
   *  CREDITS
 
-LaTeX Support implements an LaTeX-IDE for Vim/gVim. It has been written to
-considerably speed up writing code in a consistent style. This is done by
+LaTeX Support implements an LaTeX-IDE for Vim/gVim/Neovim. It has been written
+to considerably speed up writing code in a consistent style. This is done by
 inserting complete statements, comments, idioms, and code snippets. There are
 many additional hints and options which can improve speed and comfort when
 writing LaTeX.
 See the help file latexsupport.txt for more information.
 
-This plugin can be used with Vim version 7.x.
+This plug-in can be used with Vim version 7.3+ and Neovim 0.2.1+.
 
 
 --------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ INSTALLATION
 A system-wide installation for all users can also be done. This will have
 further effects on how the plug-in works. For a step-by-step instruction, as
 well as an explanation of the other consequences, please see the help file
-'doc/latexsupport.txt' or look up the documentation via:
+`doc/latexsupport.txt` or look up the documentation via:
 
       :help latexsupport-system-wide
 
@@ -33,14 +33,14 @@ well as an explanation of the other consequences, please see the help file
 (1) LINUX
 ----------------------------------------------------------------------
 
-The subdirectories in the zip archive latex-support.zip mirror the directory
-structure which is needed below the local installation directory $HOME/.vim/
-(find the value of $HOME with `:echo $HOME` from inside Vim).
+The subdirectories in the zip archive `latex-support.zip` mirror the directory
+structure which is needed below the local installation directory `$HOME/.vim/`
+(find the value of `$HOME` with `:echo $HOME` from inside Vim).
 
-(1.0) Save the template files in '$HOME/.vim/latex-support/templates/Templates' if
-   you have changed any of them.
+(1.0) Save the template files in `$HOME/.vim/latex-support/templates/Templates`
+   if you have changed any of them.
 
-(1.1) Copy the zip archive latex-support.zip to $HOME/.vim and run
+(1.1) Copy the zip archive `latex-support.zip` to `$HOME/.vim` and run
 
       unzip latex-support.zip
 
@@ -50,19 +50,24 @@ structure which is needed below the local installation directory $HOME/.vim/
       $HOME/.vim/doc/...
       $HOME/.vim/plugin/latex-support.vim
 
-(1.2) Loading of plugin files must be enabled. If not use
+(1.2) Loading of plug-in files must be enabled. If not use
 
       :filetype plugin on
 
-   This is the minimal content of the file '$HOME/.vimrc'. Create one if there
-   is none or use the files in $HOME/.vim/latex-support/rc as a starting point.
+   This is the minimal content of the file `$HOME/.vimrc`. Create one if there
+   is none or use the files in `$HOME/.vim/latex-support/rc` as a starting point.
 
-(1.3) Set at least some personal details. Use the map \ntw inside a LaTeX buffer
+(1.3) Make the plug-in help accessible by typing the following command on the
+   Vim command line:
+
+      :helptags $HOME/.vim/doc/
+
+(1.4) Set at least some personal details. Use the map \ntw inside a LaTeX buffer
    or the menu entry:
 
       LaTeX -> Snippets -> template setup wizard
 
-   It will help you set up the file _runtimepath_/templates/personal.templates .
+   It will help you set up the file `_runtimepath_/templates/personal.templates`.
    The file is read by all plug-ins supporting this feature to get your personal
    details. Here is the minimal personalization (my settings as an example):
 
@@ -71,33 +76,28 @@ structure which is needed below the local installation directory $HOME/.vim/
       SetMacro( 'EMAIL',       'wolfgang-mehner@web.de' )
       SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 
-   Use the file $HOME/.vim/templates/latex.templates to customize or add to your
-   LaTeX template library. It can also be set up via the wizard.
+   Use the file `$HOME/.vim/templates/latex.templates` to customize or add to
+   your LaTeX template library. It can also be set up via the wizard.
 
-   (Read more about the template system in the plugin documentation)
+   (Read more about the template system in the plug-in documentation)
 
-(1.4) Make the plugin help accessible by typing the following command on the
-   Vim command line:
-
-      :helptags $HOME/.vim/doc/
-
-(1.5) Consider additional settings in the file '$HOME/.vimrc'. The files
-   customization.vimrc and customization.gvimrc are replacements or extensions
-   for your .vimrc and .gvimrc. You may want to use parts of them. The files
-   are documented.
+(1.5) Consider additional settings in the file `$HOME/.vimrc`. The files
+   `customization.vimrc` and `customization.gvimrc` are replacements or
+   extensions for your `.vimrc` and `.gvimrc`. You may want to use parts of
+   them. The files are documented.
 
 
 (2) WINDOWS
 ----------------------------------------------------------------------
 
-The subdirectories in the zip archive latex-support.zip mirror the directory
-structure which is needed below the local installation directory $HOME/vimfiles/
-(find the value of $HOME with ":echo $HOME" from inside Vim).
+The subdirectories in the zip archive `latex-support.zip` mirror the directory
+structure which is needed below the local installation directory `$HOME/vimfiles/`
+(find the value of `$HOME` with `:echo $HOME` from inside Vim).
 
-(2.0) Save the template files in '$HOME/vimfiles/latex-support/templates/Templates' if
-   you have changed any of them.
+(2.0) Save the template files in `$HOME/vimfiles/latex-support/templates/Templates`
+   if you have changed any of them.
 
-(2.1) Copy the zip archive latex-support.zip to $HOME/vimfiles and run
+(2.1) Copy the zip archive `latex-support.zip` to `$HOME/vimfiles` and run
 
       unzip latex-support.zip
 
@@ -107,19 +107,24 @@ structure which is needed below the local installation directory $HOME/vimfiles/
       $HOME/vimfiles/doc/...
       $HOME/vimfiles/plugin/latex-support.vim
 
-(2.2) Loading of plugin files must be enabled. If not use
+(2.2) Loading of plug-in files must be enabled. If not use
 
       :filetype plugin on
 
-   This is the minimal content of the file '$HOME/_vimrc'. Create one if there
-   is none or use the files in $HOME/vimfiles/latex-support/rc as a starting point.
+   This is the minimal content of the file `$HOME/_vimrc`. Create one if there
+   is none or use the files in `$HOME/vimfiles/latex-support/rc` as a starting point.
 
-(2.3) Set at least some personal details. Use the map \ntw inside a LaTeX buffer
+(2.3) Make the plug-in help accessible by typing the following command on the
+   Vim command line:
+
+      :helptags $HOME\vimfiles\doc\
+
+(2.4) Set at least some personal details. Use the map \ntw inside a LaTeX buffer
    or the menu entry:
 
       LaTeX -> Snippets -> template setup wizard
 
-   It will help you set up the file _runtimepath_/templates/personal.templates .
+   It will help you set up the file `_runtimepath_/templates/personal.templates`.
    The file is read by all plug-ins supporting this feature to get your personal
    details. Here is the minimal personalization (my settings as an example):
 
@@ -128,20 +133,15 @@ structure which is needed below the local installation directory $HOME/vimfiles/
       SetMacro( 'EMAIL',       'wolfgang-mehner@web.de' )
       SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 
-   Use the file $HOME/vimfiles/templates/latex.templates to customize or add to
+   Use the file `$HOME/vimfiles/templates/latex.templates` to customize or add to
    your LaTeX template library. It can also be set up via the wizard.
 
-   (Read more about the template system in the plugin documentation)
+   (Read more about the template system in the plug-in documentation)
 
-(2.4) Make the plugin help accessible by typing the following command on the
-   Vim command line:
-
-      :helptags $HOME\vimfiles\doc\
-
-(2.5) Consider additional settings in the file '$HOME/_vimrc'. The files
-   customization.vimrc and customization.gvimrc are replacements or extensions
-   for your _vimrc and _gvimrc. You may want to use parts of them. The files
-   are documented.
+(2.5) Consider additional settings in the file `$HOME/_vimrc`. The files
+   `customization.vimrc` and `customization.gvimrc` are replacements or
+   extensions for your `_vimrc` and `_gvimrc`. You may want to use parts of
+   them. The files are documented.
 
 
 (3) ADDITIONAL REMARKS
@@ -151,21 +151,14 @@ There are a lot of features and options which can be used and influenced:
 
   *  use of template files and macros
   *  using and managing personal code snippets
-  *  using additional plugins
+  *  using additional plug-ins
 
-Look at the LaTeX-Support help with:
+Actions differ for different modes. Please read the documentation:
 
       :help latexsupport 
 
-               +-----------------------------------------------+
-               | +-------------------------------------------+ |
-               | |    ** PLEASE READ THE DOCUMENTATION **    | |
-               | |    Actions differ for different modes!    | |
-               | +-------------------------------------------+ |
-               +-----------------------------------------------+
-
 Any problems? See the TROUBLESHOOTING section at the end of the help file
-'doc/latexsupport.txt'.
+`doc/latexsupport.txt`.
 
 
 --------------------------------------------------------------------------------
@@ -208,7 +201,7 @@ or add the commands there to your own filetype plug-ins.
 
 RELEASE NOTES FOR OLDER VERSIONS
 ----------------------------------------------------------------------
--> see file 'latex-support/doc/ChangeLog'
+-> see file `latex-support/doc/ChangeLog`
 
 
 --------------------------------------------------------------------------------
@@ -232,7 +225,7 @@ FILES
                         The help files for the toolbox.
 
     plugin/latex-support.vim
-                        The LaTeX plug-in for Vim/gVim.
+                        The LaTeX plug-in for Vim/gVim/Neovim.
 
     latex-support/codesnippets/*
                         Some LaTeX code snippets as a starting point.
@@ -290,14 +283,6 @@ ___The settings are explained in the files themselves.___
 CREDITS
 ================================================================================
 
-Fritz Mehner thanks:
-----------------------------------------------------------------------
+__We thank:__
 
-Many thanks to Wolfgang Mehner (wolfgang-mehner at web.de) for is template
-engine Template Support.
-
-Wolfgang Mehner thanks:
-----------------------------------------------------------------------
-
-This plug-in has been developed by Fritz Mehner, who maintained it until 2015.
-
+* Fritz Mehner for developed this plug-in and maintained it until 2015.

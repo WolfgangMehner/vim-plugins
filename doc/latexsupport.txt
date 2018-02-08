@@ -1,4 +1,4 @@
-*latexsupport.txt*               LaTeX Support                     Feb 05 2018
+*latexsupport.txt*               LaTeX Support                     Feb 08 2018
 
 LaTeX Support                                     *latex-support* *latexsupport*
 
@@ -7,10 +7,11 @@ LaTeX Support                                     *latex-support* *latexsupport*
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
 
-LaTeX-IDE for Vim/gVim. It is written to considerably speed up typesetting a
-document in a consistent style. This is done by inserting complete statements,
-idioms, code snippets, and comments. Compiling and viewing a document, format
-conversion and running make can be done with a few keystrokes.
+LaTeX-IDE for Vim/gVim/Neovim. It is written to considerably speed up
+typesetting a document in a consistent style. This is done by inserting
+complete statements, idioms, code snippets, and comments. Compiling and
+viewing a document, format conversion and running make can be done with
+a few keystrokes.
 
 ==============================================================================
 0.  TABLE OF CONTENTS                                  *latexsupport-contents*
@@ -201,7 +202,7 @@ files (see |latexsupport-templates|).
 The 'Text' and 'Math' menus contain the most frequently used statements. The
 menu entries insert some code into the buffer. Almost all menu entries also
 have a map, making the same behavior accessible more quickly. E.g. the menu
-entry "Text->environment" has the map ´e .
+entry "Text->environment" has the map `´e`.
 
 Many statements behave differently depending on the mode.
 
@@ -233,13 +234,13 @@ by the statement:
   \end{center}
 <
 This "split mode" works for many of the menu entries. With the word 'Length'
-selected, the map ´msq or the menu entry "Math->sqrt" will surround it with
+selected, the map `´msq` or the menu entry "Math->sqrt" will surround it with
 the sqrt-statement:
 >
   ... \sqrt[|]{Length} ...
 <
 Lots of submenus are only associated with one map. E.g. all the entries in
-"Math->spaces->..." can be accessed via the map ´msp . You will be prompted
+"Math->spaces->..." can be accessed via the map `´msp`. You will be prompted
 for your choice. Use tab-expansion to display the choices and the arrow keys
 to select an item:
 >
@@ -370,7 +371,7 @@ also be used to set different maps in the ftplugin.
   *:LatexConvert* [<doc>]          convert a document
  ----------------------------------------------------------------------------
 
-To run the typesetter for the tex file in the current buffer, use the map ´rr ,
+To run the typesetter for the tex file in the current buffer, use the map `´rr`,
 the menu entry "Run->save + run typesetter" or the ex-command |:Latex|. Using
 the command, you can also run LaTeX for other files: >
   :Latex some_other_doc.tex
@@ -420,7 +421,7 @@ editing "myfile.tex" in the current buffer, then the defaults are as follows:
  ----------------------------------------------------------------------------
 
 Some commands use background processing if it has been set as the processing
-mode. The viewers are always run in the background, since that are forked and
+mode. The viewers are always run in the background, since they are forked and
 do not rely on the |+job| feature.
 
 ------------------------------------------------------------------------------
@@ -470,7 +471,7 @@ code checker has found in the code.
 
 It is controlled by the commands:
 - |:copen| and |:cclose|    : open or close the quickfix window
-- |:cnext| and |:cprevious| : jump to the next previous error
+- |:cnext| and |:cprevious| : jump to the next or previous error
 
 The fastest way of using them is to put maps like this into your .vimrc file:
 >
@@ -673,7 +674,7 @@ to the denominator.
 3.5  MACROS                                    *latexsupport-templates-macros*
 ------------------------------------------------------------------------------
 
-Macros are placeholder which get replace while a template is inserted. The
+Macros are placeholders which get replace while a template is inserted. The
 template library defines several macros used for personalization:
 >
   SetMacro( 'AUTHOR',       'YOUR NAME' )
@@ -763,10 +764,26 @@ see |latexsupport-templates-custom|. For help with setting up the template
 library, use the setup wizard:
   Latex -> Snippets -> template setup wizard
 
-Template Style
---------------
-The template system supports different template styles. If there are more than
-one style the menu item 'choose style' let you choose a style on the fly.
+Template Locations
+------------------
+
+The standard locations of the template files can be changed via the
+configuration variables below, e.g.: >
+  let g:Latex_CustomTemplateFile = $HOME.'/.vim/my-templates/latex.templates'
+<
+  Variable                     Default Linux
+ ----------------------------------------------------------------------------
+  *g:Latex_CustomTemplateFile*   $HOME/.vim/templates/latex.templates
+  *g:Latex_GlobalTemplateFile*   $VIMRUNTIME/latex-support/templates/Templates
+  *g:Latex_LocalTemplateFile*    $HOME/.vim/latex-support/templates/Templates
+ ----------------------------------------------------------------------------
+
+  Variable                     Default Windows
+ ----------------------------------------------------------------------------
+  g:Latex_CustomTemplateFile   $HOME/vimfiles/templates/latex.templates
+  g:Latex_GlobalTemplateFile   $VIMRUNTIME/latex-support/templates/Templates
+  g:Latex_LocalTemplateFile    $HOME/vimfiles/latex-support/templates/Templates
+ ----------------------------------------------------------------------------
 
 Template Browser
 ----------------
@@ -776,6 +793,11 @@ this behavior by setting a global variable in your ~/.vimrc (see
 >
   let g:Templates_TemplateBrowser = 'browse'
 <
+Template Style
+--------------
+The template system supports different template styles. If there are more than
+one style the menu item 'choose style' let you choose a style on the fly.
+
 ------------------------------------------------------------------------------
 3.8  FILE SKELETONS                               *latexsupport-file-skeleton*
 ------------------------------------------------------------------------------
@@ -1155,7 +1177,7 @@ is still supported for backwards compatibility.
 >
 Create your private snippet directory: >
   mkdir --parents  ~/.vim/latex-support/codesnippets
-You may want to copy the snippets comming with this plug-in (in
+You may want to copy the snippets coming with this plug-in (in
 $VIM/vimfiles/latex-support/codesnippets) into the new directory or to set a
 link to the global directory.
 
@@ -1361,7 +1383,7 @@ doc/latexsupport.txt              The help file for LaTeX support.
 doc/templatesupport.txt           The help file for the template system.
 doc/toolbox*.txt                  The help files for the toolbox.
 
-plugin/latex-support.vim          The LaTeX plug-in for Vim/gVim.
+plugin/latex-support.vim          The LaTeX plug-in for Vim/gVim/Neovim.
 
 latex-support/codesnippets/       The code snippets directory.
 
