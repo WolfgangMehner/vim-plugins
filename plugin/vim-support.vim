@@ -16,9 +16,9 @@
 "
 "       Version:  see variable g:VimSupportVersion below
 "       Created:  14.01.2012
-"      Revision:  12.10.2017
+"      Revision:  09.02.2018
 "       License:  Copyright (c) 2012-2015, Fritz Mehner
-"                 Copyright (c) 2016-2017, Wolfgang Mehner
+"                 Copyright (c) 2016-2018, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -48,7 +48,7 @@ if exists("g:VimSupportVersion") || &cp
 	finish
 endif
 
-let g:VimSupportVersion= "2.5alpha"                  " version number of this script; do not change
+let g:VimSupportVersion= "2.5beta"                  " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " === Auxiliary functions ===   {{{1
@@ -487,10 +487,8 @@ let s:Vim_CodeSnippets  				= s:plugin_dir.'/vim-support/codesnippets/'
 " User configurable options   {{{3
 "-------------------------------------------------------------------------------
 
-let s:Vim_CreateMenusDelayed= 'yes'
-let s:Vim_MenuVisible				= 'no'
 let s:Vim_GuiSnippetBrowser = 'gui'             " gui / commandline
-let s:Vim_LoadMenus         = 'yes'             " load the menus?
+let s:Vim_LoadMenus         = 'auto'            " load the menus?
 let s:Vim_RootMenu          = '&Vim'            " name of the root menu
 let s:Vim_Ctrl_j            = 'yes'
 let s:Vim_Ctrl_d            = 'yes'
@@ -518,11 +516,22 @@ call s:GetGlobalSetting ( 'Vim_LocalTemplateFile' )
 call s:GetGlobalSetting ( 'Vim_GlobalTemplateFile' )
 call s:GetGlobalSetting ( 'Vim_CustomTemplateFile' )
 call s:GetGlobalSetting ( 'Vim_CodeSnippets' )
-call s:GetGlobalSetting ( 'Vim_CreateMenusDelayed' )
 call s:GetGlobalSetting ( 'Vim_LineEndCommColDefault' )
 
 call s:ApplyDefaultSetting ( 'Vim_MapLeader', '' )                " default: do not overwrite 'maplocalleader'
 call s:ApplyDefaultSetting ( 'Vim_Printheader', "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N" )
+
+" adapt for backwards compatibility
+if s:Vim_LoadMenus == 'no'
+	let s:Vim_LoadMenus = 'manual'
+elseif s:Vim_LoadMenus == 'yes'
+	if exists ( 'g:Vim_CreateMenusDelayed' )
+		let s:Vim_LoadMenus = g:Vim_CreateMenusDelayed == 'yes' ? 'auto' : 'startup'
+	else
+		" old default for 'Vim_CreateMenusDelayed' is 'yes'
+		let s:Vim_LoadMenus = 'auto'
+	endif
+endif
 
 " }}}3
 "-------------------------------------------------------------------------------
@@ -1275,7 +1284,7 @@ function! Vim_Settings ( verbose )
 	if a:verbose >= 1
 		let	txt .= "\n"
 					\ .'                mapleader :  "'.g:Vim_MapLeader."\"\n"
-					\ .'     load menus / delayed :  "'.s:Vim_LoadMenus.'" / "'.s:Vim_CreateMenusDelayed."\"\n"
+					\ .'               load menus :  "'.s:Vim_LoadMenus."\"\n"
 	endif
 	let	txt .= "__________________________________________________________________________\n"
 	let	txt .= " Vim-Support, Version ".g:VimSupportVersion." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
@@ -1345,8 +1354,8 @@ endfunction    " ----------  end of function s:RemoveMenus  ----------
 "-------------------------------------------------------------------------------
 function! s:Initialize ( ftype )
 	if ! exists( 'g:Vim_Templates' )
-		if s:Vim_LoadMenus == 'yes' | call s:AddMenus()
-		else                        | call s:RereadTemplates()
+		if s:Vim_LoadMenus == 'auto' | call s:AddMenus()
+		else                         | call s:RereadTemplates()
 		endif
 	endif
 	call s:CreateAdditionalMaps()
@@ -1360,7 +1369,7 @@ endfunction    " ----------  end of function s:CreateTemplAndMenu  ----------
 " tool menu entry
 call s:ToolMenu ( 'setup' )
 
-if s:Vim_LoadMenus == 'yes' && s:Vim_CreateMenusDelayed == 'no'
+if s:Vim_LoadMenus == 'startup'
 	call s:AddMenus ()
 endif
 

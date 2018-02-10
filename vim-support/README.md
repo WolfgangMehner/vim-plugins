@@ -1,4 +1,4 @@
-README for vim-support.vim (Version 2.5alpha) / October 12 2017
+README for vim-support.vim (Version 2.5beta) / February 10 2018
 ================================================================================
 
 [INSTALLATION][sec_install]
@@ -179,10 +179,11 @@ RELEASE NOTES
 ================================================================================
   [sec_release]: #release-notes
 
-RELEASE NOTES FOR VERSION 2.5alpha
+RELEASE NOTES FOR VERSION 2.5beta
 ----------------------------------------------------------------------
 - Add configuration variables `g:Vim_Ctrl_j` and `g:Vim_Ctrl_d` to control the
   creation of the `CTRL+J` and `CTRL+D` maps.
+- Remove `g:Vim_CreateMenusDelayed`, use `g:Vim_LoadMenus` instead.
 - Remove the definition of the map `SHIFT+F1`. Add it to your filetype plug-in
   if you want to use it.
 - Minor changes.

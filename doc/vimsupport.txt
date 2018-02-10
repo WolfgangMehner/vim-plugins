@@ -1,8 +1,8 @@
-*vimsupport.txt*                 Vim Support                       Oct 12 2017
+*vimsupport.txt*                 Vim Support                       Feb 10 2018
 
 Vim Support                                         *vim-support* *vimsupport*
 
-                             Plug-in version 2.5alpha
+                             Plug-in version 2.5beta
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
@@ -589,8 +589,7 @@ g:Vim_LocalTemplateFile     $HOME.'/.vim/vim-support/templates/Templates'
 g:Vim_CustomTemplateFile    $HOME.'/.vim/templates/vim.templates'
 g:Vim_CodeSnippets          $HOME.'/.vim/vim-support/codesnippets' (Linux/U**X)
                             $VIM.'\vimfiles\vim-support/codesnippets/'(Windows)
-g:Vim_LoadMenus             'yes'
-g:Vim_CreateMenusDelayed    'no'
+g:Vim_LoadMenus             'auto'
 g:Vim_RootMenu              '&Vim'
 g:Vim_GuiSnippetBrowser     'gui'
 g:Vim_Ctrl_j                'yes'
@@ -608,8 +607,10 @@ g:Vim_GlobalTemplateFile    sets the global template file (see|vimsupport-templa
 g:Vim_LocalTemplateFile     sets the local template file (see|vimsupport-templates|)
 g:Vim_CustomTemplateFile    sets the custom template file (see|vimsupport-templates|)
 g:Vim_CodeSnippets          set the personal code snippet directory
-g:Vim_LoadMenus             Load menus and mappings ("yes", "no") at start up.
-g:Vim_CreateMenusDelayed    Load menus only with filetype 'vim'
+g:Vim_LoadMenus             Load the menu at start up ("startup"), when opening
+                            the first VimL file ("auto"), or only when the
+                            user does it ("manual")
+g:Vim_CreateMenusDelayed    Deprecated, only for backwards compatibility.
 g:Vim_RootMenu              The name of the root menu entry of this plugin
                              (see |vimsupport-custom-root|).
 g:Vim_GuiSnippetBrowser     code snippet browser: 'gui', 'commandline'
