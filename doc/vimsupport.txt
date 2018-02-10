@@ -17,29 +17,22 @@ comfort when writing Vim scripts.
 0.  TABLE OF CONTENTS                                    *vimsupport-contents*
 ==============================================================================
 
- 1.     Usage with GUI                      |vimsupport-usage-gvim|
- 1.1     Menu 'Comments'                    |vimsupport-comments|
- 1.1.1    Append aligned comments           |vimsupport-comm-aligned|
- 1.1.2    Adjust end-of-line comments       |vimsupport-comm-realign|
- 1.1.3    Comment / uncomment               |vimsupport-comm-uncomm|
- 1.1.4    Frame comments, file header, ...  |vimsupport-comm-templates|
- 1.1.5    Function description (auto)       |vimsupport-comm-auto|
- 1.1.6    Keyword comment                   |vimsupport-comm-keywords|
- 1.2     Menu 'Statements'                  |vimsupport-statements|
- 1.2.1    Normal mode, insert mode          |vimsupport-stat-norm-ins|
- 1.2.2    Visual mode                       |vimsupport-stat-visual|
- 1.3     Menu 'Idioms'                      |vimsupport-idioms|
- 1.4     Menu 'Regex'                       |vimsupport-regex|
- 1.5     Menu 'Perl'                        |vimsupport-perl|
- 1.6     Menu 'Documentation'               |vimsupport-documentation|
- 1.7     Menu 'Snippets'                    |vimsupport-snippets|
- 1.7.1    Code Snippets                     |vimsupport-snippets-menu|
- 1.7.2    Code Templates                    |vimsupport-templates-menu|
- 1.8     Menu 'Run'                         |vimsupport-run|
- 1.8.1    Hardcopy                          |vimsupport-hardcopy|
- 1.8.2    Settings                          |vimsupport-settings|
- 1.9     Menu 'Help'                        |vimsupport-help|
- 2.     Usage without GUI                   |vimsupport-usage-vim|
+ 1.    Introduction                         |vimsupport-introduction|
+
+ 2.    Usage                                |vimsupport-usage|
+ 2.1    Comments                            |vimsupport-usage-comments|
+ 2.1.1   End-of-Line Comments               |vimsupport-usage-comments-eol|
+ 2.1.2   Toggle Comment Lines               |vimsupport-usage-comments-lines|
+ 2.1.3   Automated Comments                 |vimsupport-usage-comments-auto|
+ 2.1.4   Further Comments                   |vimsupport-usage-comments-other|
+ 2.1.5   Keyword Comments                   |vimsupport-usage-comments-keyword|
+ 2.2    Statements, Idioms, ...             |vimsupport-usage-templates|
+ 2.3    Perl API                            |vimsupport-usage-api|
+ 2.4    Documentation                       |vimsupport-usage-docu|
+ 2.5    Code Snippets                       |vimsupport-usage-snippets|
+ 2.6    Hardcopy                            |vimsupport-usage-hardcopy|
+ 2.7    Help                                |vimsupport-usage-help|
+
  3.     Customization and configuration     |vimsupport-customization|
  3.1     Files                              |vimsupport-custom-files|
  3.2     Global variables                   |vimsupport-custom-variables|
@@ -61,222 +54,257 @@ comfort when writing Vim scripts.
  D.    Release Notes - Change Log           |vimsupport-release-notes|
 
 ==============================================================================
-1.  USAGE with GUI  (gVim)                             *vimsupport-usage-gvim*
+1.  INTRODUCTION                                     *vimsupport-introduction*
 ==============================================================================
 
-If the menus are not visible call them with the entry "Load Vim Support"
-in the standard Tools-menu.
+After the first VimL/VimScript file (*.vim) has been opened, the menu "Vim"
+appears in the menu bar. It holds entries for all the templates (such as
+"Statements->for" or "Idioms->function"), as well as some other functionality.
+The letters on the right name maps, which can also be used to access all the
+capabilities. See |vimsupport-mappings| for an overview.
+The menus are also created if a GUI is not running. They can be used via >
+  :emenu Vim.
+(Use the arrow keys for navigation, <Enter> to select an entry and <TAB> for
+auto completion.)
+
+The features of the plug-in are:
+- Turn code lines into comments and vice versa.
+    |vimsupport-usage-comments-lines|
+- Automatically add comments for functions and their parameters.
+    |vimsupport-usage-comments-auto|
+- Manage code snippets. |vimsupport-usage-snippets|
+- An extendible template library. |vimsupport-templates|
+
+The usage of most features is described in the chapter |vimsupport-usage|.
+The chapter |vimsupport-templates| gives a short introduction to the
+template system. Various features may require some configuration, which is
+documented in the chapter |vimsupport-configuration|. How to do a system-wide
+installation is outlined in |vimsupport-system-wide|.
+
+The template system comes with its own documentation, which mainly aims at the
+advanced user (see |templatesupport.txt|).
+
+==============================================================================
+2.  USAGE                                                   *vimsupport-usage*
+==============================================================================
+
+Features are accessible via menu entries and maps. Most maps are preceded by a
+mapleader. The leader is a backslash, if the standard configuration is used.
+
+If the root menu 'Vim' is not visible you also can load it with the item
+"Load Vim Support" from the "Tools" menu. The item "Unload Vim Support"
+can be used to unload the Vim root menu.
+(Compare |vimsupport-config-menus|.)
 
 ------------------------------------------------------------------------------
-1.1  MENU 'Comments'                                     *vimsupport-comments*
+2.1  COMMENTS                                      *vimsupport-usage-comments*
 ------------------------------------------------------------------------------
 
-1.1.1 APPEND ALIGNED COMMENTS TO CONSECUTIVE LINES   *vimsupport-comm-aligned*
---------------------------------------------------
+Besides the templates, there is some other functionality provided in the menu
+"Comments".
+
+  Feature                    Menu Entry                     Map
+ ----------------------------------------------------------------------------
+  add end-of-line comments   Comments.end-of-line comment   <LocalLeader>cl
+  adjust end-of-line com.    Comments.adjust end-of-line c. <LocalLeader>cj
+  set end-of-line column     Comments.set end-of-line col.  <LocalLeader>cs
+
+  code to comment            Comments.comment               <LocalLeader>cc
+  comment to code            Comments.uncomment             <LocalLeader>co
+
+  automatic function         Comments.func. desc. (auto)    <LocalLeader>ca
+    description 
+ ----------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+
+2.1.1  End-of-Line Comments                    *vimsupport-usage-comments-eol*
 
 In NORMAL MODE the menu entry 'end-of-line comments' will append a comment to
-the current line.
-In VISUAL MODE, this item will append aligned comments to all marked lines.
-Marking the 4 lines
+the current line. In VISUAL MODE this item will append aligned comments to all
+marked lines. Marking the 4 lines
+>
   let x = 33
   let y = 44
   
   let z = 55
+<
 and choosing 'end-of-line comments' will yield
+>
   let x = 33                                      " |
   let y = 44                                      " 
   
   let z = 55                                      " 
+<
 The cursor position above is marked by '|'. Empty lines will be ignored.
 
-The default starting column is 49 ( = (multiple of 2,4, or 8) + 1 ).  This can
-be changed by setting a global variable in the file '.vimrc', e.g. :
-
-  let g:Vim_LineEndCommColDefault    = 45
-
-The starting column can also be set by the menu entry 'Comments->adjust
-end-of-line com.' . Just position the cursor in an arbitrary column (normal
+The default starting column is 49 ( = (multiple of 2,4, or 8) + 1 ). This can
+be changed by setting a global variable in the file '.vimrc', e.g. : >
+  let g:Vim_LineEndCommColDefault = 65
+The starting column can also be set by the menu entry "Comments -> adjust
+end-of-line com.". Just position the cursor in an arbitrary column (normal
 mode; column number is shown in the Vim status line) and choose this menu
-item.  This setting is buffer related.
+item. This setting is buffer related.
 If the cursor was at the end of a line you will be asked for a column number
-because this position is most likely not the desired starting column.  Your
-choice will be confirmed.
+because this position is most likely not the desired starting column.
 
-1.1.2 ADJUST END-OF-LINE COMMENTS                    *vimsupport-comm-realign*
----------------------------------
+------------------------------------------------------------------------------
 
 After some copy/paste/change actions comments may be misaligned:
-
- let x = 33                             " this is x
- let y = 44                                      " and y
- let z = 55                                         " and now z
-
+>
+  let x = 33                             " this is x
+  let y = 44                                      " and y
+  let z = 55                                         " and now z
+<
 Realignment can be achieved with the menu item 'adjust end-of-line com.' In
 normal mode the comment (if any) in the current line will be aligned to the
 end-of-line comment column (see above) if possible. In visual mode the
 comments in the marked block will be aligned:
-
- let x = 33                                     " this is x
- let y = 44                                     " and y
- let z = 55                                     " and now z
-
-Another way is to use the hotkey \cj. In normal and insert mode the current
+>
+  let x = 33                                    " this is x
+  let y = 44                                    " and y
+  let z = 55                                    " and now z
+<
+Another way is to use the hotkey `\cj`. In normal and insert mode the current
 line will be adjusted. To adjust n lines starting with the current one use
-n\cj.
+`n\cj`.
 
-1.1.3  COMMENT/UNCOMMENT                              *vimsupport-comm-uncomm*
-------------------------
+------------------------------------------------------------------------------
 
-The comment sign " can be set or removed at the beginning of the current line
-or for a marked block using the menu items 'comment' (or \cc) and 'uncomment'
-(or \co). A single line needs not to be marked (normal mode, insert mode).
+2.1.2  Toggle Comment Lines                  *vimsupport-usage-comments-lines*
+
+The comment sign " can be inserted or removed at the beginning of the current
+line or for a marked block, using the menu items 'comment' (or `\cc`) and
+'uncomment' (or `\co`). A single line needs not to be marked (normal mode,
+insert mode).
 
 A marked block
-
- let x = 33                                     " this is x
- let y = 44                                     " and y
- let z = 55                                     " and now z
-
+>
+  let x = 33                                    " this is x
+  let y = 44                                    " and y
+  let z = 55                                    " and now z
+<
 will be changed into (and vice versa)
+>
+  "let x = 33                                    " this is x
+  "let y = 44                                    " and y
+  "let z = 55                                    " and now z
+<
+------------------------------------------------------------------------------
 
- "let x = 33                                     " this is x
- "let y = 44                                     " and y
- "let z = 55                                     " and now z
+2.1.3  Automated Comments                     *vimsupport-usage-comments-auto*
 
-1.1.4 FRAME COMMENTS, FILE HEADER, ...             *vimsupport-comm-templates*
---------------------------------------
+The menu item 'function description (auto)' generates a function description
+from the function head in the current line. The function:
+>
+  function! s:fct77 ( a, b, c )
+    ...
+<
+will be augmented by the following comment
+>
+  "===  FUNCTION  =============================================================
+  "          NAME:  s:fct77     {{{1
+  "   DESCRIPTION:  
+  "    PARAMETERS:  a - {+DESCRIPTION+}
+  "                 b - {+DESCRIPTION+}
+  "                 c - {+DESCRIPTION+}
+  "       RETURNS:  
+  "============================================================================
+  function! s:fct77 ( a, b, c )
+    ...
+<
+The template Comments.function will be used. After typing a brief description,
+use <CTRL-J> to jump to the various tags: >
+  {+TAG+}
+and fill in the information (see Sec. |luasupport-templates-jump-tags|).
+
+------------------------------------------------------------------------------
+
+2.1.4  Further Comments                      *vimsupport-usage-comments-other*
 
 Frame comments, function descriptions and file header comments are read as
 templates from the appropriate files (see |vimsupport-templates|).
 
-1.1.5 FUNCTION DESCRIPTION (AUTO)                       *vimsupport-comm-auto*
----------------------------------
+------------------------------------------------------------------------------
 
-The menu item 'function description (auto)' generates a function description
-from the function head in the current line. The line 
-
- function! s:fct77 ( a, b, c )
-   ...
-
-will be augmented by the following comment
-
- "===  FUNCTION  =============================================================
- "          NAME:  s:fct77     {{{1
- "   DESCRIPTION:  
- "    PARAMETERS:  a - {+DESCRIPTION+}
- "                 b - {+DESCRIPTION+}
- "                 c - {+DESCRIPTION+}
- "       RETURNS:  
- "============================================================================
- function! s:fct77 ( a, b, c )
-   ...
-
-The template Comments.function will be used. 
-
-1.1.6 KEYWORD COMMENT                               *vimsupport-comm-keywords*
----------------------
+2.1.5  Keyword Comments                    *vimsupport-usage-comments-keyword*
 
 Preliminary end-of-line comments to document (and find again!) places where
-work will be resumed shortly, like
-
- " :BUG:08.02.2012 12:29:: ... your comment
-
+work will be resumed shortly, like:
+>
+  " :BUG:08.02.2012 12:29:: ... your comment
+<
 Usually these comments are not meant for the final documentation.
 
 ------------------------------------------------------------------------------
-1.2  MENU 'Statements'                                 *vimsupport-statements*
+2.2  STATEMENTS, IDIOMS, ...                      *vimsupport-usage-templates*
 ------------------------------------------------------------------------------
 
-1.2.1  NORMAL MODE, INSERT MODE                     *vimsupport-stat-norm-ins*
+The 'Statement' and 'Idioms' menus contain the most frequently used templates.
+The menu entries insert some code into the buffer. Almost all menu entries
+also have a map, making the same behavior accessible more quickly. E.g. the
+menu entry "Idioms -> function" has the map `\if`.
+
+NORMAL MODE, INSERT MODE
 -------------------------------
 
-An empty statement will be inserted and properly indented. The entry 'if, end'
-will insert an if-statement:
+If you choose "Idioms -> function" you will be prompted for the name of the
+new function. Enter it, then hit <Enter>. An empty function will be inserted:
+>
+  function! s:MyFunc ( | )
+    <-FUNCTION_BODY->
+    return
+  endfunction    " ----------  end of function s:MyFunc  ----------
+<
+The inserted lines will be indented. The character '|' marks the cursor
+position after insertion.
 
+VISUAL MODE
+-------------------------------
+
+Select the following lines:
+>
+  echohl WarningMsg
+  echo msg
+  echohl None
+<
+If you now use the menu entry "Statements -> if, end", the lines will be
+surrounded by the statement:
+>
   if |
-    <-IF_PART->
+    echohl WarningMsg
+    echo msg
+    echohl None
   endif
-
-The statement will be indented.
-
-1.2.2  VISUAL MODE                                    *vimsupport-stat-visual*
-------------------
-
-The highlighted area
-
-  xxxxx
-  xxxxx
-
-can be surrounded by one of the following statements ( '|'
-marks the cursor position after insertion):
-
-  +--------------------------------------------------+
-  |  for | in <+LIST+>                               |
-  |    xxxxx                                         |
-  |    xxxxx                                         |
-  |  endfor                                          |
-  +--------------------------------------------------+
-  |  if |                                            |
-  |    xxxxx                                         |
-  |    xxxxx                                         |
-  |  endif                                           |
-  +--------------------------------------------------+
-  |  if |                                            |
-  |    xxxxx                                         |
-  |    xxxxx                                         |
-  |  else                                            |
-  |    <+ELSE_PART+>                                 |
-  |  endif                                           |
-  +--------------------------------------------------+
-  |  while                                           |
-  |    xxxxx                                         |
-  |    xxxxx                                         |
-  |  endwhile                                        |
-  +--------------------------------------------------+
-  |  try                                             |
-  |    xxxxx                                         |
-  |    xxxxx                                         |
-  |  catch //                                        |
-  |  catch /.*/                                      |
-  |    echo "Internal error (" . v:exception . ")"   |
-  |    echo " - occurred at " . v:throwpoint         |
-  |  finally                                         |
-  |  endtry                                          |
-  +--------------------------------------------------+
-
-The whole statement will be indented after insertion.
-
+<
+This "split mode" works for many of the menu entries. With the pattern '\w\+'
+selected, the map `´xc` or the menu entry "Regex -> capture" will surround it
+with a capture: >
+  matchlist ( str, '\s\+\w\+' )
+will be changed into: >
+  matchlist ( str, '\s\+\(\w\+\)' )
+<
+Lots of submenus are only associated with one map. E.g. all the entries in
+"Idiom  -> iterators -> ..." can be accessed via the map `\ii`. You will be
+prompted for your choice. Use tab-expansion to display the choices and the
+arrow keys to select an item:
+>
+  dict, keys  dict, key+val  dict, values  file  list
+  iterator over : dict, keys
+>
 ------------------------------------------------------------------------------
-1.3  MENU 'Idioms'                                         *vimsupport-idioms*
+2.3  PERL API                                           *vimsupport-usage-api*
 ------------------------------------------------------------------------------
 
-Often used programming idioms other than the basic language statements.
-
-------------------------------------------------------------------------------
-1.4  MENU 'Regex'                                           *vimsupport-regex*
-------------------------------------------------------------------------------
-
-This menu can be used to compose regular expressions with a few keystrokes.
-In normal mode the entries insert the shown constructs after the cursor. Some
-of them can enclose a marked text.  The marked text
-  xxxxx
-will be changed into
-  \(xxxxx\|\)
-by the menu item 'branch'.
-
-------------------------------------------------------------------------------
-1.5  MENU 'Perl'                                             *vimsupport-perl*
-------------------------------------------------------------------------------
-
-This submenu supplies support for the Perl interface of Vim.
+This sub-menu supplies support for the Perl interface of Vim.
 For more information please see |if_perl.txt|.
 
 ------------------------------------------------------------------------------
-1.6  MENU 'Documentation'                           *vimsupport-documentation*
+2.4  DOCUMENTATION                                     *vimsupport-usage-docu*
 ------------------------------------------------------------------------------
 
-This submenu supplies support for writing Vim help-files in an easy an
-consistent way. Example: insert a chapter header with 'chapter, text'.
+This sub-menu supplies support for writing Vim help-files in an easy and
+consistent way. You can insert a chapter header with 'chapter, text'.
 You will be asked for number, name, and tag:
 >
   ============================================================================
@@ -284,34 +312,37 @@ You will be asked for number, name, and tag:
   ============================================================================
 <
 Now generate a line for the table of content using 'chapter, ToC':
-Example:
 >
   3    Documentation                                   |xxxx|
 <
 The number, name, and tag is taken from the last chapter header inserted.
 
 For using the maps while editing help-files set the variable
-g:Vim_CreateMapsForHelp in ~/.vimrc to 'yes' (default 'no'):
->
+`g:Vim_CreateMapsForHelp` in ~/.vimrc to 'yes' (default 'no'): >
   let g:Vim_CreateMapsForHelp = 'yes'
-<
+Now the maps are created for filetype "help", but only if the buffer is
+modifiable. This way, the maps are not created for help buffers when you look
+up documentation.
+
 ------------------------------------------------------------------------------
-1.7  MENU 'SNIPPETS'                                     *vimsupport-snippets*
+2.5  CODE SNIPPETS                                 *vimsupport-usage-snippets*
 ------------------------------------------------------------------------------
 
-1.7.1  Code Snippets                                *vimsupport-snippets-menu*
---------------------
+Useful code snippets can be kept in a central place. This way, they can
+quickly be inserted into the code, using "Snippets -> read code snippet".
+New snippets can be created from existing lines of code by selecting them in
+visual mode and saving them using "Snippets -> write code snippet".
 
-Code snippets are pieces of code which are kept in separate files in a special
-directory. File names are used to identify the snippets.  The default snippet
-directory is  '$HOME/.vim/vim-support/codesnippets'.  Snippets are managed
-with the 3 entries
+Code snippets are kept in a directory which can be changed using the setting
+|g:Vim_CodeSnippets|.
 
-   vim -> Snippets -> read  code snippet
-   vim -> Snippets -> write code snippet
-   vim -> Snippets -> edit  code snippet
-
-from the Statements submenu.
+  Feature                    Menu Entry                     Map
+ ----------------------------------------------------------------------------
+  insert code snippet        Snippets.read code snippet     <LocalLeader>nr
+  view code snippet          Snippets.view code snippet     <LocalLeader>nv
+  create code snippet        Snippets.write code snippet    <LocalLeader>nw
+  edit code snippet          Snippets.edit code snippet     <LocalLeader>ne
+ ----------------------------------------------------------------------------
 
 Creating a new snippet:
 -----------------------
@@ -320,79 +351,53 @@ to a snippet file, otherwise the marked area will be written to a file.
 
 Insert a snippet:
 -----------------
-Select the appropriate file from the snippet directory ('read  code snippet').
+Select the appropriate file from the snippet directory via 'read code snippet'.
 The inserted lines will be indented.
 
 Indentation / no indentation
 ----------------------------
 Code snippets are normally indented after insertion. To suppress indentation
 add the file extension "ni" or "noindent" to the snippet file name, e.g.
-
+>
   parameter_handling.vim.noindent
-
+<
 Snippet browser
 ---------------
 Under a GUI a file requester will be put up. Without GUI the filename will be
 read from the command line. You can change this behavior by setting a global
-variable in your $HOME/.vimrc :
-
- let g:Vim_GuiSnippetBrowser = 'commandline'
-
+variable in your $HOME/.vimrc : >
+  let g:Vim_GuiSnippetBrowser = 'commandline'
 The default value is 'gui'. 
 
-1.7.2  Code Templates                              *vimsupport-templates-menu*
----------------------
-
-Nearly all menu entries insert code snippets or comments. All of these are
-contained within template files and can be changed by the user to meet their
-requirements (see|vimsupport-templates|on how to use the template system).
-
-The menu items 'edit ... templates' open various template files. The stock
-templates are usually located in the "local" template file: >
-  ~/.vim/perl-support/templates/Templates
-The template files named "custom" and "personal" can be used for
-customization, which avoids editing the stock templates.
-There may be dependent files loaded from the main files. Change whatever file
-you want, save it, and click on the menu item 'reread templates' to read in
-the file(s) and to rebuild the internal representation of the templates.
-
 ------------------------------------------------------------------------------
-1.8  MENU 'Run'                                               *vimsupport-run*
+2.6  HARDCOPY                                      *vimsupport-usage-hardcopy*
 ------------------------------------------------------------------------------
 
-1.8.1 Hardcopy                                           *vimsupport-hardcopy*
---------------
+The current buffer, or a range in it, can be quickly printed into a file,
+using the menu entry "Run -> hardcopy to filename.ps".
 
-Generates a PostScript file from the whole buffer or from a marked region. The
-hardcopy is written to the current working directory. If the buffer contains
-documentation or other material from non-writable directories the hardcopy
-goes to the HOME directory. The output destination will be shown in a message.
+  Feature                    Menu Entry                     Map
+ ----------------------------------------------------------------------------
+  hardcopy to postscript     Run.hardcopy to ...            <LocalLeader>rh
+ ----------------------------------------------------------------------------
 
-The print header contains date and time according the current locale. The
-definition used is:
->
-  let g:Vim_Printheader = "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
-<
-The current locale can be overwritten by changing the language, e.g. :
->
-  :language C
-<
-or by setting a global variable in the file '.vimrc', e.g. :
->
-  let g:Vim_Printheader = "%<%f%h%m%<  %=%{strftime('%x %X')}     SEITE %N"
-<
-See |printheader| and |strftime()| for more details.
+The file will be put into the current working directory. If the user can not
+write there, it is put into the home directory instead.
 
-1.8.2 Settings                                           *vimsupport-settings*
---------------
-
-Displays some Vim Support plugin settings. 
+The printheader on top of each page can be set via |g:Vim_Printheader|.
 
 ------------------------------------------------------------------------------
-1.9  MENU 'Help'                                             *vimsupport-help*
+2.7  HELP                                              *vimsupport-usage-help*
 ------------------------------------------------------------------------------
 
-This submenu offers convenient access to various documentations.
+This sub-menu offers convenient access to various documentations.
+
+  Feature                    Menu Entry                     Map
+ ----------------------------------------------------------------------------
+  open English dictionary    Help.English                   <LocalLeader>he
+  view help for keyword      Help.keyword help              <LocalLeader>hk
+  open plug-in help          Help.help (LaTeX-support)      <LocalLeader>hp
+ ----------------------------------------------------------------------------
 
 The entry 'keyword' looks up Vim help for the word (function name, keyword)
 under the cursor. If there is no word under the cursor the functions list
@@ -400,21 +405,11 @@ will be displayed.
 
 The entry 'English' opens an online dictionary for the word under the cursor.
 
-------------------------------------------------------------------------------
-
-The browser for opening the online documentation, or the English dictionary,
+The browser for opening online documentation, such as the English dictionary,
 can be configured by setting a global variable in your ~/.vimrc (see
-|g:Templates_InternetBrowserExec| and |g:Templates_InternetBrowserFlags|):
->
+|g:Templates_InternetBrowserExec| and |g:Templates_InternetBrowserFlags|): >
   let g:Templates_InternetBrowserExec = 'firefox'
 <
-==============================================================================
-2.  USAGE without GUI  (Vim)                            *vimsupport-usage-vim*
-==============================================================================
-
-When used without a GUI, the functionality is accessible via mappings,
-see |vimsupport-mappings|.
-
 ==============================================================================
 3.0  CUSTOMIZATION                                  *vimsupport-customization*
 ==============================================================================
