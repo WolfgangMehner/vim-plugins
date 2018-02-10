@@ -7,9 +7,9 @@ Vim Support                                         *vim-support* *vimsupport*
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
 
-Vim Support implements a Vim-IDE for Vim/gVim/Neovim. It is written to
-considerably speed up writing Vim script code in a consistent style. This is
-done by inserting complete statements, comments, idioms, and code snippets.
+Vim Support implements a VimL/VimScript-IDE for Vim/gVim/Neovim. It is written
+to considerably speed up writing Vim script code in a consistent style. This
+is done by inserting complete statements, comments, idioms, and code snippets.
 There are many additional hints and options which can improve speed and
 comfort when writing Vim scripts.
 
@@ -54,11 +54,11 @@ comfort when writing Vim scripts.
  4.3.2    The macros <+text+> etc.          |vimsupport-templates-jumptags|
  4.3.3    Commands Ctrl-j and Ctrl-d        |vimsupport-Ctrl-j|
  5.     Windows particularities             |vimsupport-windows|
- 6.     Troubleshooting                     |vimsupport-troubleshooting|
- 7.     Release Notes                       |vimsupport-release-notes|
 
-        How to add this help file to Vim's help  |add-local-help|
-
+ A.    Overview of Mappings                 |vimsupport-mappings|
+ B.    Files                                |vimsupport-files|
+ C.    Troubleshooting - Known Issues       |vimsupport-troubleshooting|
+ D.    Release Notes - Change Log           |vimsupport-release-notes|
 
 ==============================================================================
 1.  USAGE with GUI  (gVim)                             *vimsupport-usage-gvim*
@@ -412,130 +412,8 @@ can be configured by setting a global variable in your ~/.vimrc (see
 2.  USAGE without GUI  (Vim)                            *vimsupport-usage-vim*
 ==============================================================================
 
-The frequently used constructs can be inserted via key mappings.  The mappings
-are also described in the document 'vim-hotkeys.pdf' (reference card, part of
-this package).
-
-All mappings are filetype specific: they are only defined for buffers with
-filetype 'vim' to minimize conflicts with mappings from other plugins.
-
-Hint: Typing speed matters. The combination of a leader ('\') and the
-following character(s) will only be recognized for a short time.
-
-Some mappings can be used with range (of lines). In normal mode
-  \cl
-appends a end-of-line comment to the current line,  whereas 
-  4\cl
-appends end-of-line comments to the 4 lines starting with the current line.
-
-Legend:  (i) insert mode, (n) normal mode, (v) visual mode
-         [n] range
-
-  -- Help ----------------------------------------------
-
-     \he     open an English dictionary for the   (n, i)
-             word under the cursor
-     \hk     displays help for the function name  (n, i)
-             under the cursor (Vim help)
-     \hp     displays plugin help                 (n, i)
-
-  -- Comments ------------------------------------------
-
-  [n]\cl     end-of-line comment             (n, i, v)
-  [n]\cj     adjust end-of-line comments     (n, i, v)
-     \cs     set end-of-line comment column  (n)
-  [n]\cc     comment code                    (n, i, v)
-  [n]\co     uncomment code                  (n, i, v)
-     \ca     function description (auto)     (n, i, v)
-     \cfr    frame comment                   (n, i)
-     \cfu    function description            (n, i)
-     \ch     file header                     (n, i)
-     \cd     date                            (n, i)
-     \ct     date & time                     (n, i)
-     \ck     keyword comments                (n, i)
-     \cma    plugin macros                   (n, i)
-
-  -- Statements -----------------------------------------
-
-     \sv     let variable                    (n, i)
-     \sl     let list                        (n, i)
-     \sd     let dictionary                  (n, i)
-     \sf     for                             (n, i, v)
-     \sif    if ... endif                    (n, i, v)
-     \sie    if ... else ... endif           (n, i, v)
-     \sei    elseif                          (n, i)
-     \sel    else                            (n, i)
-     \sw     while                           (n, i, v)
-     \st     try ... catch                   (n, i, v)
-
-  -- Idioms ----------------------------------------------
-
-     \ii     iterators                       (n, i, v )
-     \if     function                        (n, i, v )
-
-  -- Regular Expression ----------------------------------
-
-     \xc     capture                         (n, i, v )
-     \xbc    branch                          (n, i, v )
-     \xbn    branch, no capture              (n, i, v )
-     \xw     word                            (n, i )
-     \xpc    POSIX character classes         (n, i )
-     \xs     switches                        (n, i )
-
-  -- Perl ------------------------------------------------
-
-     \ps     Perl snippet                    (n, i)
-     \pd     Vim::DoCommand()                (n, i)
-     \pe     Vim::Eval()                     (n, i)
-     \pm     Vim::Msg( "" )                  (n, i)
-     \pmc    Vim::Msg( "", "Comment" )       (n, i)
-     \pme    Vim::Msg( "", "Warning" )       (n, i)
-     \pmw    Vim::Msg( "", "ErrorMsg" )      (n, i)
-
-  -- Documentation ---------------------------------------
-
-     \dcc    chapter, contents               (n, i)
-     \dcs    section, contents               (n, i)
-     \dcu    subsection, contents            (n, i)
-     \dtc    chapter, text                   (n, i)
-     \dts    section, text                   (n, i)
-     \dtu    subsection, text                (n, i)
-     \df     function description            (n, i)
-     \de     example                         (n, i, v)
-     \dl     list item                       (n, i)
-
-  -- Snippets --------------------------------------------
-
-     \nr     read code snippet                (n, i)
-     \nw     write code snippet               (n, i, v)
-     \ne     edit code snippet                (n, i)
-
-     \ntg    edit global template file        (n, i)
-     \ntl    edit local template file         (n, i)
-     \ntc    edit custom template file        (n, i)
-     \ntp    edit personal template file      (n, i)
-     \ntr    reread template file             (n, i)
-     \ntw    template setup wizard            (n, i)
-     \nts    choose template style            (n, i)
-
-  -- Run -------------------------------------------------
-
-     \rh     hardcopy buffer to FILENAME.ps   (n, i)
-     \rs     settings and hot keys            (n, i)
-
-File 'vim-hotkeys.pdf' contains a reference card for these key mappings.
-Multiline inserts and code snippets will be indented after insertion.
-
-Changing the default map leader '\'
------------------------------------
-The map leader can be changed by the user by setting a global variable in the
-file .vimrc 
-
- let g:Vim_MapLeader  = ','
-
-The map leader is now a comma. The 'end-of-line comment' command is now
-defined as ',cl'. This setting will be used as a so called local leader and
-influences only files with filetype 'vim'.
+When used without a GUI, the functionality is accessible via mappings,
+see |vimsupport-mappings|.
 
 ==============================================================================
 3.0  CUSTOMIZATION                                  *vimsupport-customization*
@@ -545,34 +423,7 @@ influences only files with filetype 'vim'.
 3.1  FILES (after installation)                      *vimsupport-custom-files*
 ------------------------------------------------------------------------------
 
-vim-support/README.md              Release notes, installation description.
-
-plugin/vim-support.vim             The vim plugin for Vim/gVim.
-
-doc/vimsupport.txt                 The help file for the local online help.
-
-vim-support/codesnippets/*         Some code snippets as a starting point.
-
-vim-support/templates/*            Vim template files 
-                                   (see |vimsupport-comm-templates|).
-
-autoload/mmtemplates/*             The template engine.
-
-The following files and extensions are for convenience only.  vim-support.vim
-will work without them.
-
-vim-support/doc/*                   Hotkey reference card (PDF), changelog.
-
-vim-support/rc/customization.vimrc  Additional settings I use in '.vimrc': 
-                                    incremental search, tabstop, hot keys,
-                                    font, use of dictionaries, ...  The file
-                                    is commented. Append it to your '.vimrc'
-                                    if you like.
-
-vim-support/rc/customization.gvimrc Additional settings I use in '.gvimrc': 
-                                    hot keys, mouse settings, ...  The file is
-                                    commented.  Append it to your '.gvimrc' if
-                                    you like.
+For an overview of the files shipping with this plug-in, see |vimsupport-files|.
 
 ------------------------------------------------------------------------------
 3.2  GLOBAL VARIABLES                            *vimsupport-custom-variables*
@@ -619,7 +470,7 @@ g:Vim_Ctrl_d                hotkey Ctrl-D 'yes'/'no' (see |vimsupport-Ctrl-j|)
 
 g:Vim_LineEndCommColDefault default starting column for line end comments
 g:Vim_Printheader           hardcopy header format
-g:Vim_MapLeader             the map leader for hotkeys (see|vimsupport-usage-vim|)
+g:Vim_MapLeader             the map leader for hotkeys (see |vimsupport-mappings|)
 
 To override the defaults add appropriate assignments in '.vimrc', e.g.
  let g:Vim_MapLeader  = ','
@@ -930,7 +781,164 @@ for the system
   $VIM/_vimrc   and  $VIM/_gvimrc
 
 ==============================================================================
-6.  TROUBLESHOOTING                               *vimsupport-troubleshooting*
+A.  OVERVIEW OF MAPPINGS                                 *vimsupport-mappings*
+==============================================================================
+
+Almost all functionality is accessible using key mappings. These mappings are
+also described in the document 'vim-support/doc/vim-hotkeys.pdf'.
+
+All mappings are filetype specific: they are only defined for buffers with
+filetype 'vim' to minimize conflicts with mappings from other plug-ins.
+Furthermore, the mapleader can be changed using the setting |g:Vim_MapLeader|.
+
+Some mappings can be used with range (of lines). In normal mode >
+  \cl
+appends a end-of-line comment to the current line, whereas >
+  4\cl
+appends end-of-line comments to the 4 lines starting with the current line.
+
+Hint: Typing speed matters. The combination of a leader ('\') and the
+following character(s) will only be recognized for a short time.
+
+Legend:  (i) insert mode, (n) normal mode, (v) visual mode
+         [n] range
+
+  -- Help ----------------------------------------------
+
+     \he     open an English dictionary for the   (n, i)
+             word under the cursor
+     \hk     displays help for the function name  (n, i)
+             under the cursor (Vim help)
+     \hp     displays plugin help                 (n, i)
+
+  -- Comments ------------------------------------------
+
+  [n]\cl     end-of-line comment             (n, i, v)
+  [n]\cj     adjust end-of-line comments     (n, i, v)
+     \cs     set end-of-line comment column  (n)
+  [n]\cc     comment code                    (n, i, v)
+  [n]\co     uncomment code                  (n, i, v)
+     \ca     function description (auto)     (n, i, v)
+     \cfr    frame comment                   (n, i)
+     \cfu    function description            (n, i)
+     \ch     file header                     (n, i)
+     \cd     date                            (n, i)
+     \ct     date & time                     (n, i)
+     \ck     keyword comments                (n, i)
+     \cma    plugin macros                   (n, i)
+
+  -- Statements -----------------------------------------
+
+     \sv     let variable                    (n, i)
+     \sl     let list                        (n, i)
+     \sd     let dictionary                  (n, i)
+     \sf     for                             (n, i, v)
+     \sif    if ... endif                    (n, i, v)
+     \sie    if ... else ... endif           (n, i, v)
+     \sei    elseif                          (n, i)
+     \sel    else                            (n, i)
+     \sw     while                           (n, i, v)
+     \st     try ... catch                   (n, i, v)
+
+  -- Idioms ----------------------------------------------
+
+     \ii     iterators                       (n, i, v )
+     \if     function                        (n, i, v )
+
+  -- Regular Expression ----------------------------------
+
+     \xc     capture                         (n, i, v )
+     \xbc    branch                          (n, i, v )
+     \xbn    branch, no capture              (n, i, v )
+     \xw     word                            (n, i )
+     \xpc    POSIX character classes         (n, i )
+     \xs     switches                        (n, i )
+
+  -- Perl ------------------------------------------------
+
+     \ps     Perl snippet                    (n, i)
+     \pd     Vim::DoCommand()                (n, i)
+     \pe     Vim::Eval()                     (n, i)
+     \pm     Vim::Msg( "" )                  (n, i)
+     \pmc    Vim::Msg( "", "Comment" )       (n, i)
+     \pme    Vim::Msg( "", "Warning" )       (n, i)
+     \pmw    Vim::Msg( "", "ErrorMsg" )      (n, i)
+
+  -- Documentation ---------------------------------------
+
+     \dcc    chapter, contents               (n, i)
+     \dcs    section, contents               (n, i)
+     \dcu    subsection, contents            (n, i)
+     \dtc    chapter, text                   (n, i)
+     \dts    section, text                   (n, i)
+     \dtu    subsection, text                (n, i)
+     \df     function description            (n, i)
+     \de     example                         (n, i, v)
+     \dl     list item                       (n, i)
+
+  -- Snippets --------------------------------------------
+
+     \nr     read code snippet                (n, i)
+     \nw     write code snippet               (n, i, v)
+     \ne     edit code snippet                (n, i)
+
+     \ntg    edit global template file        (n, i)
+     \ntl    edit local template file         (n, i)
+     \ntc    edit custom template file        (n, i)
+     \ntp    edit personal template file      (n, i)
+     \ntr    reread template file             (n, i)
+     \ntw    template setup wizard            (n, i)
+     \nts    choose template style            (n, i)
+
+  -- Run -------------------------------------------------
+
+     \rh     hardcopy buffer to FILENAME.ps   (n, i)
+     \rs     settings and hot keys            (n, i)
+
+==============================================================================
+B.  FILES                                                   *vimsupport-files*
+==============================================================================
+
+vim-support/README.md             Release notes, installation description.
+
+autoload/mmtemplates/*            The template system.
+
+doc/vimsupport.txt                The help file for Vim Support.
+doc/templatesupport.txt           The help file for the template system.
+
+plugin/vim-support.vim            The VimL plug-in for Vim/gVim/Neovim.
+
+vim-support/codesnippets/         Some code snippets as a starting point.
+
+vim-support/templates/*           The template files.
+
+--------------------------------------------------------------
+ The following files and extensions are for convenience only.
+ `vim-support.vim` will work without them.
+--------------------------------------------------------------
+
+ftdetect/template.vim
+ftplugin/template.vim
+syntax/template.vim               Additional files for working with templates.
+
+vim-support/...
+  .../doc/vim-hotkeys.pdf         Reference card for the key mappings.
+  .../doc/ChangeLog               The change log.
+
+vim-support/...
+  .../rc/customization.gvimrc     Additional settings for use in .gvimrc.
+  .../rc/customization.vimrc      Additional settings for use in .vimrc:
+                                    incremental search, tabstop, hot keys,
+                                    font, use of dictionaries, ...
+                                  The file is commented. Append it to your
+                                  .vimrc if you like.
+
+  .../rc/vim.vim                  Suggestion for a filetype plug-in.
+  .../rc/*.templates              Sample template files for customization.
+                                  Used by the customization template setup wizard.
+
+==============================================================================
+C.  TROUBLESHOOTING - KNOWN ISSUES                *vimsupport-troubleshooting*
 ==============================================================================
 
 * I do not see any new main menu item.
@@ -950,10 +958,10 @@ for the system
     settings can usually be redefined.
 
 ==============================================================================
-7.  Release Notes                                   *vimsupport-release-notes*
+D.  RELEASE NOTES - CHANGE LOG                      *vimsupport-release-notes*
 ==============================================================================
 
-See file 'README.md'.
+See files 'vim-support/README.md' and 'vim-support/doc/ChangeLog'.
 
 ==============================================================================
 vim:tw=78:expandtab:ts=2:ft=help:norl:
