@@ -1,4 +1,4 @@
-README for lua-support.vim (Version 1.1alpha) / October 13 2017
+README for lua-support.vim (Version 1.1alpha) / February 11 2018
 ================================================================================
 
   *  INSTALLATION
@@ -37,7 +37,7 @@ well as an explanation of the other consequences, please see the help file
 (1) LINUX
 ----------------------------------------------------------------------
 
-The subdirectories in the zip archive lua-support.zip mirror the directory
+The subdirectories in the zip archive `lua-support.zip` mirror the directory
 structure which is needed below the local installation directory `$HOME/.vim/`
 (find the value of `$HOME` with `:echo $HOME` from inside Vim).
 
@@ -103,7 +103,7 @@ structure which is needed below the local installation directory `$HOME/.vim/`
 (2) WINDOWS
 ----------------------------------------------------------------------
 
-The subdirectories in the zip archive lua-support.zip mirror the directory
+The subdirectories in the zip archive `lua-support.zip` mirror the directory
 structure which is needed below the local installation directory `$HOME/vimfiles/`
 (find the value of `$HOME` with `:echo $HOME` from inside Vim).
 
@@ -241,7 +241,7 @@ FILES
                         The help files for the toolbox.
 
     plugin/lua-support.vim
-                        The Lua plug-in for Vim/gVim.
+                        The Lua plug-in for Vim/gVim/Neovim.
 
     lua-support/templates/Templates
                         Lua main template file.
@@ -326,6 +326,8 @@ ADDITIONAL TIPS
 CREDITS
 ================================================================================
 
+__We thank:__
+
 * Fritz Mehner (vim.org user name: mehner) for a number of things:
   - his plug-ins (bash-support, c-support, perl-support, ...) provided the
     inspiration and model for this plug-in and the utilized template support
@@ -343,4 +345,3 @@ For a complete list of people who made contributions to this plug-in,
 please be so kind as to take a look at the credits:
 
       :help luasupport-credits
-
