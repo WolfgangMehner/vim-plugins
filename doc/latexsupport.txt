@@ -12,6 +12,8 @@ typesetting a document in a consistent style. This is done by inserting
 complete statements, idioms, code snippets, and comments. Compiling and
 viewing a document, format conversion and running make can be done with
 a few keystrokes.
+See the chapter |latexsupport-introduction| for a quick overview and a short
+guide to this documentation.
 
 ==============================================================================
 0.  TABLE OF CONTENTS                                  *latexsupport-contents*
@@ -91,8 +93,8 @@ The features of the plug-in are:
 - Make integration. |latexsupport-usage-toolbox|
 
 The usage of most features is described in the chapter |latexsupport-usage|.
-The chapter |latexsupport-templates| gives a short introduction to the template
-system. The LaTeX executables and some other features may require some
+The chapter |latexsupport-templates| gives a short introduction to the
+template system. The LaTeX executables and other features may require some
 configuration, which is documented in the chapter |latexsupport-configuration|.
 How to do a system-wide installation is outlined in |latexsupport-system-wide|.
 
@@ -155,7 +157,7 @@ be changed by setting a global variable in the file .vimrc , e.g. : >
 The starting column can also be set by the menu item "Comments->adjust
 end-of-line com.". Just position the cursor in an arbitrary column (normal
 mode; the column number is shown in the Vim status line) and choose this menu
-item. This setting is done individually for each buffer.
+item. This setting is stored individually for each buffer.
 If the cursor was at the end of a line you will be asked for a column number
 because this position is most likely not the desired starting column.
 
@@ -176,12 +178,17 @@ comments in the marked block will be aligned:
  \begin{flushleft}                               % comment 2
  \large{\textbf{Ex Commands}}\\[1.0ex]           % comment 3
 <
+Another way is to use the hotkey `´cj`. In normal and insert mode the current
+line will be adjusted. To adjust n lines starting with the current one use
+`n\cj`.
+
 ------------------------------------------------------------------------------
 
 2.1.2  Toggle Comment Lines                *latexsupport-usage-comments-lines*
 
 The comment sign % can be inserted or removed at the beginning of the current
-line or for a marked block. A single line does not need to be marked.
+line or for a marked block, using the menu item 'comment' (or `´cc`). A single
+line does not need to be marked.
 
 For a marked block containing only lines with a '%' in the first column (and
 possibly empty lines) all lines will be uncommented. A marked block containing
@@ -217,6 +224,8 @@ statement will be inserted:
   |
   \end{center}
 <
+The character '|' marks the cursor position after insertion.
+
 VISUAL MODE
 -------------------------------
 
@@ -294,7 +303,7 @@ snippet file. Otherwise the marked area will be written to a file.
 
 Insert a snippet
 ----------------
-Select the appropriate file from the snippet directory ("read code snippet").
+Select the appropriate file from the snippet directory via "read code snippet".
 The inserted lines will be indented.
 
 Indentation / no indentation
@@ -343,9 +352,9 @@ External tools like the typesetters and BibTeX can be run with a keystroke.
   open the resulting PS      Run.View.PS                    <LocalLeader>rps
   convert the result         Run.Convert.###->###           <LocalLeader>rc
 
-	run makeglossaries         run makeglossaries             <LocalLeader>rmg
-	run makeindex              run makeindex                  <LocalLeader>rmi
-	run BibTeX                 run bibtex                     <LocalLeader>rbi
+	run makeglossaries         Run.run makeglossaries         <LocalLeader>rmg
+	run makeindex              Run.run makeindex              <LocalLeader>rmi
+	run BibTeX                 Run.run bibtex                 <LocalLeader>rbi
 
   change the typesetter      Run.choose typesetter          <LocalLeader>rt
   set the processing mode    Run.external processing        <LocalLeader>rp
@@ -505,7 +514,7 @@ The printheader on top of each page can be set via |g:Latex_Printheader|.
 2.7  HELP                                            *latexsupport-usage-help*
 ------------------------------------------------------------------------------
 
-This submenu offers convenient access to various documentations.
+This sub-menu offers convenient access to various documentations.
 
   Feature                    Menu Entry                     Map
  ----------------------------------------------------------------------------
@@ -520,10 +529,9 @@ name of a package.
 
 The entry 'English' opens an online dictionary for the word under the cursor.
 
-The browser for opening the online documentation, or the English dictionary,
+The browser for opening online documentation, such as the English dictionary,
 can be configured by setting a global variable in your ~/.vimrc (see
-|g:Templates_InternetBrowserExec| and |g:Templates_InternetBrowserFlags|):
->
+|g:Templates_InternetBrowserExec| and |g:Templates_InternetBrowserFlags|): >
   let g:Templates_InternetBrowserExec = 'firefox'
 <
 ------------------------------------------------------------------------------
@@ -638,10 +646,11 @@ Use the <CTRL-J> to jump to the next tag. The maps works in normal and insert
 mode. Use <CTRL-D> to delete optional tags on the same line, for example: >
   string.match ( <+str+>, <+pattern+>, [+init+] )
 The optional argument "init" can be written down after jumping to the tag
-using <CTRL-J> or deleted together with the comma using <CTRL-D>.
+using <CTRL-J> or deleted together with the comma using <CTRL-D>. The optional
+tags are: `[+TAGNAME+]` `[-TAGNAME-]`
 
 The tags written with minus signs are removed when the template is used in
-visual mode: `{-TAGNAME-}` `<-TAGNAME->` `[-TAGNAME-]`
+visual mode, compare the next section: `{-TAGNAME-}` `<-TAGNAME->` `[-TAGNAME-]`
 
 ------------------------------------------------------------------------------
 3.4  SPLIT TAGS                            *latexsupport-templates-split-tags*
@@ -708,6 +717,10 @@ for the format specifiers:
   SetFormat( 'TIME', '%H:%M'   )
   SetFormat( 'YEAR', 'year %Y' )
 <
+This sets the format for the date to the preferred representation for your
+current locale, the time will be inserted as 10:24 and the year will be
+represented using four digits.
+
 ------------------------------------------------------------------------------
 3.6  TEMPLATE FILES                             *latexsupport-templates-files*
 ------------------------------------------------------------------------------
@@ -764,27 +777,6 @@ see |latexsupport-templates-custom|. For help with setting up the template
 library, use the setup wizard:
   Latex -> Snippets -> template setup wizard
 
-Template Locations
-------------------
-
-The standard locations of the template files can be changed via the
-configuration variables below, e.g.: >
-  let g:Latex_CustomTemplateFile = $HOME.'/.vim/my-templates/latex.templates'
-<
-  Variable                     Default Linux
- ----------------------------------------------------------------------------
-  *g:Latex_CustomTemplateFile*   $HOME/.vim/templates/latex.templates
-  *g:Latex_GlobalTemplateFile*   $VIMRUNTIME/latex-support/templates/Templates
-  *g:Latex_LocalTemplateFile*    $HOME/.vim/latex-support/templates/Templates
- ----------------------------------------------------------------------------
-
-  Variable                     Default Windows
- ----------------------------------------------------------------------------
-  g:Latex_CustomTemplateFile   $HOME/vimfiles/templates/latex.templates
-  g:Latex_GlobalTemplateFile   $VIMRUNTIME/latex-support/templates/Templates
-  g:Latex_LocalTemplateFile    $HOME/vimfiles/latex-support/templates/Templates
- ----------------------------------------------------------------------------
-
 Template Browser
 ----------------
 When editing a template file, it is selected via |:Explore|. You can change
@@ -796,7 +788,35 @@ this behavior by setting a global variable in your ~/.vimrc (see
 Template Style
 --------------
 The template system supports different template styles. If there are more than
-one style the menu item 'choose style' let you choose a style on the fly.
+one style the menu item "choose style" let you choose a style on the fly.
+
+Template Locations
+------------------
+                        *g:Latex_LocalTemplateFile* *g:Latex_GlobalTemplateFile*
+                                                  *g:Latex_CustomTemplateFile*
+The variables `g:Latex_LocalTemplateFile` and `g:Latex_GlobalTemplateFile` set the
+locations and names of the local and global template files, respectively.
+The standard locations of the template files can be changed via these
+configuration variables, e.g.: >
+  let g:Latex_CustomTemplateFile = $HOME.'/.vim/my-templates/latex.templates'
+<
+  Variable                     Default Linux
+ ----------------------------------------------------------------------------
+  g:Latex_CustomTemplateFile   $HOME/.vim/templates/latex.templates
+  g:Latex_GlobalTemplateFile   $VIMRUNTIME/latex-support/templates/Templates
+  g:Latex_LocalTemplateFile    $HOME/.vim/latex-support/templates/Templates
+ ----------------------------------------------------------------------------
+
+  Variable                     Default Windows
+ ----------------------------------------------------------------------------
+  g:Latex_CustomTemplateFile   $HOME/vimfiles/templates/latex.templates
+  g:Latex_GlobalTemplateFile   $VIMRUNTIME/latex-support/templates/Templates
+  g:Latex_LocalTemplateFile    $HOME/vimfiles/latex-support/templates/Templates
+ ----------------------------------------------------------------------------
+
+The personalization file is located in a directory relative to |runtimepath|: >
+  <RUNTIMEPATH>/templates/personal.templates
+For configuring the personalization file, see |g:Templates_PersonalizationFile|.
 
 ------------------------------------------------------------------------------
 3.8  FILE SKELETONS                               *latexsupport-file-skeleton*
@@ -813,10 +833,8 @@ This automatic insertion can be switched off by adding this to the `.vimrc`: >
 <
                                                  *Latex::FileSkeleton::Script*
 The file skeleton is controlled via this property, which can be set in one
-of the template files:
->
+of the template files: >
   SetProperty ( 'Latex::FileSkeleton::Script', 'Comments.file prolog' )
-<
 This inserts only a comment box to document the file. To disable the insertion
 completely, set the property to an empty string: >
   SetProperty ( 'Latex::FileSkeleton::Script', '' )
@@ -857,11 +875,11 @@ also be adapted, see below.
   |g:Latex_CodeSnippets|       (see below)   directory with code snippets
   |g:Latex_GuiSnippetBrowser|  'gui'         browser to select code snippets
 
-  |g:Latex_LocalTemplateFile|  (see below)   the local top-level template file
-  |g:Latex_GlobalTemplateFile| (see below)   the global top-level template file
-  |g:Latex_CustomTemplateFile| (see below)   the optional custom template file
+  |g:Latex_LocalTemplateFile|  (see Chp. 3)  the local top-level template file
+  |g:Latex_GlobalTemplateFile| (see Chp. 3)  the global top-level template file
+  |g:Latex_CustomTemplateFile| (see Chp. 3)  the optional custom template file
   |g:Templates_PersonalizationFile|
-                             (see below)   the personalization template file
+                             (see Chp. 3)  the personalization template file
 
   |g:Latex_Dictionary_File|    ''            word list used for completion
   |g:Latex_Printheader|        '...'         printheader used for hardcopy
@@ -1006,9 +1024,10 @@ Sets the mapleader to '#'.
 
                                                         *Latex_SetMapLeader()*
                                                       *Latex_ResetMapLeader()*
-The mapleader can also be used in the ftplugin, by calling the functions
-`Latex_SetMapLeader()` and `Latex_ResetMapLeader()`. The maps created between
-the two calls will use |g:Latex_MapLeader| as the |<LocalLeader>|:
+The configured mapleader can also be used in the ftplugin, by calling the
+functions `Latex_SetMapLeader()` and `Latex_ResetMapLeader()`. The maps
+created between the two calls will use |g:Latex_MapLeader| as the
+|<LocalLeader>|:
 >
   call Latex_SetMapLeader ()
 
@@ -1033,7 +1052,7 @@ switched off by adding this to the .vimrc: >
 The behavior can be changed on the fly by settings the variable to a different
 value on the command line.
 
-Further customization the file skeletons is possible through use of the
+Further customization of the file skeletons is possible through use of the
 template library (see |latexsupport-file-skeleton|).
 
                                                *g:Latex_LineEndCommColDefault*
@@ -1099,8 +1118,10 @@ and also |i_CTRL-P| and |i_CTRL-N|, depending on how 'complete' is set.
 The printheader used by "Run -> hardcopy to filename.ps" is set via the
 variable `g:Latex_Printheader`. It is temporarily set as the value of
 'printheader' while printing the hardcopy. See the documentation of the
-option 'printheader' for the possible contents of `g:Latex_Printheader`.
-
+option 'printheader' for the possible contents of `g:Latex_Printheader`. The
+default is: >
+  let g:Latex_Printheader = "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
+<
 The behavior can be changed on the fly by settings the variable to a different
 value on the command line.
 
@@ -1126,8 +1147,8 @@ follows.
 As *** SUPERUSER *** :
 
 (1) Find the Vim installation directory.
-The Vim ex command ':echo $VIM' gives '/usr/local/share/vim' or something like
-that. Beyond this directory you will find the Vim installation,  e.g. in
+The Vim ex-command `:echo $VIM` gives '/usr/local/share/vim' or something like
+that. Beyond this directory you will find the Vim installation, e.g. in
 '/usr/local/share/vim/vim73' if Vim version 7.3 has been installed (Windows:
 'C:\Program Files\Vim').
 
@@ -1135,22 +1156,21 @@ that. Beyond this directory you will find the Vim installation,  e.g. in
 (Windows: 'C:\Program Files\Vim\vimfiles').
 
 (3) Install LaTeX Support
-Copy the archive latex-support.zip to this new directory and unpack it:
->
+Copy the archive 'latex-support.zip' to this new directory and unpack it: >
   unzip latex-support.zip
 <
-(4) Generate the help tags:
->
+(4) Generate the help tags: >
   :helptags $VIM/vimfiles/doc
 <
 SPECIAL CASES. Some Linux distributions use non-standard names for Vim
 directories. SUSE has a directory '/usr/share/vim/site' to put plug-ins in.
-These directories will not be found automatically.  After installing the
-plug-in below '/usr/share/vim/site' the use of the templates will be enabled by
-the following line in '~/.vimrc':
+These directories will not be found automatically. After installing the
+plug-in below '/usr/share/vim/site' the use of the templates will be enabled
+by the following line in '$HOME/.vimrc':
 >
   let g:Latex_GlobalTemplateFile = '/usr/share/vim/site/latex-support/templates/Templates'
 <
+------------------------------------------------------------------------------
 
 As *** USER *** :
 
@@ -1163,10 +1183,10 @@ and should contain only information relevant for all template libraries. You
 can set some macros in this file with your personal information in order to
 obtain personalized comments, e.g. something like this:
 >
- SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
- SetMacro( 'AUTHORREF',   'fgm' )
- SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
- SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
+  SetMacro( 'AUTHOR',      'Wolfgang Mehner' )
+  SetMacro( 'AUTHORREF',   'WM' )
+  SetMacro( 'EMAIL',       'wolfgang-mehner@web.de' )
+  SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 <
 Use the custom template file for LaTeX templates which override the global
 templates or to add new ones.
@@ -1174,9 +1194,9 @@ templates or to add new ones.
 The old system (before version 1.2), using a "local" template file, >
   ~/.vim/latex-support/templates
 is still supported for backwards compatibility.
->
+
 Create your private snippet directory: >
-  mkdir --parents  ~/.vim/latex-support/codesnippets
+  mkdir --parents  $HOME/.vim/latex-support/codesnippets
 You may want to copy the snippets coming with this plug-in (in
 $VIM/vimfiles/latex-support/codesnippets) into the new directory or to set a
 link to the global directory.
@@ -1194,7 +1214,7 @@ Furthermore, the mapleader can be changed using the setting |g:Latex_MapLeader|.
 
 Some mappings can be used with a range (of lines). In normal mode >
   ´cl
-appends a end-of-line comment to the current line,  whereas >
+appends a end-of-line comment to the current line, whereas >
   4´cl
 appends end-of-line comments to the 4 lines starting with the current line.
 
@@ -1379,7 +1399,7 @@ README.md                         The starting point.
 autoload/mmtemplates/*            The template system.
 autoload/mmtoolbox/*              The toolbox (make, ...).
 
-doc/latexsupport.txt              The help file for LaTeX support.
+doc/latexsupport.txt              The help file for LaTeX Support.
 doc/templatesupport.txt           The help file for the template system.
 doc/toolbox*.txt                  The help files for the toolbox.
 
