@@ -12,6 +12,8 @@ to considerably speed up writing Vim script code in a consistent style. This
 is done by inserting complete statements, comments, idioms, and code snippets.
 There are many additional hints and options which can improve speed and
 comfort when writing Vim scripts.
+See the chapter |vimsupport-introduction| for a quick overview and a short
+guide to this documentation.
 
 ==============================================================================
 0.  TABLE OF CONTENTS                                    *vimsupport-contents*
@@ -124,7 +126,7 @@ Besides the templates, there is some other functionality provided in the menu
 
 2.1.1  End-of-Line Comments                    *vimsupport-usage-comments-eol*
 
-In NORMAL MODE the menu entry 'end-of-line comments' will append a comment to
+In NORMAL MODE the menu item 'end-of-line comments' will append a comment to
 the current line. In VISUAL MODE this item will append aligned comments to all
 marked lines. Marking the 4 lines
 >
@@ -148,7 +150,7 @@ be changed by setting a global variable in the file '.vimrc', e.g. : >
 The starting column can also be set by the menu entry "Comments -> adjust
 end-of-line com.". Just position the cursor in an arbitrary column (normal
 mode; column number is shown in the Vim status line) and choose this menu
-item. This setting is buffer related.
+item. This setting is stored individually for each buffer.
 If the cursor was at the end of a line you will be asked for a column number
 because this position is most likely not the desired starting column.
 
@@ -282,7 +284,7 @@ surrounded by the statement:
   endif
 <
 This "split mode" works for many of the menu entries. With the pattern '\w\+'
-selected, the map `´xc` or the menu entry "Regex -> capture" will surround it
+selected, the map `\xc` or the menu entry "Regex -> capture" will surround it
 with a capture: >
   matchlist ( str, '\s\+\w\+' )
 will be changed into: >
@@ -348,14 +350,14 @@ Code snippets are kept in a directory which can be changed using the setting
   edit code snippet          Snippets.edit code snippet     <LocalLeader>ne
  ----------------------------------------------------------------------------
 
-Creating a new snippet:
------------------------
-When nothing is marked, 'write code snippet' will write the whole buffer
-to a snippet file, otherwise the marked area will be written to a file.
+Creating a new snippet
+----------------------
+When nothing is marked, "write code snippet" will write the whole buffer to a
+snippet file. Otherwise the marked area will be written to a file.
 
-Insert a snippet:
------------------
-Select the appropriate file from the snippet directory via 'read code snippet'.
+Insert a snippet
+----------------
+Select the appropriate file from the snippet directory via "read code snippet".
 The inserted lines will be indented.
 
 Indentation / no indentation
@@ -400,7 +402,7 @@ This sub-menu offers convenient access to various documentations.
  ----------------------------------------------------------------------------
   open English dictionary    Help.English                   <LocalLeader>he
   view help for keyword      Help.keyword help              <LocalLeader>hk
-  open plug-in help          Help.help (LaTeX-support)      <LocalLeader>hp
+  open plug-in help          Help.help (Vim-Support)        <LocalLeader>hp
  ----------------------------------------------------------------------------
 
 The entry 'keyword' looks up Vim help for the word (function name, keyword)
@@ -414,6 +416,16 @@ can be configured by setting a global variable in your ~/.vimrc (see
 |g:Templates_InternetBrowserExec| and |g:Templates_InternetBrowserFlags|): >
   let g:Templates_InternetBrowserExec = 'firefox'
 <
+                                                 *<Plug>VimSupportKeywordHelp*
+The keyword help can be mapped to an additional key by the user, using the
+mapping `<Plug>VimSupportKeywordHelp`. To map the <F1> key to bring up the
+help for the keyword under the cursor, add this to your vim filetype plug-in:
+>
+  nmap  <buffer>  <F1>  <Plug>VimSupportKeywordHelp
+  imap  <buffer>  <F1>  <Plug>VimSupportKeywordHelp
+<
+See 'vim-support/rc/vim.vim' for an example filetype plug-in.
+
 ==============================================================================
 3.  TEMPLATES                                           *vimsupport-templates*
 ==============================================================================
@@ -787,9 +799,9 @@ Sets the mapleader to '#'.
 
                                                           *Vim_SetMapLeader()*
                                                         *Vim_ResetMapLeader()*
-The mapleader can also be used in the ftplugin, by calling the functions
-`Vim_SetMapLeader()` and `Vim_ResetMapLeader()`. The maps created between
-the two calls will use |g:Vim_MapLeader| as the |<LocalLeader>|:
+The configured mapleader can also be used in the ftplugin, by calling the
+functions `Vim_SetMapLeader()` and `Vim_ResetMapLeader()`. The maps created
+between the two calls will use |g:Vim_MapLeader| as the |<LocalLeader>|:
 >
   call Vim_SetMapLeader ()
 
@@ -882,7 +894,7 @@ and for the system `$VIM/_vimrc` and `$VIM/_gvimrc`.
 A system-wide installation (one installation for all users) is done as
 follows.
 
-As ****** SUPERUSER ****** :
+As *** SUPERUSER *** :
 
 (1) Find the Vim installation directory.
 The Vim ex-command `:echo $VIM` gives '/usr/local/share/vim' or something like
@@ -900,15 +912,15 @@ Copy the archive 'vim-support.zip' to this new directory and unpack it: >
 <
 SPECIAL CASES. Some Linux distributions use non-standard names for Vim
 directories. SUSE has a directory '/usr/share/vim/site' to put plug-ins in.
-These directories will not be found automatically.  After installing the
-plug-in below '/usr/share/vim/site' the use of the templates will be enabled by
-the following line in '$HOME/.vimrc':
+These directories will not be found automatically. After installing the
+plug-in below '/usr/share/vim/site' the use of the templates will be enabled
+by the following line in '$HOME/.vimrc':
 >
   let g:Vim_GlobalTemplateFile = '/usr/share/vim/site/vim-support/templates/Templates'
 <
 ------------------------------------------------------------------------------
 
-As ****** USER ****** :
+As *** USER *** :
 
 Use the template setup wizard:
   Vim -> Snippets -> template setup wizard
@@ -919,10 +931,10 @@ and should contain only information relevant for all template libraries. You
 can set some macros in this file with your personal information in order to
 obtain personalized comments, e.g. something like this:
 >
- SetMacro( 'AUTHOR',      'Dr. Fritz Mehner' )
- SetMacro( 'AUTHORREF',   'fgm' )
- SetMacro( 'EMAIL',       'mehner.fritz@web.de' )
- SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
+  SetMacro( 'AUTHOR',      'Wolfgang Mehner' )
+  SetMacro( 'AUTHORREF',   'WM' )
+  SetMacro( 'EMAIL',       'wolfgang-mehner@web.de' )
+  SetMacro( 'COPYRIGHT',   'Copyright (c) |YEAR|, |AUTHOR|' )
 <
 Use the custom template file for Vim templates which override the global
 templates or to add new ones.
@@ -942,13 +954,13 @@ A.  OVERVIEW OF MAPPINGS                                 *vimsupport-mappings*
 ==============================================================================
 
 Almost all functionality is accessible using key mappings. These mappings are
-also described in the document 'vim-support/doc/vim-hotkeys.pdf'.
+also described in the reference card 'vim-support/doc/vim-hotkeys.pdf'.
 
-All mappings are filetype specific: they are only defined for buffers with
+All mappings are filetype specific; they are only defined for buffers with
 filetype 'vim' to minimize conflicts with mappings from other plug-ins.
 Furthermore, the mapleader can be changed using the setting |g:Vim_MapLeader|.
 
-Some mappings can be used with range (of lines). In normal mode >
+Some mappings can be used with a range (of lines). In normal mode >
   \cl
 appends a end-of-line comment to the current line, whereas >
   4\cl

@@ -35,14 +35,14 @@ well as an explanation of the other consequences, please see the help file
 (1) LINUX
 ----------------------------------------------------------------------
 
-The subdirectories in the zip archive vim-support.zip mirror the directory
+The subdirectories in the zip archive `vim-support.zip` mirror the directory
 structure which is needed below the local installation directory `$HOME/.vim/`
-(find the value of $HOME with `:echo $HOME` from inside Vim).
+(find the value of `$HOME` with `:echo $HOME` from inside Vim).
 
 (1.0) Save the template files in `$HOME/.vim/vim-support/templates/` if you
    have changed any of them.
 
-(1.1) Copy the zip archive vim-support.zip to $HOME/.vim and run
+(1.1) Copy the zip archive `vim-support.zip` to `$HOME/.vim` and run
 
       unzip vim-support.zip
 
@@ -57,7 +57,7 @@ structure which is needed below the local installation directory `$HOME/.vim/`
       :filetype plugin on
 
    This is the minimal content of the file `$HOME/.vimrc`. Create one if there
-   is none or use the file in $HOME/.vim/vim-support/rc as a starting point.
+   is none or use the file in `$HOME/.vim/vim-support/rc` as a starting point.
 
 (1.3) Make the plug-in help accessible by typing the following command on the
    Vim command line:
@@ -69,7 +69,7 @@ structure which is needed below the local installation directory `$HOME/.vim/`
 
       Vim -> Snippets -> template setup wizard
 
-   It will help you set up the file _runtimepath_/templates/personal.templates .
+   It will help you set up the file `_runtimepath_/templates/personal.templates`.
    The file is read by all plug-ins supporting this feature to get your personal
    details. Here is the minimal personalization (my settings as an example):
 
@@ -78,7 +78,7 @@ structure which is needed below the local installation directory `$HOME/.vim/`
       SetMacro( 'EMAIL',        'wolfgang-mehner@web.de' )
       SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
 
-   Use the file $HOME/.vim/templates/vim.templates to customize or add to your
+   Use the file `$HOME/.vim/templates/vim.templates` to customize or add to your
    Vim template library. It can also be set up via the wizard.
 
    (Read more about the template system in the plug-in documentation.)
@@ -97,14 +97,14 @@ structure which is needed below the local installation directory `$HOME/.vim/`
 (2) WINDOWS
 ----------------------------------------------------------------------
 
-The subdirectories in the zip archive vim-support.zip mirror the directory
+The subdirectories in the zip archive `vim-support.zip` mirror the directory
 structure which is needed below the local installation directory `$HOME/vimfiles/`
-(find the value of $HOME with `:echo $HOME` from inside Vim).
+(find the value of `$HOME` with `:echo $HOME` from inside Vim).
 
 (2.0) Save the template files in `$HOME/vimfiles/vim-support/templates/` if you
    have changed any of them.
 
-(2.1) Copy the zip archive vim-support.zip to $HOME/vimfiles and run
+(2.1) Copy the zip archive `vim-support.zip` to `$HOME/vimfiles` and run
 
       unzip vim-support.zip
 
@@ -119,7 +119,7 @@ structure which is needed below the local installation directory `$HOME/vimfiles
       :filetype plugin on
 
    This is the minimal content of the file `$HOME/_vimrc`. Create one if there
-   is none or use the file in $HOME/vimfiles/vim-support/rc as a starting point.
+   is none or use the file in `$HOME/vimfiles/vim-support/rc` as a starting point.
 
 (2.3) Make the plug-in help accessible by typing the following command on the
    Vim command line:
@@ -131,7 +131,7 @@ structure which is needed below the local installation directory `$HOME/vimfiles
 
       Vim -> Snippets -> template setup wizard
 
-   It will help you set up the file _runtimepath_/templates/personal.templates .
+   It will help you set up the file `_runtimepath_/templates/personal.templates`.
    The file is read by all plug-ins supporting this feature to get your personal
    details. Here is the minimal personalization (my settings as an example):
 
@@ -140,7 +140,7 @@ structure which is needed below the local installation directory `$HOME/vimfiles
       SetMacro( 'EMAIL',        'wolfgang-mehner@web.de' )
       SetMacro( 'COPYRIGHT',    'Copyright (c) |YEAR|, |AUTHOR|' )
 
-   Use the file $HOME/vimfiles/templates/vim.templates to customize or add to
+   Use the file `$HOME/vimfiles/templates/vim.templates` to customize or add to
    your Vim template library. It can also be set up via the wizard.
 
    (Read more about the template system in the plug-in documentation.)
