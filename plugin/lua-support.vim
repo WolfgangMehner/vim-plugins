@@ -2,7 +2,7 @@
 "
 "          File:  lua-support.vim
 "
-"   Description:  Lua IDE for Vim/gVim.
+"   Description:  Lua IDE for Vim/gVim/Neovim.
 "
 "                 See help file luasupport.txt .
 "
@@ -11,8 +11,8 @@
 "  Organization:  
 "       Version:  see variable g:Lua_Version below
 "       Created:  26.03.2014
-"      Revision:  07.11.2017
-"       License:  Copyright (c) 2014-2017, Wolfgang Mehner
+"      Revision:  11.02.2018
+"       License:  Copyright (c) 2014-2018, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -1251,7 +1251,7 @@ function! s:Run ( args )
 		let arg_list = [ exec ]
 	else
 		let exec   = s:Lua_Executable
-		let script = shellescape ( expand ( '%' ) )
+		let script = shellescape ( expand ( '%:p' ) )
 		let arg_list = [ exec, expand( '%' ) ]
 	endif
 

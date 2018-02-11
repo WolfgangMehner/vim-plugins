@@ -47,3 +47,15 @@ elseif <CURSOR> then
 else
 	<CURSOR>
 == ENDTEMPLATE ==
+
+§ -------------------------------------------------------------
+§  Block
+§ -------------------------------------------------------------
+
+== SEP: Statements.sep_block ==
+
+== Statements.do block == below, map:sb, sc:b ==
+do
+	<CURSOR><SPLIT>
+end
+== ENDTEMPLATE ==

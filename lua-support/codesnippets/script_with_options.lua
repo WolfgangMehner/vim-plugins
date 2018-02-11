@@ -1,5 +1,3 @@
-local args = { ... }
-
 -- script name, version and help text
 local script_name    = 'TODO'
 local script_version = '1.0'
@@ -17,7 +15,7 @@ Options:
 ]]
 
 -- check for "--help" and "--version", exit
-for idx, arg in ipairs ( args ) do
+for idx, arg in ipairs ( arg ) do
 	if arg == '-h' or arg == '--help' then
 		print ( help_text )
 		return
@@ -35,19 +33,19 @@ local options = {
 -- go through arguments
 local idx = 1
 
-while idx <= #args do
+while idx <= #arg do
 	
-	if args[idx] == '--lit' then
+	if arg[idx] == '--lit' then
 		options.lit = true
 		idx = idx + 1
-	elseif args[idx] == '--str' then
-		options.str = args[idx+1]
+	elseif arg[idx] == '--str' then
+		options.str = arg[idx+1]
 		idx = idx + 2
-	elseif args[idx] == '-h' or args[idx] == '--help' or args[idx] == '-v' or args[idx] == '--version' then
+	elseif arg[idx] == '-h' or arg[idx] == '--help' or arg[idx] == '-v' or arg[idx] == '--version' then
 		-- noop
 		idx = idx + 1
 	else
-		print ( 'Unknown option: '..args[idx] )
+		print ( 'Unknown option: '..arg[idx] )
 		print ( '' )
 		return
 	end
