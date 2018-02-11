@@ -42,12 +42,15 @@ comfort when writing Vim scripts.
  3.6    Template Files                      |vimsupport-templates-files|
  3.7    Template Libraries                  |vimsupport-templates-libs|
 
- 3.     Customization and configuration     |vimsupport-customization|
- 3.1     Files                              |vimsupport-custom-files|
- 3.2     Global variables                   |vimsupport-custom-variables|
- 3.3     The root menu                      |vimsupport-custom-root|
- 3.4     System-wide installation           |vimsupport-system-wide|
- 5.     Windows particularities             |vimsupport-windows|
+ 4.    Configuration                        |vimsupport-configuration|
+ 4.1    Menus                               |vimsupport-config-menus|
+ 4.2    Maps                                |vimsupport-config-maps|
+ 4.3    Comments                            |vimsupport-config-comments|
+ 4.4    Snippets                            |vimsupport-config-snippets|
+ 4.5    Hardcopy                            |vimsupport-config-hardcopy|
+ 4.6    Windows Particularities             |vimsupport-config-windows|
+
+ 5.    System-wide Installation             |vimsupport-system-wide|
 
  A.    Overview of Mappings                 |vimsupport-mappings|
  B.    Files                                |vimsupport-files|
@@ -319,7 +322,7 @@ Now generate a line for the table of content using 'chapter, ToC':
 The number, name, and tag is taken from the last chapter header inserted.
 
 For using the maps while editing help-files set the variable
-`g:Vim_CreateMapsForHelp` in ~/.vimrc to 'yes' (default 'no'): >
+|g:Vim_CreateMapsForHelp| in ~/.vimrc to 'yes' (default 'no'): >
   let g:Vim_CreateMapsForHelp = 'yes'
 Now the maps are created for filetype "help", but only if the buffer is
 modifiable. This way, the maps are not created for help buffers when you look
@@ -689,83 +692,192 @@ The personalization file is located in a directory relative to |runtimepath|: >
 For configuring the personalization file, see |g:Templates_PersonalizationFile|.
 
 ==============================================================================
-3.0  CUSTOMIZATION                                  *vimsupport-customization*
+4.  CONFIGURATION                                   *vimsupport-configuration*
 ==============================================================================
 
-------------------------------------------------------------------------------
-3.1  FILES (after installation)                      *vimsupport-custom-files*
-------------------------------------------------------------------------------
+The basic configuration is done via a number of global variables, which can be
+set in the `.vimrc` file.
 
-For an overview of the files shipping with this plug-in, see |vimsupport-files|.
+  Variable                  Default       Description
+ ----------------------------------------------------------------------------
+  |g:Vim_CreateMapsForHelp|   'no'          create the mappings in modifiable
+                                            help buffers
 
-------------------------------------------------------------------------------
-3.2  GLOBAL VARIABLES                            *vimsupport-custom-variables*
-------------------------------------------------------------------------------
+  |g:Vim_LoadMenus|           'auto'        when to load the menus ('startup',
+                                            'auto' or 'manual')
+  |g:Vim_RootMenu|            '&Vim'        name and shortcut of the root menu
+  |g:Vim_MapLeader|           ''            the |maplocalleader| used for maps
+  |g:Vim_Ctrl_j|              'yes'         generate the <CTRL-J> map
+  |g:Vim_Ctrl_d|              'yes'         generate the <CTRL-D> map
 
-Several global variables are checked by the plugin to customize it:
+  |g:Vim_LineEndCommColDefault|             standard column used for end-of-
+                            49              line comments
 
-------------------------------------------------------------------------------
-Global Variable             Default Value
-------------------------------------------------------------------------------
-g:Vim_CreateMapsForHelp     'no'
-g:Vim_GlobalTemplateFile    $VIM.'/vimfiles/vim-support/templates/Templates'
-g:Vim_LocalTemplateFile     $HOME.'/.vim/vim-support/templates/Templates'
-g:Vim_CustomTemplateFile    $HOME.'/.vim/templates/vim.templates'
-g:Vim_CodeSnippets          $HOME.'/.vim/vim-support/codesnippets' (Linux/U**X)
-                            $VIM.'\vimfiles\vim-support/codesnippets/'(Windows)
-g:Vim_LoadMenus             'auto'
-g:Vim_RootMenu              '&Vim'
-g:Vim_GuiSnippetBrowser     'gui'
-g:Vim_Ctrl_j                'yes'
-g:Vim_Ctrl_d                'yes'
-g:Vim_LineEndCommColDefault 49
-g:Vim_Printheader           '%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N'
-                             'vim.exe'     (Windows)
-g:Vim_MapLeader             '\'
+  |g:Vim_CodeSnippets|        (see below)   directory with code snippers
+  |g:Vim_GuiSnippetBrowser|   'gui'         browser to select code snippets
 
-------------------------------------------------------------------------------
-Global Variable             Description
-------------------------------------------------------------------------------
-g:Vim_CreateMapsForHelp     Create maps for modifiable help buffers ("yes", "no").
-g:Vim_GlobalTemplateFile    sets the global template file (see|vimsupport-templates|)
-g:Vim_LocalTemplateFile     sets the local template file (see|vimsupport-templates|)
-g:Vim_CustomTemplateFile    sets the custom template file (see|vimsupport-templates|)
-g:Vim_CodeSnippets          set the personal code snippet directory
-g:Vim_LoadMenus             Load the menu at start up ("startup"), when opening
-                            the first VimL file ("auto"), or only when the
-                            user does it ("manual")
-g:Vim_CreateMenusDelayed    Deprecated, only for backwards compatibility.
-g:Vim_RootMenu              The name of the root menu entry of this plugin
-                             (see |vimsupport-custom-root|).
-g:Vim_GuiSnippetBrowser     code snippet browser: 'gui', 'commandline'
-g:Vim_Ctrl_j                hotkey Ctrl-J 'yes'/'no' (see |vimsupport-templates-jump-tags|)
-g:Vim_Ctrl_d                hotkey Ctrl-D 'yes'/'no' (see |vimsupport-templates-jump-tags|)
+  |g:Vim_LocalTemplateFile|   (see Chp. 3)  the local top-level template file
+  |g:Vim_GlobalTemplateFile|  (see Chp. 3)  the global top-level template file
+  |g:Vim_CustomTemplateFile|  (see Chp. 3)  the optional custom template file
+  |g:Templates_PersonalizationFile|
+                            (see Chp. 3)  the personalization template file
 
-g:Vim_LineEndCommColDefault default starting column for line end comments
-g:Vim_Printheader           hardcopy header format
-g:Vim_MapLeader             the map leader for hotkeys (see |vimsupport-mappings|)
+  |g:Vim_Printheader|         '...'         printheader used for hardcopy
 
-To override the defaults add appropriate assignments in '.vimrc', e.g.
- let g:Vim_MapLeader  = ','
+  |g:Templates_InternetBrowserExec|         the browser executable
+  |g:Templates_InternetBrowserFlags|        additional browser flags
+ ----------------------------------------------------------------------------
+
+Further customization is carried out in the template library, see
+|vimsupport-templates-custom|.
 
 ------------------------------------------------------------------------------
-3.3  THE ROOT MENU                                    *vimsupport-custom-root*
-------------------------------------------------------------------------------
+                                                     *g:Vim_CreateMapsForHelp*
+In order to use the mappings for the templates listed in "Documentation" while
+writing helpfiles, the creation of these maps has to be allowed explicitly by
+the user. (compare |vimsupport-usage-docu|)
 
-The variable g:Vim_RootMenu, if set (in '.vimrc' or in '.gvimrc'), sets the
-name of the single gVim root menu item in which the Vim submenus will be
-appear.  The default is
-
-                  '&Vim'
-
-If you want to set the plugin root menu into another menu, e.g. 'Plugin',
-this is done by the following line in '.vimrc'
-
-  let g:Vim_RootMenu = "&Plugin"
+Add this line to your .vimrc: >
+  let g:Vim_CreateMapsForHelp = 'yes'
+Now the maps are created for filetype "help", but only if the buffer is
+modifiable. This way, the maps are not created for help buffers when you look
+up documentation.
 
 ------------------------------------------------------------------------------
-3.4  System-wide installation                         *vimsupport-system-wide*
+4.1  MENUS                                           *vimsupport-config-menus*
 ------------------------------------------------------------------------------
+                                                             *g:Vim_LoadMenus*
+The creation of the menus is controlled by `g:Vim_LoadMenus`. The default
+setting: >
+  let g:Vim_LoadMenus = 'auto'
+causes the templates to be loaded and the menus to be created when the first
+VimL file is opened.
+The menus appear right away after starting Vim with the setting: >
+  let g:Vim_LoadMenus = 'startup'
+This has the disadvantage that the templates have to be loaded during the
+startup of Vim, which might cause a noticeable slowdown on older systems.
+The automatic creation of the menus is prevented by: >
+  let g:Vim_LoadMenus = 'manual'
+Now the menus can only be loaded by using the tool menu entry "Tools -> Load
+Vim Support".
+
+                                                    *g:Vim_CreateMenusDelayed*
+The old setting `g:Vim_CreateMenusDelayed` still works for backwards
+compatibility, use the above values for |g:Vim_LoadMenus| instead.
+
+                                                              *g:Vim_RootMenu*
+The name and shortcut of the root menu is set via `g:Vim_RootMenu`. The
+character prefixed by '&' will be the shortcut.
+>
+Example: >
+  let g:Vim_RootMenu = '&Plugin.&Vim'
+Creates the Vim menu as a submenu of "Plugin", and sets the shortcut to 'l'.
+
+------------------------------------------------------------------------------
+4.2  MAPS                                             *vimsupport-config-maps*
+------------------------------------------------------------------------------
+                                                             *g:Vim_MapLeader*
+All the maps the plug-in creates use |maplocalleader|. It can be changed by
+setting the variable `g:Vim_MapLeader`. If it contains the empty string,
+Vim's default (backslash) is used.
+
+Example: >
+  let g:Vim_MapLeader = '#'
+Sets the mapleader to '#'.
+
+                                                          *Vim_SetMapLeader()*
+                                                        *Vim_ResetMapLeader()*
+The mapleader can also be used in the ftplugin, by calling the functions
+`Vim_SetMapLeader()` and `Vim_ResetMapLeader()`. The maps created between
+the two calls will use |g:Vim_MapLeader| as the |<LocalLeader>|:
+>
+  call Vim_SetMapLeader ()
+
+  map  <buffer>  <LocalLeader>eg  :echo "Example Map :)"<CR>
+
+  call Vim_ResetMapLeader ()
+<
+                                                   *g:Vim_Ctrl_j* *g:Vim_Ctrl_d*
+The creation of the <CTRL-J> and <CTRL-D> maps is controlled by the variables
+`g:Vim_Ctrl_j` and `g:Vim_Ctrl_d`, respectively. To disable <CTRL-D>, set the
+variable to "no": >
+  let g:Vim_Ctrl_d = 'no'
+<
+------------------------------------------------------------------------------
+4.3  COMMENTS                                     *vimsupport-config-comments*
+------------------------------------------------------------------------------
+                                                 *g:Vim_LineEndCommColDefault*
+The standard column used for end-of-line comments is configured using
+`g:Vim_LineEndCommentColumn`. The column can then be set individually for each
+buffer, using the menu entry "Comments -> set end-of-line com. col.".
+
+Example: >
+  g:Vim_LineEndCommColDefault = 59
+<
+------------------------------------------------------------------------------
+4.4  SNIPPETS                                     *vimsupport-config-snippets*
+------------------------------------------------------------------------------
+                                                          *g:Vim_CodeSnippets*
+The variable `g:Vim_Snippets` sets the location of the code snippet directory.
+The default value depends on the type of installation and the operating
+system.
+
+(Path separators are always written as slashes '/', even for Windows.)
+
+For a local installation, the default will be (UNIX/Linux): >
+  s:Vim_Snippets = $HOME.'/.vim/vim-support/codesnippets/'
+or (Windows): >
+  s:Vim_Snippets = $HOME.'/vimfiles/vim-support/codesnippets'
+<
+For a sytem-wide installation, the default will be: >
+  s:Vim_Snippets = $VIM.'/vimfiles/vim-support/codesnippets'
+<
+Example:
+
+To set a different code snippet directory, add this line to your vimrc: >
+  let g:Vim_Snippets = $HOME.'/myvim/vimscript/codesnippets/'
+<
+                                                     *g:Vim_GuiSnippetBrowser*
+Code snippets can either be selected in a file browser, by setting: >
+  let g:Vim_GuiSnippetBrowser = 'gui'
+or on the command line by setting: >
+  let g:Vim_GuiSnippetBrowser = 'commandline'
+<
+------------------------------------------------------------------------------
+4.5  HARDCOPY                                     *vimsupport-config-hardcopy*
+------------------------------------------------------------------------------
+                                                           *g:Vim_Printheader*
+The printheader used by "Run -> hardcopy to filename.ps" is set via the
+variable `g:Vim_Printheader`. It is temporarily set as the value of
+'printheader' while printing the hardcopy. See the documentation of the
+option 'printheader' for the possible contents of `g:Vim_Printheader`. The
+default is: >
+  let g:Vim_Printheader = "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N"
+<
+The behavior can be changed on the fly by settings the variable to a different
+value on the command line.
+
+------------------------------------------------------------------------------
+4.6  WINDOWS PARTICULARITIES                       *vimsupport-config-windows*
+------------------------------------------------------------------------------
+
+For a user installation the plug-in should go into the directory structure
+below the folder: >
+  $HOME/vimfiles/
+for a system installation below: >
+  $VIM/vimfiles/
+<
+The values of the two variables can be found from inside Vim: >
+  :echo $HOME
+and >
+  :echo $VIM
+<
+The configuration files for the user are `$HOME/_vimrc` and `$HOME/_gvimrc`,
+and for the system `$VIM/_vimrc` and `$VIM/_gvimrc`.
+
+==============================================================================
+5.  SYSTEM-WIDE INSTALLATION                          *vimsupport-system-wide*
+==============================================================================
 
 A system-wide installation (one installation for all users) is done as
 follows.
@@ -773,27 +885,28 @@ follows.
 As ****** SUPERUSER ****** :
 
 (1) Find the Vim installation directory.
-The Vim ex command ':echo $VIM' gives '/usr/local/share/vim' or something like
-that. Beyond this directory you will find the Vim installation,  e.g. in
+The Vim ex-command `:echo $VIM` gives '/usr/local/share/vim' or something like
+that. Beyond this directory you will find the Vim installation, e.g. in
 '/usr/local/share/vim/vim73' if Vim version 7.3 has been installed.
 
 (2) Create a new subdirectory 'vimfiles', e.g. '/usr/local/share/vim/vimfiles'.
 
 (3) Install Vim Support
-Copy the archive 'vim-support.zip' to this new directory and unpack it:
+Copy the archive 'vim-support.zip' to this new directory and unpack it: >
   unzip vim-support.zip
-
-(4) Generate the help tags:
+<
+(4) Generate the help tags: >
   :helptags $VIM/vimfiles/doc
-
+<
 SPECIAL CASES. Some Linux distributions use non-standard names for Vim
-directories. SUSE has a directory '/usr/share/vim/site' to put plugins in.
+directories. SUSE has a directory '/usr/share/vim/site' to put plug-ins in.
 These directories will not be found automatically.  After installing the
-plugin below '/usr/share/vim/site' the use of the templates will be enabled by
+plug-in below '/usr/share/vim/site' the use of the templates will be enabled by
 the following line in '$HOME/.vimrc':
-
+>
   let g:Vim_GlobalTemplateFile = '/usr/share/vim/site/vim-support/templates/Templates'
-
+<
+------------------------------------------------------------------------------
 
 As ****** USER ****** :
 
@@ -820,32 +933,9 @@ is still supported for backwards compatibility.
 
 Create your private snippet directory: >
   mkdir --parents  $HOME/.vim/vim-support/codesnippets
-You may want to copy the snippets coming with this plugin (in
+You may want to copy the snippets coming with this plug-in (in
 $VIM/vimfiles/vim-support/codesnippets) into the new directory or to set a
 link to the global directory.
-
-==============================================================================
-5.  WINDOWS PARTICULARITIES                               *vimsupport-windows*
-==============================================================================
-
-For a user installation the plugin should go into the directory structure
-below 
-  $HOME/vimfiles/
-for a system installation below
-  $VIM/vimfiles/
-
-The values of the two variables can be found from inside Vim:
-   :echo $VIM
-or
-   :echo $HOME
-
-The configuration files for a user are
-
-  $HOME/_vimrc   and  $HOME/_gvimrc
-
-for the system
-
-  $VIM/_vimrc   and  $VIM/_gvimrc
 
 ==============================================================================
 A.  OVERVIEW OF MAPPINGS                                 *vimsupport-mappings*
