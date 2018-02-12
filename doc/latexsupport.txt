@@ -1,8 +1,8 @@
-*latexsupport.txt*               LaTeX Support                     Feb 08 2018
+*latexsupport.txt*               LaTeX Support                     Feb 12 2018
 
 LaTeX Support                                     *latex-support* *latexsupport*
 
-                             Plug-in version 1.3alpha
+                             Plug-in version 1.3beta
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
@@ -399,6 +399,9 @@ tools for the file in the current buffer. You can set the main document via: >
   :LatexMainDoc <tex-file>
 Now, when running the typesetter, the working directory will be changed before
 compiling the main document.
+The call `:LatexView` without arguments will now show the PDF or DVI belonging
+to the main document. E.g., when the main doc is `mydir/somefile.tex`, the
+file `mydir/somefile.pdf` will be opened in the PDF viewer.
 
 ------------------------------------------------------------------------------
 
@@ -418,14 +421,14 @@ editing "myfile.tex" in the current buffer, then the defaults are as follows:
  ----------------------------------------------------------------------------
   :Latex                       yes         myfile.tex       yes (|+job|)
   :LatexCheck                  no          myfile.tex       no
-  :LatexBibtex                             myfile
+  :LatexBibtex                 yes         myfile           no
   :LatexMakeglossaries                     myfile
   :LatexMakeindex                          myfile.idx
-  :LatexView                               myfile.dvi       always (forked)
+  :LatexView                   yes         myfile.dvi       always (forked)
     (with typesetter tex or latex)
-  :LatexView                               myfile.pdf       always (forked)
+  :LatexView                   yes         myfile.pdf       always (forked)
     (with typesetter pdf[la]tex or lua[la]tex)
-  :LatexConvert                            myfile.FROM      yes (|+job|)
+  :LatexConvert                yes         myfile.FROM      yes (|+job|)
     (the default name depends on the conversion operation: FROM-TO)
  ----------------------------------------------------------------------------
 
