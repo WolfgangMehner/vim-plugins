@@ -13,7 +13,7 @@
 # REQUIREMENTS:  ---
 #         BUGS:  ---
 #        NOTES:  ---
-#       AUTHOR:  Dr. Fritz Mehner (fgm), mehner@web.de
+#       AUTHOR:  Dr. Fritz Mehner (fgm), mehner.fritz@web.de
 #      VERSION:  2.0
 #      CREATED:  13.02.2009 17:04:00
 #===============================================================================

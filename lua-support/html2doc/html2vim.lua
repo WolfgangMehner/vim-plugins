@@ -208,7 +208,7 @@ local function t_add_anchor ( anchor )
 	local data = ANCHOR_DATA
 	local pos  = data[ANCHOR_POS]
 
-	text = t_rightalign ( data, anchor )
+	local text = t_rightalign ( data, anchor )
 
 	table.insert ( data.text, pos, text )
 
@@ -1001,6 +1001,7 @@ function parse_matching_tag ( str_html, tag )
 	local options
 	local tag_end = string.find ( str_html, '>', 1, true )
 	local tag_compl = string.sub ( str_html, 1, tag_end )
+	local text_end
 
 	if string.match ( tag_compl, '<'..tag_pat..'%s' ) then
 		options = string.match ( tag_compl, '<'..tag_pat..'%s+(%S.*)>' )
@@ -1168,7 +1169,7 @@ end  -----  end of function parse_html  -----
 --print ( string.format ( '"%s" "%s" "%s" "%s"', parse_matching_tag ( '<em class="id">opening long bracket of level <em class="blah">n</em></em> ', 'em' ) ) )
 
 -- header inserted before the generated documentation to make the format Vim compatible
-header_txt = [[
+local header_txt = [[
 *luaref%MAJOR%%MINOR%.txt*             Lua %MAJOR%.%MINOR% Reference Manual                %DATE%
 
 Lua %MAJOR%.%MINOR%.%RELEASE% Reference Manual                                   *%LINKMAIN%* *luaref%MAJOR%%MINOR%*
@@ -1187,7 +1188,7 @@ Formated for Vim help by
 ]]
 
 -- footer inserted after the generated documentation
-footer_txt = [[
+local footer_txt = [[
 
 Formated for Vim help:
 ]] .. os.date ( '%a %b %d %H:%M:%S %Z %Y' ) .. '\n' .. [[

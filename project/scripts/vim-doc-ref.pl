@@ -42,8 +42,8 @@ my	%target;
 my	%otherTarget;
 my	%ignoreTarget;
 
-my	$rgx_target	= qr/\*([\w\d.-]+)\*/;
-my	$rgx_link	= qr/\|([\w\d.-]+)\|/;
+my	$rgx_target	= qr/\*([\w\d:.-]+)\*/;
+my	$rgx_link	= qr/\|([\w\d:.-]+)\|/;
 
 my $filecontent	= do{
 	local  $/  = undef;                           # input record separator undefined
