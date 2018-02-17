@@ -6,11 +6,11 @@
 %%
 %%      Version:  see \Pluginversion
 %%      Created:  20.05.2013
-%%     Revision:  22.06.2017
+%%     Revision:  17.02.2018
 %%
 %%       Author:  Wolfgang Mehner, wolfgang-mehner@web.de
 %%                (formerly Dr. Fritz Mehner (fgm), mehner.fritz@web.de)
-%%    Copyright:  Copyright (c) 2013-2017, Wolfgang Mehner
+%%    Copyright:  Copyright (c) 2013-2018, Wolfgang Mehner
 %%
 %%=====================================================================================
 
@@ -78,7 +78,7 @@
 \textbf{\textsc{\Huge{Hot keys}}}\\ 
 \vspace{1mm}%
 Key mappings for Vim/gVim/Neovim.\\
-{\tiny  \texttt{http://www.vim.org}\hspace{1.5mm}---\hspace{1.5mm}\textbf{Wolfgang Mehner},  \texttt{wolfgang-mehner@web.de}}\\
+{\tiny  \texttt{https://vim.sourceforge.io}\hspace{1.5mm}---\hspace{1.5mm}\textbf{Wolfgang Mehner},  \texttt{wolfgang-mehner@web.de}}\\
 \vspace{1.0mm}
 %
 %%======================================================================
@@ -131,22 +131,29 @@ Key mappings for Vim/gVim/Neovim.\\
 \end{tabular}\\[1.0ex]
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
-%
-\parbox[t][5mm][t]{0.33\textwidth}{%
-\scriptsize%
+%%----------------------------------------------------------------------
+%%  box Footnotes   [[[2
+%%----------------------------------------------------------------------
+\begin{minipage}[b]{72mm}%
+\scriptsize{%
 visual mode: {\normalsize (v)} use the range, 
 {\normalsize (s)} surround range \\
 tab-completion: {\normalsize (T)} specialized,
 {\normalsize (F)} filenames
-}\\%
+}%
+\end{minipage}
+% ]]]2
 %
 %%======================================================================
 %%  page 1 / table, middle part				[[[1
 %%======================================================================
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{60mm}|}
+%%----------------------------------------------------------------------
+%%  menu Comments				[[[2
+%%----------------------------------------------------------------------
 \hline
-	\multicolumn{2}{|r|}{\textsl{\textbf{C}omments (cont)}}                       \\[1.0ex]
+\multicolumn{2}{|r|}{\textsl{\textbf{C}omments (cont)}}                       \\[1.0ex]
 \hline     \verb'\css'  & script sections                       \hfill (T)\\
 \hline     \verb'\ckc'  & keyword comments                      \hfill (T)\\
 \hline     \verb'\cma'  & plug-in macros                        \hfill (T)\\
@@ -199,6 +206,7 @@ tab-completion: {\normalsize (T)} specialized,
 %%
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
+% ]]]2
 %
 %%======================================================================
 %%  page 1 / table, right part				[[[1
@@ -245,6 +253,18 @@ tab-completion: {\normalsize (T)} specialized,
 \hline \verb'\ntw' & template setup wizard     \\
 \hline \verb'\nts' & choose style              \hfill (T)\\
 \hline
+\end{tabular}\\
+%%~~~~~ TABULAR :  end  ~~~~~~~~~~
+% ]]]2
+%
+\newpage
+%
+%%======================================================================
+%%  page 2 / table, left part				[[[1
+%%======================================================================
+%
+%%~~~~~ TABULAR : begin ~~~~~~~~~~
+\begin{tabular}[]{|p{11mm}|p{60mm}|}
 %%----------------------------------------------------------------------
 %%  menu Run				[[[2
 %%----------------------------------------------------------------------
@@ -263,20 +283,9 @@ tab-completion: {\normalsize (T)} specialized,
 \hline \verb'\rh'  & hardcopy buffer                      \hfill (v)\\
 \hline \verb'\rs'  & plug-in settings                     \\
 \hline
-\end{tabular}\\
-%%~~~~~ TABULAR :  end  ~~~~~~~~~~
-%
-\newpage
-%
-%%======================================================================
-%%  page 2 / table, left part				[[[1
-%%======================================================================
-%
 %%----------------------------------------------------------------------
 %%  buffer "Bash Output"				[[[2
 %%----------------------------------------------------------------------
-%%~~~~~ TABULAR : begin ~~~~~~~~~~
-\begin{tabular}[]{|p{11mm}|p{60mm}|}
 \hline
 \multicolumn{2}{|r|}{\textsl{Buffer ``Bash Output''}} \\[1.0ex]
 \hline \verb'\qf'  & load errors into quickfix             \\
@@ -285,11 +294,10 @@ tab-completion: {\normalsize (T)} specialized,
 \end{tabular}\\[2.5ex]
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
-\parbox[t][72mm][t]{69mm}{%
-%
 %%----------------------------------------------------------------------
-%%  Run Bash
+%%  Run Bash   [[[2
 %%----------------------------------------------------------------------
+\begin{minipage}[b]{72mm}%
 \large{\textbf{Run}}\\[1.0ex]
 Run \textit{bash} with optional arguments: \\[0.5ex]
 \texttt{:Bash [<args>]} \\[1.0ex]
@@ -297,44 +305,48 @@ Memorize script arguments: \\[0.5ex]
 \texttt{:BashScriptArguments [<args>]} \\[0.5ex]
 The memorize arguments are used if \texttt{:Bash} is invoked without arguments. \\[1.0ex]
 Set interpreter arguments: \\[0.5ex]
-\texttt{:BashInterpArguments [<args>]} \\[2.5ex]
+\texttt{:BashInterpArguments [<args>]}
+\end{minipage}
+\\[2.5ex]
 %
-}\\%
-%
-\parbox[t][42mm][t]{69mm}{%
 %%----------------------------------------------------------------------
-%%  Check Syntax
+%%  Check Syntax   [[[2
 %%----------------------------------------------------------------------
+\begin{minipage}[b]{72mm}%
 \large{\textbf{Syntax}}\\[1.0ex]
 Run syntax checking: \\[0.5ex]
 \texttt{:BashCheck} \\[1.0ex]
 Set syntax checking options: \\[0.5ex]
-\texttt{:BashSyntaxCheckOptions <opts>} \\[2.5ex]
+\texttt{:BashSyntaxCheckOptions <opts>}
+\end{minipage}
+\\[2.5ex]
 %
-}\\%
-%
-\parbox[t][72mm][t]{69mm}{%
 %%----------------------------------------------------------------------
-%%  Options
+%%  Options   [[[2
 %%----------------------------------------------------------------------
+\begin{minipage}[b]{72mm}%
 \large{\textbf{Options}}\\[1.0ex]
 Set the output method: \\[0.5ex]
 \texttt{:BashOutputMethod [<method>]} \\[1.0ex]
 Set the shell executable: \\[0.5ex]
 \texttt{:BashExecutable [<exec>]} \\[1.0ex]
 Set ``direct run'': \\[0.5ex]
-\texttt{:BashExecutable [ yes | no ]} \\[0.5ex]
-When set to \texttt{yes}, executable scripts will be run as the executable, instead of using \texttt{:BashExecutable}. \\[1.0ex]
-}
+\texttt{:BashDirectRun [ yes | no ]} \\[0.5ex]
+When set to \texttt{yes}, executable scripts will be run as the executable, instead of using \texttt{:BashExecutable}.
+\end{minipage}
+\\[2.5ex]
 %
-\parbox[t][72mm][t]{69mm}{%
 %%----------------------------------------------------------------------
-%%  Debugger
+%%  Debugger   [[[2
 %%----------------------------------------------------------------------
+\begin{minipage}[b]{72mm}%
 \large{\textbf{BashDB}}\\[1.0ex]
-\textit{TODO} \\[0.5ex]
+Run the debugger \texttt{bashdb}: \\[0.5ex]
 \texttt{:BashDB} \\[1.0ex]
-}
+\dots
+% TODO
+\end{minipage}
+% ]]]2
 %
 \end{center}%
 \end{multicols}%
