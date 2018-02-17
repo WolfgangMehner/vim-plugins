@@ -30,7 +30,7 @@
 
 \setlength\parindent{0pt}
 
-\newcommand{\Pluginversion}{1.3beta}
+\newcommand{\Pluginversion}{2.0}
 \newcommand{\ReleaseDate}{\today}
 \newcommand{\Rep}{{\scriptsize{[n]}}}
 \newcommand{\Map}[1] {\textbf{\textasciiacute}\texttt{#1}}
@@ -78,10 +78,7 @@
 \textbf{\textsc{\Huge{Hot keys}}}\\
 \vspace{1mm}%
 Key mappings for Vim/gVim/Neovim\\
-{\tiny  \texttt{http://www.vim.org}\hspace{1.5mm}---\hspace{1.5mm}\textbf{Wolfgang Mehner},  \texttt{wolfgang-mehner@web.de}}\\
-\vspace{1.0mm}
-{\normalsize (i)} insert mode, {\normalsize (n)} normal mode, {\normalsize (v)} visual mode,\\
-{\normalsize (T)} tab-completion
+{\tiny  \texttt{https://vim.sourceforge.io}\hspace{1.5mm}---\hspace{1.5mm}\textbf{Wolfgang Mehner},  \texttt{wolfgang-mehner@web.de}}\\
 \vspace{1.0mm}
 %
 %%======================================================================
@@ -90,53 +87,66 @@ Key mappings for Vim/gVim/Neovim\\
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{60mm}|}
 %%----------------------------------------------------------------------
-%%  Help
+%%  Help   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{H}elp}}\\[1.0ex]
-\hline \Map{he}   & English dictionary              \hfill (n,i)\\
-\hline \Map{ht}   & start \texttt{texdoc}           \hfill (n,i)\\
-\hline \Map{hp}   & help (plug-in)                  \hfill (n,i)\\
+\hline \Map{he}   & English dictionary              \\
+\hline \Map{ht}   & start \texttt{texdoc}           \\
+\hline \Map{hp}   & help (plug-in)                  \\
 \hline
 %%----------------------------------------------------------------------
-%%  Comments
+%%  Comments   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{C}omments}}    \\[1.0ex]
-\hline \Rep\Map{cl}   & end-of-line comment         \hfill (n, i, v)\\
-\hline \Rep\Map{cj}   & adjust end-of-line comments \hfill (n, i, v)\\
-\hline     \Map{cs}   & set end-of-line comment col.\hfill (n)      \\
+\hline \Rep\Map{cl}   & end-of-line comment         \hfill (v)\\
+\hline \Rep\Map{cj}   & adjust end-of-line comments \hfill (v)\\
+\hline     \Map{cs}   & set end-of-line comment col.\\
 %
-\hline \Rep\Map{cc}   & toggle code comment         \hfill (n, i, v)\\
+\hline \Rep\Map{cc}   & toggle code comment         \hfill (v)\\
 %
-\hline     \Map{cfr1} & frame comment, type 1       \hfill (n, i)   \\
-\hline     \Map{cfr2} & frame comment, type 2       \hfill (n, i)   \\
-\hline     \Map{cfr3} & frame comment, type 3       \hfill (n, i)   \\
-\hline     \Map{cp}   & file prolog                 \hfill (n, i)   \\
-\hline     \Map{cm}   & plug-in macros              \hfill (n, i, T)\\
-\hline     \Map{cd}   & date                        \hfill (n, i)   \\
-\hline     \Map{ct}   & date \& time                \hfill (n, i)   \\
+\hline     \Map{cfr1} & frame comment, type 1       \\
+\hline     \Map{cfr2} & frame comment, type 2       \\
+\hline     \Map{cfr3} & frame comment, type 3       \\
+\hline     \Map{cp}   & file prolog                 \\
+\hline     \Map{cm}   & plug-in macros              \hfill (T)\\
+\hline     \Map{cd}   & date                        \\
+\hline     \Map{ct}   & date \& time                \\
 \hline
 %%----------------------------------------------------------------------
-%%  Document
+%%  Document   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{D}ocument}}                 \\[1.0ex]
-\hline     \Map{dc}  &  documentclass               \hfill (n, i, T)\\
-\hline     \Map{di}  &  indices                     \hfill (n, i, T)\\
-\hline     \Map{dti} &  title                       \hfill (n, i)\\
-\hline     \Map{dbi} &  bibliography                \hfill (n, i)\\
-\hline     \Map{dac} &  addcontentsline             \hfill (n, i)\\
+\hline     \Map{dc}  &  documentclass               \hfill (T)\\
+\hline     \Map{di}  &  indices                     \hfill (T)\\
+\hline     \Map{dti} &  title                       \\
+\hline     \Map{dbi} &  bibliography                \hfill (T)\\
+\hline     \Map{dac} &  addcontentsline             \\
 \hline
-\hline     \Map{dln} &  newlength                   \hfill (n, i)\\
-\hline     \Map{dls} &  setlength                   \hfill (n, i)\\
-\hline     \Map{dla} &  addtolength                 \hfill (n, i)\\
-\hline     \Map{dlp} &  print length                \hfill (n, i)\\
-\hline     \Map{dlt} &  set length to               \hfill (n, i)\\
+\hline     \Map{dln} &  newlength                   \\
+\hline     \Map{dls} &  setlength                   \\
+\hline     \Map{dla} &  addtolength                 \\
+\hline     \Map{dlp} &  print length                \\
+\hline     \Map{dlt} &  set length to               \\
 \hline
 %
-\end{tabular}\\
+\end{tabular}\\[1.0ex]
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%----------------------------------------------------------------------
+%%  box Footnotes   [[[2
+%%----------------------------------------------------------------------
+\begin{minipage}[b]{72mm}%
+\scriptsize{%
+visual mode: {\normalsize (v)} use the range,
+{\normalsize (s)} surround range \\
+tab-completion: {\normalsize (T)} specialized,
+{\normalsize (F)} filenames
+}%
+\end{minipage}
+% ]]]2
 %
 %%======================================================================
 %%  page 1 / table, middle part     [[[1
@@ -144,42 +154,43 @@ Key mappings for Vim/gVim/Neovim\\
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{60mm}|}
 %%----------------------------------------------------------------------
-%%  Text
+%%  Text   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{T}ext}}                 \\[1.0ex]
-\hline \Map{e}    & environment                    \hfill (n, i, v, T)\\
-\hline \Map{to}   & organization                   \hfill (n, i, T)\\
-\hline \Map{ts}   & section                        \hfill (n, i, T)\\
-\hline \Map{tld}  & list environment, description  \hfill (n, i)\\
-\hline \Map{tle}  & list environment, enumerate    \hfill (n, i)\\
-\hline \Map{tli}  & list environment, itemize      \hfill (n, i)\\
-\hline \Map{tll}  & list environment, list         \hfill (n, i)\\
-\hline \Map{tlit} & list environment, item         \hfill (n, i)\\
-\hline \Map{tlil} & list environment, item+labels  \hfill (n, i)\\
-\hline \Map{tf}   & font style                     \hfill (n, i, v, T)\\
-\hline \Map{tfs}  & font size                      \hfill (n, i, v, T)\\
-\hline \Map{tq}   & quotes                         \hfill (n, i, v, T)\\
-\hline \Map{tsp}  & spacing                        \hfill (n, i, T)\\
-\hline \Map{tal}  & line alignment + spacing       \hfill (n, i, v, T)\\
-\hline \Map{tac}  & accents                        \hfill (n, i, T)\\
-\hline \Map{ttc}  & textcomp characters            \hfill (n, i, T)\\
+\hline \Map{e}    & environment                    \hfill (s, T)\\
+\hline \Map{to}   & organization                   \hfill (T)\\
+\hline \Map{ts}   & section                        \hfill (T)\\
+\hline \Map{tld}  & list environment, description  \\
+\hline \Map{tle}  & list environment, enumerate    \\
+\hline \Map{tli}  & list environment, itemize      \\
+\hline \Map{tll}  & list environment, list         \\
+\hline \Map{tlit} & list environment, item         \\
+\hline \Map{tlil} & list environment, item+labels  \\
+\hline \Map{tf}   & font style                     \hfill (s, T)\\
+\hline \Map{tfs}  & font size                      \hfill (s, T)\\
+\hline \Map{tq}   & quotes                         \hfill (s, T)\\
+\hline \Map{tsp}  & spacing                        \hfill (T)\\
+\hline \Map{tal}  & line alignment + spacing       \hfill (s, T)\\
+\hline \Map{tac}  & accents                        \hfill (T)\\
+\hline \Map{ttc}  & textcomp characters            \hfill (T)\\
 \hline
-\hline \Map{tbi}  & bibitem                        \hfill (n, i)\\
-\hline \Map{tci}  & cite                           \hfill (n, i)\\
-\hline \Map{tfo}  & footnote                       \hfill (n, i)\\
-\hline \Map{tin}  & index                          \hfill (n, i)\\
-\hline \Map{tla}  & label                          \hfill (n, i)\\
-\hline \Map{tma}  & marginpar                      \hfill (n, i)\\
-\hline \Map{tco}  & newcommand                     \hfill (n, i)\\
-\hline \Map{tnc}  & nocite                         \hfill (n, i)\\
-\hline \Map{tpa}  & pageref                        \hfill (n, i)\\
-\hline \Map{tre}  & ref                            \hfill (n, i)\\
-\hline \Map{tur}  & url                            \hfill (n, i, v)\\
+\hline \Map{tbi}  & bibitem                        \\
+\hline \Map{tci}  & cite                           \\
+\hline \Map{tfo}  & footnote                       \\
+\hline \Map{tin}  & index                          \\
+\hline \Map{tla}  & label                          \\
+\hline \Map{tma}  & marginpar                      \\
+\hline \Map{tco}  & newcommand                     \\
+\hline \Map{tnc}  & nocite                         \\
+\hline \Map{tpa}  & pageref                        \\
+\hline \Map{tre}  & ref                            \\
+\hline \Map{tur}  & url                            \hfill (s)\\
 \hline
 %
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
+% ]]]2
 %
 %%======================================================================
 %%  page 1 / table, right part      [[[1
@@ -187,40 +198,41 @@ Key mappings for Vim/gVim/Neovim\\
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{62mm}|}
 %%----------------------------------------------------------------------
-%%  Math
+%%  Math   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{M}ath}}  \\[1.0ex]
-\hline  \Map{msp} & spaces                    \hfill (n, i, T)\\
-\hline  \Map{mac} & accents                   \hfill (n, i, T)\\
-\hline  \Map{mfs} & font styles               \hfill (n, i, T)\\
-\hline  \Map{md}  & delimiter                 \hfill (n, i, T)\\
-\hline  \Map{mf}  & functions                 \hfill (n, i, T)\\
-\hline  \Map{mgl} & lowercase  greek          \hfill (n, i, T)\\
-\hline  \Map{mgu} & uppercase greek           \hfill (n, i, T)\\
-\hline  \Map{mo}  & operators                 \hfill (n, i, T)\\
-\hline  \Map{mr}  & relations                 \hfill (n, i, T)\\
-\hline  \Map{mar} & arrows                    \hfill (n, i, T)\\
+\hline  \Map{msp} & spaces                    \hfill (T)\\
+\hline  \Map{mac} & accents                   \hfill (T)\\
+\hline  \Map{mfs} & font styles               \hfill (T)\\
+\hline  \Map{md}  & delimiter                 \hfill (T)\\
+\hline  \Map{mf}  & functions                 \hfill (T)\\
+\hline  \Map{mgl} & lowercase  greek          \hfill (T)\\
+\hline  \Map{mgu} & uppercase greek           \hfill (T)\\
+\hline  \Map{mo}  & operators                 \hfill (T)\\
+\hline  \Map{mr}  & relations                 \hfill (T)\\
+\hline  \Map{mar} & arrows                    \hfill (T)\\
 \hline
-\hline  \Map{me}  & equation+label            \hfill (n, i, v)\\
-\hline  \Map{mea} & eqnarray+label            \hfill (n, i, v)\\
+\hline  \Map{me}  & equation+label            \hfill (s)\\
+\hline  \Map{mea} & eqnarray+label            \hfill (s)\\
 \hline
-\hline  \Map{mca} & cases                     \hfill (n, i, v)\\
-\hline  \Map{mch} & choose                    \hfill (n, i, v)\\
-\hline  \Map{mfr} & frac                      \hfill (n, i, v)\\
-\hline  \Map{mma} & matrix                    \hfill (n, i)\\
-\hline  \Map{mnr} & \textit{n}th root         \hfill (n, i, v)\\
-\hline  \Map{mon} & operatorname              \hfill (n, i, v)\\
-\hline  \Map{mov} & overset                   \hfill (n, i, v)\\
-\hline  \Map{mpr} & prod                      \hfill (n, i, v)\\
-\hline  \Map{msi} & sideset                   \hfill (n, i, v)\\
-\hline  \Map{msq} & sqrt                      \hfill (n, i, v)\\
-\hline  \Map{msu} & sum                       \hfill (n, i, v)\\
-\hline  \Map{mun} & underset                  \hfill (n, i, v)\\
+\hline  \Map{mca} & cases                     \\
+\hline  \Map{mch} & choose                    \hfill (s)\\
+\hline  \Map{mfr} & frac                      \hfill (s)\\
+\hline  \Map{mma} & matrix                    \\
+\hline  \Map{mnr} & \textit{n}th root         \hfill (s)\\
+\hline  \Map{mon} & operatorname              \hfill (s)\\
+\hline  \Map{mov} & overset                   \hfill (s)\\
+\hline  \Map{mpr} & prod                      \hfill (s)\\
+\hline  \Map{msi} & sideset                   \hfill (s)\\
+\hline  \Map{msq} & sqrt                      \hfill (s)\\
+\hline  \Map{msu} & sum                       \hfill (s)\\
+\hline  \Map{mun} & underset                  \hfill (s)\\
 \hline
 %
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
+% ]]]2
 %
 \newpage
 %
@@ -230,64 +242,68 @@ Key mappings for Vim/gVim/Neovim\\
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{60mm}|}
 %%----------------------------------------------------------------------
-%%  Beamer
+%%  Beamer   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{B\textbf{e}amer}}\\[1.0ex]
-\hline \Map{bf}  & frame           \hfill (n, i, v)\\
-\hline \Map{bco} & columns         \hfill (n, i, v, T)\\
-\hline \Map{bit} & itemize         \hfill (n, i, v)\\
-\hline \Map{bov} & overprint       \hfill (n, i, v)\\
-\hline \Map{bgr} & includegraphics \hfill (n, i)\\
-\hline \Map{bbl} & block           \hfill (n, i, v)\\
-\hline \Map{btc} & textcolor       \hfill (n, i, v)\\
+\hline \Map{but} & usetheme        \hfill (T)\\
+\hline \Map{bf}  & frame           \hfill (s)\\
+\hline \Map{bco} & columns         \hfill (s, T)\\
+\hline \Map{bit} & itemize         \hfill (s)\\
+\hline \Map{bov} & overprint       \hfill (s)\\
+\hline \Map{bpa} & pause           \\
+\hline \Map{bgr} & includegraphics \hfill (F)\\
+\hline \Map{bal} & alert           \hfill (s)\\
+\hline \Map{bbl} & block           \hfill (s)\\
+\hline \Map{btc} & textcolor       \hfill (s, T)\\
 \hline
 %%----------------------------------------------------------------------
-%%  Wizard
+%%  Wizard   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{W}izard}}\\[1.0ex]
-\hline  \Map{wll}  & lstlisting               \hfill (n, i, v)\\
-\hline  \Map{wlil} & lstinputlisting          \hfill (n, i)\\
-\hline  \Map{wlin} & lstinline                \hfill (n, i, v)\\
-\hline  \Map{wls}  & lstset                   \hfill (n, i, T)\\
+\hline  \Map{wll}  & lstlisting               \hfill (s)\\
+\hline  \Map{wlil} & lstinputlisting          \\
+\hline  \Map{wlin} & lstinline                \hfill (s)\\
+\hline  \Map{wls}  & lstset                   \hfill (T)\\
 \hline
-\hline  \Map{wtt}  & table                    \hfill (n, i, v)\\
-\hline  \Map{wtf}  & table, floating          \hfill (n, i, v)\\
-\hline  \Map{wtg}  & tabbing                  \hfill (n, i)\\
-\hline  \Map{wtr}  & tabular                  \hfill (n, i)\\
+\hline  \Map{wtt}  & table                    \hfill (s)\\
+\hline  \Map{wtf}  & table, floating          \hfill (s)\\
+\hline  \Map{wtg}  & tabbing                  \\
+\hline  \Map{wtr}  & tabular                  \\
 \hline
-\hline  \Map{wf}   & figure                   \hfill (n, i)\\
-\hline  \Map{wff}  & floatingfigure           \hfill (n, i)\\
-\hline  \Map{wwf}  & wrapfigure               \hfill (n, i)\\
+\hline  \Map{wf}   & figure                   \\
+\hline  \Map{wff}  & floatingfigure           \\
+\hline  \Map{wwf}  & wrapfigure               \\
 \hline
-\hline  \Map{wbf}  & fbox                     \hfill (n, i, v)\\
-\hline  \Map{wbfr} & framebox                 \hfill (n, i, v)\\
-\hline  \Map{wbm}  & mbox                     \hfill (n, i, v)\\
-\hline  \Map{wbmb} & makebox                  \hfill (n, i, v)\\
-\hline  \Map{wmp}  & minipage                 \hfill (n, i, v)\\
-\hline  \Map{wbp}  & parbox                   \hfill (n, i, v)\\
+\hline  \Map{wbf}  & fbox                     \hfill (s)\\
+\hline  \Map{wbfr} & framebox                 \hfill (s)\\
+\hline  \Map{wbm}  & mbox                     \hfill (s)\\
+\hline  \Map{wbmb} & makebox                  \hfill (s)\\
+\hline  \Map{wmp}  & minipage                 \hfill (s)\\
+\hline  \Map{wbp}  & parbox                   \hfill (s)\\
 \hline
 %%----------------------------------------------------------------------
-%%  Snippets
+%%  Snippets   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{S\textbf{n}ippets}}                \\[1.0ex]
-\hline \Map{nr}  & read code snippet         \hfill (n, i)   \\
-\hline \Map{nw}  & write code snippet        \hfill (n, i, v)\\
-\hline \Map{nv}  & view code snippet         \hfill (n, i)   \\
-\hline \Map{ne}  & edit code snippet         \hfill (n, i)   \\
+\hline \Map{nr}  & read code snippet         \\
+\hline \Map{nw}  & write code snippet        \hfill (v)\\
+\hline \Map{nv}  & view code snippet         \\
+\hline \Map{ne}  & edit code snippet         \\
 \hline
-\hline \Map{ntl} & edit local templates      \hfill (n, i)   \\
-\hline \Map{ntc} & edit custom templates     \hfill (n, i)   \\
-\hline \Map{ntp} & edit personal templates   \hfill (n, i)   \\
-\hline \Map{ntr} & reread the templates      \hfill (n, i)   \\
-\hline \Map{ntw} & template setup wizard     \hfill (n, i)   \\
-\hline \Map{nts} & choose template style     \hfill (n, i, T)\\
+\hline \Map{ntl} & edit local templates      \\
+\hline \Map{ntc} & edit custom templates     \\
+\hline \Map{ntp} & edit personal templates   \\
+\hline \Map{ntr} & reread the templates      \\
+\hline \Map{ntw} & template setup wizard     \\
+\hline \Map{nts} & choose template style     \hfill (T)\\
 \hline
 %
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
+% ]]]2
 %
 %%======================================================================
 %%  page 2 / table, middle part      [[[1
@@ -295,37 +311,36 @@ Key mappings for Vim/gVim/Neovim\\
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{62mm}|}
 %%----------------------------------------------------------------------
-%%  menu run
+%%  menu run   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{R}un}} \\[1.0ex]
-\hline \Map{rr}   & save + run typesetter                    \hfill (n, i)\\
-\hline \Map{rla}  & save + run \texttt{lacheck}              \hfill (n, i)\\
-\hline \Map{rmd}  & set the main document                    \hfill (n, i)\\
-\hline \Map{re}   & errors from last bg.\ process            \hfill (n, i)\\
-\hline \Map{rdvi} & view DVI                                 \hfill (n, i)\\
-\hline \Map{rpdf} & view PDF                                 \hfill (n, i)\\
-\hline \Map{rps}  & view PS                                  \hfill (n, i)\\
-\hline \Map{rc}   & run a converter                          \hfill (n, i)\\
+\hline \Map{rr}   & save + run typesetter                    \\
+\hline \Map{rla}  & save + run \texttt{lacheck}              \\
+\hline \Map{rmd}  & set the main document                    \hfill (F)\\
+\hline \Map{re}   & errors from last bg.\ process            \\
+\hline \Map{rdvi} & view DVI                                 \\
+\hline \Map{rpdf} & view PDF                                 \\
+\hline \Map{rps}  & view PS                                  \\
+\hline \Map{rc}   & run a converter                          \\
 \hline
-\hline \Map{rmg}  & run \texttt{makeglossaries}              \hfill (n, i)\\
-\hline \Map{rmi}  & run \texttt{makeindex}                   \hfill (n, i)\\
-\hline \Map{rbi}  & run \texttt{bibtex}                      \hfill (n, i)\\
+\hline \Map{rmg}  & run \texttt{makeglossaries}              \\
+\hline \Map{rmi}  & run \texttt{makeindex}                   \\
+\hline \Map{rbi}  & run \texttt{bibtex}                      \\
 \hline
-\hline \Map{rt}   & choose the typesetter                    \hfill (n, i, T)\\
-\hline \Map{rp}   & method for external processing           \hfill (n, i, T)\\
+\hline \Map{rt}   & choose the typesetter                    \hfill (T)\\
+\hline \Map{rp}   & method for external processing           \hfill (T)\\
 \hline
-\hline \Map{rh}   & hardcopy buffer to postscript            \hfill (n, i, v)\\
-\hline \Map{rs}   & show plug-in settings                    \hfill (n, i)\\
+\hline \Map{rh}   & hardcopy buffer to postscript            \hfill (v)\\
+\hline \Map{rs}   & show plug-in settings                    \\
 \hline
 \end{tabular}\\[2.5ex]
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
 %
-\parbox[t][80mm][t]{70mm}{%
-%
 %%----------------------------------------------------------------------
-%%  External Programs
+%%  External Programs   [[[2
 %%----------------------------------------------------------------------
+\begin{minipage}[b]{70mm}%
 \large{\textbf{Run}}\\[1.0ex]
 Run the typesetter or \texttt{lacheck} : \\[1.0ex]
 \texttt{:Latex [<tex-file>]} \\[1.0ex]
@@ -338,18 +353,18 @@ Run tools like \texttt{makeindex} or \texttt{bibtex} : \\[1.0ex]
 Set the main document: \\[1.0ex]
 \texttt{:LatexMainDoc <tex-file>} \\[1.0ex]
 View the errors of the last background process: \\[1.0ex]
-\texttt{:LatexErrors} \\[2.5ex]
-}
+\texttt{:LatexErrors}
+\end{minipage}
+% ]]]2
 %
 %%======================================================================
 %%  page 2 / table, right part      [[[1
 %%======================================================================
 %
-\parbox[t][130mm][t]{70mm}{%
-%
 %%----------------------------------------------------------------------
-%%  View & Convert
+%%  View & Convert   [[[2
 %%----------------------------------------------------------------------
+\begin{minipage}[b]{70mm}%
 \large{\textbf{View \& Convert}}\\[1.0ex]
 View a document of the specified format
 (supports \texttt{dvi}, \texttt{pdf}, and \texttt{ps}): \\[1.0ex]
@@ -358,21 +373,27 @@ View a document of the specified format
 \texttt{:LatexView <file> [<format>]} \\[1.0ex]
 Convert a document: \\[1.0ex]
 \texttt{:LatexConvert [<file>]} \\[1.0ex]
-(the default filename is derived from the name of the current buffer) \\[2.5ex]
+(the default filename is derived from the name of the current buffer)
+\end{minipage}
+\\[2.5ex]
 %
 %%----------------------------------------------------------------------
-%%  Options
+%%  Options   [[[2
 %%----------------------------------------------------------------------
+\begin{minipage}[b]{70mm}%
 \large{\textbf{Options}}\\[1.0ex]
 Print or set the typesetter: \\[1.0ex]
 \texttt{:LatexTypesetter [<typesetter>]} \\[1.0ex]
 Print or set the processing method: \\[1.0ex]
 \texttt{:LatexProcessing [<method>]} \\[1.0ex]
-(both commands support tab-compl.) \\[2.5ex]
+(both commands support tab-compl.)
+\end{minipage}
+\\[2.5ex]
 %
 %%----------------------------------------------------------------------
-%%  Make
+%%  Make   [[[2
 %%----------------------------------------------------------------------
+\begin{minipage}[b]{70mm}%
 \large{\textbf{Make}}\\[1.0ex]
 Run \texttt{make} : \\[1.0ex]
 \texttt{:Make [<args>]} \\[1.0ex]
@@ -381,7 +402,8 @@ Set the current makefile: \\[1.0ex]
 (both commands support tab-compl.) \\[1.0ex]
 Help for the Make Tool: \\[1.0ex]
 \texttt{:MakeHelp} \\[2.5ex]
-}
+\end{minipage}
+% ]]]2
 %
 \end{center}%
 \end{multicols}%

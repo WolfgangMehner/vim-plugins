@@ -136,7 +136,7 @@ magenta
 yellow
 == ENDLIST ==
 
-== Beamer.alert == insert, map:bta ==
+== Beamer.alert == insert, map:bal ==
 \alert<CURSOR><<+ON_SLIDES+>>{<SPLIT><-TEXT->}
 == Beamer.block == below, map:bbl ==
 \begin{block}{<CURSOR>}
