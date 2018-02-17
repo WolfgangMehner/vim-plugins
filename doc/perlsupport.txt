@@ -2432,7 +2432,7 @@ was compiled for your platform. Install it and all is done.
 
 COMPILE YOUR OWN VERSION (LINUX/UNIX).
 --------------------------------------
-(1) Download the sources from http://vim.sourceforge.net/ and extract the
+(1) Download the sources from https://vim.sourceforge.io/ and extract the
 sources from the archive (for patches see|perlsupport-compile-vim-patches|).
 
 (2) Inspect the current version again. The section 'Compilation' shows how

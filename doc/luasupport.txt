@@ -453,7 +453,7 @@ can be configured by setting a global variable in your ~/.vimrc (see
 ------------------------------------------------------------------------------
 
 This plug-in is shipped with templates for Lua's C-API. They can be used with
-the C-Support plug-in (www.vim.org/scripts/script.php?script_id=213).
+the C-Support plug-in (https://vim.sourceforge.io/scripts/script.php?script_id=213).
 
 The templates have to be added to C-Support's (!) template library, so they
 can be used when editing C code. Find out the path where the plug-in is
@@ -1214,7 +1214,7 @@ Luis Carvalho (Kozure):
 - the idea for supplying Lua's reference manual in Vim's help format is taken
   from his plug-in "luarefvim", which contains previous versions of the
   reference manual
-  ( http://vim.sourceforge.net/scripts/script.php?script_id=1291 )
+  ( https://vim.sourceforge.io/scripts/script.php?script_id=1291 )
 
 ==============================================================================
 vim:tw=78:expandtab:ts=2:ft=help:norl:

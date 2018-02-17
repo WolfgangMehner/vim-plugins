@@ -20,8 +20,8 @@ exist in parallel. This makes it easy to integrate a toolbox into your
 plug-in.
 
 Here is a list of high profile plug-ins which use the toolbox support:
-- C-Support (www.vim.org/scripts/script.php?script_id=213)
-- Perl-Support (www.vim.org/scripts/script.php?script_id=556)
+- C-Support (https://vim.sourceforge.io/scripts/script.php?script_id=213)
+- Perl-Support (https://vim.sourceforge.io/scripts/script.php?script_id=556)
 
 ==============================================================================
 0.  TABLE OF CONTENTS                               *toolbox-support-contents*

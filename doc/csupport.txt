@@ -1410,7 +1410,7 @@ The hotkeys are defined in the file type plugin  c.vim.  All hotkeys from the
 non-GUI mode also work for gVim (see |csupport-usage-vim|).
 
 Shift-F2 can be used to switch between source files and header files if the
-plugin a.vim (http://vim.sourceforge.net/scripts/script.php?script_id=31) is
+plugin a.vim (https://vim.sourceforge.io/scripts/script.php?script_id=31) is
 present.  To suppress the creation of a new header file when switching from a
 source file the file ~/.vimrc should contain a line
 >
