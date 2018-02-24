@@ -1,4 +1,4 @@
-README for latex-support.vim (Version 1.3beta) / February 12 2018
+README for latex-support.vim (Version 2.0beta) / February 12 2018
 ================================================================================
 
   *  INSTALLATION
@@ -166,7 +166,7 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 RELEASE NOTES
 ================================================================================
 
-RELEASE NOTES FOR VERSION 1.3beta
+RELEASE NOTES FOR VERSION 2.0beta
 ----------------------------------------------------------------------
 - Adapt for running under Neovim more smoothly.
 - Add commands :Latex, :LatexCheck, :LatexMakeindex, and :LatexBibtex to run the

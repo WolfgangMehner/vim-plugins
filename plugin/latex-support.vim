@@ -48,7 +48,7 @@ if exists("g:LatexSupportVersion") || &cp
 	finish
 endif
 
-let g:LatexSupportVersion= "1.3beta"                  " version number of this script; do not change
+let g:LatexSupportVersion= "2.0beta"                  " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " === Auxiliary functions ===   {{{1
@@ -659,7 +659,6 @@ endif
 " User configurable options   {{{3
 "-------------------------------------------------------------------------------
 
-let s:escfilename 								= ' \%#[]'
 let s:Latex_TexFlavor							= 'latex'
 let s:Latex_GuiSnippetBrowser 		= 'gui'             " gui / commandline
 let s:Latex_LoadMenus             = 'auto'            " load the menus?
@@ -677,7 +676,6 @@ endif
 let s:Latex_LineEndCommColDefault = 49
 let s:Latex_TemplateJumpTarget 		= ''
 let s:Latex_Wrapper               = s:plugin_dir.'/latex-support/scripts/wrapper.sh'
-let s:Latex_InsertFileProlog      = 'yes'
 let s:Latex_Ctrl_j                = 'yes'
 let s:Latex_Ctrl_d                = 'yes'
 
@@ -703,7 +701,6 @@ call s:GetGlobalSetting( 'Latex_Ctrl_j' )
 call s:GetGlobalSetting( 'Latex_Ctrl_d' )
 call s:GetGlobalSetting( 'Latex_EpsPdf' )
 call s:GetGlobalSetting( 'Latex_GuiSnippetBrowser' )
-call s:GetGlobalSetting( 'Latex_InsertFileProlog' )
 call s:GetGlobalSetting( 'Latex_Latex' )
 call s:GetGlobalSetting( 'Latex_LineEndCommColDefault' )
 call s:GetGlobalSetting( 'Latex_LoadMenus' )
@@ -724,7 +721,8 @@ call s:GetGlobalSetting( 'Latex_Typesetter' )
 call s:GetGlobalSetting( 'Latex_UseToolbox' )
 
 " overwrite the mapleader, we should not use use "\" in LaTeX
-call s:ApplyDefaultSetting ( 'Latex_MapLeader', '´' )
+call s:ApplyDefaultSetting ( 'Latex_InsertFileProlog', 'yes' )            " default: do insert a file prolog
+call s:ApplyDefaultSetting ( 'Latex_MapLeader', '´' )                     " default: overwrite 'maplocalleader'
 call s:ApplyDefaultSetting ( 'Latex_Printheader',  "%<%f%h%m%<  %=%{strftime('%x %X')}     Page %N" )
 
 " adapt for backwards compatibility
@@ -2046,7 +2044,7 @@ function! s:CheckTemplatePersonalization ()
 	" check whether the templates are personalized
 	if s:DoneCheckTemplatePersonalization
 				\ || mmtemplates#core#ExpandText ( g:Latex_Templates, '|AUTHOR|' ) != 'YOUR NAME'
-				\ || s:Latex_InsertFileProlog != 'yes'
+				\ || g:Latex_InsertFileProlog != 'yes'
 		return
 	endif
 
@@ -2075,7 +2073,7 @@ function! s:InsertFileHeader ()
 	call s:CheckAndRereadTemplates()
 
 	" prevent insertion for a file generated from a some error
-	if isdirectory(expand('%:p:h')) && s:Latex_InsertFileProlog == 'yes'
+	if isdirectory(expand('%:p:h')) && g:Latex_InsertFileProlog == 'yes'
 		let templ_s = mmtemplates#core#Resource ( g:Latex_Templates, 'get', 'property', 'Latex::FileSkeleton::Script' )[0]
 
 		" insert templates in reverse order, always above the first line
@@ -2744,7 +2742,7 @@ function! Latex_Settings ( verbose )
 		let	txt .= "\n"
 					\ .'                mapleader :  "'.g:Latex_MapLeader."\"\n"
 					\ .'               load menus :  "'.s:Latex_LoadMenus."\"\n"
-					\ .'       insert file prolog :  "'.s:Latex_InsertFileProlog."\"\n"
+					\ .'       insert file prolog :  "'.g:Latex_InsertFileProlog."\"\n"
 	endif
 	let txt = txt."\n"
 	let txt = txt.'               typesetter :  "'.s:Latex_TypesetterCall[s:Latex_Typesetter]."\"\n"
