@@ -1,8 +1,8 @@
-*latexsupport.txt*               LaTeX Support                     Feb 12 2018
+*latexsupport.txt*               LaTeX Support                     Feb 24 2018
 
 LaTeX Support                                     *latex-support* *latexsupport*
 
-                             Plug-in version 1.3beta
+                             Plug-in version 2.0beta
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
@@ -1221,177 +1221,186 @@ appends a end-of-line comment to the current line, whereas >
   4´cl
 appends end-of-line comments to the 4 lines starting with the current line.
 
-Legend:  (i) insert mode, (n) normal mode, (v) visual mode
-         [n] range
+Legend:  visual mode:    (v) use range, (s) surround content,
+                         [n] range
+         tab-completion: (T) specialized, (F) filenames
+
+  -----------------------------------------------------------------
+   Jump Tags
+  -----------------------------------------------------------------
+  <CTRL-J>   jump to next tag
+  <CTRL-D>   delete an optional tag
 
   -----------------------------------------------------------------
    Help
   -----------------------------------------------------------------
-     ´he        open an English dictionary for  (ni)
-                the word under the cursor
-     ´ht        start texdoc                    (ni)
-     ´hp        displays plugin help            (ni)
+
+   for the word under the cursor ...
+     ´he        open an English dictionary
+     ´ht        start texdoc
+
+     ´hp        display plug-in help
 
   -----------------------------------------------------------------
    Comments
   -----------------------------------------------------------------
-  [n]´cl        end-of-line comment             (niv)
-  [n]´cj        adjust end-of-line comments     (niv)
-     ´cs        set end-of-line comment col.    (n)
-  [n]´cc        toggle comment                  (niv)
+  [n]´cl        end-of-line comment             (v)
+  [n]´cj        adjust end-of-line comments     (v)
+     ´cs        set end-of-line comment col.
+  [n]´cc        toggle comment                  (v)
 
-     ´cfr1      frame comment, type 1           (ni)
-     ´cfr2      frame comment, type 2           (ni)
-     ´cfr3      frame comment, type 3           (ni)
-     ´cp        file prolog                     (ni)
+     ´cfr1      frame comment, type 1
+     ´cfr2      frame comment, type 2
+     ´cfr3      frame comment, type 3
+     ´cp        file prolog
 
-     ´cm        plug-in macros                  (ni)
-     ´cd        date                            (ni)
-     ´ct        date & time                     (ni)
+     ´cm        plug-in macros                  (T)
+     ´cd        date
+     ´ct        date & time
 
   -----------------------------------------------------------------
    Document
   -----------------------------------------------------------------
-     ´dc        document class                  (ni)
-     ´di        indices                         (ni)
-     ´dti       title                           (ni)
-     ´dbi       bibliography                    (ni)
-     ´dac       addcontentsline                 (ni)
+     ´dc        document class                  (T)
+     ´di        indices                         (T)
+     ´dti       title
+     ´dbi       bibliography                    (T)
+     ´dac       addcontentsline
 
-     ´dln       newlength                       (ni)
-     ´dls       setlength                       (ni)
-     ´dla       addtolength                     (ni)
-     ´dlp       print length                    (ni)
-     ´dlt       set length to                   (ni)
+     ´dln       newlength
+     ´dls       setlength
+     ´dla       addtolength
+     ´dlp       print length
+     ´dlt       set length to
 
   -----------------------------------------------------------------
    Text
   -----------------------------------------------------------------
-     ´e         environment                     (niv)
-     ´to        organization                    (ni)
-     ´ts        section                         (ni)
-     ´tld       list environment, description   (ni)
-     ´tle       list environment, enumerate     (ni)
-     ´tli       list environment, itemize       (ni)
-     ´tll       list environment, list          (ni)
-     ´tlit      list environment, item          (ni)
-     ´tlil      list environment, item+labels   (ni)
-     ´tf        font style                      (niv)
-     ´tfs       font size                       (niv)
-     ´tq        quotes                          (niv)
-     ´tsp       spacing                         (ni)
-     ´tal       line alignment + spacing        (niv)
-     ´tac       accents                         (niv)
-     ´ttc       textcomp characters             (ni)
+     ´e         environment                     (s, T)
+     ´to        organization                    (T)
+     ´ts        section                         (T)
+     ´tld       list environment, description
+     ´tle       list environment, enumerate
+     ´tli       list environment, itemize
+     ´tll       list environment, list
+     ´tlit      list environment, item
+     ´tlil      list environment, item+labels
+     ´tf        font style                      (s, T)
+     ´tfs       font size                       (s, T)
+     ´tq        quotes                          (s, T)
+     ´tsp       spacing                         (T)
+     ´tal       line alignment + spacing        (s, T)
+     ´tac       accents                         (T)
+     ´ttc       textcomp characters             (T)
 
-     ´tbi       bibitem                         (ni)
-     ´tci       cite                            (ni)
-     ´tfo       footnote                        (ni)
-     ´tin       index                           (ni)
-     ´tla       label                           (ni)
-     ´tma       marginpar                       (ni)
-     ´tco       newcommand                      (ni)
-     ´tnc       nocite                          (ni)
-     ´tpa       pageref                         (ni)
-     ´tre       ref                             (ni)
-     ´tur       url                             (niv)
+     ´tbi       bibitem
+     ´tci       cite
+     ´tfo       footnote
+     ´tin       index
+     ´tla       label
+     ´tma       marginpar
+     ´tco       newcommand
+     ´tnc       nocite
+     ´tpa       pageref
+     ´tre       ref
+     ´tur       url                             (s)
 
   -----------------------------------------------------------------
    Math
   -----------------------------------------------------------------
-     ´msp      spaces                           (ni)
-     ´mac      accents                          (ni)
-     ´mfs      font styles                      (ni)
-     ´md       delimiter                        (ni)
-     ´mf       functions                        (ni)
-     ´mgl      lowercase  greek                 (ni)
-     ´mgu      uppercase greek                  (ni)
-     ´mo       operators                        (ni)
-     ´mr       relations                        (ni)
-     ´mar      arrows                           (ni)
+     ´msp      spaces                           (T)
+     ´mac      accents                          (T)
+     ´mfs      font styles                      (T)
+     ´md       delimiter                        (T)
+     ´mf       functions                        (T)
+     ´mgl      lowercase  greek                 (T)
+     ´mgu      uppercase greek                  (T)
+     ´mo       operators                        (T)
+     ´mr       relations                        (T)
+     ´mar      arrows                           (T)
 
-     ´me       equation+label                   (niv)
-     ´mea      eqnarray+label                   (niv)
+     ´me       equation+label                   (s)
+     ´mea      eqnarray+label                   (s)
 
-     ´mca      cases                            (niv)
-     ´mch      choose                           (niv)
-     ´mfr      frac                             (niv)
-     ´mma      matrix                           (ni)
-     ´mnr      nth root                         (niv)
-     ´mon      operatorname                     (niv)
-     ´mov      overset                          (niv)
-     ´mpr      prod                             (niv)
-     ´msi      sideset                          (niv)
-     ´msq      sqrt                             (niv)
-     ´msu      sum                              (niv)
-     ´mun      underset                         (niv)
+     ´mca      cases
+     ´mch      choose                           (s)
+     ´mfr      frac                             (s)
+     ´mma      matrix
+     ´mnr      nth root                         (s)
+     ´mon      operatorname                     (s)
+     ´mov      overset                          (s)
+     ´mpr      prod                             (s)
+     ´msi      sideset                          (s)
+     ´msq      sqrt                             (s)
+     ´msu      sum                              (s)
+     ´mun      underset                         (s)
 
   -----------------------------------------------------------------
    Wizard
   -----------------------------------------------------------------
-     ´wll       lstlisting                      (niv)
-     ´wlil      lstinputlisting                 (ni)
-     ´wlin      lstinline                       (niv)
-     ´wls       lstset                          (ni)
+     ´wll       lstlisting                      (s)
+     ´wlil      lstinputlisting
+     ´wlin      lstinline                       (s)
+     ´wls       lstset                          (T)
 
-     ´wtt       table                           (niv)
-     ´wtf       table, floating                 (niv)
-     ´wtg       tabbing                         (ni)
-     ´wtr       tabular                         (ni)
+     ´wtt       table                           (s)
+     ´wtf       table, floating                 (s)
+     ´wtg       tabbing
+     ´wtr       tabular
 
-     ´wf        figure                          (ni)
-     ´wff       floatingfigure                  (ni)
-     ´wwf       wrapfigure                      (ni)
+     ´wf        figure
+     ´wff       floatingfigure
+     ´wwf       wrapfigure
 
-     ´wbf       fbox                            (niv)
-     ´wbfr      framebox                        (niv)
-     ´wbm       mbox                            (niv)
-     ´wbmb      makebox                         (niv)
-     ´wmp       minipage                        (niv)
-     ´wbp       parbox                          (niv)
+     ´wbf       fbox                            (s)
+     ´wbfr      framebox                        (s)
+     ´wbm       mbox                            (s)
+     ´wbmb      makebox                         (s)
+     ´wmp       minipage                        (s)
+     ´wbp       parbox                          (s)
 
   -----------------------------------------------------------------
    Snippets
   -----------------------------------------------------------------
-     ´nr       read code snippet                (ni)
-     ´nw       write code snippet               (niv)
-     ´nv       view code snippet                (ni)
-     ´ne       edit code snippet                (ni)
+     ´nr       read code snippet
+     ´nw       write code snippet               (v)
+     ´nv       view code snippet
+     ´ne       edit code snippet
 
-     ´ntg      edit global templates            (ni)
-     ´ntl      edit local templates             (ni)
-     ´ntc      edit custom templates            (ni)
-     ´ntp      edit personal templates          (ni)
-     ´ntr      reread templates                 (ni)
-     ´ntw      template setup wizard            (ni)
-     ´nts      choose style                     (ni)
+     ´ntg      edit global templates
+     ´ntl      edit local templates
+     ´ntc      edit custom templates
+     ´ntp      edit personal templates
+     ´ntr      reread templates
+     ´ntw      template setup wizard
+     ´nts      choose style                     (T)
 
   -----------------------------------------------------------------
    Run
   -----------------------------------------------------------------
-     ´rr        save + run typesetter           (ni)
-     ´rla       save + run lacheck              (ni)
-     ´rmd       set main document               (ni)
-     ´re        view errors from bg. process    (ni)
-     ´rdvi      view DVI                        (ni)
-     ´rpdf      view PDF                        (ni)
-     ´rps       view PS                         (ni)
-     ´rc        run a converter                 (ni)
-     ´rmg       run makeglossaries              (ni)
-     ´rmi       run makeindex                   (ni)
-     ´rbi       run bibtex                      (ni)
-     ´rt        choose the typesetter           (ni)
-     ´rp        method for external processing  (ni)
-     ´rh        hardcopy buffer to postscript   (niv)
-     ´rs        show plugin settings            (ni)
+     ´rr        save + run typesetter
+     ´rla       save + run lacheck
+     ´rmd       set main document               (F)
+     ´re        view errors from bg. process
+     ´rdvi      view DVI
+     ´rpdf      view PDF
+     ´rps       view PS
+     ´rc        run a converter                 (T)
+     ´rmg       run makeglossaries
+     ´rmi       run makeindex
+     ´rbi       run bibtex
+     ´rt        choose the typesetter           (T)
+     ´rp        method for external processing  (T)
+     ´rh        hardcopy buffer to postscript   (v)
+     ´rs        show plug-in settings
 
   -----------------------------------------------------------------
    Tool Box
   -----------------------------------------------------------------
-     ´rm        run make                        (ni)
-     ´rmc       run make clean                  (ni)
-     ´rma       command line arguments for make (ni)
-     ´rcm       choose make file                (ni)
+     ´rm        run make
+     ´rmc       run make clean
+     ´rma       command line arguments for make (F)
+     ´rcm       choose make file                (F)
 
 ==============================================================================
 B.  FILES                                                 *latexsupport-files*
