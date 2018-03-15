@@ -61,9 +61,10 @@ Lua is: Copyright 1994-2017 Lua.org, PUC-Rio.
 
  5.    System-wide Installation         |luasupport-system-wide|
 
- A.    Troubleshooting - Known Issues   |luasupport-troubleshooting|
- B.    Release Notes - Change Log       |luasupport-release-notes|
- C.    Credits                          |luasupport-credits|
+ A.    Overview of Mappings             |luasupport-mappings|
+ B.    Troubleshooting - Known Issues   |luasupport-troubleshooting|
+ C.    Release Notes - Change Log       |luasupport-release-notes|
+ D.    Credits                          |luasupport-credits|
 
 ==============================================================================
 1.  INTRODUCTION                                     *luasupport-introduction*
@@ -1166,7 +1167,150 @@ Use the custom template file for Vim templates which override the global
 templates or to add new ones.
 
 ==============================================================================
-A.  TROUBLESHOOTING - KNOWN ISSUES                *luasupport-troubleshooting*
+A.  OVERVIEW OF MAPPINGS                                 *luasupport-mappings*
+==============================================================================
+
+Almost all functionality is accessible using key mappings.
+
+All mappings are filetype specific; they are only defined for buffers with
+filetype 'lua' to minimize conflicts with mappings from other plug-ins.
+Furthermore, the mapleader can be changed using the setting |g:Lua_MapLeader|.
+
+Some mappings can be used with a range (of lines). In normal mode >
+  \cl
+appends a end-of-line comment to the current line, whereas >
+  4\cl
+appends end-of-line comments to the 4 lines starting with the current line.
+
+Hint: Typing speed matters. The combination of a leader ('\') and the
+following character(s) will only be recognized for a short time.
+
+Legend:  visual mode:    (v) use range, (s) surround content,
+                         [n] range
+         tab-completion: (T) specialized, (F) filenames
+
+  -- Jump Tags -----------------------------------------
+
+  <CTRL-J>   jump to next tag
+  <CTRL-D>   delete an optional tag
+
+  -- Help ----------------------------------------------
+
+   for the word under the cursor ...
+     \he     open an English dictionary
+     \hl     open online reference manual
+     \h1     open manual for Lua 5.1 inside Vim
+     \h2     open manual for Lua 5.2 inside Vim
+     \h3     open manual for Lua 5.3 inside Vim
+
+     \hs     display plug-in help
+
+  -- Comments ------------------------------------------
+
+  [n]\cl     end-of-line comment             (v)
+  [n]\cj     adjust end-of-line comments     (v)
+     \cs     set end-of-line comment column
+  [n]\cc     comment code                    (v)
+  [n]\co     uncomment code                  (v)
+  [n]\ct     toggle comments                 (v)
+  [n]\cil    insert long comment             (v)
+  [n]\crl    remove long comment             (v)
+  [n]\ca     function description (auto)     (v)
+
+     \cfr    frame comment
+     \cfb    frame comment, big
+     \cfi    file description
+     \cfu    function description
+     \cb     shebang
+     \cke    keyword comments                (T)
+     \cma    plug-in macros                  (T)
+     \cd     date
+
+  -- Statements -----------------------------------------
+
+     \sfr    for, range                      (s)
+     \sfi    for, in                         (s)
+     \sw     while                           (s)
+     \sr     repeat                          (s)
+
+     \sif    if ... end                      (s)
+     \sie    if ... else ... endif           (s)
+     \sei    elseif
+     \sel    else
+
+     \sb     do ... end (block)              (s)
+
+  -- Idioms ----------------------------------------------
+
+     \if     function definition             (s)
+     \in     inline function def.            (s)
+     \im     metamethod                      (s, T)
+
+     \it     table constructor               (s)
+
+     \il     library functions               (T)
+     \iv     library variables               (T)
+     \ii     iterators                       (s, T)
+
+     \iof    open file
+     \iot    open tempfile
+     \iop    open pipe
+
+     \ip     add to path
+
+  -- Objects ---------------------------------------------
+
+     \ot     class metatable
+     \oc     class constructor               (s)
+     \ois    class, is_object function
+     \om     method                          (s)
+
+     \im     metamethod                      (s, T)
+
+  -- Regular Expressions ---------------------------------
+
+     \xca    captures                        (s)
+     \xco    collection                      (s)
+     \xcl    character class                 (T)
+     \xe     escape magic character
+
+  -- Snippets --------------------------------------------
+
+     \ni     insert code snippet
+  [n]\nc     create code snippet             (v)
+     \nv     view code snippet
+     \ne     edit code snippet
+
+     \ntg    edit global template file
+     \ntl    edit local template file
+     \ntc    edit custom template file
+     \ntp    edit personal template file
+     \ntr    reread template file
+     \ntw    template setup wizard
+     \nts    choose template style           (T)
+
+  -- Run -------------------------------------------------
+
+     \rr     run the script
+     \rc     compile the script
+     \rk     check the code
+     \re     make script executable
+
+     \ro     output method for "run"
+     \rd     change "direct run"
+     \rse    change the interpreter
+     \rsc    change the compiler
+
+  [n]\rh     hardcopy buffer                 (v)
+     \rs     plug-in settings
+
+  -- Buffer "Lua Output/Term" ----------------------------
+
+     \qf     load quickfix list
+     \qj     ... and jump to first error
+
+==============================================================================
+B.  TROUBLESHOOTING - KNOWN ISSUES                *luasupport-troubleshooting*
 ==============================================================================
 
 * I do not see any new main menu item.
@@ -1195,13 +1339,13 @@ A.  TROUBLESHOOTING - KNOWN ISSUES                *luasupport-troubleshooting*
       :set shellxquote=\"
 
 ==============================================================================
-B.  RELEASE NOTES - CHANGE LOG                      *luasupport-release-notes*
+C.  RELEASE NOTES - CHANGE LOG                      *luasupport-release-notes*
 ==============================================================================
 
 See files 'lua-support/README.md' and 'lua-support/doc/ChangeLog'.
 
 ==============================================================================
-C.  CREDITS                                               *luasupport-credits*
+D.  CREDITS                                               *luasupport-credits*
 ==============================================================================
 
 Fritz Mehner (vim.org user name: mehner) for a number of things:
