@@ -6,12 +6,12 @@
 %%                
 %%      Version:  see \Pluginversion
 %%      Created:  22.01.2012
-%%     Revision:  09.07.2017
+%%     Revision:  17.02.2018
 %%
 %%       Author:  Wolfgang Mehner (WM), wolfgang-mehner@web.de
 %%                Dr. Fritz Mehner (fgm), mehner.fritz@web.de
 %%    Copyright:  Copyright (c) 2012-2015, Dr. Fritz Mehner
-%%                Copyright (c) 2016-2017, Wolfgang Mehner
+%%                Copyright (c) 2016-2018, Wolfgang Mehner
 %%                
 %%=====================================================================================
 
@@ -30,7 +30,7 @@
 
 \setlength\parindent{0pt}
 
-\newcommand{\Pluginversion}{2.5beta}
+\newcommand{\Pluginversion}{2.5}
 \newcommand{\Rep}{{\scriptsize{[n]}}}
 
 %%----------------------------------------------------------------------
@@ -77,10 +77,7 @@
 \textbf{\textsc{\Huge{Hot keys}}}\\ 
 \vspace{1mm}%
 Key mappings for Vim/gVim/Neovim\\
-{\tiny  \texttt{http://www.vim.org}\hspace{1.5mm}---\hspace{1.5mm}\textbf{Wolfgang Mehner},  \texttt{wolfgang-mehner@web.de}}\\
-\vspace{1.0mm}
-{\normalsize (i)} insert mode, {\normalsize (n)} normal mode, {\normalsize (v)} visual mode,\\
-{\normalsize (T)} tab-completion
+{\tiny  \texttt{https://vim.sourceforge.io}\hspace{1.5mm}---\hspace{1.5mm}\textbf{Wolfgang Mehner},  \texttt{wolfgang-mehner@web.de}}\\
 \vspace{1.0mm}
 %
 %%======================================================================
@@ -89,38 +86,51 @@ Key mappings for Vim/gVim/Neovim\\
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{58mm}|}
 %%----------------------------------------------------------------------
-%%  show plugin help
+%%  show plugin help   [[[2
 %%----------------------------------------------------------------------
 \hline 
 \multicolumn{2}{|r|}{\textsl{\underline{H}elp}}\\[1.0ex]
-\hline \verb'\he'                 & English dictionary   \hfill (n, i)\\
-\hline \verb'\hk'                 & help (Vim functions) \hfill (n, i)\\
-\hline \verb'\hp'                 & help (vim-support)   \hfill (n, i)\\
+\hline \verb'\he'                 & English dictionary   \\
+\hline \verb'\hk'                 & help (Vim functions) \\
+\hline \verb'\hp'                 & help (vim-support)   \\
 \hline 
 %%----------------------------------------------------------------------
-%%  menu comments
+%%  menu comments   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\underline{C}omments}}                       \\[1.0ex]
-\hline \Rep\verb'\cl'   & end-of-line comment               \hfill (n, v, i)\\
-\hline \Rep\verb'\cj'   & adjust end-of-line comments       \hfill (n, v, i)\\
-\hline     \verb'\cs'   & set end-of-line comment col.      \hfill (n)   \\
-\hline \Rep\verb'\cc'   & comment code                      \hfill (n, i, v)\\
-\hline \Rep\verb'\co'   & uncomment code                    \hfill (n, i, v)\\
-\hline     \verb'\ca'   & function description (auto)       \hfill (n, i, v)\\
+\hline \Rep\verb'\cl'   & end-of-line comment               \hfill (v)\\
+\hline \Rep\verb'\cj'   & adjust end-of-line comments       \hfill (v)\\
+\hline     \verb'\cs'   & set end-of-line comment col.      \\
+\hline \Rep\verb'\cc'   & comment code                      \hfill (v)\\
+\hline \Rep\verb'\co'   & uncomment code                    \hfill (v)\\
+\hline     \verb'\ca'   & function description (auto)       \\
 %
-\hline     \verb'\cfr'  & frame comment                     \hfill (n, i)\\
-\hline     \verb'\cfu'  & function description              \hfill (n, i)\\
-\hline     \verb'\ch'   & file description                  \hfill (n, i)\\
-\hline     \verb'\cd'   & date                              \hfill (n, i)\\
-\hline     \verb'\ct'   & date \& time                      \hfill (n, i)\\
+\hline     \verb'\cfr'  & frame comment                     \\
+\hline     \verb'\cfu'  & function description              \\
+\hline     \verb'\ch'   & file description                  \\
+\hline     \verb'\cd'   & date                              \\
+\hline     \verb'\ct'   & date \& time                      \\
 \hline
 %
-\hline     \verb'\ck'   & keyword comments                  \hfill (n, i, T)\\
-\hline     \verb'\cma'  & plugin macros                     \hfill (n, i, T)\\
+\hline     \verb'\ck'   & keyword comments                  \hfill (T)\\
+\hline     \verb'\cma'  & plugin macros                     \hfill (T)\\
 \hline
-\end{tabular}\\
+\end{tabular}\\[1.0ex]
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%----------------------------------------------------------------------
+%%  box Footnotes   [[[2
+%%----------------------------------------------------------------------
+\begin{minipage}[b]{72mm}%
+\scriptsize{%
+visual mode: {\normalsize (v)} use the range,
+{\normalsize (s)} surround range \\
+tab-completion: {\normalsize (T)} specialized,
+{\normalsize (F)} filenames
+}%
+\end{minipage}
+% ]]]2
 %
 %%======================================================================
 %%  table, middle part				[[[1
@@ -129,57 +139,58 @@ Key mappings for Vim/gVim/Neovim\\
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{58mm}|}
 %%----------------------------------------------------------------------
-%%  menu statements
+%%  menu statements   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\underline{S}tatements}}\\[1.0ex]
-\hline \verb'\sv'     & \verb'let' variable                              \hfill (n, i)\\
-\hline \verb'\sl'     & \verb'let' list                                  \hfill (n, i)\\
-\hline \verb'\sd'     & \verb'let' dictionary                            \hfill (n, i)\\
-\hline \verb'\sf'     & \verb'for'                                       \hfill (n, v, i)\\
-\hline \verb'\sif'    & \verb'if'$\ldots$\verb'endif'                    \hfill (n, v, i)\\
-\hline \verb'\sie'    & \verb'if'$\ldots$\verb'else'$\ldots$\verb'endif' \hfill (n, v, i)\\
-\hline \verb'\sei'    & \verb'elseif'                                    \hfill (n, i)\\
-\hline \verb'\sel'    & \verb'else'                                      \hfill (n, i)\\
-\hline \verb'\sw'     & \verb'while'                                     \hfill (n, v, i)\\
-\hline \verb'\st'     & \verb'try'$\ldots$\verb'catch'                   \hfill (n, v, i)\\
+\hline \verb'\sv'     & \verb'let' variable                              \\
+\hline \verb'\sl'     & \verb'let' list                                  \\
+\hline \verb'\sd'     & \verb'let' dictionary                            \\
+\hline \verb'\sf'     & \verb'for'                                       \hfill (s)\\
+\hline \verb'\sif'    & \verb'if'$\ldots$\verb'endif'                    \hfill (s)\\
+\hline \verb'\sie'    & \verb'if'$\ldots$\verb'else'$\ldots$\verb'endif' \hfill (s)\\
+\hline \verb'\sei'    & \verb'elseif'                                    \\
+\hline \verb'\sel'    & \verb'else'                                      \\
+\hline \verb'\sw'     & \verb'while'                                     \hfill (s)\\
+\hline \verb'\st'     & \verb'try'$\ldots$\verb'catch'                   \hfill (s)\\
 \hline
 %%----------------------------------------------------------------------
-%%  menu idioms
+%%  menu idioms   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\underline{I}dioms}}                 \\[1.0ex]
-\hline \verb'\ib' & builtin functions         \hfill (n, i, T)\\
-\hline \verb'\ii' & iterators                 \hfill (n, v, i, T)\\
-\hline \verb'\if' & function                  \hfill (n, v, i)\\
+\hline \verb'\ib' & builtin functions         \hfill (T)\\
+\hline \verb'\ii' & iterators                 \hfill (s, T)\\
+\hline \verb'\if' & function                  \hfill (s)\\
 \hline
 %%----------------------------------------------------------------------
-%%  menu regex menu
+%%  menu regex menu   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{Regular E\underline{x}pressions}}     \\[1.0ex]
-\hline \verb'\xc'  & capture                 \hfill (n, i, v)\\
-\hline \verb'\xbc' & branch                  \hfill (n, i, v)\\
-\hline \verb'\xbn' & branch, no capture      \hfill (n, i, v)\\
-\hline \verb'\xw'  & word                    \hfill (n, i)\\
-\hline \verb'\xcc' & character classes       \hfill (n, i, T)\\
-\hline \verb'\xs'  & switches                \hfill (n, i, T)\\
+\hline \verb'\xc'  & capture                 \hfill (s)\\
+\hline \verb'\xbc' & branch                  \hfill (s)\\
+\hline \verb'\xbn' & branch, no capture      \hfill (s)\\
+\hline \verb'\xw'  & word                    \hfill (s)\\
+\hline \verb'\xcc' & character classes       \hfill (T)\\
+\hline \verb'\xs'  & switches                \hfill (T)\\
 \hline
 %%----------------------------------------------------------------------
-%%  menu Perl
+%%  menu Perl   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\underline{P}erl}}                       \\[1.0ex]
-\hline \verb'\ps'   & Perl snippet \hfill (n, i)\\
-\hline \verb'\pd'   & \texttt{Vim::DoCommand()} \hfill (n, i)\\
-\hline \verb'\pe'   & \texttt{Vim::Eval()} \hfill (n, i)\\
-\hline \verb'\pm'   & \texttt{Vim::Msg( "" )           } \hfill (n, i)\\
-\hline \verb'\pmc'  & \texttt{Vim::Msg( "", "Comment" )} \hfill (n, i)\\
-\hline \verb'\pme'  & \texttt{Vim::Msg( "", "Warning" )} \hfill (n, i)\\
-\hline \verb'\pmw'  & \texttt{Vim::Msg( "", "ErrorMsg")} \hfill (n, i)\\
+\hline \verb'\ps'   & Perl snippet                       \\
+\hline \verb'\pd'   & \texttt{Vim::DoCommand()}          \\
+\hline \verb'\pe'   & \texttt{Vim::Eval()}               \\
+\hline \verb'\pm'   & \texttt{Vim::Msg( "" )           } \\
+\hline \verb'\pmc'  & \texttt{Vim::Msg( "", "Comment" )} \\
+\hline \verb'\pme'  & \texttt{Vim::Msg( "", "Warning" )} \\
+\hline \verb'\pmw'  & \texttt{Vim::Msg( "", "ErrorMsg")} \\
 \hline
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
+% ]]]2
 %
 %%======================================================================
 %%  table, right part				[[[1
@@ -188,59 +199,52 @@ Key mappings for Vim/gVim/Neovim\\
 %%~~~~~ TABULAR : begin ~~~~~~~~~~
 \begin{tabular}[]{|p{11mm}|p{58mm}|}
 %%----------------------------------------------------------------------
-%%  menu Documentation
+%%  menu Documentation   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\underline{D}ocumentation}}                 \\[1.0ex]
-\hline \verb'\dcc' & table-of-contents, chapter    \hfill (n, i)\\
-\hline \verb'\dcs' & table-of-contents, section    \hfill (n, i)\\
-\hline \verb'\dcu' & table-of-contents, subsection \hfill (n, i)\\
-\hline \verb'\dtc' & text, chapter                 \hfill (n, i)\\
-\hline \verb'\dts' & text, section                 \hfill (n, i)\\
-\hline \verb'\dtu' & text, subsection              \hfill (n, i)\\
-\hline \verb'\df'  & function description          \hfill (n, i)\\
-\hline \verb'\de'  & example                       \hfill (n, v, i)\\
+\hline \verb'\dcc' & table-of-contents, chapter    \\
+\hline \verb'\dcs' & table-of-contents, section    \\
+\hline \verb'\dcu' & table-of-contents, subsection \\
+\hline \verb'\dtc' & text, chapter                 \\
+\hline \verb'\dts' & text, section                 \\
+\hline \verb'\dtu' & text, subsection              \\
+\hline \verb'\df'  & function description          \\
+\hline \verb'\de'  & example                       \hfill (s)\\
 \hline
 %%----------------------------------------------------------------------
-%%  snippet menu
+%%  snippet menu   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{S\underline{n}ippet}}                \\[1.0ex]
-\hline \verb'\nr'  & read code snippet         \hfill (n, i)   \\
-\hline \verb'\nw'  & write code snippet        \hfill (n, v, i)\\
-\hline \verb'\nv'  & view code snippet         \hfill (n, i)   \\
-\hline \verb'\ne'  & edit code snippet         \hfill (n, i)   \\
+\hline \verb'\nr'  & read code snippet         \\
+\hline \verb'\nw'  & write code snippet        \hfill (v)\\
+\hline \verb'\nv'  & view code snippet         \\
+\hline \verb'\ne'  & edit code snippet         \\
 %
-\hline \verb'\ntl' & edit local templates      \hfill (n, i)\\
-\hline \verb'\ntc' & edit custom templates     \hfill (n, i)\\
-\hline \verb'\ntp' & edit personal templates   \hfill (n, i)\\
-\hline \verb'\ntr' & reread the templates      \hfill (n, i)\\
-\hline \verb'\ntw' & template setup wizard     \hfill (n, i)\\
-\hline \verb'\nts' & choose template style     \hfill (n, i, T)\\
+\hline \verb'\ntl' & edit local templates      \\
+\hline \verb'\ntc' & edit custom templates     \\
+\hline \verb'\ntp' & edit personal templates   \\
+\hline \verb'\ntr' & reread the templates      \\
+\hline \verb'\ntw' & template setup wizard     \\
+\hline \verb'\nts' & choose template style     \hfill (T)\\
 %
 \hline
 %%----------------------------------------------------------------------
-%%  menu run
+%%  menu run   [[[2
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\underline{R}un}} \\[1.0ex]
-\hline \verb'\rh'    & hardcopy buffer to postscript \hfill (n, v, i)\\
-\hline \verb'\rs'    & plugin settings \hfill (n, i)\\
+\hline \verb'\rh'    & hardcopy buffer to postscript \hfill (v)\\
+\hline \verb'\rs'    & plugin settings               \\
 \hline
 \end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
-%
-%\begin{minipage}[b]{75mm}%
-%\scriptsize{%
-%\vspace{10mm}
-%\hrulefill\\
-%$^1$ {system-wide installation only}\\
-%}%
-%\end{minipage}\\
 %
 \end{center}%
 \end{multicols}%
 %
 %%----- TABBING :  end  ----------
+% ]]]2
 \end{document}
 % vim: foldmethod=marker foldmarker=[[[,]]]

@@ -44,7 +44,7 @@
 == ENDTEMPLATE ==
 
 == Regex.word == insert, map:xw, sc:w ==
-\<<CURSOR>\>
+\<<SPLIT><CURSOR>\>
 == ENDTEMPLATE ==
 
 == Regex.character classes == expandmenu, expandright:value, insert, map:xcc, sc:l ==
