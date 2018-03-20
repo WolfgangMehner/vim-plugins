@@ -128,20 +128,8 @@ Key mappings for Vim/gVim/Neovim.\\
 \hline     \verb'\cd'   & date                              \\
 \hline     \verb'\ct'   & date \& time                      \\
 \hline
-\end{tabular}\\[1.0ex]
+\end{tabular}\\
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
-%
-%%----------------------------------------------------------------------
-%%  box Footnotes   [[[2
-%%----------------------------------------------------------------------
-\begin{minipage}[b]{72mm}%
-\scriptsize{%
-visual mode: {\normalsize (v)} use the range, 
-{\normalsize (s)} surround range \\
-tab-completion: {\normalsize (T)} specialized,
-{\normalsize (F)} filenames
-}%
-\end{minipage}
 % ]]]2
 %
 %%======================================================================
@@ -227,13 +215,13 @@ tab-completion: {\normalsize (T)} specialized,
 %%----------------------------------------------------------------------
 \hline
 \multicolumn{2}{|r|}{\textsl{\textbf{P}attern Matching}}     \\[1.0ex]
-\hline     \verb'pzo' & zero or one,      \verb' ?( | )'  \hfill (s)\\ 
-\hline     \verb'pzm' & zero or more,     \verb' *( | )'  \hfill (s)\\ 
-\hline     \verb'pom' & one or more,      \verb' +( | )'  \hfill (s)\\ 
-\hline     \verb'peo' & exactly one,      \verb' @( | )'  \hfill (s)\\ 
-\hline     \verb'pae' & anything except,  \verb' !( | )'  \hfill (s)\\ 
-\hline     \verb'ppc' & POSIX classes                     \hfill (T)\\ 
-\hline     \verb'pbr' &  \verb'${BASH_REMATCH[0'$\ldots$\verb'3]}'  \hfill (T)\\ 
+\hline \verb'\pzo' & zero or one,      \verb' ?( | )'  \hfill (s)\\
+\hline \verb'\pzm' & zero or more,     \verb' *( | )'  \hfill (s)\\
+\hline \verb'\pom' & one or more,      \verb' +( | )'  \hfill (s)\\
+\hline \verb'\peo' & exactly one,      \verb' @( | )'  \hfill (s)\\
+\hline \verb'\pae' & anything except,  \verb' !( | )'  \hfill (s)\\
+\hline \verb'\ppc' & POSIX classes                     \hfill (T)\\
+\hline \verb'\pbr' &  \verb'${BASH_REMATCH[0'$\ldots$\verb'3]}'  \hfill (T)\\
 \hline
 %
 %%----------------------------------------------------------------------
@@ -253,8 +241,21 @@ tab-completion: {\normalsize (T)} specialized,
 \hline \verb'\ntw' & template setup wizard     \\
 \hline \verb'\nts' & choose style              \hfill (T)\\
 \hline
-\end{tabular}\\
+\end{tabular}\\[1.0ex]
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%----------------------------------------------------------------------
+%%  box Footnotes   [[[2
+%%----------------------------------------------------------------------
+\begin{minipage}[b]{72mm}%
+\scriptsize{%
+all hotkeys work in normal and insert mode \\
+visual mode: {\normalsize (v)} use the range,
+{\normalsize (s)} surround range \\
+tab-completion: {\normalsize (T)} specialized,
+{\normalsize (F)} filenames
+}%
+\end{minipage}
 % ]]]2
 %
 \newpage
@@ -283,6 +284,11 @@ tab-completion: {\normalsize (T)} specialized,
 \hline \verb'\rh'  & hardcopy buffer                      \hfill (v)\\
 \hline \verb'\rs'  & plug-in settings                     \\
 \hline
+\hline \verb'\ra'  & set script cmd. line arguments       \hfill {(\textit{d})}\\
+\hline \verb'\rba' & set interp. cmd. line arguments      \hfill {(\textit{d})}\\
+\hline \verb'\rc'  & check syntax                         \hfill {(\textit{d})}\\
+\hline \verb'\rco' & syntax check options                 \hfill {(\textit{d})}\\
+\hline
 %%----------------------------------------------------------------------
 %%  buffer "Bash Output"				[[[2
 %%----------------------------------------------------------------------
@@ -291,8 +297,23 @@ tab-completion: {\normalsize (T)} specialized,
 \hline \verb'\qf'  & load errors into quickfix             \\
 \hline \verb'\qj'  & load into qf.~and jump to first error \\
 \hline
-\end{tabular}\\[2.5ex]
+\end{tabular}\\[1.0ex]
 %%~~~~~ TABULAR :  end  ~~~~~~~~~~
+%
+%%----------------------------------------------------------------------
+%%  box Footnotes   [[[2
+%%----------------------------------------------------------------------
+\begin{minipage}[b]{72mm}%
+\scriptsize{%
+{\normalsize (\textit{d})} deprecated, will be removed in next version
+}%
+\end{minipage}
+% ]]]2
+\columnbreak
+%
+%%======================================================================
+%%  page 2 / table, middle part				[[[1
+%%======================================================================
 %
 %%----------------------------------------------------------------------
 %%  Run Bash   [[[2
