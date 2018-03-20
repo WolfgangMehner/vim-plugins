@@ -2039,16 +2039,16 @@ function! s:InitMenus()
 	exe vhead.'save\ +\ &run\ script<Tab>'.esc_mapl.'rr            :call <SID>Run("","v")<CR>'
 	exe ihead.'save\ +\ &run\ script<Tab>'.esc_mapl.'rr       <C-C>:call <SID>Run("","n")<CR>'
 
-	exe ahead_loud.'script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra             <Plug>BashSupportSetBashScriptArgs'
-	exe ihead_loud.'script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra        <C-C><Plug>BashSupportSetBashScriptArgs'
-	exe ahead_loud.'interpreter\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'rba       <Plug>BashSupportSetBashInterpArgs'
-	exe ihead_loud.'interpreter\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'rba  <C-C><Plug>BashSupportSetBashInterpArgs'
+	exe ahead_loud.'script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'rsa            <Plug>BashSupportSetBashScriptArgs'
+	exe ihead_loud.'script\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'rsa       <C-C><Plug>BashSupportSetBashScriptArgs'
+	exe ahead_loud.'interpreter\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ria       <Plug>BashSupportSetBashInterpArgs'
+	exe ihead_loud.'interpreter\ cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ria  <C-C><Plug>BashSupportSetBashInterpArgs'
 
-  exe ahead.'check\ &syntax<Tab>'.esc_mapl.'rc       :call <SID>SyntaxCheck()<CR>'
-  exe ihead.'check\ &syntax<Tab>'.esc_mapl.'rc  <C-C>:call <SID>SyntaxCheck()<CR>'
+	exe ahead.'check\ &syntax<Tab>'.esc_mapl.'rk       :call <SID>SyntaxCheck()<CR>'
+	exe ihead.'check\ &syntax<Tab>'.esc_mapl.'rk  <C-C>:call <SID>SyntaxCheck()<CR>'
 
-	exe ahead_loud.'syntax\ check\ o&ptions<Tab>'.esc_mapl.'rco       <Plug>BashSupportSetBashSyntaxOpts'
-	exe ihead_loud.'syntax\ check\ o&ptions<Tab>'.esc_mapl.'rco  <C-C><Plug>BashSupportSetBashSyntaxOpts'
+	exe ahead_loud.'syntax\ check\ o&ptions<Tab>'.esc_mapl.'rso       <Plug>BashSupportSetBashSyntaxOpts'
+	exe ihead_loud.'syntax\ check\ o&ptions<Tab>'.esc_mapl.'rso  <C-C><Plug>BashSupportSetBashSyntaxOpts'
 
 	exe ahead.'&buffer\ "Bash\ Output\/Term".buffer\ "Bash\ Output\/Term"  :echo "This is a menu header."<CR>'
 	exe ahead.'&buffer\ "Bash\ Output\/Term".-SepHead-              :'
@@ -2263,16 +2263,32 @@ function! s:CreateAdditionalMaps ()
 	nnoremap    <buffer>  <silent>  <LocalLeader>rr        :call <SID>Run("","n")<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rr   <Esc>:call <SID>Run("","n")<CR>
 	vnoremap    <buffer>  <silent>  <LocalLeader>rr        :call <SID>Run("","v")<CR>
+	nnoremap    <buffer>  <silent>  <LocalLeader>rk        :call <SID>SyntaxCheck()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rk   <C-C>:call <SID>SyntaxCheck()<CR>
+	vnoremap    <buffer>  <silent>  <LocalLeader>rk   <C-C>:call <SID>SyntaxCheck()<CR>
+
+	" :DEPRECATED:20.03.2018 17:30:WM: remove in next version
 	nnoremap    <buffer>  <silent>  <LocalLeader>rc        :call <SID>SyntaxCheck()<CR>
 	inoremap    <buffer>  <silent>  <LocalLeader>rc   <C-C>:call <SID>SyntaxCheck()<CR>
 	vnoremap    <buffer>  <silent>  <LocalLeader>rc   <C-C>:call <SID>SyntaxCheck()<CR>
 
 	" these maps have to remap
+	 map        <buffer>            <LocalLeader>rsa       <Plug>BashSupportSetBashScriptArgs
+	imap        <buffer>            <LocalLeader>rsa  <Esc><Plug>BashSupportSetBashScriptArgs
+	 map        <buffer>            <LocalLeader>ria       <Plug>BashSupportSetBashInterpArgs
+	imap        <buffer>            <LocalLeader>ria  <Esc><Plug>BashSupportSetBashInterpArgs
+
+	" :DEPRECATED:20.03.2018 17:30:WM: remove in next version
 	 map        <buffer>            <LocalLeader>ra        <Plug>BashSupportSetBashScriptArgs
 	imap        <buffer>            <LocalLeader>ra   <Esc><Plug>BashSupportSetBashScriptArgs
 	 map        <buffer>            <LocalLeader>rba       <Plug>BashSupportSetBashInterpArgs
 	imap        <buffer>            <LocalLeader>rba  <Esc><Plug>BashSupportSetBashInterpArgs
 
+	nmap        <buffer>            <LocalLeader>rso       <Plug>BashSupportSetBashSyntaxOpts
+	imap        <buffer>            <LocalLeader>rso  <C-C><Plug>BashSupportSetBashSyntaxOpts
+	vmap        <buffer>            <LocalLeader>rso  <C-C><Plug>BashSupportSetBashSyntaxOpts
+
+	" :DEPRECATED:20.03.2018 17:30:WM: remove in next version
 	nmap        <buffer>            <LocalLeader>rco       <Plug>BashSupportSetBashSyntaxOpts
 	imap        <buffer>            <LocalLeader>rco  <C-C><Plug>BashSupportSetBashSyntaxOpts
 	vmap        <buffer>            <LocalLeader>rco  <C-C><Plug>BashSupportSetBashSyntaxOpts

@@ -13,12 +13,12 @@ Run
  --------------------------------------------------------------------------
   run		rr	rr	rr		rr	-	rr
   exec. to run	-	-	re		-	-	-
-  syntax check	rs>rk	rc>rk	-		rk	rk	rs>rk
-  s.c. options	-	rco	-		-	-	-
+  syntax check	rs>rk	rk	-		rk	rk	rs>rk
+  s.c. options	-	rso	-		-	-	-
   lint check	rl	-	-		-	-	-
   debugger	-	-	rd		-	-	rd
-  script args	ra	ra	ra		-	-	ra
-  interp. args	raa	rba			-	-	rw
+  script args	ra	rsa	ra		-	-	ra
+  interp. args	raa	ria			-	-	rw
   output dest.	ro	ro	ro	-	ro	-	ro	-
   direct run		rd	-	-	rd	-	-	-
   set exec.	-	rse	-	-	rse	-	-	-

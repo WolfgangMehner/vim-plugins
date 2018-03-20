@@ -730,10 +730,10 @@ Legend:  (i) insert mode, (n) normal mode, (v) visual mode
   -- Run ----------------------------------------------------
 
   [n]\rr     update file, run script             (n, i)
-     \ra     set script cmd. line arguments      (n, i)
-     \rba    set Bash cmd. line arguments        (n, i)
-     \rc     update file, check syntax           (n, i)
-     \rco    syntax check options                (n, i)
+     \rsa    set script cmd. line arguments      (n, i)
+     \ria    set Bash cmd. line arguments        (n, i)
+     \rk     update file, check syntax           (n, i)
+     \rso    syntax check options                (n, i)
      \ro     change output destination           (n, i)
      \rd     set "direct run"                    (n, i)
      \rse    set shell executable                (n, i)
