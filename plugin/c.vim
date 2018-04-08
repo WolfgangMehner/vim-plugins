@@ -17,9 +17,9 @@
 "
 "        Version:  see variable  g:C_Version  below
 "        Created:  04.11.2000
-"       Revision:  29.01.2017
+"       Revision:  08.04.2018
 "        License:  Copyright (c) 2000-2014, Fritz Mehner
-"                  Copyright (c) 2015-2016, Wolfgang Mehner
+"                  Copyright (c) 2015-2018, Wolfgang Mehner
 "                  This program is free software; you can redistribute it and/or
 "                  modify it under the terms of the GNU General Public License as
 "                  published by the Free Software Foundation, version 2 of the
@@ -2969,7 +2969,7 @@ endfunction    " ----------  end of function s:Initialize  ----------
 "-------------------------------------------------------------------------------
 
 "------------------------------------------------------------------------------
-"  setup the toolbox
+"  setup the toolbox   {{{2
 "------------------------------------------------------------------------------
 "
 if s:C_UseToolbox == 'yes'
@@ -2985,7 +2985,7 @@ if s:C_UseToolbox == 'yes'
 endif
 
 "------------------------------------------------------------------------------
-"  show / hide the C-Support menus
+"  show / hide the C-Support menus   {{{2
 "------------------------------------------------------------------------------
 
 call C_ToolMenu()
@@ -2995,7 +2995,7 @@ if s:C_LoadMenus == 'yes' && s:C_CreateMenusDelayed == 'no'
 endif
 
 "------------------------------------------------------------------------------
-"  Automated header insertion
+"  lazy initialization / automated header insertion   {{{2
 "
 "			Vim always adds the {cmd} after existing autocommands,
 "			so that the autocommands execute in the order in which
@@ -3017,8 +3017,8 @@ if has("autocmd")
 	" insert file header
 	if !exists( 'g:C_Styles' )
 		" template styles are the default settings
-		autocmd BufNewFile c    if expand("%:e") !~ 'ii\?' | call s:InsertFileHeader() | endif
-		autocmd BufNewFile cpp  if expand("%:e") !~ 'ii\?' | call s:InsertFileHeader() | endif
+		autocmd BufNewFile *  if &filetype == 'c'   && expand("%:e") !~ 'ii\?' | call s:InsertFileHeader() | endif
+		autocmd BufNewFile *  if &filetype == 'cpp' && expand("%:e") !~ 'ii\?' | call s:InsertFileHeader() | endif
 	else
 		" template styles are related to file extensions
 		for [ pattern, stl ] in items( g:C_Styles )
@@ -3033,6 +3033,9 @@ if has("autocmd")
 
 	augroup END
 endif " has("autocmd")
+" }}}2
+"-------------------------------------------------------------------------------
+
 " }}}1
 "-------------------------------------------------------------------------------
 
