@@ -236,7 +236,7 @@ the library, are case sensitive.
 
 A template library can be organized in several files. The command: >
 	IncludeFile ( "<path>/<file>" )
-loads templates from another file (|template-support-IncludeFile|). The path
+loads templates from another file (|template-support-IncludeFile()|). The path
 is given relative to the including file. The call: >
 	IncludeFile ( "<path>/<file>", "abs" )
 interprets the path as a absolute path instead.
@@ -295,7 +295,7 @@ found in |template-support-menus|.
 ------------------------------------------------------------------------------
 
 A personalization of the template library can be achieved by using macros. The
-command 'SetMacro' (|template-support-SetMacro|) is used to set replacements
+command 'SetMacro' (|template-support-SetMacro()|) is used to set replacements
 for various macros (my settings as an example):
 >
 	SetMacro( 'AUTHOR',       'Wolfgang Mehner' )
@@ -326,7 +326,7 @@ Then the template for the file description may look as follows:
 	== ENDTEMPLATE ==
 <
 The format of the included dates and times can be set in a similar fashion,
-using 'SetFormat' (|template-support-SetFormat|):
+using 'SetFormat' (|template-support-SetFormat()|):
 >
   SetFormat( 'DATE', '%D'      )
   SetFormat( 'TIME', '%H:%M'   )
@@ -478,7 +478,7 @@ Except for using flags, the user has no further influence on the replacements
 of these macros, they can not be set via SetMacro().
 
 Dates and timestamps are inserted analogously. Their format can be set via
-SetFormat (see |template-support-SetFormat|).
+SetFormat (see |template-support-SetFormat()|).
 
   *|TIME|*     : the current time
   *|DATE|*     : the current date
@@ -1154,7 +1154,7 @@ Templates inside nested statements are only associated with the styles
 listed in the innermost "USE STYLES" statement.
 
 When files are included inside a "USE STYLES" statement (see
-|template-support-IncludeFile|), the templates inside the file are associated
+|template-support-IncludeFile()|), the templates inside the file are associated
 with the style, as they would if they appeared in the including file itself.
 The rules for nested "USE STYLES" statements also hold across included files.
 
@@ -1168,7 +1168,7 @@ directory, such the include mechanism of the C preprocessor or LaTeX's
 support offers so-called file pickers.
 
 File pickers are templates which use the command PickFile( <prompt>, <path> )
-(|template-support-PickFile|), which asks the user to interactively select a
+(|template-support-PickFile()|), which asks the user to interactively select a
 file:
 >
 	SetPath( 'global_include', '/usr/include/' )
@@ -1187,10 +1187,10 @@ beforehand, such as "global_include". After the user selects a file, several
 macros are created which can be used in the template. *|PICK|* is the path and
 name of the file, relative to the path given as the second argument.
 *|FILENAME|* is only the name of the file. For a list of all macros, see
-|template-support-PickFile|.
+|template-support-PickFile()|.
 
 Names for paths are created using the function SetPath( <name>, <path> )
-(see |template-support-SetPath|), which is a lot like SetMacro.
+(see |template-support-SetPath()|), which is a lot like SetMacro.
 
 For example, if the user picks "/usr/include/GL/gl.h", the first template
 would result in the line >
@@ -1217,7 +1217,7 @@ directory.
 
 The template support automatically creates menus for every template. The user
 has a measure of influence on the result. Some of these options were already
-explained in |templates-support-templ-maps|, this chapter will introduce further
+explained in |template-support-templ-maps|, this chapter will introduce further
 capabilities.
 
 The menu entries appear in the order the templates have been read. Including a
@@ -1326,7 +1326,7 @@ flag is 'W', the |WORD| under the cursor is picked up: >
 	|Word('W')|
 Otherwise the |word| under the cursor is picked: >
 	|Word('')|
-Lastly, the word can be picked using a regular expression (see |regex|): >
+Lastly, the word can be picked using a regular expression (see |regexp|): >
 	|Pattern( '[\\@]\w\+' )|
 This call picks a word prefix by "\" or "@", which in a C comment could be a
 Doxygen command.
