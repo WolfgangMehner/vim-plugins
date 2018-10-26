@@ -181,7 +181,7 @@ RELEASE NOTES FOR VERSION 2.0beta
 - Add command :LatexErrors and map ´re to view errors from background processing
   in quickfix.
 - BibTeX errors are recognized by quickfix.
-- Add a converter 'eps-pdf'.
+- Add a conversion 'eps-pdf'.
 - The templates which are inserted into new files as file skeletons can be
   specified in the templates library, via the property:
     `Latex::FileSkeleton::Script`
