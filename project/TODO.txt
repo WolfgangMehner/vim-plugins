@@ -27,7 +27,7 @@ Project:
 
 vim.org:
 - (DONE) Reference GitHub on plug-in pages.
-- All links should use 'https://vim.sourceforge.io'
+- All links should use 'https://www.vim.org'
 
 Templates:
 - (DONE) API 'EditTemplateFiles'.

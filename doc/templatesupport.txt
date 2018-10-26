@@ -31,9 +31,9 @@ can exist in parallel. This makes it relatively easy to write a plug-in for
 the programming language of your choice.
 
 Here is a list of high profile plug-ins which use the template support:
-- Bash-Support (https://vim.sourceforge.io/scripts/script.php?script_id=365)
-- C-Support (https://vim.sourceforge.io/scripts/script.php?script_id=213)
-- Perl-Support (https://vim.sourceforge.io/scripts/script.php?script_id=556)
+- Bash-Support (https://www.vim.org/scripts/script.php?script_id=365)
+- C-Support (https://www.vim.org/scripts/script.php?script_id=213)
+- Perl-Support (https://www.vim.org/scripts/script.php?script_id=556)
 
 ==============================================================================
 0.  TABLE OF CONTENTS                              *template-support-contents*
@@ -3208,7 +3208,7 @@ Fritz Mehner (vim.org user name: mehner):
 Jeremy Cantrell (jmcantrell):
 - the solution for getting the visual area is take from his plug-in
   "opener.vim", which is distributed under the same licence as Vim itself
-  ( https://vim.sourceforge.io/scripts/script.php?script_id=3543 )
+  ( https://www.vim.org/scripts/script.php?script_id=3543 )
 
 Andrew L:
 - suggested to insert a breakpoint into the undo sequence before inserting
