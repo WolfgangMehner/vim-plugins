@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>Vim Plug-Ins - Getting Started</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<link rel="stylesheet" type="text/css" href="vimstyle_select.css">
+	</head>
+	<body>
+
+		<!-- ::GUIDE::START:: -->
+		<div class="selection_top">
+			<div class="selection_hack" id=selection_awk></div>
+			<div class="selection_hack" id=selection_bash></div>
+			<div class="selection_hack" id=selection_cpp></div>
+			<div class="selection_hack" id=selection_lua></div>
+			<div class="selection_hack" id=selection_perl></div>
+			<div class="selection_hack" id=selection_tex></div>
+			<div class="selection_hack" id=selection_vim></div>
+
+			<div class="selection_line">
+			<b>Select your plug-in:</b> &nbsp;
+			<a select="awk"  title="Set-up for AWK-Support"   href="#selection_awk" >AWK</a> &dash;
+			<a select="bash" title="Set-up for Bash-Support"  href="#selection_bash">Bash</a> &dash;
+<!--			<a select="cpp"  title="Set-up for C-Support"     href="#selection_cpp" >C/C++</a> &dash;-->
+			<a select="tex"  title="Set-up for LaTeX-Support" href="#selection_tex" >LaTeX</a> &dash;
+			<a select="lua"  title="Set-up for Lua-Support"   href="#selection_lua" >Lua</a> &dash;
+			<a select="perl" title="Set-up for Perl-Support"  href="#selection_perl">Perl</a> &dash;
+			<a select="vim"  title="Set-up for Vim-Support"   href="#selection_vim" >VimL/VimScript</a>
+			</div>
+
+			<table class=plugin_setup>
+				<thead><tr><th>Installation</th></tr></thead>
+				<tbody>
+					<tr select="awk bash cpp tex lua perl vim">
+						<td>
+							<p>Install the plug-in using a plug-in manager or by unpacking the archive inside the folder <code>$HOME/.vim</code> (Linux) or <code>$HOME/vimfiles</code> (Windows).
+							Then make the plug-in help available by rebuild the helptags. The argument is the folder <code>doc</code> inside the directory where the plug-in is installed, e.g.:
+							<pre>:helptags $HOME/.vim/doc/</pre>
+							<p>Make sure there is a file <code>$HOME/.vimrc</code> (Linux) or <code>$HOME/_vimrc</code> (Windows) with the following line, so that the plug-ins are loaded:
+							<pre>filetype plugin on</pre>
+							<p>The configuration variables listed below also go into the <i>vimrc</i> file, e.g.:
+							<pre select="no"  >dodobob</pre>
+							<pre select="awk" >let g:Awk_InsertFileHeader = 'no'</pre>
+							<pre select="bash">let g:BASH_InsertFileHeader = 'no'</pre>
+							<pre select="cpp" >let g:C_InsertFileHeader = 'no'</pre>
+							<pre select="tex" >let g:Latex_InsertFileProlog = 'no'</pre>
+							<pre select="lua" >let g:Lua_InsertFileHeader = 'no'</pre>
+							<pre select="perl">let g:Perl_InsertFileHeader = 'no'</pre>
+							<pre select="vim" >let g:Vim_MapLeader = '#'</pre>
+							<pre select="no"  >dodobob</pre>
+							<p>The plug-in ships with an extensive example <i>vimrc</i> file, which can be found in the archive or repo:
+							<pre select="no"  >dodobob</pre>
+							<pre select="awk" >awk-support/rc/customization.vimrc</pre>
+							<pre select="bash">bash-support/rc/customization.vimrc</pre>
+							<pre select="cpp" >c-support/rc/customization.vimrc</pre>
+							<pre select="tex" >latex-support/rc/customization.vimrc</pre>
+							<pre select="lua" >lua-support/rc/customization.vimrc</pre>
+							<pre select="perl">perl-support/rc/customization.vimrc</pre>
+							<pre select="vim" >vim-support/rc/customization.vimrc</pre>
+						</td>
+					</tr>
+				</tbody>
+				<thead><tr><th>Documentation</th></tr></thead>
+				<tbody>
+					<tr select="awk bash cpp tex lua perl vim">
+						<td>
+							<p>The documention of the plug-in is avaiable through the build-in help system:
+							<pre select="no"  >dodobob</pre>
+							<pre select="awk" >:help awk-support</pre>
+							<pre select="bash">:help bash-support</pre>
+							<pre select="cpp" >:help c-support</pre>
+							<pre select="tex" >:help latex-support</pre>
+							<pre select="lua" >:help lua-support</pre>
+							<pre select="perl">:help perl-support</pre>
+							<pre select="vim" >:help vim-support</pre>
+						</td>
+					</tr>
+					<!-- TODO: enable for further plug-ins -->
+					<tr select="bash tex lua vim">
+						<td>
+							<p>Help is also avaiable for all configuration options and ex-commands:
+							<pre select="no"  >dodobob</pre>
+							<pre select="awk" >:help</pre>
+							<pre select="bash">:help g:BASH_Executable<br>:help :BashOutputMethod</pre>
+							<pre select="cpp" >:help</pre>
+							<pre select="tex" >:help g:Latex_Typesetter<br>:help :LatexProcessing</pre>
+							<pre select="lua" >:help g:Lua_Executable<br>:help :LuaOutputMethod</pre>
+							<pre select="perl">:help</pre>
+							<pre select="vim" >:help g:Vim_CreateMapsForHelp</pre>
+						</td>
+					</tr>
+					<tr select="awk bash cpp tex perl vim">
+						<td>
+							<p>For an overview of the maps, see the hotkey sheet:
+							<pre select="no"  >dodobob</pre>
+							<pre select="awk" >awk-support/doc/awk-hotkeys.pdf</pre>
+							<pre select="bash">bash-support/doc/bash-hotkeys.pdf</pre>
+							<pre select="cpp" >c-support/doc/c-hotkeys.pdf</pre>
+							<pre select="tex" >latex-support/doc/latex-hotkeys.pdf</pre>
+							<pre select="perl">perl-support/doc/perl-hot-keys.pdf</pre>
+							<pre select="vim" >vim-support/doc/vim-hotkeys.pdf</pre>
+						</td>
+					</tr>
+				</tbody>
+				<thead><tr><th>Configuration Options</th></tr></thead>
+				<tbody>
+					<tr select="awk bash cpp tex lua perl vim">
+						<td>
+							<p>Set the mapleader used by the plug-in:
+							<pre select="no"  >dodobob</pre>
+							<pre select="awk" >let g:Awk_MapLeader = '#'</pre>
+							<pre select="bash">let g:BASH_MapLeader = '#'</pre>
+							<pre select="cpp" >let g:C_MapLeader = '#'</pre>
+							<pre select="tex" >let g:Latex_MapLeader = '#'</pre>
+							<pre select="lua" >let g:Lua_MapLeader = '#'</pre>
+							<pre select="perl">let g:Perl_MapLeader = '#'</pre>
+							<pre select="vim" >let g:Vim_MapLeader = '#'</pre>
+							<pre select="no"  >dodobob</pre>
+							<div><p>Now all maps start with the character <code>#</code>, e.g. to comment out some lines of code use <code>#cc</code>.</div>
+						</td>
+					</tr>
+				</tbody>
+				<thead><tr><th>External Programs</th></tr></thead>
+				<tbody>
+					<tr select="vim">
+						<td>
+							<p><i>not applicable</i>
+						</td>
+					</tr>
+					<tr select="awk bash perl">
+						<td>
+							<p>Set the script interpreter:
+							<pre select="no"  >dodobob</pre>
+							<pre select="awk" >let g:Awk_Executable = '/usr/local/bin/awk'</pre>
+							<pre select="bash">let g:BASH_Executable = '/usr/local/bin/bash'</pre>
+							<pre select="perl">let g:Perl_Executable = '/usr/local/bin/perl'</pre>
+						</td>
+					</tr>
+					<tr select="lua">
+						<td>
+							<p>Configure the path where to find all the executables:
+							<pre select="lua">let g:Lua_BinPath = $HOME.'/lua52/bin'</pre>
+							<p>Or set the script interpreter and compiler individually:
+							<pre select="lua">let g:Lua_Executable   = '/usr/local/bin/lua'</pre>
+							<pre select="lua">let g:Lua_CompilerExec = '/usr/local/bin/luac'</pre>
+							<p>Because of the lack of a standard, the extension for compiled files can be changed as well:
+							<pre select="lua">let g:Lua_CompiledExtension = 'lc'</pre>
+						</td>
+					</tr>
+					<tr select="tex">
+						<td>
+							<p>Choose the typesetter used on start-up:
+							<pre>let g:Latex_Typesetter = 'luatex'</pre>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<!-- ::GUIDE::END:: -->
+
+	</body>
+</html>

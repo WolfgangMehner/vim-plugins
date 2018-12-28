@@ -1,0 +1,128 @@
+@import "vimstyle.css";
+
+table.plugin_setup > thead > tr > th,
+table.plugin_setup > tbody > tr > td
+{
+	padding:2px;
+	vertical-align:top;
+}
+
+table.plugin_setup > thead > tr > th
+{
+	padding-top:15px;
+	padding-left:2.0em;
+	text-align:left;
+}
+
+table.plugin_setup > tbody > tr > td
+{
+/*	border-bottom-style:solid;*/
+/*	border-bottom-width:3px;*/
+/*	border-bottom-color:SkyBlue;*/
+
+	font-family:serif;
+}
+
+/*
+ * Targets for the selection process:
+ * - prevent the page from jumping when clicking a link
+ */
+div.selection_hack
+{
+	display:none;
+}
+
+/*
+ * Container for the selection links:
+ * - adjust placement
+ */
+div.selection_line
+{
+	padding-top:0.5em;
+	padding-bottom:0.5em;
+	padding-left:1.0em;
+}
+
+/*
+ * Links for the selection process:
+ * - highlight when selected
+ */
+div#selection_awk:target  ~ * a[select~=awk] ,
+div#selection_bash:target ~ * a[select~=bash] ,
+div#selection_cpp:target  ~ * a[select~=cpp] ,
+div#selection_lua:target  ~ * a[select~=lua] ,
+div#selection_perl:target ~ * a[select~=perl] ,
+div#selection_tex:target  ~ * a[select~=tex] ,
+div#selection_vim:target  ~ * a[select~=vim]
+{
+	color:#a000ff;
+}
+
+/*
+ * Table Rows:
+ * - collapse/hide by default, visible when the associated target is selected
+ */
+div.selection_hack ~ * tr[select]
+{
+	visibility: collapse;
+}
+div#selection_awk:target  ~ * tr[select~=awk] ,
+div#selection_bash:target ~ * tr[select~=bash] ,
+div#selection_cpp:target  ~ * tr[select~=cpp] ,
+div#selection_lua:target  ~ * tr[select~=lua] ,
+div#selection_perl:target ~ * tr[select~=perl] ,
+div#selection_tex:target  ~ * tr[select~=tex] ,
+div#selection_vim:target  ~ * tr[select~=vim]
+{
+	visibility: visible;
+}
+
+/*
+ * Code Blocks:
+ * - collapse/hide by default, visible when the associated target is selected
+ * - take up no space when not selected
+ * - adjust none collapsible blocks
+ */
+div.selection_hack ~ * pre
+{
+	margin : 6px;
+}
+
+div.selection_hack ~ * pre[select]
+{
+	visibility: collapse;
+	height: 0px;
+	margin: 0px;
+}
+div#selection_awk:target  ~ * pre[select~=awk] ,
+div#selection_bash:target ~ * pre[select~=bash] ,
+div#selection_cpp:target  ~ * pre[select~=cpp] ,
+div#selection_lua:target  ~ * pre[select~=lua] ,
+div#selection_perl:target ~ * pre[select~=perl] ,
+div#selection_tex:target  ~ * pre[select~=tex] ,
+div#selection_vim:target  ~ * pre[select~=vim]
+{
+	visibility: visible;
+	height: auto;
+	margin: 6px;
+}
+
+/*
+ * Code:
+ * - collapse/hide by default, visible when the associated target is selected
+ * - take up no space when not selected
+ */
+div.selection_hack ~ * code[select]
+{
+	visibility: collapse;
+}
+div#selection_awk:target  ~ * code[select~=awk] ,
+div#selection_bash:target ~ * code[select~=bash] ,
+div#selection_cpp:target  ~ * code[select~=cpp] ,
+div#selection_lua:target  ~ * code[select~=lua] ,
+div#selection_perl:target ~ * code[select~=perl] ,
+div#selection_tex:target  ~ * code[select~=tex] ,
+div#selection_vim:target  ~ * code[select~=vim]
+{
+	visibility: visible;
+}

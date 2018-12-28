@@ -380,6 +380,30 @@ config.vim = {
 	},
 }
 
+local template_guide = {
+	filename = 'template_guide.html',
+}
+
+template_guide.order = {
+	'head',
+	'HTML_HEAD',
+	'head_body',
+	'TITLE_BAR',
+	'GUIDE',
+	'FOOTER',
+	'body',
+}
+
+config.guide = {
+	input    = 'guide_content.html',
+	output   = 'guide.html',
+	template = template_guide,
+	fields = {
+		MAINTAINER_NAME = 'Wolfgang Mehner',
+		MAINTAINER_MAIL = 'wolfgang-mehner@web.de',
+	},
+}
+
 local template_news = {
 	filename = 'template_news.html',
 }

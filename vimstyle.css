@@ -46,6 +46,11 @@ hr
 	border-width:1px;
 }
 
+br.height150
+{
+	line-height: 150%;
+}
+
 p.footnote
 {
   font-size:0.5em;
