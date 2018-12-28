@@ -19,16 +19,18 @@
 
 			<div class="selection_line">
 			<b>Select your plug-in:</b> &nbsp;
-			<a select="awk"  title="Set-up for AWK-Support"   href="#selection_awk" >AWK</a> &dash;
-			<a select="bash" title="Set-up for Bash-Support"  href="#selection_bash">Bash</a> &dash;
+<!--			<a select="awk"  title="Set-up for AWK-Support"   href="#selection_awk" >AWK</a> &dash;-->
+<!--			<a select="bash" title="Set-up for Bash-Support"  href="#selection_bash">Bash</a> &dash;-->
 <!--			<a select="cpp"  title="Set-up for C-Support"     href="#selection_cpp" >C/C++</a> &dash;-->
 			<a select="tex"  title="Set-up for LaTeX-Support" href="#selection_tex" >LaTeX</a> &dash;
 			<a select="lua"  title="Set-up for Lua-Support"   href="#selection_lua" >Lua</a> &dash;
-			<a select="perl" title="Set-up for Perl-Support"  href="#selection_perl">Perl</a> &dash;
+<!--			<a select="perl" title="Set-up for Perl-Support"  href="#selection_perl">Perl</a> &dash;-->
 			<a select="vim"  title="Set-up for Vim-Support"   href="#selection_vim" >VimL/VimScript</a>
 			</div>
 
 			<div class=plugin_setup>
+
+			<h1>Overview</h1>
 
 			<h1>Installation</h1>
 			<div select="awk bash cpp tex lua perl vim">
@@ -72,7 +74,7 @@
 			</div>
 			<!-- TODO: enable for further plug-ins -->
 			<div select="bash tex lua vim">
-				<p>Help is also avaiable for all configuration options and ex-commands:
+				<p>Help is also available for all configuration options and ex-commands:
 				<pre select="no"  >dodobob</pre>
 				<pre select="awk" >:help</pre>
 				<pre select="bash">:help g:BASH_Executable<br>:help :BashOutputMethod</pre>
@@ -108,7 +110,7 @@
 				<div><p>Now all maps start with the character <code>#</code>, e.g. to comment out some lines of code use <code>#cc</code>.</div>
 			</div>
 
-			<h1>External Programs</h1>
+			<h2>External Programs</h2>
 			<div select="vim">
 				<p><i>not applicable</i>
 			</div>
@@ -132,6 +134,8 @@
 				<p>Choose the typesetter used on start-up:
 				<pre>let g:Latex_Typesetter = 'luatex'</pre>
 			</div>
+
+			<h1>Templates</h1>
 
 			</div>
 		</div>
