@@ -1,28 +1,5 @@
 @import "vimstyle.css";
 
-table.plugin_setup > thead > tr > th,
-table.plugin_setup > tbody > tr > td
-{
-	padding:2px;
-	vertical-align:top;
-}
-
-table.plugin_setup > thead > tr > th
-{
-	padding-top:15px;
-	padding-left:2.0em;
-	text-align:left;
-}
-
-table.plugin_setup > tbody > tr > td
-{
-/*	border-bottom-style:solid;*/
-/*	border-bottom-width:3px;*/
-/*	border-bottom-color:SkyBlue;*/
-
-	font-family:serif;
-}
-
 /*
  * Targets for the selection process:
  * - prevent the page from jumping when clicking a link
@@ -38,9 +15,9 @@ div.selection_hack
  */
 div.selection_line
 {
-	padding-top:0.5em;
-	padding-bottom:0.5em;
-	padding-left:1.0em;
+	margin-top:0.5em;
+	margin-bottom:0.5em;
+	margin-left:1.0em;
 }
 
 /*
@@ -62,19 +39,19 @@ div#selection_vim:target  ~ * a[select~=vim]
  * Table Rows:
  * - collapse/hide by default, visible when the associated target is selected
  */
-div.selection_hack ~ * tr[select]
+div.selection_hack ~ * div[select]
 {
-	visibility: collapse;
+	display: none;
 }
-div#selection_awk:target  ~ * tr[select~=awk] ,
-div#selection_bash:target ~ * tr[select~=bash] ,
-div#selection_cpp:target  ~ * tr[select~=cpp] ,
-div#selection_lua:target  ~ * tr[select~=lua] ,
-div#selection_perl:target ~ * tr[select~=perl] ,
-div#selection_tex:target  ~ * tr[select~=tex] ,
-div#selection_vim:target  ~ * tr[select~=vim]
+div#selection_awk:target  ~ * div[select~=awk] ,
+div#selection_bash:target ~ * div[select~=bash] ,
+div#selection_cpp:target  ~ * div[select~=cpp] ,
+div#selection_lua:target  ~ * div[select~=lua] ,
+div#selection_perl:target ~ * div[select~=perl] ,
+div#selection_tex:target  ~ * div[select~=tex] ,
+div#selection_vim:target  ~ * div[select~=vim]
 {
-	visibility: visible;
+	display: initial;
 }
 
 /*
@@ -90,9 +67,7 @@ div.selection_hack ~ * pre
 
 div.selection_hack ~ * pre[select]
 {
-	visibility: collapse;
-	height: 0px;
-	margin: 0px;
+	display: none;
 }
 div#selection_awk:target  ~ * pre[select~=awk] ,
 div#selection_bash:target ~ * pre[select~=bash] ,
@@ -102,9 +77,7 @@ div#selection_perl:target ~ * pre[select~=perl] ,
 div#selection_tex:target  ~ * pre[select~=tex] ,
 div#selection_vim:target  ~ * pre[select~=vim]
 {
-	visibility: visible;
-	height: auto;
-	margin: 6px;
+	display: block;
 }
 
 /*
@@ -114,7 +87,7 @@ div#selection_vim:target  ~ * pre[select~=vim]
  */
 div.selection_hack ~ * code[select]
 {
-	visibility: collapse;
+	display: none;
 }
 div#selection_awk:target  ~ * code[select~=awk] ,
 div#selection_bash:target ~ * code[select~=bash] ,
@@ -124,5 +97,10 @@ div#selection_perl:target ~ * code[select~=perl] ,
 div#selection_tex:target  ~ * code[select~=tex] ,
 div#selection_vim:target  ~ * code[select~=vim]
 {
-	visibility: visible;
+	display: initial;
+}
+
+div.plugin_setup pre
+{
+	margin-left: 12px;
 }
