@@ -1,4 +1,4 @@
-*latexsupport.txt*               LaTeX Support                     Feb 24 2018
+*latexsupport.txt*               LaTeX Support                     Jan 06 2019
 
 LaTeX Support                                     *latex-support* *latexsupport*
 
@@ -361,7 +361,7 @@ External tools like the typesetters and BibTeX can be run with a keystroke.
  ----------------------------------------------------------------------------
 
 The functionality is also available through ex-commands. These commands can
-also be used to set different maps in the ftplugin.
+also be used to set different maps in the |ftplugin|.
 
   Command                        Explanation
  ----------------------------------------------------------------------------
@@ -385,11 +385,11 @@ the menu entry "Run->save + run typesetter" or the ex-command |:Latex|. Using
 the command, you can also run LaTeX for other files: >
   :Latex some_other_doc.tex
 <
-You can run the typesetter in the background (requires the |+job| feature).
-Choose the processing mode via |:LatexProcessing|:  >
+You can run the typesetter in the background (requires the |+job| feature or
+Neovim). Choose the processing mode via |:LatexProcessing|:  >
   :LatexProcessing background
 Now you can continue working while your document is compiling. After the
-typesetter finished a message is displayed. In case of errors, you can load
+typesetter finishes, a message is displayed. In case of errors, you can load
 them into the |quickfix| buffer using: >
   :LatexErrors
 <
@@ -464,7 +464,7 @@ To define the following function keys in normal, visual, and insert mode:
          F9   run typesetter
     CTRL-F9   run viewer
 
-Add these lines to your Latex filetype plug-in: >
+add these lines to your Latex filetype plug-in: >
 
   nnoremap   <buffer>     <F9>        :Latex<CR>
   inoremap   <buffer>     <F9>   <Esc>:Latex<CR>
@@ -941,7 +941,7 @@ changed on-the-fly using: >
 <
 ------------------------------------------------------------------------------
 
-The converters are configured using the variables `g:Latex_<format>Viewer`:
+The viewers are configured using the variables `g:Latex_<format>Viewer`:
 
   Variable            Default Linux          Default Windows
  ----------------------------------------------------------------------------
@@ -977,7 +977,7 @@ setting the variable: >
  ----------------------------------------------------------------------------
   'foreground'   blocks the editor until the external process is done
   'background'   runs the process asynchronously and displays a message
-                 once it is done (requires the |+job| feature)
+                 once it is done (requires the |+job| feature or Neovim)
  ----------------------------------------------------------------------------
 
 The behavior can be changed on-the-fly using the menu entry or the ex-command: >
@@ -1027,7 +1027,7 @@ Sets the mapleader to '#'.
 
                                                         *Latex_SetMapLeader()*
                                                       *Latex_ResetMapLeader()*
-The configured mapleader can also be used in the ftplugin, by calling the
+The configured mapleader can also be used in the |ftplugin|, by calling the
 functions `Latex_SetMapLeader()` and `Latex_ResetMapLeader()`. The maps
 created between the two calls will use |g:Latex_MapLeader| as the
 |<LocalLeader>|:

@@ -18,7 +18,7 @@
 "       Created:  27.12.2012
 "      Revision:  07.02.2018
 "       License:  Copyright (c) 2012-2015, Fritz Mehner
-"                 Copyright (c) 2016-2018, Wolfgang Mehner
+"                 Copyright (c) 2016-2019, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -1584,7 +1584,7 @@ function! s:Lacheck ( args )
 
 	let v:statusmsg = ''                          " reset, so we are able to check it below
 	silent exe "make ".shellescape ( source )   | " do not jump to the first error
-	" :TODO:26.11.2016 22:12:WM: using make! here seems to cause v:statusmsg to
+	" :TRICKY:26.11.2016 22:12:WM: using make! here seems to cause v:statusmsg to
 	" never be set to a none-emtpy value
 
 	" restore current settings
