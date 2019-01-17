@@ -14,7 +14,7 @@
 "       Created:  26.02.2001
 "      Revision:  19.11.2017
 "       License:  Copyright (c) 2001-2015, Dr. Fritz Mehner
-"                 Copyright (c) 2016-2017, Wolfgang Mehner
+"                 Copyright (c) 2016-2019, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -809,11 +809,13 @@ call sort ( s:BASH_OutputMethodList )
 let s:BASH_DirectRun              = 'no'         " 'yes' or 'no'
 let s:BASH_LineEndCommColDefault	= 49
 let s:BASH_TemplateJumpTarget 		= ''
-let s:BASH_Errorformat            = '%f: %[%^0-9]%# %l:%m,%f: %l:%m,%f:%l:%m,%f[%l]:%m'
 let s:BASH_InsertFileHeader       = 'yes'
 let s:BASH_Ctrl_j                 = 'yes'
 let s:BASH_Ctrl_d                 = 'yes'
 let s:BASH_SyntaxCheckOptionsGlob = ''
+
+" errorformat: bash, dash, ksh, zsh, output of `caller <expr>`
+let s:BASH_Errorformat = '%f: %[%^0-9]%# %l:%m,%f: %l:%m,%f:%l:%m,%f[%l]:%m,%l %m %f'
 
 if ! exists ( 's:MenuVisible' )
 	let s:MenuVisible = 0                         " menus are not visible at the moment
