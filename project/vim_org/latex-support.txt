@@ -36,16 +36,13 @@ This plug-in comes with a help file (latexsupport.txt). Read it with
 Editing actions differ for different modes! There are a lot of features which
 can be configured or customized to match your needs.
 
-MAILING LIST
+GitHub
 --------------------------------------------------------
-You can subscribe to the vim-plugins-list mailing list to post your questions or
-suggestions for improvement or to report bugs. The list will also be used to
-announce new releases ( c.vim / perl-support / bash-support / latex-support ).
-Visit the following page for subscribing to the mailing list:
+LaTeX-Support is on GitHub. We are happy to receive your questions, suggestions, and bug reports here:
 
-    http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list
+    https://github.com/WolfgangMehner/vim-plugins
 
-The vim-plugins-list list is very low on traffic.
+(Please help us keep track of all the issues and name your report/request "LaTeX-Support: <title>")
 ================================================================================
 ===== install details
 ================================================================================

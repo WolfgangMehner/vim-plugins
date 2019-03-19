@@ -35,28 +35,21 @@ This plug-in comes with a help file (gitsupport.txt). Read it with
 
 GitHub
 --------------------------------------------------------
-Git Support is on GitHub:
+Git Support is on GitHub. We are happy to receive your questions, suggestions, and bug reports here:
 
     https://github.com/WolfgangMehner/vim-plugins
 
 (Please help us keep track of all the issues and name your report/request "Git-Support: <title>") 
-
-MAILING LIST
---------------------------------------------------------
-You can subscribe to the vim-plugins-list mailing list to post your questions or
-suggestions for improvement or to report bugs. The list will also be used to
-announce new releases ( c.vim / perl-support / bash-support / git-support ).
-Visit the following page for subscribing to the mailing list:
-
-    http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list
-
-The vim-plugins-list list is very low on traffic.
 ================================================================================
 ===== install details
 ================================================================================
 Copy the zip archive git-support.zip to $HOME/.vim/ (Linux/Unix) or
 $HOME/vimfiles (Windows) and run:
     unzip git-support.zip
+
+Redo the helptags (Linux/Windows):
+    :helptags $HOME/.vim/doc/
+    :helptags $HOME\vimfiles\doc\
 
 Windows: Set the correct executable. See git-support/README.gitsupport or: 
     :help g:Git_Executable

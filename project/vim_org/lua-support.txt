@@ -22,7 +22,7 @@ For plug-in managers :  https://github.com/WolfgangMehner/lua-support
 
 The help file online :  https://wolfgangmehner.github.io/vim-plugins/doc/luasupport.html
 
-While this plug-in is conceived as a successor of the original lua-support ( http://vim.sourceforge.net/scripts/script.php?script_id=1763 ), backwards compatibility is not guaranteed.
+While this plug-in is conceived as a successor of the original lua-support ( https://www.vim.org/scripts/script.php?script_id=1763 ), backwards compatibility is not guaranteed.
 However, we hope that the better configurability through the template library and other new features make for a product which is much better suited to deal with a language like Lua.
 
 
@@ -34,22 +34,11 @@ This plug-in comes with a help file (luasupport.txt). Read it with
 
 GitHub
 --------------------------------------------------------
-Lua-Support is on GitHub:
+Lua-Support is on GitHub. We are happy to receive your questions, suggestions, and bug reports here:
 
     https://github.com/WolfgangMehner/vim-plugins
 
 (Please help us keep track of all the issues and name your report/request "Lua-Support: <title>")
-
-MAILING LIST
---------------------------------------------------------
-You can subscribe to the vim-plugins-list mailing list to post your questions or
-suggestions for improvement or to report bugs. The list will also be used to
-announce new releases ( c.vim / perl-support / bash-support / lua-support ).
-Visit the following page for subscribing to the mailing list:
-
-    http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list
-
-The vim-plugins-list list is very low on traffic.
 ================================================================================
 ===== install details
 ================================================================================
