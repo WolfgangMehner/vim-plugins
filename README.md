@@ -43,15 +43,17 @@ Each plug-in comes with its own readme as well as an extensive documentation uti
 
     :help lua-support
 
-# Mailing List
+# Get Involved
 
-You can subscribe to the vim-plugins-list mailing list to post your questions or suggestions for improvement or to report bugs.
-The list will also be used to announce new releases.
-Visit the following page for subscribing to the mailing list:
+You are welcome to use the issue tracker to post questions, suggestions, and bug reports.
 
-[http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list](http://lug.fh-swf.de/cgi-bin/mailman/listinfo/vim-plugins-list)
+Please help us keep track of all the issues and name your report/request appropriately:
 
-The vim-plugins-list list is very low on traffic.
+    "Bash-Support: <title>"
+
+    "C-Support: <title>"
+
+    "...-Support: ..."
 
 # Contributing
 
