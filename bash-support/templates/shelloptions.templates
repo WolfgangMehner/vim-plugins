@@ -3,6 +3,7 @@
 § =============================================================
 
 == LIST: shopt == list ==
+'assoc_expand_once',
 'autocd',
 'cdable_vars',
 'cdspell',
@@ -16,6 +17,7 @@
 'compat41',
 'compat42',
 'compat43',
+'compat44',
 'complete_fullquote',
 'direxpand',
 'dirspell',
@@ -39,6 +41,8 @@
 'interactive_comments',
 'lastpipe',
 'lithist',
+'localvar_inherit',
+'localvar_unset',
 'login_shell',
 'mailwarn',
 'no_empty_cmd_completion',
@@ -46,6 +50,7 @@
 'nocasematch',
 'nullglob',
 'progcomp',
+'progcomp_alias',
 'promptvars',
 'restricted_shell',
 'shift_verbose',

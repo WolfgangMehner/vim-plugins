@@ -1,4 +1,4 @@
-README for bash-support.vim (Version 5.0alpha) / October 10 2017
+README for bash-support.vim (Version 5.0alpha) / April 02 2019
 ================================================================================
 
   *  INSTALLATION
@@ -188,7 +188,7 @@ RELEASE NOTES FOR VERSION 5.0alpha
 - Remove the definition of the maps `CTRL+F9`, `SHIFT+F9`, and `ALT+F9`.
   Add them to your filetype plug-in if you want to use them.
 - Integration of BashDB moved into the toolbox.
-- Add shell options and variables for BASH Version 4.4.
+- Add shell options and variables for BASH Version 4.4 and 5.0.
 - Minor corrections and improvements.
 
 Note: The filetype plug-in has been moved, and is thus not loaded automatically
