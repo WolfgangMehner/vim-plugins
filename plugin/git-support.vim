@@ -12,7 +12,7 @@
 "       Version:  see variable g:GitSupport_Version below
 "       Created:  06.10.2012
 "      Revision:  17.01.2018
-"       License:  Copyright (c) 2012-2016, Wolfgang Mehner
+"       License:  Copyright (c) 2012-2019, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -1127,19 +1127,25 @@ else
 endif
 "
 " syntax highlighting   {{{2
-"
-highlight default link GitComment     Comment
-highlight default      GitHeading     term=bold       cterm=bold       gui=bold
-highlight default link GitHighlight1  Identifier
-highlight default link GitHighlight2  PreProc
-highlight default      GitHighlight3  term=underline  cterm=underline  gui=underline
-highlight default link GitWarning     WarningMsg
-highlight default link GitSevere      ErrorMsg
-"
-highlight default link GitAdd         DiffAdd
-highlight default link GitRemove      DiffDelete
-highlight default link GitConflict    DiffText
-"
+
+function! s:HighlightingDefaults ()
+	highlight default link GitComment     Comment
+	highlight default      GitHeading     term=bold       cterm=bold       gui=bold
+	highlight default link GitHighlight1  Identifier
+	highlight default link GitHighlight2  PreProc
+	highlight default      GitHighlight3  term=underline  cterm=underline  gui=underline
+	highlight default link GitWarning     WarningMsg
+	highlight default link GitSevere      ErrorMsg
+
+	highlight default link GitAdd         DiffAdd
+	highlight default link GitRemove      DiffDelete
+	highlight default link GitConflict    DiffText
+endfunction    " ----------  end of function s:HighlightingDefaults  ----------
+
+augroup GitSupport
+	autocmd VimEnter,ColorScheme * call s:HighlightingDefaults()
+augroup END
+
 " }}}2
 "-------------------------------------------------------------------------------
 "
