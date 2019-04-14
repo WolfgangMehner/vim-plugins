@@ -1,4 +1,4 @@
-README for latex-support.vim (Version 2.0beta) / February 12 2018
+README for latex-support.vim (Version 2.0beta) / April 14 2019
 ================================================================================
 
   *  INSTALLATION

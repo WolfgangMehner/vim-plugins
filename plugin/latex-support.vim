@@ -16,7 +16,7 @@
 "
 "       Version:  see variable g:LatexSupportVersion below.
 "       Created:  27.12.2012
-"      Revision:  07.02.2018
+"      Revision:  14.04.2019
 "       License:  Copyright (c) 2012-2015, Fritz Mehner
 "                 Copyright (c) 2016-2019, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
@@ -1685,7 +1685,9 @@ function! s:View ( args )
 	endif
 
 	" run the command
-	if s:MSWIN
+	if s:NEOVIM
+		call jobstart ( viewer.' '.targetfile, { 'detach' : 1 } )
+	elseif s:MSWIN
 		silent exe '!start '.viewer.' '.targetfile
 	else
 		silent exe '!'.viewer.' '.targetfile.' &'
@@ -1907,10 +1909,16 @@ function! s:Texdoc( )
 	endif
 
 	if !empty(item)
-		let cmd = 'texdoc '.item.' &'
-		call system( cmd )
-		if v:shell_error
-			return s:ErrorMsg ( 'Shell command "'.cmd.'" failed.' )
+		if s:NEOVIM
+			let jobid = jobstart ( 'texdoc '.item, { 'detach' : 1 } )
+			if jobid <= 0
+				return s:ErrorMsg ( 'Shell command "texdoc '.item.'" failed.' )
+			endif
+		else
+			call system( 'texdoc '.item.' &' )
+			if v:shell_error
+				return s:ErrorMsg ( 'Shell command "texdoc '.item.'" failed.' )
+			endif
 		endif
 	endif
 endfunction		" ---------- end of function  s:Texdoc  ----------
@@ -2030,32 +2038,6 @@ function! s:RereadTemplates ()
 	let s:Latex_TemplateJumpTarget = mmtemplates#core#Resource ( g:Latex_Templates, "jumptag" )[0]
 	"
 endfunction    " ----------  end of function s:RereadTemplates  ----------
-
-"-------------------------------------------------------------------------------
-" s:CheckTemplatePersonalization : Check template personalization.   {{{1
-"
-" Check whether the |AUTHOR| has been set in the template library.
-" If not, display help on how to set up the template personalization.
-"-------------------------------------------------------------------------------
-let s:DoneCheckTemplatePersonalization = 0
-
-function! s:CheckTemplatePersonalization ()
-
-	" check whether the templates are personalized
-	if s:DoneCheckTemplatePersonalization
-				\ || mmtemplates#core#ExpandText ( g:Latex_Templates, '|AUTHOR|' ) != 'YOUR NAME'
-				\ || g:Latex_InsertFileProlog != 'yes'
-		return
-	endif
-
-	let s:DoneCheckTemplatePersonalization = 1
-
-	let maplead = mmtemplates#core#Resource ( g:Latex_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
-
-	redraw
-	call s:ImportantMsg ( 'The personal details are not set in the template library. Use the map "'.maplead.'ntw".' )
-
-endfunction    " ----------  end of function s:CheckTemplatePersonalization  ----------
 
 "-------------------------------------------------------------------------------
 " s:CheckAndRereadTemplates : Make sure the templates are loaded.   {{{1
@@ -2672,7 +2654,6 @@ function! s:Initialize ( ftype )
 	elseif a:ftype == 'bib'
 		call s:CreateAdditionalBibtexMaps()
 	endif
-	call s:CheckTemplatePersonalization()
 endfunction    " ----------  end of function s:Initialize  ----------
 
 "-------------------------------------------------------------------------------
