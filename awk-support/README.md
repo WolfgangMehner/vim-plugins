@@ -1,4 +1,4 @@
-README for awk-support.vim (Version 1.4pre) / October 11 2017
+README for awk-support.vim (Version 1.4pre) / April 19 2019
 ================================================================================
 
   *  INSTALLATION
@@ -56,7 +56,12 @@ structure which is needed below the local installation directory `$HOME/.vim/`
    This is the minimal content of the file `$HOME/.vimrc`. Create one if there
    is none or use the files in `$HOME/.vim/awk-support/rc` as a starting point.
 
-(1.3) Set at least some personal details. Use the map `\ntw` inside a Awk buffer
+(1.3) Make the plug-in help accessible by typing the following command on the
+   Vim command line:
+
+      :helptags $HOME/.vim/doc/
+
+(1.4) Set at least some personal details. Use the map `\ntw` inside a Awk buffer
    or the menu entry:
 
       Awk -> Snippets -> template setup wizard
@@ -74,11 +79,6 @@ structure which is needed below the local installation directory `$HOME/.vim/`
    Awk template library. It can also be set up via the wizard.
 
    (Read more about the template system in the plug-in documentation.)
-
-(1.4) Make the plug-in help accessible by typing the following command on the
-   Vim command line:
-
-      :helptags $HOME/.vim/doc/
 
 (1.5) Consider additional settings in the file `$HOME/.vimrc`. The files
    `customization.vimrc` and `customization.gvimrc` are replacements or extensions
@@ -113,7 +113,12 @@ structure which is needed below the local installation directory
    This is the minimal content of the file `$HOME/_vimrc`. Create one if there
    is none or use the files in `$HOME/vimfiles/awk-support/rc` as a starting point.
 
-(2.3) Set at least some personal details. Use the map `\ntw` inside a Awk buffer
+(2.3) Make the plug-in help accessible by typing the following command on the
+   Vim command line:
+
+      :helptags $HOME\vimfiles\doc\
+
+(2.4) Set at least some personal details. Use the map `\ntw` inside a Awk buffer
    or the menu entry:
 
       Awk -> Snippets -> template setup wizard
@@ -131,11 +136,6 @@ structure which is needed below the local installation directory
    your Awk template library. It can also be set up via the wizard.
 
    (Read more about the template system in the plug-in documentation.)
-
-(2.4) Make the plug-in help accessible by typing the following command on the
-   Vim command line:
-
-      :helptags $HOME\vimfiles\doc\
 
 (2.5) Consider additional settings in the file `$HOME/_vimrc`. The files
    `customization.vimrc` and `customization.gvimrc` are replacements or extensions
