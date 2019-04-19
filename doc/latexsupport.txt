@@ -107,8 +107,9 @@ advanced user (see |templatesupport.txt|).
 
 Features are accessible via menu entries and maps. Most maps are preceded by a
 mapleader. The leader is an acute accent "´", if the standard configuration is
-used. (The default mapleader in Vim, the backslash "\", is not an appropriate
-choice for typesetting in LaTeX.)
+used.
+(The default mapleader in Vim, the backslash "\", is not an appropriate choice
+for typesetting in LaTeX. The mapleader is configured via |g:Latex_MapLeader|)
 
 If the root menu 'LaTeX' is not visible you also can load it with the item
 "Load LaTeX Support" from the "Tools" menu. The item "Unload LaTeX Support"
