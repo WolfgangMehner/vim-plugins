@@ -12,9 +12,9 @@
 "                 Fritz Mehner <mehner.fritz@web.de>
 "       Version:  see g:BASH_Version below
 "       Created:  26.02.2001
-"      Revision:  19.11.2017
+"      Revision:  19.04.2019
 "       License:  Copyright (c) 2001-2015, Dr. Fritz Mehner
-"                 Copyright (c) 2016-2017, Wolfgang Mehner
+"                 Copyright (c) 2016-2019, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -325,8 +325,8 @@ function! s:ShellParseArgs ( line )
 			let curr .= mlist[1]
 			let line  = mlist[2]
 		else
-			" otherwise parse up to next space
-			let mlist = matchlist ( line, '^\(\S\+\)\(.*\)' )
+			" otherwise parse up to next special char.: space, backslash, quote
+			let mlist = matchlist ( line, '^\([^[:space:]\\''"]\+\)\(.*\)' )
 			let curr .= mlist[1]
 			let line  = mlist[2]
 		endif

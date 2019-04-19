@@ -57,12 +57,17 @@ structure which is needed below the local installation directory `$HOME/.vim/`
    This is the minimal content of the file `$HOME/.vimrc`. Create one if there
    is none or use the files in `$HOME/.vim/bash-support/rc` as a starting point.
 
-(1.3) Set at least some personal details. Use the map `\ntw` inside a Bash buffer
+(1.3) Make the plug-in help accessible by typing the following command on the
+   Vim command line:
+
+      :helptags $HOME/.vim/doc/
+
+(1.4) Set at least some personal details. Use the map `\ntw` inside a Bash buffer
    or the menu entry:
 
       Bash -> Snippets -> template setup wizard
 
-   It will help you set up the file _runtimepath_/templates/personal.templates .
+   It will help you set up the file `_runtimepath_/templates/personal.templates`.
    The file is read by all plug-ins supporting this feature to get your personal
    details. Here is the minimal personalization (my settings as an example):
 
@@ -76,11 +81,6 @@ structure which is needed below the local installation directory `$HOME/.vim/`
 
    (Read more about the template system in the plug-in documentation.)
 
-(1.4) Make the plug-in help accessible by typing the following command on the
-   Vim command line:
-
-      :helptags $HOME/.vim/doc/
-
 (1.5) Consider additional settings in the file `$HOME/.vimrc`. The files
    `customization.vimrc` and `customization.gvimrc` are replacements or extensions
    for your `.vimrc` and `.gvimrc`. You may want to use parts of them. The files
@@ -92,7 +92,7 @@ structure which is needed below the local installation directory `$HOME/.vim/`
 
 The subdirectories in the zip archive `bash-support.zip` mirror the directory
 structure which is needed below the local installation directory
-`$HOME/vimfiles/` (find the value of $HOME with `:echo $HOME` from inside Vim).
+`$HOME/vimfiles/` (find the value of `$HOME` with `:echo $HOME` from inside Vim).
 
 (2.0) Save the template files in `$HOME/vimfiles/bash-support/templates/Templates`
    if you have changed any of them.
@@ -114,12 +114,17 @@ structure which is needed below the local installation directory
    This is the minimal content of the file `$HOME/_vimrc`. Create one if there
    is none or use the files in `$HOME/vimfiles/bash-support/rc` as a starting point.
 
-(2.3) Set at least some personal details. Use the map `\ntw` inside a Bash buffer
+(2.3) Make the plug-in help accessible by typing the following command on the
+   Vim command line:
+
+      :helptags $HOME\vimfiles\doc\
+
+(2.4) Set at least some personal details. Use the map `\ntw` inside a Bash buffer
    or the menu entry:
 
       Bash -> Snippets -> template setup wizard
 
-   It will help you set up the file _runtimepath_/templates/personal.templates .
+   It will help you set up the file `_runtimepath_/templates/personal.templates`.
    The file is read by all plug-ins supporting this feature to get your personal
    details. Here is the minimal personalization (my settings as an example):
 
@@ -132,11 +137,6 @@ structure which is needed below the local installation directory
    your Bash template library. It can also be set up via the wizard.
 
    (Read more about the template system in the plug-in documentation.)
-
-(2.4) Make the plug-in help accessible by typing the following command on the
-   Vim command line:
-
-      :helptags $HOME\vimfiles\doc\
 
 (2.5) Consider additional settings in the file `$HOME/_vimrc`. The files
    `customization.vimrc` and `customization.gvimrc` are replacements or extensions
