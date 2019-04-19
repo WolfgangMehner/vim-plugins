@@ -16,7 +16,7 @@ ___This is a preview version!___
 Notable new feature:
 
 - Run Lua in a terminal window directly inside the editor.
-- Enable fully for Neovim.
+- Fully enabled for Neovim.
 
 The terminal window relies on the new `+terminal` feature, which becomes
 available with a patch level of approx. `8.0.1000`.

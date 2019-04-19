@@ -1176,7 +1176,8 @@ All mappings are filetype specific; they are only defined for buffers with
 filetype 'lua' to minimize conflicts with mappings from other plug-ins.
 Furthermore, the mapleader can be changed using the setting |g:Lua_MapLeader|.
 
-Some mappings can be used with a range (of lines). In normal mode >
+All maps work in normal and insert mode. Additionally some mappings can be
+used with a range (of lines). In normal mode >
   \cl
 appends a end-of-line comment to the current line, whereas >
   4\cl
