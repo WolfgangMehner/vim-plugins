@@ -8,13 +8,13 @@
 "
 "                 See help file bashdbintegration.txt .
 " 
-"   VIM Version:  7.0+
+"   VIM Version:  7.3+
 "        Author:  Wolfgang Mehner, wolfgang-mehner@web.de
 "  Organization:  
 "       Version:  see variable g:BashDB_Version below
 "       Created:  28.09.2017
-"      Revision:  -
-"       License:  Copyright (c) 2017-2017, Wolfgang Mehner
+"      Revision:  19.04.2019
+"       License:  Copyright (c) 2017-2019, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -257,8 +257,8 @@ function! s:ShellParseArgs ( line )
 			let curr .= mlist[1]
 			let line  = mlist[2]
 		else
-			" otherwise parse up to next space
-			let mlist = matchlist ( line, '^\(\S\+\)\(.*\)' )
+			" otherwise parse up to next special char.: space, backslash, quote
+			let mlist = matchlist ( line, '^\([^[:space:]\\''"]\+\)\(.*\)' )
 			let curr .= mlist[1]
 			let line  = mlist[2]
 		endif
@@ -667,7 +667,9 @@ endfunction    " ----------  end of function s:Run  ----------
 
 let s:debug_status   = ''
 let s:debug_buf_ctrl = -1
+let s:debug_win_ctrl = -1
 let s:debug_buf_io   = -1
+let s:debug_win_io   = -1
 
 let s:debug_buf_script = -1
 let s:debug_win_script = -1
@@ -704,6 +706,7 @@ function! s:StartInternal ( args )
 	let s:debug_buf_io = term_start ( 'NONE', {
 				\ 'term_name' : name_pty,
 				\ } )
+	let s:debug_win_io = win_getid( winnr() )
 
 	let tty = term_gettty ( s:debug_buf_io )
 
@@ -722,10 +725,12 @@ function! s:StartInternal ( args )
 				\ 'curwin'    : is_bashdb,
 				\ 'exit_cb'   : function ( 's:EndInternal' ),
 				\ } )
+	let s:debug_win_ctrl = win_getid( winnr() )
 
 	" bashdb: switch the buffers
 	if is_bashdb
 		let [ s:debug_buf_io, s:debug_buf_ctrl ] = [ s:debug_buf_ctrl, s:debug_buf_io ]
+		let [ s:debug_win_io, s:debug_win_ctrl ] = [ s:debug_win_ctrl, s:debug_win_io ]
 	endif
 
 	" now we're cooking
