@@ -39,9 +39,9 @@
 "
 "        Version:  see variable  g:Perl_PluginVersion  below
 "        Created:  09.07.2001
-"       Revision:  12.02.2017
+"       Revision:  21.04.2019
 "        License:  Copyright (c) 2001-2014, Fritz Mehner
-"                  Copyright (c) 2015-2017, Wolfgang Mehner
+"                  Copyright (c) 2015-2019, Wolfgang Mehner
 "                  This program is free software; you can redistribute it
 "                  and/or modify it under the terms of the GNU General Public
 "                  License as published by the Free Software Foundation,
@@ -2219,32 +2219,6 @@ function! s:RereadTemplates ()
 endfunction    " ----------  end of function s:RereadTemplates  ----------
 
 "-------------------------------------------------------------------------------
-" s:CheckTemplatePersonalization : Check template personalization.   {{{1
-"
-" Check whether the |AUTHOR| has been set in the template library.
-" If not, display help on how to set up the template personalization.
-"-------------------------------------------------------------------------------
-let s:DoneCheckTemplatePersonalization = 0
-
-function! s:CheckTemplatePersonalization ()
-
-	" check whether the templates are personalized
-	if s:DoneCheckTemplatePersonalization
-				\ || mmtemplates#core#ExpandText ( g:Perl_Templates, '|AUTHOR|' ) != 'YOUR NAME'
-				\ || s:Perl_InsertFileHeader != 'yes'
-		return
-	endif
-
-	let s:DoneCheckTemplatePersonalization = 1
-
-	let maplead = mmtemplates#core#Resource ( g:Perl_Templates, 'get', 'property', 'Templates::Mapleader' )[0]
-
-	redraw
-	call s:ImportantMsg ( 'The personal details are not set in the template library. Use the map "'.maplead.'ntw".' )
-
-endfunction    " ----------  end of function s:CheckTemplatePersonalization  ----------
-
-"-------------------------------------------------------------------------------
 " s:CheckAndRereadTemplates : Make sure the templates are loaded.   {{{1
 "-------------------------------------------------------------------------------
 function! s:CheckAndRereadTemplates ()
@@ -3008,7 +2982,6 @@ function! s:Initialize ( ftype )
 		endif
 	endif
 	call s:CreateAdditionalMaps()
-	call s:CheckTemplatePersonalization()
 endfunction    " ----------  end of function s:Initialize  ----------
 
 "-------------------------------------------------------------------------------

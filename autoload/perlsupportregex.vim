@@ -12,7 +12,7 @@
 "       Created:  16.12.2008
 "      Revision:  27.09.2017
 "       License:  Copyright (c) 2008-2016, Fritz Mehner
-"                 Copyright (c) 2017-2017, Wolfgang Mehner
+"                 Copyright (c) 2017-2019, Wolfgang Mehner
 "===============================================================================
 "
 " Exit quickly when:
@@ -22,7 +22,7 @@
 if exists("g:loaded_perlsupportregex") || &compatible
   finish
 endif
-let g:loaded_perlsupportregex = "v1.0"
+let g:loaded_perlsupportregex = "v1.0.1"
 
 let s:MSWIN = has("win16") || has("win32")   || has("win64")    || has("win95")
 "

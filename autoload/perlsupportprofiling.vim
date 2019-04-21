@@ -10,7 +10,7 @@
 "       Created:  22.02.2009
 "      Revision:  27.09.2017
 "       License:  Copyright (c) 2009-2016, Fritz Mehner
-"                 Copyright (c) 2017-2017, Wolfgang Mehner
+"                 Copyright (c) 2017-2019, Wolfgang Mehner
 "===============================================================================
 "
 " Exit quickly when:
@@ -20,7 +20,7 @@
 if exists("g:loaded_perlsupportprofiling") || &compatible
   finish
 endif
-let g:loaded_perlsupportregex = "v1.0"
+let g:loaded_perlsupportprofiling = "v1.0"
 "
 let s:MSWIN = has("win16") || has("win32")   || has("win64")    || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
