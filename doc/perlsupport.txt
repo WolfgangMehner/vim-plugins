@@ -1,4 +1,4 @@
-*perlsupport.txt*                Perl Support                      Oct 02 2017
+*perlsupport.txt*                Perl Support                      Apr 21 2019
 
 Perl Support                                      *perl-support* *perlsupport*
 
@@ -860,8 +860,8 @@ For convenience consider to use maps like
 >
   noremap  <silent> <F5>    :copen<CR>
   noremap  <silent> <F6>    :cclose<CR>
-  noremap  <silent> <F7>    :cp<CR>
-  noremap  <silent> <F8>    :cn<CR>
+  noremap  <silent> <F7>    :cprevious<CR>
+  noremap  <silent> <F8>    :cnext<CR>
 <
 in your .vimrc file to jump to the error locations (F7,F8) and to open and
 close the error window (F5,F6). This makes navigation a lot easier (see also
@@ -2432,7 +2432,7 @@ was compiled for your platform. Install it and all is done.
 
 COMPILE YOUR OWN VERSION (LINUX/UNIX).
 --------------------------------------
-(1) Download the sources from https://vim.sourceforge.io/ and extract the
+(1) Download the sources from https://www.vim.org/ and extract the
 sources from the archive (for patches see|perlsupport-compile-vim-patches|).
 
 (2) Inspect the current version again. The section 'Compilation' shows how

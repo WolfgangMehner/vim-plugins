@@ -1,4 +1,4 @@
-README for perl-support.vim (Version 5.5pre) / October 02 2017
+README for perl-support.vim (Version 5.5pre) / April 21 2019
 ================================================================================
 
   *  INSTALLATION
@@ -59,7 +59,12 @@ structure which is needed below the local installation directory `$HOME/.vim/`
    This is the minimal content of the file `$HOME/.vimrc`. Create one if there
    is none or use the files in `$HOME/.vim/perl-support/rc` as a starting point.
 
-(1.3) Set at least some personal details. Use the map `\ntw` inside a Perl buffer
+(1.3) Make the plug-in help accessible by typing the following command on the
+   Vim command line:
+
+      :helptags $HOME/.vim/doc/
+
+(1.4) Set at least some personal details. Use the map `\ntw` inside a Perl buffer
    or the menu entry:
 
       Perl -> Snippets -> template setup wizard
@@ -77,11 +82,6 @@ structure which is needed below the local installation directory `$HOME/.vim/`
    your Perl template library. It can also be set up via the wizard.
 
    (Read more about the template system in the plug-in documentation)
-
-(1.4) Make the plug-in help accessible by typing the following command on the
-   Vim command line:
-
-      :helptags $HOME/.vim/doc/
 
 (1.5) Consider additional settings in the file `$HOME/.vimrc`. The files
    `customization.vimrc` and `customization.gvimrc` are replacements or
@@ -116,7 +116,12 @@ structure which is needed below the local installation directory
    This is the minimal content of the file `$HOME/_vimrc`. Create one if there
    is none or use the files in `$HOME/vimfiles/perl-support/rc` as a starting point.
 
-(2.3) Set at least some personal details. Use the map `\ntw` inside a Perl buffer
+(2.3) Make the plug-in help accessible by typing the following command on the
+   Vim command line:
+
+      :helptags $HOME\vimfiles\doc\
+
+(2.4) Set at least some personal details. Use the map `\ntw` inside a Perl buffer
    or the menu entry:
 
       Perl -> Snippets -> template setup wizard
@@ -134,11 +139,6 @@ structure which is needed below the local installation directory
    your Perl template library. It can also be set up via the wizard.
 
    (Read more about the template system in the plug-in documentation)
-
-(2.4) Make the plug-in help accessible by typing the following command on the
-   Vim command line:
-
-      :helptags $HOME\vimfiles\doc\
 
 (2.5) Consider additional settings in the file `$HOME/_vimrc`. The files
    `customization.vimrc` and `customization.gvimrc` are replacements or
@@ -163,16 +163,9 @@ There are a lot of features and options which can be used and influenced:
   *  removing the root menu
   *  using additional plug-ins
 
-Look at the Perl Support help with:
+Actions differ for different modes. Please read the documentation:
 
       :help perlsupport
-
-               +-----------------------------------------------+
-               | +-------------------------------------------+ |
-               | |    ** PLEASE READ THE DOCUMENTATION **    | |
-               | |    Actions differ for different modes!    | |
-               | +-------------------------------------------+ |
-               +-----------------------------------------------+
 
 Any problems? See the TROUBLESHOOTING section at the end of the help file
 `doc/perlsupport.txt`.
@@ -196,6 +189,7 @@ RELEASE NOTES FOR VERSION 5.5pre
 Note: The filetype plug-ins have been moved, and are thus not loaded
 automatically anymore. Copy them from `perl-support/rc` to `ftplugin`,
 or add the commands there to your own filetype plug-ins.
+
 Note: Some configuration for `*.t` and `*.pod` files has been removed.
 See `perl-support/rc/customization.vimrc` for how to add them to your
 configuration files.
