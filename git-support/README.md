@@ -1,4 +1,4 @@
-README for git-support.vim (Version 0.9.4pre) / January 17 2018
+README for git-support.vim (Version 0.9.4) / April 23 2019
 ================================================================================
 
   *  INSTALLATION
@@ -14,7 +14,7 @@ from right there. Further commands allow to quickly add the file in the
 current buffer or show its diff.
 Please read the documentation.
 
-This plug-in can be used with Vim version 7.x.
+This plug-in can be used with Vim version 7.3+ and Neovim 0.2.1+.
 
 
 --------------------------------------------------------------------------------
@@ -25,14 +25,14 @@ INSTALLATION
 (1) LINUX
 ----------------------------------------------------------------------
 
-The subdirectories in the zip archive git-support.zip mirror the directory
+The subdirectories in the zip archive `git-support.zip` mirror the directory
 structure which is needed below the local installation directory
 
       $HOME/.vim/
 
-(find the value of $HOME with `:echo $HOME` from inside Vim).
+(find the value of `$HOME` with `:echo $HOME` from inside Vim).
 
-(1.1) Copy the zip archive git-support.zip to $HOME/.vim and run
+(1.1) Copy the zip archive `git-support.zip` to `$HOME/.vim` and run
 
       unzip git-support.zip
 
@@ -40,8 +40,8 @@ structure which is needed below the local installation directory
 
       :filetype plugin on
 
-   This is the minimal content of the file '$HOME/.vimrc'. Create one if there
-   is none or use the file in $HOME/.vim/git-support/rc as a starting point.
+   This is the minimal content of the file `$HOME/.vimrc`. Create one if there
+   is none or use the file in `$HOME/.vim/git-support/rc` as a starting point.
 
 (1.3) Make the plug-in help accessible by typing the following command on the
    Vim command line:
@@ -49,25 +49,25 @@ structure which is needed below the local installation directory
       :helptags $HOME/.vim/doc/
 
 (1.4) To get a syntax highlighting closer to the one Git uses, take a look at
-   the suggestions in git-support/rc/additions.vimrc, which offers example
+   the suggestions in `git-support/rc/additions.vimrc`, which offers example
    settings for bright and dark backgrounds.
 
-(1.5) Consider additional settings in the file '$HOME/.vimrc'. The files
-   customization.vimrc and customization.gvimrc are replacements or extensions
-   for your .vimrc and .gvimrc. You may want to use parts of them. The files
-   are documented.
+(1.5) Consider additional settings in the file `$HOME/.vimrc`. The files
+   `customization.vimrc` and `customization.gvimrc` are replacements or
+   extensions for your `.vimrc` and `.gvimrc`. You may want to use parts of
+   them. The files are documented.
 
 (2) WINDOWS
 ----------------------------------------------------------------------
 
-The subdirectories in the zip archive git-support.zip mirror the directory
+The subdirectories in the zip archive `git-support.zip` mirror the directory
 structure which is needed below the local installation directory
 
       $HOME/vimfiles/
 
-(find the value of $HOME with `:echo $HOME` from inside Vim).
+(find the value of `$HOME` with `:echo $HOME` from inside Vim).
 
-(2.1) Copy the zip archive git-support.zip to $HOME/vimfiles and run
+(2.1) Copy the zip archive `git-support.zip` to `$HOME/vimfiles` and run
 
       unzip git-support.zip
 
@@ -75,25 +75,25 @@ structure which is needed below the local installation directory
 
       :filetype plugin on
 
-   This is the minimal content of the file '$HOME/_vimrc'. Create one if there
-   is none or use the file in $HOME/vimfiles/git-support/rc as a starting point.
+   This is the minimal content of the file `$HOME/_vimrc`. Create one if there
+   is none or use the file in `$HOME/vimfiles/git-support/rc` as a starting point.
 
 (2.3) Make the plug-in help accessible by typing the following command on the
    Vim command line:
 
       :helptags $HOME\vimfiles\doc\
 
-(2.4) Set the correct executable. This is not necessary if 'git' is already on
-   your path. See :help g:Git_Executable .
+(2.4) Set the correct executable. This is not necessary if `git` is already on
+   your path. See `:help g:Git_Executable`.
 
 (2.5) To get a syntax highlighting closer to the one Git uses, take a look at
-   the suggestions in git-support\rc\additions.vimrc, which offers example
+   the suggestions in `git-support\rc\additions.vimrc`, which offers example
    settings for bright and dark backgrounds.
 
-(2.6) Consider additional settings in the file '$HOME/_vimrc'. The files
-   customization.vimrc and customization.gvimrc are replacements or extensions
-   for your _vimrc and _gvimrc. You may want to use parts of them. The files
-   are documented.
+(2.6) Consider additional settings in the file `$HOME/_vimrc`. The files
+   `customization.vimrc` and `customization.gvimrc` are replacements or
+   extensions for your `_vimrc` and `_gvimrc`. You may want to use parts of
+   them. The files are documented.
 
 
 (3) ADDITIONAL REMARKS
@@ -106,18 +106,12 @@ There are a lot of features and options which can be used and influenced:
   *  the syntax highlighting
   *  the behavior of various commands
 
-Look at the Git-Support help with:
+Please read the documentation:
 
       :help gitsupport
 
-               +-----------------------------------------------+
-               | +-------------------------------------------+ |
-               | |    ** PLEASE READ THE DOCUMENTATION **    | |
-               | +-------------------------------------------+ |
-               +-----------------------------------------------+
-
 Any problems? See the TROUBLESHOOTING section at the end of the help file
-'doc/gitsupport.txt'.
+`doc/gitsupport.txt`.
 
 
 --------------------------------------------------------------------------------
@@ -125,18 +119,19 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 RELEASE NOTES
 ================================================================================
 
-RELEASE NOTES FOR VERSION 0.9.4pre
+RELEASE NOTES FOR VERSION 0.9.4
 ----------------------------------------------------------------------
 - Add command :GitTerm to execute Git in a terminal window (requires +terminal).
 - Improve :GitGrep (in case +conceal is available).
 - Improve :GitLog to support ranges.
+- Add a map to the buffer: status
 - Adapt for running under Neovim more smoothly.
 - Minor changes.
 
 
 RELEASE NOTES FOR OLDER VERSIONS
 ----------------------------------------------------------------------
--> see file 'git-support/doc/ChangeLog'
+-> see file `git-support/doc/ChangeLog`
 
 
 --------------------------------------------------------------------------------

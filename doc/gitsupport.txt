@@ -1,8 +1,8 @@
-*gitsupport.txt*                  Git Support                      Jan 17 2018
+*gitsupport.txt*                  Git Support                      Apr 23 2019
 
 Git Support                                          *git-support* *gitsupport*
 
-                            Plug-in version 0.9.4pre
+                            Plug-in version 0.9.4
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 
@@ -50,7 +50,7 @@ Git Support defines two types of commands. The first kind provides convenient
 access to various Git commands which manipulate the working directory and
 staging area. The second kind redirects the output from Git commands like "git
 status" into buffers. For each such buffer maps are defined which can be used
-to run other commands. For example, after running :GitStatus, you can use maps
+to run other commands. For example, after running |:GitStatus|, you can use maps
 like "a" and "c" to add or check out the file under the cursor, provided its
 name appears in the section "Changes not staged for commit:". Each buffer has
 a map <SHIFT-F1> for showing a short help.
@@ -669,6 +669,7 @@ Git command.
   cp        checkout --patch (^1)
   ch        checkout HEAD (set index and working tree to HEAD)
   od        open diff
+  ow        open diff (with --color-words)
   of        open file (edit)
   oj        open file (edit)
   ol        open log (with --stat)

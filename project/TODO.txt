@@ -112,13 +112,12 @@ Git:
   is extremely slow for diff and log.
 - Rename function 'GitS_FoldLog' into 'GitS_FoldLogTxt'.
 - Set 'foldmethod' individually and not in 's:OpenGitBuffer'.
-- Document map "ow" in status buffer, mention in the README.
 - Update buffer after executing a command: :GitBranch, :GitRemote, :GitStash, ...
 - Feed output of "git apply" into quickfix.
 - Remove :GitAbove, :GitBelow, and :GitTab again and ...
 - Use modifiers to split the window or open on a new tab.
 - Document 'g:Git_Editor', and the use of '$GIT_EDITOR', and add it to :GitSupportSettings.
-- Add 'git log -L line,line:file' in visual mode.
+- (DONE) Add 'git log -L line,line:file' in visual mode.
 
 LaTeX:
 - (DONE) Add :LatexConvert as an ex-command.

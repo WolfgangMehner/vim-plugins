@@ -41,7 +41,7 @@ endif
 if &cp || ( exists('g:GitSupport_Version') && ! exists('g:GitSupport_DevelopmentOverwrite') )
 	finish
 endif
-let g:GitSupport_Version= '0.9.4pre'     " version number of this script; do not change
+let g:GitSupport_Version= '0.9.4'     " version number of this script; do not change
 "
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
@@ -3668,7 +3668,7 @@ endfunction    " ----------  end of function s:Status_GetFile  ----------
 " Parameters:
 "   action - the action to perform, see below (string)
 " Returns:
-"   success - true, if the command was run successfully (integer)
+"   update - true, if the status buffer requires an immediate update (integer)
 "
 " Uses 's:Status_GetFile' to obtain the section and file under the cursor. Then
 " the action is performed, if allowed for this section. The actions are named
@@ -3787,8 +3787,12 @@ function! s:Status_FileAction( action )
 		" section "modified", action "add-patch"
 		"
 		if f_status == 'modified' || f_status =~ '^.M$'
-			call s:GitBash( 'add -p -- '.shellescape( f_name_old ) )
-			return 1
+			if s:EnabledGitTerm
+				call s:GitTerm( 'add -p -- '.shellescape( f_name_old ) )
+			else
+				call s:GitBash( 'add -p -- '.shellescape( f_name_old ) )
+			endif
+			return !s:EnabledGitTerm
 		else
 			call s:ErrorMsg ( 'No "add -p" for file status "'.f_status.'".' )
 		endif
@@ -3826,8 +3830,12 @@ function! s:Status_FileAction( action )
 		" section "modified", action "checkout-patch"
 		"
 		if f_status == 'modified' || f_status =~ '^.M$'
-			call s:GitBash( 'checkout -p -- '.shellescape( f_name_old ) )
-			return 1
+			if s:EnabledGitTerm
+				call s:GitTerm( 'checkout -p -- '.shellescape( f_name_old ) )
+			else
+				call s:GitBash( 'checkout -p -- '.shellescape( f_name_old ) )
+			endif
+			return !s:EnabledGitTerm
 		else
 			call s:ErrorMsg ( 'No "checkout -p" for file status "'.f_status.'".' )
 		endif
@@ -3863,8 +3871,12 @@ function! s:Status_FileAction( action )
 		" section "staged", action "reset-patch"
 		"
 		if f_status == 'modified' || f_status =~ '^M.$'
-			call s:GitBash( 'reset -p -- '.shellescape( f_name_old ) )
-			return 1
+			if s:EnabledGitTerm
+				call s:GitTerm( 'reset -p -- '.shellescape( f_name_old ) )
+			else
+				call s:GitBash( 'reset -p -- '.shellescape( f_name_old ) )
+			endif
+			return !s:EnabledGitTerm
 		else
 			call s:ErrorMsg ( 'No "reset -p" for file status "'.f_status.'".' )
 		endif
@@ -3926,23 +3938,21 @@ function! GitS_Status( action, ... )
 		let txt .= "v       : verbose output\n"
 		let txt .= "\n"
 		let txt .= "file under cursor ...\n"
-		if s:EnabledGitBash
+		if s:EnabledGitBash || s:EnabledGitTerm
 			let txt .= "a / ap  : add / add --patch\n"
-		else
-			let txt .= "a       : add\n"
-		endif
-		if s:EnabledGitBash
 			let txt .= "c / cp  : checkout / checkout --patch\n"
-		else
-			let txt .= "c       : checkout\n"
-		endif
-		let txt .= "ch      : checkout HEAD\n"
-		let txt .= "od      : open diff\n"
-		let txt .= "of / oj : open file (edit)\n"
-		let txt .= "ol      : open log\n"
-		if s:EnabledGitBash
+			let txt .= "ch      : checkout HEAD\n"
+			let txt .= "od / ow : open diff / diff --color-words\n"
+			let txt .= "of / oj : open file (edit)\n"
+			let txt .= "ol      : open log\n"
 			let txt .= "r / rp  : reset / reset --patch\n"
 		else
+			let txt .= "a       : add\n"
+			let txt .= "c       : checkout\n"
+			let txt .= "ch      : checkout HEAD\n"
+			let txt .= "od      : open diff\n"
+			let txt .= "of / oj : open file (edit)\n"
+			let txt .= "ol      : open log\n"
 			let txt .= "r       : reset\n"
 		endif
 		let txt .= "D       : delete from file system (only untracked files)\n"

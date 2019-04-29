@@ -1,4 +1,14 @@
 --------------------------------------------------------------------------------
+  RELEASE NOTES FOR VERSION 0.9.4
+--------------------------------------------------------------------------------
+- Add command :GitTerm to execute Git in a terminal window (requires +terminal).
+- Improve :GitGrep (in case +conceal is available).
+- Improve :GitLog to support ranges.
+- Add a map to the buffer: status
+- Adapt for running under Neovim more smoothly.
+- Minor changes.
+
+--------------------------------------------------------------------------------
   RELEASE NOTES FOR VERSION 0.9.3
 --------------------------------------------------------------------------------
 - Add: The diff buffer can be use to add/reset chunks, added new maps.
