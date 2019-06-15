@@ -1,4 +1,4 @@
-README for perl-support.vim (Version 5.5pre) / April 21 2019
+README for perl-support.vim (Version 5.4.1beta) / June 15 2019
 ================================================================================
 
   *  INSTALLATION
@@ -176,12 +176,14 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 RELEASE NOTES
 ================================================================================
 
-RELEASE NOTES FOR VERSION 5.5pre
+RELEASE NOTES FOR VERSION 5.4.1beta
 ----------------------------------------------------------------------
 - The templates which are inserted into new files as file skeletons can be
   specified in the templates library, via the properties:
     `Perl::FileSkeleton::Script`, `Perl::FileSkeleton::Module`,
     `Perl::FileSkeleton::Test`,   `Perl::FileSkeleton::POD`
+- Set default for `g:Perl_Executable` to `perl` when running under Linux,
+  instead of a hardcoded path.
 - Add configuration variable `g:Perl_Ctrl_d` to control the creation
   of the `CTRL+D` map.
 - Minor changes.

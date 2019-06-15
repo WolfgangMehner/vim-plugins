@@ -72,7 +72,7 @@ if exists("g:Perl_PluginVersion") || &cp
 	finish
 endif
 
-let g:Perl_PluginVersion= "5.5pre"                  " version number of this script; do not change
+let g:Perl_PluginVersion= "5.4.1beta"                  " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " === Auxiliary functions ===   {{{1
@@ -309,7 +309,7 @@ else
 					\	$HOME.'/.vim/autoload/mmtoolbox/' ]
 	endif
 
-	let s:Perl_Executable           = '/usr/bin/perl'
+	let s:Perl_Executable           = 'perl'
   let g:Perl_FilenameEscChar      = ' \%#[]'
 
   " ==============================================================================

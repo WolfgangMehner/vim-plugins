@@ -1,8 +1,8 @@
-*perlsupport.txt*                Perl Support                      Apr 21 2019
+*perlsupport.txt*                Perl Support                      Jun 15 2019
 
 Perl Support                                      *perl-support* *perlsupport*
 
-                             Plug-in version 5.5pre
+                             Plug-in version 5.4.1beta
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
@@ -1768,7 +1768,7 @@ g:Perl_InsertFileHeader        'yes'
 g:Perl_CreateMenusDelayed      'yes'
 g:Perl_PerlTags                'off'
 g:Perl_PerltidyBackup          'off'
-g:Perl_Executable              "/usr/bin/perl" or "C:/Perl/bin/perl.exe"
+g:Perl_Executable              "perl" or "C:/Perl/bin/perl.exe"
 g:Perl_DirectRun               'no'
 
 g:Perl_PerlModuleList          root_dir.'perl-support/modules/perl-modules.list'
