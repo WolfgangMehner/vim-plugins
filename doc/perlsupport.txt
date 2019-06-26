@@ -2,7 +2,7 @@
 
 Perl Support                                      *perl-support* *perlsupport*
 
-                             Plug-in version 5.4.1beta
+                             Plug-in version 5.5alpha
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
@@ -906,10 +906,10 @@ the buffer with the new name.
 
 1.9.5  DEBUG                                           *perlsupport-run-debug*
 ------------
-Start a debugger from the menu item Run->debug, with hotkey \rd or F9. One of
-three debuggers can be started. The preference can be set with the variable
-g:Perl_Debugger (possible values: 'perl', 'ptkdb', 'ddd' ). The default is
-'perl').
+Start a debugger from the menu item Run->debug, with the map \rd or the
+command `:PerlDebug`. One of three debuggers can be started. The preference
+can be set with the variable `g:Perl_Debugger`. The possible values are:
+"perl" (default), "ptkdb", "ddd"
 
 (1) perl
 The script will be run as 'perl -d my-script.pl my-arguments' in an xterm.
@@ -933,8 +933,9 @@ the debugger.
 
 Debugging without GUI
 ---------------------
-The hotkey \rd or F9 can be used to start the debugger inside the vim window.
-The script will be run with 'perl -d my-script.pl my-arguments'.
+The map \rd or command `:PerlDebug` can be used to start the debugger inside
+the vim window. The script will be run with:
+'perl -d my-script.pl my-arguments'.
 
 1.9.6  READ PERLDOC                                  *perlsupport-perldoc*
 -------------------
@@ -1664,7 +1665,8 @@ CAVEAT: This setting is global and influences all filetypes.
 3.  FUNCTION KEYS                                  *perlsupport-function-keys*
 ==============================================================================
 
-The following function keys are defined in normal, visual and insert mode:
+Additional function keys can be defined in the |ftplugin|. The examples in
+'perl-support/rc/perl.vim' set the following maps:
 
    Shift-F1   read perldoc  (for the word under the cursor)
          F9   start a debugger
@@ -1672,7 +1674,7 @@ The following function keys are defined in normal, visual and insert mode:
     Ctrl-F9   run script
    Shift-F9   set command line arguments (buffer related)
 
-These function keys are defined in the file type plug-in ~/.vim/ftplugin/perl.vim .
+Copy them to your filetype plug-in '~/.vim/ftplugin/perl.vim'.
 
 Note for xterm users (Vim without GUI): The function key combinations
 Shift-Fx, Alt-Fx and Ctrl-Fx do not work. F9 is also not working to prevent
@@ -1833,7 +1835,7 @@ The variable root_dir will automatically be set to one of the following values:
            g:Xterm_Options                : the xterm options
            g:Perl_XtermDefaults           : the xterm options (included for backwards
                                             compatibility only)
-           g:Perl_Debugger                : the debugger called by F9 (perl, ptkdb, ddd).
+           g:Perl_Debugger                : the debugger called by :PerlDebug (perl, ptkdb, ddd).
            g:Perl_TimestampFormat         : trailing time stamp for a file
            g:Perl_LineEndCommColDefault   : default starting column for line end comments
            g:Perl_PodcheckerWarnings      : podchecker warnings on/off

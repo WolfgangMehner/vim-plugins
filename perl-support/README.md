@@ -1,4 +1,4 @@
-README for perl-support.vim (Version 5.4.1beta) / June 15 2019
+README for perl-support.vim (Version 5.5alpha) / June 15 2019
 ================================================================================
 
   *  INSTALLATION
@@ -176,16 +176,22 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 RELEASE NOTES
 ================================================================================
 
-RELEASE NOTES FOR VERSION 5.4.1beta
+RELEASE NOTES FOR VERSION 5.5alpha
 ----------------------------------------------------------------------
+- Add command `:Perl [<args>]` to run the interpreter with arguments.
+- Add command `:PerlDebug [<args>]` to run the debugger with arguments.
+- Add command `:PerlCheck` to run the syntax checker.
+- Add command `:PerlDoc [<item>]` to look up help.
+- Set default for `g:Perl_Executable` to `perl` when running under Linux,
+  instead of a hardcoded path.
 - The templates which are inserted into new files as file skeletons can be
   specified in the templates library, via the properties:
     `Perl::FileSkeleton::Script`, `Perl::FileSkeleton::Module`,
     `Perl::FileSkeleton::Test`,   `Perl::FileSkeleton::POD`
-- Set default for `g:Perl_Executable` to `perl` when running under Linux,
-  instead of a hardcoded path.
 - Add configuration variable `g:Perl_Ctrl_d` to control the creation
   of the `CTRL+D` map.
+- Remove the definition of the maps `F9`. `CTRL+F9`, `SHIFT+F9`, `ALT+F9`, and
+  `SHIFT+F1`. Add them to your filetype plug-in if you want to use them.
 - Minor changes.
 
 Note: The filetype plug-ins have been moved, and are thus not loaded

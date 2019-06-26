@@ -39,7 +39,7 @@
 "
 "        Version:  see variable  g:Perl_PluginVersion  below
 "        Created:  09.07.2001
-"       Revision:  21.04.2019
+"       Revision:  26.06.2019
 "        License:  Copyright (c) 2001-2014, Fritz Mehner
 "                  Copyright (c) 2015-2019, Wolfgang Mehner
 "                  This program is free software; you can redistribute it
@@ -72,7 +72,7 @@ if exists("g:Perl_PluginVersion") || &cp
 	finish
 endif
 
-let g:Perl_PluginVersion= "5.4.1beta"                  " version number of this script; do not change
+let g:Perl_PluginVersion= "5.5alpha"                  " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " === Auxiliary functions ===   {{{1
@@ -854,24 +854,27 @@ function! Perl_CodeSnippet(mode)
     echohl None
   endif
 endfunction   " ---------- end of function  Perl_CodeSnippet  ----------
+
+"-------------------------------------------------------------------------------
+" s:PerlDoc : Look up help.   {{{1
 "
-"------------------------------------------------------------------------------
-"  Perl-Run : Perl_perldoc - lookup word under the cursor or ask
-"------------------------------------------------------------------------------
-"
+" Parameters:
+"   item - get help for this item (string, optional)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
 let s:Perl_PerldocBufferName       = "PERLDOC"
 let s:Perl_PerldocHelpBufferNumber = -1
 let s:Perl_PerldocModulelistBuffer = -1
 let s:Perl_PerldocSearchWord       = ""
 let s:Perl_PerldocTry              = "module"
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Perl_perldoc     {{{1
-"   DESCRIPTION:  Perl_perldoc - lookup word under the cursor or ask
-"===============================================================================
-function! Perl_perldoc()
 
-  if( expand("%:p") == s:Perl_PerlModuleList )
+function! s:PerlDoc( item )
+
+	if a:item != ''
+		let item = a:item
+	elseif( expand("%:p") == s:Perl_PerlModuleList )
     normal! 0
     let item=expand("<cWORD>")        			" WORD under the cursor
   else
@@ -1000,10 +1003,10 @@ function! Perl_perldoc()
 		" ---------- Add ':' to the keyword characters -------------------------------
 		"            Tokens like 'File::Find' are recognized as one keyword
 		setlocal iskeyword+=:
- 		 noremap   <buffer>  <silent>  <S-F1>             :call Perl_perldoc()<CR>
- 		inoremap   <buffer>  <silent>  <S-F1>        <C-C>:call Perl_perldoc()<CR>
+		 noremap   <buffer>  <silent>  <S-F1>             :call <SID>PerlDoc("")<CR>
+		inoremap   <buffer>  <silent>  <S-F1>        <C-C>:call <SID>PerlDoc("")<CR>
   endif
-endfunction   " ---------- end of function  Perl_perldoc  ----------
+endfunction   " ---------- end of function  s:PerlDoc  ----------
 "
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_RemoveSpecialCharacters     {{{1
@@ -1046,8 +1049,8 @@ function! Perl_perldoc_show_module_list()
     setlocal nomodifiable
     setlocal filetype=perl
     setlocal syntax=none
- 		 noremap   <buffer>  <silent>  <S-F1>             :call Perl_perldoc()<CR>
- 		inoremap   <buffer>  <silent>  <S-F1>        <C-C>:call Perl_perldoc()<CR>
+		 noremap   <buffer>  <silent>  <S-F1>             :call <SID>PerlDoc("")<CR>
+		inoremap   <buffer>  <silent>  <S-F1>        <C-C>:call <SID>PerlDoc("")<CR>
   endif
   normal! gg
   redraw!
@@ -1176,15 +1179,6 @@ function! Perl_Settings ( verbose )
 		let txt = txt.'         xterm executable :  '.s:Xterm_Executable."\n"
 		let txt = txt.'            xterm options :  '.g:Xterm_Options."\n"
 	endif
-	if a:verbose == 0
-		let txt = txt."\n"
-		let txt = txt."    Additional hot keys\n\n"
-		let txt = txt."                Shift-F1  :  read perldoc (for word under cursor)\n"
-		let txt = txt."                      F9  :  start a debugger (".s:Perl_Debugger.")\n"
-		let txt = txt."                  Alt-F9  :  run syntax check          \n"
-		let txt = txt."                 Ctrl-F9  :  run script                \n"
-		let txt = txt."                Shift-F9  :  set command line arguments\n"
-	endif
 	let txt = txt."________________________________________________________________________________\n"
 	let txt = txt."  Perl-Support, Version ".g:Perl_PluginVersion." / Wolfgang Mehner / wolfgang-mehner@web.de\n\n"
 
@@ -1195,16 +1189,18 @@ function! Perl_Settings ( verbose )
 		echo txt
 	endif
 endfunction   " ---------- end of function  Perl_Settings  ----------
+
+"-------------------------------------------------------------------------------
+" s:SyntaxCheck : Run the syntax checker.   {{{1
 "
-"===  FUNCTION  ================================================================
-"          NAME:  Perl_SyntaxCheck     {{{1
-"   DESCRIPTION:  syntax check
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! Perl_SyntaxCheck ()
+" Parameters:
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:SyntaxCheck ()
  
-	if !Perl_Check_Interpreter()
+	if !s:CheckInterpreter()
 		return
 	endif
   
@@ -1245,8 +1241,8 @@ function! Perl_SyntaxCheck ()
     setlocal wrap
     setlocal linebreak
   endif
-endfunction   " ---------- end of function  Perl_SyntaxCheck  ----------
-"
+endfunction   " ---------- end of function  s:SyntaxCheck  ----------
+
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_Toggle_Gvim_Xterm     {{{1
 "   DESCRIPTION:  toggle output destination (vim/buffer/xterm)
@@ -1297,14 +1293,16 @@ endfunction		" ---------- end of function  Perl_ScriptCmdLineArguments  --------
 function! Perl_PerlCmdLineArguments ( ... )
 	let	b:Perl_Switches	= join( a:000 )
 endfunction    " ----------  end of function Perl_PerlCmdLineArguments ----------
+
+"-------------------------------------------------------------------------------
+" s:CheckInterpreter : Check perl executable.   {{{1
 "
-let s:Perl_OutputBufferName   = "Perl-Output"
-let s:Perl_OutputBufferNumber = -1
-"
-"------------------------------------------------------------------------------
-"  Check if perl interpreter is executable       {{{1
-"------------------------------------------------------------------------------
-function! Perl_Check_Interpreter ()
+" Parameters:
+" Returns:
+"   is_executable - true, if perl is executable (boolean)
+"-------------------------------------------------------------------------------
+
+function! s:CheckInterpreter ()
 	if !s:Perl_Perl_is_executable
 		echohl WarningMsg
 		echomsg '(possibly default) Perl interpreter "'.s:Perl_Executable.'" not executable'
@@ -1312,17 +1310,23 @@ function! Perl_Check_Interpreter ()
 		return 0
 	endif
 	return 1
-endfunction    " ----------  end of function Perl_Check_Interpreter  ----------
+endfunction    " ----------  end of function s:CheckInterpreter  ----------
 
-"===  FUNCTION  ================================================================
-"          NAME:  Perl_Run     {{{1
-"   DESCRIPTION:  run the current buffer
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! Perl_Run ()
+"-------------------------------------------------------------------------------
+" s:Run : Run the current buffer.   {{{1
+"
+" Parameters:
+"   args - command-line arguments (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+let s:Perl_OutputBufferName   = "Perl-Output"
+let s:Perl_OutputBufferNumber = -1
+
+function! s:Run ( args )
   
-	if !Perl_Check_Interpreter()
+	if !s:CheckInterpreter()
 		return
 	endif
 
@@ -1334,25 +1338,32 @@ function! Perl_Run ()
   if fnamemodify( s:Perl_PerlModuleList, ":p:t" ) == buffername || s:Perl_PerldocBufferName == buffername
     return
   endif
-  "
+
   let l:currentbuffernr = bufnr("%")
-  let l:arguments       = exists("b:Perl_CmdLineArgs") ? " ".b:Perl_CmdLineArgs : ""
   let l:switches        = exists("b:Perl_Switches") ? b:Perl_Switches.' ' : ""
   let l:currentbuffer   = bufname("%")
 	let l:fullname				= expand("%:p")
-  "
-  silent exe ":update"
-  silent exe ":cclose"
-  "
+
+	if a:args != ''
+		let args_script = a:args
+	elseif exists("b:Perl_CmdLineArgs")
+		let args_script = b:Perl_CmdLineArgs
+	else
+		let args_script = ''
+	endif
+
+	silent exe 'update'
+	silent exe 'cclose'
+
   "------------------------------------------------------------------------------
   "  run : run from the vim command line
   "------------------------------------------------------------------------------
 	if g:Perl_OutputGvim == "vim"
 		"
 		if executable(l:fullname) && s:Perl_DirectRun == 'yes'
-			exe "!".shellescape(l:fullname).l:arguments
+			exe "!".shellescape(l:fullname).' '.args_script
 		else
-			exe '!'.s:Perl_Executable.' '.l:switches.shellescape(l:fullname).l:arguments
+			exe '!'.s:Perl_Executable.' '.l:switches.shellescape(l:fullname).' '.args_script
 		endif
 		"
 	endif
@@ -1388,9 +1399,9 @@ function! Perl_Run ()
       silent exe ":update"
 		"
 		if executable(l:fullname) && s:Perl_DirectRun == 'yes'
-			exe "%!".shellescape(l:fullname).l:arguments
+			exe "%!".shellescape(l:fullname).' '.args_script
 		else
-			exe '%!'.s:Perl_Executable.' '.l:switches.shellescape(l:fullname).l:arguments
+			exe '%!'.s:Perl_Executable.' '.l:switches.shellescape(l:fullname).' '.args_script
 		endif
 		"
       setlocal  nomodifiable
@@ -1409,89 +1420,97 @@ function! Perl_Run ()
 		"
 		if  s:MSWIN
 			" MSWIN : same as "vim"
-			exe '!'.s:Perl_Executable.' '.l:switches.shellescape(l:fullname).l:arguments
+			exe '!'.s:Perl_Executable.' '.l:switches.shellescape(l:fullname).' '.args_script
 		else
 			" Linux
 			if executable(l:fullname) == 1 && s:Perl_DirectRun == 'yes'
-				silent exe '!'.s:Xterm_Executable.' -title '.shellescape(l:fullname).' '.g:Xterm_Options.' -e '.s:Perl_Wrapper.' '.shellescape(l:fullname).l:arguments
+				silent exe '!'.s:Xterm_Executable.' -title '.shellescape(l:fullname).' '.g:Xterm_Options.' -e '.s:Perl_Wrapper.' '.shellescape(l:fullname).' '.args_script
 			else
-				silent exe '!'.s:Xterm_Executable.' -title '.shellescape(l:fullname).' '.g:Xterm_Options.' -e '.s:Perl_Wrapper.' '.s:Perl_Executable.' '.l:switches.shellescape(l:fullname).l:arguments
+				silent exe '!'.s:Xterm_Executable.' -title '.shellescape(l:fullname).' '.g:Xterm_Options.' -e '.s:Perl_Wrapper.' '.s:Perl_Executable.' '.l:switches.shellescape(l:fullname).' '.args_script
 			endif
 			:redraw!
 		endif
 		"
 	endif
   "
-endfunction    " ----------  end of function Perl_Run  ----------
-"
-"===  FUNCTION  ================================================================
-"          NAME:  Perl_Debugger     {{{1
-"   DESCRIPTION:  start debugger
-"    PARAMETERS:  -
-"       RETURNS:
-"===============================================================================
-function! Perl_Debugger ()
-  "
-  silent exe  ":update"
-  let l:arguments 	= exists("b:Perl_CmdLineArgs") ? " ".b:Perl_CmdLineArgs : ""
-  let l:switches    = exists("b:Perl_Switches") ? b:Perl_Switches.' ' : ""
-  let filename      = expand("%:p")
-  "
-  if  s:MSWIN
-    let l:arguments = substitute( l:arguments, '^\s\+', ' ', '' )
-    let l:arguments = substitute( l:arguments, '\s\+', "\" \"", 'g')
-		let l:switches  = substitute( l:switches,  '^\s\+', ' ', '' )
-		let l:switches  = substitute( l:switches,  '\s\+', "\" \"", 'g')
-  endif
-  "
-  " debugger is ' perl -d ... '
-  "
-  if s:Perl_Debugger == "perl"
+endfunction    " ----------  end of function s:Run  ----------
 
-		if !Perl_Check_Interpreter()
+"-------------------------------------------------------------------------------
+" s:Debugger : Start a debugger.   {{{1
+"
+" Parameters:
+"   args - command-line arguments (string)
+" Returns:
+"   -
+"-------------------------------------------------------------------------------
+
+function! s:Debugger ( args )
+
+	silent exe 'update'
+	let args_interp = exists("b:Perl_Switches") ? b:Perl_Switches.' ' : ""
+	let filename    = expand("%:p")
+
+	if a:args != ''
+		let args_script = a:args
+	elseif exists("b:Perl_CmdLineArgs")
+		let args_script = b:Perl_CmdLineArgs
+	else
+		let args_script = ''
+	endif
+
+	" :TODO:25.06.2019 19:49:WM: proper shell escaping
+	if s:MSWIN
+		let args_script = substitute( args_script, '^\s\+', ' ', '' )
+		let args_script = substitute( args_script, '\s\+', "\" \"", 'g')
+		let args_interp = substitute( args_interp,  '^\s\+', ' ', '' )
+		let args_interp = substitute( args_interp,  '\s\+', "\" \"", 'g')
+	endif
+
+	" debugger is ' perl -d ... '
+	if s:Perl_Debugger == "perl"
+
+		if !s:CheckInterpreter()
 			return
 		endif
-    if  s:MSWIN
-      exe '!'. s:Perl_Executable .' -d '.shellescape( filename.l:arguments )
-    else
-      if has("gui_running") || &term == "xterm"
-				silent exe '!'.s:Xterm_Executable.' '.g:Xterm_Options.' -e ' . s:Perl_Executable . l:switches .' -d '.shellescape(filename).l:arguments.' &'
-      else
-        silent exe '!clear; ' .s:Perl_Executable. l:switches . ' -d '.shellescape(filename).l:arguments
-      endif
-    endif
-  endif
-  "
-  if v:windowid != 0
-    "
-    " grapical debugger is 'ptkdb', uses a PerlTk interface
-    "
-    if s:Perl_Debugger == "ptkdb"
-      if  s:MSWIN
-				exe '!perl -d:ptkdb "'.filename.l:arguments.'"'
-      else
-        silent exe '!perl -d:ptkdb  '.shellescape(filename).l:arguments.' &'
-      endif
-    endif
-    "
-    " debugger is 'ddd'  (not available for MS Windows); graphical front-end for GDB
-    "
-    if s:Perl_Debugger == "ddd" && !s:MSWIN
-      if !executable("ddd")
-        echohl WarningMsg
-        echo 'ddd does not exist or is not executable!'
-        echohl None
-        return
-      else
-        silent exe '!ddd '.shellescape(filename).l:arguments.' &'
-      endif
-    endif
-    "
-  endif
-  "
+		if s:MSWIN
+			exe '!'.s:Perl_Executable.' -d '.shellescape( filename.' '.args_script )
+		else
+			if has("gui_running") || &term == "xterm"
+				silent exe '!'.s:Xterm_Executable.' '.g:Xterm_Options.' -e ' . s:Perl_Executable.' '.args_interp .' -d '.shellescape(filename).' '.args_script.' &'
+			else
+				silent exe '!clear; ' .s:Perl_Executable.' '.args_interp.' -d '.shellescape(filename).' '.args_script
+			endif
+		endif
+	endif
+
+	if v:windowid != 0
+
+		" grapical debugger is 'ptkdb', uses a PerlTk interface
+		if s:Perl_Debugger == "ptkdb"
+			if s:MSWIN
+				exe '!perl -d:ptkdb "'.filename.' '.args_script.'"'
+			else
+				silent exe '!perl -d:ptkdb  '.shellescape(filename).' '.args_script.' &'
+			endif
+		endif
+
+		" debugger is 'ddd'  (not available for MS Windows); graphical front-end for GDB
+		if s:Perl_Debugger == "ddd" && !s:MSWIN
+			if !executable("ddd")
+				echohl WarningMsg
+				echo 'ddd does not exist or is not executable!'
+				echohl None
+				return
+			else
+				silent exe '!ddd '.shellescape(filename).' '.args_script.' &'
+			endif
+		endif
+
+	endif
+
 	redraw!
-endfunction   " ---------- end of function  Perl_Debugger  ----------
-"
+endfunction   " ---------- end of function  s:Debugger  ----------
+
 "===  FUNCTION  ================================================================
 "          NAME:  Perl_XtermSize     {{{1
 "   DESCRIPTION:  read xterm geometry
@@ -2469,16 +2488,16 @@ function! s:Perl_InitMenus ()
 	let	vhead	= 'vmenu <silent> '.s:Perl_RootMenu.'.&Run.'
 
 	" ----- run, syntax check -----
-  exe ahead.'update,\ &run\ script<Tab>'.esc_mapl.'rr\ \ <C-F9>         :call Perl_Run()<CR>'
-  exe ahead.'update,\ check\ &syntax<Tab>'.esc_mapl.'rs\ \ <A-F9>       :call Perl_SyntaxCheck()<CR>'
-  exe 'amenu '.s:Perl_RootMenu.'.&Run.cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra\ \ <S-F9>  :PerlScriptArguments<Space>'
-  exe 'amenu .'s:Perl_RootMenu.'.&Run.perl\ s&witches<Tab>'.esc_mapl.'rw                :PerlSwitches<Space>'
+	exe ahead.'update,\ &run\ script<Tab>'.esc_mapl.'rr     :call <SID>Run("")<CR>'
+	exe ahead.'update,\ check\ &syntax<Tab>'.esc_mapl.'rs   :call <SID>SyntaxCheck()<CR>'
+	exe 'amenu '.s:Perl_RootMenu.'.&Run.cmd\.\ line\ &arg\.<Tab>'.esc_mapl.'ra   :PerlScriptArguments<Space>'
+	exe 'amenu .'s:Perl_RootMenu.'.&Run.perl\ s&witches<Tab>'.esc_mapl.'rw       :PerlSwitches<Space>'
 
   " ----- set execution rights for user only ( user may be root ! ) -----
   if !s:MSWIN
     exe ahead.'make\ script\ &exe\./not\ exec\.<Tab>'.esc_mapl.'re              :call Perl_MakeScriptExecutable()<CR>'
   endif
-  exe ahead.'start\ &debugger<Tab>'.esc_mapl.'rd\ \ <F9>                :call Perl_Debugger()<CR>'
+	exe ahead.'start\ &debugger<Tab>'.esc_mapl.'rd                 :call <SID>Debugger("")<CR>'
 
 	" ----- module list -----
   exe ahead.'-SEP2-                     :'
@@ -2549,8 +2568,8 @@ function! s:Perl_InitMenus ()
 	let	vhead	= 'vnoremenu <silent> '.s:Perl_RootMenu.'.Help.'
 	let	ihead	= 'inoremenu <silent> '.s:Perl_RootMenu.'.Help.'
 	"
-	exe ahead.'read\ &perldoc<Tab>'.esc_mapl.'h                :call Perl_perldoc()<CR>'
-	exe ihead.'read\ &perldoc<Tab>'.esc_mapl.'h           <C-C>:call Perl_perldoc()<CR>'
+	exe ahead.'read\ &perldoc<Tab>'.esc_mapl.'h                :call <SID>PerlDoc("")<CR>'
+	exe ihead.'read\ &perldoc<Tab>'.esc_mapl.'h           <C-C>:call <SID>PerlDoc("")<CR>'
 	exe ahead.'-SEP1-                              :'
 	exe ahead.'&help\ (Perl-Support)<Tab>'.esc_mapl.'hp        :call Perl_HelpPerlsupport()<CR>'
 	exe ihead.'&help\ (Perl-Support)<Tab>'.esc_mapl.'hp   <C-C>:call Perl_HelpPerlsupport()<CR>'
@@ -2675,22 +2694,28 @@ function! s:CreateAdditionalMaps ()
 	if exists("g:Perl_Dictionary_File")
 		silent! exe 'setlocal dictionary+='.g:Perl_Dictionary_File
 	endif
-	"
+
 	"-------------------------------------------------------------------------------
 	" USER DEFINED COMMANDS
 	"-------------------------------------------------------------------------------
-	"
-	" ---------- commands : run -------------------------------------
-  command! -nargs=* -complete=file PerlScriptArguments call Perl_ScriptCmdLineArguments(<q-args>)
-  command! -nargs=* -complete=file PerlSwitches        call Perl_PerlCmdLineArguments(<q-args>)
 
-	"
+	" ---------- commands : help -------------------------------------
+	command! -nargs=? -buffer                 PerlDoc  call <SID>PerlDoc(<q-args>)
+
+	" ---------- commands : run -------------------------------------
+	command! -nargs=* -buffer -complete=file  Perl       call <SID>Run(<q-args>)
+	command! -nargs=0 -buffer -complete=file  PerlCheck  call <SID>SyntaxCheck()
+	command! -nargs=* -buffer -complete=file  PerlDebug  call <SID>Debugger(<q-args>)
+
+	command! -nargs=* -complete=file PerlScriptArguments call Perl_ScriptCmdLineArguments(<q-args>)
+	command! -nargs=* -complete=file PerlSwitches        call Perl_PerlCmdLineArguments(<q-args>)
+
 	" ---------- commands : perlcritic -------------------------------------
 	command! -nargs=? CriticOptions         call Perl_GetPerlcriticOptions  (<f-args>)
 	command! -nargs=1 -complete=customlist,Perl_PerlcriticSeverityList   CriticSeverity   call Perl_GetPerlcriticSeverity (<f-args>)
 	command! -nargs=1 -complete=customlist,Perl_PerlcriticVerbosityList  CriticVerbosity  call Perl_GetPerlcriticVerbosity(<f-args>)
-	"
-	" ---------- commands : perlcritic -------------------------------------
+
+	" ---------- commands : regex -------------------------------------
 	command! -nargs=1 RegexSubstitutions    call perlsupportregex#Perl_PerlRegexSubstitutions(<f-args>)
 	"
 	" ---------- commands : profiling -------------------------------------
@@ -2718,34 +2743,13 @@ function! s:CreateAdditionalMaps ()
 		endif
 		let g:maplocalleader = g:Perl_MapLeader
 	endif
-	"
-	" ---------- Key mappings : function keys ------------------------------------
-	"
-	"   Ctrl-F9   run script
-	"    Alt-F9   run syntax check
-	"  Shift-F9   set command line arguments
-	"  Shift-F1   read Perl documentation
-	" Vim (non-GUI) : shifted keys are mapped to their unshifted key !!!
-	"
-	if has("gui_running")
-		"
-		noremap    <buffer>  <silent>  <A-F9>             :call Perl_SyntaxCheck()<CR>
-		inoremap   <buffer>  <silent>  <A-F9>        <C-C>:call Perl_SyntaxCheck()<CR>
-		"
-		noremap    <buffer>  <silent>  <C-F9>             :call Perl_Run()<CR>
-		inoremap   <buffer>  <silent>  <C-F9>        <C-C>:call Perl_Run()<CR>
-		"
-		noremap    <buffer>            <S-F9>             :PerlScriptArguments<Space>
-		inoremap   <buffer>            <S-F9>        <C-C>:PerlScriptArguments<Space>
-		"
- 		noremap    <buffer>  <silent>  <S-F1>             :call Perl_perldoc()<CR>
- 		inoremap   <buffer>  <silent>  <S-F1>        <C-C>:call Perl_perldoc()<CR>
-	endif
-	"
-	" ---------- plugin help -----------------------------------------------------
-	"
-	noremap    <buffer>  <silent>  <LocalLeader>h          :call Perl_perldoc()<CR>
-	inoremap   <buffer>  <silent>  <LocalLeader>h     <C-C>:call Perl_perldoc()<CR>
+
+	" ----------------------------------------------------------------------------
+	" Help
+	" ----------------------------------------------------------------------------
+
+	noremap    <buffer>  <silent>  <LocalLeader>h          :call <SID>PerlDoc("")<CR>
+	inoremap   <buffer>  <silent>  <LocalLeader>h     <C-C>:call <SID>PerlDoc("")<CR>
 	noremap    <buffer>  <silent>  <LocalLeader>hp         :call Perl_HelpPerlsupport()<CR>
 	inoremap   <buffer>  <silent>  <LocalLeader>hp    <C-C>:call Perl_HelpPerlsupport()<CR>
 	"
@@ -2844,20 +2848,19 @@ function! s:CreateAdditionalMaps ()
 	" Run
 	" ----------------------------------------------------------------------------
 	"
-	noremap    <buffer>  <silent>  <LocalLeader>rr         :call Perl_Run()<CR>
-	noremap    <buffer>  <silent>  <LocalLeader>rs         :call Perl_SyntaxCheck()<CR>
+	noremap    <buffer>  <silent>  <LocalLeader>rr         :call <SID>Run("")<CR>
+	noremap    <buffer>  <silent>  <LocalLeader>rs         :call <SID>SyntaxCheck()<CR>
 	noremap    <buffer>            <LocalLeader>ra         :PerlScriptArguments<Space>
 	noremap    <buffer>            <LocalLeader>rw         :PerlSwitches<Space>
 	"
-	inoremap    <buffer>  <silent>  <LocalLeader>rr    <C-C>:call Perl_Run()<CR>
-	inoremap    <buffer>  <silent>  <LocalLeader>rs    <C-C>:call Perl_SyntaxCheck()<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rr    <C-C>:call <SID>Run("")<CR>
+	inoremap    <buffer>  <silent>  <LocalLeader>rs    <C-C>:call <SID>SyntaxCheck()<CR>
 	inoremap    <buffer>            <LocalLeader>ra    <C-C>:PerlScriptArguments<Space>
 	inoremap    <buffer>            <LocalLeader>rw    <C-C>:PerlSwitches<Space>
-	"
-	noremap    <buffer>  <silent>  <LocalLeader>rd    :call Perl_Debugger()<CR>
-	noremap    <buffer>  <silent>    <F9>             :call Perl_Debugger()<CR>
-	inoremap   <buffer>  <silent>    <F9>        <C-C>:call Perl_Debugger()<CR>
-	"
+
+	noremap    <buffer>  <silent>  <LocalLeader>rd    :call <SID>Debugger("")<CR>
+	inoremap   <buffer>  <silent>  <LocalLeader>rd    :call <SID>Debugger("")<CR>
+
 	if s:UNIX
 		 noremap    <buffer>  <silent>  <LocalLeader>re         :call Perl_MakeScriptExecutable()<CR>
 		inoremap    <buffer>  <silent>  <LocalLeader>re    <C-C>:call Perl_MakeScriptExecutable()<CR>
