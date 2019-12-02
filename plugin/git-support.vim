@@ -4507,8 +4507,17 @@ call s:LoadCmdLineOptions ()
 "
 "-------------------------------------------------------------------------------
 " s:CmdLineComplete : Command line completion.   {{{1
-"-------------------------------------------------------------------------------
 "
+" Parameters:
+"   mode     - the mode (string)
+"   backward - move backwards in the list of replacements (integer, optional);
+"              move forward otherwise
+" Returns:
+"   cmd_line - the new command line (string)
+"
+" Mode is one of:
+"   branch  command  remote  tag
+"-------------------------------------------------------------------------------
 function! s:CmdLineComplete ( mode, ... )
 	"
 	let forward = 1
@@ -4522,9 +4531,10 @@ function! s:CmdLineComplete ( mode, ... )
 	"
 	let cmdline_tail = strpart ( cmdline, cmdpos )
 	let cmdline_head = strpart ( cmdline, 0, cmdpos )
-	"
-	let idx = match ( cmdline_head, '[^[:blank:]:]*$' )
-	"
+
+	" split at blanks
+	let idx = match ( cmdline_head, '[^[:blank:]]*$' )
+
 	" prefixed by --option=
 	if a:mode != 'command' && -1 != match ( strpart ( cmdline_head, idx ), '^--[^=]\+=' )
 		let idx2 = matchend ( strpart ( cmdline_head, idx ), '^--[^=]\+=' )
@@ -4532,10 +4542,10 @@ function! s:CmdLineComplete ( mode, ... )
 			let idx += idx2
 		endif
 	endif
-	"
-	" for a branch or tag, split at a ".." or "..."
+
+	" for a branch or tag, split at a "..", "...", or ":"
 	if a:mode == 'branch' || a:mode == 'tag'
-		let idx2 = matchend ( strpart ( cmdline_head, idx ), '\.\.\.\?' )
+		let idx2 = matchend ( strpart ( cmdline_head, idx ), '\.\.\.\?\|:' )
 		if idx2 >= 0
 			let idx += idx2
 		endif
