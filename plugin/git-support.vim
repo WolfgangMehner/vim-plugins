@@ -11,7 +11,7 @@
 "  Organization:  
 "       Version:  see variable g:GitSupport_Version below
 "       Created:  06.10.2012
-"      Revision:  14.04.2019
+"      Revision:  03.12.2019
 "       License:  Copyright (c) 2012-2019, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
@@ -23,11 +23,11 @@
 "                 PURPOSE.
 "                 See the GNU General Public License version 2 for more details.
 "===============================================================================
-"
+
 "-------------------------------------------------------------------------------
 " Basic checks.   {{{1
 "-------------------------------------------------------------------------------
-"
+
 " need at least 7.0
 if v:version < 700
 	echohl WarningMsg
@@ -35,14 +35,14 @@ if v:version < 700
 	echohl None
 	finish
 endif
-"
+
 " prevent duplicate loading
 " need compatible
 if &cp || ( exists('g:GitSupport_Version') && ! exists('g:GitSupport_DevelopmentOverwrite') )
 	finish
 endif
 let g:GitSupport_Version= '0.9.4'     " version number of this script; do not change
-"
+
 "-------------------------------------------------------------------------------
 " Auxiliary functions.   {{{1
 "-------------------------------------------------------------------------------
@@ -1698,6 +1698,7 @@ function! GitS_BranchList( action )
 		let txt .= "branch under cursor ...\n"
 		let txt .= "ch      : checkout\n"
 		let txt .= "cr      : use as starting point for creating a new branch\n"
+		let txt .= "Ch / CH : create new branch and check it out\n"
 		let txt .= "de      : delete\n"
 		let txt .= "De / DE : delete (via -D)\n"
 		let txt .= "me      : merge with current branch\n"
@@ -1712,7 +1713,7 @@ function! GitS_BranchList( action )
 		return
 	elseif a:action == 'update'
 		" noop
-	elseif -1 != index ( [ 'checkout', 'create', 'delete', 'delete-force', 'merge', 'rebase', 'rename', 'set-upstream', 'show' ], a:action )
+	elseif -1 != index ( [ 'checkout', 'create', 'create-checkout', 'delete', 'delete-force', 'merge', 'rebase', 'rename', 'set-upstream', 'show' ], a:action )
 		"
 		let [ b_name, b_flag ] = s:BranchList_GetBranch ()
 		"
@@ -1723,13 +1724,19 @@ function! GitS_BranchList( action )
 		if a:action == 'checkout'
 			call GitS_Checkout( shellescape(b_name), 'c' )
 		elseif a:action == 'create'
-			"
 			let suggestion = ''
 			if b_flag =~ 'r' && b_name !~ '/HEAD$'
 				let suggestion = matchstr ( b_name, '[^/]\+$' )
 			endif
-			"
+
 			return s:AssembleCmdLine ( ':GitBranch '.suggestion, ' '.b_name )
+		elseif a:action == 'create-checkout'
+			let suggestion = ''
+			if b_flag =~ 'r' && b_name !~ '/HEAD$'
+				let suggestion = matchstr ( b_name, '[^/]\+$' )
+			endif
+
+			return s:AssembleCmdLine ( ':GitCheckout -b '.suggestion, ' '.b_name )
 		elseif a:action == 'delete'
 			if b_flag =~ 'r'
 				call GitS_Branch( '-rd '.shellescape(b_name), 'c' )
@@ -1780,6 +1787,8 @@ function! GitS_BranchList( action )
 		"
 		exe 'nnoremap <silent> <buffer> ch     :call GitS_BranchList("checkout")<CR>'
 		exe 'nnoremap <expr>   <buffer> cr     GitS_BranchList("create")'
+		exe 'nnoremap <expr>   <buffer> Ch     GitS_BranchList("create-checkout")'
+		exe 'nnoremap <expr>   <buffer> CH     GitS_BranchList("create-checkout")'
 		exe 'nnoremap <silent> <buffer> de     :call GitS_BranchList("delete")<CR>'
 		exe 'nnoremap <silent> <buffer> De     :call GitS_BranchList("delete-force")<CR>'
 		exe 'nnoremap <silent> <buffer> DE     :call GitS_BranchList("delete-force")<CR>'

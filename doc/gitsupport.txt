@@ -1,4 +1,4 @@
-*gitsupport.txt*                  Git Support                      Apr 23 2019
+*gitsupport.txt*                  Git Support                      Dec 02 2019
 
 Git Support                                          *git-support* *gitsupport*
 
@@ -283,6 +283,7 @@ The second version executes "git branch ...".
   branch under the cursor ...
   ch        checkout
   cr        use as starting point for creating a new branch
+  Ch / CH   create new branch and check it out
   de        delete
   De / DE   delete (via -D)
   me        merge with current branch
