@@ -1726,14 +1726,14 @@ function! GitS_BranchList( action )
 		elseif a:action == 'create'
 			let suggestion = ''
 			if b_flag =~ 'r' && b_name !~ '/HEAD$'
-				let suggestion = matchstr ( b_name, '[^/]\+$' )
+				let suggestion = substitute ( b_name, '^[^/]\+/', '', '' )
 			endif
 
 			return s:AssembleCmdLine ( ':GitBranch '.suggestion, ' '.b_name )
 		elseif a:action == 'create-checkout'
 			let suggestion = ''
 			if b_flag =~ 'r' && b_name !~ '/HEAD$'
-				let suggestion = matchstr ( b_name, '[^/]\+$' )
+				let suggestion = substitute ( b_name, '^[^/]\+/', '', '' )
 			endif
 
 			return s:AssembleCmdLine ( ':GitCheckout -b '.suggestion, ' '.b_name )
