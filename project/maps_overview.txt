@@ -20,7 +20,8 @@ Run
   script args	ra	rsa	ra		-	-	ra
   interp. args	raa	ria			-	-	rw
   output dest.	ro	ro	ro	-	ro	-	ro	-
-  direct run		rd	-	-	rd	-	-	-
+  ex. process	-	-	-	rp	-	-	-	-
+  direct run	-	rd	-	-	rd	-	-	-
   set exec.	-	rse	-	-	rse	-	-	-
   set compiler	-	-	-	-	rsc	-	-	-
   xterm size	rx	rx	rx	-	-	-	rx	-

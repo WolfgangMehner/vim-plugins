@@ -14,7 +14,7 @@ Project:
   itself contains ignored sections?
 - Do not always jump to errors automatically from the quickfix list. Make this
   configurable.
-- Configure the template which is inserted automatically when a new file is
+- (DONE) Configure the template which is inserted automatically when a new file is
   created.
 - Use 'Xterm_Executable' and 'Xterm_Options' everywhere.
 - Do not use 'lchdir' for starting external jobs in a directory. This may have
@@ -85,8 +85,6 @@ C/C++:
 - (DONE) Documentation: Change the description of the Doxygen setup.
 - README: Change the description of the Doxygen setup.
 - (DONE) Documentation: Adding additional template files.
-- Configure the template which is inserted automatically when a new file is
-  created.
 - (DONE) Add a template to insert all section comments into a file at once.
 - (DONE) Move 'ftplugin/c.vim'.
 - (DONE) Move 'ftplugin/make.vim'.
