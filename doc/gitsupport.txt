@@ -1,4 +1,4 @@
-*gitsupport.txt*                  Git Support                      Dec 02 2019
+*gitsupport.txt*                  Git Support                      Jul 18 2020
 
 Git Support                                          *git-support* *gitsupport*
 

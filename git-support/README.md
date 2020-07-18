@@ -1,4 +1,4 @@
-README for git-support.vim (Version 0.9.4) / December 03 2019
+README for git-support.vim (Version 0.9.4) / July 18 2020
 ================================================================================
 
   *  INSTALLATION
