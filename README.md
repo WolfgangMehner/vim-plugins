@@ -20,10 +20,10 @@ Vim-Support    | Vim-Script          | [vim.org](https://www.vim.org/scripts/scr
 
 __Other Tools__
 
-Name            | Description                                                  | vim.org                                                                 | GitHub                                                  | Screenshots
----             | ---                                                          | ---                                                                     | ---                                                     | ---
+Name            | Description                                                  | vim.org                                                          | GitHub                                                  | Screenshots
+---             | ---                                                          | ---                                                              | ---                                                     | ---
 Git-Support     | Manage Git repos from within Vim                             | [vim.org](https://www.vim.org/scripts/script.php?script_id=4497) | [GitHub](https://github.com/WolfgangMehner/git-support) | [here](https://wolfgangmehner.github.io/vim-plugins/gitsupport)
-Verilog-Support | SystemVerilog & UVM by [jmcneal](https://github.com/jmcneal) | -                                                                       | [GitHub](https://github.com/jmcneal/verilog-support)    | -
+Verilog-Support | SystemVerilog & UVM by [jmcneal](https://github.com/jmcneal) | -                                                                | [GitHub](https://github.com/jmcneal/verilog-support)    | -
 
 # Installation
 

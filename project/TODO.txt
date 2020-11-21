@@ -51,6 +51,8 @@ Templates:
 - Configure CTRL+J and CTRL+D.
 - Add an appropriate action if 'mmtemplates#core#EditTemplateFiles' is called
   for a file which is not yet available.
+- All maps and menus for visual mode should have the "v" flag.
+  Consequently, remove the "visual" template option.
 
 Awk:
 - (DONE) 'code->comment' should not insert a space following the hash?
@@ -88,34 +90,6 @@ C/C++:
 - (DONE) Add a template to insert all section comments into a file at once.
 - (DONE) Move 'ftplugin/c.vim'.
 - (DONE) Move 'ftplugin/make.vim'.
-
-Git:
-- Add more suggestions for custom menu entries to 's:Git_CustomMenu'.
-- Add current custom menu entries to documentation and/or "git-support/rc/",
-  as a starting point for customization.
-- Current method for jumping to Git buffers does not work for tabs.
-  * (DONE) Open the buffer in a new window.
-  * Optionally: Jump across tab pages.
-- How about jumping to windows?
-  * (DONE) Open the buffer in a new window.
-  * Optionally: Jump across tab pages.
-- (DONE) Problem with 's:OpenFile()':
-  Since the name of the buffer has to match exactly, this does not always work
-  with different working directories.
-- (DONE) Maps for completing Git commands, branches, tags, remotes, ...
-  similar to the cmd-line completion plug-in.
-- (DONE) New status buffer output (version > 1.8.5):
-  Update syntax highlighting, folding function, file actions
-- Do not use "sync fromstart" in syntax highlighting,
-  is extremely slow for diff and log.
-- Rename function 'GitS_FoldLog' into 'GitS_FoldLogTxt'.
-- Set 'foldmethod' individually and not in 's:OpenGitBuffer'.
-- Update buffer after executing a command: :GitBranch, :GitRemote, :GitStash, ...
-- Feed output of "git apply" into quickfix.
-- Remove :GitAbove, :GitBelow, and :GitTab again and ...
-- Use modifiers to split the window or open on a new tab.
-- Document 'g:Git_Editor', and the use of '$GIT_EDITOR', and add it to :GitSupportSettings.
-- (DONE) Add 'git log -L line,line:file' in visual mode.
 
 LaTeX:
 - (DONE) Add :LatexConvert as an ex-command.
