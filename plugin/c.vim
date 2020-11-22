@@ -17,9 +17,9 @@
 "
 "        Version:  see variable  g:C_Version  below
 "        Created:  04.11.2000
-"       Revision:  08.04.2018
+"       Revision:  22.11.2020
 "        License:  Copyright (c) 2000-2014, Fritz Mehner
-"                  Copyright (c) 2015-2018, Wolfgang Mehner
+"                  Copyright (c) 2015-2020, Wolfgang Mehner
 "                  This program is free software; you can redistribute it and/or
 "                  modify it under the terms of the GNU General Public License as
 "                  published by the Free Software Foundation, version 2 of the
@@ -50,7 +50,7 @@ if exists("g:C_Version") || &cp
 	finish
 endif
 
-let g:C_Version= "6.2.1pre"                  " version number of this script; do not change
+let g:C_Version= "6.2.1beta"                  " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " === Auxiliary functions ===   {{{1
@@ -70,10 +70,10 @@ let g:C_Version= "6.2.1pre"                  " version number of this script; do
 "-------------------------------------------------------------------------------
 
 function! s:ApplyDefaultSetting ( varname, value )
-	if ! exists ( 'g:'.a:varname )
-		let { 'g:'.a:varname } = a:value
+	if ! exists( 'g:'.a:varname )
+		let {'g:'.a:varname} = a:value
 	endif
-endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
+endfunction
 
 "-------------------------------------------------------------------------------
 " s:ErrorMsg : Print an error message.   {{{2
@@ -92,7 +92,7 @@ function! s:ErrorMsg ( ... )
 		echomsg line
 	endfor
 	echohl None
-endfunction    " ----------  end of function s:ErrorMsg  ----------
+endfunction
 
 "-------------------------------------------------------------------------------
 " s:GetGlobalSetting : Get a setting from a global variable.   {{{2
@@ -113,10 +113,10 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 function! s:GetGlobalSetting ( varname, ... )
 	let lname = a:varname
 	let gname = a:0 >= 1 ? a:1 : lname
-	if exists ( 'g:'.gname )
-		let { 's:'.lname } = { 'g:'.gname }
+	if exists( 'g:'.gname )
+		let {'s:'.lname} = {'g:'.gname}
 	endif
-endfunction    " ----------  end of function s:GetGlobalSetting  ----------
+endfunction
 
 "-------------------------------------------------------------------------------
 " s:ImportantMsg : Print an important message.   {{{2
