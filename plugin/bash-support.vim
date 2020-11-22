@@ -64,10 +64,10 @@ let g:BASH_Version = "5.0alpha"                  " version number of this script
 "-------------------------------------------------------------------------------
 
 function! s:ApplyDefaultSetting ( varname, value )
-	if ! exists ( 'g:'.a:varname )
-		let { 'g:'.a:varname } = a:value
+	if ! exists( 'g:'.a:varname )
+		let {'g:'.a:varname} = a:value
 	endif
-endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
+endfunction
 
 "-------------------------------------------------------------------------------
 " s:ErrorMsg : Print an error message.   {{{2
@@ -86,7 +86,7 @@ function! s:ErrorMsg ( ... )
 		echomsg line
 	endfor
 	echohl None
-endfunction    " ----------  end of function s:ErrorMsg  ----------
+endfunction
 
 "-------------------------------------------------------------------------------
 " s:GetGlobalSetting : Get a setting from a global variable.   {{{2
@@ -107,10 +107,10 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 function! s:GetGlobalSetting ( varname, ... )
 	let lname = a:varname
 	let gname = a:0 >= 1 ? a:1 : lname
-	if exists ( 'g:'.gname )
-		let { 's:'.lname } = { 'g:'.gname }
+	if exists( 'g:'.gname )
+		let {'s:'.lname} = {'g:'.gname}
 	endif
-endfunction    " ----------  end of function s:GetGlobalSetting  ----------
+endfunction
 
 "-------------------------------------------------------------------------------
 " s:ImportantMsg : Print an important message.   {{{2
