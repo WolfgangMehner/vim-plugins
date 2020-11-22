@@ -26,7 +26,6 @@ C
 Git
 Latex
 Lua
-Matlab
 Perl
 Vim
 "

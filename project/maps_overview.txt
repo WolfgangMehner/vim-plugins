@@ -1,40 +1,40 @@
 
-		Awk	Bash	C	LaTeX	Lua	Matlab	Perl	Vim
+		Awk	Bash	C	LaTeX	Lua	Perl	Vim
 
 Run
- --------------------------------------------------------------------------
+ ------------------------------------------------------------------
   typesetter				rr
   lacheck				rla
   convert				rc
   set main doc				rmd
- --------------------------------------------------------------------------
+ ------------------------------------------------------------------
   compile			rc		rc
   link				rl		-
- --------------------------------------------------------------------------
-  run		rr	rr	rr		rr	-	rr
-  exec. to run	-	-	re		-	-	-
-  syntax check	rs>rk	rk	-		rk	rk	rs>rk
-  s.c. options	-	rso	-		-	-	-
-  lint check	rl	-	-		-	-	-
-  debugger	-	-	rd		-	-	rd
-  script args	ra	rsa	ra		-	-	ra
-  interp. args	raa	ria			-	-	rw
-  output dest.	ro	ro	ro	-	ro	-	ro	-
-  ex. process	-	-	-	rp	-	-	-	-
-  direct run	-	rd	-	-	rd	-	-	-
-  set exec.	-	rse	-	-	rse	-	-	-
-  set compiler	-	-	-	-	rsc	-	-	-
-  xterm size	rx	rx	rx	-	-	-	rx	-
- --------------------------------------------------------------------------
-  make exec.	re	re	-	-	re	-	re	-
-  hardcopy	rh	rh	rh	rh	rh	-	rh	rh
-  timestamped	-	-	-	-	-	-	rt	-
- --------------------------------------------------------------------------
-  settings	rse>rs	rs	rs	rs	rs	rs	rk>rs	rs
- --------------------------------------------------------------------------
+ ------------------------------------------------------------------
+  run		rr	rr	rr		rr	rr
+  exec. to run	-	-	re		-	-
+  syntax check	rs>rk	rk	-		rk	rs>rk
+  s.c. options	-	rso	-		-	-
+  lint check	rl	-	-		-	-
+  debugger	-	-	rd		-	rd
+  script args	ra	rsa	ra		-	ra
+  interp. args	raa	ria			-	rw
+  output dest.	ro	ro	ro	-	ro	ro	-
+  ex. process	-	-	-	rp	-	-	-
+  direct run	-	rd	-	-	rd	-	-
+  set exec.	-	rse	-	-	rse	-	-
+  set compiler	-	-	-	-	rsc	-	-
+  xterm size	rx	rx	rx	-	-	rx	-
+ ------------------------------------------------------------------
+  make exec.	re	re	-	-	re	re	-
+  hardcopy	rh	rh	rh	rh	rh	rh	rh
+  timestamped	-	-	-	-	-	rt	-
+ ------------------------------------------------------------------
+  settings	rse>rs	rs	rs	rs	rs	rk>rs	rs
+ ------------------------------------------------------------------
 Help
- --------------------------------------------------------------------------
-  plug-in	hp	hp	hp	hp	hs	hs	hp	hp
- --------------------------------------------------------------------------
+ ------------------------------------------------------------------
+  plug-in	hp	hp	hp	hp	hs	hp	hp
+ ------------------------------------------------------------------
 
 # vim: tabstop=8

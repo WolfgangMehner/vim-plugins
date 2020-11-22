@@ -14,7 +14,6 @@ Bash-Support   | Bash                | [vim.org](https://www.vim.org/scripts/scr
 C-Support      | C/C++ & Doxygen     | [vim.org](https://www.vim.org/scripts/script.php?script_id=213)  | [GitHub](https://github.com/WolfgangMehner/c-support)      | [here](https://wolfgangmehner.github.io/vim-plugins/csupport)
 LaTeX-Support  | LaTeX/LuaTeX/BibTeX | [vim.org](https://www.vim.org/scripts/script.php?script_id=4405) | [GitHub](https://github.com/WolfgangMehner/latex-support)  | [here](https://wolfgangmehner.github.io/vim-plugins/latexsupport)
 Lua-Support    | Lua & C-API         | [vim.org](https://www.vim.org/scripts/script.php?script_id=4950) | [GitHub](https://github.com/WolfgangMehner/lua-support)    | [here](https://wolfgangmehner.github.io/vim-plugins/luasupport)
-Matlab-Support | Matlab              | -                                                                | [GitHub](https://github.com/WolfgangMehner/matlab-support) | -
 Perl-Support   | Perl & POD          | [vim.org](https://www.vim.org/scripts/script.php?script_id=556)  | [GitHub](https://github.com/WolfgangMehner/perl-support)   | [here](https://wolfgangmehner.github.io/vim-plugins/perlsupport)
 Vim-Support    | Vim-Script          | [vim.org](https://www.vim.org/scripts/script.php?script_id=3931) | [GitHub](https://github.com/WolfgangMehner/vim-support)    | [here](https://wolfgangmehner.github.io/vim-plugins/vimsupport)
 

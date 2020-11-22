@@ -11,10 +11,8 @@
 --                - awk
 --                - bash
 --                - c
---                - git
 --                - latex
 --                - lua
---                - matlab
 --                - perl
 --                - vim
 --
@@ -163,25 +161,6 @@ filelists_repo.c = {
 }
 
 ------------------------------------------------------------------------
---  Git   {{{1
-------------------------------------------------------------------------
-
-filelists.git = {
-	'doc/gitsupport.txt',
-	'plugin/git-support.vim',
-	'git-support/data/',
-	'git-support/doc/',
-	'git-support/rc/',
-	'git-support/README.md',
-	'syntax/gits*.vim',
-}
-
-filelists_repo.git = {
-	'git-support/git-doc/',
-	'project/release.lua',
-}
-
-------------------------------------------------------------------------
 --  LaTeX   {{{1
 ------------------------------------------------------------------------
 
@@ -239,30 +218,6 @@ filelists.lua = {
 filelists_repo.lua = {
 	'lua-support/html2doc/',
 	'lua-support/lua-doc/',
-	'project/release.lua',
-}
-
-------------------------------------------------------------------------
---  Matlab   {{{1
-------------------------------------------------------------------------
-
-filelists.matlab = {
-	'autoload/mmtemplates/',
-	'doc/matlabsupport.txt',
-	'doc/templatesupport.txt',
-	'ftdetect/template.vim',
-	'ftplugin/matlab.vim',
-	'ftplugin/template.vim',
-	'plugin/matlab-support.vim',
-	'syntax/template.vim',
-	'matlab-support/codesnippets/',
-	'matlab-support/doc/',
-	'matlab-support/rc/',
-	'matlab-support/templates/',
-	'matlab-support/README.md',
-}
-
-filelists_repo.matlab = {
 	'project/release.lua',
 }
 
@@ -511,10 +466,8 @@ if print_help then
 	print ( '\tawk' )
 	print ( '\tbash' )
 	print ( '\tc' )
-	print ( '\tgit' )
 	print ( '\tlatex' )
 	print ( '\tlua' )
-	print ( '\tmatlab' )
 	print ( '\tperl' )
 	print ( '\tvim' )
 	print ( '' )
