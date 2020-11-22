@@ -62,10 +62,10 @@ let g:Lua_Version= '1.1alpha'     " version number of this script; do not change
 "-------------------------------------------------------------------------------
 
 function! s:ApplyDefaultSetting ( varname, value )
-	if ! exists ( 'g:'.a:varname )
-		let { 'g:'.a:varname } = a:value
+	if ! exists( 'g:'.a:varname )
+		let {'g:'.a:varname} = a:value
 	endif
-endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
+endfunction
 
 "-------------------------------------------------------------------------------
 " s:ErrorMsg : Print an error message.   {{{2
@@ -84,7 +84,7 @@ function! s:ErrorMsg ( ... )
 		echomsg line
 	endfor
 	echohl None
-endfunction    " ----------  end of function s:ErrorMsg  ----------
+endfunction
 
 "-------------------------------------------------------------------------------
 " s:GetGlobalSetting : Get a setting from a global variable.   {{{2
@@ -105,10 +105,10 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 function! s:GetGlobalSetting ( varname, ... )
 	let lname = a:varname
 	let gname = a:0 >= 1 ? a:1 : lname
-	if exists ( 'g:'.gname )
-		let { 's:'.lname } = { 'g:'.gname }
+	if exists( 'g:'.gname )
+		let {'s:'.lname} = {'g:'.gname}
 	endif
-endfunction    " ----------  end of function s:GetGlobalSetting  ----------
+endfunction
 
 "-------------------------------------------------------------------------------
 " s:ImportantMsg : Print an important message.   {{{2
@@ -1370,7 +1370,7 @@ function! s:Run ( args )
 
 		if s:NEOVIM
 			" :TODO:11.10.2017 18:03:WM: better handling than using 'job_id', but ensures
-			" successful operation for know
+			" successful operation for now
 			above new
 			let job_id = termopen ( arg_list, {} )
 
@@ -1406,6 +1406,7 @@ function! s:Run ( args )
 		endif
 		let args = a:args
 
+		" :TODO:13.04.2019 19:48:WM: Neovim
 		silent exe '!'.s:Xterm_Executable.' '.g:Xterm_Options.title
 					\ .' -e '.shellescape( exec.' '.script.' '.args.' ; echo "" ; read -p "  ** PRESS ENTER **  " dummy ' ).' &'
 
@@ -1729,7 +1730,8 @@ function! s:InsertFileHeader ()
 		return
 	endif
 
-	if g:Lua_InsertFileHeader == 'yes'
+	" prevent insertion for a file generated from a quickfix error
+	if g:Lua_InsertFileHeader == 'yes' && isdirectory ( expand('%:p:h') )
 		let templ_s = mmtemplates#core#Resource ( g:Lua_Templates, 'get', 'property', 'Lua::FileSkeleton::Script' )[0]
 
 		" insert templates in reverse order, always above the first line

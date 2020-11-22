@@ -10,10 +10,6 @@ local module_name = ...
 module ( module_name, package.seeall )
 
 <CURSOR>
-== Files.script == below, map:fs, sc:s ==
-local args = { ... }
-
-<CURSOR>
 == ENDTEMPLATE ==
 
 == ENDSTYLES ==
@@ -28,10 +24,6 @@ local |BASENAME| = {}
 <CURSOR>
 
 return |BASENAME|
-== Files.script == below, map:fs, sc:s ==
-local args = { ... }
-
-<CURSOR>
 == ENDTEMPLATE ==
 
 == ENDSTYLES ==
