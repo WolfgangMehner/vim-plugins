@@ -1,8 +1,8 @@
-*templatesupport.txt*         MM Template Support                  Apr 14 2017
+*templatesupport.txt*         MM Template Support                  Aug 06 2020
 
 MM Template Support                                        *template-support*
 
-                             Plug-in version 1.1alpha
+                             Plug-in version 1.1beta
                         for Vim version 7.0 and above
                  Wolfgang Mehner <wolfgang-mehner at web.de>
 

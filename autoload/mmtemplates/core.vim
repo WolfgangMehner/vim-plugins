@@ -11,8 +11,8 @@
 "  Organization:  
 "       Version:  see variable g:Templates_Version below
 "       Created:  30.08.2011
-"      Revision:  14.04.2017
-"       License:  Copyright (c) 2012-2016, Wolfgang Mehner
+"      Revision:  06.08.2020
+"       License:  Copyright (c) 2012-2020, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -23,11 +23,11 @@
 "                 PURPOSE.
 "                 See the GNU General Public License version 2 for more details.
 "===============================================================================
-"
+
 "-------------------------------------------------------------------------------
 " === Basic Checks ===   {{{1
 "-------------------------------------------------------------------------------
-"
+
 " need at least 7.0
 if v:version < 700
 	echohl WarningMsg
@@ -35,15 +35,15 @@ if v:version < 700
 	echohl None
 	finish
 endif
-"
+
 " prevent duplicate loading
 " need compatible
 if &cp || ( exists('g:Templates_Version') && g:Templates_Version != 'searching' && ! exists('g:Templates_DevelopmentOverwrite') )
 	finish
 endif
-"
-let s:Templates_Version = '1.1alpha'     " version number of this script; do not change
-"
+
+let s:Templates_Version = '1.1beta'     " version number of this script; do not change
+
 "----------------------------------------------------------------------
 "  --- Find Newest Version ---   {{{2
 "----------------------------------------------------------------------
@@ -133,13 +133,13 @@ else
 endif
 " }}}2
 "-------------------------------------------------------------------------------
-"
+
 let g:Templates_Version = s:Templates_Version     " version number of this script; do not change
-"
+
 "----------------------------------------------------------------------
 "  === Modul Setup ===   {{{1
 "----------------------------------------------------------------------
-"
+
 "-------------------------------------------------------------------------------
 " s:ApplyDefaultSetting : Write default setting to a global variable.   {{{2
 "
@@ -152,13 +152,13 @@ let g:Templates_Version = s:Templates_Version     " version number of this scrip
 " If g:<varname> does not exists, assign:
 "   g:<varname> = value
 "-------------------------------------------------------------------------------
-"
+
 function! s:ApplyDefaultSetting ( varname, value )
-	if ! exists ( 'g:'.a:varname )
-		let { 'g:'.a:varname } = a:value
+	if ! exists( 'g:'.a:varname )
+		let {'g:'.a:varname} = a:value
 	endif
-endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
-"
+endfunction
+
 "-------------------------------------------------------------------------------
 " s:GetGlobalSetting : Get a setting from a global variable.   {{{2
 "
@@ -175,20 +175,20 @@ endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
 "   g:<varname> == 0  ->  s:<varname> = "no"
 "   otherwise         ->  s:<varname> = "yes"
 "-------------------------------------------------------------------------------
-"
+
 function! s:GetGlobalSetting ( varname, ... )
-	if a:0 > 0 && a:1 == 'bin' && exists ( 'g:'.a:varname ) && type ( 0 ) == type ( { 'g:'.a:varname } )
-		let { 's:'.a:varname } = { 'g:'.a:varname } == 0 ? 'no' : 'yes'
-	elseif exists ( 'g:'.a:varname )
-		let { 's:'.a:varname } = { 'g:'.a:varname }
+	if a:0 > 0 && a:1 == 'bin' && exists( 'g:'.a:varname ) && type( 0 ) == type( {'g:'.a:varname} )
+		let {'s:'.a:varname} = {'g:'.a:varname} == 0 ? 'no' : 'yes'
+	elseif exists( 'g:'.a:varname )
+		let {'s:'.a:varname} = {'g:'.a:varname}
 	endif
-	"
-	let s:Templates_AllSettings[ a:varname ] = { 's:'.a:varname }
-endfunction    " ----------  end of function s:GetGlobalSetting  ----------
-"
+
+	let s:Templates_AllSettings[ a:varname ] = {'s:'.a:varname}
+endfunction
+
 " }}}2
 "-------------------------------------------------------------------------------
-"
+
 " platform specifics
 let s:MSWIN = has("win16") || has("win32")   || has("win64")     || has("win95")
 let s:UNIX	= has("unix")  || has("macunix") || has("win32unix")
