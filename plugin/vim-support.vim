@@ -16,9 +16,9 @@
 "
 "       Version:  see variable g:VimSupportVersion below
 "       Created:  14.01.2012
-"      Revision:  09.02.2018
+"      Revision:  22.11.2020
 "       License:  Copyright (c) 2012-2015, Fritz Mehner
-"                 Copyright (c) 2016-2018, Wolfgang Mehner
+"                 Copyright (c) 2016-2020, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -68,10 +68,10 @@ let g:VimSupportVersion= "2.5beta"                  " version number of this scr
 "-------------------------------------------------------------------------------
 
 function! s:ApplyDefaultSetting ( varname, value )
-	if ! exists ( 'g:'.a:varname )
-		let { 'g:'.a:varname } = a:value
+	if ! exists( 'g:'.a:varname )
+		let {'g:'.a:varname} = a:value
 	endif
-endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
+endfunction
 
 "-------------------------------------------------------------------------------
 " s:ErrorMsg : Print an error message.   {{{2
@@ -90,7 +90,7 @@ function! s:ErrorMsg ( ... )
 		echomsg line
 	endfor
 	echohl None
-endfunction    " ----------  end of function s:ErrorMsg  ----------
+endfunction
 
 "-------------------------------------------------------------------------------
 " s:GetGlobalSetting : Get a setting from a global variable.   {{{2
@@ -111,10 +111,10 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 function! s:GetGlobalSetting ( varname, ... )
 	let lname = a:varname
 	let gname = a:0 >= 1 ? a:1 : lname
-	if exists ( 'g:'.gname )
-		let { 's:'.lname } = { 'g:'.gname }
+	if exists( 'g:'.gname )
+		let {'s:'.lname} = {'g:'.gname}
 	endif
-endfunction    " ----------  end of function s:GetGlobalSetting  ----------
+endfunction
 
 "-------------------------------------------------------------------------------
 " s:ImportantMsg : Print an important message.   {{{2

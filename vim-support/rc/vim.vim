@@ -32,7 +32,7 @@ else
 	nmap  <buffer>  <F1>  <Plug>VimSupportKeywordHelp
 	imap  <buffer>  <F1>  <Plug>VimSupportKeywordHelp
 endif
-" these maps have to remap
+" these maps have to remap, do not use nnoremap
 
 " ---------- Reset "maplocalleader" ------------------------------------------
 call Vim_ResetMapLeader ()
