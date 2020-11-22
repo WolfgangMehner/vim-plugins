@@ -4,7 +4,7 @@
 "
 "   Description:  suggestion for a personal configuration file ~/.vimrc
 "
-"   VIM Version:  7.0+
+"   VIM Version:  7.4+
 "        Author:  Wolfgang Mehner, wolfgang-mehner@web.de
 "                 Dr. Fritz Mehner (fgm), mehner.fritz@web.de
 "      Revision:  15.04.2019

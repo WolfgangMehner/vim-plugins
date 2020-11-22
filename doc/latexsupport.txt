@@ -1,9 +1,9 @@
-*latexsupport.txt*               LaTeX Support                     Apr 14 2019
+*latexsupport.txt*               LaTeX Support                     Nov 22 2020
 
 LaTeX Support                                     *latex-support* *latexsupport*
 
                              Plug-in version 2.0beta
-                        for Vim version 7.0 and above
+                        for Vim version 7.4 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
 

@@ -2,23 +2,23 @@
 "
 "          File:  latex-support.vim
 "
-"   Description:  LaTeX support     (VIM Version 7.0+)
+"   Description:  LaTeX support
 "
 "                  Write LaTeX scripts by inserting comments, statements,
 "                  variables and builtins.
 "
 "                 See help file latexsupport.txt .
 "
-"   VIM Version:  7.0+
+"   VIM Version:  7.4+
 "
 "        Author:  Wolfgang Mehner <wolfgang-mehner@web.de>
 "                 (formerly Fritz Mehner <mehner.fritz@web.de>)
 "
 "       Version:  see variable g:LatexSupportVersion below.
 "       Created:  27.12.2012
-"      Revision:  14.04.2019
+"      Revision:  22.11.2020
 "       License:  Copyright (c) 2012-2015, Fritz Mehner
-"                 Copyright (c) 2016-2019, Wolfgang Mehner
+"                 Copyright (c) 2016-2020, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -34,10 +34,10 @@
 " === Basic checks ===   {{{1
 "-------------------------------------------------------------------------------
 
-" need at least 7.0
-if v:version < 700
+" need at least 7.4
+if v:version < 704
 	echohl WarningMsg
-	echo 'The plugin latex-support.vim needs Vim version >= 7.'
+	echo 'The plugin latex-support.vim needs Vim version >= 7.4'
 	echohl None
 	finish
 endif
@@ -68,10 +68,10 @@ let g:LatexSupportVersion= "2.0beta"                  " version number of this s
 "-------------------------------------------------------------------------------
 
 function! s:ApplyDefaultSetting ( varname, value )
-	if ! exists ( 'g:'.a:varname )
-		let { 'g:'.a:varname } = a:value
+	if ! exists( 'g:'.a:varname )
+		let {'g:'.a:varname} = a:value
 	endif
-endfunction    " ----------  end of function s:ApplyDefaultSetting  ----------
+endfunction
 
 "-------------------------------------------------------------------------------
 " s:ChangeDir : Change the working directory.   {{{2
@@ -137,10 +137,10 @@ endfunction    " ----------  end of function s:ErrorMsg  ----------
 function! s:GetGlobalSetting ( varname, ... )
 	let lname = a:varname
 	let gname = a:0 >= 1 ? a:1 : lname
-	if exists ( 'g:'.gname )
-		let { 's:'.lname } = { 'g:'.gname }
+	if exists( 'g:'.gname )
+		let {'s:'.lname} = {'g:'.gname}
 	endif
-endfunction    " ----------  end of function s:GetGlobalSetting  ----------
+endfunction
 
 "-------------------------------------------------------------------------------
 " s:ImportantMsg : Print an important message.   {{{2

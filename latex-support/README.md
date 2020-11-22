@@ -1,4 +1,4 @@
-README for latex-support.vim (Version 2.0beta) / April 14 2019
+README for latex-support.vim (Version 2.0beta) / November 22 2020
 ================================================================================
 
   *  INSTALLATION
@@ -14,7 +14,7 @@ many additional hints and options which can improve speed and comfort when
 writing LaTeX.
 See the help file latexsupport.txt for more information.
 
-This plug-in can be used with Vim version 7.3+ and Neovim 0.2.1+.
+This plug-in can be used with Vim version 7.4+ and Neovim 0.2.1+.
 
 
 --------------------------------------------------------------------------------
