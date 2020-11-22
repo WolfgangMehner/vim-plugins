@@ -1,4 +1,4 @@
-README for perl-support.vim (Version 5.5alpha) / June 15 2019
+README for perl-support.vim (Version 5.5alpha) / August 06 2020
 ================================================================================
 
   *  INSTALLATION

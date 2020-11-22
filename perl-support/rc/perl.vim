@@ -4,7 +4,7 @@
 "
 "   Language :  Perl
 "     Plugin :  perl-support.vim
-"   Revision :  15.04.2017
+"   Revision :  26.06.2019
 " Maintainer :  Wolfgang Mehner <wolfgang-mehner@web.de>
 "               (formerly Fritz Mehner <mehner.fritz@web.de>)
 "
