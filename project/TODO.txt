@@ -23,7 +23,7 @@ Project:
 - Check how to start jobs with arguments under Windows.
   Important for job_start() and term_start().
 - Add plug-in set-up guide.
-- Remove mailing list links from plug-in pages and GitHub README.
+- (DONE) Remove mailing list links from plug-in pages and GitHub README.
 
 vim.org:
 - (DONE) Reference GitHub on plug-in pages.
@@ -100,13 +100,6 @@ Lua:
 - Change behavior of terminal output. Opens a new window every time.
 - (DONE) Add maps 'qf' and 'qj' for terminal output.
 - Complete documentation with regards to terminals.
-
-Matlab:
-- The old setup of the help via "SetMacro( 'HELP_BROWSER', ... )" is still
-  mentioned in the documentations.
-- Remove old ".../rc/sample_template_file".
-- Remove old release script 'release.lua'.
-- Move 'ftplugin/matlab.vim'.
 
 Perl:
 - (DONE?) 'perldoc' does not print the correct error message if it is not installed.
