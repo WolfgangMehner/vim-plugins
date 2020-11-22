@@ -24,40 +24,46 @@ os.setlocale ( 'C' )
 --  settings for Lua 5.1.5
 ------------------------------------------------------------------------
 
---local lua_major           = 5
---local lua_minor           = 1
---local lua_release         = 5
---local lua_date            = 'Feb 13 2012'
---local lua_copyright       = '2006 - 2012'
---local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref51.txt'
---local link_main_component = 'lua51'
---local html_filename       = '/home/wolfgang/Software/lua-5.1.5/doc/manual.html'
+--[[  -- BlockCommentNo_1 --
+local lua_major           = 5
+local lua_minor           = 1
+local lua_release         = 5
+local lua_date            = 'Feb 13 2012'
+local lua_copyright       = '2006 - 2012'
+local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref51.txt'
+local link_main_component = 'lua51'
+local html_filename       = '/home/wolfgang/Software/lua-5.1.5/doc/manual.html'
+--]]  -- BlockCommentNo_1 --
 
 ------------------------------------------------------------------------
 --  settings for Lua 5.2.4
 ------------------------------------------------------------------------
 
---local lua_major           = 5
---local lua_minor           = 2
---local lua_release         = 4
---local lua_date            = 'Feb 23 2015'
---local lua_copyright       = '2011 - 2015'
---local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref52.txt'
---local link_main_component = 'lua52'
---local html_filename       = '/home/wolfgang/Software/lua-5.2.4/doc/manual.html'
+--[[  -- BlockCommentNo_2 --
+local lua_major           = 5
+local lua_minor           = 2
+local lua_release         = 4
+local lua_date            = 'Feb 23 2015'
+local lua_copyright       = '2011 - 2015'
+local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref52.txt'
+local link_main_component = 'lua52'
+local html_filename       = '/home/wolfgang/Software/lua-5.2.4/doc/manual.html'
+--]]  -- BlockCommentNo_2 --
 
 ------------------------------------------------------------------------
---  settings for Lua 5.3.4
+--  settings for Lua 5.3.6
 ------------------------------------------------------------------------
 
+--[ [  -- BlockCommentNo_3 --
 local lua_major           = 5
 local lua_minor           = 3
-local lua_release         = 4
-local lua_date            = 'May 30 2016'
-local lua_copyright       = '2015 - 2016'
+local lua_release         = 6
+local lua_date            = 'Jul 14 2020'
+local lua_copyright       = '2015 - 2020'
 local doc_filename        = os.getenv ( 'HOME' ) .. '/Programme/VimPlugins/doc/luaref53.txt'
 local link_main_component = 'lua53'
-local html_filename       = '/home/wolfgang/Software/lua-5.3.4/doc/manual.html'
+local html_filename       = '/home/wolfgang/Software/lua-5.3.6/doc/manual.html'
+--]]  -- BlockCommentNo_3 --
 
 ------------------------------------------------------------------------
 --  links to all versions (since Lua 5.3.1)
@@ -1165,8 +1171,6 @@ end  -----  end of function parse_html  -----
 
 --  }}}1
 ------------------------------------------------------------------------
-
---print ( string.format ( '"%s" "%s" "%s" "%s"', parse_matching_tag ( '<em class="id">opening long bracket of level <em class="blah">n</em></em> ', 'em' ) ) )
 
 -- header inserted before the generated documentation to make the format Vim compatible
 local header_txt = [[

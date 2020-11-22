@@ -1,9 +1,9 @@
-*luaref53.txt*             Lua 5.3 Reference Manual                May 30 2016
+*luaref53.txt*             Lua 5.3 Reference Manual                Jul 14 2020
 
-Lua 5.3.4 Reference Manual                                   *lua53* *luaref53*
+Lua 5.3.6 Reference Manual                                   *lua53* *luaref53*
 
 by Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes
-Copyright © 2015 - 2016 Lua.org, PUC-Rio. Freely available under the terms of
+Copyright © 2015 - 2020 Lua.org, PUC-Rio. Freely available under the terms of
 the Lua license (see http://www.lua.org/license.html).
 
 Formated for Vim help by
@@ -84,7 +84,7 @@ Formated for Vim help by
 Lua 5.3 Reference Manual
 
 by Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes
-Copyright © 2015-2017 Lua.org, PUC-Rio. Freely available under the terms of
+Copyright © 2015-2020 Lua.org, PUC-Rio. Freely available under the terms of
 the Lua license (see http://www.lua.org/license.html).
 
 ------------------------------------------------------------------------------
@@ -178,13 +178,13 @@ The type thread represents independent threads of execution and it is used to
 implement coroutines (see |lua53-sec2.6|). Lua threads are not related to
 operating-system threads. Lua supports coroutines on all systems, even those
 that do not support threads natively.
-The type table implements associative arrays, that is, arrays that can be
-indexed not only with numbers, but with any Lua value except nil and NaN. (Not
-a Number is a special value used to represent undefined or unrepresentable
-numerical results, such as 0/0.) Tables can be heterogeneous; that is, they
-can contain values of all types (except nil). Any key with value nil is not
-considered part of the table. Conversely, any key that is not part of a table
-has an associated value nil.
+The type table implements associative arrays, that is, arrays that can have as
+indices not only numbers, but any Lua value except nil and NaN. (Not a Number
+is a special value used to represent undefined or unrepresentable numerical
+results, such as 0/0.) Tables can be heterogeneous; that is, they can contain
+values of all types (except nil). Any key with value nil is not considered
+part of the table. Conversely, any key that is not part of a table has an
+associated value nil.
 Tables are the sole data-structuring mechanism in Lua; they can be used to
 represent ordinary arrays, lists, symbol tables, sets, records, graphs, trees,
 etc. To represent records, Lua uses the field name as an index. The language
@@ -281,7 +281,8 @@ function to perform the addition.
 The key for each event in a metatable is a string with the event name prefixed
 by two underscores; the corresponding values are called metamethods. In the
 previous example, the key is "__add" and the metamethod is the function that
-performs the addition.
+performs the addition. Unless stated otherwise, metamethods should be function
+values.
 You can query the metatable of any value using the |lua53-getmetatable|
 function. Lua queries metamethods in metatables using a raw access (see
 |lua53-rawget|). So, to retrieve the metamethod for event ev in object o, Lua
@@ -366,9 +367,9 @@ operation is identified by its corresponding key.
   a <= b is equivalent to not (b < a). As with the other comparison operators,
   the result is always a boolean. (This use of the __lt event can be removed
   in future versions; it is also slower than a real __le metamethod.)
-- __index: The indexing access table[key]. This event happens when table is
-  not a table or when key is not present in table. The metamethod is looked up
-  in table.
+- __index: The indexing access operation table[key]. This event happens when
+  table is not a table or when key is not present in table. The metamethod is
+  looked up in table.
   Despite the name, the metamethod for this event can be either a function or
   a table. If it is a function, it is called with table and key as arguments,
   and the result of the call (adjusted to one value) is the result of the
@@ -725,11 +726,8 @@ Square brackets are used to index a table:
 >
 	var ::= prefixexp '[' exp ']'
 <
-The meaning of accesses to table fields can be changed via metatables. An
-access to an indexed variable t[i] is equivalent to a call
-gettable_event(t,i). (See |lua53-sec2.4| for a complete description of the
-gettable_event function. This function is not defined or callable in Lua. We
-use it here only for explanatory purposes.)
+The meaning of accesses to table fields can be changed via metatables (see
+|lua53-sec2.4|).
 The syntax var.Name is just syntactic sugar for var["Name"]:
 >
 	var ::= prefixexp '.' Name
@@ -847,13 +845,11 @@ exchanges the values of x and y, and
      x, y, z = y, z, x
 <
 cyclically permutes the values of x, y, and z.
-The meaning of assignments to global variables and table fields can be changed
-via metatables. An assignment to an indexed variable t[i] = val is equivalent
-to settable_event(t,i,val). (See |lua53-sec2.4| for a complete description of
-the settable_event function. This function is not defined or callable in Lua.
-We use it here only for explanatory purposes.)
 An assignment to a global name x = val is equivalent to the assignment _ENV.x
 = val (see |lua53-sec2.2|).
+The meaning of assignments to table fields and global variables (which are
+actually table fields, too) can be changed via metatables (see
+|lua53-sec2.4|).
 
 ------------------------------------------------------------------------------
 3.3.4  Control Structures                                     *lua53-sec3.3.4*
@@ -1049,17 +1045,17 @@ Here are some examples:
      g(f(), x)          -- f() is adjusted to 1 result
      g(x, f())          -- g gets x plus all results from f()
      a,b,c = f(), x     -- f() is adjusted to 1 result (c gets nil)
-     a,b = ...          -- a gets the first vararg parameter, b gets
+     a,b = ...          -- a gets the first vararg argument, b gets
                         -- the second (both a and b can get nil if there
-                        -- is no corresponding vararg parameter)
+                        -- is no corresponding vararg argument)
      
      a,b,c = x, f()     -- f() is adjusted to 2 results
      a,b,c = f()        -- f() is adjusted to 3 results
      return f()         -- returns all results from f()
-     return ...         -- returns all received vararg parameters
+     return ...         -- returns all received vararg arguments
      return x,y,f()     -- returns x, y, and all results from f()
      {f()}              -- creates a list with all results from f()
-     {...}              -- creates a list with all vararg parameters
+     {...}              -- creates a list with all vararg arguments
      {f(), nil}         -- f() is adjusted to 1 result
 <
 Any expression enclosed in parentheses always results in only one value. Thus,
@@ -1170,9 +1166,11 @@ denote the same mathematical value.
 Tables, userdata, and threads are compared by reference: two objects are
 considered equal only if they are the same object. Every time you create a new
 object (a table, userdata, or thread), this new object is different from any
-previously existing object. Closures with the same reference are always equal.
-Closures with any detectable difference (different behavior, different
-definition) are always different.
+previously existing object. A closure is always equal to itself. Closures with
+any detectable difference (different behavior, different definition) are
+always different. Closures created at different times but with no detectable
+differences may be classified as equal or not (depending on internal caching
+details).
 You can change the way that Lua compares tables and userdata by using the "eq"
 metamethod (see |lua53-sec2.4|).
 Equality comparisons do not convert strings to numbers or vice versa. Thus,
@@ -1334,8 +1332,8 @@ A function call in Lua has the following syntax:
 In a function call, first prefixexp and args are evaluated. If the value of
 prefixexp has type function, then this function is called with the given
 arguments. Otherwise, the prefixexp "call" metamethod is called, having as
-first parameter the value of prefixexp, followed by the original call
-arguments (see |lua53-sec2.4|).
+first argument the value of prefixexp, followed by the original call arguments
+(see |lua53-sec2.4|).
 The form
 >
 	functioncall ::= prefixexp ':' Name args
@@ -1669,7 +1667,7 @@ The panic function, as its name implies, is a mechanism of last resort.
 Programs should avoid it. As a general rule, when a C function is called by
 Lua with a Lua state, it can do whatever it wants on that Lua state, as it
 should be already protected. However, when C code operates on other Lua states
-(e.g., a Lua parameter to the function, a Lua state stored in the registry, or
+(e.g., a Lua argument to the function, a Lua state stored in the registry, or
 the result of |lua53-lua_newthread|), it should use them only in API calls
 that cannot raise errors.
 The panic function runs as if it were a message handler (see |lua53-sec2.3|);
@@ -2020,7 +2018,7 @@ lua_close ~
 <
 Destroys all objects in the given Lua state (calling the corresponding
 garbage-collection metamethods, if any) and frees all dynamic memory used by
-this state. On several platforms, you may not need to call this function,
+this state. In several platforms, you may not need to call this function,
 because all resources are naturally released when the host program ends. On
 the other hand, long-running programs that create multiple states, such as
 daemons or web servers, will probably need to close states as soon as they are
@@ -3608,7 +3606,7 @@ Gets information about a specific function or function invocation.
 To get information about a function invocation, the parameter ar must be a
 valid activation record that was filled by a previous call to
 |lua53-lua_getstack| or given as argument to a hook (see |lua53-lua_Hook|).
-To get information about a function you push it onto the stack and start the
+To get information about a function, you push it onto the stack and start the
 what string with the character '>'. (In that case, lua_getinfo pops the
 function from the top of the stack.) For instance, to know in which line a
 function f was defined, you can write the following code:
@@ -4200,7 +4198,7 @@ luaL_getmetafield ~
     int luaL_getmetafield (lua_State *L, int obj, const char *e);
 <
 Pushes onto the stack the field e from the metatable of the object at index
-obj and returns the type of pushed value. If the object does not have a
+obj and returns the type of the pushed value. If the object does not have a
 metatable, or if the metatable does not have this field, pushes nothing and
 returns LUA_TNIL.
 
@@ -4411,7 +4409,7 @@ This macro is defined as follows:
 <
 In words, if the argument arg is nil or absent, the macro results in the
 default dflt. Otherwise, it results in the result of calling func with the
-state L and the argument index arg as parameters. Note that it evaluates the
+state L and the argument index arg as arguments. Note that it evaluates the
 expression dflt only if needed.
 
 ------------------------------------------------------------------------------
@@ -5622,9 +5620,9 @@ combinations are allowed in describing a character class:
   [0-7%l%-] represents the octal digits plus the lowercase letters plus the
   '-' character.
   You can put a closing square bracket in a set by positioning it as the first
-  character in the set. You can put an hyphen in a set by positioning it as
-  the first or the last character in the set. (You can also use an escape for
-  both cases.)
+  character in the set. You can put a hyphen in a set by positioning it as the
+  first or the last character in the set. (You can also use an escape for both
+  cases.)
   The interaction between ranges and classes is not defined. Therefore,
   patterns like [%a-z] or [a-%%] have no meaning.
 - [^set]: represents the complement of set, where set is interpreted as above.
@@ -5853,8 +5851,8 @@ Returns the destination table a2.
                                                             *lua53-table.pack*
 table.pack (...) ~
 
-Returns a new table with all parameters stored into keys 1, 2, etc. and with a
-field "n" with the total number of parameters. Note that the resulting table
+Returns a new table with all arguments stored into keys 1, 2, etc. and with a
+field "n" with the total number of arguments. Note that the resulting table
 may not be a sequence.
 
 ------------------------------------------------------------------------------
@@ -5936,7 +5934,7 @@ Returns the arc sine of x (in radians).
 math.atan (y [, x]) ~
 
 Returns the arc tangent of y/x (in radians), but uses the signs of both
-parameters to find the quadrant of the result. (It also handles correctly the
+arguments to find the quadrant of the result. (It also handles correctly the
 case of x being zero.)
 The default value for x is 1, so that the call math.atan(y) returns the arc
 tangent of y.
@@ -6137,7 +6135,7 @@ meanings from C: io.stdin, io.stdout, and io.stderr. The I/O library never
 closes these files.
 Unless otherwise stated, all I/O functions return nil on failure (plus an
 error message as a second result and a system-dependent error code as a third
-result) and some value different from nil on success. On non-POSIX systems,
+result) and some value different from nil on success. In non-POSIX systems,
 the computation of the error message and error code in case of errors may be
 not thread safe, because they rely on the global C variable errno.
 
@@ -6163,7 +6161,7 @@ io.input ([file]) ~
 When called with a file name, it opens the named file (in text mode), and sets
 its handle as the default input file. When called with a file handle, it
 simply sets this file handle as the default input file. When called without
-parameters, it returns the current default input file.
+arguments, it returns the current default input file.
 In case of errors this function raises the error, instead of returning an
 error code.
 
@@ -6178,7 +6176,8 @@ detects the end of file, it returns no values (to finish the loop) and
 automatically closes the file.
 The call io.lines() (with no file name) is equivalent to
 io.input():lines("*l"); that is, it iterates over the lines of the default
-input file. In this case it does not close the file when the loop ends.
+input file. In this case, the iterator does not close the file when the loop
+ends.
 In case of errors this function raises the error, instead of returning an
 error code.
 
@@ -6390,7 +6389,7 @@ according to the same rules as the ISO C function strftime.
 When called without arguments, date returns a reasonable date and time
 representation that depends on the host system and on the current locale.
 (More specifically, os.date() is equivalent to os.date("%c").)
-On non-POSIX systems, this function may be not thread safe because of its
+In non-POSIX systems, this function may be not thread safe because of its
 reliance on C function gmtime and C function localtime.
 
 ------------------------------------------------------------------------------
@@ -6503,7 +6502,7 @@ os.tmpname () ~
 Returns a string with a file name that can be used for a temporary file. The
 file must be explicitly opened before its use and explicitly removed when no
 longer needed.
-On POSIX systems, this function also creates a file with that name, to avoid
+In POSIX systems, this function also creates a file with that name, to avoid
 security risks. (Someone else might create the file with wrong permissions in
 the time between getting the name and creating the file.) You still have to
 open the file to use it and to remove it (even if you do not use it).
@@ -6580,10 +6579,10 @@ explicit local variables, but also parameters, temporaries, etc.
 The first parameter or local variable has index 1, and so on, following the
 order that they are declared in the code, counting only the variables that are
 active in the current scope of the function. Negative indices refer to vararg
-parameters; -1 is the first vararg parameter. The function returns nil if
-there is no variable with the given index, and raises an error when called
-with a level out of range. (You can call |lua53-debug.getinfo| to check
-whether the level is valid.)
+arguments; -1 is the first vararg argument. The function returns nil if there
+is no variable with the given index, and raises an error when called with a
+level out of range. (You can call |lua53-debug.getinfo| to check whether the
+level is valid.)
 Variable names starting with '(' (open parenthesis) represent variables with
 no known names (internal variables such as loop control variables, and
 variables from chunks saved without debug information).
@@ -6638,7 +6637,7 @@ combination of the following characters, with the given meaning:
 Moreover, with a count different from zero, the hook is called also after
 every count instructions.
 When called without arguments, |lua53-debug.sethook| turns off the hook.
-When the hook is called, its first parameter is a string describing the event
+When the hook is called, its first argument is a string describing the event
 that has triggered its call: "call" (or "tail call"), "return", "line", and
 "count". For line events, the hook also gets the new line number as its second
 parameter. Inside a hook, you can call getinfo with level 2 to get more
@@ -6731,7 +6730,7 @@ standard libraries, including the debug library. Its usage is:
 <
 The options are:
 - -e stat: executes string stat;
-- -l mod: "requires" mod;
+- -l mod: "requires" mod and assigns the result to global @mod;
 - -i: enters interactive mode after running script;
 - -v: prints version information;
 - -E: ignores environment variables;
@@ -6774,7 +6773,7 @@ followed by the other arguments. For instance, the call
 >
      $ lua -e "print(arg[1])"
 <
-will print "-e". If there is a script, the script is called with parameters
+will print "-e". If there is a script, the script is called with arguments
 arg[1], ..., arg[#arg]. (Like all chunks in Lua, the script is compiled as a
 vararg function.)
 In interactive mode, Lua repeatedly prompts and waits for a line. After
@@ -6866,9 +6865,8 @@ The standard paths in the official distribution may change between versions.
 - The following functions were deprecated in the mathematical library: atan2,
   cosh, sinh, tanh, pow, frexp, and ldexp. You can replace math.pow(x,y) with
   x^y; you can replace math.atan2 with math.atan, which now accepts one or two
-  parameters; you can replace math.ldexp(x,exp) with x * 2.0^exp. For the
-  other operations, you can either use an external library or implement them
-  in Lua.
+  arguments; you can replace math.ldexp(x,exp) with x * 2.0^exp. For the other
+  operations, you can either use an external library or implement them in Lua.
 - The searcher for C loaders used by |lua53-require| changed the way it
   handles versioned names. Now, the version should come after the module name
   (as is usual in most other tools). For compatibility, that searcher still
@@ -6882,7 +6880,7 @@ The standard paths in the official distribution may change between versions.
 8.3  Changes in the API                                         *lua53-sec8.3*
 ------------------------------------------------------------------------------
 
-- Continuation functions now receive as parameters what they needed to get
+- Continuation functions now receive as arguments what they needed to get
   through lua_getctx, so lua_getctx has been removed. Adapt your code
   accordingly.
 - Function |lua53-lua_dump| has an extra parameter, strip. Use 0 as the value
@@ -6972,10 +6970,10 @@ Numeral, and LiteralString, see |lua53-sec3.1|.)
 ------------------------------------------------------------------------------
 
 Last update:
-Mon Jan 9 13:30:53 BRST 2017
+Tue Jul 14 10:32:39 UTC 2020
 
 Formated for Vim help:
-Tue Jan 31 16:01:50 CET 2017
+Sun Nov 01 11:18:30 CET 2020
 
 ==============================================================================
 vim:tw=78:expandtab:ts=4:ft=help:norl:
