@@ -187,7 +187,7 @@ function! s:OpenBuffer ( name, ... )
 	let buf_regex = a:name
 	if topic != ''
 		let buf_name  .= ' ('.topic.')'
-		let buf_regex .= ' ([a-zA-Z0-9_: ]\+)'
+		let buf_regex .= ' ([a-zA-Z0-9 :_-]\+)'
 	endif
 	let buf_regex = '{'.buf_regex.','.buf_regex.' -[0-9]\+-'.'}'
 
@@ -218,7 +218,7 @@ function! s:OpenBuffer ( name, ... )
 	call s:RenameBuffer( buf_name, 1 )
 
 	return 1
-endfunction    " ----------  end of function s:OpenBuffer  ----------
+endfunction
 
 "-------------------------------------------------------------------------------
 " s:RenameBuffer : Rename a scratch buffer.   {{{2
@@ -1088,7 +1088,7 @@ endfunction   " ---------- end of function s:RemoveEcho  ----------
 
 function! s:OutputBufferErrors ( jump )
 
-	if bufname('%') !~# 'Bash Output\%( -\d\+-\)\?$' && bufname('%') !~# 'Bash Terminal - '
+	if bufname('%') !~# 'Bash Output' && bufname('%') !~# 'Bash Terminal'
 		return s:ImportantMsg ( 'not inside a Bash output buffer' )
 	endif
 
@@ -1110,7 +1110,7 @@ function! s:OutputBufferErrors ( jump )
 	if a:jump != 0
 		cc
 	endif
-endfunction    " ----------  end of function s:OutputBufferErrors  ----------
+endfunction
 
 "-------------------------------------------------------------------------------
 " s:Run : Run the current buffer.   {{{1
@@ -1118,6 +1118,7 @@ endfunction    " ----------  end of function s:OutputBufferErrors  ----------
 " Parameters:
 "   args - command-line arguments (string)
 "   mode - "n" : run complete buffer, "v" : run marked area (string)
+"   ...  - range information
 " Returns:
 "   -
 "-------------------------------------------------------------------------------
@@ -1237,7 +1238,13 @@ function! s:Run ( args, mode, ... ) range
 
 		" method : "buffer"
 
-		if s:OpenBuffer ( 'Bash Output' )
+		let title_name  = 'Bash Output'
+		let title_range = ''
+		if mode == 'v'
+			let title_range = 'lines '.line_f.'-'.line_l
+		endif
+
+		if s:OpenBuffer ( 'Bash Output', 'topic', title_range )
 			" open buffer
 
 			setlocal syntax=none
@@ -1313,39 +1320,47 @@ function! s:Run ( args, mode, ... ) range
 						\ " - occurred at " . v:throwpoint )
 		endtry
 
-		let title = 'Bash Terminal - '.expand( '%:t' )
+		let title_name  = 'Bash Terminal'
+		let title_range = ''
 		if mode == 'v'
-			let title  = title.' - lines '.line_f.'-'.line_l
+			let title_range  = 'lines '.line_f.'-'.line_l
+		endif
+		let is_new_buffer = 0
+
+		if s:OpenBuffer ( 'Bash Terminal', 'topic', title_range )
+			" open buffer
+			let is_new_buffer = 1
 		endif
 
 		if s:NEOVIM
-			" :TODO:11.10.2017 18:03:WM: better handling than using 'job_id', but ensures
-			" successful operation for know
-			above new
-			let job_id = termopen ( arg_list, {} )
+			let bn = bufname( '%' )
+			let job_id = termopen( arg_list, {} )
 
-			silent exe 'file '.fnameescape( title.' -'.job_id.'-' )
+			silent exe 'file '.fnameescape( bn )
 		else
-			call term_start ( arg_list, { 'term_name' : title, } )
+			let bn = bufname( '%' )
+			call term_start( arg_list, { 'curwin' : 1, 'term_name' : bn } )
 		endif
 
 		" :TODO:27.09.2017 23:39:WM: needs to handle the tmpfile, use exit callback
 
-		call Bash_SetMapLeader ()
+		if is_new_buffer
+			call Bash_SetMapLeader ()
 
-		" maps: quickfix list
-		if empty( maparg( '<LocalLeader>qf', 'n' ) )
-			nnoremap  <buffer>  <silent>  <LocalLeader>qf       :call <SID>OutputBufferErrors(0)<CR>
-			inoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call <SID>OutputBufferErrors(0)<CR>
-			vnoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call <SID>OutputBufferErrors(0)<CR>
-		endif
-		if empty( maparg( '<LocalLeader>qj', 'n' ) )
-			nnoremap  <buffer>  <silent>  <LocalLeader>qj       :call <SID>OutputBufferErrors(1)<CR>
-			inoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
-			vnoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
-		endif
+			" maps: quickfix list
+			if empty( maparg( '<LocalLeader>qf', 'n' ) )
+				nnoremap  <buffer>  <silent>  <LocalLeader>qf       :call <SID>OutputBufferErrors(0)<CR>
+				inoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call <SID>OutputBufferErrors(0)<CR>
+				vnoremap  <buffer>  <silent>  <LocalLeader>qf  <C-C>:call <SID>OutputBufferErrors(0)<CR>
+			endif
+			if empty( maparg( '<LocalLeader>qj', 'n' ) )
+				nnoremap  <buffer>  <silent>  <LocalLeader>qj       :call <SID>OutputBufferErrors(1)<CR>
+				inoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
+				vnoremap  <buffer>  <silent>  <LocalLeader>qj  <C-C>:call <SID>OutputBufferErrors(1)<CR>
+			endif
 
-		call Bash_ResetMapLeader ()
+			call Bash_ResetMapLeader ()
+		endif
 
 	elseif s:BASH_OutputMethod == 'xterm'
 
