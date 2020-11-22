@@ -1,4 +1,4 @@
-README for c.vim (Version 6.2.1pre) / December 20 2017
+README for c.vim (Version 6.2.1beta) / November 22 2020
 ================================================================================
 
   *  INSTALLATION
@@ -58,7 +58,12 @@ structure which is needed below the local installation directory `$HOME/.vim/`
    This is the minimal content of the file `$HOME/.vimrc`. Create one if there
    is none or use the files in `$HOME/.vim/c-support/rc` as a starting point.
 
-(1.3) Set at least some personal details. Use the map `\ntw` inside a C/C++ buffer
+(1.3) Make the plug-in help accessible by typing the following command on the
+   Vim command line:
+
+      :helptags $HOME/.vim/doc/
+
+(1.4) Set at least some personal details. Use the map `\ntw` inside a C/C++ buffer
    or the menu entry:
 
       C/C++ -> Snippets -> template setup wizard
@@ -76,11 +81,6 @@ structure which is needed below the local installation directory `$HOME/.vim/`
    C/C++ template library. It can also be set up via the wizard.
 
    (Read more about the template system in the plug-in documentation)
-
-(1.4) Make the plug-in help accessible by typing the following command on the
-   Vim command line:
-
-      :helptags $HOME/.vim/doc/
 
 (1.5) Consider additional settings in the file `$HOME/.vimrc`. The files
    `customization.vimrc` and `customization.gvimrc` are replacements or extensions
@@ -125,7 +125,12 @@ structure which is needed below the local installation directory `$HOME/vimfiles
    This is the minimal content of the file `$HOME/_vimrc`. Create one if there
    is none or use the files in `$HOME/vimfiles/c-support/rc` as a starting point.
 
-(2.3) Set at least some personal details. Use the map `\ntw` inside a C/C++ buffer
+(2.3) Make the plug-in help accessible by typing the following command on the
+   Vim command line:
+
+      :helptags $HOME\vimfiles\doc\
+
+(2.4) Set at least some personal details. Use the map `\ntw` inside a C/C++ buffer
    or the menu entry:
 
       C/C++ -> Snippets -> template setup wizard
@@ -143,11 +148,6 @@ structure which is needed below the local installation directory `$HOME/vimfiles
    your C/C++ template library. It can also be set up via the wizard.
 
    (Read more about the template system in the plug-in documentation)
-
-(2.4) Make the plug-in help accessible by typing the following command on the
-   Vim command line:
-
-      :helptags $HOME\vimfiles\doc\
 
 (2.5) Consider additional settings in the file `$HOME/_vimrc`. The files
    `customization.vimrc` and `customization.gvimrc` are replacements or extensions
@@ -207,6 +207,7 @@ RELEASE NOTES FOR VERSION 6.2.1
 Note: The filetype plug-ins have been moved, and are thus not loaded
 automatically anymore. Copy them from `c-support/rc` to `ftplugin`,
 or add the commands there to your own filetype plug-ins.
+
 Note: Some configuration for `*.i`, `*.ii`, and quickfix files has been removed.
 See `c-support/rc/customization.vimrc` for how to add them to your configuration
 files.

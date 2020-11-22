@@ -1,8 +1,8 @@
-*csupport.txt*                  C/C++ Support                      Oct 03 2017
+*csupport.txt*                  C/C++ Support                      Nov 22 2020
 
 C/C++ Support                                            *c-support* *csupport*
 
-                            Plug-in version 6.2.1pre
+                            Plug-in version 6.2.1beta
                         for Vim version 7.0 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                 (formerly Fritz Mehner <mehner.fritz@web.de>)
@@ -1410,7 +1410,7 @@ The hotkeys are defined in the file type plugin  c.vim.  All hotkeys from the
 non-GUI mode also work for gVim (see |csupport-usage-vim|).
 
 Shift-F2 can be used to switch between source files and header files if the
-plugin a.vim (https://vim.sourceforge.io/scripts/script.php?script_id=31) is
+plugin a.vim (https://www.vim.org/scripts/script.php?script_id=31) is
 present.  To suppress the creation of a new header file when switching from a
 source file the file ~/.vimrc should contain a line
 >
@@ -1499,7 +1499,7 @@ The variable plugin_dir will automatically be set to one of the following values
  g:C_CodeSnippets          : The name of the code snippet directory (see
                              |csupport-snippets|).
  g:C_CplusCompiler         : The name of the C++ compiler.
- g:C_Ctrl_j                : hotkey Ctrl-j 'on'/'off' (see |csupport-CTRL-j|)
+ g:C_Ctrl_j                : hotkey Ctrl-j 'on'/'off' (see |csupport-CTRL-J|)
  g:C_CustomTemplateFile    : sets the custom template file (see|csupport-templates|)
  g:C_Debugger              : the default debugging: 'gdb', 'kdbg', or 'ddd'
  g:C_Dictionary_File       : The name(s) of the dictionary file(s) used for
@@ -1832,7 +1832,7 @@ The text inside the brackets is userdefined and can be empty. The text can be
 composed from letters (uppercase and lowercase), digits, and underscores.
 After the insertion of an template these jump targets will be highlighted.
 
-5.3.3  Command Ctrl-j                                        *csupport-CTRL-j*
+5.3.3  Command Ctrl-j                                        *csupport-CTRL-J*
 
 Use the command Ctrl-j to jump to the next target. The target will be removed
 and the mode will switched to insertion. Ctrl-j works in normal and in insert

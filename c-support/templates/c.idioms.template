@@ -31,7 +31,7 @@ static void<CURSOR>
  *  Description:  
  * =====================================================================================
  */
-int
+	int
 main ( int argc, char *argv[] )
 {<CURSOR>
 <SPLIT>	return EXIT_SUCCESS;
