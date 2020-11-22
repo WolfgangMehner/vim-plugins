@@ -1,4 +1,4 @@
-README for bash-support.vim (Version 5.0alpha) / April 02 2019
+README for bash-support.vim (Version 5.0beta) / November 22 2020
 ================================================================================
 
   *  INSTALLATION
@@ -14,7 +14,7 @@ script, starting a debugger can be done with a keystroke. There are many
 additional hints and options which can improve speed and comfort when writing
 shell scripts.
 
-This plug-in can be used with Vim version 7.x.
+This plug-in can be used with Vim version 7.4+ and Neovim 0.2.1+.
 
 
 --------------------------------------------------------------------------------
@@ -168,10 +168,11 @@ Any problems? See the TROUBLESHOOTING section at the end of the help file
 RELEASE NOTES
 ================================================================================
 
-RELEASE NOTES FOR VERSION 5.0alpha
+RELEASE NOTES FOR VERSION 5.0beta
 ----------------------------------------------------------------------
 - Adapt for running under Neovim more smoothly.
 - Add command `:Bash [<args>]` to run the interpreter with arguments.
+- Add command `:BashCheck.` the run the syntax checker.
 - Add command `:BashDirectRun` to run executable scripts without `g:BASH_Executable`.
 - Add command `:BashOutputMethod` to set the output destination for `:Bash`.
 - Add command `:BashExecutable` to set the executable during runtime.

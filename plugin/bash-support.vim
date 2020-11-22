@@ -7,14 +7,14 @@
 "                  Write Bash scripts by inserting comments, statements,
 "                  variables and builtins.
 "
-"   VIM Version:  7.0+
+"   VIM Version:  7.4+
 "        Author:  Wolfgang Mehner <wolfgang-mehner@web.de>
 "                 Fritz Mehner <mehner.fritz@web.de>
 "       Version:  see g:BASH_Version below
 "       Created:  26.02.2001
-"      Revision:  19.04.2019
+"      Revision:  22.11.2020
 "       License:  Copyright (c) 2001-2015, Dr. Fritz Mehner
-"                 Copyright (c) 2016-2019, Wolfgang Mehner
+"                 Copyright (c) 2016-2020, Wolfgang Mehner
 "                 This program is free software; you can redistribute it and/or
 "                 modify it under the terms of the GNU General Public License as
 "                 published by the Free Software Foundation, version 2 of the
@@ -30,10 +30,10 @@
 " === Basic checks ===   {{{1
 "-------------------------------------------------------------------------------
 
-" need at least 7.0
-if v:version < 700
+" need at least 7.4
+if v:version < 740
 	echohl WarningMsg
-	echo 'The plugin bash-support.vim needs Vim version >= 7.'
+	echo 'The plugin bash-support.vim needs Vim version >= 7.4'
 	echohl None
 	finish
 endif
@@ -44,7 +44,7 @@ if exists("g:BASH_Version") || &cp
 	finish
 endif
 
-let g:BASH_Version = "5.0alpha"                  " version number of this script; do not change
+let g:BASH_Version = "5.0beta"                  " version number of this script; do not change
 
 "-------------------------------------------------------------------------------
 " === Auxiliary functions ===   {{{1

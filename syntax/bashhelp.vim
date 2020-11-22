@@ -6,7 +6,7 @@
 "
 "                 Import man page syntax.
 "
-"   VIM Version:  7.0+
+"   VIM Version:  7.4+
 "        Author:  Wolfgang Mehner, wolfgang-mehner@web.de
 "  Organization:  
 "       Version:  1.0

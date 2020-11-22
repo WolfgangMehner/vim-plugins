@@ -1,9 +1,9 @@
-*bashsupport.txt*                Bash Support                      Oct 01 2017
+*bashsupport.txt*                Bash Support                      Nov 22 2020
 
 Bash Support                                      *bash-support* *bashsupport*
 
-                             Plug-in version 5.0alpha
-                        for Vim version 7.0 and above
+                             Plug-in version 5.0beta
+                        for Vim version 7.4 and above
                    Wolfgang Mehner <wolfgang-mehner@web.de>
                       Fritz Mehner <mehner.fritz@web.de>
 
