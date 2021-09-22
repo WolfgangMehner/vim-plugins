@@ -413,7 +413,6 @@ elseif args[2] == 'cp-repo' then
 		end
 
 		os.execute ( 'mkdir -p '..dest_dir )
-		os.execute ( 'mkdir -p '..dest_dir..'/project' )
 
 		local cmd = 'cp --parents -r '..table.concat ( filelist_compl, ' ' )..' '..dest_dir
 
@@ -428,7 +427,7 @@ elseif args[2] == 'cp-repo' then
 		end
 
 		if success then
-			cmd = 'echo "\\ntaken from WolfgangMehner/vim-plugins, revision\\nhttps://github.com/WolfgangMehner/vim-plugins/commit/$(git rev-parse HEAD)" >> '..dest_dir..'/project/commit.txt'
+			cmd = 'echo "\\ntaken from WolfgangMehner/vim-plugins, revision\\nhttps://github.com/WolfgangMehner/vim-plugins/commit/$(git rev-parse HEAD)" >> '..dest_dir..'/commit.txt'
 
 			success, res_reason, res_status = os.execute ( cmd )
 		end
