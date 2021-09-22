@@ -2704,7 +2704,7 @@ function! s:CreateAdditionalMaps ()
 
 	" ---------- commands : run -------------------------------------
 	command! -nargs=* -buffer -complete=file  Perl       call <SID>Run(<q-args>)
-	command! -nargs=0 -buffer -complete=file  PerlCheck  call <SID>SyntaxCheck()
+	command! -nargs=0 -buffer                 PerlCheck  call <SID>SyntaxCheck()
 	command! -nargs=* -buffer -complete=file  PerlDebug  call <SID>Debugger(<q-args>)
 
 	command! -nargs=* -complete=file PerlScriptArguments call Perl_ScriptCmdLineArguments(<q-args>)
