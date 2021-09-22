@@ -1763,8 +1763,8 @@ function! s:CreateMaps ()
 	"-------------------------------------------------------------------------------
 	"
 	command! -nargs=* -buffer -complete=file Lua          call <SID>Run(<q-args>)
-	command! -nargs=0 -buffer -complete=file LuaCompile   call <SID>Compile('compile')
-	command! -nargs=0 -buffer -complete=file LuaCheck     call <SID>Compile('check')
+	command! -nargs=0 -buffer                LuaCompile   call <SID>Compile('compile')
+	command! -nargs=0 -buffer                LuaCheck     call <SID>Compile('check')
 	"
 	"-------------------------------------------------------------------------------
 	" settings - local leader
